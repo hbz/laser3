@@ -4,6 +4,8 @@ import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 
 @Transactional
@@ -39,7 +41,11 @@ class EscapeService {
     }
 
     String outputFinancialValue(input) {
+        //workaround for the correct currency output but without currency symbol, according to https://stackoverflow.com/questions/8658205/format-currency-without-currency-symbol
         NumberFormat nf = NumberFormat.getCurrencyInstance(LocaleContextHolder.getLocale())
+        DecimalFormatSymbols dcf = ((DecimalFormat) nf).getDecimalFormatSymbols()
+        dcf.setCurrencySymbol("")
+        ((DecimalFormat) nf).setDecimalFormatSymbols(dcf)
         nf.format(input)
     }
 }

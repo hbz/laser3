@@ -362,19 +362,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
-    static def lookupByIdentifierString(idstr) {
-        LogFactory.getLog(this).debug("lookupByIdentifierString(${idstr})")
-
-        def result = null
-        def qr = Identifier.lookupObjectsByIdentifierString(new Org(), idstr)
-
-        if (qr && (qr.size() == 1)) {
-            //result = qr.get(0);
-            result = GrailsHibernateUtil.unwrapIfProxy( qr.get(0) ) // fix: unwrap proxy
-        }
-        result
-    }
-
     Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
         Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'orphanedProperties':[] ]
 

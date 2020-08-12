@@ -39,7 +39,7 @@
 
     <tmpl:/layouts/favicon />
 
-    <r:layoutResources/>
+    <r:layoutResources/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
@@ -54,7 +54,7 @@
             <span>QA</span>
         </div>
     </g:if>
-    <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
+    <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
     <nav id="mainMenue" class="ui fixed inverted stackable menu" role="menubar" aria-label="${message(code:'aria-label.mainNavigation')}">
         <div class="ui container" role="none">
             <g:link controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
@@ -563,7 +563,7 @@
 
 
     <sec:ifAnyGranted roles="ROLE_USER">
-        <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu"></g:set>
+        <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
         <nav class="ui fixed  stackable  menu la-contextBar"  >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>

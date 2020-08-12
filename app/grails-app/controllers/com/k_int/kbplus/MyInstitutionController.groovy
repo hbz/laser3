@@ -106,7 +106,6 @@ class MyInstitutionController extends AbstractDebugController {
                 configMap.subscription = params.subscription
             else if(params.package) {
                 configMap.package = params.package
-                configMap.subscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
             }
             result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
             if(result.costItems) {
@@ -133,8 +132,10 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def loadCostItemChartData() {
         Org contextOrg = contextService.org
-        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,institution:contextOrg])
+        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg])
         Map<String,Object> result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
+        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+            result.graphB = financeService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
         render result as JSON
     }
 
@@ -1343,48 +1344,6 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
-    /*
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def deleteLicense(params) {
-        log.debug("deleteLicense ${params}");
-        Map<String, Object> result = setResultGenerics()
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${result.institution.name}. Please request access on the profile page");
-            return;
-        }
-
-        def license = License.get(params.baselicense)
-
-
-        if (license?.hasPerm("edit", result.user)) {
-            def current_subscription_status = RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS)
-
-            def subs_using_this_license = Subscription.findAllByOwnerAndStatus(license, current_subscription_status)
-
-            if (subs_using_this_license.size() == 0) {
-                license.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS)
-                license.save(flush: true)
-            } else {
-                flash.error = message(code:'myinst.deleteLicense.error')
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-        } else {
-            log.warn("Attempt by ${result.user} to delete license ${result.license} without perms")
-            flash.message = message(code: 'license.delete.norights')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-
-        redirect action: 'currentLicenses'
-    }
-    */
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
@@ -1698,196 +1657,6 @@ join sub.orgRelations or_sub where
 
     }
 
-    /**
-     * Add to the given result Map the list of values available for each filters.
-     *
-     * @param result - result Map which will be sent to the view page
-     * @param date_restriction - 'Subscription valid on' date restriction as a String
-     * @return the result Map with the added filter lists
-     */
-    @Deprecated
-    private setFiltersLists(result, date_restriction) {
-        // Query the list of Subscriptions
-        def del_ie =  RDStore.TIPP_STATUS_DELETED
-
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-
-        def cp = RDStore.OR_CONTENT_PROVIDER
-        def role_consortia = RDStore.OR_PACKAGE_CONSORTIA
-
-        def roles = [role_sub, role_sub_cons, role_sub_consortia]
-
-        def sub_params = [institution: result.institution,roles:roles]
-        def sub_qry = """
-Subscription AS s INNER JOIN s.orgRelations AS o
-WHERE o.roleType IN (:roles)
-AND o.org = :institution """
-        if (date_restriction) {
-            sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "
-            sub_params.date_restriction = date_restriction
-        }
-        result.subscriptions = Subscription.executeQuery("SELECT s FROM ${sub_qry} ORDER BY s.name", sub_params);
-        result.test = Subscription.executeQuery("""
-SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role ORDER BY role.org.name """);
-
-        // Query the list of Providers
-        result.providers = Subscription.executeQuery("""
-SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role 
-WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) 
-AND role.roleType=:role_cp 
-ORDER BY role.org.name""", sub_params+[role_cp:cp])
-
-        // Query the list of Host Platforms
-        result.hostplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(ie.tipp.platform), ie.tipp.platform.name
-FROM IssueEntitlement AS ie, ${sub_qry}
-AND s = ie.subscription
-ORDER BY ie.tipp.platform.name""", sub_params)
-
-        return result
-    }
-
-    /**
-     * This function will gather the different filters from the request parameters and
-     * will build the base of the query to gather all the information needed for the view page
-     * according to the requested filtering.
-     *
-     * @param institution - the {@link Org} object representing the institution we're looking at
-     * @param date_restriction - 'Subscription valid on' date restriction as a String
-     * @return a Map containing the base query as a String and a Map containing the parameters to run the query
-     */
-    @Deprecated
-    private buildCurrentTitlesQuery(institution, date_restriction) {
-        def qry_map = [:]
-
-        // Put multi parameters for filtering into Lists
-        // Set the variables to null if filter is equal to 'all'
-        def filterSub = params.list("filterSub")
-        if (filterSub.contains("all")) filterSub = null
-        def filterPvd = params.list("filterPvd")
-        if (filterPvd.contains("all")) filterPvd = null
-        def filterHostPlat = params.list("filterHostPlat")
-        if (filterHostPlat.contains("all")) filterHostPlat = null
-        def filterOtherPlat = params.list("filterOtherPlat")
-        if (filterOtherPlat.contains("all")) filterOtherPlat = null
-
-        def qry_params = [:]
-
-        StringBuilder title_query = new StringBuilder()
-        title_query.append("FROM IssueEntitlement AS ie ")
-        // Join with Org table if there are any Provider filters
-        if (filterPvd) title_query.append("INNER JOIN ie.tipp.pkg.orgs AS role ")
-        // Join with the Platform table if there are any Host Platform filters
-        if (filterHostPlat) title_query.append("INNER JOIN ie.tipp.platform AS hplat ")
-        title_query.append(", Subscription AS s INNER JOIN s.orgRelations AS o ")
-
-        // Main query part
-        title_query.append("\
-  WHERE ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) \
-  AND o.org = :institution \
-  AND s = ie.subscription ")
-        qry_params.institution = institution
-
-        // Subscription filtering
-        if (filterSub) {
-            title_query.append("\
-  AND ( \
-  ie.subscription.id IN (:subscriptions) \
-  OR ( EXISTS ( FROM IssueEntitlement AS ie2 \
-  WHERE ie2.tipp.title = ie.tipp.title \
-  AND ie2.subscription.id IN (:subscriptions) \
-  )))")
-            qry_params.subscriptions = filterSub.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-        }
-
-        // Title name filtering
-        // Copied from SubscriptionDetailsController
-        if (params.filter) {
-            title_query.append("\
-  AND ( ( Lower(ie.tipp.title.title) like :filterTrim ) \
-  OR ( EXISTS ( FROM Identifier ident \
-  WHERE ident.ti.id = ie.tipp.title.id \
-  AND ident.value like :filter ) ) )")
-            qry_params.filterTrim = "%${params.filter.trim().toLowerCase()}%"
-            qry_params.filter = "%${params.filter}%"
-        }
-
-        // Provider filtering
-        if (filterPvd) {
-            title_query.append("\
-  AND role.roleType.value = 'Content Provider' \
-  AND role.org.id IN (:provider) ")
-            qry_params.provider = filterPvd.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-            //Long.valueOf(params.filterPvd)
-        }
-        // Host Platform filtering
-        if (filterHostPlat) {
-            title_query.append("AND hplat.id IN (:hostPlatform) ")
-            qry_params.hostPlatform = filterHostPlat.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-            //Long.valueOf(params.filterHostPlat)
-        }
-        // Host Other filtering
-        if (filterOtherPlat) {
-            title_query.append("""
-AND EXISTS (
-  FROM IssueEntitlement ie2
-  WHERE EXISTS (
-    FROM ie2.tipp.additionalPlatforms AS ap
-    WHERE ap.platform.id IN (:otherPlatform)
-  )
-  AND ie2.tipp.title = ie.tipp.title
-) """)
-            qry_params.otherPlatform = filterOtherPlat.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-            //Long.valueOf(params.filterOtherPlat)
-        }
-        // 'Subscription valid on' filtering
-        if (date_restriction) {
-            title_query.append(" AND ie.subscription.startDate <= :date_restriction AND ie.subscription.endDate >= :date_restriction ")
-            qry_params.date_restriction = date_restriction
-        }
-
-        title_query.append("AND ( ie.status.value != 'Deleted' ) ")
-
-        qry_map.query = title_query.toString()
-        qry_map.parameters = qry_params
-        return qry_map
-    }
-
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def availableLicenses() {
-        // def sub = resolveOID(params.elementid);
-        // OrgRole.findAllByOrgAndRoleType(result.institution, licensee_role).collect { it.lic }
-
-
-        User user = User.get(springSecurityService.principal.id)
-        Org institution = contextService.getOrg()
-
-        if (! accessService.checkUserIsMember(user, institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[institution.name]);
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${institution.name}. Please request access on the profile page");
-            return;
-        }
-
-        RefdataValue licensee_role      = RDStore.OR_LICENSEE
-        RefdataValue licensee_cons_role = RDStore.OR_LICENSEE_CONS
-
-        // Find all licenses for this institution...
-        Map<String, Object> result = [:]
-        OrgRole.findAllByOrg(institution).each { it ->
-            if (it.roleType in [licensee_role, licensee_cons_role]) {
-                result["License:${it.lic?.id}"] = it.lic?.reference
-            }
-        }
-
-        //log.debug("returning ${result} as available licenses");
-        render result as JSON
-    }
-
     def resolveOID(oid_components) {
         def result = null;
         def domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
@@ -1896,57 +1665,6 @@ AND EXISTS (
         }
         result
     }
-
-    /* RDStore.SUBSCRIPTION_DELETED is removed
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def actionCurrentSubscriptions() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Subscription subscription = Subscription.get(params.basesubscription)
-        Org inst = Org.get(params.curInst)
-        def deletedStatus = RDStore.SUBSCRIPTION_DELETED
-
-        if (subscription.hasPerm("edit", result.user)) {
-            Subscription derived_subs = Subscription.findByInstanceOf(subscription)
-
-            //this is matter of discussion!
-            if (CostItem.findBySub(subscription)) {
-                flash.error = message(code: 'subscription.delete.existingCostItems')
-
-            }
-            else if (! derived_subs) {
-              log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
-              if( subscription.consortia && subscription.consortia != inst ) {
-                OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
-              } else {
-                subscription.status = deletedStatus
-                
-                if(subscription.save(flush: true)) {
-                    //delete eventual links, bugfix for ERMS-800 (ERMS-892)
-                    Links.executeQuery('select l from Links as l where :subscription in (l.source,l.destination)',[subscription:GenericOIDService.getOID(subscription)]).each { l ->
-                        DocContext comment = DocContext.findByLink(l)
-                        if(comment) {
-                            Doc commentContent = comment.owner
-                            comment.delete(flush:true)
-                            commentContent.delete(flush:true)
-                        }
-                        l.delete(flush:true)
-                    }
-                }
-              }
-            } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error')
-            }
-        } else {
-            log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
-            flash.message = message(code: 'subscription.delete.norights')
-        }
-
-        redirect action: 'currentSubscriptions'
-    }
-     */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -2742,14 +2460,11 @@ AND EXISTS (
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
+
+        result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)
+        result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)
+
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-
-        result.propList =
-                PropertyDefinition.findAllWhere(
-                        descr: PropertyDefinition.PRS_PROP,
-                        tenant: result.institution // private properties
-                )
-
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
@@ -3085,7 +2800,7 @@ AND EXISTS (
             int rownum = 1
             int sumcell = 11
             int sumTitleCell = 10
-            result.costItems.eachWithIndex { entry, int sidewideNumber ->
+            result.entries.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
                 Subscription subCons = (Subscription) entry[1]
@@ -3124,8 +2839,10 @@ AND EXISTS (
                 //license name
                 log.debug("insert license name")
                 cell = row.createCell(cellnum++)
-                if(subCons.owner)
-                    cell.setCellValue(subCons.owner.reference)
+                if(result.linkedLicenses.get(subCons)) {
+                    List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
+                    cell.setCellValue(references.join("\n"))
+                }
                 //packages
                 log.debug("insert package name")
                 cell = row.createCell(cellnum++)
@@ -3236,7 +2953,7 @@ AND EXISTS (
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
-                    result.costItems.eachWithIndex { entry, int sidewideNumber ->
+                    result.entries.eachWithIndex { entry, int sidewideNumber ->
                         row = []
                         log.debug("processing entry ${sidewideNumber} ...")
                         CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3275,8 +2992,10 @@ AND EXISTS (
                         //license name
                         log.debug("insert license name")
                         cellnum++
-                        if(subCons.owner)
-                            row.add(subCons.owner.reference.replaceAll(',',' '))
+                        if(result.linkedLicenses.get(subCons)) {
+                            List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',',' ') }
+                            row.add(references.join(' '))
+                        }
                         else row.add(' ')
                         //packages
                         log.debug("insert package name")
@@ -3886,47 +3605,33 @@ AND EXISTS (
 
         Org tenant = contextService.getOrg()
 
-        def privatePropDef = PropertyDefinition.findWhere(
-                name:   params.pd_name,
-                descr:  params.pd_descr,
-                //type:   params.pd_type,
-                tenant: tenant,
-        )
+        RefdataCategory rdc = null
 
-        if (privatePropDef) {
-            return ['error', message(code: 'propertyDefinition.name.unique')]
+        if (params.refdatacategory) {
+            rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+        }
+
+        Map<String, Object> map = [
+                token       : UUID.randomUUID(),
+                category    : params.pd_descr,
+                type        : params.pd_type,
+                rdc         : rdc?.getDesc(),
+                multiple    : (params.pd_multiple_occurrence ? true : false),
+                mandatory   : (params.pd_mandatory ? true : false),
+                i10n        : [
+                        name_de: params.pd_name?.trim(),
+                        name_en: params.pd_name?.trim(),
+                        expl_de: params.pd_expl?.trim(),
+                        expl_en: params.pd_expl?.trim()
+                ],
+                tenant      : tenant.globalUID]
+
+        PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
+        if (privatePropDef.save(flush: true)) {
+            return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
         }
         else {
-            RefdataCategory rdc = null
-
-            if (params.refdatacategory) {
-                rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-            }
-
-            Map<String, Object> map = [
-                    token       : UUID.randomUUID(),
-                    category    : params.pd_descr,
-                    type        : params.pd_type,
-                    rdc         : rdc?.getDesc(),
-                    multiple    : (params.pd_multiple_occurrence ? true : false),
-                    mandatory   : (params.pd_mandatory ? true : false),
-                    i10n        : [
-                            name_de: params.pd_name?.trim(),
-                            name_en: params.pd_name?.trim(),
-                            expl_de: params.pd_expl?.trim(),
-                            expl_en: params.pd_expl?.trim()
-                    ],
-                    tenant      : tenant.globalUID
-            ]
-
-            privatePropDef = PropertyDefinition.construct(map)
-
-            if (privatePropDef.save(flush: true)) {
-                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-            }
-            else {
-                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-            }
+            return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
         }
     }
 

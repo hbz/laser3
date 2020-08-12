@@ -27,11 +27,23 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
     PropertyDefinition type
+    boolean isPublic = false
+
+    String           stringValue
+    Integer          intValue
+    BigDecimal       decValue
+    RefdataValue     refValue
+    URL              urlValue
+    String           note = ""
+    Date             dateValue
+    Org              tenant
+
     Subscription owner
     SubscriptionProperty instanceOf
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     static mapping = {
         id          column: 'sp_id'

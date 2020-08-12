@@ -16,11 +16,6 @@ import grails.transaction.Transactional
 @Transactional
 class CascadingUpdateService {
 
-    def grailsApplication
-
-    def changeNotificationService
-    def auditService
-
     void update(IdentifierNamespace obj, Date luc) {
         log(obj, luc)
 

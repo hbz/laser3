@@ -1,3 +1,4 @@
+<%@page import="de.laser.helper.RDStore" %>
 <!doctype html>
 <r:require module="chartist"/>
 <html>
@@ -64,7 +65,7 @@
         </semui:filter>
 
         <g:if test="${formSubmit}">
-            <%-- this is just for that we see something. Micha surely has concrete ideas which cause refactoring. --%>
+        <%-- this is just for that we see something. Micha surely has concrete ideas which cause refactoring. --%>
             <g:if test="${costItems}">
                 <table class="ui celled la-table table">
                     <thead>
@@ -86,7 +87,7 @@
                                     <td>
                                         <g:each in="${row.getValue().findAll { subscription.id in [it.sub.id,it.sub.instanceOf?.id] }}" var="ci">
                                             <ul>
-                                                <li><g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
+                                                <li>${ci.sub.dropdownNamingConvention(institution)}: <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
                                             </ul>
                                         </g:each>
                                     </td>
@@ -96,22 +97,52 @@
                     </tbody>
                 </table>
             </g:if>
+            <p>
+                <h2>Meine Subskriptionen</h2><%-- a placeholder title and a gag for that finally, there is really a page like on the landing page screenshot --%>
+            </p>
 
-            <div id="chartA">
+            <div class="ui top attached segment">
+                <div id="chartA"></div>
+            </div>
 
+            <div class="ui top attached segment">
+                <div id="chartB"></div>
             </div>
 
         </g:if>
     </body>
     <r:script>
-        $.ajax({
-            url: "<g:createLink action="loadCostItemChartData" />",
-            data: {
-                subscription: ${params.subscription}
-            }
-        }).done(function(data){
-            console.log(data.graph);
-            new Chartist.Bar('#chartA',data.graph); //continue here: deploy to AJAX because of request response type which will be JSON
-        });
+        <g:if test="${params.formSubmit}">
+            $.ajax({
+                url: "<g:createLink action="loadCostItemChartData" />",
+                data: {
+                <g:if test="${params.subscription}">
+                    subscription: ${params.subscription}
+                </g:if>
+                <g:elseif test="${params.package}">
+                    package: ${params.package}
+                </g:elseif>
+                }
+            }).done(function(data){
+                console.log(data.graphB);
+                new Chartist.Bar('#chartA',data.graphA,{
+                    axisY: {
+                        scaleMinSpace: 40
+                    },
+                    height: '600px'
+                });
+                new Chartist.Pie('#chartB',data.graphB,{
+                    donut:true,
+                    donutWidth: 60,
+                    donutSolid:true,
+                    startAngle: 270,
+                    showLabel: false,
+                    height: '300px',
+                    plugins: [
+                        Chartist.plugins.legend()
+                    ]
+                });
+            });
+        </g:if>
     </r:script>
 </html>

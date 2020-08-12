@@ -174,6 +174,7 @@ class SubscriptionService {
 
         String query
         Map qarams
+        Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
             query = "select ci, subT, roleT.org " +
@@ -344,16 +345,28 @@ class SubscriptionService {
                             entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
                         }
                     }
+                    if (obj[1]) {
+                        Subscription subCons = obj[1]
+                        linkedLicenses.put(subCons,Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE).collect {Links row -> genericOIDService.resolveOID(row.source)})
+                    }
                 }
                 entries
             }()
         }
         else if('onlyMemberSubs') {
-            Set<Subscription> memberSubscriptions = Subscription.executeQuery(query,qarams)
+            Set memberSubscriptions = Subscription.executeQuery(query,qarams)
             result.memberSubscriptions = memberSubscriptions
+            if(memberSubscriptions) {
+                memberSubscriptions.each { row ->
+                    Subscription subCons = row[0]
+                    Set<Links> links = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)
+                    linkedLicenses.put(subCons,links.collect {Links li -> genericOIDService.resolveOID(li.source)})
+                }
+            }
             result.totalCount = memberSubscriptions.size()
             result.entries = memberSubscriptions.drop((int) result.offset).take((int) result.max)
         }
+        result.linkedLicenses = linkedLicenses
 
         List bm = du.stopBenchmark()
         result.benchMark = bm
