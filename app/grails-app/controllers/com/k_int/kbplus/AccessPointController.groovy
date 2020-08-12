@@ -448,6 +448,7 @@ class AccessPointController extends AbstractDebugController {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org;
         Long orgId = org.id;
+        boolean inContextOrg = (orgId == contextService.org.id)
 
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -519,10 +520,10 @@ class AccessPointController extends AbstractDebugController {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && orgId == contextService.org.id) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
+                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
-                    inContextOrg                      : orgId == contextService.org.id,
+                    inContextOrg                      : inContextOrg,
                     activeSubsOnly                    : activeChecksOnly,
             ]
         }
@@ -557,6 +558,7 @@ class AccessPointController extends AbstractDebugController {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org;
         Long orgId = org.id;
+        boolean inContextOrg = (orgId == contextService.org.id)
 
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -628,10 +630,10 @@ class AccessPointController extends AbstractDebugController {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && orgId == contextService.org.id) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
+                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
-                    inContextOrg                      : orgId == contextService.org.id,
+                    inContextOrg                      : inContextOrg,
                     activeSubsOnly                    : activeChecksOnly,
             ]
         }
