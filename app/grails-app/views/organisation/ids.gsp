@@ -71,7 +71,6 @@
         <div class="la-inline-lists">
 
 <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
-<g:if test="${departmentalView == false}">
     <div class="ui card">
         <div class="content">
             <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -90,6 +89,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <g:render template="idTableRow"
+                              model="[orgInstance:orgInstance, tableRowNr:++tableIdentifierRowNr, showGlobalUid:true, editable:false]"
+                    />
                     <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id">
                         <g:render template="idTableRow"
                                   model="[orgInstance:orgInstance, tableRowNr:++tableIdentifierRowNr, id:id, editable:editable_identifier]"
@@ -99,7 +101,6 @@
             </table>
         </div>
     </div>
-</g:if>
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${hasAccessToCustomeridentifier}">

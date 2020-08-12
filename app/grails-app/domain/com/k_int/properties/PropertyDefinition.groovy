@@ -50,8 +50,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             PRS_PROP,
-            ORG_PROP,
             SUB_PROP,
+            ORG_PROP,
             PLA_PROP,
             SUR_PROP,
             LIC_PROP
@@ -59,8 +59,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     final static String[] AVAILABLE_PRIVATE_DESCR = [
             PRS_PROP,
-            ORG_PROP,
             SUB_PROP,
+            ORG_PROP,
             PLA_PROP,
             SUR_PROP,
             LIC_PROP
