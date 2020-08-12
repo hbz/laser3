@@ -101,45 +101,48 @@
                 <h2>Meine Subskriptionen</h2><%-- a placeholder title and a gag for that finally, there is really a page like on the landing page screenshot --%>
             </p>
 
-            <div id="chartA"/>
+            <div class="ui top attached segment">
+                <div id="chartA"></div>
+            </div>
 
-            <div id="chartB"/>
+            <div class="ui top attached segment">
+                <div id="chartB"></div>
+            </div>
+
         </g:if>
     </body>
     <r:script>
-        $.ajax({
-            url: "<g:createLink action="loadCostItemChartData" />",
-            data: {
+        <g:if test="${params.formSubmit}">
+            $.ajax({
+                url: "<g:createLink action="loadCostItemChartData" />",
+                data: {
                 <g:if test="${params.subscription}">
                     subscription: ${params.subscription}
                 </g:if>
                 <g:elseif test="${params.package}">
                     package: ${params.package}
                 </g:elseif>
-            }
-        }).done(function(data){
-            console.log(data.graphA);
-            new Chartist.Bar('#chartA',data.graphA,{
-                axisY: {
-                    scaleMinSpace: 40
-                },
-                height: '600px'
+                }
+            }).done(function(data){
+                console.log(data.graphB);
+                new Chartist.Bar('#chartA',data.graphA,{
+                    axisY: {
+                        scaleMinSpace: 40
+                    },
+                    height: '600px'
+                });
+                new Chartist.Pie('#chartB',data.graphB,{
+                    donut:true,
+                    donutWidth: 60,
+                    donutSolid:true,
+                    startAngle: 270,
+                    showLabel: false,
+                    height: '300px',
+                    plugins: [
+                        Chartist.plugins.legend()
+                    ]
+                });
             });
-            new Chartist.Pie('#chartB',data.graphB,{
-                donut:true,
-                donutWidth: 60,
-                donutSolid:true,
-                startAngle: 270,
-                showLabel: true,
-                labelInterpolationFnc: function(value) {
-                    return Math.round(value / data.graphB.series.reduce(sum) * 100) + '%';
-                },
-                height: '300px'
-            });
-        });
-
-        let sum = function(a,b) {
-            return a + b;
-        };
+        </g:if>
     </r:script>
 </html>

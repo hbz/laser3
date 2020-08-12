@@ -1113,20 +1113,6 @@ class FinanceService {
                                 list of each billing sum -> suitable for sums (currently two arrays of 118 items)
                             }
                         }
-                        the running code:
-                        Collection<Subscription> childSubs = configMap.costItems.collect { CostItem ci -> ci.sub }
-                        List costs = []
-                        childSubs.each { Subscription child ->
-                            BigDecimal billingSum = 0.0
-                            childrenCostItems.findAll{ CostItem ci -> ci.sub == child && ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE }.each { CostItem ci ->
-                                //TODO [ticket=2761] to implement when Chartist is included
-
-                                //this is the temporary structure until ERMS-2761 is done
-                                billingSum += ci.costInBillingCurrency
-                            }
-                            costs << billingSum
-                        }
-                        series << costs
 
                         distinctive:
                         parent subs {
@@ -1209,7 +1195,7 @@ class FinanceService {
                 labels << row[0]
                 series << row[1]
             }
-            //result.labels = labels
+            result.labels = labels
             result.series = series
         }
         else if(configMap.package) {
@@ -1217,7 +1203,6 @@ class FinanceService {
         }
         result
     }
-
 
     BigDecimal calculateSum(Collection<CostItem> allCIs) {
         BigDecimal result = 0.0
