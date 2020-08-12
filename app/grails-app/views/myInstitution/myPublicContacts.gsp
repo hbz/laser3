@@ -40,37 +40,54 @@
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
         ]"/>
 
-        <g:if test="${visiblePersons}">
-
-            <semui:filter>
-                <g:form action="${actionName}" controller="myInstitution" method="get" class="ui small form">
-                    <div class="four fields">
-                        <div class="field">
-                            <label for="prs">${message(code: 'person.filter.name')}</label>
-                            <div class="ui input">
-                                <input type="text" id="prs" name="prs" value="${params.prs}"
-                                       placeholder="${message(code: 'person.filter.name')}" />
-                            </div>
+        <semui:filter>
+            <g:form action="${actionName}" controller="myInstitution" method="get" class="ui small form">
+                <div class="three fields">
+                    <div class="field">
+                        <label for="prs">${message(code: 'person.filter.name')}</label>
+                        <div class="ui input">
+                            <input type="text" id="prs" name="prs" value="${params.prs}"
+                                   placeholder="${message(code: 'person.filter.name')}" />
                         </div>
-                        <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
                     </div>
-
-                    <div class="field la-field-right-aligned">
-                        <label></label>
-                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                    <div class="field">
+                        <label><g:message code="person.function.label" /></label>
+                        <laser:select class="ui dropdown search"
+                                      name="function"
+                                      from="${rdvAllPersonFunctions}"
+                                      multiple=""
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${params.function}"
+                        />
                     </div>
-                </g:form>
-            </semui:filter>
+                    <div class="field">
+                        <label><g:message code="person.position.label" /></label>
+                        <laser:select class="ui dropdown search"
+                                      name="position"
+                                      from="${rdvAllPersonPositions}"
+                                      multiple=""
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${params.position}"
+                        />
+                    </div>
+                </div>
 
-            <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: null]}" />
+                <div class="field la-field-right-aligned">
+                    <label></label>
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                </div>
+            </g:form>
+        </semui:filter>
 
-            <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
-                            next="${message(code: 'default.paginate.next')}"
-                            prev="${message(code: 'default.paginate.prev')}"
-                            max="${max}"
-                            total="${num_visiblePersons}"/>
+        <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: null]}" />
 
-        </g:if>
+        <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
+                        max="${max}"
+                        total="${num_visiblePersons}"/>
     </body>
 </html>
