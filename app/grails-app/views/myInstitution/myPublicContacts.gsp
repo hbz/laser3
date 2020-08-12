@@ -40,7 +40,7 @@
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
         ]"/>
 
-        <g:if test="${visiblePersons}">
+        %{--<g:if test="${visiblePersons}">--}%
 
             <semui:filter>
                 <g:form action="${actionName}" controller="myInstitution" method="get" class="ui small form">
@@ -54,21 +54,29 @@
                         </div>
                         <div class="field">
                             <label><g:message code="person.function.label" /></label>
-                                          %{--multiple=""--}%
+                                          %{--value="null"--}%
+                                          %{--noSelection="['null': '']"--}%
                             <laser:select class="ui dropdown search"
-                                          name="prsFunctionMultiSelect"
+                                          name="function"
                                           from="${rdvAllPersonFunctions}"
+                                          multiple=""
                                           optionKey="id"
-                                          optionValue="value"/>
+                                          optionValue="value"
+                                          value="${params.function}"
+                            />
                         </div>
                         <div class="field">
                             <label><g:message code="person.position.label" /></label>
-                                          %{--multiple=""--}%
+                                          %{--value="null"--}%
+                                          %{--noSelection="['null': '']"--}%
                             <laser:select class="ui dropdown search"
-                                          name="prsPositionMultiSelect"
+                                          name="position"
                                           from="${rdvAllPersonPositions}"
+                                          multiple=""
                                           optionKey="id"
-                                          optionValue="value"/>
+                                          optionValue="value"
+                                          value="${params.position}"
+                            />
                         </div>
                     </div>
 
@@ -88,6 +96,6 @@
                             max="${max}"
                             total="${num_visiblePersons}"/>
 
-        </g:if>
+        %{--</g:if>--}%
     </body>
 </html>

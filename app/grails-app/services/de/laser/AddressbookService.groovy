@@ -4,6 +4,7 @@ import com.k_int.kbplus.Address
 import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
@@ -106,6 +107,23 @@ class AddressbookService {
         else if(params.org && params.org instanceof String) {
             qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.shortname, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
             qParams << [name: "${params.org}"]
+        }
+
+        if (params.position || params.function){
+            List s = []
+            if (params.position) { s.addAll(params.position) }
+            if (params.function) { s.addAll(params.function) }
+            List<Long> selectedRoleTypIds = []
+            s.each{ if (it && it !="null") {selectedRoleTypIds.add(Long.valueOf(it))}}
+            List<RefdataValue> selectedRoleTypes = null
+            if (selectedRoleTypIds) {
+                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
+                if (selectedRoleTypes) {
+                    qParts << "pr.functionType in (:selectedRoleTypes) "
+                    qParams << [selectedRoleTypes: selectedRoleTypes]
+                }
+            }
+
         }
 
         def query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
