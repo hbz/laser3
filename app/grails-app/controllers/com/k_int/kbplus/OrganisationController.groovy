@@ -924,6 +924,7 @@ class OrganisationController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.id)
+        result.contextOrg      = contextService.org
 
         result.editable = checkIsEditable(result.user, orgInstance)
 

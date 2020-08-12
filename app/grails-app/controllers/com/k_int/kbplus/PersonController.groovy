@@ -81,6 +81,7 @@ class PersonController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Person personInstance = Person.get(params.id)
+        Org contextOrg      = contextService.org
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
@@ -88,7 +89,7 @@ class PersonController extends AbstractDebugController {
             return
         }
         else if(personInstance && ! personInstance.isPublic) {
-            if(contextService.org?.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            if(contextOrg.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 flash.error = message(code: 'default.notAutorized.message')
                 redirect(url: request.getHeader('referer'))
                 return
@@ -112,11 +113,12 @@ class PersonController extends AbstractDebugController {
         
 
         Map<String,Object> result = [
-                institution: contextService.org,
+                institution: contextOrg,
                 personInstance: personInstance,
                 presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
                 editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser()),
-                myPublicContact: myPublicContact
+                myPublicContact: myPublicContact,
+                contextOrg: contextOrg
         ]
 
         result
