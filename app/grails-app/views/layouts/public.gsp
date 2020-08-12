@@ -27,7 +27,7 @@
     <![endif]-->
 
     <g:layoutHead/>
-    <r:layoutResources/>
+    <r:layoutResources/> <%-- grails-3-fix : remove --%>
 
     <tmpl:/layouts/favicon />
 

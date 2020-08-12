@@ -48,14 +48,16 @@ class AuditConfig {
     }
 
     static void addConfig(Object obj, String field) {
-        if (obj) {
-            AuditConfig config = new AuditConfig(
-                    referenceId: obj.getId(),
-                    referenceClass: obj.getClass().name,
-                    referenceField: field
-            )
-            if(!config.save(flush: true))
-                log.error(config.errors.toString())
+        withTransaction {
+            if (obj) {
+                AuditConfig config = new AuditConfig(
+                        referenceId: obj.getId(),
+                        referenceClass: obj.getClass().name,
+                        referenceField: field
+                )
+                if (! config.save())
+                    log.error(config.errors.toString())
+            }
         }
     }
 
@@ -86,21 +88,25 @@ class AuditConfig {
     }
 
     static void removeConfig(Object obj, String field) {
-        if (obj) {
-            AuditConfig.findAllWhere(
-                    referenceId: obj.getId(),
-                    referenceClass: obj.getClass().name,
-                    referenceField: field
-            ).each { it.delete(flush: true) }
+        withTransaction {
+            if (obj) {
+                AuditConfig.findAllWhere(
+                        referenceId: obj.getId(),
+                        referenceClass: obj.getClass().name,
+                        referenceField: field
+                ).each { it.delete() }
+            }
         }
     }
 
     static void removeAllConfigs(Object obj) {
-        if (obj) {
-            AuditConfig.findAllWhere(
-                    referenceId: obj.getId(),
-                    referenceClass: obj.getClass().name
-            ).each { it.delete(flush: true) }
+        withTransaction {
+            if (obj) {
+                AuditConfig.findAllWhere(
+                        referenceId: obj.getId(),
+                        referenceClass: obj.getClass().name
+                ).each { it.delete() }
+            }
         }
     }
 }

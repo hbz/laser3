@@ -45,11 +45,13 @@ class Links {
     }
 
     static Links construct(Map<String, Object> configMap) throws CreationException {
-        Links links = new Links(source:configMap.source,destination:configMap.destination,owner:configMap.owner,linkType:configMap.linkType)
-        if(links.save())
-            links
-        else {
-            throw new CreationException(links.errors)
+        withTransaction {
+            Links links = new Links(source: configMap.source, destination: configMap.destination, owner: configMap.owner, linkType: configMap.linkType)
+            if (links.save())
+                links
+            else {
+                throw new CreationException(links.errors)
+            }
         }
     }
 

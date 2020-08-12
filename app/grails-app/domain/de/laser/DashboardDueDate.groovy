@@ -33,18 +33,18 @@ class DashboardDueDate {
     }
 
     void update(messageSource, obj){
-        Date now = new Date()
-        this.version = this.version +1
-        this.lastUpdated = now
-        this.dueDateObject.version = this.dueDateObject.version +1
-        this.dueDateObject.lastUpdated = now
-        this.dueDateObject.attribute_value_de = getAttributeValue(messageSource, obj, responsibleUser,
-                Locale.GERMAN)
-        this.dueDateObject.attribute_value_en = getAttributeValue(messageSource, obj, responsibleUser,
-                Locale.ENGLISH)
-        this.dueDateObject.date = getDate(obj, responsibleUser)
-        this.dueDateObject.save()
-        this.save()
+        withTransaction {
+            Date now = new Date()
+            this.version = this.version + 1
+            this.lastUpdated = now
+            this.dueDateObject.version = this.dueDateObject.version + 1
+            this.dueDateObject.lastUpdated = now
+            this.dueDateObject.attribute_value_de = getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN)
+            this.dueDateObject.attribute_value_en = getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH)
+            this.dueDateObject.date = getDate(obj, responsibleUser)
+            this.dueDateObject.save()
+            this.save()
+        }
     }
 
     static Date getDate(obj, user){
@@ -80,20 +80,22 @@ class DashboardDueDate {
         return (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate))
     }
     private DashboardDueDate(attribute_value_de, attribute_value_en, attribute_name, date, object, responsibleUser, responsibleOrg, isDone, isHidden){
-        Date now = new Date()
-        this.responsibleUser = responsibleUser
-        this.responsibleOrg = responsibleOrg
-        this.isHidden = isHidden
-        this.dateCreated = now
-        this.lastUpdated = now
+        withTransaction {
+            Date now = new Date()
+            this.responsibleUser = responsibleUser
+            this.responsibleOrg = responsibleOrg
+            this.isHidden = isHidden
+            this.dateCreated = now
+            this.lastUpdated = now
 
-        DueDateObject ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
-        if ( ! ddo ) {
-            ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now, now)
-            ddo.save()
+            DueDateObject ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+            if (!ddo) {
+                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now, now)
+                ddo.save()
+            }
+            this.dueDateObject = ddo
+            this.save()
         }
-        this.dueDateObject = ddo
-        this.save()
     }
 
     static mapping = {

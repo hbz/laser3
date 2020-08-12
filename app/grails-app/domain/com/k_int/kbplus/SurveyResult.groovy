@@ -32,8 +32,14 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     boolean isRequired = false
 
     static constraints = {
-        importFrom AbstractPropertyWithCalculatedLastUpdated
-        tenant (nullable: true, blank: false)
+        stringValue (nullable: true)
+        intValue    (nullable: true)
+        decValue    (nullable: true)
+        refValue    (nullable: true)
+        urlValue    (nullable: true)
+        note        (nullable: true)
+        dateValue   (nullable: true)
+        tenant      (nullable: true)
         finishDate  (nullable:true)
         comment (nullable:true, blank:false)
         resultValues (nullable:true, blank:false)
@@ -41,6 +47,10 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         endDate     (nullable:true)
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
+
+        dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     static mapping = {
@@ -51,12 +61,12 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         dateCreated column: 'surre_date_created'
         lastUpdated column: 'surre_last_updated'
         lastUpdatedCascading column: 'surre_last_updated_cascading'
-        stringValue column: 'surre_string_value'
+        stringValue column: 'surre_string_value', type: 'text'
         intValue    column: 'surre_int_value'
         decValue    column: 'surre_dec_value'
         refValue    column: 'surre_ref_value_rv_fk'
         urlValue    column: 'surre_url_value'
-        note        column: 'surre_note'
+        note        column: 'surre_note', type: 'text'
         dateValue   column: 'surre_date_value'
         resultValues column: 'surre_result_values'
 

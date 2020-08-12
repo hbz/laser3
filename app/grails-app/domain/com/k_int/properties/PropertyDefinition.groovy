@@ -163,7 +163,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         type                (blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true)
-        multipleOccurrence  (nullable: true)
         lastUpdated         (nullable: true)
         dateCreated         (nullable: true)
     }

@@ -80,55 +80,39 @@ class I10nTranslation {
         if (!reference || !referenceField)
             return
 
-        reference = GrailsHibernateUtil.unwrapIfProxy(reference)
+        withTransaction {
 
-        I10nTranslation i10n = get(reference, referenceField)
-        if (!i10n) {
-            i10n = new I10nTranslation(
-                    referenceClass: reference.getClass().getCanonicalName(),
-                    referenceId:    reference.getId(),
-                    referenceField: referenceField
-            )
-        }
-
-        values.each { k, v ->
-            switch(k.toString().toLowerCase()){
-                case 'de':
-                    i10n.valueDe = v ? v.toString() : null
-                    break
-                case 'en':
-                    i10n.valueEn = v ? v.toString() : null
-                    break
-                case 'fr':
-                    i10n.valueFr = v ? v.toString() : null
-                    break
+            reference = GrailsHibernateUtil.unwrapIfProxy(reference)
+            I10nTranslation i10n = get(reference, referenceField)
+            
+            if (!i10n) {
+                i10n = new I10nTranslation(
+                        referenceClass: reference.getClass().getCanonicalName(),
+                        referenceId: reference.getId(),
+                        referenceField: referenceField
+                )
             }
-        }
 
-        i10n.save()
-        i10n
+            values.each { k, v ->
+                switch (k.toString().toLowerCase()) {
+                    case 'de':
+                        i10n.valueDe = v ? v.toString() : null
+                        break
+                    case 'en':
+                        i10n.valueEn = v ? v.toString() : null
+                        break
+                    case 'fr':
+                        i10n.valueFr = v ? v.toString() : null
+                        break
+                }
+            }
+
+            i10n.save()
+            i10n
+        }
     }
 
     // -- initializations --
-
-    // used in gsp to create translations for on-the-fly-created refdatas and property definitions
-    @Deprecated
-    static I10nTranslation createI10nOnTheFly(Object reference, String referenceField) {
-
-        Map<String, Object> values = [:] // no effect in set()
-        I10nTranslation existing = get(reference, referenceField)
-
-        if (! existing) { // set default values
-            values = [
-                    'en': reference."${referenceField}",
-                    'de': reference."${referenceField}",
-                    'fr': reference."${referenceField}"
-            ]
-            return set(reference, referenceField, values)
-        }
-
-        existing
-    }
 
     // used in bootstap
     static I10nTranslation createOrUpdateI10n(Object reference, String referenceField, Map translations) {
@@ -161,42 +145,4 @@ class I10nTranslation {
         decodeLocale(locale.toString())
     }
 
-    @Deprecated
-    static def refdataFindHelper(String referenceClass, String referenceField, String query, def locale) {
-        List<I10nTranslation> matches = []
-        def result = []
-
-        if(! query) {
-            matches = I10nTranslation.findAllByReferenceClassAndReferenceField(
-                    referenceClass, referenceField
-            )
-        }
-        else {
-            switch (I10nTranslation.decodeLocale(locale)) {
-                case 'en':
-                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
-                            referenceClass, referenceField, "%${query}%"
-                    )
-                    break
-                case 'de':
-                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueDeIlike(
-                            referenceClass, referenceField, "%${query}%"
-                    )
-                    break
-                case 'fr':
-                    matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueFrIlike(
-                            referenceClass, referenceField, "%${query}%"
-                    )
-                    break
-            }
-        }
-        matches.each { it ->
-            def obj = (new I10nTranslation().getDomainClass().grailsApplication.classLoader.loadClass(it.referenceClass)).findById(it.referenceId)
-            if (obj) {
-                result << obj
-            }
-        }
-
-        return result
-    }
 }

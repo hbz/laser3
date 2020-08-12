@@ -121,6 +121,8 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   @Deprecated
   static Platform lookupOrCreatePlatform(Map params=[:]) {
 
+    withTransaction {
+
     Platform platform
     List<Platform> platform_candidates = []
 
@@ -167,22 +169,23 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
     if (platform && params.gokbId  && platform.gokbId != params.gokbId) {
       platform.gokbId = params.gokbId
-      platform.save(flush:true)
+      platform.save()
     }
 
     if(platform && params.primaryUrl && platform.primaryUrl != params.primaryUrl)
     {
       platform.primaryUrl = params.primaryUrl
-      platform.save(flush:true)
+      platform.save()
     }
 
     if(platform && params.name && platform.name != params.name)
     {
       platform.name = params.name
-      platform.save(flush:true)
+      platform.save()
     }
 
-    platform
+        platform
+      }
   }
 
   Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {

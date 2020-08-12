@@ -153,7 +153,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         type        (nullable:true)
         reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublicForApi (nullable:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf  (nullable:true)
@@ -365,38 +364,33 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         result
   }
 
-  @Transient
-  def getLicenseType() {
-    return type?.value
-  }
-
-    DocContext getNote(domain) {
+    DocContext getNote(String domain) {
         DocContext.findByLicenseAndDomain(this, domain)
     }
 
-  void setNote(domain, note_content) {
-      DocContext note = DocContext.findByLicenseAndDomain(this, domain)
-    if ( note ) {
-      log.debug("update existing note...");
-      if ( note_content == '' ) {
-        log.debug("Delete note doc ctx...");
-        note.delete(flush:true)
-        note.owner.delete(flush:true)
+  void setNote(String domain, String note_content) {
+      withTransaction {
+          DocContext note = DocContext.findByLicenseAndDomain(this, domain)
+          if (note) {
+              log.debug("update existing note...");
+              if (note_content == '') {
+                  log.debug("Delete note doc ctx...");
+                  note.delete()
+                  note.owner.delete()
+              } else {
+                  note.owner.content = note_content
+                  note.owner.save()
+              }
+          } else {
+              log.debug("Create new note...");
+              if ((note_content) && (note_content.trim().length() > 0)) {
+                  Doc doc = new Doc(content: note_content, lastUpdated: new Date(), dateCreated: new Date())
+                  DocContext newctx = new DocContext(license: this, owner: doc, domain: domain)
+                  doc.save()
+                  newctx.save()
+              }
+          }
       }
-      else {
-        note.owner.content = note_content
-        note.owner.save(flush:true);
-      }
-    }
-    else {
-      log.debug("Create new note...");
-      if ( ( note_content ) && ( note_content.trim().length() > 0 ) ) {
-          Doc doc = new Doc(content:note_content, lastUpdated:new Date(), dateCreated: new Date())
-          DocContext newctx = new DocContext(license: this, owner: doc, domain:domain)
-        doc.save();
-        newctx.save(flush:true);
-      }
-    }
   }
 
     String getGenericLabel() {

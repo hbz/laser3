@@ -14,12 +14,12 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static mapping = {
         id                   column: 'pp_id'
         version              column: 'pp_version'
-        stringValue          column: 'pp_string_value'
+        stringValue          column: 'pp_string_value', type: 'text'
         intValue             column: 'pp_int_value'
         decValue             column: 'pp_dec_value'
         refValue             column: 'pp_ref_value_rv_fk'
         urlValue             column: 'pp_url_value'
-        note                 column: 'pp_note'
+        note                 column: 'pp_note', type: 'text'
         dateValue            column: 'pp_date_value'
         type                 column: 'pp_type_fk', index: 'pp_type_idx'
         owner                column: 'pp_owner_fk', index:'pp_owner_idx'
@@ -31,14 +31,17 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
     }
 
     static constraints = {
-        importFrom AbstractPropertyWithCalculatedLastUpdated
+        stringValue (nullable: true)
+        intValue    (nullable: true)
+        decValue    (nullable: true)
+        refValue    (nullable: true)
+        urlValue    (nullable: true)
+        note        (nullable: true)
+        dateValue   (nullable: true)
 
-        type    (blank:false)
-        owner   (blank:false)
-
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
         dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
     static belongsTo = [
