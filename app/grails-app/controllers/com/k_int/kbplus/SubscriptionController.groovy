@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
 import de.laser.*
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
@@ -32,7 +32,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -71,6 +70,7 @@ class SubscriptionController
     def surveyService
     FormService formService
     AccessPointService accessPointService
+    CopyElementsService copyElementsService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -3986,7 +3986,7 @@ class SubscriptionController
     }
 
 
-    @Deprecated
+    /*@Deprecated
     @Secured(['ROLE_YODA'])
     def renewSubscriptionConsortia() {
 
@@ -4022,8 +4022,8 @@ class SubscriptionController
                     ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
                     if (prevLinks.size() == 0) {
 
-                        /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                            [result.subscriptionInstance, it.id])*/
+                        *//* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                            [result.subscriptionInstance, it.id])*//*
 
                         Subscription newSubscription = new Subscription(
                                 type: subMember.type,
@@ -4033,7 +4033,7 @@ class SubscriptionController
                                 startDate: newSubConsortia.startDate,
                                 endDate: newSubConsortia.endDate,
                                 manualRenewalDate: subMember.manualRenewalDate,
-                                /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+                                *//* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, *//*
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: newSubConsortia?.id,
                                 //previousSubscription: subMember?.id,
@@ -4061,7 +4061,7 @@ class SubscriptionController
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
-                        /*
+                        *//*
                         if (subMember.privateProperties) {
                             //privatProperties
 
@@ -4077,7 +4077,7 @@ class SubscriptionController
                                 }
                             }
                         }
-                        */
+                        *//*
 
                         if (subMember.packages && newSubConsortia.packages) {
                             //Package
@@ -4446,7 +4446,7 @@ class SubscriptionController
         }
         result
 
-    }
+    }*/
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -4652,48 +4652,48 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
-                result << subscriptionService.copySubElements_DatesOwnerRelations()
+                result << copyElementsService.copySubElements_DatesOwnerRelations(params)
                 if (params.isRenewSub){
                     params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-                    result << subscriptionService.loadDataFor_PackagesEntitlements()
+                    result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                 } else {
-                    result << subscriptionService.loadDataFor_DatesOwnerRelations()
+                    result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 }
                 break
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << subscriptionService.copySubElements_PackagesEntitlements()
+                result << copyElementsService.copySubElements_PackagesEntitlements(params)
                 if (params.isRenewSub){
                     params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                    result << subscriptionService.loadDataFor_DocsAnnouncementsTasks()
+                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 } else {
-                    result << subscriptionService.loadDataFor_PackagesEntitlements()
+                    result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                 }
                 break
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks()
+                result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
                 if (params.isRenewSub){
                     if (!params.fromSurvey && result.isSubscriberVisible){
                         params.workFlowPart = WORKFLOW_SUBSCRIBER
-                        result << loadDataFor_Subscriber()
+                        result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
                         params.workFlowPart = WORKFLOW_PROPERTIES
-                        result << loadDataFor_Properties()
+                        result << copyElementsService.loadDataFor_Properties(params)
                     }
                 } else {
-                    result << loadDataFor_DocsAnnouncementsTasks()
+                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 }
                 break
             case WORKFLOW_SUBSCRIBER:
-                result << copySubElements_Subscriber()
+                result << copyElementsService.copySubElements_Subscriber(params)
                 if (params.isRenewSub) {
                     params.workFlowPart = WORKFLOW_PROPERTIES
-                    result << loadDataFor_Properties()
+                    result << copyElementsService.loadDataFor_Properties(params)
                 } else {
-                    result << loadDataFor_Subscriber()
+                    result << copyElementsService.loadDataFor_Subscriber(params)
                 }
                 break
             case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties()
+                result << copyElementsService.copySubElements_Properties(params)
                 if (params.isRenewSub && params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
@@ -4705,11 +4705,11 @@ class SubscriptionController
                         redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
                     }
                 } else {
-                    result << loadDataFor_Properties()
+                    result << copyElementsService.loadDataFor_Properties(params)
                 }
                 break
             case WORKFLOW_END:
-                result << copySubElements_Properties()
+                result << copyElementsService.copySubElements_Properties(params)
                 if (params.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
@@ -4724,7 +4724,7 @@ class SubscriptionController
                 }
                 break
             default:
-                result << loadDataFor_DatesOwnerRelations()
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
         }
 

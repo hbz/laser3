@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -8,6 +7,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.*
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -2072,7 +2072,7 @@ join sub.orgRelations or_sub where
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-            result.subscription = result.subscriptionInstance	
+            result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
@@ -2173,7 +2173,7 @@ join sub.orgRelations or_sub where
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-	    result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user) 	
+	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
         }
         result
     }

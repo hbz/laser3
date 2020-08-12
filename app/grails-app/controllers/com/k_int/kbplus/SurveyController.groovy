@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.*
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
@@ -959,6 +959,8 @@ class SurveyController {
                         tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                         break
                 }
+
+                result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
             selectedMembers.each { id ->
@@ -1684,6 +1686,7 @@ class SurveyController {
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
