@@ -2025,7 +2025,7 @@ class SubscriptionController
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance.instanceOf
+        result.parentSub = result.subscriptionInstance
 
         Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.parentSub,roleType:RDStore.OR_SUBSCRIBER_CONS])
         /*Sortieren

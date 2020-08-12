@@ -2,7 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
 2778    12.08.2020  rc1.5       Moe     Bug         Zugangskonfiguration kann von Konsortialstelle nicht gelöscht werden
+
+2774    12.08.2020  rc1.5       Andreas Bug         Bezeichner Einrichtung in Organisation bei Merkmalsdefinitionen geändert
 
 2773    11.08.2020  rc1.5       Moe     Bug         Für EZproxy kann keine IP-Adresse angegeben werden
 
