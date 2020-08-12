@@ -26,7 +26,7 @@
                     propDefGroup: propDefGroup,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
-                    editable: editable && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
+                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>

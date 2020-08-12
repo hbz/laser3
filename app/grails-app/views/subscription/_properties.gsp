@@ -108,7 +108,7 @@
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (editable && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
+                    editable: (controllerName == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
