@@ -28,6 +28,7 @@ class SurveyService {
     EscapeService escapeService
     GrailsApplication grailsApplication
     String replyTo
+    GenericOIDService genericOIDService
 
     SimpleDateFormat formatter = DateUtil.getSDF_dmy()
     String from
@@ -413,7 +414,7 @@ class SurveyService {
 
                     List licenseNames = []
                     Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        License l = genericOIDService.resolveOID(li.destination)
+                        License l = genericOIDService.resolveOID(li.source)
                         licenseNames << l.reference
                     }
                     row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -778,7 +779,7 @@ class SurveyService {
 
                             List licenseNames = []
                             Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                                License l = genericOIDService.resolveOID(li.destination)
+                                License l = genericOIDService.resolveOID(li.source)
                                 licenseNames << l.reference
                             }
                             row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
