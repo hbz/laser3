@@ -7,9 +7,22 @@ import com.k_int.properties.PropertyDefinition
 class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type
+    boolean isPublic = false
+
+    String           stringValue
+    Integer          intValue
+    BigDecimal       decValue
+    RefdataValue     refValue
+    URL              urlValue
+    String           note = ""
+    Date             dateValue
+    Org              tenant
+
     Person owner
+
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     static mapping = {
         id                   column: 'pp_id'

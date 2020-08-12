@@ -1,6 +1,5 @@
 package de.laser.base
 
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
@@ -17,17 +16,24 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 
-    String           stringValue
-    Integer          intValue
-    BigDecimal       decValue
-    RefdataValue     refValue
-    URL              urlValue
-    String           note = ""
-    Date             dateValue
-    Org              tenant
+    /* grails-3-fix
+    abstract PropertyDefinition type
 
-    boolean isPublic = false
-    Date    lastUpdatedCascading
+    abstract String           stringValue
+    abstract Integer          intValue
+    abstract BigDecimal       decValue
+    abstract RefdataValue     refValue
+    abstract URL              urlValue
+    abstract String           note = ""
+    abstract Date             dateValue
+    abstract Org              tenant
+
+    abstract boolean isPublic = false
+
+    abstract Date dateCreated
+    abstract Date lastUpdated
+    abstract Date lastUpdatedCascading
+    */
 
     protected void beforeInsertHandler() {
         static_logger.debug("beforeInsertHandler()")
@@ -128,7 +134,8 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     def static parseValue(value, type){
         def result
-        println value + " << " + type
+        static_logger.debug( value + " << " + type )
+
         switch (type){
             case Integer.toString():
                 result = Integer.parseInt(value)

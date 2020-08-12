@@ -530,18 +530,4 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       if( noChange ) return 0;      
       return 1;
   }  
-
-    @Deprecated
-  static def expunge(tipp_id) {
-    try {
-      static_logger.debug("  -> TIPPs");
-      def deleted_ie = RDStore.TIPP_STATUS_DELETED
-      IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
-      TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = :tipp_id', [tipp_id: tipp_id])
     }
-    catch ( Exception e ) {
-      static_logger.error("Problem expunging title",e);
-    }
-  }
-
-}

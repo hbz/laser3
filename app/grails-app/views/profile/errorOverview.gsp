@@ -18,7 +18,6 @@
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="profile" action="errorOverview" message="profile.errorOverview.label" />
-    <semui:subNavItem controller="profile" action="errorReport" message="profile.errorReport.label" />
 </semui:subNav>
 
 <div class="ui grid">
