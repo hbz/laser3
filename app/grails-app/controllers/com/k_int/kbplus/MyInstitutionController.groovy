@@ -2616,14 +2616,11 @@ AND EXISTS (
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
+
+        result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)
+        result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)
+
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-
-        result.propList =
-                PropertyDefinition.findAllWhere(
-                        descr: PropertyDefinition.PRS_PROP,
-                        tenant: result.institution // private properties
-                )
-
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
