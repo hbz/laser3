@@ -56,39 +56,41 @@ class PendingChangeController extends AbstractDebugController {
         List<String> concernedPackage = params.list("acceptChangesForPackages")
         boolean acceptAll = params.acceptAll != null
         boolean rejectAll = params.rejectAll != null
-        //executorService.execute({
+        if(concernedPackage){
             concernedPackage.each { String spID ->
-                SubscriptionPackage sp = SubscriptionPackage.get(spID)
-                Set<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange pc where pc.subscription = :sub and pc.owner = :context and pc.status = :pending",[context:contextService.org,sub:sp.subscription,pending:RDStore.PENDING_CHANGE_PENDING])
-                pendingChanges.each { PendingChange pc ->
-                    log.info("processing change ${pc}")
-                    def changedObject = genericOIDService.resolveOID(pc.oid)
-                    Package targetPkg
-                    if(changedObject instanceof TitleInstancePackagePlatform) {
-                        targetPkg = changedObject.pkg
-                    }
-                    else if(changedObject instanceof IssueEntitlement || changedObject instanceof TIPPCoverage) {
-                        targetPkg = changedObject.tipp.pkg
-                    }
-                    else if(changedObject instanceof IssueEntitlementCoverage) {
-                        targetPkg = changedObject.issueEntitlement.tipp.pkg
-                    }
-                    else if(changedObject instanceof Package) {
-                        targetPkg = changedObject
-                    }
-                    if(targetPkg?.id == sp.pkg.id) {
-                        if(acceptAll) {
-                            //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
-                            pc.accept()
+                if(spID) {
+                    SubscriptionPackage sp = SubscriptionPackage.get(spID)
+                    Set<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange pc where pc.subscription = :sub and pc.owner = :context and pc.status = :pending",[context:contextService.org,sub:sp.subscription,pending:RDStore.PENDING_CHANGE_PENDING])
+                    pendingChanges.each { PendingChange pc ->
+                        log.info("processing change ${pc}")
+                        def changedObject = genericOIDService.resolveOID(pc.oid)
+                        Package targetPkg
+                        if(changedObject instanceof TitleInstancePackagePlatform) {
+                            targetPkg = changedObject.pkg
                         }
-                        else if(rejectAll) {
-                            //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
-                            pc.reject()
+                        else if(changedObject instanceof IssueEntitlement || changedObject instanceof TIPPCoverage) {
+                            targetPkg = changedObject.tipp.pkg
+                        }
+                        else if(changedObject instanceof IssueEntitlementCoverage) {
+                            targetPkg = changedObject.issueEntitlement.tipp.pkg
+                        }
+                        else if(changedObject instanceof Package) {
+                            targetPkg = changedObject
+                        }
+                        if(targetPkg?.id == sp.pkg.id) {
+                            if(acceptAll) {
+                                //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
+                                pc.accept()
+                            }
+                            else if(rejectAll) {
+                                //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
+                                pc.reject()
+                            }
                         }
                     }
                 }
             }
-        //})
+        }
         redirect(url: request.getHeader('referer'))
     }
 

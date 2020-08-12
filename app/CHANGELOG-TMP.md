@@ -2,6 +2,20 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2779    12.08.2020  rc1.5       Moe     Bug         Fehlermeldung bei Hauptkontakt
+
+2778    12.08.2020  rc1.5       Moe     Bug         Zugangskonfiguration kann von Konsortialstelle nicht gelöscht werden
+
+2774    12.08.2020  rc1.5       Andreas Bug         Bezeichner Einrichtung in Organisation bei Merkmalsdefinitionen geändert
+
+2773    11.08.2020  rc1.5       Moe     Bug         Für EZproxy kann keine IP-Adresse angegeben werden
+
+2771    11.08.2020  rc1.5       Andreas Bug         Unterbinden der Anzeige der Paketauswahl bei leerer Menge unterbunden, Überprüfung bei Abschicken leerer Menge eingebaut
+
+--      11.08.2020  rc1.5       Andreas Bug         fehlerhafte Abfrage der nicht vererbten Merkmale bei Teilnehmerverträgen korrigiert
+
+2769    11.08.2020  rc1.5       Anja    Bug         Identifikatoren immer anzeigen; GlobaleUID auch anzeigen
+
 2768    10.08.2020  rc1.5       Moe     Bug         Fehlermeldungen bei Nutzer
 
 2734    10.08.2020  rc1.5       Andreas Bug         Export unter "Meine Lizenzen pro Einrichtung" funktionierte nicht
