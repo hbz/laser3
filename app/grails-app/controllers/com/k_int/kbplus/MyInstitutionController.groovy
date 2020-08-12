@@ -106,7 +106,6 @@ class MyInstitutionController extends AbstractDebugController {
                 configMap.subscription = params.subscription
             else if(params.package) {
                 configMap.package = params.package
-                configMap.subscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
             }
             result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
             if(result.costItems) {
@@ -133,8 +132,10 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def loadCostItemChartData() {
         Org contextOrg = contextService.org
-        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,institution:contextOrg])
+        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg])
         Map<String,Object> result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
+        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+            result.graphB = financeService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
         render result as JSON
     }
 

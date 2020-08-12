@@ -52,6 +52,7 @@ modules = {
     chartist {
         resource url:'vendor/chartist/javascript/chartist.min.js'
         resource url:'vendor/chartist/css/chartist.css', attrs: [media: 'screen,print']
+        resource url:'vendor/chartist-plugin-legend/chartist-plugin-legend.min.js'
     }
     base {
         dependsOn 'jquery'
