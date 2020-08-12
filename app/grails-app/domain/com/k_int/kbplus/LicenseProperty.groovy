@@ -25,12 +25,24 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
     PropertyDefinition type
+    boolean isPublic = false
+
+    String           stringValue
+    Integer          intValue
+    BigDecimal       decValue
+    RefdataValue     refValue
+    URL              urlValue
+    String           note = ""
+    Date             dateValue
+    Org              tenant
+
     License owner
     LicenseProperty instanceOf
     String paragraph
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
     static mapping = {
         id          column: 'lp_id'
