@@ -26,7 +26,7 @@
         </g:else>
     </td>
     <g:if test="${ ! showGlobalUid}">
-    <td>${id?.note}</td>
+    <td>${id.note}</td>
     <td>
         <g:if test="${editable}">
             <button class="ui icon button" onclick="IdContoller.editIdentifier(${id.id});"><i class="write icon"></i></button>

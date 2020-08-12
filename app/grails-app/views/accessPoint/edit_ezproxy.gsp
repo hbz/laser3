@@ -129,9 +129,9 @@
                                 <g:field type="text" name="ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="Submit" class="ui tiny button"
+                        <input type="submit" class="ui tiny button"
                                value="${message(code: 'accessPoint.button.add')}"
-                               onClick="this.form.submit()" class="ui button"/>
+                               class="ui button"/>
                     </div>
                 </g:form>
             </div>
@@ -199,9 +199,9 @@
                             <g:field type="text" name="ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="Submit" class="ui tiny button"
+                    <input type="submit" class="ui tiny button"
                            value="${message(code: 'accessPoint.button.add')}"
-                           onClick="this.form.submit()" class="ui button"/>
+                           class="ui button"/>
                 </div>
             </g:form>
         </div>
