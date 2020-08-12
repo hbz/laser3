@@ -21,7 +21,6 @@ class ProfileController {
     def genericOIDService
     def springSecurityService
     def passwordEncoder
-    def errorReportService
     def refdataService
     def propertyService
     def instAdmService
@@ -43,20 +42,6 @@ class ProfileController {
     def errorReport() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-
-        if (params.sendErrorReport) {
-            def data = [
-                    author:     result.user,
-                    title:      params.title?.trim(),
-                    described:  params.described?.trim(),
-                    expected:   params.expected?.trim(),
-                    info:       params.info?.trim(),
-                    status:     RefdataValue.getByValueAndCategory('New', RDConstants.TICKET_STATUS),
-                    category:   RefdataValue.getByValueAndCategory('Bug', RDConstants.TICKET_CATEGORY)
-            ]
-            result.sendingStatus = (errorReportService.writeReportIntoDB(data) ? 'ok' : 'fail')
-        }
-
         result.title = params.title
         result.described = params.described
         result.expected = params.expected

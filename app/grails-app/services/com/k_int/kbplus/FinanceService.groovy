@@ -1104,26 +1104,37 @@ class FinanceService {
             case GROUP_OPTION_SUBSCRIPTION_GRAPH:
                 if(configMap.contextOrg.getCustomerType() == 'ORG_CONSORTIUM') {
                     Set<String> labels = []
-                    Set<List> series = []
+                    List<List> series = []
+                    /*
+                        structures
+                        cumulative:
+                        parent subs {
+                            child subs {
+                                list of each billing sum -> suitable for sums (currently two arrays of 118 items)
+                            }
+                        }
+
+                        distinctive:
+                        parent subs {
+                            for each year ring a list of two entries
+                        }
+                     */
+                    Map<Org,List<BigDecimal>> costItemMap = [:]
                     configMap.linkedSubscriptions.each { Subscription parentSub ->
                         labels << parentSub.dropdownNamingConvention(configMap.contextOrg)
-                        Collection<CostItem> childrenCostItems = configMap.costItems.findAll { CostItem ci -> ci.sub.instanceOf == parentSub }
-                        Collection<Subscription> childSubs = configMap.costItems.collect { CostItem ci -> ci.sub }
-                        childSubs.each { Subscription child ->
-                            List costs = []
-                            childrenCostItems.findAll{ it.sub == child }.each { CostItem ci ->
-                                //TODO [ticket=2761] to implement when Chartist is included
-                                /*
-
-                                 */
-                                /* this is the temporary structure until ERMS-2761 is done */
-                                costs << ci.costInBillingCurrency
-                            }
-                            series << costs
+                        parentSub.getDerivedSubscriptions().each { Subscription childSub ->
+                            Org subscr = childSub.getSubscriber()
+                            List<BigDecimal> sumsOfSubscriber = costItemMap.get(subscr)
+                            if(!sumsOfSubscriber)
+                                sumsOfSubscriber = []
+                            List<CostItem> allCIs = configMap.costItems.findAll { CostItem ci -> ci.sub == childSub }
+                            sumsOfSubscriber << calculateSum(allCIs)
+                            costItemMap.put(subscr,sumsOfSubscriber)
                         }
                     }
-                    Map<String,Set> graph = [labels:labels,series:series]
-                    result.graph = graph
+                    series.addAll(costItemMap.values())
+                    Map<String,List> graph = [labels:labels,series:series]
+                    result.graphA = graph
                 }
                 break
         }
@@ -1133,8 +1144,13 @@ class FinanceService {
 
     Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
-        Set<CostItem> costItems = []
-        String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc'
+        String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
+        if(configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+            ciQuery += 'and ci.sub.instanceOf in (:subs)'
+        }
+        else {
+            ciQuery += 'and ci.sub in (:subs)'
+        }
         Map<String,Object> ciParams = [owner:configMap.institution]
         //we define some entry points
         Set<Subscription> linkedSubscriptionSet = []
@@ -1146,21 +1162,60 @@ class FinanceService {
             linkedSubscriptionSet << starting
             //get successors
             linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
-            if(configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-                ciQuery += 'and ci.sub.instanceOf in (:subs)'
-            }
-            else {
-                ciQuery += 'and ci.sub in (:subs)'
-            }
-            costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subs:linkedSubscriptionSet]))
-            result.linkedSubscriptionSet = linkedSubscriptionSet
         }
         else if(configMap.package) {
-            ciQuery += 'and ci.subPkg = :subPkg'
-            costItems.addAll(CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subPkg:result.subscriptionPackages]))
+            if(configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+                subFilter += ' and sp.subscription.instanceOf is null'
+            }
+            linkedSubscriptionSet.addAll(Subscription.executeQuery("select sub from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :contextOrg and sp.pkg = :pkg"+subFilter,[contextOrg:configMap.institution,pkg:Package.get(configMap.package)]))
         }
         result.linkedSubscriptionSet = linkedSubscriptionSet
-        result.costItems = costItems
+        result.costItems = CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subs:linkedSubscriptionSet])
+        result
+    }
+
+
+    Map<String,Collection> getSubscribersByRegion(Map<String,Object> configMap) {
+        Map<String,Collection> result = [:]
+        if(configMap.subscription) {
+            String column = 'value_'+LocaleContextHolder.getLocale().toString().split('_')[0]
+            List consortiaMembers = Org.executeQuery('select org.region.'+column+',count(org.id) from OrgRole oo join oo.org org where oo.sub.instanceOf = :subscription and oo.roleType = :roleType group by org.region.'+column+' order by org.region.'+column+' asc',[subscription:Subscription.get(configMap.subscription),roleType:RDStore.OR_SUBSCRIBER_CONS])
+            /*
+            consortiaMembers.each { Org o ->
+                List<Integer> membersOfRegion = result.get(o.region.getI10n("value"))
+                if(!membersOfRegion)
+                    membersOfRegion = 0
+                membersOfRegion++
+                result.put(o.region.getI10n("value"),membersOfRegion)
+            }
+            */
+            Set<String> labels = []
+            List<Integer> series = []
+            consortiaMembers.each { row ->
+                labels << row[0]
+                series << row[1]
+            }
+            result.labels = labels
+            result.series = series
+        }
+        else if(configMap.package) {
+            //todo
+        }
+        result
+    }
+
+    BigDecimal calculateSum(Collection<CostItem> allCIs) {
+        BigDecimal result = 0.0
+        if(allCIs) {
+            allCIs.each { CostItem ci ->
+                switch(ci.costItemElementConfiguration) {
+                    case RDStore.CIEC_POSITIVE: result += ci.costInBillingCurrency
+                        break
+                    case RDStore.CIEC_NEGATIVE: result -= ci.costInBillingCurrency
+                        break
+                }
+            }
+        }
         result
     }
 

@@ -1,14 +1,18 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
+import grails.util.Holders
+import org.codehaus.groovy.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.MessageSource
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -20,20 +24,308 @@ class CopyElementsService {
     GenericOIDService genericOIDService
     ComparisonService comparisonService
     TaskService taskService
+    SubscriptionService subscriptionService
+    ContextService contextService
+    MessageSource messageSource
+    Locale locale
+    DocstoreService docstoreService
 
-    Map copySubElements_DatesOwnerRelations(Map params) {
+    @javax.annotation.PostConstruct
+    void init() {
+        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+    }
+
+    List allowedProperties(Object obj){
+        List result = []
+        switch (obj.class.simpleName) {
+            case License.class.simpleName:
+                result = ['startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi']
+                break
+            case Subscription.class.simpleName:
+                result = ['startDate', 'endDate', 'manualCancellationDate', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess']
+                break
+            case SurveyInfo.class.simpleName:
+                result = ['startDate', 'endDate', 'comment']
+                break
+            case SurveyConfig.class.simpleName:
+                result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment', 'url', 'url2', 'url3']
+                break
+        }
+        result
+    }
+
+    Map loadDataFor_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        //boolean isTargetSubChanged = false
-        if (params.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
-            deleteDates(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyDates(baseSub, newSub, flash)
-            //isTargetSubChanged = true
+        result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
         }
+        result.targetIdentifiers = newSub?.ids?.sort { x, y ->
+            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
+                x.value <=> y.value
+            } else {
+                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            }
+        }
+
+        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_LICENSE])
+        if(newSub) {
+            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.targetLicenses = License.executeQuery(targetLicensesQuery,[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
+        }
+
+        // restrict visible for templates/links/orgLinksAsList
+        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
+        result
+    }
+
+    Map loadDataFor_DocsAnnouncementsTasks(Map params) {
+        Map<String, Object> result = [:]
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        Subscription newSub = null
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
+        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
+        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
+        result
+    }
+
+    Map loadDataFor_Subscriber(Map params) {
+        Map<String, Object> result = [:]
+        result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceSubscription)
+        if (params.targetSubscriptionId) {
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+            result.validTargetSubChilds = subscriptionService.getValidSubChilds(result.targetSubscription)
+        }
+        result
+    }
+
+    Map loadDataFor_Properties(Map params){
+        LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = null
+        List<Subscription> subsToCompare = [baseSub]
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(params.targetSubscriptionId)
+            subsToCompare.add(newSub)
+        }
+
+        if (newSub) {
+            result.newSub = newSub.refresh()
+        }
+        Org contextOrg = contextService.org
+        subsToCompare.each{ Subscription sub ->
+            Map customProperties = result.customProperties
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
+            result.customProperties = customProperties
+            Map privateProperties = result.privateProperties
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
+            result.privateProperties = privateProperties
+        }
+        result
+    }
+
+    Map loadDataFor_PackagesEntitlements(Map params) {
+        Map<String, Object> result = [:]
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+        result.newSub = newSub
+        result.subscription = baseSub
+        result
+    }
+
+    void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        targetSub.refresh()
+        List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetSub)
+        subscriptionToTake.each { Subscription subMember ->
+            //Gibt es mich schon in der Ziellizenz?
+            Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
+
+            if (found) {
+                // mich gibts schon! Fehlermeldung ausgeben!
+                Object[] args = [found.sortname ?: found.name]
+                flash.error += messageSource.getMessage('subscription.err.subscriberAlreadyExistsInTargetSub', args, locale)
+//                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
+            } else {
+                //ChildSub Exist
+//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
+//                if (prevLinks.size() == 0) {
+
+                /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                        [result.subscriptionInstance, it.id])*/
+
+                def newSubscription = new Subscription(
+                        isMultiYear: subMember.isMultiYear,
+                        type: subMember.type,
+                        kind: subMember.kind,
+                        status: targetSub.status,
+                        name: subMember.name,
+                        startDate: subMember.isMultiYear ? subMember.startDate : targetSub.startDate,
+                        endDate: subMember.isMultiYear ? subMember.endDate : targetSub.endDate,
+                        manualRenewalDate: subMember.manualRenewalDate,
+                        /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+                        identifier: UUID.randomUUID().toString(),
+                        instanceOf: targetSub,
+                        //previousSubscription: subMember?.id,
+                        isSlaved: subMember.isSlaved,
+                        //owner: targetSub.owner ? subMember.owner : null,
+                        resource: targetSub.resource ?: null,
+                        form: targetSub.form ?: null,
+                        isPublicForApi: targetSub.isPublicForApi,
+                        hasPerpetualAccess: targetSub.hasPerpetualAccess
+                )
+                newSubscription.save(flush:true)
+                //ERMS-892: insert preceding relation in new data model
+                if (subMember) {
+                    try {
+                        Links.construct([source: GenericOIDService.getOID(newSubscription), destination: GenericOIDService.getOID(subMember), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                        Set<Links> precedingLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subMember),RDStore.LINKTYPE_LICENSE)
+                        precedingLicenses.each { Links link ->
+                            Map<String,Object> successorLink = [source:link.source,destination:GenericOIDService.getOID(newSubscription),linkType:RDStore.LINKTYPE_LICENSE,owner:contextService.org]
+                            Links.construct(successorLink)
+                        }
+                    }
+                    catch (CreationException e) {
+                        log.error("Subscription linking failed, please check: ${e.stackTrace}")
+                    }
+                }
+
+                if (subMember.propertySet) {
+                    //customProperties
+                    for (prop in subMember.propertySet) {
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
+                        copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.save()
+                        //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+                    }
+                }
+                /*
+                if (subMember.privateProperties) {
+                    //privatProperties
+                    List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
+                        it -> it.id
+                    }
+                    subMember.privateProperties?.each { prop ->
+                        if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
+                            def copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription)
+                            copiedProp = prop.copyInto(copiedProp)
+                            copiedProp.save()
+                            //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
+                        }
+                    }
+                }
+                */
+
+                if (subMember.packages && targetSub.packages) {
+                    //Package
+                    subMember.packages?.each { pkg ->
+                        def pkgOapls = pkg.oapls
+                        pkg.properties.oapls = null
+                        pkg.properties.pendingChangeConfig = null
+                        SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                        InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                        newSubscriptionPackage.subscription = newSubscription
+
+                        if(newSubscriptionPackage.save()){
+                            pkgOapls.each{ oapl ->
+
+                                def oaplProperties = oapl.properties
+                                oaplProperties.globalUID = null
+                                OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                                InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                newOrgAccessPointLink.save()
+                            }
+                        }
+                    }
+                }
+                if (subMember.issueEntitlements && targetSub.issueEntitlements) {
+                    subMember.issueEntitlements?.each { ie ->
+                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                            def ieProperties = ie.properties
+                            ieProperties.globalUID = null
+
+                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                            InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
+                            newIssueEntitlement.coverages = null
+                            newIssueEntitlement.ieGroups = null
+                            newIssueEntitlement.subscription = newSubscription
+
+                            if(save(newIssueEntitlement, flash)){
+                                ie.properties.coverages.each{ coverage ->
+
+                                    def coverageProperties = coverage.properties
+                                    IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                    InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                    newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                    newIssueEntitlementCoverage.save()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //OrgRole
+                subMember.orgRelations?.each { or ->
+                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_COLLECTIVE]) || (targetSub.orgRelations.size() >= 1)) {
+                        OrgRole newOrgRole = new OrgRole()
+                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        newOrgRole.sub = newSubscription
+                        newOrgRole.save(flush:true)
+                        log.debug("new org role set: ${newOrgRole.sub} for ${newOrgRole.org.sortname}")
+                    }
+                }
+
+                if (subMember.prsLinks && targetSub.prsLinks) {
+                    //PersonRole
+                    subMember.prsLinks?.each { prsLink ->
+                        PersonRole newPersonRole = new PersonRole()
+                        InvokerHelper.setProperties(newPersonRole, prsLink.properties)
+                        newPersonRole.sub = newSubscription
+                        newPersonRole.save()
+                    }
+                }
+//                }
+            }
+        }
+    }
+
+    Map copySubElements_DatesOwnerRelations(Map params) {
+        Map<String, Object> result = [:]
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+
+        params.list('object.take').each{ takeProperty ->
+            if(takeProperty in allowedProperties(baseSub)) {
+                copyObjectProperty(baseSub, newSub, flash, takeProperty)
+            }
+        }
+
+//        params.list('object.toggleShare').each{ toggleShareProperty ->
+//            if(toggleShareProperty in allowedProperties(baseSub)) {
+//                toggleShareObjectProperty(baseSub, newSub, flash, toggleShareProperty)
+//            }
+//        }
+
         if(params.toggleShareStartDate)
             AuditConfig.addConfig(newSub,'startDate')
         else if(params.toggleShareStartDate == false && AuditConfig.getConfig(newSub, 'startDate'))
@@ -42,74 +334,30 @@ class CopyElementsService {
             AuditConfig.addConfig(newSub,'endDate')
         else if(params.toggleShareEndDate == false && AuditConfig.getConfig(newSub, 'endDate'))
             AuditConfig.removeConfig(newSub, 'endDate')
-
-        if (params.subscription?.deleteStatus && isBothSubscriptionsSet(baseSub, newSub)) {
-            deleteStatus(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeStatus && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyStatus(baseSub, newSub, flash)
-            //isTargetSubChanged = true
-        }
         if(params.toggleShareStatus)
             AuditConfig.addConfig(newSub,'status')
         else if(!params.toggleShareStatus && AuditConfig.getConfig(newSub, 'status'))
             AuditConfig.removeConfig(newSub, 'status')
-
-        if (params.subscription?.deleteKind && isBothSubscriptionsSet(baseSub, newSub)) {
-            deleteKind(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeKind && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyKind(baseSub, newSub, flash)
-            //isTargetSubChanged = true
-        }
         if(params.toggleShareKind)
             AuditConfig.addConfig(newSub,'kind')
         else if(!params.toggleShareKind && AuditConfig.getConfig(newSub, 'kind'))
             AuditConfig.removeConfig(newSub, 'kind')
 
-        if (params.subscription?.deleteForm && isBothSubscriptionsSet(baseSub, newSub)) {
-            deleteForm(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeForm && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyForm(baseSub, newSub, flash)
-            //isTargetSubChanged = true
-        }
         if(params.toggleShareForm)
             AuditConfig.addConfig(newSub,'form')
         else if(!params.toggleShareForm && AuditConfig.getConfig(newSub, 'form'))
             AuditConfig.removeConfig(newSub, 'form')
 
-        if (params.subscription?.deleteResource && isBothSubscriptionsSet(baseSub, newSub)) {
-            deleteResource(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takeResource && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyResource(baseSub, newSub, flash)
-            //isTargetSubChanged = true
-        }
         if(params.toggleShareResource)
             AuditConfig.addConfig(newSub,'resource')
         else if(!params.toggleShareResource && AuditConfig.getConfig(newSub, 'resource'))
             AuditConfig.removeConfig(newSub, 'resource')
 
-        if (params.subscription?.deletePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
-            deletePublicForApi(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takePublicForApi && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyPublicForApi(baseSub, newSub, flash)
-            //isTargetSubChanged = true
-        }
         if(params.toggleSharePublicForApi)
             AuditConfig.addConfig(newSub,'isPublicForApi')
         else if(!params.toggleSharePublicForApi && AuditConfig.getConfig(newSub, 'isPublicForApi'))
             AuditConfig.removeConfig(newSub, 'isPublicForApi')
 
-        if (params.subscription?.deletePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
-            deletePerpetualAccess(newSub, flash)
-            //isTargetSubChanged = true
-        }else if (params.subscription?.takePerpetualAccess && isBothSubscriptionsSet(baseSub, newSub)) {
-            copyPerpetualAccess(baseSub, newSub, flash)
-            //isTargetSubChanged = true
-        }
         if(params.toggleSharePerpetualAccess)
             AuditConfig.addConfig(newSub,'hasPerpetualAccess')
         else if(!params.toggleSharePerpetualAccess && AuditConfig.getConfig(newSub, 'hasPerpetualAccess'))
@@ -181,41 +429,12 @@ class CopyElementsService {
         result.targetSubscription = newSub
         result
     }
-    Map loadDataFor_DatesOwnerRelations(Map params) {
-        Map<String, Object> result = [:]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-
-        result.sourceIdentifiers = baseSub.ids?.sort { x, y ->
-            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
-                x.value <=> y.value
-            } else {
-                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
-            }
-        }
-        result.targetIdentifiers = newSub?.ids?.sort { x, y ->
-            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()){
-                x.value <=> y.value
-            } else {
-                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
-            }
-        }
-
-        String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
-        result.sourceLicenses = License.executeQuery(sourceLicensesQuery,[sub: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_LICENSE])
-        if(newSub) {
-            String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
-            result.targetLicenses = License.executeQuery(targetLicensesQuery,[sub:GenericOIDService.getOID(newSub),linkType:RDStore.LINKTYPE_LICENSE])
-        }
-
-        // restrict visible for templates/links/orgLinksAsList
-        result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
-        result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
-        result
-    }
 
     Map copySubElements_DocsAnnouncementsTasks(Map params) {
         Map<String, Object> result = [:]
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -272,8 +491,12 @@ class CopyElementsService {
         result.targetSubscription = newSub
         result
     }
+
     Map copySubElements_Identifiers(Map params) {
         Map<String, Object> result = [:]
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -305,23 +528,11 @@ class CopyElementsService {
         result
     }
 
-    Map loadDataFor_DocsAnnouncementsTasks(Map params) {
-        Map<String, Object> result = [:]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
-        Subscription newSub = null
-        if (params.targetSubscriptionId) {
-            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-        }
-
-        result.sourceSubscription = baseSub
-        result.targetSubscription = newSub
-        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
-        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-        result
-    }
-
     Map copySubElements_Subscriber(Map params) {
         Map<String, Object> result = [:]
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
         if (params.targetSubscriptionId) {
@@ -336,18 +547,6 @@ class CopyElementsService {
         result.targetSubscription = newSub
         result
     }
-
-    Map loadDataFor_Subscriber(Map params) {
-        Map<String, Object> result = [:]
-        result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
-        result.validSourceSubChilds = getValidSubChilds(result.sourceSubscription)
-        if (params.targetSubscriptionId) {
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-            result.validTargetSubChilds = getValidSubChilds(result.targetSubscription)
-        }
-        result
-    }
-
 
     Map copySubElements_Properties(Map params){
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
@@ -377,33 +576,11 @@ class CopyElementsService {
         result
     }
 
-    Map loadDataFor_Properties(Map params){
-        LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = null
-        List<Subscription> subsToCompare = [baseSub]
-        if (params.targetSubscriptionId) {
-            newSub = Subscription.get(params.targetSubscriptionId)
-            subsToCompare.add(newSub)
-        }
-
-        if (newSub) {
-            result.newSub = newSub.refresh()
-        }
-        Org contextOrg = contextService.org
-        subsToCompare.each{ Subscription sub ->
-            Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
-            result.customProperties = customProperties
-            Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
-            result.privateProperties = privateProperties
-        }
-        result
-    }
-
     Map copySubElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -462,26 +639,6 @@ class CopyElementsService {
         result
     }
 
-    Map loadDataFor_PackagesEntitlements(Map params) {
-        Map<String, Object> result = [:]
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        result.sourceIEs = getIssueEntitlements(baseSub)
-        result.targetIEs = getIssueEntitlements(newSub)
-        result.newSub = newSub
-        result.subscription = baseSub
-        result
-    }
-
-    boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {
-        if (! baseSub || !newSub) {
-            if (!baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource') + '<br />'
-            if (!newSub)  flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget') + '<br />'
-            return false
-        }
-        return true
-    }
-
     boolean deleteTasks(List<Long> toDeleteTasks, Subscription targetSub, def flash) {
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.user.id
@@ -501,7 +658,6 @@ class CopyElementsService {
         }
     }
 
-
     boolean copyTasks(Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
         toCopyTasks.each { tsk ->
             def task = Task.findBySubscriptionAndId(sourceSub, tsk)
@@ -516,7 +672,6 @@ class CopyElementsService {
             }
         }
     }
-
 
     boolean copyAnnouncements(Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
         sourceSub.documents?.each { dctx ->
@@ -535,7 +690,6 @@ class CopyElementsService {
         }
     }
 
-
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Subscription targetSub, def flash) {
         targetSub.documents.each {
             if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain)){
@@ -545,8 +699,6 @@ class CopyElementsService {
             }
         }
     }
-
-
 
     boolean deleteDates(Subscription targetSub, def flash){
         targetSub.startDate = null
@@ -589,7 +741,6 @@ class CopyElementsService {
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
-
     boolean copyDocs(Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
@@ -620,7 +771,6 @@ class CopyElementsService {
             }
         }
     }
-
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         SubscriptionProperty targetProp
@@ -688,7 +838,6 @@ class CopyElementsService {
         }
     }
 
-
     boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         if (true){
             properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
@@ -699,80 +848,60 @@ class CopyElementsService {
         int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false",[properties: properties, org: contextService.org])
     }
 
-    private boolean delete(obj, flash) {
-        if (obj) {
-            obj.delete(flush: true)
-            log.debug("Delete ${obj} ok")
-        } else {
-            flash.error += messageSource.getMessage('default.delete.error.general.message', null, locale)
-        }
-    }
-
     boolean deleteStatus(Subscription targetSub, def flash) {
         targetSub.status = RDStore.SUBSCRIPTION_NO_STATUS
         return save(targetSub, flash)
     }
-
 
     boolean copyStatus(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.status = sourceSub.status ?: null
         return save(targetSub, flash)
     }
 
-
     boolean deleteKind(Subscription targetSub, def flash) {
         targetSub.kind = null
         return save(targetSub, flash)
     }
-
 
     boolean copyKind(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.kind = sourceSub.kind ?: null
         return save(targetSub, flash)
     }
 
-
     boolean deleteForm(Subscription targetSub, def flash) {
         targetSub.form = null
         return save(targetSub, flash)
     }
-
 
     boolean copyForm(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.form = sourceSub.form ?: null
         return save(targetSub, flash)
     }
 
-
     boolean deleteResource(Subscription targetSub, def flash) {
         targetSub.resource = null
         return save(targetSub, flash)
     }
-
 
     boolean copyResource(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.resource = sourceSub.resource ?: null
         return save(targetSub, flash)
     }
 
-
     boolean deletePublicForApi(Subscription targetSub, def flash) {
         targetSub.isPublicForApi = false
         return save(targetSub, flash)
     }
-
 
     boolean copyPublicForApi(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.isPublicForApi = sourceSub.isPublicForApi
         return save(targetSub, flash)
     }
 
-
     boolean deletePerpetualAccess(Subscription targetSub, def flash) {
         targetSub.hasPerpetualAccess = false
         return save(targetSub, flash)
     }
-
 
     boolean copyPerpetualAccess(Subscription sourceSub, Subscription targetSub, def flash) {
         //Vertrag/License
@@ -780,20 +909,59 @@ class CopyElementsService {
         return save(targetSub, flash)
     }
 
+    boolean copyObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {
+
+        if(sourceObject.getClass() == targetObject.getClass())
+        {
+            if (sourceObject.hasProperty(propertyName)) {
+                targetObject[propertyName] = sourceObject."$propertyName"
+                return save(targetObject, flash)
+            }
+        }
+
+    }
+
+    boolean deleteObjectProperty(Object targetObject, def flash, String propertyName) {
+
+        if (targetObject.hasProperty(propertyName)) {
+            if(targetObject[propertyName] instanceof Boolean){
+                targetObject[propertyName] = false
+            }else {
+                targetObject[propertyName] = null
+            }
+            return save(targetObject, flash)
+        }
+
+    }
+
+    boolean toggleShareObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {
+
+        if(sourceObject.getClass() == targetObject.getClass())
+        {
+            if (sourceObject.hasProperty(propertyName) && !AuditConfig.getConfig(targetObject,propertyName)) {
+                AuditConfig.addConfig(targetObject,propertyName)
+            }
+        }
+
+    }
+
+    boolean removeToggleShareObjectProperty(Object targetObject, def flash, String propertyName) {
+            if (targetObject.hasProperty(propertyName) && AuditConfig.getConfig(targetObject, propertyName)) {
+                    AuditConfig.removeConfig(targetObject, propertyName)
+            }
+    }
 
     boolean deleteLicenses(List<License> toDeleteLicenses, Subscription targetSub, def flash) {
         toDeleteLicenses.each { License lic ->
-            setOrgLicRole(targetSub,lic,true)
+            subscriptionService.setOrgLicRole(targetSub,lic,true)
         }
     }
-
 
     boolean copyLicenses(List<License> toCopyLicenses, Subscription targetSub, def flash) {
         toCopyLicenses.each { License lic ->
-            setOrgLicRole(targetSub,lic,false)
+            subscriptionService.setOrgLicRole(targetSub,lic,false)
         }
     }
-
 
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
@@ -808,7 +976,6 @@ class CopyElementsService {
                 [personRoles: toDeletePersonRoles, sub: targetSub]
         )
     }
-
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
         sourceSub.orgRelations?.each { or ->
@@ -854,11 +1021,10 @@ class CopyElementsService {
 
     }
 
-
     boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
         //alle IEs löschen, die zu den zu löschenden Packages gehören
 //        targetSub.issueEntitlements.each{ ie ->
-        getIssueEntitlements(targetSub).each{ ie ->
+        subscriptionService.getIssueEntitlements(targetSub).each{ ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
                 ie.status = RDStore.TIPP_STATUS_DELETED
                 save(ie, flash)
@@ -886,7 +1052,6 @@ class CopyElementsService {
                     [packagesToDelete: packagesToDelete, sub: targetSub])
         }
     }
-
 
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Subscription targetSub, def flash) {
         packagesToTake.each { subscriptionPackage ->
@@ -941,11 +1106,10 @@ class CopyElementsService {
 //                [entitlementsToDelete: entitlementsToDelete, sub: targetSub])
     }
 
-
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
             if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
-                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED}
+                def list = subscriptionService.getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
@@ -985,4 +1149,26 @@ class CopyElementsService {
             return false
         }
     }
+
+    private boolean delete(obj, flash) {
+        if (obj) {
+            obj.delete(flush: true)
+            log.debug("Delete ${obj} ok")
+        } else {
+            flash.error += messageSource.getMessage('default.delete.error.general.message', null, locale)
+        }
+    }
+
+    boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        if (! baseSub || !newSub) {
+            if (!baseSub) flash.error += messageSource.getMessage('subscription.details.copyElementsIntoSubscription.noSubscriptionSource', null, locale) + '<br />'
+            if (!newSub)  flash.error += messageSource.getMessage('subscription.details.copyElementsIntoSubscription.noSubscriptionTarget', null, locale) + '<br />'
+            return false
+        }
+        return true
+    }
+
 }

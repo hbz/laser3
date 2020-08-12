@@ -11,25 +11,36 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
     static Log static_logger = LogFactory.getLog(SurveyResult)
 
-    Date dateCreated
-    Date lastUpdated
+    PropertyDefinition type
+    boolean isPublic = false
+    boolean isRequired = false
+
+    String           stringValue
+    Integer          intValue
+    BigDecimal       decValue
+    RefdataValue     refValue
+    URL              urlValue
+    String           note = ""
+    Date             dateValue
+    Org              tenant
 
     Org owner
     Org participant
-
-    Date finishDate
-    Date startDate
-    Date endDate
 
     String comment
     String participantComment
     String ownerComment
 
-    PropertyDefinition type
+    Date finishDate
+    Date startDate
+    Date endDate
+
     SurveyConfig surveyConfig
     ArrayList resultValues
 
-    boolean isRequired = false
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
     static constraints = {
         stringValue (nullable: true)

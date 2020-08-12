@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -8,6 +7,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.*
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -106,7 +106,6 @@ class MyInstitutionController extends AbstractDebugController {
                 configMap.subscription = params.subscription
             else if(params.package) {
                 configMap.package = params.package
-                configMap.subscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
             }
             result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
             if(result.costItems) {
@@ -133,8 +132,10 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def loadCostItemChartData() {
         Org contextOrg = contextService.org
-        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,institution:contextOrg])
+        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg])
         Map<String,Object> result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
+        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+            result.graphB = financeService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
         render result as JSON
     }
 
@@ -1656,163 +1657,6 @@ join sub.orgRelations or_sub where
 
     }
 
-    /**
-     * Add to the given result Map the list of values available for each filters.
-     *
-     * @param result - result Map which will be sent to the view page
-     * @param date_restriction - 'Subscription valid on' date restriction as a String
-     * @return the result Map with the added filter lists
-     */
-    @Deprecated
-    private setFiltersLists(result, date_restriction) {
-        // Query the list of Subscriptions
-        def del_ie =  RDStore.TIPP_STATUS_DELETED
-
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-
-        def cp = RDStore.OR_CONTENT_PROVIDER
-        def role_consortia = RDStore.OR_PACKAGE_CONSORTIA
-
-        def roles = [role_sub, role_sub_cons, role_sub_consortia]
-
-        def sub_params = [institution: result.institution,roles:roles]
-        def sub_qry = """
-Subscription AS s INNER JOIN s.orgRelations AS o
-WHERE o.roleType IN (:roles)
-AND o.org = :institution """
-        if (date_restriction) {
-            sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "
-            sub_params.date_restriction = date_restriction
-        }
-        result.subscriptions = Subscription.executeQuery("SELECT s FROM ${sub_qry} ORDER BY s.name", sub_params);
-        result.test = Subscription.executeQuery("""
-SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role ORDER BY role.org.name """);
-
-        // Query the list of Providers
-        result.providers = Subscription.executeQuery("""
-SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role 
-WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) 
-AND role.roleType=:role_cp 
-ORDER BY role.org.name""", sub_params+[role_cp:cp])
-
-        // Query the list of Host Platforms
-        result.hostplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(ie.tipp.platform), ie.tipp.platform.name
-FROM IssueEntitlement AS ie, ${sub_qry}
-AND s = ie.subscription
-ORDER BY ie.tipp.platform.name""", sub_params)
-
-        return result
-    }
-
-    /**
-     * This function will gather the different filters from the request parameters and
-     * will build the base of the query to gather all the information needed for the view page
-     * according to the requested filtering.
-     *
-     * @param institution - the {@link Org} object representing the institution we're looking at
-     * @param date_restriction - 'Subscription valid on' date restriction as a String
-     * @return a Map containing the base query as a String and a Map containing the parameters to run the query
-     */
-    @Deprecated
-    private buildCurrentTitlesQuery(institution, date_restriction) {
-        def qry_map = [:]
-
-        // Put multi parameters for filtering into Lists
-        // Set the variables to null if filter is equal to 'all'
-        def filterSub = params.list("filterSub")
-        if (filterSub.contains("all")) filterSub = null
-        def filterPvd = params.list("filterPvd")
-        if (filterPvd.contains("all")) filterPvd = null
-        def filterHostPlat = params.list("filterHostPlat")
-        if (filterHostPlat.contains("all")) filterHostPlat = null
-        def filterOtherPlat = params.list("filterOtherPlat")
-        if (filterOtherPlat.contains("all")) filterOtherPlat = null
-
-        def qry_params = [:]
-
-        StringBuilder title_query = new StringBuilder()
-        title_query.append("FROM IssueEntitlement AS ie ")
-        // Join with Org table if there are any Provider filters
-        if (filterPvd) title_query.append("INNER JOIN ie.tipp.pkg.orgs AS role ")
-        // Join with the Platform table if there are any Host Platform filters
-        if (filterHostPlat) title_query.append("INNER JOIN ie.tipp.platform AS hplat ")
-        title_query.append(", Subscription AS s INNER JOIN s.orgRelations AS o ")
-
-        // Main query part
-        title_query.append("\
-  WHERE ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) \
-  AND o.org = :institution \
-  AND s = ie.subscription ")
-        qry_params.institution = institution
-
-        // Subscription filtering
-        if (filterSub) {
-            title_query.append("\
-  AND ( \
-  ie.subscription.id IN (:subscriptions) \
-  OR ( EXISTS ( FROM IssueEntitlement AS ie2 \
-  WHERE ie2.tipp.title = ie.tipp.title \
-  AND ie2.subscription.id IN (:subscriptions) \
-  )))")
-            qry_params.subscriptions = filterSub.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-        }
-
-        // Title name filtering
-        // Copied from SubscriptionDetailsController
-        if (params.filter) {
-            title_query.append("\
-  AND ( ( Lower(ie.tipp.title.title) like :filterTrim ) \
-  OR ( EXISTS ( FROM Identifier ident \
-  WHERE ident.ti.id = ie.tipp.title.id \
-  AND ident.value like :filter ) ) )")
-            qry_params.filterTrim = "%${params.filter.trim().toLowerCase()}%"
-            qry_params.filter = "%${params.filter}%"
-        }
-
-        // Provider filtering
-        if (filterPvd) {
-            title_query.append("\
-  AND role.roleType.value = 'Content Provider' \
-  AND role.org.id IN (:provider) ")
-            qry_params.provider = filterPvd.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-            //Long.valueOf(params.filterPvd)
-        }
-        // Host Platform filtering
-        if (filterHostPlat) {
-            title_query.append("AND hplat.id IN (:hostPlatform) ")
-            qry_params.hostPlatform = filterHostPlat.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-            //Long.valueOf(params.filterHostPlat)
-        }
-        // Host Other filtering
-        if (filterOtherPlat) {
-            title_query.append("""
-AND EXISTS (
-  FROM IssueEntitlement ie2
-  WHERE EXISTS (
-    FROM ie2.tipp.additionalPlatforms AS ap
-    WHERE ap.platform.id IN (:otherPlatform)
-  )
-  AND ie2.tipp.title = ie.tipp.title
-) """)
-            qry_params.otherPlatform = filterOtherPlat.collect(new ArrayList<Long>()) { Long.valueOf(it) }
-            //Long.valueOf(params.filterOtherPlat)
-        }
-        // 'Subscription valid on' filtering
-        if (date_restriction) {
-            title_query.append(" AND ie.subscription.startDate <= :date_restriction AND ie.subscription.endDate >= :date_restriction ")
-            qry_params.date_restriction = date_restriction
-        }
-
-        title_query.append("AND ( ie.status.value != 'Deleted' ) ")
-
-        qry_map.query = title_query.toString()
-        qry_map.parameters = qry_params
-        return qry_map
-    }
-
     def resolveOID(oid_components) {
         def result = null;
         def domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
@@ -2228,7 +2072,7 @@ AND EXISTS (
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-            result.subscription = result.subscriptionInstance	
+            result.subscription = result.subscriptionInstance
             result.authorizedOrgs = result.user?.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
@@ -2329,7 +2173,7 @@ AND EXISTS (
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-	    result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user) 	
+	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
         }
         result
     }
@@ -2616,14 +2460,11 @@ AND EXISTS (
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
+
+        result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)
+        result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)
+
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-
-        result.propList =
-                PropertyDefinition.findAllWhere(
-                        descr: PropertyDefinition.PRS_PROP,
-                        tenant: result.institution // private properties
-                )
-
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
