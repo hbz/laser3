@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2781    13.08.2020  rc1.5       Andreas Bug         inkorrekte Befüllung der Ziellizenzen sorgte für Kostendubletten
+
+2780    12.08.2020  rc1.5       Moe     Bug         Umfragen lässt sich nicht exportieren
+
+2779    12.08.2020  rc1.5       Moe     Bug         Fehlermeldung bei Hauptkontakt
+
+2778    12.08.2020  rc1.5       Moe     Bug         Zugangskonfiguration kann von Konsortialstelle nicht gelöscht werden
+
 2774    12.08.2020  rc1.5       Andreas Bug         Bezeichner Einrichtung in Organisation bei Merkmalsdefinitionen geändert
 
 2773    11.08.2020  rc1.5       Moe     Bug         Für EZproxy kann keine IP-Adresse angegeben werden

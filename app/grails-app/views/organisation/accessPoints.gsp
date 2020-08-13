@@ -11,8 +11,7 @@
     </head>
     <body>
     <semui:controlButtons>
-        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
-                || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
+        <g:if test="${editable}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="accessPoints" params="${params + [exportXLSX: true]}">${message(code: 'accessPoint.exportAccessPoints')}</g:link>

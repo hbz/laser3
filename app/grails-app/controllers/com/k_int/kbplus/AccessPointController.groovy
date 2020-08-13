@@ -411,35 +411,43 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(closure = { ctx.accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (ctx.accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && OrgAccessPoint.get(request.getRequestURI().split('/').last()).org == ctx.contextService.getOrg())
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def delete() {
         OrgAccessPoint accessPoint = OrgAccessPoint.get(params.id)
         if (!accessPoint) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'accessMethod.label'), params.id])
             redirect(url: request.getHeader("referer"))
             return
         }
 
         Org org = accessPoint.org;
-        Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
-        Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
+        boolean inContextOrg = (org.id == contextService.org.id)
 
-        if ( oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0){
-            flash.message = message(code: 'accessPoint.list.deleteDisabledInfo', args: [oapPlatformLinkCount, oapSubscriptionLinkCount])
-            redirect(url: request.getHeader("referer"))
-            return
-        }
-        def orgId = org.id;
+        if(((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')))) {
+            Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
+            Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
 
-        try {
-            accessPoint.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label'), accessPoint.name])
-            redirect controller: 'organisation', action: 'accessPoints', id: orgId
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), accessPoint.id])
-            redirect action: 'show', id: params.id
+            if (oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0) {
+                flash.message = message(code: 'accessPoint.list.deleteDisabledInfo', args: [oapPlatformLinkCount, oapSubscriptionLinkCount])
+                redirect(url: request.getHeader("referer"))
+                return
+            }
+            def orgId = org.id;
+
+            try {
+                accessPoint.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label'), accessPoint.name])
+                redirect controller: 'organisation', action: 'accessPoints', id: orgId
+            }
+            catch (DataIntegrityViolationException e) {
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), accessPoint.id])
+                redirect action: 'show', id: params.id
+            }
+        }else {
+                response.sendError(401)
+                return
         }
     }
 
