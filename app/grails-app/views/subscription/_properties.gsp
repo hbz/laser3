@@ -102,13 +102,13 @@
                 ${message(code:'subscription.properties')}
             </g:else>
         </h5>
-
+         <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
         <div id="custom_props_div_props">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (editable && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
+                    editable: (controllerName == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
