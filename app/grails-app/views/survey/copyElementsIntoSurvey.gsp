@@ -25,8 +25,8 @@
     <semui:messages data="${flash}"/>
 
     <% Map params = [id: params.id];
-        if (sourceSubscriptionId)   params << [sourceSubscriptionId: sourceSubscriptionId];
-        if (targetSubscriptionId)   params << [targetSubscriptionId: targetSubscriptionId];
+        if (sourceObjectId)   params << [sourceObjectId: sourceObjectId];
+        if (targetObjectId)   params << [targetObjectId: targetObjectId];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
     %>
     <g:if test="${isRenewSub}">

@@ -79,7 +79,7 @@ ${surveyInfo.name}
 
         <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
         <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription?.id}"
-                params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, fromSurvey: true]"
+                params="[sourceObjectId: parentSubscription?.id, targetObjectId: parentSuccessorSubscription?.id, isRenewSub: true, fromSurvey: true]"
                 class="ui button ">
             <g:message code="renewalWithSurvey.newSub.change"/>
         </g:link>

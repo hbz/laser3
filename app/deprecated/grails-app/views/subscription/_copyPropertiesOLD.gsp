@@ -4,33 +4,33 @@
 <% def contextService = grailsApplication.mainContext.getBean("contextService");
    def contextOrg = contextService.org%>
 <semui:form>
-    <g:render template="selectSourceAndTargetSubscription" model="[
-            sourceSubscription: sourceSubscription,
-            targetSubscription: targetSubscription,
-            allSubscriptions_readRights: allSubscriptions_readRights,
-            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]"
+    <g:render template="/templates/subscription/selectSourceAndTargetObject" model="[
+            sourceObject: sourceObject,
+            targetObject: targetObject,
+            allObjects_readRights: allObjects_readRights,
+            allObjects_writeRights: allObjects_writeRights]"/>
+    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceObjectId}"
+            params="[workFlowPart: WORKFLOW_END, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId]"
             method="post" class="ui form newLicence">
         <table class="ui celled table" style="table-layout: fixed; width: 100%">
             <tbody>
                 <tr>
-                    <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}:</b>
-                    <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                    <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceObject.name')}:</b>
+                    <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
                     </td>
-                    <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}:</b>
-                        <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                    <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.targetObject.name')}:</b>
+                        <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align: top">
-                        <g:if test="${sourceSubscription}">
+                        <g:if test="${sourceObject}">
                             ${message(code: 'subscription.takeCustomProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
                                     show_checkboxes: true,
                                     showCopyConflicts: false,
                                     prop_desc: PropertyDefinition.SUB_PROP,
-                                    ownobj: sourceSubscription,
+                                    ownobj: sourceObject,
                                     showPropClass: CustomProperty.class,
                                     forced_not_editable: true,
                                     custom_props_div: "custom_props_div_${contextOrg.id}",
@@ -38,13 +38,13 @@
                         </g:if>
                     </td>
                     <td style="vertical-align: top">
-                        <g:if test="${targetSubscription}">
+                        <g:if test="${targetObject}">
                             ${message(code: 'subscription.takeCustomProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
                                     show_checkboxes: false,
                                     showCopyConflicts: true,
                                     prop_desc: PropertyDefinition.SUB_PROP,
-                                    ownobj: targetSubscription,
+                                    ownobj: targetObject,
                                     showPropClass: CustomProperty.class,
                                     forced_not_editable: true,
                                     custom_props_div: "custom_props_div_${contextOrg.id}",
@@ -54,13 +54,13 @@
                 </tr>
                 <tr>
                     <td style="vertical-align: top">
-                        <g:if test="${sourceSubscription}">
+                        <g:if test="${sourceObject}">
                             ${message(code: 'subscription.takePrivateProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
                                 show_checkboxes: true,
                                 showCopyConflicts: false,
                                 prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: sourceSubscription,
+                                ownobj: sourceObject,
                                 showPropClass: PrivateProperty.class,
                                 forced_not_editable: true,
                                 custom_props_div: "custom_props_div_${contextOrg.id}",
@@ -68,13 +68,13 @@
                         </g:if>
                     </td>
                     <td style="vertical-align: top">
-                        <g:if test="${targetSubscription}">
+                        <g:if test="${targetObject}">
                             ${message(code: 'subscription.takePrivateProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
                                 show_checkboxes: false,
                                 showCopyConflicts: true,
                                 prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: targetSubscription,
+                                ownobj: targetObject,
                                 showPropClass: PrivateProperty.class,
                                 forced_not_editable: true,
                                 custom_props_div: "custom_props_div_${contextOrg.id}",

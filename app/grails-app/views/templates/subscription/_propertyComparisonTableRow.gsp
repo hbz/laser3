@@ -8,11 +8,11 @@
         <th class="five wide center aligned">
             <div class="la-copyElements-th-flex-container">
                 <div class="la-copyElements-th-flex-item">
-                    <g:if test="${propBinding && propBinding.get(sourceSubscription)?.isVisibleForConsortiaMembers}">
-                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
+                    <g:if test="${propBinding && propBinding.get(sourceObject)?.isVisibleForConsortiaMembers}">
+                        <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
                     </g:if>
                     <g:else>
-                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
                     </g:else>
                 </div>
             </div>
@@ -30,18 +30,18 @@
         <th class="six wide center aligned">
             <div class="la-copyElements-th-flex-container">
                 <div class="la-copyElements-th-flex-item">
-                    <g:if test="${propBinding && propBinding.get(targetSubscription)?.isVisibleForConsortiaMembers}">
-                        <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
+                    <g:if test="${propBinding && propBinding.get(targetObject)?.isVisibleForConsortiaMembers}">
+                        <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
                     </g:if>
                     <g:else>
-                        <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
                     </g:else>
                 </div>
             </div>
         </th>
         %{--th DELETE:--}%
         <th>
-            <g:if test="${targetSubscription}">
+            <g:if test="${targetObject}">
                 <input type="checkbox" data-action="delete" class="select-all" onclick="selectAllDelete(this);" />
             </g:if>
         </th>
@@ -60,11 +60,11 @@
             </g:if>
         </td>
         <g:set var="propValues" value="${prop.getValue()}" />
-        <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
-        <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
+        <% Set propValuesForSourceSub = propValues.get(sourceObject) %>
+        <% Set propValuesForTargetSub = propValues.get(targetObject) %>
         %{--SOURCE-SUBSCRIPTION--}%
         <td class="center aligned">
-            <g:if test="${propValues.containsKey(sourceSubscription)}">
+            <g:if test="${propValues.containsKey(sourceObject)}">
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     <div class="la-copyElements-flex-container la-multi-sources la-colorCode-source">
                         <div class="la-copyElements-flex-item">
@@ -98,7 +98,7 @@
                                 <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay" data-content="${propValue?.note}">Anm.</div>
                             </g:if>
 
-                            <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
+                            <g:if test="${propValues.get(sourceObject)?.size() > 1}"><br></g:if>
                         </div>
                     </div>
                 </g:each>
@@ -112,7 +112,7 @@
         <g:if test="${isConsortialSubs}">
         %{--HEREDITY--}%
             <td class="center aligned">
-                <g:if test="${propValues.containsKey(sourceSubscription)}">
+                <g:if test="${propValues.containsKey(sourceObject)}">
                     <g:each var="propValue" in="${propValuesForSourceSub}">
                         <g:if test="${propValue instanceof SubscriptionProperty}">
                             <div class="ui checkbox la-toggle-radio la-inherit">
@@ -126,10 +126,10 @@
         </g:if>
         %{--ACTION--}%
         <td class="center aligned">
-            <g:if test="${propValues.containsKey(sourceSubscription)}">
+            <g:if test="${propValues.containsKey(sourceObject)}">
                 <g:each var="propValue" in="${propValuesForSourceSub}">
                     %{--COPY:--}%
-                    <g:if test="${propValues.containsKey(sourceSubscription)}">
+                    <g:if test="${propValues.containsKey(sourceObject)}">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                         </div>
@@ -139,7 +139,7 @@
         </td>
         %{--TARGET-SUBSCRIPTION--}%
         <td>
-            <g:if test="${ targetSubscription && propValues.containsKey(targetSubscription)}">
+            <g:if test="${ targetObject && propValues.containsKey(targetObject)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                         <div  class="la-copyElements-flex-item">
@@ -173,7 +173,7 @@
                             <g:if test="${propValue?.note}">
                                 <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"  data-content="${propValue?.note}">Anm.</div>
                             </g:if>
-                            <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
+                            <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>
                         </div>
 
                         <g:if test="${isConsortialSubs}">
@@ -192,7 +192,7 @@
                                 </div>
                             </g:if>
                         </g:if>
-                        <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
+                        <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>
                     </div>
                 </g:each>
             </g:if>
@@ -204,7 +204,7 @@
         </td>
         %{--DELETE:--}%
         <td>
-            <g:if test="${ targetSubscription && propValues.containsKey(targetSubscription)}">
+            <g:if test="${ targetObject && propValues.containsKey(targetObject)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="ui checkbox la-toggle-radio la-noChange">
                         <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>

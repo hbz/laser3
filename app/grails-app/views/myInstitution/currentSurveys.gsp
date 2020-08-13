@@ -245,7 +245,7 @@
 
                         <g:if test="${surveyConfig.pickAndChoose}">
                                 <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                        params="${[targetSubscriptionId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui">
+                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui">
                                     ${surveyConfig.getSurveyName()}
                                 </g:link>
                         </g:if>
@@ -298,7 +298,7 @@
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
                                 <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                        params="${[targetSubscriptionId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
+                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>
                             </span>
