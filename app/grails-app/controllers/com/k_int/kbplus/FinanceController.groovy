@@ -824,6 +824,7 @@ class FinanceController extends AbstractDebugController {
                       break
                   default:
                       if (params.newLicenseeTarget) {
+                          subsToDo.clear()
                           if(params.newLicenseeTarget instanceof String)
                             subsToDo << genericOIDService.resolveOID(params.newLicenseeTarget)
                           else if(params.newLicenseeTarget instanceof String[]) {
