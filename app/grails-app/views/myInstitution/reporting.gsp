@@ -102,11 +102,11 @@
             </p>
 
             <div class="ui top attached segment">
-                <div id="chartA"></div>
+                <div id="chartB"></div>
             </div>
 
             <div class="ui top attached segment">
-                <div id="chartB"></div>
+                <div id="chartA"></div>
             </div>
 
         </g:if>
@@ -124,13 +124,14 @@
                 </g:elseif>
                 }
             }).done(function(data){
-                console.log(data.graphB);
                 new Chartist.Bar('#chartA',data.graphA,{
-                    axisY: {
-                        scaleMinSpace: 40
-                    },
-                    height: '600px'
+                    stackBars: true,
+                    height: '600px',
+                    plugins: [
+                        Chartist.plugins.legend()
+                    ]
                 });
+                console.log(data.graphA);
                 new Chartist.Pie('#chartB',data.graphB,{
                     donut:true,
                     donutWidth: 60,

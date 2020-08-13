@@ -135,7 +135,7 @@ class MyInstitutionController extends AbstractDebugController {
         Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg])
         Map<String,Object> result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
         if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
-            result.graphB = financeService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
+            result.graphB = subscriptionService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
         render result as JSON
     }
 
