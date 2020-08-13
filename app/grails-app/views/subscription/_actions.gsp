@@ -96,7 +96,7 @@
             <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
                 <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: params.id]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetSubscriptionId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetObjectId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
                 </g:if>
             </g:if>
 
@@ -120,7 +120,7 @@
                     <g:if test="${params.pkgfilter}">
                         <g:set var="pkg" value="${SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp where sp.pkg.gokbId = :filter",[filter:params.pkgfilter])}"/>
                         <g:if test="${pkg && !pkg.finishDate}">
-                            <semui:actionsDropdownItem controller="subscription" action="renewEntitlements" params="${[targetSubscriptionId:params.id,packageId:params.pkgfilter]}" message="subscription.details.renewEntitlements.label"/>
+                            <semui:actionsDropdownItem controller="subscription" action="renewEntitlements" params="${[targetObjectId:params.id,packageId:params.pkgfilter]}" message="subscription.details.renewEntitlements.label"/>
                         </g:if>
                         <g:else>
                             <semui:actionsDropdownItemDisabled message="subscription.details.renewEntitlements.label" tooltip="${message(code:'subscription.details.renewEntitlements.packageRenewalAlreadySubmitted')}"/>

@@ -296,11 +296,18 @@ class SubscriptionsQueryService {
         if (params.status) {
 
             if (params.status != 'FETCH_ALL') {
-                base_qry += " and s.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-                filterSet = true
+                if(params.status instanceof List){
+                    base_qry += " and s.status.id in (:status) "
+                    qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+                    filterSet = true
+                }else {
+                    base_qry += " and s.status.id = :status "
+                    qry_params.put('status', (params.status as Long))
+                    filterSet = true
+                }
             }
         }
+
 
         if (params.form) {
             base_qry += "and s.form.id = :form "

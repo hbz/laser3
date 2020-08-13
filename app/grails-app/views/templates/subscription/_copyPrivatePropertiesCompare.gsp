@@ -9,20 +9,20 @@
 <body>
 <semui:form>
     <g:if test="${!fromSurvey && !isRenewSub}">
-        <g:render template="selectSourceAndTargetSubscription" model="[
-                sourceSubscription          : sourceSubscription,
-                targetSubscription          : targetSubscription,
-                allSubscriptions_readRights : allSubscriptions_readRights,
-                allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+                sourceObject          : sourceObject,
+                targetObject          : targetObject,
+                allObjects_readRights : allObjects_readRights,
+                allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: SubscriptionController.WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+    <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}"
+            params="[workFlowPart: SubscriptionController.WORKFLOW_END, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
         <%
-            List subscriptions = [Subscription.get(sourceSubscriptionId)]
-            if (targetSubscriptionId) subscriptions.add(Subscription.get(targetSubscriptionId))
+            List subscriptions = [Subscription.get(sourceObjectId)]
+            if (targetObjectId) subscriptions.add(Subscription.get(targetObjectId))
         %>
 
         <g:set var="subscriptionsCount" value="${subscriptions?.size()}"/>
@@ -33,7 +33,7 @@
                           model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name, subscriptions: subscriptions]"/>
             </table>
         </g:if>
-        <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription) ? '' : 'disabled'}"/>
+        <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
 
         <g:if test="${customProperties || privateProperties}">
             <g:set var="submitButtonText" value="${isRenewSub ?
