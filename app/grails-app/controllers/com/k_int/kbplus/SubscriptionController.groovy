@@ -3139,7 +3139,7 @@ class SubscriptionController
         result.myTaskInstanceCount = result.myTaskInstanceList?.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        log.debug(result.taskInstanceList)
+        log.debug(result.taskInstanceList.toString())
         result
     }
 
@@ -3529,9 +3529,15 @@ class SubscriptionController
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
-        result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
-        result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
+        Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: "${result.subscription.id}"]
+
+        result.historyLines = AuditLogEvent.executeQuery(
+                "select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc",
+                qry_params, [max: result.max, offset: result.offset]
+        )
+        result.historyLinesTotal = AuditLogEvent.executeQuery(
+                "select e.id from AuditLogEvent as e where className = :cname and persistedObjectId = :poid", qry_params
+        ).size()
 
         result
     }
