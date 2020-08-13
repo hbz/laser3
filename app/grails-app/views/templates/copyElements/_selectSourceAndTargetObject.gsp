@@ -1,44 +1,50 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
-<g:if test="${! (sourceSubscription && targetSubscription)}">
+<g:if test="${! (sourceObject && targetObject)}">
     <% if (params){
-        params.remove('sourceSubscriptionId')
-        params.remove('targetSubscriptionId')
+        params.remove('sourceObjectId')
+        params.remove('targetObjectId')
     } %>
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
             params="${params << [workFlowPart: workFlowPart]}"
-            method="post" class="ui form newLicence"  onsubmit="enableSubmit();">
+            method="post" class="ui form newLicence">
         <div class="fields" style="justify-content: flex-end;">
-            <div class="six wide field">
-                <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
+            <div class="eight wide field">
+                <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceObject.name')}: </label>
                 <g:select class="ui search selection dropdown"
-                      name="sourceSubscriptionId"
-                      from="${((List<Subscription>)allSubscriptions_readRights)?.sort {it.dropdownNamingConvention()}}"
+                      name="sourceObjectId"
+                      from="${((List<Subscription>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
                       optionKey="id"
-                      value="${sourceSubscription?.id}"
+                      value="${sourceObject?.id}"
                       />
             </div>
-            <div class="six wide field">
-                <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
+            <div class="eight wide field">
+                <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetObject.name')}: </label>
                 <div class="ui checkbox">
                     <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
                     <label for="show.activeSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.activeSubscriptions.name')}</label>
                 </div><br />
                 <div class="ui checkbox">
+                    <g:checkBox name="show.intendedSubscriptions" value="intended" checked="false" onchange="adjustDropdown()"/>
+                    <label for="show.intendedSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.intendedSubscriptions.name')}</label>
+                </div><br />
+                <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false" onchange="adjustDropdown()" />
                     <label for="show.subscriber">${message(code:'subscription.details.copyElementsIntoSubscription.show.subscriber.name')}</label>
                 </div><br />
+                </g:if>
                 <div class="ui checkbox">
                     <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
                     <label for="show.conntectedSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.conntectedSubscriptions.name')}</label>
                 </div><br id="element-vor-target-dropdown" />
                 <g:select class="ui search selection dropdown"
-                      id="targetSubscriptionId"
-                      name="targetSubscriptionId"
-                      from="${allSubscriptions_writeRights}"
+                      id="targetObjectId"
+                      name="targetObjectId"
+                      from="${allObjects_writeRights}"
                       optionValue="${{it?.dropdownNamingConvention()}}"
                       optionKey="id"
-                      value="${targetSubscription?.id}"
+                      value="${targetObject?.id}"
                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </div>
@@ -60,9 +66,10 @@
 
     function adjustDropdown() {
         var showActiveSubs = $("input[name='show.activeSubscriptions'").prop('checked');
+        var showIntendedSubs = $("input[name='show.intendedSubscriptions'").prop('checked');
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedSubs = $("input[name='show.conntectedSubscriptions'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?showActiveSubs='+showActiveSubs+'&showSubscriber='+showSubscriber+'&showConnectedSubs='+showConnectedSubs+'&format=json'
+        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?showActiveSubs='+showActiveSubs+'&showIntendedSubs='+showIntendedSubs+'&showSubscriber='+showSubscriber+'&showConnectedSubs='+showConnectedSubs+'&format=json'
 
         $.ajax({
             url: url,
@@ -72,13 +79,14 @@
                     var option = data[index];
                     var optionText = option.text;
                     var optionValue = option.value;
-                    console.log(optionValue +'-'+optionText)
+                    var count = index + 1
+                    // console.log(optionValue +'-'+optionText)
 
-                    select += '<div class="item"  data-value="' + optionValue + '">' + optionText + '</div>';
+                    select += '<div class="item"  data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
                 }
 
                 select = ' <div   class="ui fluid search selection dropdown la-filterProp">' +
-                        '   <input type="hidden" id="targetSubscriptionId" name="targetSubscriptionId">' +
+                        '   <input type="hidden" id="targetObjectId" name="targetObjectId">' +
                         '   <i class="dropdown icon"></i>' +
                         '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
                         '   <div class="menu">'

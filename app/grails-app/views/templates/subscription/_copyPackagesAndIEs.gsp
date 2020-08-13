@@ -4,15 +4,15 @@
 <semui:form>
 
     <g:if test="${!fromSurvey && !isRenewSub}">
-        <g:render template="selectSourceAndTargetSubscription" model="[
-                sourceSubscription: sourceSubscription,
-                targetSubscription: targetSubscription,
-                allSubscriptions_readRights: allSubscriptions_readRights,
-                allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+                sourceObject: sourceObject,
+                targetObject: targetObject,
+                allObjects_readRights: allObjects_readRights,
+                allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
     <g:form controller="${controllerName}" action="${actionName}"  id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
@@ -20,7 +20,7 @@
                     <th class="six wide">
                         <div class="la-copyElements-th-flex-container">
                             <div class="la-copyElements-th-flex-item">
-                                <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                                <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
                                 <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
@@ -31,7 +31,7 @@
                     <th class="six wide">
                         <div class="la-copyElements-th-flex-container">
                             <div class="la-copyElements-th-flex-item">
-                                <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                                <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
                                 <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
@@ -44,8 +44,8 @@
             <tr>
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
-                    <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
-                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
+                    <b>${message(code: 'subscription.packages.label')}: ${sourceObject?.packages?.size()}</b>
+                    <g:each in="${sourceObject?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
@@ -62,7 +62,7 @@
                                                 <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
                                                     <g:if test="${!(pcc.settingKey in excludes)}">
-                                                        <g:if test="${auditService.getAuditConfig(sourceSubscription,pcc.settingKey)}">
+                                                        <g:if test="${auditService.getAuditConfig(sourceObject,pcc.settingKey)}">
                                                             <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
                                                         </g:if>
                                                     </g:if>
@@ -90,9 +90,9 @@
 
 
                 <td name="subscription.takePackages.target">
-                    <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
+                    <b>${message(code: 'subscription.packages.label')}: ${targetObject?.packages?.size()}</b>
 
-                    <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
+                    <g:each in="${targetObject?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
                                 <i class="gift icon"></i>
@@ -107,7 +107,7 @@
                                                 <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
                                                     <g:if test="${!(pcc.settingKey in excludes)}">
-                                                        <g:if test="${auditService.getAuditConfig(targetSubscription,pcc.settingKey)}">
+                                                        <g:if test="${auditService.getAuditConfig(targetObject,pcc.settingKey)}">
                                                             <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
                                                         </g:if>
                                                     </g:if>
@@ -136,7 +136,7 @@
             </tr>
             <tr>
                 <td name="subscription.takeEntitlements.source">
-                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
+                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceObject? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
                         <div class="la-copyPack-container la-element">
                             <div  data-ieoid="${genericOIDService.getOID(ie)}" class="la-copyPack-item">
@@ -155,7 +155,7 @@
                     </g:each>
                 </td>
                 <td name="subscription.takeEntitlements.target">
-                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
+                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetObject? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}" class=" la-copyPack-item">
@@ -186,14 +186,14 @@
                 </g:link>
             </div>
             <div class="eight wide field" style="text-align: right;">
-                <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
             </div>
         </div>
         </g:if>
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
-                <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:else>

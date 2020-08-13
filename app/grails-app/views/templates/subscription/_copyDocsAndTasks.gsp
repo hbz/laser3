@@ -4,31 +4,31 @@
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
     <g:if test="${!fromSurvey}">
-        <g:render template="selectSourceAndTargetSubscription" model="[
-                sourceSubscription: sourceSubscription,
-                targetSubscription: targetSubscription,
-                allSubscriptions_readRights: allSubscriptions_readRights,
-                allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+                sourceObject: sourceObject,
+                targetObject: targetObject,
+                allObjects_readRights: allObjects_readRights,
+                allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+    <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}"
+            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
             %{--DOCUMENTS:--}%
                 <tr>
                     <th class="six wide">
-                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
                         <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     </th>
                     <th class="six wide">
-                        <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
-                        <g:if test="${targetSubscription}">
+                        <g:if test="${targetObject}">
                             <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
                         </g:if>
                     </th>
@@ -38,7 +38,7 @@
                 <tr>
                     <td  name="subscription.takeDocs.source">
                         <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
+                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
@@ -78,7 +78,7 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                         <br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
+                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
@@ -91,8 +91,8 @@
                     <td  name="subscription.takeDocs.target">
                         <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
                         <div>
-                            <g:if test="${targetSubscription}">
-                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:if test="${targetObject}">
+                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                     <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         <div data-id="${docctx.id}" class="la-element">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}">
@@ -132,7 +132,7 @@
                     %{--DELETE:--}%
                     <td>
                         <br />
-                        <g:each in="${targetSubscription?.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                        <g:each in="${targetObject?.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-noChange">
@@ -148,7 +148,7 @@
                 <tr>
                     <td name="subscription.takeAnnouncements.source">
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
@@ -186,7 +186,7 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                     <br />
-                        <g:each in="${sourceSubscription.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
@@ -201,8 +201,8 @@
                     <td  name="subscription.takeAnnouncements.target">
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
                         <div>
-                            <g:if test="${targetSubscription}">
-                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:if test="${targetObject}">
+                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         <div data-id="${docctx.id}" class="la-element">
                                             <g:if test="${docctx.owner.title}">
@@ -240,8 +240,8 @@
                     <td>
                     <br />
                         <div>
-                            <g:if test="${targetSubscription}">
-                                <g:each in="${targetSubscription?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:if test="${targetObject}">
+                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         %{--<div class="ui checkbox">--}%
                                         <div class="ui checkbox la-toggle-radio la-noChange">
@@ -313,20 +313,20 @@
 
         <g:if test="${!fromSurvey}">
             <div class="sixteen wide field" style="text-align: right;">
-                <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
             </div>
         </g:if>
         <g:else>
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(Subscription.get(sourceSubscriptionId), true)}" />
+                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(Subscription.get(sourceObjectId), true)}" />
                     <g:link controller="survey" action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
                         <g:message code="renewalWithSurvey.back"/>
                     </g:link>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
-                    <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                    <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
                     <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
                 </div>
             </div>
