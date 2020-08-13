@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ServerUtils; com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
+<%@ page import="de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -756,7 +756,8 @@
             $(document).ready(function() {
                 $.ajax({
                     url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
-                    data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},
+                    <%--data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},--%>
+                    data: {uri: "${ ProfilerUtils.generateKey( webRequest )}"},
                     success: function (data) {
                         var $sp = $('#system-profiler')
                         if ($sp) {

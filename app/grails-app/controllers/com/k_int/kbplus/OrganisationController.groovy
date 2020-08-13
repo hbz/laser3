@@ -587,8 +587,8 @@ class OrganisationController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def show() {
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('this-n-that')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('this-n-that')
 
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if (! result) {
@@ -603,7 +603,7 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        du.setBenchmark('orgRoles & editable')
+        pu.setBenchmark('orgRoles & editable')
 
       if (!result.orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -611,7 +611,7 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
-        du.setBenchmark('PersonRoles')
+        pu.setBenchmark('PersonRoles')
         List<PersonRole> allPRs = PersonRole.executeQuery("select distinct(pr) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: result.orgInstance])
         Map<RefdataValue, List<PersonRole>> allPRMap = [:]
         List<RefdataValue> usedRDV = []
@@ -648,7 +648,7 @@ class OrganisationController extends AbstractDebugController {
         result.usedRDV = usedRDV
         result.allPRMap = allPRMap
 
-        du.setBenchmark('properties')
+        pu.setBenchmark('properties')
 
         result.authorizedOrgs = result.user?.authorizedOrgs
 
@@ -669,13 +669,13 @@ class OrganisationController extends AbstractDebugController {
             }
         }
 
-        du.setBenchmark('identifier')
+        pu.setBenchmark('identifier')
 
         if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-        du.setBenchmark('createdBy and legallyObligedBy')
+        pu.setBenchmark('createdBy and legallyObligedBy')
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
@@ -691,7 +691,7 @@ class OrganisationController extends AbstractDebugController {
 					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
 
         result
@@ -702,8 +702,8 @@ class OrganisationController extends AbstractDebugController {
 
         User user = User.get(springSecurityService.principal.id)
         Org org   = Org.get(params.id)
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('this-n-that')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('this-n-that')
 
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -715,7 +715,7 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        du.setBenchmark('editable_identifier')
+        pu.setBenchmark('editable_identifier')
 
 
         RefdataValue orgSector = RDStore.O_SECTOR_PUBLISHER
@@ -723,12 +723,12 @@ class OrganisationController extends AbstractDebugController {
 
         //IF ORG is a Provider
         if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getAllOrgTypeIds()) {
-            du.setBenchmark('editable_identifier2')
+            pu.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
-            du.setBenchmark('editable_identifier2')
+            pu.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 List<Long> consortia = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
                     it.toOrg.id
@@ -753,7 +753,7 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
-        du.setBenchmark('create Identifiers if necessary')
+        pu.setBenchmark('create Identifiers if necessary')
 
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
@@ -763,7 +763,7 @@ class OrganisationController extends AbstractDebugController {
         }
 
 //------------------------orgSettings --------------------
-        du.setBenchmark('orgsettings')
+        pu.setBenchmark('orgsettings')
         Boolean inContextOrg = contextService.getOrg().id == org.id
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
 
@@ -830,7 +830,7 @@ class OrganisationController extends AbstractDebugController {
                 result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
             }
         }
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
         result
     }

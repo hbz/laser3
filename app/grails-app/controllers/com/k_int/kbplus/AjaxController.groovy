@@ -131,10 +131,10 @@ class AjaxController {
         Map<String, Object> result = [status:'failed']
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        DebugUtil debugUtil = (DebugUtil) cache.get(DebugUtil.SYSPROFILER_SESSION)
+        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
 
-        if (debugUtil) {
-            long delta = debugUtil.stopSimpleBench(params.uri)
+        if (pu) {
+            long delta = pu.stopSimpleBench(params.uri)
 
             SystemProfiler.update(delta, params.uri)
 
