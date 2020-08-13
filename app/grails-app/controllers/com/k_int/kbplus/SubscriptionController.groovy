@@ -3630,15 +3630,15 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('1')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('1')
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-        du.setBenchmark('this-n-that')
+        pu.setBenchmark('this-n-that')
 
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
@@ -3648,11 +3648,11 @@ class SubscriptionController
             result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
-        du.setBenchmark('links')
+        pu.setBenchmark('links')
 
         result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
-        du.setBenchmark('pending changes')
+        pu.setBenchmark('pending changes')
 
         // ---- pendingChanges : start
 
@@ -3686,7 +3686,7 @@ class SubscriptionController
 
         // ---- pendingChanges : end
 
-        du.setBenchmark('tasks')
+        pu.setBenchmark('tasks')
 
         // TODO: experimental asynchronous task
         //def task_tasks = task {
@@ -3708,7 +3708,7 @@ class SubscriptionController
             result.visibleOrgRelations.sort { it.org.sortname }
         //}
 
-        du.setBenchmark('properties')
+        pu.setBenchmark('properties')
 
         // TODO: experimental asynchronous task
         //def task_properties = task {
@@ -3757,7 +3757,7 @@ class SubscriptionController
             }
         //}
 
-        du.setBenchmark('usage')
+        pu.setBenchmark('usage')
 
         // TODO: experimental asynchronous task
         //def task_usage = task {
@@ -3810,7 +3810,7 @@ class SubscriptionController
             }
         //}
 
-        du.setBenchmark('costs')
+        pu.setBenchmark('costs')
 
         //cost items
         //params.forExport = true
@@ -3829,7 +3829,7 @@ class SubscriptionController
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
-        du.setBenchmark('provider & agency filter')
+        pu.setBenchmark('provider & agency filter')
 
         // TODO: experimental asynchronous task
         //def task_providerFilter = task {
@@ -3855,7 +3855,7 @@ class SubscriptionController
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
 
         if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
-            du.setBenchmark('non-inherited member properties')
+            pu.setBenchmark('non-inherited member properties')
             List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
             if(childSubs) {
                 String localizedName
@@ -3873,7 +3873,7 @@ class SubscriptionController
             }
         }
 
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
 
         // TODO: experimental asynchronous task
