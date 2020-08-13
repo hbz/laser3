@@ -1,8 +1,33 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.DocstoreService
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.FinanceService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Links
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.SurveyConfig
+import com.k_int.kbplus.SurveyConfigProperties
+import com.k_int.kbplus.SurveyInfo
+import com.k_int.kbplus.SurveyOrg
+import com.k_int.kbplus.SurveyResult
+import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
@@ -72,7 +97,7 @@ class SurveyController {
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.max = result.max
@@ -141,7 +166,7 @@ class SurveyController {
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.max = result.max
@@ -288,7 +313,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
@@ -369,7 +394,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
@@ -684,7 +709,7 @@ class SurveyController {
                result.sortConfig = [consSort:'sortname',consOrder:'asc',
                                     ownSort:'ci.costTitle',ownOrder:'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -760,7 +785,7 @@ class SurveyController {
     def surveyTitles() {
         def result = setResultGenericsAndCheckAccess()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         String base_qry = null
@@ -1667,7 +1692,7 @@ class SurveyController {
             //result.offsets = [consOffset:0]
             //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
             //cost items
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2674,7 +2699,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         if(result.surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id){

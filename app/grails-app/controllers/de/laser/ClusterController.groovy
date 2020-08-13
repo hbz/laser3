@@ -1,5 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Cluster
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
@@ -22,7 +27,7 @@ class ClusterController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [clusterInstanceList: Cluster.list(params), clusterInstanceTotal: Cluster.count()]
     }
 

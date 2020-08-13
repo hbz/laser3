@@ -756,8 +756,8 @@ class LicenseController
         result.myTaskInstanceCount = result.myTaskInstanceList?.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        log.debug(result.taskInstanceList)
-        log.debug(result.myTaskInstanceList)
+        log.debug(result.taskInstanceList.toString())
+        log.debug(result.myTaskInstanceList.toString())
 
         result
     }
@@ -1089,7 +1089,7 @@ class LicenseController
         result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ?: 0
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {

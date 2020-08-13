@@ -267,7 +267,7 @@ class AdminController extends AbstractDebugController {
             params.search = null
         }
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
     if(params.id){
