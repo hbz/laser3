@@ -5,6 +5,7 @@ import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.EscapeService
 import de.laser.LinksGenerationService
+import de.laser.SubscriptionService
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
@@ -36,6 +37,7 @@ class FinanceService {
     def messageSource
     AccessService accessService
     EscapeService escapeService
+    SubscriptionService subscriptionService
     SpringSecurityService springSecurityService
     LinksGenerationService linksGenerationService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
@@ -1104,7 +1106,7 @@ class FinanceService {
             case GROUP_OPTION_SUBSCRIPTION_GRAPH:
                 if(configMap.contextOrg.getCustomerType() == 'ORG_CONSORTIUM') {
                     Set<String> labels = []
-                    List<List> series = []
+                    List<Map> series = []
                     /*
                         structures
                         cumulative:
@@ -1120,19 +1122,27 @@ class FinanceService {
                         }
                      */
                     Map<Org,List<BigDecimal>> costItemMap = [:]
+                    Set<OrgRole> allTimeSubscriptionRoles = subscriptionService.getAllTimeSubscribersForConsortiaSubscription(configMap.linkedSubscriptions)
+                    Set<Org> allTimeSubscribers = allTimeSubscriptionRoles.collect { OrgRole row -> row.org }
                     configMap.linkedSubscriptions.each { Subscription parentSub ->
                         labels << parentSub.dropdownNamingConvention(configMap.contextOrg)
-                        parentSub.getDerivedSubscriptions().each { Subscription childSub ->
-                            Org subscr = childSub.getSubscriber()
+                        allTimeSubscribers.each { Org subscr ->
+                            OrgRole childRole = allTimeSubscriptionRoles.find { OrgRole row -> row.org == subscr && row.sub.instanceOf == parentSub }
                             List<BigDecimal> sumsOfSubscriber = costItemMap.get(subscr)
                             if(!sumsOfSubscriber)
                                 sumsOfSubscriber = []
-                            List<CostItem> allCIs = configMap.costItems.findAll { CostItem ci -> ci.sub == childSub }
-                            sumsOfSubscriber << calculateSum(allCIs)
+                            if(childRole) {
+                                List<CostItem> allCIs = configMap.costItems.findAll { CostItem ci -> ci.sub.id == childRole.sub.id }
+                                sumsOfSubscriber << calculateSum(allCIs)
+                            }
+                            else sumsOfSubscriber << 0.0
                             costItemMap.put(subscr,sumsOfSubscriber)
                         }
                     }
-                    series.addAll(costItemMap.values())
+                    //series.addAll(costItemMap.values())
+                    costItemMap.each { Org k, List<BigDecimal> v ->
+                        series.add([name:k.sortname ?: k.name, data: v])
+                    }
                     Map<String,List> graph = [labels:labels,series:series]
                     result.graphA = graph
                 }
@@ -1140,7 +1150,6 @@ class FinanceService {
         }
         result
     }
-
 
     Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
@@ -1174,46 +1183,14 @@ class FinanceService {
         result
     }
 
-
-    Map<String,Collection> getSubscribersByRegion(Map<String,Object> configMap) {
-        Map<String,Collection> result = [:]
-        if(configMap.subscription) {
-            String column = 'value_'+LocaleContextHolder.getLocale().toString().split('_')[0]
-            List consortiaMembers = Org.executeQuery('select org.region.'+column+',count(org.id) from OrgRole oo join oo.org org where oo.sub.instanceOf = :subscription and oo.roleType = :roleType group by org.region.'+column+' order by org.region.'+column+' asc',[subscription:Subscription.get(configMap.subscription),roleType:RDStore.OR_SUBSCRIBER_CONS])
-            /*
-            consortiaMembers.each { Org o ->
-                List<Integer> membersOfRegion = result.get(o.region.getI10n("value"))
-                if(!membersOfRegion)
-                    membersOfRegion = 0
-                membersOfRegion++
-                result.put(o.region.getI10n("value"),membersOfRegion)
-            }
-            */
-            Set<String> labels = []
-            List<Integer> series = []
-            consortiaMembers.each { row ->
-                labels << row[0]
-                series << row[1]
-            }
-            result.labels = labels
-            result.series = series
-        }
-        else if(configMap.package) {
-            //todo
-        }
-        result
-    }
-
     BigDecimal calculateSum(Collection<CostItem> allCIs) {
         BigDecimal result = 0.0
-        if(allCIs) {
-            allCIs.each { CostItem ci ->
-                switch(ci.costItemElementConfiguration) {
-                    case RDStore.CIEC_POSITIVE: result += ci.costInBillingCurrency
-                        break
-                    case RDStore.CIEC_NEGATIVE: result -= ci.costInBillingCurrency
-                        break
-                }
+        allCIs.each { CostItem ci ->
+            switch(ci.costItemElementConfiguration) {
+                case RDStore.CIEC_POSITIVE: result += ci.costInBillingCurrency
+                    break
+                case RDStore.CIEC_NEGATIVE: result -= ci.costInBillingCurrency
+                    break
             }
         }
         result
