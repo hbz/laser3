@@ -1,5 +1,11 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SurveyConfig
+import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil

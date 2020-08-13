@@ -1,4 +1,4 @@
-package com.k_int.kbplus
+package de.laser
 
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured

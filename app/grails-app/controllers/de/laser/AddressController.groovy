@@ -1,5 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Address
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation

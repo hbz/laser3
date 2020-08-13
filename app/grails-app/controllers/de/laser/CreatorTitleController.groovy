@@ -1,5 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.CreatorTitle
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
