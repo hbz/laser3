@@ -2174,14 +2174,14 @@ class SubscriptionController
                                         log.debug("New private property created: " + newProp.type.name)
 
                                         newProperties++
-                                        def prop = setProperty(newProp, params.filterPropValue)
+                                        updateProperty(newProp, params.filterPropValue)
                                     }
                                 }
 
                                 if (existingProps.size() == 1){
                                     def privateProp = SubscriptionProperty.get(existingProps[0].id)
                                     changeProperties++
-                                    def prop = setProperty(privateProp, params.filterPropValue)
+                                    updateProperty(privateProp, params.filterPropValue)
 
                                 }
 
@@ -2200,15 +2200,14 @@ class SubscriptionController
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         newProperties++
-                                        def prop = setProperty(newProp, params.filterPropValue)
+                                        updateProperty(newProp, params.filterPropValue)
                                     }
                                 }
 
                                 if (existingProp){
                                     SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
                                     changeProperties++
-                                    def prop = setProperty(customProp, params.filterPropValue)
-
+                                    updateProperty(customProp, params.filterPropValue)
                                 }
                             }
 
@@ -5604,9 +5603,9 @@ class SubscriptionController
         }
     }
 
-    private def setProperty(def property, def value) {
+    private void updateProperty(def property, def value) {
 
-        def field = null
+        String field
 
         if(property.type.type == Integer.toString()) {
             field = "intValue"
@@ -5699,9 +5698,7 @@ class SubscriptionController
                     bindData(property, binding_properties)
 
                     property.save(failOnError: true, flush: true)
-
                 }
-
             }
         }
 
