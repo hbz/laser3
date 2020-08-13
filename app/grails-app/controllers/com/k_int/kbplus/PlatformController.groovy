@@ -28,7 +28,7 @@ class PlatformController extends AbstractDebugController {
     def list() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.max = params.max ?: result.user.getDefaultPageSize()
 
         result.offset = params.offset ?: 0
 

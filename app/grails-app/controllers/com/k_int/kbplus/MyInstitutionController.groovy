@@ -164,7 +164,7 @@ class MyInstitutionController extends AbstractDebugController {
 		pu.setBenchmark('init')
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
 
@@ -1564,7 +1564,7 @@ join sub.orgRelations or_sub where
 
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
 

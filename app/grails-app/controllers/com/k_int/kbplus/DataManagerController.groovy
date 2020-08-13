@@ -444,7 +444,7 @@ class DataManagerController extends AbstractDebugController {
   def checkPackageTIPPs() {
     Map<String, Object> result = [:]
     result.user = springSecurityService.getCurrentUser()
-    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
+    params.max =  params.max ?: result.user.getDefaultPageSize()
 
 
         def gokbRecords = []

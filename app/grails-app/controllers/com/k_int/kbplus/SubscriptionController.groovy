@@ -3526,7 +3526,7 @@ class SubscriptionController
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP();
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0;
 
         Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: "${result.subscription.id}"]
@@ -3551,7 +3551,7 @@ class SubscriptionController
         }
 
         result.contextOrg = contextService.getOrg()
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP();
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0;
 
         String baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"

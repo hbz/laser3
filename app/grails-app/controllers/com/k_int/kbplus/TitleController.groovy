@@ -34,7 +34,7 @@ class TitleController extends AbstractDebugController {
             params.rectype = ["EBookInstance", "JournalInstance", "BookInstance", "TitleInstance", "DatabaseInstance"] // Tells ESSearchService what to look for
             params.showAllTitles = true
             result.user = springSecurityService.getCurrentUser()
-            params.max = params.max ?: result.user.getDefaultPageSizeTMP()
+            params.max = params.max ?: result.user.getDefaultPageSize()
 
 
             if (params.search.equals("yes")) {

@@ -131,7 +131,7 @@ class OrganisationController extends AbstractDebugController {
 
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSize()
         result.offset = params.offset ? Long.parseLong(params.offset) : 0
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
