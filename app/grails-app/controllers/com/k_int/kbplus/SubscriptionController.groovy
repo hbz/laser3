@@ -1313,8 +1313,8 @@ class SubscriptionController
 
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
-        params.id = params.targetSubscriptionId
-        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
+        params.id = params.targetObjectId
+        params.sourceObjectId = Subscription.get(params.targetObjectId)?.instanceOf?.id
         def result = loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
@@ -1334,10 +1334,10 @@ class SubscriptionController
         params.max = 5000
         params.tab = params.tab ?: 'allIEs'
 
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : Subscription.get(params.id)
+        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
         Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
         params.id = newSub.id
-        params.sourceSubscriptionId = baseSub.id
+        params.sourceObjectId = baseSub.id
 
         List<IssueEntitlement> sourceIEs
 
@@ -2174,14 +2174,14 @@ class SubscriptionController
                                         log.debug("New private property created: " + newProp.type.name)
 
                                         newProperties++
-                                        def prop = setProperty(newProp, params.filterPropValue)
+                                        updateProperty(newProp, params.filterPropValue)
                                     }
                                 }
 
                                 if (existingProps.size() == 1){
                                     def privateProp = SubscriptionProperty.get(existingProps[0].id)
                                     changeProperties++
-                                    def prop = setProperty(privateProp, params.filterPropValue)
+                                    updateProperty(privateProp, params.filterPropValue)
 
                                 }
 
@@ -2200,15 +2200,14 @@ class SubscriptionController
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         newProperties++
-                                        def prop = setProperty(newProp, params.filterPropValue)
+                                        updateProperty(newProp, params.filterPropValue)
                                     }
                                 }
 
                                 if (existingProp){
                                     SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
                                     changeProperties++
-                                    def prop = setProperty(customProp, params.filterPropValue)
-
+                                    updateProperty(customProp, params.filterPropValue)
                                 }
                             }
 
@@ -2862,7 +2861,7 @@ class SubscriptionController
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetSubscriptionId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
+        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2910,7 +2909,7 @@ class SubscriptionController
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscriptionInstance?.id, packageId: params.packageId]
 
     }
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2936,7 +2935,7 @@ class SubscriptionController
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetSubscriptionId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
+        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -3034,7 +3033,7 @@ class SubscriptionController
         else {
             log.error("Unable to locate subscription instance")
         }
-        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetSubscriptionId: params.id, surveyConfigID: result.surveyConfig?.id]
+        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -3630,15 +3629,15 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('1')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('1')
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-        du.setBenchmark('this-n-that')
+        pu.setBenchmark('this-n-that')
 
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
@@ -3648,11 +3647,11 @@ class SubscriptionController
             result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
-        du.setBenchmark('links')
+        pu.setBenchmark('links')
 
         result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
-        du.setBenchmark('pending changes')
+        pu.setBenchmark('pending changes')
 
         // ---- pendingChanges : start
 
@@ -3686,7 +3685,7 @@ class SubscriptionController
 
         // ---- pendingChanges : end
 
-        du.setBenchmark('tasks')
+        pu.setBenchmark('tasks')
 
         // TODO: experimental asynchronous task
         //def task_tasks = task {
@@ -3708,7 +3707,7 @@ class SubscriptionController
             result.visibleOrgRelations.sort { it.org.sortname }
         //}
 
-        du.setBenchmark('properties')
+        pu.setBenchmark('properties')
 
         // TODO: experimental asynchronous task
         //def task_properties = task {
@@ -3757,7 +3756,7 @@ class SubscriptionController
             }
         //}
 
-        du.setBenchmark('usage')
+        pu.setBenchmark('usage')
 
         // TODO: experimental asynchronous task
         //def task_usage = task {
@@ -3810,7 +3809,7 @@ class SubscriptionController
             }
         //}
 
-        du.setBenchmark('costs')
+        pu.setBenchmark('costs')
 
         //cost items
         //params.forExport = true
@@ -3829,7 +3828,7 @@ class SubscriptionController
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
-        du.setBenchmark('provider & agency filter')
+        pu.setBenchmark('provider & agency filter')
 
         // TODO: experimental asynchronous task
         //def task_providerFilter = task {
@@ -3855,7 +3854,7 @@ class SubscriptionController
         result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
 
         if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
-            du.setBenchmark('non-inherited member properties')
+            pu.setBenchmark('non-inherited member properties')
             List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
             if(childSubs) {
                 String localizedName
@@ -3873,7 +3872,7 @@ class SubscriptionController
             }
         }
 
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
 
         // TODO: experimental asynchronous task
@@ -3978,11 +3977,11 @@ class SubscriptionController
 
         new_subscription.save(flush:true)
 
-        if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
         redirect controller: 'subscription',
                  action: 'copyElementsIntoSubscription',
                  id: old_subOID,
-                 params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: new_subscription.id, isRenewSub: true]
+                 params: [sourceObjectId: old_subOID, targetObjectId: new_subscription.id, isRenewSub: true]
     }
 
 
@@ -4530,13 +4529,13 @@ class SubscriptionController
                 }
                 result.newSub = newSub
 
-                if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+                if (params.targetObjectId == "null") params.remove("targetObjectId")
                 result.isRenewSub = true
 
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
                             id: old_subOID,
-                            params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true]
+                            params: [sourceObjectId: old_subOID, targetObjectId: newSub.id, isRenewSub: true]
 
             }
         }
@@ -4620,31 +4619,31 @@ class SubscriptionController
         }
         flash.error = ""
         flash.message = ""
-        if (params.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
-        result.sourceSubscriptionId = params.sourceSubscriptionId ?: params.id
-        result.sourceSubscription = Subscription.get(Long.parseLong(params.sourceSubscriptionId ?: params.id))
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId ?: params.id
+        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
 
-        if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-        if (params.targetSubscriptionId) {
-            result.targetSubscriptionId = params.targetSubscriptionId
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
         if (params.fromSurvey && accessService.checkPerm("ORG_CONSORTIUM")) {result.fromSurvey = params.fromSurvey}
 
-        result.isConsortialSubs = (result.sourceSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetSubscription?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+        result.isConsortialSubs = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
-        result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
+        result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
                                                 CalculatedType.TYPE_ADMINISTRATIVE]
         result.isSubscriberVisible =
-                result.sourceSubscription &&
-                result.targetSubscription &&
-                subTypSubscriberVisible.contains(result.sourceSubscription._getCalculatedType()) &&
-                subTypSubscriberVisible.contains(result.targetSubscription._getCalculatedType())
+                result.sourceObject &&
+                result.targetObject &&
+                subTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
+                subTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
 
         if (! result.isSubscriberVisible) {
             //flash.message += message(code: 'subscription.info.subscriberNotAvailable')
@@ -4694,15 +4693,15 @@ class SubscriptionController
                 break
             case WORKFLOW_PROPERTIES:
                 result << copyElementsService.copySubElements_Properties(params)
-                if (params.isRenewSub && params.targetSubscriptionId){
+                if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
 
                     if(surveyConfig && result.fromSurvey) {
                         redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                     }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
                     }
                 } else {
                     result << copyElementsService.loadDataFor_Properties(params)
@@ -4710,16 +4709,16 @@ class SubscriptionController
                 break
             case WORKFLOW_END:
                 result << copyElementsService.copySubElements_Properties(params)
-                if (params.targetSubscriptionId){
+                if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
 
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceSubscription, true)
+                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
 
                     if(surveyConfig && result.fromSurvey) {
                         redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                     }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                        redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
                     }
                 }
                 break
@@ -4728,8 +4727,8 @@ class SubscriptionController
                 break
         }
 
-        if (params.targetSubscriptionId) {
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        if (params.targetObjectId) {
+            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
         result.workFlowPart = params.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
@@ -4749,18 +4748,18 @@ class SubscriptionController
         }
         flash.error = ""
         flash.message = ""
-        if (params.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
-        result.sourceSubscriptionId = params.sourceSubscriptionId ?: params.id
-        result.sourceSubscription = Subscription.get(Long.parseLong(params.sourceSubscriptionId ?: params.id))
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId ?: params.id
+        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
 
-        if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-        if (params.targetSubscriptionId) {
-            result.targetSubscriptionId = params.targetSubscriptionId
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
 
-        result.allSubscriptions_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
+        result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights()
+        result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
 
         switch (params.workFlowPart) {
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
@@ -4775,10 +4774,10 @@ class SubscriptionController
                 break;
             case WORKFLOW_END:
                 result << copySubElements_Properties();
-                if (params.targetSubscriptionId){
+                if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
                 }
                 break;
             default:
@@ -4786,8 +4785,8 @@ class SubscriptionController
                 break;
         }
 
-        if (params.targetSubscriptionId) {
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        if (params.targetObjectId) {
+            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
         result.workFlowPart = params.workFlowPart ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_PROPERTIES
@@ -5604,9 +5603,9 @@ class SubscriptionController
         }
     }
 
-    private def setProperty(def property, def value) {
+    private void updateProperty(def property, def value) {
 
-        def field = null
+        String field
 
         if(property.type.type == Integer.toString()) {
             field = "intValue"
@@ -5699,9 +5698,7 @@ class SubscriptionController
                     bindData(property, binding_properties)
 
                     property.save(failOnError: true, flush: true)
-
                 }
-
             }
         }
 

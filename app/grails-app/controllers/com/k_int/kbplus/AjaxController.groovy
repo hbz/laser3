@@ -131,10 +131,10 @@ class AjaxController {
         Map<String, Object> result = [status:'failed']
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        DebugUtil debugUtil = (DebugUtil) cache.get(DebugUtil.SYSPROFILER_SESSION)
+        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
 
-        if (debugUtil) {
-            long delta = debugUtil.stopSimpleBench(params.uri)
+        if (pu) {
+            long delta = pu.stopSimpleBench(params.uri)
 
             SystemProfiler.update(delta, params.uri)
 
@@ -2678,14 +2678,19 @@ class AjaxController {
         List<Subscription> data
         List result = []
         boolean showActiveSubs = params.showActiveSubs == 'true'
+        boolean showIntendedSubs = params.showIntendedSubs == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedSubs = params.showConnectedSubs == 'true'
         Map queryParams = [:]
-        if (showActiveSubs) { queryParams.status = RDStore.SUBSCRIPTION_CURRENT.id }
+        queryParams.status = []
+        if (showActiveSubs) { queryParams.status << RDStore.SUBSCRIPTION_CURRENT.id }
+        if (showIntendedSubs) { queryParams.status << RDStore.SUBSCRIPTION_INTENDED.id }
+
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedSubs = showConnectedSubs
 
         data = subscriptionService.getMySubscriptions_writeRights(queryParams)
+
 
         if(data) {
             data.each { Subscription s ->

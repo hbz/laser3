@@ -2,17 +2,17 @@
 <laser:serviceInjection/>
 
 <semui:form>
-    <g:render template="selectSourceAndTargetSubscription" model="[
-            sourceSubscription          : sourceSubscription,
-            targetSubscription          : targetSubscription,
-            allSubscriptions_readRights : allSubscriptions_readRights,
-            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+    <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+            sourceObject          : sourceObject,
+            targetObject          : targetObject,
+            allObjects_readRights : allObjects_readRights,
+            allObjects_writeRights: allObjects_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription"
-            id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            id="${params.id ?: params.sourceObjectId}"
+            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
-        <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceSubscription, true)}">
+        <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">
             <semui:msg class="negative" message="subscription.details.copyElementsIntoSubscription.surveyExist"/>
         </g:if>
         <g:else>
@@ -26,9 +26,9 @@
                                 <thead>
                                 <tr>
                                     <th colspan="5">
-            <g:if test="${sourceSubscription}"><g:link controller="subscription"
+            <g:if test="${sourceObject}"><g:link controller="subscription"
                                                        action="show"
-                                                       id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                                                       id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
             </th>
         </tr>
             <tr>
@@ -78,9 +78,9 @@
                     <thead>
                     <tr>
                         <th colspan="4">
-                            <g:if test="${targetSubscription}"><g:link controller="subscription"
+                            <g:if test="${targetObject}"><g:link controller="subscription"
                                                                        action="show"
-                                                                       id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
+                                                                       id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
                         </th>
                     </tr>
                     <tr>
@@ -109,7 +109,7 @@
             </table>
         </g:else>
 
-        <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription) ? '' : 'disabled'}"/>
+        <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
         <div class="sixteen wide field" style="text-align: right;">
             <input type="submit" class="ui button js-click-control"
                    value="${message(code: 'subscription.details.copyElementsIntoSubscription.copySubscriber.button')}" ${submitDisabled}/>

@@ -14,7 +14,7 @@ import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
+import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.annotation.Secured
@@ -55,8 +55,8 @@ class LicenseController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('this-n-that')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -75,7 +75,7 @@ class LicenseController
 
         // ---- pendingChanges : start
 
-        du.setBenchmark('pending changes')
+        pu.setBenchmark('pending changes')
 
         if (executorWrapperService.hasRunningProcess(result.license)) {
             log.debug("PendingChange processing in progress")
@@ -108,7 +108,7 @@ class LicenseController
 
         //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
-        du.setBenchmark('tasks')
+        pu.setBenchmark('tasks')
 
         // TODO: experimental asynchronous task
         //def task_tasks = task {
@@ -133,7 +133,7 @@ class LicenseController
             //result.visibleOrgLinks.sort { it.org.sortname }
         //}
 
-        du.setBenchmark('properties')
+        pu.setBenchmark('properties')
 
         // TODO: experimental asynchronous task
         //def task_properties = task {
@@ -160,7 +160,7 @@ class LicenseController
             }
 
             if(result.license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
-                du.setBenchmark('non-inherited member properties')
+                pu.setBenchmark('non-inherited member properties')
                 Set<License> childLics = result.license.getDerivedLicenses()
                 if(childLics) {
                     String localizedName
@@ -177,7 +177,7 @@ class LicenseController
                 }
             }
 
-            du.setBenchmark('links')
+            pu.setBenchmark('links')
 
             result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
 
@@ -204,7 +204,7 @@ class LicenseController
             }
         //}
 
-        du.setBenchmark('licensor filter')
+        pu.setBenchmark('licensor filter')
 
         // TODO: experimental asynchronous task
         //def task_licensorFilter = task {
@@ -222,7 +222,7 @@ class LicenseController
         // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
        // }
 
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
 
         // TODO: experimental asynchronous task
