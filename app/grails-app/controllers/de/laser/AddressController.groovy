@@ -25,7 +25,7 @@ class AddressController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 

@@ -113,7 +113,7 @@ class PackageController extends AbstractDebugController {
     def list() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 
         result.editable = true
 
@@ -244,7 +244,7 @@ class PackageController extends AbstractDebugController {
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (params.pkgA?.length() > 0 && params.pkgB?.length() > 0) {
@@ -429,7 +429,7 @@ class PackageController extends AbstractDebugController {
         result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub and sp.pkg = :pkg)',
                 [contextOrg: contextService.org, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT,pkg:packageInstance])
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
@@ -529,7 +529,7 @@ class PackageController extends AbstractDebugController {
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, payload", [packageInstance, pending_change_pending_status]);
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         params.max = result.max
         //def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -639,7 +639,7 @@ class PackageController extends AbstractDebugController {
         }
         result.packageInstance = packageInstance
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         params.max = result.max
         def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -1006,7 +1006,7 @@ class PackageController extends AbstractDebugController {
             result.offset = 0
         } else {
             User user = User.get(springSecurityService.principal.id)
-            result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
+            result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
             params.max = result.max
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }

@@ -160,7 +160,7 @@ class ProfileController {
         long l = Long.parseLong(params.defaultPageSize);
         if ( ( l >= 5 ) && ( l <= 100 ) ) {
           Long new_long = new Long(l);
-          if ( new_long != user.getDefaultPageSizeTMP() ) {
+          if ( new_long != user.getDefaultPageSize() ) {
             flash.message += message(code:'profile.updateProfile.updated.pageSize')
           }
             //user.setDefaultPageSizeTMP(new_long)

@@ -23,7 +23,7 @@ class CreatorTitleController extends AbstractDebugController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSizeTMP()
+			params.max = user?.getDefaultPageSize()
 		}
         [creatorTitleInstanceList: CreatorTitle.list(params), creatorTitleInstanceTotal: CreatorTitle.count()]
     }

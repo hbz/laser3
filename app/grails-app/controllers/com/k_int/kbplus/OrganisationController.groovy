@@ -229,7 +229,7 @@ class OrganisationController extends AbstractDebugController {
             fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeAsInteger()
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
         result.orgListTotal = orgListTotal.size()

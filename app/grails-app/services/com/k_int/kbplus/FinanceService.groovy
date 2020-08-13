@@ -1225,7 +1225,7 @@ class FinanceService {
             result.max = 1000000
         }
         else {
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         }
         if(!(result.user instanceof User))
             throw new FinancialDataException("Context user not loaded successfully!")

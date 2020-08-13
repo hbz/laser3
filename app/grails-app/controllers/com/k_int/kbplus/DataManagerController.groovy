@@ -50,7 +50,7 @@ class DataManagerController extends AbstractDebugController {
     }
     else {
       User user = User.get(springSecurityService.principal.id)
-      result.max = params.max ?: user.getDefaultPageSizeTMP()
+      result.max = params.max ?: user.getDefaultPageSize()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     }
@@ -316,7 +316,7 @@ class DataManagerController extends AbstractDebugController {
     Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeAsInteger()
 
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -345,7 +345,7 @@ class DataManagerController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeAsInteger()
         result.editable = true
 
         def paginate_after = params.paginate_after ?: ( (2*result.max)-1);

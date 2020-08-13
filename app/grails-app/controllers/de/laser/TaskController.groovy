@@ -33,7 +33,7 @@ class TaskController extends AbstractDebugController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max  = user?.getDefaultPageSizeTMP()
+			params.max  = user?.getDefaultPageSize()
 		}
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }

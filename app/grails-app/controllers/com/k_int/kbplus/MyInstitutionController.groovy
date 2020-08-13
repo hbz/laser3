@@ -298,7 +298,7 @@ class MyInstitutionController extends AbstractDebugController {
         }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.org)
-        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
@@ -645,7 +645,7 @@ class MyInstitutionController extends AbstractDebugController {
     def emptyLicense() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
@@ -721,7 +721,7 @@ join sub.orgRelations or_sub where
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
@@ -1402,7 +1402,7 @@ join sub.orgRelations or_sub where
         }
 
         // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         List filterSub = params.list("filterSub")
@@ -1678,7 +1678,7 @@ join sub.orgRelations or_sub where
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.pendingOffset = 0
         result.acceptedOffset = 0
@@ -1762,7 +1762,7 @@ join sub.orgRelations or_sub where
     def changes() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
@@ -1801,7 +1801,7 @@ join sub.orgRelations or_sub where
           result.offset = 0;
         }
         else {
-          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
@@ -1986,7 +1986,7 @@ join sub.orgRelations or_sub where
     def currentSurveys() {
         Map<String, Object> result = setResultGenerics()
 
-        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.tab = params.tab ?: 'new'
@@ -2090,7 +2090,7 @@ join sub.orgRelations or_sub where
                 result.offsets = [subscrOffset: 0]
                 result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2434,7 +2434,7 @@ join sub.orgRelations or_sub where
     def addressbook() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
@@ -2456,7 +2456,7 @@ join sub.orgRelations or_sub where
     def myPublicContacts() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
@@ -2657,7 +2657,7 @@ join sub.orgRelations or_sub where
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
@@ -3094,7 +3094,7 @@ join sub.orgRelations or_sub where
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         DateFormat sdFormat = DateUtil.getSDF_NoTime()

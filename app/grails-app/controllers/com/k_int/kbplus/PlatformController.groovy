@@ -150,7 +150,7 @@ class PlatformController extends AbstractDebugController {
         editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
         Map result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 

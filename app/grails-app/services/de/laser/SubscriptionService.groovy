@@ -49,7 +49,7 @@ class SubscriptionService {
     //ex SubscriptionController.currentSubscriptions()
     Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
-        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         ProfilerUtils pu = new ProfilerUtils()
@@ -147,7 +147,7 @@ class SubscriptionService {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextOrg)

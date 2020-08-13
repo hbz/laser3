@@ -232,7 +232,7 @@ class TitleController extends AbstractDebugController {
     }
     else {
         User user = User.get(springSecurityService.principal.id)
-      result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
+      result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     }
@@ -300,7 +300,7 @@ class TitleController extends AbstractDebugController {
     }
       User user = User.get(springSecurityService.principal.id)
     Map<String, Object> result = [:]
-    result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
+    result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
     result.availableStatuses = RefdataCategory.getAllRefdataValues(RDConstants.TITLE_STATUS)

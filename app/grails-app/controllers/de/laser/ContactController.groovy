@@ -20,7 +20,7 @@ class ContactController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
     }
 

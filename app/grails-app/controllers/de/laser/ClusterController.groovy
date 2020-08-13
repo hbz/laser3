@@ -27,7 +27,7 @@ class ClusterController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [clusterInstanceList: Cluster.list(params), clusterInstanceTotal: Cluster.count()]
     }
 
