@@ -21,19 +21,12 @@ class ReaderNumber {
 
     Org org
 
-    @Transient
     final static String READER_NUMBER_USER = 'User'
-    @Transient
     final static String READER_NUMBER_PEOPLE = 'Population'
-    @Transient
     final static String READER_NUMBER_SCIENTIFIC_STAFF = 'Scientific staff'
-    @Transient
     final static String READER_NUMBER_FTE = 'FTE'
-    @Transient
     final static String READER_NUMBER_STUDENTS = 'Students'
-    @Transient
     final static Set<String> CONSTANTS_WITH_SEMESTER = [READER_NUMBER_STUDENTS,READER_NUMBER_SCIENTIFIC_STAFF,READER_NUMBER_FTE]
-    @Transient
     final static Set<String> CONSTANTS_WITH_DUE_DATE = [READER_NUMBER_PEOPLE,READER_NUMBER_USER]
 
     static constraints = {

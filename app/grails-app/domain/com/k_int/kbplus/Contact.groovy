@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory
 
 @Log4j
 class Contact implements Comparable<Contact>{
+
     private static final String REFDATA_PHONE = "Phone"
     private static final String REFDATA_FAX =   "Fax"
     private static final String REFDATA_MAIL =  "Mail"

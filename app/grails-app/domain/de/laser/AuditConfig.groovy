@@ -7,7 +7,6 @@ import javax.persistence.Transient
 @Log4j
 class AuditConfig {
 
-    @Transient
     def grailsApplication
 
     final static COMPLETE_OBJECT = 'COMPLETE_OBJECT'

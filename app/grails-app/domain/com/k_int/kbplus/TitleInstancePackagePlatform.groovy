@@ -14,16 +14,10 @@ import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
-  @Transient
+
   def grailsLinkGenerator
-
-  @Transient
   def grailsApplication
-  
-  @Transient
   def messageSource
-
-  @Transient
   def changeNotificationService
 
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)

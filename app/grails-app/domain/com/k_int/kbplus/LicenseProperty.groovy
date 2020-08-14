@@ -10,17 +10,11 @@ import javax.persistence.Transient
 
 class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 
-    @Transient
     def genericOIDService
-    @Transient
     def changeNotificationService
-    @Transient
     def messageSource
-    @Transient
     def pendingChangeService
-    @Transient
     def deletionService
-    @Transient
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]

@@ -26,35 +26,23 @@ import java.text.SimpleDateFormat
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements AuditableSupport, CalculatedType, Permissions, ShareSupport {
 
+    def grailsApplication
+    def contextService
+    def messageSource
+    def pendingChangeService
+    def changeNotificationService
+    def springSecurityService
+    def accessService
+    def propertyService
+    def deletionService
+    def subscriptionService
+    def auditService
+    def genericOIDService
+
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     static Log static_logger = LogFactory.getLog(Subscription)
-
-    @Transient
-    def grailsApplication
-    @Transient
-    def contextService
-    @Transient
-    def messageSource
-    @Transient
-    def pendingChangeService
-    @Transient
-    def changeNotificationService
-    @Transient
-    def springSecurityService
-    @Transient
-    def accessService
-    @Transient
-    def propertyService
-    @Transient
-    def deletionService
-    @Transient
-    def subscriptionService
-    @Transient
-    def auditService
-    @Transient
-    def genericOIDService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status

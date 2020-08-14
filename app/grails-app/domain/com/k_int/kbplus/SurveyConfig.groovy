@@ -13,25 +13,14 @@ import java.text.SimpleDateFormat
 
 class SurveyConfig {
 
-    @Transient
     def deletionService
 
-    @Transient
+
     public static final ALL_RESULTS_PROCESSED_BY_ORG = "All Processed"
-
-    @Transient
     public static final ALL_RESULTS_NOT_PROCESSED_BY_ORG = "Not Processed"
-
-    @Transient
     public static final ALL_RESULTS_HALF_PROCESSED_BY_ORG = "Half Processed"
-
-    @Transient
     public static final SURVEY_CONFIG_TYPE_SUBSCRIPTION = "Subscription"
-
-    @Transient
     public static final SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT = "IssueEntitlementsSurvey"
-
-    @Transient
     public static final SURVEY_CONFIG_TYPE_GENERAL_SURVEY = "GeneralSurvey"
 
     Integer configOrder

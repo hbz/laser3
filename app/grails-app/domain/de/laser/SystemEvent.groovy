@@ -10,7 +10,6 @@ import javax.persistence.Transient
 @Log4j
 class SystemEvent {
 
-    @Transient
     def messageSource
 
     @Transient

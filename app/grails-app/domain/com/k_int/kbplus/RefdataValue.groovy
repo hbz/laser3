@@ -11,10 +11,9 @@ import javax.persistence.Transient
 
 class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
-    static Log static_logger = LogFactory.getLog(RefdataValue)
-
-    @Transient
     def grailsApplication
+
+    static Log static_logger = LogFactory.getLog(RefdataValue)
 
     String value
     String value_de

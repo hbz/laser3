@@ -11,7 +11,6 @@ import javax.persistence.Transient
 
 class PendingChangeConfiguration {
 
-    @Transient
     def messageSource
 
     static final String NEW_TITLE = "pendingChange.message_TP01"

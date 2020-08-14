@@ -7,7 +7,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class BookInstance extends TitleInstance {
 
-
     Date dateFirstInPrint
     Date dateFirstOnline
     String summaryOfContent

@@ -6,12 +6,8 @@ import javax.persistence.Transient
 
 class Links {
 
-
-    @Transient
     def contextService
-    @Transient
     def springSecurityService
-    @Transient
     def genericOIDService
 
     Long id

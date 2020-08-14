@@ -12,6 +12,7 @@ import groovy.util.logging.Log4j
 
 @Log4j
 class DashboardDueDate {
+
     User responsibleUser
     Org  responsibleOrg
     boolean isHidden = false
