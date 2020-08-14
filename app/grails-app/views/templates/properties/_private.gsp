@@ -14,7 +14,7 @@
 </g:if>
 
 <table class="ui compact la-table-inCard table">
-    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant.id == contextOrg.id && cp.isPublic == false }}"/>
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id && cp.isPublic == false }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
             <col style="width: 129px;">
@@ -39,7 +39,7 @@
     </g:if>
     <tbody>
         <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
-            <g:if test="${prop.type?.tenant?.id == tenant?.id}">
+            <g:if test="${prop.type.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">

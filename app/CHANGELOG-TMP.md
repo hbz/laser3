@@ -2,6 +2,19 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+--      14.08.2020  rc1.5       Andreas Bug         DBS-Statistikfelder 19.29 und 19.35 korrigiert
+
+2782    14.08.2020  rc1.5       Andreas Bug         Kopieren von Lizenzen übernahm Werte nicht und stürzte bei Merkmalen ab
+
+2784    14.08.2020  rc1.5       Moe     Bug         User kann nicht auf "Meine Umfragen" zugreifen
+
+2783    14.08.2020  rc1.5       Moe     Bug         Cronjob für Umfrage kann keine Emails verschicken!
+
+2781    13.08.2020  rc1.5       Andreas Bug         inkorrekte Befüllung der Ziellizenzen sorgte für Kostendubletten
+
+2780    12.08.2020  rc1.5       Moe     Bug         Umfragen lässt sich nicht exportieren
+
 2779    12.08.2020  rc1.5       Moe     Bug         Fehlermeldung bei Hauptkontakt
 
 2778    12.08.2020  rc1.5       Moe     Bug         Zugangskonfiguration kann von Konsortialstelle nicht gelöscht werden

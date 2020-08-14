@@ -2012,6 +2012,11 @@ join sub.orgRelations or_sub where
 
         result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
 
+        result.allConsortia = Org.executeQuery(
+                """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
+                        group by o order by lower(o.name) """
+        )
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }

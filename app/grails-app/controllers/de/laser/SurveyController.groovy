@@ -28,9 +28,10 @@ import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.*
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -1997,20 +1998,20 @@ class SurveyController {
                     config.orgs.org.each { org ->
 
                             config.surveyProperties.each { property ->
-
-                                def surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org ?: null,
-                                        startDate: result.surveyInfo.startDate,
-                                        endDate: result.surveyInfo.endDate ?: null,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
+                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: result.surveyInfo.startDate,
+                                            endDate: result.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
 
                                 if (surveyResult.save(flush: true)) {
                                     log.debug( surveyResult.toString() )
                                 } else {
-                                    log.error("Not create surveyResult: "+ surveyResult)
+                                    log.error("Not create surveyResult: " + surveyResult)
                                 }
                             }
                         }
@@ -2073,14 +2074,15 @@ class SurveyController {
 
                             config.surveyProperties.each { property ->
 
-                                def surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org ?: null,
-                                        startDate: currentDate,
-                                        endDate: result.surveyInfo.endDate,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
+                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: currentDate,
+                                            endDate: result.surveyInfo.endDate,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
 
                                 if (surveyResult.save(flush: true)) {
                                     log.debug( surveyResult.toString() )

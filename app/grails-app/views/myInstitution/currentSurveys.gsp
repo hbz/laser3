@@ -74,7 +74,7 @@
             <div class="field">
                 <label>${message(code: 'surveyInfo.owner.label')}</label>
                 <g:select class="ui dropdown" name="owner"
-                              from="${com.k_int.kbplus.SurveyInfo.getAll()?.owner.unique { a, b -> a.id <=> b.id }}"
+                              from="${allConsortia}"
                               optionKey="id"
                               optionValue="name"
                               value="${params.owner}"
