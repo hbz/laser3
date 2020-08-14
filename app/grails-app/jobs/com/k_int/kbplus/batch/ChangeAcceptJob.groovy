@@ -4,6 +4,7 @@ import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.RefdataValue
 import de.laser.SystemEvent
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.quartz.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {
@@ -45,17 +46,15 @@ class ChangeAcceptJob extends AbstractJob {
         SystemEvent.createEvent('CAJ_JOB_START')
 
         try {
-            RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
-
             // Get all changes associated with slaved subscriptions
-            String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
-            def subPendingChanges = PendingChange.executeQuery(subQueryStr, [ pending_change_pending_status ]);
+            String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = :status ) order by pc.ts desc"
+            def subPendingChanges = PendingChange.executeQuery(subQueryStr, [ status: RDStore.PENDING_CHANGE_PENDING ])
             log.debug(subPendingChanges.size() +" pending changes have been found for slaved subscriptions")
 
             //refactoring: replace link table with instanceOf
             //def licQueryStr = "select pc.id from PendingChange as pc join pc.license.incomingLinks lnk where lnk.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
-            String licQueryStr = "select pc.id from PendingChange as pc where license.isSlaved = true and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
-            def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ pending_change_pending_status ]);
+            String licQueryStr = "select pc.id from PendingChange as pc where license.isSlaved = true and ( pc.status is null or pc.status = :status ) order by pc.ts desc"
+            def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ status: RDStore.PENDING_CHANGE_PENDING ])
             log.debug( licPendingChanges.size() +" pending changes have been found for slaved licenses")
 
             if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges)) {

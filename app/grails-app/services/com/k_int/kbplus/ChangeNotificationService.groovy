@@ -95,11 +95,11 @@ class ChangeNotificationService extends AbstractLockableService {
 
             if ( contextObject == null ) {
               log.warn("Pending changes for a now deleted item.. nuke them!");
-              ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid:poidc])
+              ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid: poidc])
             }
 
             List<ChangeNotificationQueueItem> pendingChanges = ChangeNotificationQueueItem.executeQuery(
-                    "select c from ChangeNotificationQueueItem as c where c.oid = ? order by c.ts asc", [poidc]
+                    "select c from ChangeNotificationQueueItem as c where c.oid = :oid order by c.ts asc", [oid: poidc]
             )
             StringWriter sw = new StringWriter();
 
