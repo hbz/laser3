@@ -920,7 +920,7 @@ class SurveyService {
 
                         List generalContactsEMails = []
 
-                        survey.owner.getGeneralContactPersons(false)?.each { person ->
+                        survey.owner.getGeneralContactPersons(true)?.each { person ->
                             person.contacts.each { contact ->
                                 if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
                                     generalContactsEMails << contact.content
