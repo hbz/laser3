@@ -1,8 +1,33 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.DocstoreService
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.FinanceService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Links
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.SurveyConfig
+import com.k_int.kbplus.SurveyConfigProperties
+import com.k_int.kbplus.SurveyInfo
+import com.k_int.kbplus.SurveyOrg
+import com.k_int.kbplus.SurveyResult
+import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
@@ -72,7 +97,7 @@ class SurveyController {
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.max = result.max
@@ -141,7 +166,7 @@ class SurveyController {
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.max = result.max
@@ -288,7 +313,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
@@ -369,7 +394,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
@@ -684,7 +709,7 @@ class SurveyController {
                result.sortConfig = [consSort:'sortname',consOrder:'asc',
                                     ownSort:'ci.costTitle',ownOrder:'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -760,7 +785,7 @@ class SurveyController {
     def surveyTitles() {
         def result = setResultGenericsAndCheckAccess()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         String base_qry = null
@@ -1667,7 +1692,7 @@ class SurveyController {
             //result.offsets = [consOffset:0]
             //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
             //cost items
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2674,7 +2699,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         if(result.surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id){
@@ -2970,13 +2995,13 @@ class SurveyController {
                 }
                 result.newSub = newSub
 
-                if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+                if (params.targetObjectId == "null") params.remove("targetObjectId")
                 result.isRenewSub = true
 
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
                             id: old_subOID,
-                            params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true, fromSurvey: true]
+                            params: [sourceObjectId: old_subOID, targetObjectId: newSub.id, isRenewSub: true, fromSurvey: true]
 
             }
         }
@@ -4775,18 +4800,18 @@ class SurveyController {
         }
         flash.error = ""
         flash.message = ""
-        if (params.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
-        result.sourceSubscriptionId = params.sourceSubscriptionId ?: params.id
-        result.sourceSubscription = Subscription.get(Long.parseLong(params.sourceSubscriptionId ?: params.id))
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId ?: params.id
+        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
 
-        if (params.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-        if (params.targetSubscriptionId) {
-            result.targetSubscriptionId = params.targetSubscriptionId
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
 
-        result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
+        result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
@@ -4823,20 +4848,20 @@ class SurveyController {
                 break
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties()
-                if (params.isRenewSub && params.targetSubscriptionId){
+                if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
                 } else {
                     result << loadDataFor_Properties()
                 }
                 break
             case WORKFLOW_END:
                 result << copySubElements_Properties()
-                if (params.targetSubscriptionId){
+                if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetSubscriptionId]
+                    redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
                 }
                 break
             default:
@@ -4844,8 +4869,8 @@ class SurveyController {
                 break
         }
 
-        if (params.targetSubscriptionId) {
-            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        if (params.targetObjectId) {
+            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
         result.workFlowPart = params.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS

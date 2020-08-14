@@ -9,7 +9,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugUtil
+import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -17,6 +17,7 @@ import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.sql.Timestamp
@@ -48,16 +49,16 @@ class SubscriptionService {
     //ex SubscriptionController.currentSubscriptions()
     Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
-        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('init data fetch')
-        du.setBenchmark('consortia')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('init data fetch')
+        pu.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
-        du.setBenchmark('all consortia')
+        pu.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
@@ -98,11 +99,11 @@ class SubscriptionService {
             }
         }
 
-        du.setBenchmark('get base query')
+        pu.setBenchmark('get base query')
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
-        du.setBenchmark('fetch subscription data')
+        pu.setBenchmark('fetch subscription data')
         if(params.sort == "providerAgency") {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ).collect{ row -> row[0] }
         }
@@ -125,7 +126,7 @@ class SubscriptionService {
             result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction
-        du.setBenchmark('get properties')
+        pu.setBenchmark('get properties')
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
@@ -133,9 +134,9 @@ class SubscriptionService {
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
          */
-        du.setBenchmark('end properties')
+        pu.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
         result
     }
@@ -143,16 +144,16 @@ class SubscriptionService {
     Map<String,Object> getMySubscriptionsForConsortia(GrailsParameterMap params,User contextUser, Org contextOrg,List<String> tableConf) {
         Map<String,Object> result = [:]
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('filterService')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextOrg)
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
-        du.setBenchmark('filterSubTypes & filterPropList')
+        pu.setBenchmark('filterSubTypes & filterPropList')
 
         if(params.filterSet)
             result.filterSet = params.filterSet
@@ -170,7 +171,7 @@ class SubscriptionService {
 
         // CostItem ci
 
-        du.setBenchmark('filter query')
+        pu.setBenchmark('filter query')
 
         String query
         Map qarams
@@ -313,7 +314,7 @@ class SubscriptionService {
         // log.debug( qarams )
 
         if('withCostItems' in tableConf) {
-            du.setBenchmark('costs')
+            pu.setBenchmark('costs')
 
             String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
 
@@ -368,9 +369,40 @@ class SubscriptionService {
         }
         result.linkedLicenses = linkedLicenses
 
-        List bm = du.stopBenchmark()
+        List bm = pu.stopBenchmark()
         result.benchMark = bm
 
+        result
+    }
+
+    Set<OrgRole> getAllTimeSubscribersForConsortiaSubscription(Subscription entryPoint) {
+        getAllTimeSubscribersForConsortiaSubscription([entryPoint].toSet())
+    }
+
+    Set<OrgRole> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
+        OrgRole.executeQuery('select oo from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+    }
+
+    Map<String,Collection> getSubscribersByRegion(Map<String,Object> configMap) {
+        Map<String,Collection> result = [:]
+        if(configMap.subscription) {
+            Map<String,Object> consortiaMemberParams = [subscription:Subscription.get(configMap.subscription),roleType:RDStore.OR_SUBSCRIBER_CONS]
+            String column = 'value_'+ LocaleContextHolder.getLocale().toString().split('_')[0]
+            List consortiaMembers = Org.executeQuery('select org.region.'+column+',count(org.id) from OrgRole oo join oo.org org where oo.sub.instanceOf = :subscription and oo.roleType = :roleType group by org.region.'+column+' order by org.region.'+column+' asc',consortiaMemberParams)
+            Set<String> labels = []
+            List<Integer> series = []
+            int total = Org.executeQuery('select count(oo.org.id) from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType = :roleType',consortiaMemberParams)[0]
+            consortiaMembers.each { row ->
+                int percent = row[1] / total * 100
+                labels << "${row[0]} (${percent}%)"
+                series << row[1]
+            }
+            result.labels = labels
+            result.series = series
+        }
+        else if(configMap.package) {
+            //todo
+        }
         result
     }
 

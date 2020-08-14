@@ -17,8 +17,8 @@
         <semui:breadcrumbs>
             <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
-            <g:if test="${sourceSubscription}">
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceSubscription, true)}"/>
+            <g:if test="${sourceObject}">
+                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
                 <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
             </g:if>
 
@@ -31,7 +31,7 @@
     </g:else>
         <br>
     <g:if test="${isRenewSub}">
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceSubscription}">${sourceSubscription.name}</g:if></h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceObject}">${sourceObject.name}</g:if></h1>
     </g:if>
     <g:else>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.copyElementsIntoSubscription.label')} </h1>
@@ -40,8 +40,8 @@
     <semui:messages data="${flash}"/>
 
     <% Map params = [id: params.id];
-        if (sourceSubscriptionId)   params << [sourceSubscriptionId: sourceSubscriptionId];
-        if (targetSubscriptionId)   params << [targetSubscriptionId: targetSubscriptionId];
+        if (sourceObjectId)   params << [sourceObjectId: sourceObjectId];
+        if (targetObjectId)   params << [targetObjectId: targetObjectId];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
     %>
     <g:if test="${isRenewSub}">
@@ -220,7 +220,7 @@
     </g:elseif>
     %{--<g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_DATES_OWNER_RELATIONS}">--}%
     <g:else>
-        <g:render template="/templates/subscription/copyElementsNew" />
+        <g:render template="/templates/copyElements/copyElements" />
     </g:else>
     <g:javascript src="copyPropertiesCompare.js"/>
 </body>

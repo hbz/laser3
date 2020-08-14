@@ -39,7 +39,7 @@ class HomeController {
     Map<String, Object> result = [:]
   
     result.user = springSecurityService.getCurrentUser()
-    params.max = result.user.getDefaultPageSizeTMP()
+    params.max = result.user.getDefaultPageSize()
 
     if (springSecurityService.isLoggedIn()) {
         params.sort = "name"

@@ -20,6 +20,8 @@
                     exportParams.subscription = params.subscription
                 else if(params.package)
                     exportParams.package = params.package
+                else if(params.organisation)
+                    exportParams.organisation = params.organisation
             %>
             <semui:controlButtons>
                 <semui:exportDropdown>
@@ -52,6 +54,26 @@
                         </label>
                         <g:select name="package" from="${packages}" value="${params.package}"
                                   optionKey="${{it.id}}" optionValue="${{it.name}}"
+                                  noSelection="['':message(code:'default.select.choose.label')]"
+                                  class="ui search selection dropdown"/>
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="field">
+                        <label for="provider">
+                            <g:message code="default.provider.label"/>
+                        </label>
+                        <g:select name="provider" from="${providers}" value="${params.provider}"
+                                  optionKey="${{it.id}}" optionValue="${{it.name}}"
+                                  noSelection="['':message(code:'default.select.choose.label')]"
+                                  class="ui search selection dropdown"/>
+                    </div>
+                    <div class="field">
+                        <label for="subscriber">
+                            <g:message code="default.institution"/>
+                        </label>
+                        <g:select name="subscriber" from="${subscribers}" value="${params.subscriber}"
+                                  optionKey="${{it.id}}" optionValue="${{it.sortname ?: it.name}}"
                                   noSelection="['':message(code:'default.select.choose.label')]"
                                   class="ui search selection dropdown"/>
                     </div>
@@ -102,11 +124,15 @@
             </p>
 
             <div class="ui top attached segment">
+                <div id="chartB"></div>
+            </div>
+
+            <div class="ui top attached segment">
                 <div id="chartA"></div>
             </div>
 
             <div class="ui top attached segment">
-                <div id="chartB"></div>
+                <div id="chartC"></div>
             </div>
 
         </g:if>
@@ -122,26 +148,48 @@
                 <g:elseif test="${params.package}">
                     package: ${params.package}
                 </g:elseif>
+                <g:elseif test="${params.provider}">
+                    provider: ${params.provider}
+                </g:elseif>
+                <g:elseif test="${params.subscriber}">
+                    subscriber: ${params.subscriber}
+                </g:elseif>
                 }
             }).done(function(data){
-                console.log(data.graphB);
-                new Chartist.Bar('#chartA',data.graphA,{
-                    axisY: {
-                        scaleMinSpace: 40
-                    },
-                    height: '600px'
-                });
-                new Chartist.Pie('#chartB',data.graphB,{
-                    donut:true,
-                    donutWidth: 60,
-                    donutSolid:true,
-                    startAngle: 270,
-                    showLabel: false,
-                    height: '300px',
-                    plugins: [
-                        Chartist.plugins.legend()
-                    ]
-                });
+                console.log(data.graphA);
+                if(data.graphA) {
+                    new Chartist.Line('#chartA',data.graphA,{
+                        axisY: {
+                            scaleMinSpace: 15
+                        },
+                        plugins: [
+                            Chartist.plugins.legend()
+                        ]
+                    });
+                }
+                if(data.graphB) {
+                    new Chartist.Pie('#chartB',data.graphB,{
+                        donut:true,
+                        donutWidth: 60,
+                        donutSolid:true,
+                        startAngle: 270,
+                        showLabel: false,
+                        height: '300px',
+                        plugins: [
+                            Chartist.plugins.legend()
+                        ]
+                    });
+                }
+                if(data.graphC) {
+                    new Chartist.Bar('#chartC',data.graphC,{
+                        stackBars: true,
+                        //reverseData: true,
+                        //horizontalBars: true,
+                        plugins: [
+                            Chartist.plugins.legend()
+                        ]
+                    });
+                }
             });
         </g:if>
     </r:script>

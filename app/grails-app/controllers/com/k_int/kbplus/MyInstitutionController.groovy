@@ -104,9 +104,12 @@ class MyInstitutionController extends AbstractDebugController {
             Map<String,Object> configMap = [institution:result.institution]
             if(params.subscription)
                 configMap.subscription = params.subscription
-            else if(params.package) {
+            else if(params.package)
                 configMap.package = params.package
-            }
+            else if(params.provider)
+                configMap.provider = params.provider
+            else if(params.subscriber)
+                configMap.subscriber = params.subscriber
             result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
             if(result.costItems) {
                 //test for ERMS-1125: group by elements
@@ -116,12 +119,16 @@ class MyInstitutionController extends AbstractDebugController {
         Set<SubscriptionPackage> currentSubscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
         Set<Subscription> subscriptions = []
         Set<Package> packages = []
+        Set<Org> providers = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:orgTypes) order by o.name asc',[orgTypes:[RDStore.OT_PROVIDER,RDStore.OT_AGENCY]])
+        Set<Org> subscribers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :context and c.type = :comboType order by c.fromOrg.sortname asc, c.fromOrg.name asc',[context:result.institution,comboType:RDStore.COMBO_TYPE_CONSORTIUM])
         currentSubscriptionPackages.each { SubscriptionPackage sp ->
             subscriptions << sp.subscription
             packages << sp.pkg
         }
         result.subscriptions = subscriptions
         result.packages = packages
+        result.providers = providers
+        result.subscribers = subscribers
         result.costItems = costItemElementGroups
         result
     }
@@ -132,10 +139,13 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def loadCostItemChartData() {
         Org contextOrg = contextService.org
-        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg])
-        Map<String,Object> result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
-        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
-            result.graphB = financeService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
+        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg]), result = [:]
+        if(baseMap.costItems)
+            result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
+        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM' && params.subscription)
+            result.graphB = subscriptionService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
+        else if(params.subscriber)
+            result.graphC = organisationService.getSubscriberProviderPercentages([subscriber:params.subscriber,institution:contextOrg])
         render result as JSON
     }
 
@@ -160,11 +170,11 @@ class MyInstitutionController extends AbstractDebugController {
     def currentPlatforms() {
 
         Map<String, Object> result = [:]
-		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
+		ProfilerUtils pu = new ProfilerUtils()
+		pu.setBenchmark('init')
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
 
@@ -271,7 +281,7 @@ class MyInstitutionController extends AbstractDebugController {
 
         result.cachedContent = true
 
-		List bm = du.stopBenchmark()
+		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
         result
@@ -282,8 +292,8 @@ class MyInstitutionController extends AbstractDebugController {
     def currentLicenses() {
 
         Map<String, Object> result = setResultGenerics()
-		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
+		ProfilerUtils pu = new ProfilerUtils()
+		pu.setBenchmark('init')
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -298,7 +308,7 @@ class MyInstitutionController extends AbstractDebugController {
         }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.org)
-        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
@@ -464,10 +474,10 @@ class MyInstitutionController extends AbstractDebugController {
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
-        du.setBenchmark('execute query')
+        pu.setBenchmark('execute query')
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
-        du.setBenchmark('get subscriptions')
+        pu.setBenchmark('get subscriptions')
 
         List<String> licenseOIDs = totalLicenses.collect { License l -> GenericOIDService.getOID(l) }
 
@@ -485,14 +495,14 @@ class MyInstitutionController extends AbstractDebugController {
         orgRoles.each { OrgRole oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
-        du.setBenchmark('get consortia')
+        pu.setBenchmark('get consortia')
         Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
-        du.setBenchmark('get licensors')
+        pu.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
         result.orgs = orgs
 
-		List bm = du.stopBenchmark()
+		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
         SimpleDateFormat sdfNoPoint = DateUtil.getSDF_NoTimeNoPoint()
@@ -645,7 +655,7 @@ class MyInstitutionController extends AbstractDebugController {
     def emptyLicense() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
@@ -685,8 +695,8 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         Map<String, Object> result = setResultGenerics()
-		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
+		ProfilerUtils pu = new ProfilerUtils()
+		pu.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getCache('MyInstitutionController/currentProviders', contextService.ORG_SCOPE)
         List orgIds = []
@@ -721,7 +731,7 @@ join sub.orgRelations or_sub where
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
@@ -740,7 +750,7 @@ join sub.orgRelations or_sub where
 
         result.cachedContent = true
 
-		List bm = du.stopBenchmark()
+		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -785,8 +795,8 @@ join sub.orgRelations or_sub where
     def currentSubscriptions() {
         Map<String, Object> result = setResultGenerics()
 
-		DebugUtil du = new DebugUtil()
-		//du.setBenchmark('init')
+		ProfilerUtils pu = new ProfilerUtils()
+		//pu.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
@@ -795,7 +805,7 @@ join sub.orgRelations or_sub where
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		//List bm = du.stopBenchmark()
+		//List bm = pu.stopBenchmark()
 		//result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -1368,8 +1378,8 @@ join sub.orgRelations or_sub where
     def currentTitles() {
 
         Map<String,Object> result = setResultGenerics()
-		DebugUtil du = new DebugUtil()
-		du.setBenchmark('init')
+		ProfilerUtils pu = new ProfilerUtils()
+		pu.setBenchmark('init')
 
         Set<RefdataValue> orgRoles = []
 
@@ -1402,7 +1412,7 @@ join sub.orgRelations or_sub where
         }
 
         // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         List filterSub = params.list("filterSub")
@@ -1492,7 +1502,7 @@ join sub.orgRelations or_sub where
         result.filterSet = params.filterSet || defaultSet
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
 
-		List bm = du.stopBenchmark()
+		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
         if(params.exportKBart) {
@@ -1564,7 +1574,7 @@ join sub.orgRelations or_sub where
 
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
 
@@ -1678,7 +1688,7 @@ join sub.orgRelations or_sub where
         }
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.pendingOffset = 0
         result.acceptedOffset = 0
@@ -1762,7 +1772,7 @@ join sub.orgRelations or_sub where
     def changes() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
@@ -1801,7 +1811,7 @@ join sub.orgRelations or_sub where
           result.offset = 0;
         }
         else {
-          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
@@ -1986,7 +1996,7 @@ join sub.orgRelations or_sub where
     def currentSurveys() {
         Map<String, Object> result = setResultGenerics()
 
-        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         params.tab = params.tab ?: 'new'
@@ -2090,7 +2100,7 @@ join sub.orgRelations or_sub where
                 result.offsets = [subscrOffset: 0]
                 result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2434,7 +2444,7 @@ join sub.orgRelations or_sub where
     def addressbook() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
@@ -2456,7 +2466,7 @@ join sub.orgRelations or_sub where
     def myPublicContacts() {
         Map<String, Object> result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.institution
@@ -2640,8 +2650,8 @@ join sub.orgRelations or_sub where
     def manageMembers() {
         Map<String, Object> result = setResultGenerics()
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('start')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('start')
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
@@ -2659,7 +2669,7 @@ join sub.orgRelations or_sub where
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
@@ -2669,7 +2679,7 @@ join sub.orgRelations or_sub where
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-		du.setBenchmark('query')
+		pu.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
@@ -2688,7 +2698,7 @@ join sub.orgRelations or_sub where
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
 
-		List bm = du.stopBenchmark()
+		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -3093,10 +3103,10 @@ join sub.orgRelations or_sub where
     def manageParticipantSurveys() {
         Map<String, Object> result = setResultGenerics()
 
-        DebugUtil du = new DebugUtil()
-        du.setBenchmark('filterService')
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         DateFormat sdFormat = DateUtil.getSDF_NoTime()

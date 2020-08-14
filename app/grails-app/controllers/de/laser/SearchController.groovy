@@ -1,4 +1,4 @@
-package com.k_int.kbplus
+package de.laser
 
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
@@ -16,7 +16,7 @@ class SearchController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         result.user = springSecurityService.getCurrentUser()
-        params.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        params.max = params.max ?: result.user.getDefaultPageSize()
         params.offset = params.offset ? params.int('offset') : 0
 
         params.searchObjects = params.searchObjects ?: 'allObjects'
@@ -71,7 +71,7 @@ class SearchController extends AbstractDebugController {
         def filtered
         def query = "${params.query}"
         result.user = springSecurityService.getCurrentUser()
-        //params.max = result.user.getDefaultPageSizeTMP() ?: 15
+        //params.max = result.user.getDefaultPageSize() ?: 15
         params.max = 50
 
         if (!query) {

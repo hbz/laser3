@@ -24,7 +24,7 @@ class UsageController extends AbstractDebugController {
     def index() {
         def result = initResult()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation

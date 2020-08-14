@@ -1,5 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Creator
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -23,7 +24,7 @@ class CreatorController extends AbstractDebugController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSizeTMP()
+			params.max = user?.getDefaultPageSize()
 		}
         [creatorInstanceList: Creator.list(params), creatorInstanceTotal: Creator.count()]
     }

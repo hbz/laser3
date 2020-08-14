@@ -29,7 +29,7 @@
                         </g:if>
                         <g:if test="${surveyConfig.pickAndChoose}">
                             <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                    params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
+                                    params="${[targetObjectId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
                                 ${surveyConfig.getSurveyName()}
                             </g:link>
                         </g:if>

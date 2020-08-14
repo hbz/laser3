@@ -1,5 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Address
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
@@ -24,7 +25,7 @@ class AddressController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 
