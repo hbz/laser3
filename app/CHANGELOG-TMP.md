@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2784    14.08.2020  rc1.5       Moe     Bug         User kann nicht auf "Meine Umfragen" zugreifen
+
 2783    14.08.2020  rc1.5       Moe     Bug         Cronjob für Umfrage kann keine Emails verschicken!
 
 2781    13.08.2020  rc1.5       Andreas Bug         inkorrekte Befüllung der Ziellizenzen sorgte für Kostendubletten
