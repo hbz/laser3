@@ -27,8 +27,9 @@
           <tr>
             <td>${ol.org.name}</td>
             <td>
-              ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}<br/>
-              ${message(code:'subscription.details.permissionInfo.role.info')}<br/>
+              ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}
+              <br/>
+              <%--${message(code:'subscription.details.permissionInfo.role.info')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                   <li>${message(code:"default.perm.${sp.perm.code}", default:"${sp.perm.code}")}
@@ -40,7 +41,7 @@
                       </g:else>
                   </li>
                 </g:each>
-              </ul>
+              </ul>--%>
             </td>
           </tr>
         </g:each>

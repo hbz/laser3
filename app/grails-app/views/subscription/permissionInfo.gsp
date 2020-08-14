@@ -37,21 +37,21 @@
                     <td>
                         <g:message code="subscription.license.connection" args="${[ol.roleType?.value?:'']}"/>
                         <br/>
-                        ${message(code:'subscription.details.permissionInfo.role.info')}
+                        <%--${message(code:'subscription.details.permissionInfo.role.info')}
                         <br/>
-                      <ul>
+                        <ul>
                         <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
-                          <li><g:message code="default.perm.${sp.perm.code}" />
-                              <g:if test="${subscriptionInstance.checkPermissions(sp.perm.code,user)}">
-                                [${message(code:'default.perm.granted')}]
-                              </g:if>
-                              <g:else>
-                                [${message(code:'default.perm.not_granted')}]
-                              </g:else>
+                            <li><g:message code="default.perm.${sp.perm.code}" />
+                                <g:if test="${subscriptionInstance.checkPermissions(sp.perm.code,user)}">
+                                  [${message(code:'default.perm.granted')}]
+                                </g:if>
+                                <g:else>
+                                  [${message(code:'default.perm.not_granted')}]
+                                </g:else>
 
-                          </li>
-                        </g:each>
-                      </ul>
+                            </li>
+                          </g:each>
+                        </ul>--%>
                     </td>
                 </tr>
             </g:each>
