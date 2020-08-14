@@ -28,7 +28,7 @@ class PlatformController extends AbstractDebugController {
     def list() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.max = params.max ?: result.user.getDefaultPageSize()
 
         result.offset = params.offset ?: 0
 
@@ -150,7 +150,7 @@ class PlatformController extends AbstractDebugController {
         editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
         Map result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 

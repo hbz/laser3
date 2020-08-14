@@ -1,7 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Contact
 import com.k_int.kbplus.auth.User
-import de.laser.FormService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -20,7 +20,7 @@ class ContactController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
     }
 

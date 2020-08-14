@@ -131,7 +131,7 @@ class OrganisationController extends AbstractDebugController {
 
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSize()
         result.offset = params.offset ? Long.parseLong(params.offset) : 0
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
@@ -229,7 +229,7 @@ class OrganisationController extends AbstractDebugController {
             fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeAsInteger()
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
         result.orgListTotal = orgListTotal.size()
@@ -1130,7 +1130,6 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
-      //def comboType = RefdataCategory.lookupOrCreate(RDConstants.ORGANISATIONAL_ROLE, 'Package Consortia')
         RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = :fromOrg and c.toOrg = :toOrg", [fromOrg: fromOrg, toOrg: toOrg])

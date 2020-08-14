@@ -267,7 +267,7 @@ class AdminController extends AbstractDebugController {
             params.search = null
         }
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
     if(params.id){
@@ -1355,98 +1355,6 @@ class AdminController extends AbstractDebugController {
             flash.error = "Es liegt kein inkrementeller Dump vor ... haben Sie vorher die Daten ausgeschrieben?"
         }
         redirect controller: 'myInstitution', action: 'dashboard'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def titlesImport() {
-
-        if ( request.method=="POST" ) {
-            def upload_mime_type = request.getFile("titles_file")?.contentType
-            def upload_filename = request.getFile("titles_file")?.getOriginalFilename()
-            def input_stream = request.getFile("titles_file")?.inputStream
-
-      CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
-      String[] nl;
-      String[] cols;
-      boolean first = true
-      while ((nl = r.readNext()) != null) {
-        if ( first ) {
-          first = false; // Skip header
-          cols=nl;
-
-          // Make sure that there is at least one valid identifier column
-        }
-        else {
-          def title = null;
-          def bindvars = []
-
-            // Set up base_query
-            String q = "Select distinct(t) from TitleInstance as t "
-            String joinclause = ''
-            String whereclause = ' where '
-
-          def i = 0;
-          def disjunction_ctr = 0;
-          cols.each { cn ->
-            if ( cn == 'title.id' ) {
-              if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
-              whereclause += 't.id = ?'
-              bindvars.add(new Long(nl[i]));
-            }
-            else if ( cn == 'title.title' ) {
-              title = nl[i]
-            }
-            else if ( cn.startsWith('title.id.' ) ) {
-              // Namespace and value
-              if ( nl[i].trim().length() > 0 ) {
-                if ( disjunction_ctr++ > 0 ) { whereclause += ' OR ' }
-                joinclause = " join t.ids as id "
-                whereclause += " ( id.ns.ns = ? AND id.value = ? ) "
-                bindvars.add(cn.substring(9))
-                bindvars.add(nl[i])
-              }
-            }
-            i++;
-          }
-
-                    log.debug("\n\n");
-                    log.debug(q);
-                    log.debug(joinclause);
-                    log.debug(whereclause);
-                    log.debug( bindvars.toString() )
-
-                    def title_search = TitleInstance.executeQuery(q+joinclause+whereclause,bindvars);
-                    log.debug("Search returned ${title_search.size()} titles");
-
-                    if ( title_search.size() == 0 ) {
-                        if ( title != null ) {
-                            log.debug("New title - create identifiers and title ${title}");
-                        }
-                        else {
-                            log.debug("NO match - no title - skip row");
-                        }
-                    }
-                    else if ( title_search.size() == 1 ) {
-                        log.debug("Matched one - see if any of the supplied identifiers are missing");
-                        def title_obj = title_search[0]
-                        def c = 0;
-                        cols.each { cn ->
-                            if ( cn.startsWith('title.id.' ) ) {
-                                def ns = cn.substring(9)
-                                def val = nl[c]
-                                log.debug("validate ${title_obj.title} has identifier with ${ns} ${val}");
-                                title_obj.checkAndAddMissingIdentifier(ns,val);
-                            }
-                            c++
-                        }
-                    }
-                    else {
-                        log.debug("Unable to continue - matched multiple titles");
-                    }
-                }
-            }
-        }
     }
 
     def cleanUpGorm() {

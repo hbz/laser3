@@ -1153,33 +1153,33 @@ class FinanceService {
 
     Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
-        String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
-        if(configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-            ciQuery += 'and ci.sub.instanceOf in (:subs)'
-        }
-        else {
-            ciQuery += 'and ci.sub in (:subs)'
-        }
-        Map<String,Object> ciParams = [owner:configMap.institution]
-        //we define some entry points
-        Set<Subscription> linkedSubscriptionSet = []
-        if(configMap.subscription) {
-            Subscription starting = Subscription.get(configMap.subscription)
-            Map<String,Object> subQueryParams = [starting:GenericOIDService.getOID(starting),linkType: RDStore.LINKTYPE_FOLLOWS]
-            //get precedents
-            linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
-            linkedSubscriptionSet << starting
-            //get successors
-            linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('"+Subscription.class.name+":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc",subQueryParams))
-        }
-        else if(configMap.package) {
-            if(configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-                subFilter += ' and sp.subscription.instanceOf is null'
+        if(configMap.subscription || configMap.package) {
+            String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
+            if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+                ciQuery += 'and ci.sub.instanceOf in (:subs)'
+            } else {
+                ciQuery += 'and ci.sub in (:subs)'
             }
-            linkedSubscriptionSet.addAll(Subscription.executeQuery("select sub from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :contextOrg and sp.pkg = :pkg"+subFilter,[contextOrg:configMap.institution,pkg:Package.get(configMap.package)]))
+            Map<String, Object> ciParams = [owner: configMap.institution]
+            //we define some entry points
+            Set<Subscription> linkedSubscriptionSet = []
+            if (configMap.subscription) {
+                Subscription starting = Subscription.get(configMap.subscription)
+                Map<String, Object> subQueryParams = [starting: GenericOIDService.getOID(starting), linkType: RDStore.LINKTYPE_FOLLOWS]
+                //get precedents
+                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc", subQueryParams))
+                linkedSubscriptionSet << starting
+                //get successors
+                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc", subQueryParams))
+            } else if (configMap.package) {
+                if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+                    subFilter += ' and sp.subscription.instanceOf is null'
+                }
+                linkedSubscriptionSet.addAll(Subscription.executeQuery("select sub from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :contextOrg and sp.pkg = :pkg" + subFilter, [contextOrg: configMap.institution, pkg: Package.get(configMap.package)]))
+            }
+            result.linkedSubscriptionSet = linkedSubscriptionSet
+            result.costItems = CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet])
         }
-        result.linkedSubscriptionSet = linkedSubscriptionSet
-        result.costItems = CostItem.executeQuery(ciQuery+ciOrder,ciParams+[subs:linkedSubscriptionSet])
         result
     }
 
@@ -1225,7 +1225,7 @@ class FinanceService {
             result.max = 1000000
         }
         else {
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         }
         if(!(result.user instanceof User))
             throw new FinancialDataException("Context user not loaded successfully!")

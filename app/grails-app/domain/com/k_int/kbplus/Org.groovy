@@ -200,7 +200,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-        subjectGroup(nullable:true, blank: true)
+        subjectGroup(nullable:true)
      //originEditUrl(nullable:true, blank:false)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
@@ -209,7 +209,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
               status(nullable:true)
-          membership(nullable:true, maxSize:128)
+          membership(nullable:true)
              country(nullable:true)
               region(nullable:true)
 //        , validator: {RefdataValue val, Org obj, errors ->

@@ -13,9 +13,15 @@
 	<thead>
 		<tr>
             <th></th>
-            <th>
-                ${message(code:'person.name.label')}
-            </th>
+                <g:if test="${controllerName == 'myInstitution' && actionName == 'myPublicContacts'}">
+                    <g:sortableColumn params="${params}" property="last_name"
+                                  title="${message(code: 'person.name.label')}"/>
+                </g:if>
+                <g:else>
+                    <th>
+                        ${message(code:'person.name.label')}
+                    </th>
+                </g:else>
             <th>
                 <g:if test="${controllerName == 'myInstitution' && actionName == 'addressbook'}">
                     ${message(code:'person.organisation.label')}
@@ -30,7 +36,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<g:each in="${persons.sort{it.last_name}}" var="person" status="c">
+		<g:each in="${persons}" var="person" status="c">
 			<tr>
                 <td>
                     ${c + 1 + (offset?:0)}

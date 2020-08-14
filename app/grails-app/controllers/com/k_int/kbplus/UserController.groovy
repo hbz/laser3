@@ -88,7 +88,7 @@ class UserController extends AbstractDebugController {
 
         Map filterParams = params
 
-        params.max = params.max ?: result.editor?.getDefaultPageSizeTMP() // TODO
+        params.max = params.max ?: result.editor?.getDefaultPageSize() // TODO
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = message(code:'user.show_all.label')

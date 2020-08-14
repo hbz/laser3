@@ -123,7 +123,7 @@ class SubscriptionController
 
         log.debug("subscription id:${params.id} format=${response.format}")
 
-        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP().toInteger())
+        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeAsInteger())
         result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0
         boolean filterSet = false
 
@@ -571,7 +571,7 @@ class SubscriptionController
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         if (params.subA?.length() > 0 && params.subB?.length() > 0) {
@@ -842,7 +842,7 @@ class SubscriptionController
             }
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         RefdataValue tipp_deleted = RDStore.TIPP_STATUS_DELETED
@@ -1320,7 +1320,7 @@ class SubscriptionController
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().toInteger()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
 
         params.offset = 0
@@ -1468,7 +1468,7 @@ class SubscriptionController
         if (!result) {
             response.sendError(401); return
         }
-//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
@@ -1607,7 +1607,7 @@ class SubscriptionController
         if (!result) {
             response.sendError(401); return
         }
-//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         result.contextOrg = contextService.getOrg()
@@ -1628,7 +1628,7 @@ class SubscriptionController
         if (!result) {
             response.sendError(401); return
         }
-//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 //        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
 
@@ -2718,7 +2718,7 @@ class SubscriptionController
             return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeAsInteger()
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -3132,7 +3132,7 @@ class SubscriptionController
         result.myTaskInstanceCount = result.myTaskInstanceList?.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        log.debug(result.taskInstanceList)
+        log.debug(result.taskInstanceList.toString())
         result
     }
 
@@ -3386,7 +3386,7 @@ class SubscriptionController
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
-        params.max = params.max ?: (user?.getDefaultPageSizeTMP() ?: 25)
+        params.max = params.max ?: (user?.getDefaultPageSize() ?: 25)
 
         //if (params.gokbApi) {
             def gokbRecords = []
@@ -3519,12 +3519,18 @@ class SubscriptionController
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP();
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0;
 
-        def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
-        result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
-        result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
+        Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: "${result.subscription.id}"]
+
+        result.historyLines = AuditLogEvent.executeQuery(
+                "select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc",
+                qry_params, [max: result.max, offset: result.offset]
+        )
+        result.historyLinesTotal = AuditLogEvent.executeQuery(
+                "select e.id from AuditLogEvent as e where className = :cname and persistedObjectId = :poid", qry_params
+        ).size()
 
         result
     }
@@ -3538,7 +3544,7 @@ class SubscriptionController
         }
 
         result.contextOrg = contextService.getOrg()
-        result.max = params.max ?: result.user.getDefaultPageSizeTMP();
+        result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0;
 
         String baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"

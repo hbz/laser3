@@ -16,7 +16,7 @@ class AccessMethodController extends AbstractDebugController {
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if (params.validFrom) {

@@ -1,5 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.CreatorTitle
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
@@ -22,7 +23,7 @@ class CreatorTitleController extends AbstractDebugController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSizeTMP()
+			params.max = user?.getDefaultPageSize()
 		}
         [creatorTitleInstanceList: CreatorTitle.list(params), creatorTitleInstanceTotal: CreatorTitle.count()]
     }

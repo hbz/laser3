@@ -24,7 +24,7 @@ class DocController extends AbstractDebugController {
       	Map<String, Object> result = [:]
       	result.user = User.get(springSecurityService.principal.id)
 
-		params.max = params.max ?: result.user?.getDefaultPageSizeTMP()
+		params.max = params.max ?: result.user?.getDefaultPageSize()
 
       	result.docInstanceList = Doc.list(params)
       	result.docInstanceTotal = Doc.count()

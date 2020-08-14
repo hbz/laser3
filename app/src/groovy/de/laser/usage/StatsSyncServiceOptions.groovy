@@ -69,8 +69,7 @@ class StatsSyncServiceOptions {
         reportName = matcher[0][1]
         reportVersion = matcher[0][2]
         setReportType()
-        // ERMS-2016: factType = RefdataCategory.lookupOrCreate('FactType', report.toString())
-        // if value exists --> RefdataValue.getByValueAndCategory()
+
         factType = RefdataValue.construct([
                 token   : report.toString(),
                 rdc     : RDConstants.FACT_TYPE,

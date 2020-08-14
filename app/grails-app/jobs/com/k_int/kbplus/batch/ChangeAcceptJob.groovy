@@ -46,7 +46,6 @@ class ChangeAcceptJob extends AbstractJob {
 
         try {
             RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
-            //def pending_change_pending_status = RefdataCategory.lookupOrCreate(RDConstants.PENDING_CHANGE_STATUS, "Pending")
 
             // Get all changes associated with slaved subscriptions
             String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = ? ) order by pc.ts desc"

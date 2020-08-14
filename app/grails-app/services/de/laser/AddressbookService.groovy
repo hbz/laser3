@@ -134,7 +134,12 @@ class AddressbookService {
             qParams = psq.queryParams
         }
 
-        List result = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams)
+        String order = "ASC"
+        if (params?.order != null && params?.order != 'null'){
+            order = params.order
+        }
+        query = query + " ORDER BY p.last_name "+order+" p.first_name "+order
+        List result = Person.executeQuery(query, qParams)
         result
     }
 
