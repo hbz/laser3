@@ -184,8 +184,11 @@ class PendingChange {
         def parsedNewValue
         if(targetProperty in DATE_FIELDS)
             parsedNewValue = DateUtil.parseDateGeneric(newValue)
-        else if(targetProperty in REFDATA_FIELDS)
-            parsedNewValue = RefdataValue.get(Long.parseLong(newValue))
+        else if(targetProperty in REFDATA_FIELDS) {
+            if(newValue)
+                parsedNewValue = RefdataValue.get(Long.parseLong(newValue))
+            else reject() //i.e. do nothing, wrong value
+        }
         else parsedNewValue = newValue
         switch(msgToken) {
             //pendingChange.message_TP01 (newTitle)
