@@ -118,25 +118,10 @@ class Contact implements Comparable<Contact>{
             result
         }
     }
-    
-    /**
-     *
-     * @param obj
-     * @return list with two elements for building hql query
-     */
-    static List hqlHelper(obj){
-        
-        def result = []
-        result.add(obj ? obj : '')
-        result.add(obj ? '= ?' : 'is null')
-        
-        result
-    }
 
     @Override
     int compareTo(Contact contact) {
-        int result
-        result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
+        int result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
         if (result == 0) {
             String a = this.getContent() ?: ''
             String b = contact.getContent() ?: ''

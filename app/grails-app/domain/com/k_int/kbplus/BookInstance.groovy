@@ -76,7 +76,6 @@ class BookInstance extends TitleInstance {
         {
             return firstAuthor
         }
-
         else if(firstEditor)
         {
             return firstEditor + ' ' + label
