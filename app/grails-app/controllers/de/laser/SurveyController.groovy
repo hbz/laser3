@@ -29,6 +29,7 @@ import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.*
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
@@ -1994,28 +1995,27 @@ class SurveyController {
 
             result.surveyConfigs.each { config ->
 
+                config.orgs.org.each { org ->
 
-                    config.orgs.org.each { org ->
+                    config.surveyProperties.each { property ->
+                        if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                            SurveyResult surveyResult = new SurveyResult(
+                                    owner: result.institution,
+                                    participant: org,
+                                    startDate: result.surveyInfo.startDate,
+                                    endDate: result.surveyInfo.endDate ?: null,
+                                    type: property.surveyProperty,
+                                    surveyConfig: config
+                            )
 
-                            config.surveyProperties.each { property ->
-                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
-                                    SurveyResult surveyResult = new SurveyResult(
-                                            owner: result.institution,
-                                            participant: org,
-                                            startDate: result.surveyInfo.startDate,
-                                            endDate: result.surveyInfo.endDate ?: null,
-                                            type: property.surveyProperty,
-                                            surveyConfig: config
-                                    )
-
-                                if (surveyResult.save(flush: true)) {
-                                    log.debug( surveyResult.toString() )
-                                } else {
-                                    log.error("Not create surveyResult: " + surveyResult)
-                                }
+                            if (surveyResult.save(flush: true)) {
+                                log.debug(surveyResult.toString())
+                            } else {
+                                log.error("Not create surveyResult: " + surveyResult)
                             }
                         }
-
+                    }
+                }
             }
 
             result.surveyInfo.status = RDStore.SURVEY_READY
@@ -2023,8 +2023,7 @@ class SurveyController {
             flash.message = g.message(code: "openSurvey.successfully")
         }
 
-            redirect action: 'show', id: params.id
-
+        redirect action: 'show', id: params.id
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
@@ -2070,29 +2069,28 @@ class SurveyController {
             result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it.configOrder }
 
             result.surveyConfigs.each { config ->
-                        config.orgs.org.each { org ->
+                config.orgs.org.each { org ->
 
-                            config.surveyProperties.each { property ->
+                    config.surveyProperties.each { property ->
 
-                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
-                                    SurveyResult surveyResult = new SurveyResult(
-                                            owner: result.institution,
-                                            participant: org,
-                                            startDate: currentDate,
-                                            endDate: result.surveyInfo.endDate,
-                                            type: property.surveyProperty,
-                                            surveyConfig: config
-                                    )
+                        if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                            SurveyResult surveyResult = new SurveyResult(
+                                    owner: result.institution,
+                                    participant: org,
+                                    startDate: currentDate,
+                                    endDate: result.surveyInfo.endDate,
+                                    type: property.surveyProperty,
+                                    surveyConfig: config
+                            )
 
-                                if (surveyResult.save(flush: true)) {
-                                    log.debug( surveyResult.toString() )
-                                } else {
-                                    log.debug( surveyResult.toString() )
-                                }
+                            if (surveyResult.save(flush: true)) {
+                                log.debug(surveyResult.toString())
+                            } else {
+                                log.debug(surveyResult.toString())
                             }
                         }
-
-
+                    }
+                }
             }
 
             result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
@@ -2104,8 +2102,7 @@ class SurveyController {
 
         }
 
-            redirect action: 'show', id: params.id
-
+        redirect action: 'show', id: params.id
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
