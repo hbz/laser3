@@ -2,6 +2,11 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+
+--      14.08.2020  rc1.5       Andreas Bug         DBS-Statistikfelder 19.29 und 19.35 korrigiert
+
+2782    14.08.2020  rc1.5       Andreas Bug         Kopieren von Lizenzen übernahm Werte nicht und stürzte bei Merkmalen ab
+
 2784    14.08.2020  rc1.5       Moe     Bug         User kann nicht auf "Meine Umfragen" zugreifen
 
 2783    14.08.2020  rc1.5       Moe     Bug         Cronjob für Umfrage kann keine Emails verschicken!

@@ -1865,9 +1865,9 @@ class SubscriptionController
         if(formService.validateToken(params)) {
             result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-            List changeAccepted = []
-            List changeAcceptedwithIE = []
-            List changeFailed = []
+            //List changeAccepted = []
+            //List changeAcceptedwithIE = []
+            //List changeFailed = []
 
             List selectedMembers = params.list("selectedMembers")
 
@@ -1881,27 +1881,27 @@ class SubscriptionController
                             if (params.processOption == 'linkwithIE') {
 
                                 pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                                changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                //changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                             } else {
                                 pkg_to_link.addToSubscription(subChild, false)
-                                changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                //changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                             }
-                        } else {
-                            changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                        } /*else {
+                            //changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                         }
 
                         if (changeAccepted) {
-                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                            //flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
                         }
                         if (changeAcceptedwithIE) {
-                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                            ///flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
                         }
 
                         if (!changeAccepted && !changeAcceptedwithIE){
-                            flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
-                        }
+                            //flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                        }*/
 
                     }
 
@@ -1909,29 +1909,30 @@ class SubscriptionController
                         if (pkg_to_link in subChild.packages.pkg) {
 
                             if (params.processOption == 'unlinkwithIE') {
-
-                                if(pkg_to_link.unlinkFromSubscription(subChild, true)) {
-                                    changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                                }
+                                pkg_to_link.unlinkFromSubscription(subChild, true)
+                                /*if() {
+                                    //changeAcceptedwithIE << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                }*/
                             } else {
-                                if(pkg_to_link.unlinkFromSubscription(subChild, false)) {
-                                    changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
-                                }
+                                pkg_to_link.unlinkFromSubscription(subChild, false)
+                                /*if() {
+                                    //changeAccepted << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                                }*/
                             }
-                        } else {
-                            changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
+                        } /*else {
+                            //changeFailed << "${subChild?.name} (${message(code: 'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                         }
 
                         if (changeAccepted) {
-                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                            //flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
                         }
                         if (changeAcceptedwithIE) {
-                            flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                            //flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedUnlinkWithIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
                         }
 
                         if (!changeAccepted && !changeAcceptedwithIE){
-                            flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
-                        }
+                            //flash.error = message(code: 'subscription.linkPackagesMembers.noChanges')
+                        }*/
 
                     }
                 }
@@ -5382,6 +5383,8 @@ class SubscriptionController
                     endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
                     resource: params.subscription.copyResource ? baseSubscription.resource : null,
                     form: params.subscription.copyForm ? baseSubscription.form : null,
+                    isPublicForApi: params.subscription.copyPublicForApi ? baseSubscription.isPublicForApi : false,
+                    hasPerpetualAccess: params.subscription.copyPerpetualAccess ? baseSubscription.hasPerpetualAccess : false,
             )
             //Copy InstanceOf
             if (params.subscription.copylinktoSubscription) {
@@ -5396,6 +5399,7 @@ class SubscriptionController
                 log.debug("Save ok")
                 //Copy License
                 if (params.subscription.copyLicense) {
+                    newSubscriptionInstance.refresh()
                     Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
                     baseSubscriptionLicenses.each { Links link ->
                         subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
@@ -5565,8 +5569,8 @@ class SubscriptionController
 
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
-                    baseSubscription.propertySet.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
-                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
+                    baseSubscription.propertySet.findAll{ it.tenant.id == result.institution.id && it.type.tenant == null }.each{ SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
                         copiedProp.save()
@@ -5576,7 +5580,7 @@ class SubscriptionController
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
 
-                    baseSubscription.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                    baseSubscription.propertySet.findAll{ it.tenant.id == result.institution.id && it.type.tenant?.id == result.institution.id }.each { SubscriptionProperty prop ->
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
