@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      14.08.2020  rc1.5       Andreas Bug         DBS-Statistikfelder 19.29 und 19.35 korrigiert
+
+2782    14.08.2020  rc1.5       Andreas Bug         Kopieren von Lizenzen übernahm Werte nicht und stürzte bei Merkmalen ab
+
 2781    13.08.2020  rc1.5       Andreas Bug         inkorrekte Befüllung der Ziellizenzen sorgte für Kostendubletten
 
 2780    12.08.2020  rc1.5       Moe     Bug         Umfragen lässt sich nicht exportieren

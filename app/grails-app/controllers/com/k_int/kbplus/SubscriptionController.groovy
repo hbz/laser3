@@ -5382,6 +5382,8 @@ class SubscriptionController
                     endDate: params.subscription.copyDates ? baseSubscription.endDate : null,
                     resource: params.subscription.copyResource ? baseSubscription.resource : null,
                     form: params.subscription.copyForm ? baseSubscription.form : null,
+                    isPublicForApi: params.subscription.copyPublicForApi ? baseSubscription.isPublicForApi : false,
+                    hasPerpetualAccess: params.subscription.copyPerpetualAccess ? baseSubscription.hasPerpetualAccess : false,
             )
             //Copy InstanceOf
             if (params.subscription.copylinktoSubscription) {
@@ -5396,6 +5398,7 @@ class SubscriptionController
                 log.debug("Save ok")
                 //Copy License
                 if (params.subscription.copyLicense) {
+                    newSubscriptionInstance.refresh()
                     Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
                     baseSubscriptionLicenses.each { Links link ->
                         subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
@@ -5565,8 +5568,8 @@ class SubscriptionController
 
                 if (params.subscription.copyCustomProperties) {
                     //customProperties
-                    baseSubscription.propertySet.findAll{ it.isPublic && it.tenant.id == result.institution.id }.each{ SubscriptionProperty prop ->
-                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance)
+                    baseSubscription.propertySet.findAll{ it.tenant.id == result.institution.id && it.type.tenant == null }.each{ SubscriptionProperty prop ->
+                        SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.instanceOf = null
                         copiedProp.save()
@@ -5576,7 +5579,7 @@ class SubscriptionController
                 if (params.subscription.copyPrivateProperties) {
                     //privatProperties
 
-                    baseSubscription.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                    baseSubscription.propertySet.findAll{ it.tenant.id == result.institution.id && it.type.tenant?.id == result.institution.id }.each { SubscriptionProperty prop ->
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscriptionInstance, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
