@@ -5,6 +5,7 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
+
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} --%>
 <g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />
 
@@ -13,7 +14,7 @@
 </g:if>
 
 <table class="ui compact la-table-inCard table">
-    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant.id == contextOrg.id && cp.isPublic == false }}"/>
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id && cp.isPublic == false }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
             <col style="width: 129px;">
@@ -38,7 +39,7 @@
     </g:if>
     <tbody>
         <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
-            <g:if test="${prop.type?.tenant?.id == tenant?.id}">
+            <g:if test="${prop.type.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">

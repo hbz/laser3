@@ -11,6 +11,14 @@
         <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser')} : ${message(code:'subscription.details.label')}</title>
         <g:javascript src="properties.js"/>
+        <style>
+            .ui.table tr th {
+                border-top: 1px solid #d3dae3;
+            }
+            .ui.table tr:first-child th {
+                border-top: none;
+            }
+        </style>
     </head>
     <body>
 
@@ -552,7 +560,7 @@
                                     </tr>
                                     <g:if test="${pair.propertySet}">
                                     <tr>
-                                        <td colspan="3"><div id="${link.id}Properties"></div></td>
+                                        <td style="border-top: none;" colspan="3"><div id="${link.id}Properties"></div></td>
                                     </tr>
                                     </g:if>
                                 </g:each>
