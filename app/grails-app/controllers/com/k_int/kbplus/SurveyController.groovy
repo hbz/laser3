@@ -1970,20 +1970,21 @@ class SurveyController {
                     config.orgs.org.each { org ->
 
                             config.surveyProperties.each { property ->
+                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: result.surveyInfo.startDate,
+                                            endDate: result.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
 
-                                def surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org ?: null,
-                                        startDate: result.surveyInfo.startDate,
-                                        endDate: result.surveyInfo.endDate ?: null,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
-
-                                if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
-                                } else {
-                                    log.error("Not create surveyResult: "+ surveyResult)
+                                    if (surveyResult.save(flush: true)) {
+                                        log.debug(surveyResult)
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
                                 }
                             }
                         }
@@ -2046,19 +2047,21 @@ class SurveyController {
 
                             config.surveyProperties.each { property ->
 
-                                def surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org ?: null,
-                                        startDate: currentDate,
-                                        endDate: result.surveyInfo.endDate,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
+                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: currentDate,
+                                            endDate: result.surveyInfo.endDate,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
 
-                                if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
-                                } else {
-                                    log.debug(surveyResult)
+                                    if (surveyResult.save(flush: true)) {
+                                        log.debug(surveyResult)
+                                    } else {
+                                        log.debug(surveyResult)
+                                    }
                                 }
                             }
                         }

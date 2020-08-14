@@ -923,6 +923,7 @@ class OrganisationController extends AbstractDebugController {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.id)
+        result.contextOrg      = contextService.org
 
         result.editable = checkIsEditable(result.user, orgInstance)
 
@@ -1435,6 +1436,7 @@ class OrganisationController extends AbstractDebugController {
                     switch (contextOrg.getCustomerType()){
                         case 'ORG_BASIC_MEMBER':
                             switch (orgInstance.getCustomerType()){
+                                case 'ORG_BASIC_MEMBER':    isEditable = false; break
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
                                 default:                    isEditable = false; break
@@ -1442,16 +1444,18 @@ class OrganisationController extends AbstractDebugController {
                             break
                         case 'ORG_INST':
                             switch (orgInstance.getCustomerType()){
+                                case 'ORG_BASIC_MEMBER':    isEditable = false; break
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = userHasEditableRights; break
+                                default:                    isEditable = false; break
                             }
                             break
                         case 'ORG_CONSORTIUM':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_INST':            isEditable = true; break
+                                case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
+                                case 'ORG_INST':            isEditable = userHasEditableRights; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = userHasEditableRights; break
+                                default:                    isEditable = false; break
                             }
                             break
                     }

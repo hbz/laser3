@@ -14,10 +14,10 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
+import org.apache.commons.collections.bidimap.DualHashBidiMap
 
 //import de.laser.TaskService //unused for quite a long time
 
-import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -2288,6 +2288,11 @@ AND EXISTS (
 
         result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
 
+        result.allConsortia = Org.executeQuery(
+                """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
+                        group by o order by lower(o.name) """
+        )
+
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
@@ -2383,7 +2388,7 @@ AND EXISTS (
                 if (costItems?.subscr) {
                     result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
-		result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)    
+		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -3089,7 +3094,7 @@ AND EXISTS (
             int rownum = 1
             int sumcell = 11
             int sumTitleCell = 10
-            result.costItems.eachWithIndex { entry, int sidewideNumber ->
+            result.entries.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
                 Subscription subCons = (Subscription) entry[1]
@@ -3128,8 +3133,10 @@ AND EXISTS (
                 //license name
                 log.debug("insert license name")
                 cell = row.createCell(cellnum++)
-                if(subCons.owner)
-                    cell.setCellValue(subCons.owner.reference)
+                if(result.linkedLicenses.get(subCons)) {
+                    List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
+                    cell.setCellValue(references.join("\n"))
+                }
                 //packages
                 log.debug("insert package name")
                 cell = row.createCell(cellnum++)
@@ -3240,7 +3247,7 @@ AND EXISTS (
                                    message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
-                    result.costItems.eachWithIndex { entry, int sidewideNumber ->
+                    result.entries.eachWithIndex { entry, int sidewideNumber ->
                         row = []
                         log.debug("processing entry ${sidewideNumber} ...")
                         CostItem ci = (CostItem) entry[0] ?: new CostItem()
@@ -3279,8 +3286,10 @@ AND EXISTS (
                         //license name
                         log.debug("insert license name")
                         cellnum++
-                        if(subCons.owner)
-                            row.add(subCons.owner.reference.replaceAll(',',' '))
+                        if(result.linkedLicenses.get(subCons)) {
+                            List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',',' ') }
+                            row.add(references.join(' '))
+                        }
                         else row.add(' ')
                         //packages
                         log.debug("insert package name")
@@ -3890,47 +3899,33 @@ AND EXISTS (
 
         Org tenant = contextService.getOrg()
 
-        def privatePropDef = PropertyDefinition.findWhere(
-                name:   params.pd_name,
-                descr:  params.pd_descr,
-                //type:   params.pd_type,
-                tenant: tenant,
-        )
+        RefdataCategory rdc = null
 
-        if (privatePropDef) {
-            return ['error', message(code: 'propertyDefinition.name.unique')]
+        if (params.refdatacategory) {
+            rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+        }
+
+        Map<String, Object> map = [
+                token       : UUID.randomUUID(),
+                category    : params.pd_descr,
+                type        : params.pd_type,
+                rdc         : rdc?.getDesc(),
+                multiple    : (params.pd_multiple_occurrence ? true : false),
+                mandatory   : (params.pd_mandatory ? true : false),
+                i10n        : [
+                        name_de: params.pd_name?.trim(),
+                        name_en: params.pd_name?.trim(),
+                        expl_de: params.pd_expl?.trim(),
+                        expl_en: params.pd_expl?.trim()
+                ],
+                tenant      : tenant.globalUID]
+
+        PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
+        if (privatePropDef.save(flush: true)) {
+            return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
         }
         else {
-            RefdataCategory rdc = null
-
-            if (params.refdatacategory) {
-                rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-            }
-
-            Map<String, Object> map = [
-                    token       : UUID.randomUUID(),
-                    category    : params.pd_descr,
-                    type        : params.pd_type,
-                    rdc         : rdc?.getDesc(),
-                    multiple    : (params.pd_multiple_occurrence ? true : false),
-                    mandatory   : (params.pd_mandatory ? true : false),
-                    i10n        : [
-                            name_de: params.pd_name?.trim(),
-                            name_en: params.pd_name?.trim(),
-                            expl_de: params.pd_expl?.trim(),
-                            expl_en: params.pd_expl?.trim()
-                    ],
-                    tenant      : tenant.globalUID
-            ]
-
-            privatePropDef = PropertyDefinition.construct(map)
-
-            if (privatePropDef.save(flush: true)) {
-                return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-            }
-            else {
-                return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-            }
+            return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
         }
     }
 

@@ -19,14 +19,16 @@
         </h1>
 
         <div class="la-float-right">
-            <g:form controller="pendingChange" action="processAll">
-                <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
-                <div class="ui buttons">
-                    <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
-                    <div class="or" data-text="${message(code:'default.or')}"></div>
-                    <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
-                </div>
-            </g:form>
+            <g:if test="${packages}">
+                <g:form controller="pendingChange" action="processAll">
+                    <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
+                    <div class="ui buttons">
+                        <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
+                        <div class="or" data-text="${message(code:'default.or')}"></div>
+                        <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
+                    </div>
+                </g:form>
+            </g:if>
         </div>
 
         <div class="ui internally celled grid">
