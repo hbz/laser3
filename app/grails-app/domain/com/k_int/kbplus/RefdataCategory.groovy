@@ -67,24 +67,6 @@ class RefdataCategory extends AbstractI10n {
         rdc
     }
 
-    @Deprecated
-    static RefdataValue lookupOrCreate(String category_name, String icon, String value) {
-        RefdataCategory cat = RefdataCategory.findByDescIlike(category_name);
-        if (! cat) {
-            cat = new RefdataCategory(desc:category_name, desc_de: cat.desc, desc_en: cat.desc).save(flush: true);
-        }
-
-        RefdataValue result = RefdataValue.findByOwnerAndValueIlike(cat, value)
-
-        if (! result) {
-            new RefdataValue(owner:cat, value:value).save(flush:true);
-            result = RefdataValue.findByOwnerAndValueIlike(cat, value);
-        }
-
-        result.icon = icon
-        result
-    }
-
   static def refdataFind(params) {
       def result = []
       List<RefdataCategory> matches = []

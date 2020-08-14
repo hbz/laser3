@@ -44,9 +44,6 @@ class FactService {
         return result
 
       try {
-          // ERMS-2016: def fact_type_refdata_value = RefdataCategory.lookupOrCreate('FactType',fact.type)
-          // if value exists --> RefdataValue.getByValueAndCategory()
-
           RefdataValue fact_type_refdata_value = RefdataValue.construct([
                   token   : fact.type,
                   rdc     : RDConstants.FACT_TYPE,
