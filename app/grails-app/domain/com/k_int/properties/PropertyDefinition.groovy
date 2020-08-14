@@ -488,10 +488,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     void removeProperty() {
         log.debug("Remove")
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = ?', [this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = ?', [this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = :self', [self: this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = :self', [self: this])
+        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
         this.delete(flush:true)
     }
 
