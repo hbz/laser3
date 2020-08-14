@@ -80,9 +80,12 @@ class LicenseController
         if (executorWrapperService.hasRunningProcess(result.license)) {
             log.debug("PendingChange processing in progress")
             result.processingpc = true
-        } else {
-
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, RDStore.PENDING_CHANGE_PENDING])
+        }
+        else {
+            List<PendingChange> pendingChanges = PendingChange.executeQuery("" +
+                    "select pc from PendingChange as pc where license = :lic and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
+                    [lic: result.license, status: RDStore.PENDING_CHANGE_PENDING]
+            )
 
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
@@ -90,7 +93,7 @@ class LicenseController
 
             if (result.license.isSlaved && ! pendingChanges.isEmpty()) {
                 log.debug("Slaved lincence, auto-accept pending changes")
-                def changesDesc = []
+                List changesDesc = []
                 pendingChanges.each { change ->
                     if (!pendingChangeService.performAccept(change)) {
                         log.debug("Auto-accepting pending change has failed.")
@@ -626,8 +629,10 @@ class LicenseController
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
-                List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+                List<PendingChange> pendingChanges = PendingChange.executeQuery(
+                        "select pc from PendingChange as pc where license.id = :licId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
+                        [licId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
+                )
 
                 result.pendingChanges << ["${member.id}": pendingChanges]
             }

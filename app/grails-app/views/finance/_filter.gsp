@@ -1,9 +1,11 @@
 <!-- _filter.gsp -->
 <%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
-<g:set var="locale" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}" />
-<g:set var="getAllRefDataValuesForCategoryQuery" value="select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_${locale}" />
 
+<%
+    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+    String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
+%>
 
     <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
     <g:render template="/templates/filter/javascript" />

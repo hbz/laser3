@@ -525,9 +525,10 @@ class PackageController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        RefdataValue pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
-
-        result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, payload", [packageInstance, pending_change_pending_status]);
+        result.pendingChanges = PendingChange.executeQuery(
+                "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
+                [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
+        )
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         params.max = result.max

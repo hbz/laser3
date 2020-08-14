@@ -136,8 +136,10 @@ class SubscriptionController
 
         log.debug("max = ${result.max}")
 
-        RefdataValue pending_change_pending_status = RDStore.PENDING_CHANGE_PENDING
-        List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status])
+        List<PendingChange> pendingChanges = PendingChange.executeQuery(
+                "select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
+                [sub: result.subscriptionInstance, status: RDStore.PENDING_CHANGE_PENDING]
+        )
 
         if (result.subscriptionInstance?.isSlaved && ! pendingChanges.isEmpty()) {
             log.debug("Slaved subscription, auto-accept pending changes")
@@ -2695,8 +2697,10 @@ class SubscriptionController
                 log.debug("PendingChange processing in progress")
                 result.processingpc = true
             } else {
-                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
-                List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+                List<PendingChange> pendingChanges = PendingChange.executeQuery(
+                        "select pc from PendingChange as pc where subscription.id = :subId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
+                        [subId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
+                )
 
                 result.pendingChanges << ["${member.id}": pendingChanges]
             }
@@ -3666,15 +3670,17 @@ class SubscriptionController
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
             //pc.msgParams null check is the legacy check; new pending changes should NOT be displayed here but on dashboard and only there!
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) and pc.msgParams is not null order by pc.ts desc", [result.subscription, pending_change_pending_status])
+            List<PendingChange> pendingChanges = PendingChange.executeQuery(
+                    "select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) and pc.msgParams is not null order by pc.ts desc",
+                    [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING]
+            )
 
             log.debug("pc result is ${result.pendingChanges}")
 
             if (result.subscription.isSlaved && ! pendingChanges.isEmpty()) {
                 log.debug("Slaved subscription, auto-accept pending changes")
-                def changesDesc = []
+                List changesDesc = []
                 pendingChanges.each { change ->
                     if (!pendingChangeService.performAccept(change)) {
                         log.debug("Auto-accepting pending change has failed.")

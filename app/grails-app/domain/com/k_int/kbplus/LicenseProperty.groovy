@@ -3,6 +3,8 @@ package com.k_int.kbplus
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 
 import javax.persistence.Transient
 
@@ -165,7 +167,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
             List<PendingChange> slavedPendingChanges = []
 
-            def depedingProps = LicenseProperty.findAllByInstanceOf( this )
+            List<LicenseProperty> depedingProps = LicenseProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
                 String definedType = 'text'
@@ -223,7 +225,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     [objectID: "${this.class.name}:${this.id}"] )
             openPD.each { pc ->
                 if (pc.payload) {
-                    def payload = JSON.parse(pc.payload)
+                    JSONElement payload = JSON.parse(pc.payload)
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
