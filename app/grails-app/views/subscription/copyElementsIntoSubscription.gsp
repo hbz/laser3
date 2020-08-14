@@ -176,7 +176,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_EDITOR")}">
+            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
                 <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
@@ -209,7 +209,7 @@
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="/templates/copyElements/copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_EDITOR")}">
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
         <g:render template="/templates/copyElements/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">

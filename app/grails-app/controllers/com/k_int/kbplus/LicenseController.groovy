@@ -6,8 +6,10 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.CopyElementsService
 import de.laser.DeletionService
 import de.laser.FormService
+import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PropertyService
 import de.laser.SubscriptionsQueryService
@@ -50,6 +52,8 @@ class LicenseController
     SubscriptionsQueryService subscriptionsQueryService
     LinksGenerationService linksGenerationService
     FormService formService
+    CopyElementsService copyElementsService
+    LicenseService licenseService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1098,8 +1102,8 @@ class LicenseController
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
-        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.allObjects_readRights = licenseService.getMyLicenses_readRights()
+        result.allObjects_writeRights = licenseService.getMyLicenses_writeRights()
 
         List<String> licTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
                                                 CalculatedType.TYPE_ADMINISTRATIVE]
@@ -1112,74 +1116,26 @@ class LicenseController
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copySubElements_DatesOwnerRelations(params)
-                if (params.isRenewSub){
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
-                    result << copyElementsService.loadDataFor_PackagesEntitlements(params)
-                } else {
-                    result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
-                }
-                break
-            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copyElementsService.copySubElements_PackagesEntitlements(params)
-                if (params.isRenewSub){
-                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-                } else {
-                    result << copyElementsService.loadDataFor_PackagesEntitlements(params)
-                }
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
-                if (params.isRenewSub){
-                    if (!params.fromSurvey && result.isSubscriberVisible){
-                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
-                        result << copyElementsService.loadDataFor_Subscriber(params)
-                    } else {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        result << copyElementsService.loadDataFor_Properties(params)
-                    }
-                } else {
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-                }
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
                 result << copyElementsService.copySubElements_Subscriber(params)
-                if (params.isRenewSub) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    result << copyElementsService.loadDataFor_Properties(params)
-                } else {
-                    result << copyElementsService.loadDataFor_Subscriber(params)
-                }
+                result << copyElementsService.loadDataFor_Subscriber(params)
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copySubElements_Properties(params)
-                if (params.isRenewSub && params.targetObjectId){
-                    flash.error = ""
-                    flash.message = ""
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
-
-                    if(surveyConfig && result.fromSurvey) {
-                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
-                    }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
-                    }
-                } else {
-                    result << copyElementsService.loadDataFor_Properties(params)
-                }
+                result << copyElementsService.loadDataFor_Properties(params)
                 break
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copySubElements_Properties(params)
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
-
-                    if(surveyConfig && result.fromSurvey) {
-                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
-                    }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
-                    }
+                    redirect controller: 'license', action: 'show', params: [id: params.targetObjectId]
                 }
                 break
             default:
@@ -1188,12 +1144,11 @@ class LicenseController
         }
 
         if (params.targetObjectId) {
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = License.get(Long.parseLong(params.targetObjectId))
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
 
-        if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
         result
     }
 
