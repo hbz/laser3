@@ -72,13 +72,6 @@ class SubscriptionController
     AccessPointService accessPointService
     CopyElementsService copyElementsService
 
-    public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
-    public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
-    public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
-    public static final String WORKFLOW_SUBSCRIBER = '3'
-    public static final String WORKFLOW_PROPERTIES = '4'
-    public static final String WORKFLOW_END = '6'
-
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
             new SimpleDateFormat('dd.MM.yyyy'),
@@ -4632,7 +4625,7 @@ class SubscriptionController
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
         if (params.fromSurvey && accessService.checkPerm("ORG_CONSORTIUM")) {result.fromSurvey = params.fromSurvey}
 
-        result.isConsortialSubs = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
@@ -4650,48 +4643,48 @@ class SubscriptionController
         }
 
         switch (params.workFlowPart) {
-            case WORKFLOW_DATES_OWNER_RELATIONS:
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copySubElements_DatesOwnerRelations(params)
                 if (params.isRenewSub){
-                    params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                 } else {
                     result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 }
                 break
-            case WORKFLOW_PACKAGES_ENTITLEMENTS:
+            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copyElementsService.copySubElements_PackagesEntitlements(params)
                 if (params.isRenewSub){
-                    params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 } else {
                     result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                 }
                 break
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
                 if (params.isRenewSub){
                     if (!params.fromSurvey && result.isSubscriberVisible){
-                        params.workFlowPart = WORKFLOW_SUBSCRIBER
+                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
-                        params.workFlowPart = WORKFLOW_PROPERTIES
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                         result << copyElementsService.loadDataFor_Properties(params)
                     }
                 } else {
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 }
                 break
-            case WORKFLOW_SUBSCRIBER:
+            case CopyElementsService.WORKFLOW_SUBSCRIBER:
                 result << copyElementsService.copySubElements_Subscriber(params)
                 if (params.isRenewSub) {
-                    params.workFlowPart = WORKFLOW_PROPERTIES
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << copyElementsService.loadDataFor_Properties(params)
                 } else {
                     result << copyElementsService.loadDataFor_Subscriber(params)
                 }
                 break
-            case WORKFLOW_PROPERTIES:
+            case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copySubElements_Properties(params)
                 if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
@@ -4707,7 +4700,7 @@ class SubscriptionController
                     result << copyElementsService.loadDataFor_Properties(params)
                 }
                 break
-            case WORKFLOW_END:
+            case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copySubElements_Properties(params)
                 if (params.targetObjectId){
                     flash.error = ""
@@ -4730,8 +4723,8 @@ class SubscriptionController
         if (params.targetObjectId) {
             result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
-        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
-        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
         result
@@ -4762,18 +4755,18 @@ class SubscriptionController
         result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
 
         switch (params.workFlowPart) {
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
-                result << loadDataFor_DocsAnnouncementsTasks()
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copyElementsService.copySubElements_DocsAnnouncementsTasks();
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
 
                 break;
-            case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties();
-                result << loadDataFor_Properties()
+            case CopyElementsService.WORKFLOW_PROPERTIES:
+                result << copyElementsService.copySubElements_Properties();
+                result << copyElementsService.loadDataFor_Properties()
 
                 break;
-            case WORKFLOW_END:
-                result << copySubElements_Properties();
+            case CopyElementsService.WORKFLOW_END:
+                result << copyElementsService.copySubElements_Properties();
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
@@ -4781,15 +4774,15 @@ class SubscriptionController
                 }
                 break;
             default:
-                result << loadDataFor_DocsAnnouncementsTasks()
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
                 break;
         }
 
         if (params.targetObjectId) {
             result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
-        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_PROPERTIES
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_PROPERTIES
         result
     }
 

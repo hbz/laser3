@@ -35,6 +35,9 @@
             </sec:ifAnyGranted>
             <g:if test="${isCopyLicenseEnabled}">
                 <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />
+                <g:if test="${(accessService.checkPerm("ORG_INST") && !license.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[id: params.id]}" message="myinst.copyElementsIntoLicense" />
+                </g:if>
             </g:if>
             <g:else>
                 <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />

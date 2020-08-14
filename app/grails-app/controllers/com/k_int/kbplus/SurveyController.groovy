@@ -44,13 +44,6 @@ class SurveyController {
     PropertyService propertyService
     LinksGenerationService linksGenerationService
 
-    public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
-    public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
-    public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
-    public static final String WORKFLOW_SUBSCRIBER = '3'
-    public static final String WORKFLOW_PROPERTIES = '4'
-    public static final String WORKFLOW_END = '6'
-
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
             new SimpleDateFormat('dd.MM.yyyy'),
@@ -4789,39 +4782,39 @@ class SurveyController {
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         switch (params.workFlowPart) {
-            case WORKFLOW_DATES_OWNER_RELATIONS:
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations()
                 if (params.isRenewSub){
-                    params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
                 } else {
                     result << loadDataFor_DatesOwnerRelations()
                 }
                 break
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
                     if (result.isSubscriberVisible){
-                        params.workFlowPart = WORKFLOW_SUBSCRIBER
+                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         result << loadDataFor_Subscriber()
                     } else {
-                        params.workFlowPart = WORKFLOW_PROPERTIES
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                         result << loadDataFor_Properties()
                     }
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
                 }
                 break
-            case WORKFLOW_SUBSCRIBER:
+            case CopyElementsService.WORKFLOW_SUBSCRIBER:
                 result << copySubElements_Subscriber()
                 if (params.isRenewSub) {
-                    params.workFlowPart = WORKFLOW_PROPERTIES
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << loadDataFor_Properties()
                 } else {
                     result << loadDataFor_Subscriber()
                 }
                 break
-            case WORKFLOW_PROPERTIES:
+            case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties()
                 if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
@@ -4831,7 +4824,7 @@ class SurveyController {
                     result << loadDataFor_Properties()
                 }
                 break
-            case WORKFLOW_END:
+            case CopyElementsService.WORKFLOW_END:
                 result << copySubElements_Properties()
                 if (params.targetObjectId){
                     flash.error = ""
@@ -4847,8 +4840,8 @@ class SurveyController {
         if (params.targetObjectId) {
             result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
-        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
-        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
 
         result
     }

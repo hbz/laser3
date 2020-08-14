@@ -9,40 +9,42 @@
             method="post" class="ui form newLicence">
         <div class="fields" style="justify-content: flex-end;">
             <div class="eight wide field">
-                <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceObject.name')}: </label>
+                <label>${message(code: 'copyElementsIntoObject.sourceObject.name')}: </label>
                 <g:select class="ui search selection dropdown"
                       name="sourceObjectId"
-                      from="${((List<Subscription>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
-                      optionValue="${{it?.dropdownNamingConvention()}}"
+                      from="${((List<Object>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
+                      optionValue="${{it.dropdownNamingConvention()}}"
                       optionKey="id"
                       value="${sourceObject?.id}"
                       />
             </div>
             <div class="eight wide field">
-                <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetObject.name')}: </label>
-                <div class="ui checkbox">
-                    <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
-                    <label for="show.activeSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.activeSubscriptions.name')}</label>
-                </div><br />
-                <div class="ui checkbox">
-                    <g:checkBox name="show.intendedSubscriptions" value="intended" checked="false" onchange="adjustDropdown()"/>
-                    <label for="show.intendedSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.intendedSubscriptions.name')}</label>
-                </div><br />
-                <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                <div class="ui checkbox">
-                    <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false" onchange="adjustDropdown()" />
-                    <label for="show.subscriber">${message(code:'subscription.details.copyElementsIntoSubscription.show.subscriber.name')}</label>
-                </div><br />
+                <g:if test="${sourceObject instanceof com.k_int.kbplus.Subscription}">
+                    <label>${message(code: 'copyElementsIntoObject.targetObject.name')}: </label>
+                    <div class="ui checkbox">
+                        <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
+                        <label for="show.activeSubscriptions">${message(code:'copyElementsIntoObject.show.activeSubscriptions.name')}</label>
+                    </div><br />
+                    <div class="ui checkbox">
+                        <g:checkBox name="show.intendedSubscriptions" value="intended" checked="false" onchange="adjustDropdown()"/>
+                        <label for="show.intendedSubscriptions">${message(code:'copyElementsIntoObject.show.intendedSubscriptions.name')}</label>
+                    </div><br />
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <div class="ui checkbox">
+                        <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false" onchange="adjustDropdown()" />
+                        <label for="show.subscriber">${message(code:'copyElementsIntoObject.show.subscriber.name')}</label>
+                    </div><br />
+                    </g:if>
+                    <div class="ui checkbox">
+                        <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
+                        <label for="show.conntectedSubscriptions">${message(code:'copyElementsIntoObject.show.conntectedSubscriptions.name')}</label>
+                    </div><br id="element-vor-target-dropdown" />
                 </g:if>
-                <div class="ui checkbox">
-                    <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
-                    <label for="show.conntectedSubscriptions">${message(code:'subscription.details.copyElementsIntoSubscription.show.conntectedSubscriptions.name')}</label>
-                </div><br id="element-vor-target-dropdown" />
                 <g:select class="ui search selection dropdown"
                       id="targetObjectId"
                       name="targetObjectId"
                       from="${allObjects_writeRights}"
-                      optionValue="${{it?.dropdownNamingConvention()}}"
+                      optionValue="${{it.dropdownNamingConvention()}}"
                       optionKey="id"
                       value="${targetObject?.id}"
                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>

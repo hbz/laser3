@@ -11,7 +11,7 @@
             <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
             <g:if test="${properties}">
 
-                <label><g:message code="subscription.details.copyElementsIntoSubscription.auditConfig" />:</label>
+                <label><g:message code="copyElementsIntoObject.auditConfig" />:</label>
                 <div class="ui bulleted list">
                     <g:each in="${properties}" var="prop" >
                         <div class="item">
@@ -30,7 +30,7 @@
                 </div>
             </g:if>
             <g:else>
-                <g:message code="subscription.details.copyElementsIntoSubscription.noAuditConfig"/>
+                <g:message code="copyElementsIntoObject.noAuditConfig"/>
             </g:else>
 
             <g:if test="${auditConfigProvidersAgencies}">
