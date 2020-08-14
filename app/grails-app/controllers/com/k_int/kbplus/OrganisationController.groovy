@@ -1130,7 +1130,6 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
-      //def comboType = RefdataCategory.lookupOrCreate(RDConstants.ORGANISATIONAL_ROLE, 'Package Consortia')
         RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
       log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
       def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = :fromOrg and c.toOrg = :toOrg", [fromOrg: fromOrg, toOrg: toOrg])

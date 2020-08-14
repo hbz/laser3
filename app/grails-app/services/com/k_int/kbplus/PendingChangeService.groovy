@@ -396,9 +396,6 @@ class PendingChangeService extends AbstractLockableService {
                                 newProp = RefdataValue.getByValueAndCategory(changeDoc.newLabel, propDef.refdataCategory)
                                 // Fallback
                                 if (! newProp) {
-                                    // ERMS-2016: newProp = RefdataCategory.lookupOrCreate(propDef.refdataCategory, changeDoc.newLabel)
-                                    // if value exists --> RefdataValue.getByValueAndCategory()
-
                                     newProp = RefdataValue.construct([
                                             token   : changeDoc.newLabel,
                                             rdc     : propDef.refdataCategory,
