@@ -12,6 +12,7 @@ import de.laser.AuditConfig
 import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -2634,4 +2635,47 @@ class OrganisationService {
         result
     }
 
+    Map<String,Object> getSubscriberProviderPercentages(Map<String,Object> configMap) {
+        Map<String,Object> result = [:]
+        Set<RefdataValue> providerRoles = RefdataValue.findAllByValueInListAndOwner(['Agency','Content Provider','Provider','Publisher'],RefdataCategory.findByDesc(RDConstants.ORGANISATIONAL_ROLE))
+        SimpleDateFormat sdf = DateUtil.SDF_NoTime
+        Set labels = []
+        List series = []
+        Map<Org,List> providerYearCount = [:]
+        if(configMap.subscriber) {
+            //open for any idea how the following may be realised in *one* query!
+            //yearRing as grouping unit may be hbz-given, but there surely is an equivalent grouping unit for other institutions
+            Set<Subscription> subscriptions = Subscription.executeQuery('select oor.sub from OrgRole oor where oor.roleType in (:subscriberRoleTypes) and oor.org = :subscriber order by oor.sub.startDate asc',[subscriber:Org.get(configMap.subscriber),subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            Set<Date> yearRings = subscriptions.collect { Subscription s -> s.startDate }
+            Set<Org> allTimeProviders = Org.executeQuery('select distinct(oo.org) from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType in (:providerRoleTypes)',[subscriptions:subscriptions,providerRoleTypes:providerRoles])
+            yearRings.each { Date yearRing ->
+                List rows
+                if(yearRing) {
+                    labels << sdf.format(yearRing)
+                    rows = Org.executeQuery('select org,count(org.id) from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and oo.sub.startDate = :yearRing and oo.sub in (:subscriptions) group by org.id order by org.name asc', [yearRing: yearRing, subscriptions: subscriptions, providerRoleTypes: providerRoles])
+                }
+                else {
+                    labels << 'ohne Jahr'
+                    rows = Org.executeQuery('select org,count(org.id) from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and oo.sub.startDate is null and oo.sub in (:subscriptions) group by org.id order by org.name asc',[subscriptions: subscriptions, providerRoleTypes:providerRoles])
+                }
+                allTimeProviders.each { Org provider ->
+                    //log.debug(row[0]+' '+row[1])
+                    def count = rows.find { row -> row[0].id == provider.id }
+                    List<Integer> providerCount = providerYearCount.get(provider)
+                    if(!providerCount)
+                        providerCount = []
+                    if(count)
+                        providerCount << count[1]
+                    else providerCount << 0
+                    providerYearCount.put(provider,providerCount)
+                }
+            }
+            providerYearCount.each { Org k, List v ->
+                series << [name:k.name,data:v]
+            }
+            result.labels = labels
+            result.series = series
+        }
+        result
+    }
 }
