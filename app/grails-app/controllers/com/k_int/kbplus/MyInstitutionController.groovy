@@ -2477,6 +2477,8 @@ join sub.orgRelations or_sub where
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
+        params.view = 'contacts'
+//        params.view = 'addresses'
 
         result
       }

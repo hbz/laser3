@@ -26,7 +26,19 @@
 
         <%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
         <g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: true]}"/>
+%{--------------------}%
+    <div class="ui secondary pointing tabular menu">
+        <a class="${params.view == 'contacts' ? 'active item':'item'}" data-tab="contacts">
+            ${message(code:'org.prsLinks.label')}
+        </a>
 
+        <a class="${params.view == 'addresses' ? 'active item':'item'}" data-tab="addresses">
+            ${message(code:'org.addresses.label')}
+        %{--<a class="${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">--}%
+        </a>
+    </div>
+%{--------------------}%
+    <div class="ui bottom attached tab ${params.view == 'contacts' ? 'active':''}" data-tab="contacts">
         <g:if test="${editable && contextService.user.hasAffiliation('INST_EDITOR')}">
 
             <input class="ui button"
@@ -88,6 +100,73 @@
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}"
-                        total="${num_visiblePersons}"/>
+                        total="${num_visiblePersons}"/>    </div>
+
+%{--------------------}%
+    <div class="ui bottom attached tab ${params.view == 'addresses' ? 'active':''}" data-tab="addresses">
+        <g:if test="${editable && contextService.user.hasAffiliation('INST_EDITOR')}">
+
+            <input class="ui button"
+                   value="${message(code: 'person.create_new.contactPerson.label')}"
+                   data-semui="modal"
+                   data-href="#personFormModal" />
+        </g:if>
+
+        <g:render template="/person/formModal" model="['org': institution,
+                                                       'isPublic': RDStore.YN_YES,
+                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+        ]"/>
+
+        <semui:filter>
+            <g:form action="${actionName}" controller="myInstitution" method="get" class="ui small form">
+                <div class="three fields">
+                    <div class="field">
+                        <label for="prs">${message(code: 'person.filter.name')}</label>
+                        <div class="ui input">
+                            <input type="text" id="prs" name="prs" value="${params.prs}"
+                                   placeholder="${message(code: 'person.filter.name')}" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label><g:message code="person.function.label" /></label>
+                        <laser:select class="ui dropdown search"
+                                      name="function"
+                                      from="${rdvAllPersonFunctions}"
+                                      multiple=""
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${params.function}"
+                        />
+                    </div>
+                    <div class="field">
+                        <label><g:message code="person.position.label" /></label>
+                        <laser:select class="ui dropdown search"
+                                      name="position"
+                                      from="${rdvAllPersonPositions}"
+                                      multiple=""
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${params.position}"
+                        />
+                    </div>
+                </div>
+
+                <div class="field la-field-right-aligned">
+                    <label></label>
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                </div>
+            </g:form>
+        </semui:filter>
+
+        <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: null]}" />
+
+        <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
+                        max="${max}"
+                        total="${num_visiblePersons}"/>    </div>
+
+%{--------------------}%
     </body>
 </html>
