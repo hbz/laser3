@@ -181,7 +181,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                     expl_en: null
             ]
 
-            typeIsValid(type)
+            PropertyDefinition.typeIsValid(type)
 
             if (map.tenant && !tenant) {
                 static_logger.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')

@@ -111,7 +111,7 @@ class OrgSettings {
     static void delete(Org org, KEYS key) {
 
         withTransaction {
-            def oss = findWhere(org: org, key: key)
+            def oss = OrgSettings.findWhere(org: org, key: key)
             oss?.delete()
         }
     }

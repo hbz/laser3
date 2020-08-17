@@ -85,7 +85,7 @@ class SurveyProperty implements I10nTrait {
     static def loc(String name, String typeClass, RefdataCategory rdc, String expl, String comment, String introduction, Org owner) {
 
         withTransaction {
-            typeIsValid(typeClass)
+            SurveyProperty.typeIsValid(typeClass)
 
             SurveyProperty prop = SurveyProperty.findWhere(
                     name: name,

@@ -40,9 +40,9 @@ class DashboardDueDate {
             this.lastUpdated = now
             this.dueDateObject.version = this.dueDateObject.version + 1
             this.dueDateObject.lastUpdated = now
-            this.dueDateObject.attribute_value_de = getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN)
-            this.dueDateObject.attribute_value_en = getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH)
-            this.dueDateObject.date = getDate(obj, responsibleUser)
+            this.dueDateObject.attribute_value_de = DashboardDueDate.getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN)
+            this.dueDateObject.attribute_value_en = DashboardDueDate.getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH)
+            this.dueDateObject.date = DashboardDueDate.getDate(obj, responsibleUser)
             this.dueDateObject.save()
             this.save()
         }
