@@ -2357,8 +2357,9 @@ class AjaxController {
     def getEmailAddresses() {
         Set result = []
         if (params.orgIdList){
-            List<Long> orgIds = params.orgIdList.split ','
+            List<Long> orgIds = (params.orgIdList.split( ',')).each { (it instanceof Long) ? it : Long.parseLong(it)}
             List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
+            println(orgList)
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
@@ -2402,6 +2403,7 @@ class AjaxController {
             }
 
         }
+
         render result as JSON
     }
 
