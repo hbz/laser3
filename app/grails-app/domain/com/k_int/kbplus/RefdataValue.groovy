@@ -93,12 +93,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
                 ])
             }
 
-            // RefdataValue rdv = findByOwnerAndValueIlike(cat, token) <- GORM fail
+            RefdataValue rdv = RefdataValue.findByOwnerAndValueIlike(cat, token)
 
-            RefdataValue rdv = RefdataValue.find(
-                    'from RefdataValue as rdv where rdv.owner = :cat and lower(rdv.value) = :token',
-                    [cat: cat, token: token.toLowerCase()]
-            )
             if (!rdv) {
                 static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
                 rdv = new RefdataValue(owner: cat, value: token)
