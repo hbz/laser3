@@ -15,7 +15,6 @@ class SystemAnnouncement {
 
     def grailsApplication
     def mailService
-    @Transient
     def escapeService
 
     User    user

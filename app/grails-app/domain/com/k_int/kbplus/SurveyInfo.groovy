@@ -9,9 +9,7 @@ import javax.persistence.Transient
 
 class SurveyInfo {
 
-    @Transient
     def contextService
-    @Transient
     def accessService
 
     String name

@@ -3,22 +3,18 @@ package com.k_int.kbplus
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 
 import javax.persistence.Transient
 
 class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 
-    @Transient
     def genericOIDService
-    @Transient
     def changeNotificationService
-    @Transient
     def messageSource
-    @Transient
     def pendingChangeService
-    @Transient
     def deletionService
-    @Transient
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
@@ -142,7 +138,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
-            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
                 description = contentItemDesc.content
             }
@@ -165,7 +161,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
             List<PendingChange> slavedPendingChanges = []
 
-            def depedingProps = LicenseProperty.findAllByInstanceOf( this )
+            List<LicenseProperty> depedingProps = LicenseProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
                 String definedType = 'text'
@@ -223,7 +219,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     [objectID: "${this.class.name}:${this.id}"] )
             openPD.each { pc ->
                 if (pc.payload) {
-                    def payload = JSON.parse(pc.payload)
+                    JSONElement payload = JSON.parse(pc.payload)
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {

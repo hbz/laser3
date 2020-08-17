@@ -19,16 +19,12 @@ import java.text.SimpleDateFormat
 
 class PendingChange {
 
-    @Transient
     def genericOIDService
-    @Transient
     def pendingChangeService
-    @Transient
     def auditService
+    def messageSource
 
-    @Transient
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
-    @Transient
     final static Set<String> REFDATA_FIELDS = ['status','packageListStatus','breakable','fixed','consistent','packageStatus','packageScope']
 
     final static PROP_LICENSE       = 'license'
@@ -39,9 +35,6 @@ class PendingChange {
     final static MSG_LI02 = 'pendingChange.message_LI02'
     final static MSG_SU01 = 'pendingChange.message_SU01'
     final static MSG_SU02 = 'pendingChange.message_SU02'
-
-    @Transient
-    def messageSource
 
     Subscription subscription
     License license
@@ -184,8 +177,11 @@ class PendingChange {
         def parsedNewValue
         if(targetProperty in DATE_FIELDS)
             parsedNewValue = DateUtil.parseDateGeneric(newValue)
-        else if(targetProperty in REFDATA_FIELDS)
-            parsedNewValue = RefdataValue.get(Long.parseLong(newValue))
+        else if(targetProperty in REFDATA_FIELDS) {
+            if(newValue)
+                parsedNewValue = RefdataValue.get(Long.parseLong(newValue))
+            else reject() //i.e. do nothing, wrong value
+        }
         else parsedNewValue = newValue
         switch(msgToken) {
             //pendingChange.message_TP01 (newTitle)

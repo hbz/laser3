@@ -238,20 +238,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         result
     }
 
-    /**
-     *
-     * @param obj
-     * @return list with two elements for building hql query
-     */
-    static List hqlHelper(obj){
-        
-        def result = []
-        result.add(obj ? obj : '')
-        result.add(obj ? '= ?' : 'is null')
-        
-        result
-    }
-    
     /*
     @Transient
     def getCustomPropByName(name){

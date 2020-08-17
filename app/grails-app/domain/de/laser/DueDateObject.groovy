@@ -5,6 +5,7 @@ import groovy.util.logging.Log4j
 
 @Log4j
 class DueDateObject {
+
     String attribute_name
     String attribute_value_de
     String attribute_value_en

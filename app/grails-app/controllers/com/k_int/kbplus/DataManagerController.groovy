@@ -8,6 +8,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.MailTemplate
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -29,7 +30,10 @@ class DataManagerController extends AbstractDebugController {
     Map<String, Object> result = [:]
     def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
-        result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = ? ) order by ts desc", [pending_change_pending_status]);
+        result.pendingChanges = PendingChange.executeQuery(
+                "select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = :status ) order by ts desc",
+                [status: pending_change_pending_status]
+        )
 
         result
     }
@@ -316,16 +320,10 @@ class DataManagerController extends AbstractDebugController {
     Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeAsInteger()
+        result.max = params.max ? Integer.parseInt(params.max): result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-    RefdataValue deleted_title_status =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.TITLE_STATUS)
-    def qry_params = [deleted_title_status]
-
-    String base_qry = " from TitleInstance as t where ( t.status = ? )"
-
+        String base_qry = " from TitleInstance as t where ( t.status = :status )"
         if (params.sort?.length() > 0) {
             base_qry += " order by " + params.sort
 
@@ -333,6 +331,7 @@ class DataManagerController extends AbstractDebugController {
                 base_qry += " " + params.order
             }
         }
+        Map<String, Object> qry_params = [status: RDStore.TITLE_STATUS_DELETED]
 
         result.titleInstanceTotal = Subscription.executeQuery( "select t.id " + base_qry, qry_params ).size()
         result.titleList = Subscription.executeQuery( "select t " + base_qry, qry_params, [max:result.max, offset:result.offset] )
@@ -345,17 +344,11 @@ class DataManagerController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeAsInteger()
+        result.max = params.max ? Integer.parseInt(params.max): result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.editable = true
 
-        def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        RefdataValue delStatus =  RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
-
-        def qry_params = [delStatus]
-        String query = " from Org as o where ( o.status = ? )"
-
+        String query = " from Org as o where ( o.status = :status )"
         if (params.sort?.length() > 0) {
             query += " order by " + params.sort
 
@@ -363,6 +356,7 @@ class DataManagerController extends AbstractDebugController {
                 query += " " + params.order
             }
         }
+        Map<String, Object> qry_params = [status: RDStore.O_STATUS_DELETED]
 
         result.orgTotal = Org.executeQuery( "select o.id " + query, qry_params ).size()
         result.orgList = Org.executeQuery( "select o " + query, qry_params, [max:result.max, offset:result.offset] )

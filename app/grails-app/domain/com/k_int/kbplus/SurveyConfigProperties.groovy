@@ -4,7 +4,6 @@ import com.k_int.properties.PropertyDefinition
 
 class SurveyConfigProperties {
 
-
     SurveyConfig surveyConfig
     PropertyDefinition surveyProperty
 

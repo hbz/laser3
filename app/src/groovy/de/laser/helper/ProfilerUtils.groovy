@@ -72,10 +72,14 @@ class ProfilerUtils {
     // helper
 
     static String generateKey(GrailsWebRequest webRequest) {
-        String cc  = webRequest.getControllerClass().getLogicalPropertyName()
-        String an  = webRequest.getActionName()
-        String uri = '/' + cc + (an ? '/' + an : '')
-
+        String uri = 'unkown'
+        try {
+            String cc = webRequest.getControllerClass().getLogicalPropertyName()
+            String an = webRequest.getActionName()
+            uri = '/' + cc + (an ? '/' + an : '')
+        }
+        catch(Exception e) {
+        }
         uri
     }
 }

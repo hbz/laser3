@@ -27,19 +27,14 @@ import java.text.SimpleDateFormat
 class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
-    static Log static_logger = LogFactory.getLog(Org)
-
-    @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
-    @Transient
     def contextService
     def organisationService
-    @Transient
     def accessService
-	@Transient
 	def propertyService
-    @Transient
     def deletionService
+
+    static Log static_logger = LogFactory.getLog(Org)
 
     String name
     String shortname

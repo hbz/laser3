@@ -21,15 +21,12 @@ import java.text.SimpleDateFormat
 class Package extends AbstractBaseWithCalculatedLastUpdated {
         //implements ShareSupport {
 
+    def grailsApplication
+    def deletionService
+    def accessService
+
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static Log static_logger = LogFactory.getLog(Package)
-
-    @Transient
-    def grailsApplication
-    @Transient
-    def deletionService
-    @Transient
-    def accessService
 
   //String identifier
   String name
@@ -365,14 +362,14 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     }
 
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, subList:subList])
-                    log.debug("before flush")
+                    //log.debug("before flush")
                     session.flush()
                     return true
                 }
             } else {
 
                 if (subPkg) {
-                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :sp", [sp: subPkg])
                     CostItem.findAllBySubPkg(subPkg).each { costItem ->
                         costItem.subPkg = null
                         if (!costItem.sub) {
@@ -383,7 +380,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
                 }
 
-                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
+                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription = :sub ", [pkg: this, sub:subscription])
                 return true
             }
         }else{
@@ -392,16 +389,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
     private def removePackagePendingChanges(List subIds, confirmed) {
-        log.debug("begin remove pending changes")
+        //log.debug("begin remove pending changes")
         String tipp_class = TitleInstancePackagePlatform.class.getName()
-        String tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
-        String change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
-        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
-        List pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
+        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery(
+                "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId", [pkgId: this.id]
+        )
+        List pendingChanges = subIds ? PendingChange.executeQuery(
+                "select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds)" , [subIds: subIds]
+        ) : []
 
         List pc_to_delete = []
         pendingChanges.each { pc ->
-            log.debug("begin pending changes")
+            //log.debug("begin pending changes")
             if(pc[1]){
                 def payload = JSON.parse(pc[1])
                 if (payload.tippID) {

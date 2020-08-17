@@ -183,11 +183,10 @@
                 if(data.graphC) {
                     new Chartist.Bar('#chartC',data.graphC,{
                         stackBars: true,
-                        //reverseData: true,
-                        //horizontalBars: true,
                         plugins: [
                             Chartist.plugins.legend()
-                        ]
+                        ],
+                        height: '500px'
                     });
                 }
             });

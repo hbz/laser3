@@ -44,8 +44,8 @@ class AccessPointData extends AbstractBase {
     }
 
     String getInputStr() {
-        def jsonSluper = new JsonSlurper();
-        return jsonSluper.parseText(data).getAt('inputStr');
+        JsonSlurper jsonSluper = new JsonSlurper()
+        return jsonSluper.parseText(data).getAt('inputStr')
     }
 
     @Override
@@ -63,7 +63,7 @@ class AccessPointData extends AbstractBase {
 
     String getIPString(String format) {
         if(datatype in ['ipv4', 'ipv6']) {
-            def jsonSluper = new JsonSlurper();
+            JsonSlurper jsonSluper = new JsonSlurper()
             def o = jsonSluper.parseText(data)
             IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
 

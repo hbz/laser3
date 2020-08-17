@@ -7,7 +7,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class BookInstance extends TitleInstance {
 
-
     Date dateFirstInPrint
     Date dateFirstOnline
     String summaryOfContent
@@ -76,7 +75,6 @@ class BookInstance extends TitleInstance {
         {
             return firstAuthor
         }
-
         else if(firstEditor)
         {
             return firstEditor + ' ' + label

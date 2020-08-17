@@ -8,10 +8,9 @@ import javax.persistence.Transient
 
 class OrgSettings {
 
-    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
-
-    @Transient
     def genericOIDService
+
+    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
 
     static enum KEYS {
         API_LEVEL       (String),
@@ -112,7 +111,7 @@ class OrgSettings {
     static void delete(Org org, KEYS key) {
 
         withTransaction {
-            def oss = findWhere(org: org, key: key)
+            def oss = OrgSettings.findWhere(org: org, key: key)
             oss?.delete()
         }
     }
