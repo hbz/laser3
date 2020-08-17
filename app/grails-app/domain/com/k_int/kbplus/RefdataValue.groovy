@@ -148,12 +148,10 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     }
 
     static RefdataValue getByValue(String value) {
-
         RefdataValue.findByValueIlike(value)
     }
 
     static RefdataValue getByValueAndCategory(String value, String category) {
-
         RefdataValue.findByValueIlikeAndOwner(value, RefdataCategory.findByDescIlike(category))
     }
 

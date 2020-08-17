@@ -87,7 +87,7 @@ class SurveyProperty implements I10nTrait {
         withTransaction {
             typeIsValid(typeClass)
 
-            def prop = findWhere(
+            SurveyProperty prop = SurveyProperty.findWhere(
                     name: name,
                     type: typeClass,
                     owner: owner
@@ -113,17 +113,16 @@ class SurveyProperty implements I10nTrait {
 
     String getLocalizedType() {
 
-        def propertyType = this.getLocalizedValue(this.type)
-        def refdataValues =[]
+        def propertyType = SurveyProperty.getLocalizedValue(this.type)
+        List refdataValues = []
         if(this.type == 'class com.k_int.kbplus.RefdataValue'){
 
-                com.k_int.kbplus.RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
+                RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
                     refdataValues << it?.getI10n('value')
                 }
         }
 
         return propertyType + ((refdataValues?.size() > 0) ? " (" + refdataValues?.join('/')+")" : "")
-
     }
 
     def countUsages() {
@@ -131,13 +130,10 @@ class SurveyProperty implements I10nTrait {
             def scp = SurveyProperty.executeQuery("select count(scp) from SurveyConfigProperties as scp where scp.surveyProperty = :sp", [sp: this])
             def srp = SurveyProperty.executeQuery("select count(srp) from SurveyResult as srp where srp.type = :sp", [sp: this])
             return scp[0]+srp[0] ?: 0
-
     }
 
     static SurveyProperty getByName(String name)
     {
         SurveyProperty.findByName(name)
     }
-
-
 }

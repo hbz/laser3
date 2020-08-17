@@ -89,7 +89,6 @@ class RefdataCategory extends AbstractI10n {
   }
 
     static RefdataCategory getByDesc(String desc) {
-
         RefdataCategory.findByDescIlike(desc)
     }
 
@@ -127,7 +126,7 @@ class RefdataCategory extends AbstractI10n {
     }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
-        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name),sort)
+        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name), sort)
 
         List result = []
         refdatas.each { rd ->

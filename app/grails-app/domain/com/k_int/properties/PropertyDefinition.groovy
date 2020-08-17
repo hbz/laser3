@@ -231,7 +231,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static PropertyDefinition getByNameAndDescr(String name, String descr) {
 
-        List<PropertyDefinition> result = findAllByNameIlikeAndDescrAndTenantIsNull(name, descr)
+        List<PropertyDefinition> result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenantIsNull(name, descr)
 
         if (result.size() == 0) {
             return null
@@ -247,7 +247,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static PropertyDefinition getByNameAndDescrAndTenant(String name, String descr, Org tenant) {
 
-        List<PropertyDefinition> result = findAllByNameIlikeAndDescrAndTenant(name, descr, tenant)
+        List<PropertyDefinition> result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenant(name, descr, tenant)
 
         if (result.size() == 0) {
             return null
@@ -262,19 +262,19 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static List<PropertyDefinition> getAllByDescr(String descr) {
-        findAllByDescrAndTenantIsNull(descr)
+        PropertyDefinition.findAllByDescrAndTenantIsNull(descr)
     }
 
     static List<PropertyDefinition> getAllByDescrAndTenant(String descr, Org tenant) {
-        findAllByDescrAndTenant(descr, tenant)
+        PropertyDefinition.findAllByDescrAndTenant(descr, tenant)
     }
 
     static List<PropertyDefinition> getAllByDescrAndMandatory(String descr, boolean mandatory) {
-        findAllByDescrAndMandatoryAndTenantIsNull(descr, mandatory)
+        PropertyDefinition.findAllByDescrAndMandatoryAndTenantIsNull(descr, mandatory)
     }
 
     static List<PropertyDefinition> getAllByDescrAndMandatoryAndTenant(String descr, boolean mandatory, Org tenant) {
-        findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
+        PropertyDefinition.findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
     }
 
     private static def typeIsValid(String key) {
@@ -467,12 +467,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         log.debug("removeProperty")
 
         withTransaction {
-            executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = :self', [self: this])
-            executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = :self', [self: this])
-            executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
-            executeUpdate('delete from com.k_int.kbplus.PlatformProperty c where c.type = :self', [self: this])
-            executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
-            executeUpdate('delete from com.k_int.kbplus.SurveyResult c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PlatformProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SurveyResult c where c.type = :self', [self: this])
 
             this.delete()
         }
@@ -499,14 +499,14 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
-        findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: [PropertyDefinition.ORG_PROP],
                         tenant: contextOrg
                     ])
     }
 
     static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
-        findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg
                     ])
