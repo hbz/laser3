@@ -84,29 +84,31 @@ class SurveyProperty implements I10nTrait {
 
     static def loc(String name, String typeClass, RefdataCategory rdc, String expl, String comment, String introduction, Org owner) {
 
-        typeIsValid(typeClass)
+        withTransaction {
+            typeIsValid(typeClass)
 
-        def prop = findWhere(
-                name: name,
-                type: typeClass,
-                owner: owner
-        )
-
-        if (!prop) {
-            log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${expl} ) @ ${owner?.name}. Creating new one ..")
-
-            prop = new SurveyProperty(
+            def prop = findWhere(
                     name: name,
                     type: typeClass,
-                    expl: expl ?: null,
-                    comment: comment ?: null,
-                    introduction: introduction ?: null,
-                    refdataCategory: rdc?.desc,
                     owner: owner
             )
-            prop.save(flush: true)
+
+            if (!prop) {
+                log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${expl} ) @ ${owner?.name}. Creating new one ..")
+
+                prop = new SurveyProperty(
+                        name: name,
+                        type: typeClass,
+                        expl: expl ?: null,
+                        comment: comment ?: null,
+                        introduction: introduction ?: null,
+                        refdataCategory: rdc?.desc,
+                        owner: owner
+                )
+                prop.save()
+            }
+            prop
         }
-        prop
     }
 
     String getLocalizedType() {

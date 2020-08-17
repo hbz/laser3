@@ -77,36 +77,44 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
     static RefdataValue construct(Map<String, Object> map) {
 
-        String token     = map.get('token')
-        String rdc       = map.get('rdc')
-        boolean hardData = new Boolean( map.get('hardData') )
-        Map i10n         = map.get('i10n')
+        withTransaction {
+            String token    = map.get('token')
+            String rdc      = map.get('rdc')
 
-        RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
-        if (! cat) {
-            cat = RefdataCategory.construct([
-                    token   : rdc,
-                    hardData: false,
-                    i10n    : [desc_de: rdc, desc_en: rdc],
-            ])
+            boolean hardData = new Boolean(map.get('hardData'))
+            Map i10n = map.get('i10n')
+
+            RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
+            if (!cat) {
+                cat = RefdataCategory.construct([
+                        token   : rdc,
+                        hardData: false,
+                        i10n    : [desc_de: rdc, desc_en: rdc],
+                ])
+            }
+
+            // RefdataValue rdv = findByOwnerAndValueIlike(cat, token) <- GORM fail
+
+            RefdataValue rdv = RefdataValue.find(
+                    'from RefdataValue as rdv where rdv.owner = :cat and lower(rdv.value) = :token',
+                    [cat: cat, token: token.toLowerCase()]
+            )
+            if (!rdv) {
+                static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
+                rdv = new RefdataValue(owner: cat, value: token)
+            }
+
+            rdv.value_de = i10n.get('value_de') ?: null
+            rdv.value_en = i10n.get('value_en') ?: null
+
+            rdv.expl_de = i10n.get('expl_de') ?: null
+            rdv.expl_en = i10n.get('expl_en') ?: null
+
+            rdv.isHardData = hardData
+            rdv.save()
+
+            rdv
         }
-
-        RefdataValue rdv = findByOwnerAndValueIlike(cat, token)
-        if (! rdv) {
-            static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
-            rdv = new RefdataValue(owner: cat, value: token)
-        }
-
-        rdv.value_de = i10n.get('value_de') ?: null
-        rdv.value_en = i10n.get('value_en') ?: null
-
-        rdv.expl_de = i10n.get('expl_de') ?: null
-        rdv.expl_en = i10n.get('expl_en') ?: null
-
-        rdv.isHardData = hardData
-        rdv.save(flush: true)
-
-        rdv
     }
 
     static def refdataFind(params) {
