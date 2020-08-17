@@ -14,11 +14,8 @@ import javax.persistence.Transient
 
 class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
-  @Transient
   def grailsApplication
-  @Transient
   def propertyService
-  @Transient
   def deletionService
 
   static Log static_logger = LogFactory.getLog(Platform)

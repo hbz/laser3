@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat
 
 class OrgRole implements ShareableTrait {
 
-    @Transient
     def shareService
 
     static belongsTo = [

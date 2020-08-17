@@ -14,8 +14,8 @@ import javax.persistence.Transient
 
 class IssueEntitlement extends AbstractBase implements Comparable {
 
-    @Transient
     def deletionService
+
     /*
     Date startDate
     String startVolume

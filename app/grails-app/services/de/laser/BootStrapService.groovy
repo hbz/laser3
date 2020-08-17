@@ -560,11 +560,6 @@ class BootStrapService {
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
-
-        //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
-        //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
-        //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
-        //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
     }
 
     void setupPropertyDefinitions() {

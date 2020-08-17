@@ -11,8 +11,8 @@ import java.sql.Blob
 
 class Doc {
 
-    @Transient
     def grailsApplication
+    def sessionFactory
 
     static final CONTENT_TYPE_STRING              = 0
     static final CONTENT_TYPE_DOCSTORE            = 1
@@ -21,7 +21,6 @@ class Doc {
 
   static transients = [ 'blobSize', 'blobData', 'sessionFactory' ]
   private static final MAX_SIZE = 1073741824 // 4GB 
-  def sessionFactory
 
     @RefdataAnnotation(cat = 'Document Status')
     RefdataValue status

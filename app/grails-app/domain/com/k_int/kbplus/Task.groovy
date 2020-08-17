@@ -8,7 +8,6 @@ import javax.persistence.Transient
 
 class Task {
 
-    @Transient
     def deletionService
 
     License         license

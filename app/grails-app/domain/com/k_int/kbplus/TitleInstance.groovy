@@ -15,9 +15,7 @@ import java.util.regex.Pattern
 @Log4j
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
-    @Transient
     def grailsApplication
-    @Transient
     def deletionService
 
     // AuditableTrait

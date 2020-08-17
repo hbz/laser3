@@ -13,6 +13,8 @@ import java.time.Year
 class CostItem extends AbstractBase
         implements DeleteFlag, CalculatedType  {
 
+    def springSecurityService
+
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
         TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),19,true),
@@ -103,9 +105,6 @@ class CostItem extends AbstractBase
 
     //@Transient
     //def budgetcodes //Binds getBudgetcodes
-
-    @Transient
-    def springSecurityService
 
     static final TAX_RATES = [ 0, 7, 19 ]
 

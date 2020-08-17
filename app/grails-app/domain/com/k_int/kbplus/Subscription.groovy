@@ -26,35 +26,23 @@ import java.text.SimpleDateFormat
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements AuditableSupport, CalculatedType, Permissions, ShareSupport {
 
+    def grailsApplication
+    def contextService
+    def messageSource
+    def pendingChangeService
+    def changeNotificationService
+    def springSecurityService
+    def accessService
+    def propertyService
+    def deletionService
+    def subscriptionService
+    def auditService
+    def genericOIDService
+
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     static Log static_logger = LogFactory.getLog(Subscription)
-
-    @Transient
-    def grailsApplication
-    @Transient
-    def contextService
-    @Transient
-    def messageSource
-    @Transient
-    def pendingChangeService
-    @Transient
-    def changeNotificationService
-    @Transient
-    def springSecurityService
-    @Transient
-    def accessService
-    @Transient
-    def propertyService
-    @Transient
-    def deletionService
-    @Transient
-    def subscriptionService
-    @Transient
-    def auditService
-    @Transient
-    def genericOIDService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -361,39 +349,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
-    /*
-    @Override
-    String getCalculatedType() {
-        def result = TYPE_UNKOWN
-
-        if (isTemplate()) {
-            result = TYPE_TEMPLATE
-        }
-        else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
-            result = TYPE_COLLECTIVE
-        }
-        else if(getCollective() && instanceOf) {
-            result = TYPE_PARTICIPATION
-        }
-        else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
-            if(administrative)
-                result = TYPE_ADMINISTRATIVE
-            else
-                result = TYPE_CONSORTIAL
-        }
-        else if(getConsortia() && instanceOf) {
-            if(administrative)
-                result = TYPE_ADMINISTRATIVE
-            else
-                result = TYPE_PARTICIPATION
-        }
-        else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
-            result = TYPE_LOCAL
-        }
-        result
-    }
-    */
-
     List<Org> getProviders() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
             [sub: this, provider: RDStore.OR_PROVIDER])
@@ -606,8 +561,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             String description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String definedType = 'text'
 
-            def definedType = 'text'
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
                 definedType = 'rdv'
             }
@@ -814,20 +769,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     this.orgRelations.add(or)
   }
 
-/*-- not used
-  def addNamespacedIdentifier(ns,value) {
-      log.debug("Add Namespaced identifier ${ns}:${value}")
-
-    def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value);
-    if ( this.ids == null)
-      this.ids = []
-    this.ids.add(new IdentifierOccurrence(sub:this,identifier:canonical_id))
-
-  }
---*/
-
-  def getCommaSeperatedPackagesIsilList() {
-      def result = []
+  String getCommaSeperatedPackagesIsilList() {
+      List result = []
       packages.each { it ->
           def identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
           if (identifierValue) {

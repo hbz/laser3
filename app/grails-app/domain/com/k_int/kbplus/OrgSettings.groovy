@@ -8,10 +8,9 @@ import javax.persistence.Transient
 
 class OrgSettings {
 
-    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
-
-    @Transient
     def genericOIDService
+
+    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
 
     static enum KEYS {
         API_LEVEL       (String),

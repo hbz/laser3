@@ -25,28 +25,18 @@ import java.text.SimpleDateFormat
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements AuditableSupport, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
-    static Log static_logger = LogFactory.getLog(License)
-
-    @Transient
     def grailsApplication
-    @Transient
     def contextService
-    @Transient
     def accessService
-    @Transient
     def genericOIDService
-    @Transient
     def messageSource
-    @Transient
     def pendingChangeService
-    @Transient
     def changeNotificationService
-    @Transient
     def propertyService
-    @Transient
     def deletionService
-    @Transient
     def auditService
+
+    static Log static_logger = LogFactory.getLog(License)
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
