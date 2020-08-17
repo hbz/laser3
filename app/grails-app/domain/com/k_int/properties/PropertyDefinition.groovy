@@ -25,24 +25,15 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
-    @Transient
     final static String CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
-    @Transient
     final static String PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
 
-    @Transient
     final static String LIC_PROP    = 'License Property'
-    @Transient
     final static String ORG_PROP    = 'Organisation Property'
-    @Transient
     final static String ORG_CONF    = 'Organisation Config'
-    @Transient
     final static String PRS_PROP    = 'Person Property'
-    @Transient
     final static String PLA_PROP    = 'Platform Property'
-    @Transient
     final static String SUB_PROP    = 'Subscription Property'
-    @Transient
     final static String SUR_PROP    = 'Survey Property'
 
     //sorting is for German terms for the next three arrays; I10n is todo for later

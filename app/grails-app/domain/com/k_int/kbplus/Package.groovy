@@ -21,15 +21,12 @@ import java.text.SimpleDateFormat
 class Package extends AbstractBaseWithCalculatedLastUpdated {
         //implements ShareSupport {
 
+    def grailsApplication
+    def deletionService
+    def accessService
+
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static Log static_logger = LogFactory.getLog(Package)
-
-    @Transient
-    def grailsApplication
-    @Transient
-    def deletionService
-    @Transient
-    def accessService
 
   //String identifier
   String name

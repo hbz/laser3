@@ -9,69 +9,43 @@ import javax.persistence.Transient
 
 class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated {
 
-    @Transient
     def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(IdentifierNamespace)
 
-    @Transient
+
     public static final String UNKNOWN    = "Unknown"
 
-    @Transient
     public static final NS_ORGANISATION = "com.k_int.kbplus.Org"
-    @Transient
     public static final NS_LICENSE      = "com.k_int.kbplus.License"
-    @Transient
     public static final NS_SUBSCRIPTION = "com.k_int.kbplus.Subscription"
-    @Transient
     public static final NS_PACKAGE      = "com.k_int.kbplus.Package"
-    @Transient
     public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
-    @Transient
     public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
 
-    @Transient
     public static final String ISIL       = "ISIL"
-    @Transient
     public static final String WIBID      = "wibid"
-    @Transient
     public static final String GND_ORG_NR = "gnd_org_nr"
-    @Transient
     public static final String EZB_ORG_ID = "ezb_org_id"
-    @Transient
     public static final String GRID_ID    = "GRID ID"
-    @Transient
     public static final String DBS_ID     = "DBS-ID"
-    @Transient
     public static final String VAT        = "VAT"
 
     //title identifier namespaces
-    @Transient
     public static final String ZDB        = 'zdb'
-    @Transient
     public static final String ZDB_PPN    = 'zdb_ppn'
-    @Transient
     public static final String DOI        = 'doi'
-    @Transient
     public static final String ISSN       = 'issn'
-    @Transient
     public static final String EISSN      = 'eissn'
-    @Transient
     public static final String PISBN      = 'pisbn'
-    @Transient
     public static final String ISBN       = 'isbn'
 
     //subscription identifier namespaces
-    @Transient
     public static final String EZB_ANCHOR = 'EZB anchor'
-    @Transient
     public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
-    @Transient
     public static final String ISIL_PAKETSIGEL = 'ISIL_Paketsigel'
-    @Transient
     public static final String ISCI = 'ISCI'
 
-    @Transient
     final static List<String> CORE_ORG_NS = [
             ISIL,
             WIBID,
@@ -82,12 +56,10 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             VAT
     ]
 
-    @Transient
     final static List<String> CORE_TITLE_NS = [
             ZDB, ZDB_PPN, DOI, ISSN, EISSN, PISBN, ISBN, ISIL_PAKETSIGEL, ISCI, EZB_ANCHOR, EZB_COLLECTION_ID
     ]
 
-    @Transient
     final static String[] AVAILABLE_NSTYPES = [
             NS_ORGANISATION,
             NS_LICENSE,

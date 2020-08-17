@@ -8,11 +8,10 @@ import javax.persistence.Transient
 
 class UserSettings {
 
-    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
-    transient final static DEFAULT_REMINDER_PERIOD = 14
-
-    @Transient
     def genericOIDService
+
+    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
+    final static DEFAULT_REMINDER_PERIOD = 14
 
     static enum KEYS {
         PAGE_SIZE                                   (Long),
@@ -61,8 +60,8 @@ class UserSettings {
         REMIND_PERIOD_FOR_ORG_PRIVATE_PROP            (Integer),
         REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP         (Integer),
         REMIND_PERIOD_FOR_TASKS                       (Integer),
-        REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE             (Integer),
-        REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE             (Integer)
+        REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE     (Integer),
+        REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE         (Integer)
 
         KEYS(type, rdc) {
             this.type = type

@@ -9,7 +9,6 @@ import javax.persistence.Transient
 
 class Identifier implements CalculatedLastUpdated {
 
-    @Transient
     def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(Identifier)

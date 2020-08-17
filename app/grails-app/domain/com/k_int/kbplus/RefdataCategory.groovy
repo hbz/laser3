@@ -10,11 +10,6 @@ class RefdataCategory extends AbstractI10n {
 
     static Log static_logger = LogFactory.getLog(RefdataCategory)
 
-    //@Transient
-    //public static final PKG_PAYMENTTYPE = 'Package Payment Type'
-    //@Transient
-    //public static final PKG_GLOBAL = 'Package Global'
-
     String desc
     String desc_de
     String desc_en

@@ -9,10 +9,7 @@ import javax.persistence.Transient
 
 class DocContext implements ShareableTrait {
 
-    @Transient
     def deletionService
-
-    @Transient
     def shareService
 
     static belongsTo = [

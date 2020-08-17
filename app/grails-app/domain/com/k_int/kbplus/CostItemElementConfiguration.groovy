@@ -8,6 +8,9 @@ import javax.persistence.Transient
 
 class CostItemElementConfiguration extends AbstractBase {
 
+    def contextService
+    def springSecurityService
+
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
 
@@ -17,11 +20,6 @@ class CostItemElementConfiguration extends AbstractBase {
     Org  forOrganisation
     Date dateCreated
     Date lastUpdated
-
-    def contextService
-
-    @Transient
-    def springSecurityService
 
     static mapping = {
         id                  column: 'ciec_id'

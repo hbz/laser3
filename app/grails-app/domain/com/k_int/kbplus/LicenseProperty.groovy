@@ -10,17 +10,11 @@ import javax.persistence.Transient
 
 class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 
-    @Transient
     def genericOIDService
-    @Transient
     def changeNotificationService
-    @Transient
     def messageSource
-    @Transient
     def pendingChangeService
-    @Transient
     def deletionService
-    @Transient
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
@@ -144,7 +138,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
-            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
                 description = contentItemDesc.content
             }

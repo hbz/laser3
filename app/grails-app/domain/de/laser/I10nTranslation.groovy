@@ -6,7 +6,6 @@ import javax.persistence.Transient
 
 class I10nTranslation {
 
-    @Transient
     def grailsApplication
 
     static supportedLocales = ['en', 'de', 'fr']

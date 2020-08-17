@@ -5,7 +5,6 @@ import javax.persistence.Transient
 
 class SurveyOrg {
 
-    @Transient
     def deletionService
 
     SurveyConfig surveyConfig

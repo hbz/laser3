@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory
 
 @Log4j
 class Contact implements Comparable<Contact>{
+
     private static final String REFDATA_PHONE = "Phone"
     private static final String REFDATA_FAX =   "Fax"
     private static final String REFDATA_MAIL =  "Mail"
@@ -118,25 +119,10 @@ class Contact implements Comparable<Contact>{
             result
         }
     }
-    
-    /**
-     *
-     * @param obj
-     * @return list with two elements for building hql query
-     */
-    static List hqlHelper(obj){
-        
-        def result = []
-        result.add(obj ? obj : '')
-        result.add(obj ? '= ?' : 'is null')
-        
-        result
-    }
 
     @Override
     int compareTo(Contact contact) {
-        int result
-        result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
+        int result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
         if (result == 0) {
             String a = this.getContent() ?: ''
             String b = contact.getContent() ?: ''
