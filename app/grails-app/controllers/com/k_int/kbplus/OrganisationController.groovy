@@ -1447,7 +1447,7 @@ class OrganisationController extends AbstractDebugController {
                                 case 'ORG_BASIC_MEMBER':    isEditable = false; break
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = true; break //means providers and agencies
+                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                         case 'ORG_CONSORTIUM':
@@ -1455,7 +1455,7 @@ class OrganisationController extends AbstractDebugController {
                                 case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
                                 case 'ORG_INST':            isEditable = userHasEditableRights; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = true; break //means providers and agencies
+                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                     }
