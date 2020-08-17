@@ -2,6 +2,7 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2786    17.08.2020  rc1.5       Andreas Bug         Regressfehler bei der Zuweisung der Berechtigung behoben
 
 --      14.08.2020  rc1.5       Andreas Bug         DBS-Statistikfelder 19.29 und 19.35 korrigiert
 
