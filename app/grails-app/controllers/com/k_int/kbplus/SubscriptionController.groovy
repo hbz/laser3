@@ -1589,6 +1589,39 @@ class SubscriptionController
             response.outputStream.close()
             wb.dispose()
             return
+        }else if (params.exportProxys) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportProxys.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else if (params.exportEZProxys) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportEZProxys.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else if (params.exportShibboleths) {
+            SXSSFWorkbook wb
+            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
         }
         else {
             withFormat {

@@ -128,7 +128,7 @@
                                 </td>
                                 <td>
                                     <g:if test="${accessPoint.hasProperty('url')}">
-                                        Proxy URL: ${accessPoint.url}
+                                        ${accessPoint.url}
                                     </g:if>
                                 </td>
                             </g:elseif>
