@@ -1320,7 +1320,7 @@ class SubscriptionService {
 
                                 // multi occurrence props; add one additional with backref
                                 if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                     additionalProp = targetProp.copyInto(additionalProp)
                                     additionalProp.instanceOf = targetProp
                                     additionalProp.save(flush: true)
@@ -1336,7 +1336,7 @@ class SubscriptionService {
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                         newProp = targetProp.copyInto(newProp)
                                         newProp.instanceOf = targetProp
                                         newProp.save(flush: true)
