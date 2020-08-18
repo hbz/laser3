@@ -17,10 +17,10 @@
                 </div>
             </div>
         </th>
-        <g:if test="${isConsortialSubs}">
+        <g:if test="${isConsortialObjects}">
             %{--th HEREDITY--}%
             <th class="center aligned">
-                <g:message code="subscription.details.copyElementsIntoSubscription.audit"/>
+                <g:message code="copyElementsIntoObject.audit"/>
             </th>
         </g:if>
         %{--th ACTION--}%
@@ -109,7 +109,7 @@
                 </div>
             </g:else>
         </td>
-        <g:if test="${isConsortialSubs}">
+        <g:if test="${isConsortialObjects}">
         %{--HEREDITY--}%
             <td class="center aligned">
                 <g:if test="${propValues.containsKey(sourceObject)}">
@@ -176,7 +176,7 @@
                             <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>
                         </div>
 
-                        <g:if test="${isConsortialSubs}">
+                        <g:if test="${isConsortialObjects}">
                             <g:if test="${propValue instanceof SubscriptionProperty}">
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${! AuditConfig.getConfig(propValue)}">

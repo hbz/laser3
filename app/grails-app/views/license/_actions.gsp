@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection />
 <g:set var="org" value="${contextService.org}"/>
 <g:set var="user" value="${contextService.user}" />
@@ -35,6 +35,9 @@
             </sec:ifAnyGranted>
             <g:if test="${isCopyLicenseEnabled}">
                 <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />
+                <g:if test="${(accessService.checkPerm("ORG_INST") && !license.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: GenericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
+                </g:if>
             </g:if>
             <g:else>
                 <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />

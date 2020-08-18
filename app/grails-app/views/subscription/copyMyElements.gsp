@@ -17,17 +17,17 @@
 <semui:messages data="${flash}"/>
 
 <% Map params = [id: params.id];
-if (sourceObjectId) params << [sourceObjectId: sourceObjectId];
-if (targetObjectId) params << [targetObjectId: targetObjectId];
+if (sourceObjectId) params << [sourceObjectId: GenericOIDService.getOID(sourceObject)];
+if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetObjectId)];
 %>
 
 <semui:subNav>
 
-    <semui:complexSubNavItem class="${workFlowPart == SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
+    <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
                              controller="subscription" action="copyMyElements"
-                             params="${params << [workFlowPart: SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
+                             params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
         <div class="content">
-            <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.attachements.label')}</div>
+            <div class="title">${message(code: 'copyElementsIntoObject.attachements.label')}</div>
 
             <div class="description">
                 <i class="file outline icon"></i>${message(code: 'default.documents.label')}
@@ -37,8 +37,8 @@ if (targetObjectId) params << [targetObjectId: targetObjectId];
         </div>
     </semui:complexSubNavItem>
 
-    <semui:complexSubNavItem class="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
-                             action="copyMyElements" params="${params << [workFlowPart: SubscriptionController.WORKFLOW_PROPERTIES]}">
+    <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
+                             action="copyMyElements" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}">
         <div class="content">
             <div class="title">${message(code: 'properties')}</div>
 
@@ -53,16 +53,16 @@ if (targetObjectId) params << [targetObjectId: targetObjectId];
 <br>
 
 <div class="la-legend">
-    <span class="la-key"><strong>${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.key')}:</strong>
+    <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}:</strong>
     </span>
-    <span class="la-added">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willStay')}</span>
-    <span class="la-removed">${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.legend.willBeReplaced')}</span>
+    <span class="la-added">${message(code: 'copyElementsIntoObject.legend.willStay')}</span>
+    <span class="la-removed">${message(code: 'copyElementsIntoObject.legend.willBeReplaced')}</span>
 </div>
-<g:if test="${workFlowPart == SubscriptionController.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <g:render template="/templates/subscription/copyDocsAndTasks"/>
+<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+    <g:render template="/templates/copyElements/copyDocsAndTasks"/>
 </g:if>
-<g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES}">
-    <g:render template="/templates/subscription/copyPrivatePropertiesCompare"/>
+<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+    <g:render template="/templates/copyElements/copyPrivatePropertiesCompare"/>
 </g:elseif>
 <g:javascript src="copyPropertiesCompare.js"/>
 

@@ -13,7 +13,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
@@ -21,9 +21,9 @@
                     <th class="six wide">
                         <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
-                    <g:if test="${isConsortialSubs}">
+                    <g:if test="${isConsortialObjects}">
                                 <th class="center aligned">
-                                    <g:message code="subscription.details.copyElementsIntoSubscription.share"/>
+                                    <g:message code="copyElementsIntoObject.share"/>
                                 </th>
                     </g:if>
                     <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
@@ -47,7 +47,7 @@
                             ${sourceObject.endDate ? (' - ' + formatDate(date: sourceObject.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                         </div>
                     </td>
-                    <g:if test="${isConsortialSubs}">
+                    <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                             <%-- TODO show that startDate and endDate are meani! --%>
                             <div class="ui checkbox la-toggle-radio la-share">
@@ -90,7 +90,7 @@
                             ${sourceObject.status.getI10n('value')}
                         </div>
                     </td>
-                    <g:if test="${isConsortialSubs}">
+                    <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                             <div class="ui checkbox la-toggle-radio la-share">
                                 <input class="ui checkbox" type="checkbox" name="toggleShareStatus" ${AuditConfig.getConfig(sourceObject,'status') ? 'checked': ''} />
@@ -130,7 +130,7 @@
                         ${sourceObject.kind?.getI10n('value')}
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                         <div class="ui checkbox la-toggle-radio la-share">
                             <input class="ui checkbox" type="checkbox" name="toggleShareKind" value="${sourceObject.kind}" ${AuditConfig.getConfig(sourceObject,'kind') ? 'checked': ''} />
@@ -168,7 +168,7 @@
                         ${sourceObject.form?.getI10n('value')}
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                         <div class="ui checkbox la-toggle-radio la-share">
                             <input class="ui checkbox" type="checkbox" name="toggleShareForm" ${AuditConfig.getConfig(sourceObject,'form') ? 'checked': ''} />
@@ -206,7 +206,7 @@
                         ${sourceObject.resource?.getI10n('value')}
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                         <div class="ui checkbox la-toggle-radio la-share">
                             <input class="ui checkbox" type="checkbox" name="toggleShareResource" ${AuditConfig.getConfig(sourceObject,'resource') ? 'checked': ''} />
@@ -244,7 +244,7 @@
                         ${sourceObject.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                         <div class="ui checkbox la-toggle-radio la-share">
                             <input class="ui checkbox" type="checkbox" name="toggleSharePublicForApi" ${AuditConfig.getConfig(sourceObject,'isPublicForApi') ? 'checked': ''} />
@@ -278,7 +278,7 @@
                         ${sourceObject.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                         <div class="ui checkbox la-toggle-radio la-share">
                             <input class="ui checkbox" type="checkbox" name="toggleSharePerpetualAccess" ${AuditConfig.getConfig(sourceObject,'hasPerpetualAccess') ? 'checked': ''} />
@@ -320,7 +320,7 @@
                         </g:each>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
 
                     </td>
@@ -377,7 +377,7 @@
                         </g:each>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                             <g:each in="${source_visibleOrgRelations}" var="source_role">
                                 <g:if test="${source_role.org}">
@@ -415,7 +415,7 @@
                                     <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
                                         ${target_role.org.name}
                                     </g:link>
-                                    <g:if test="${isConsortialSubs}">
+                                    <g:if test="${isConsortialObjects}">
                                             <div class="right aligned wide column">
                                                 <g:if test="${target_role.isShared}">
                                                     <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
@@ -506,7 +506,7 @@
                         </g:each>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                     </td>
                 </g:if>
@@ -634,7 +634,7 @@
                         <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br />
                     </g:each>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                     </td>
                 </g:if>
@@ -670,7 +670,7 @@
         </table>
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
-                message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button') }" />
+                message(code: 'copyElementsIntoObject.copyDeleteElements.button') }" />
 
         <g:if test="${fromSurvey && surveyConfig}">
             <div class="two fields">

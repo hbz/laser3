@@ -1,5 +1,7 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService;" %>
 <laser:serviceInjection/>
+
+<g:set var="formService" bean="formService"/>
 
 <semui:form>
     <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -9,11 +11,11 @@
             allObjects_writeRights: allObjects_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription"
             id="${params.id ?: params.sourceObjectId}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObjectId), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
-
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">
-            <semui:msg class="negative" message="subscription.details.copyElementsIntoSubscription.surveyExist"/>
+            <semui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>
 
@@ -112,7 +114,7 @@
         <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
         <div class="sixteen wide field" style="text-align: right;">
             <input type="submit" class="ui button js-click-control"
-                   value="${message(code: 'subscription.details.copyElementsIntoSubscription.copySubscriber.button')}" ${submitDisabled}/>
+                   value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
         </tbody>
     </table>

@@ -55,7 +55,7 @@ ${surveyInfo.name}
             <tr>
                 <th>${message(code: 'myinst.renewalUpload.props')}</th>
                 <th>${message(code: 'default.value.label')}</th>
-                <th>${message(code: 'subscription.details.copyElementsIntoSubscription.audit')}</th>
+                <th>${message(code: 'copyElementsIntoObject.audit')}</th>
             </tr>
             <tr>
                 <th>${message(code: 'myinst.emptySubscription.name')}</th>

@@ -72,13 +72,6 @@ class SubscriptionController
     AccessPointService accessPointService
     CopyElementsService copyElementsService
 
-    public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
-    public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
-    public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
-    public static final String WORKFLOW_SUBSCRIBER = '3'
-    public static final String WORKFLOW_PROPERTIES = '4'
-    public static final String WORKFLOW_END = '6'
-
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
             new SimpleDateFormat('dd.MM.yyyy'),
@@ -1316,7 +1309,7 @@ class SubscriptionController
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetObjectId
-        params.sourceObjectId = Subscription.get(params.targetObjectId)?.instanceOf?.id
+        params.sourceObjectId = genericOIDService.resolveOID(params.targetObjectId)?.instanceOf?.id
         def result = loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
@@ -1336,7 +1329,7 @@ class SubscriptionController
         params.max = 5000
         params.tab = params.tab ?: 'allIEs'
 
-        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+        Subscription newSub = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : Subscription.get(params.id)
         Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
         params.id = newSub.id
         params.sourceObjectId = baseSub.id
@@ -3993,8 +3986,7 @@ class SubscriptionController
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         redirect controller: 'subscription',
                  action: 'copyElementsIntoSubscription',
-                 id: old_subOID,
-                 params: [sourceObjectId: old_subOID, targetObjectId: new_subscription.id, isRenewSub: true]
+                 params: [sourceObjectId: GenericOIDService.getOID(old_subOID), targetObjectId: GenericOIDService.getOID(new_subscription), isRenewSub: true]
     }
 
 
@@ -4547,8 +4539,7 @@ class SubscriptionController
 
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            id: old_subOID,
-                            params: [sourceObjectId: old_subOID, targetObjectId: newSub.id, isRenewSub: true]
+                            params: [sourceObjectId: GenericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
 
             }
         }
@@ -4626,26 +4617,34 @@ class SubscriptionController
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
+        Map<String, Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId ?: params.id
-        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         if (params.targetObjectId) {
             result.targetObjectId = params.targetObjectId
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+
+        if (!result.editable) {
+            response.sendError(401); return
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
         if (params.fromSurvey && accessService.checkPerm("ORG_CONSORTIUM")) {result.fromSurvey = params.fromSurvey}
 
-        result.isConsortialSubs = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
         result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
@@ -4663,48 +4662,48 @@ class SubscriptionController
         }
 
         switch (params.workFlowPart) {
-            case WORKFLOW_DATES_OWNER_RELATIONS:
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copySubElements_DatesOwnerRelations(params)
                 if (params.isRenewSub){
-                    params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                 } else {
                     result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 }
                 break
-            case WORKFLOW_PACKAGES_ENTITLEMENTS:
+            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copyElementsService.copySubElements_PackagesEntitlements(params)
                 if (params.isRenewSub){
-                    params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 } else {
                     result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                 }
                 break
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
                 if (params.isRenewSub){
                     if (!params.fromSurvey && result.isSubscriberVisible){
-                        params.workFlowPart = WORKFLOW_SUBSCRIBER
+                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
-                        params.workFlowPart = WORKFLOW_PROPERTIES
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                         result << copyElementsService.loadDataFor_Properties(params)
                     }
                 } else {
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 }
                 break
-            case WORKFLOW_SUBSCRIBER:
+            case CopyElementsService.WORKFLOW_SUBSCRIBER:
                 result << copyElementsService.copySubElements_Subscriber(params)
                 if (params.isRenewSub) {
-                    params.workFlowPart = WORKFLOW_PROPERTIES
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << copyElementsService.loadDataFor_Properties(params)
                 } else {
                     result << copyElementsService.loadDataFor_Subscriber(params)
                 }
                 break
-            case WORKFLOW_PROPERTIES:
+            case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copySubElements_Properties(params)
                 if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
@@ -4720,7 +4719,7 @@ class SubscriptionController
                     result << copyElementsService.loadDataFor_Properties(params)
                 }
                 break
-            case WORKFLOW_END:
+            case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copySubElements_Properties(params)
                 if (params.targetObjectId){
                     flash.error = ""
@@ -4743,8 +4742,8 @@ class SubscriptionController
         if (params.targetObjectId) {
             result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
-        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
-        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
         result
@@ -4775,18 +4774,18 @@ class SubscriptionController
         result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
 
         switch (params.workFlowPart) {
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
-                result << loadDataFor_DocsAnnouncementsTasks()
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copyElementsService.copySubElements_DocsAnnouncementsTasks();
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
 
                 break;
-            case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties();
-                result << loadDataFor_Properties()
+            case CopyElementsService.WORKFLOW_PROPERTIES:
+                result << copyElementsService.copySubElements_Properties();
+                result << copyElementsService.loadDataFor_Properties()
 
                 break;
-            case WORKFLOW_END:
-                result << copySubElements_Properties();
+            case CopyElementsService.WORKFLOW_END:
+                result << copyElementsService.copySubElements_Properties();
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
@@ -4794,15 +4793,15 @@ class SubscriptionController
                 }
                 break;
             default:
-                result << loadDataFor_DocsAnnouncementsTasks()
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
                 break;
         }
 
         if (params.targetObjectId) {
             result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
         }
-        result.workFlowPart = params.workFlowPart ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.workFlowPartNext = params.workFlowPartNext ?: WORKFLOW_PROPERTIES
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_PROPERTIES
         result
     }
 

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.GenericOIDService;" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
@@ -90,7 +90,7 @@
             </g:else>
 
             <g:if test="${(accessService.checkPerm("ORG_INST") && !subscriptionInstance.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
-                <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
 
             <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">

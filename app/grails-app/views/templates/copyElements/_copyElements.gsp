@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
@@ -25,9 +25,9 @@
                     <g:if test="${sourceObject}"><g:link controller="subscription" action="show"
                                                                id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                 </th>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <th class="center aligned">
-                        <g:message code="subscription.details.copyElementsIntoSubscription.share"/>
+                        <g:message code="copyElementsIntoObject.share"/>
                     </th>
                 </g:if>
                 <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes"
@@ -48,14 +48,14 @@
 
             <g:each in="${copyElementsService.allowedProperties(sourceObject)}" var="objProperty">
                 <tr>
-                    <td name="subscription.take${objProperty}.source">
+                    <td name="object.take${objProperty}.source">
                         <div>
                             <b><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
-                                                   showToolTipp="true"/> ${message(code: "subscription.${objProperty}.label")}:</b>
+                                                   showToolTipp="true"/> ${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
                             <semui:showPropertyValue property="${sourceObject."${objProperty}"}"/>
                         </div>
                     </td>
-                    <g:if test="${isConsortialSubs}">
+                    <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                             <div class="ui checkbox la-toggle-radio la-share">
                                 <g:checkBox name="object.toggleAudit" value="${objProperty}" class="ui checkbox" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
@@ -72,27 +72,29 @@
                         </g:if>
                     </td>
 
-                    <td name="subscription.take${objProperty}.target">
-                        <div>
-                            <b><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
-                                                   showToolTipp="true"/> ${message(code: "subscription.${objProperty}.label")}:</b>
-                            <semui:showPropertyValue property="${targetObject?."${objProperty}"}"/>
+                    <td name="object.take${objProperty}.target">
+                        <g:if test="${targetObject}">
+                            <div>
+                                <b><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
+                                                       showToolTipp="true"/> ${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
+                                <semui:showPropertyValue property="${targetObject?."${objProperty}"}"/>
 
-                            <g:if test="${isConsortialSubs}">
-                                <div class="right aligned wide column">
-                                <%
-                                    if (AuditConfig.getConfig(targetObject, objProperty)) {
-                                        if (targetObject.isSlaved) {
-                                            println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                                        } else {
-                                            println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                <g:if test="${isConsortialObjects}">
+                                    <div class="right aligned wide column">
+                                    <%
+                                        if (AuditConfig.getConfig(targetObject, objProperty)) {
+                                            if (targetObject.isSlaved) {
+                                                println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                            } else {
+                                                println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                            }
                                         }
-                                    }
-                                %>
-                                </div>
-                            </g:if>
+                                    %>
+                                    </div>
+                                </g:if>
 
-                        </div>
+                            </div>
+                        </g:if>
                     </td>
 
                     <td>
@@ -107,7 +109,7 @@
 
             <g:if test="${sourceLicenses}">
             <tr>
-                <td name="subscription.takeLicenses.source">
+                <td name="object.takeLicenses.source">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
                         <g:each in="${sourceLicenses}" var="license">
@@ -122,7 +124,7 @@
                         </g:each>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
 
                     </td>
@@ -131,13 +133,13 @@
                 <td class="center aligned">
                     <g:each in="${sourceLicenses}" var="license">
                         <div class="ui checkbox la-toggle-radio la-replace">
-                            <g:checkBox name="subscription.takeLicenses" data-action="copy"
+                            <g:checkBox name="object.takeLicenses" data-action="copy"
                                         value="${GenericOIDService.getOID(license)}" checked="${true}"/>
                         </div>
                     </g:each>
                 </td>
 
-                <td name="subscription.takeLicenses.target">
+                <td name="object.takeLicenses.target">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
                         <g:each in="${targetLicenses}" var="license">
@@ -156,7 +158,7 @@
                 <td>
                     <g:each in="${targetLicenses}" var="license">
                         <div class="ui checkbox la-toggle-radio la-noChange">
-                            <g:checkBox name="subscription.deleteLicenses" data-action="delete"
+                            <g:checkBox name="object.deleteLicenses" data-action="delete"
                                         value="${GenericOIDService.getOID(license)}" checked="${false}"/>
                         </div>
                     </g:each>
@@ -165,10 +167,10 @@
             </g:if>
             <g:if test="${sourceObject.hasProperty("orgLinks") || sourceObject.hasProperty("orgRelations")}">
             <tr>
-                <td name="subscription.takeOrgRelations.source">
+                <td name="object.takeOrgRelations.source">
                     <div>
                         <g:if test="${!source_visibleOrgRelations}">
-                            <b><i class="university icon"></i>&nbsp${message(code: 'subscription.organisations.label')}:
+                            <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                             </b>
                         </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
@@ -186,7 +188,7 @@
                         </g:each>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
@@ -207,17 +209,17 @@
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="subscription.takeOrgRelations" data-action="copy"
+                                <g:checkBox name="object.takeOrgRelations" data-action="copy"
                                             value="${GenericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
                         </g:if>
                     </g:each>
                 </td>
 
-                <td name="subscription.takeOrgRelations.target">
+                <td name="object.takeOrgRelations.target">
                     <div>
                         <g:if test="${!target_visibleOrgRelations}">
-                            <b><i class="university icon"></i>&nbsp${message(code: 'subscription.organisations.label')}:
+                            <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                             </b>
                         </g:if>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
@@ -228,7 +230,7 @@
                                             id="${target_role.org.id}">
                                         ${target_role.org.name}
                                     </g:link>
-                                    <g:if test="${isConsortialSubs}">
+                                    <g:if test="${isConsortialObjects}">
                                         <div class="right aligned wide column">
                                             <g:if test="${target_role.isShared}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay"
@@ -256,7 +258,7 @@
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
                             <div class="ui checkbox la-toggle-radio la-noChange">
-                                <g:checkBox name="subscription.deleteOrgRelations" data-action="delete"
+                                <g:checkBox name="object.deleteOrgRelations" data-action="delete"
                                             value="${GenericOIDService.getOID(target_role)}" checked="${false}"/>
                             </div>
                             <br/>
@@ -324,7 +326,7 @@
                         </g:each>
                     </div>
                 </td>
-                <g:if test="${isConsortialSubs}">
+                <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
                     </td>
                 </g:if>
@@ -456,13 +458,13 @@
 
             <g:if test="${sourceObject.hasProperty("ids")}">
                 <tr>
-                    <td name="subscription.takeIdentifier.source">
+                    <td name="object.takeIdentifier.source">
                         <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br/>
                         <g:each in="${sourceIdentifiers}" var="ident">
                             <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br/>
                         </g:each>
                     </td>
-                    <g:if test="${isConsortialSubs}">
+                    <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                         </td>
                     </g:if>
@@ -472,13 +474,13 @@
                         <g:each in="${sourceIdentifiers}" var="ident">
                             <div data-id="${ident.id}" class="la-element">
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                    <g:checkBox name="subscription.takeIdentifierIds" value="${ident.id}"
+                                    <g:checkBox name="object.takeIdentifierIds" value="${ident.id}"
                                                 data-action="copy"/>
                                 </div>
                             </div>
                         </g:each>
                     </td>
-                    <td name="subscription.takeIdentifier.target">
+                    <td name="object.takeIdentifier.target">
                         <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br/>
                         <g:each in="${targetIdentifiers}" var="ident">
                             <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br/>
@@ -489,7 +491,7 @@
                         <g:each in="${targetIdentifiers}" var="ident">
                             <div data-id="${ident.id}" class="la-element">
                                 <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="subscription.deleteIdentifierIds" value="${ident.id}"
+                                    <g:checkBox name="object.deleteIdentifierIds" value="${ident.id}"
                                                 data-action="delete" checked="${false}"/>
                                 </div>
                             </div>
@@ -501,7 +503,7 @@
         </table>
         <g:set var="submitButtonText" value="${isRenewSub ?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
-                message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button')}"/>
+                message(code: 'copyElementsIntoObject.copyDeleteElements.button')}"/>
 
         <g:if test="${fromSurvey && surveyConfig}">
             <div class="two fields">
@@ -535,10 +537,10 @@
     var subCopyController = {
 
         checkboxes : {
-            $takeLicenses: $('input:checkbox[name="subscription.takeLicenses"]'),
-            $deleteLicenses: $('input:checkbox[name="subscription.deleteLicenses"]'),
-            $takeOrgRelations: $('input:checkbox[name="subscription.takeOrgRelations"]'),
-            $deleteOrgRelations: $('input:checkbox[name="subscription.deleteOrgRelations"]'),
+            $takeLicenses: $('input:checkbox[name="object.takeLicenses"]'),
+            $deleteLicenses: $('input:checkbox[name="object.deleteLicenses"]'),
+            $takeOrgRelations: $('input:checkbox[name="object.takeOrgRelations"]'),
+            $deleteOrgRelations: $('input:checkbox[name="object.deleteOrgRelations"]'),
             $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
             $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]')
         },
@@ -580,43 +582,43 @@
 
         takeLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="subscription.takeLicenses.target"] div div').addClass('willStay');
+                $('.table tr td[name="object.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="object.takeLicenses.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="subscription.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeLicenses') < 1) {
-                    $('.table tr td[name="subscription.takeLicenses.target"] div div').removeClass('willStay');
+                $('.table tr td[name="object.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeLicenses') < 1) {
+                    $('.table tr td[name="object.takeLicenses.target"] div div').removeClass('willStay');
                 }
             }
         },
 
         deleteLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="object.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
             } else {
-                $('.table tr td[name="subscription.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="object.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 
         takeOrgRelations: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="subscription.takeOrgRelations.target"] div div').addClass('willStay');
+                $('.table tr td[name="object.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="object.takeOrgRelations.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
-                    $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
+                $('.table tr td[name="object.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeOrgRelations') < 1) {
+                    $('.table tr td[name="object.takeOrgRelations.target"] div div').removeClass('willStay');
                 }
             }
         },
 
         deleteOrgRelations: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="object.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
             } else {
-                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="object.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 
@@ -648,19 +650,19 @@
             if (checkBoxID.includes("object.take")) {
 
                 if ($input.prop( "checked" ) == true) {
-                    $(".table tr td[name='subscription.take"+$input.attr("value")+".source'] div").addClass("willStay");
-                    $(".table tr td[name='subscription.take"+$input.attr("value")+".target'] div").addClass("willBeReplaced");
+                    $(".table tr td[name='object.take"+$input.attr("value")+".source'] div").addClass("willStay");
+                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").addClass("willBeReplaced");
                 } else {
-                    $(".table tr td[name='subscription.take"+$input.attr("value")+".source'] div").removeClass("willStay");
-                    $(".table tr td[name='subscription.take"+$input.attr("value")+".target'] div").removeClass("willBeReplaced");
+                    $(".table tr td[name='object.take"+$input.attr("value")+".source'] div").removeClass("willStay");
+                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").removeClass("willBeReplaced");
                 }
             }
             if (checkBoxID.includes("object.delete")) {
 
                 if ($input.prop( "checked" ) == true) {
-                    $(".table tr td[name='subscription.take"+$input.attr("value")+".target'] div").addClass("willBeReplacedStrong");
+                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").addClass("willBeReplacedStrong");
                 } else {
-                    $(".table tr td[name='subscription.take"+$input.attr("value")+".target'] div").removeClass("willBeReplacedStrong");
+                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").removeClass("willBeReplacedStrong");
                 }
             }
         },
