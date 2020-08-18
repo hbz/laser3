@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2788    17.08.2020  rc1.5       Moe     Bug         Mailadressen von Teilnehmer in Umfragen werden nicht ausgegeben
+
 2787    17.08.2020  rc1.5       Andreas Bug         Instanzvergleich löste Neuanlegen von Referenzwerten aus
 
 2786    17.08.2020  rc1.5       Andreas Bug         Regressfehler bei der Zuweisung der Berechtigung behoben

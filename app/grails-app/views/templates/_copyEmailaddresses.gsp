@@ -69,12 +69,19 @@
     </div>
 
     <g:javascript>
+            var jsonOrgIdList
         // modals
         $("*[data-semui='modal']").click(function() {
 
             var href = $(this).attr('data-href')
             if (! href) {
                 href = $(this).attr('href')
+            }
+
+             if($(this).attr('data-orgIdList')){
+                jsonOrgIdList = $(this).attr('data-orgIdList').split(',');
+            }else {
+                jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
             }
             $(href + '.ui.modal').modal({
                 onVisible: function() {
@@ -92,7 +99,6 @@
             }).modal('show')
         });
 
-        var jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set)orgList.collect{it.id})%>;
 
         $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
         $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
