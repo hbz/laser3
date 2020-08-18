@@ -46,7 +46,7 @@ class PendingChangeConfiguration {
     static PendingChangeConfiguration construct(Map<String,Object> configMap) throws CreationException {
         withTransaction {
             if (configMap.subscriptionPackage instanceof SubscriptionPackage) {
-                PendingChangeConfiguration pcc = findBySubscriptionPackageAndSettingKey((SubscriptionPackage) configMap.subscriptionPackage, configMap.settingKey)
+                PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey((SubscriptionPackage) configMap.subscriptionPackage, configMap.settingKey)
                 if (!pcc)
                     pcc = new PendingChangeConfiguration(subscriptionPackage: (SubscriptionPackage) configMap.subscriptionPackage, settingKey: configMap.settingKey)
                 pcc.settingValue = configMap.settingValue

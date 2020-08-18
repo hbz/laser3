@@ -1023,7 +1023,7 @@ join sub.orgRelations or_sub where
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
 
-            if(accessService.checkPerm("ORG_CONSORTIUM,ORG_INST_COLLECTIVE")) {
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
                     params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
                     result.consortialView = true

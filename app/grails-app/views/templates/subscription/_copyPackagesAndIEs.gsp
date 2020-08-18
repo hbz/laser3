@@ -1,5 +1,7 @@
-<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.FormService;" %>
 <laser:serviceInjection />
+
+<g:set var="formService" bean="formService"/>
 
 <semui:form>
 
@@ -12,8 +14,9 @@
     </g:if>
 
     <g:form controller="${controllerName}" action="${actionName}"  id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
             <thead>
                 <tr>
@@ -176,7 +179,7 @@
         </table>
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
-                message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" />
+                message(code: 'copyElementsIntoObject.copyPackagesAndIEs.button')}" />
 
         <g:if test="${fromSurvey && surveyConfig}">
         <div class="two fields">

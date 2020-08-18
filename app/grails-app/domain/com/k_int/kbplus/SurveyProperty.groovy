@@ -84,44 +84,45 @@ class SurveyProperty implements I10nTrait {
 
     static def loc(String name, String typeClass, RefdataCategory rdc, String expl, String comment, String introduction, Org owner) {
 
-        typeIsValid(typeClass)
+        withTransaction {
+            SurveyProperty.typeIsValid(typeClass)
 
-        def prop = findWhere(
-                name: name,
-                type: typeClass,
-                owner: owner
-        )
-
-        if (!prop) {
-            log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${expl} ) @ ${owner?.name}. Creating new one ..")
-
-            prop = new SurveyProperty(
+            SurveyProperty prop = SurveyProperty.findWhere(
                     name: name,
                     type: typeClass,
-                    expl: expl ?: null,
-                    comment: comment ?: null,
-                    introduction: introduction ?: null,
-                    refdataCategory: rdc?.desc,
                     owner: owner
             )
-            prop.save(flush: true)
+
+            if (!prop) {
+                log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${expl} ) @ ${owner?.name}. Creating new one ..")
+
+                prop = new SurveyProperty(
+                        name: name,
+                        type: typeClass,
+                        expl: expl ?: null,
+                        comment: comment ?: null,
+                        introduction: introduction ?: null,
+                        refdataCategory: rdc?.desc,
+                        owner: owner
+                )
+                prop.save()
+            }
+            prop
         }
-        prop
     }
 
     String getLocalizedType() {
 
-        def propertyType = this.getLocalizedValue(this.type)
-        def refdataValues =[]
+        def propertyType = SurveyProperty.getLocalizedValue(this.type)
+        List refdataValues = []
         if(this.type == 'class com.k_int.kbplus.RefdataValue'){
 
-                com.k_int.kbplus.RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
+                RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
                     refdataValues << it?.getI10n('value')
                 }
         }
 
         return propertyType + ((refdataValues?.size() > 0) ? " (" + refdataValues?.join('/')+")" : "")
-
     }
 
     def countUsages() {
@@ -129,13 +130,10 @@ class SurveyProperty implements I10nTrait {
             def scp = SurveyProperty.executeQuery("select count(scp) from SurveyConfigProperties as scp where scp.surveyProperty = :sp", [sp: this])
             def srp = SurveyProperty.executeQuery("select count(srp) from SurveyResult as srp where srp.type = :sp", [sp: this])
             return scp[0]+srp[0] ?: 0
-
     }
 
     static SurveyProperty getByName(String name)
     {
         SurveyProperty.findByName(name)
     }
-
-
 }

@@ -82,7 +82,7 @@ class I10nTranslation {
         withTransaction {
 
             reference = GrailsHibernateUtil.unwrapIfProxy(reference)
-            I10nTranslation i10n = get(reference, referenceField)
+            I10nTranslation i10n = I10nTranslation.get(reference, referenceField)
             
             if (!i10n) {
                 i10n = new I10nTranslation(

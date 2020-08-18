@@ -160,75 +160,78 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static PropertyDefinition construct(Map<String, Object> map) {
 
-        String token        = map.get('token') // name
-        String category     = map.get('category') // descr
-        String type         = map.get('type')
-        String rdc          = map.get('rdc') // refdataCategory
-        boolean hardData    = new Boolean( map.get('hardData') )
-        boolean mandatory   = new Boolean( map.get('mandatory') )
-        boolean multiple    = new Boolean( map.get('multiple') )
-        boolean logic       = new Boolean( map.get('logic') )
-        Org tenant          = map.get('tenant') ? Org.findByGlobalUID(map.get('tenant')) : null
-        Map i10n            = map.get('i10n')  ?: [
-                name_de: token,
-                name_en: token,
-                //descr_de: category,
-                //descr_en: category,
-                expl_de: null,
-                expl_en: null
-        ]
+        withTransaction {
+            String token    = map.get('token') // name
+            String category = map.get('category') // descr
+            String type     = map.get('type')
+            String rdc      = map.get('rdc') // refdataCategory
 
-        typeIsValid(type)
+            boolean hardData    = new Boolean(map.get('hardData'))
+            boolean mandatory   = new Boolean(map.get('mandatory'))
+            boolean multiple    = new Boolean(map.get('multiple'))
+            boolean logic       = new Boolean(map.get('logic'))
 
-        if (map.tenant && !tenant) {
-            static_logger.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')
+            Org tenant          = map.get('tenant') ? Org.findByGlobalUID(map.get('tenant')) : null
+            Map i10n = map.get('i10n') ?: [
+                    name_de: token,
+                    name_en: token,
+                    //descr_de: category,
+                    //descr_en: category,
+                    expl_de: null,
+                    expl_en: null
+            ]
+
+            PropertyDefinition.typeIsValid(type)
+
+            if (map.tenant && !tenant) {
+                static_logger.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')
+            }
+
+            PropertyDefinition pd
+
+            if (tenant) {
+                pd = PropertyDefinition.getByNameAndDescrAndTenant(token, category, tenant)
+            } else {
+                pd = PropertyDefinition.getByNameAndDescr(token, category)
+            }
+
+            if (!pd) {
+                static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}), tenant: ${tenant}")
+
+                boolean multipleOccurrence = (category == PropertyDefinition.SUR_PROP) ? false : multiple
+
+                pd = new PropertyDefinition(
+                        name: token,
+                        descr: category,
+                        type: type,
+                        refdataCategory: rdc,
+                        multipleOccurrence: multipleOccurrence,
+                        mandatory: mandatory,
+                        isUsedForLogic: logic,
+                        tenant: tenant
+                )
+
+                // TODO .. which attributes can change for existing pds ?
+            }
+
+            pd.name_de = i10n.get('name_de') ?: null
+            pd.name_en = i10n.get('name_en') ?: null
+
+            pd.expl_de = i10n.get('expl_de') ?: null
+            pd.expl_en = i10n.get('expl_en') ?: null
+
+            pd.isHardData = hardData
+            pd.save()
+
+            // I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
+
+            pd
         }
-
-        PropertyDefinition pd
-
-        if (tenant) {
-            pd = PropertyDefinition.getByNameAndDescrAndTenant(token, category, tenant)
-        }
-        else {
-            pd = PropertyDefinition.getByNameAndDescr(token, category)
-        }
-
-        if (! pd) {
-            static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}), tenant: ${tenant}")
-
-            boolean multipleOccurrence = (category == PropertyDefinition.SUR_PROP) ? false : multiple
-
-            pd = new PropertyDefinition(
-                    name:               token,
-                    descr:              category,
-                    type:               type,
-                    refdataCategory:    rdc,
-                    multipleOccurrence: multipleOccurrence,
-                    mandatory:          mandatory,
-                    isUsedForLogic:     logic,
-                    tenant:             tenant
-            )
-
-            // TODO .. which attributes can change for existing pds ?
-        }
-
-        pd.name_de = i10n.get('name_de') ?: null
-        pd.name_en = i10n.get('name_en') ?: null
-
-        pd.expl_de = i10n.get('expl_de') ?: null
-        pd.expl_en = i10n.get('expl_en') ?: null
-
-        pd.isHardData = hardData
-        pd.save(flush: true)
-
-        // I10nTranslation.createOrUpdateI10n(pd, 'descr', descr)
-
-        pd
     }
 
     static PropertyDefinition getByNameAndDescr(String name, String descr) {
 
-        List result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenantIsNull(name, descr)
+        List<PropertyDefinition> result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenantIsNull(name, descr)
 
         if (result.size() == 0) {
             return null
@@ -244,7 +247,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static PropertyDefinition getByNameAndDescrAndTenant(String name, String descr, Org tenant) {
 
-        List result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenant(name, descr, tenant)
+        List<PropertyDefinition> result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenant(name, descr, tenant)
 
         if (result.size() == 0) {
             return null
@@ -259,19 +262,19 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static List<PropertyDefinition> getAllByDescr(String descr) {
-        findAllByDescrAndTenantIsNull(descr)
+        PropertyDefinition.findAllByDescrAndTenantIsNull(descr)
     }
 
     static List<PropertyDefinition> getAllByDescrAndTenant(String descr, Org tenant) {
-        findAllByDescrAndTenant(descr, tenant)
+        PropertyDefinition.findAllByDescrAndTenant(descr, tenant)
     }
 
     static List<PropertyDefinition> getAllByDescrAndMandatory(String descr, boolean mandatory) {
-        findAllByDescrAndMandatoryAndTenantIsNull(descr, mandatory)
+        PropertyDefinition.findAllByDescrAndMandatoryAndTenantIsNull(descr, mandatory)
     }
 
     static List<PropertyDefinition> getAllByDescrAndMandatoryAndTenant(String descr, boolean mandatory, Org tenant) {
-        findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
+        PropertyDefinition.findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
     }
 
     private static def typeIsValid(String key) {
@@ -290,36 +293,19 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @param owner: The class that will hold the property, e.g License
      */
     static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(String flag, def owner, PropertyDefinition type, Org contextOrg) {
-        String classString = owner.getClass().toString()
-        def ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
-        boolean isPublic
 
-        //if(!owner.hasProperty("privateProperties")) {
+        withTransaction {
+            String classString = owner.getClass().toString()
+            String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
+
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
-        /*}
-        else {
-            if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-                ownerClassName = "com.k_int.kbplus.${ownerClassName}CustomProperty"
-            }
-            else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-                ownerClassName = "com.k_int.kbplus.${ownerClassName}PrivateProperty"
-            }
-        }*/
 
-        //def newProp = Class.forName(ownerClassName).newInstance(type: type, owner: owner)
-        def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: false, tenant: contextOrg)
-        newProp.setNote("")
+            def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: false, tenant: contextOrg)
+            newProp.setNote("")
 
-        /*
-        if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
-            owner.customProperties.add(newProp)
+            newProp.save()
+            (AbstractPropertyWithCalculatedLastUpdated) GrailsHibernateUtil.unwrapIfProxy(newProp)
         }
-        else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
-            owner.privateProperties.add(newProp)
-        } */
-
-        newProp.save(flush:true)
-        GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
     static def refdataFind(params) {
@@ -478,12 +464,18 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     @Transient
     void removeProperty() {
-        log.debug("Remove")
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = :self', [self: this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = :self', [self: this])
-        PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
-        this.delete(flush:true)
+        log.debug("removeProperty")
+
+        withTransaction {
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PlatformProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SurveyResult c where c.type = :self', [self: this])
+
+            this.delete()
+        }
     }
 
     /* tmp only */

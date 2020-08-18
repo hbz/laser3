@@ -42,24 +42,26 @@ class RefdataCategory extends AbstractI10n {
 
     static RefdataCategory construct(Map<String, Object> map) {
 
-        String token     = map.get('token')
-        boolean hardData = new Boolean( map.get('hardData') )
-        Map i10n         = map.get('i10n')
+        withTransaction {
+            String token = map.get('token')
+            boolean hardData = new Boolean(map.get('hardData'))
+            Map i10n = map.get('i10n')
 
-        RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
+            RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
 
-        if (! rdc) {
-            static_logger.debug("INFO: no match found; creating new refdata category for ( ${token}, ${i10n} )")
-            rdc = new RefdataCategory(desc:token) // todo: token
+            if (!rdc) {
+                static_logger.debug("INFO: no match found; creating new refdata category for ( ${token}, ${i10n} )")
+                rdc = new RefdataCategory(desc: token) // todo: token
+            }
+
+            rdc.desc_de = i10n.get('desc_de') ?: null
+            rdc.desc_en = i10n.get('desc_en') ?: null
+
+            rdc.isHardData = hardData
+            rdc.save()
+
+            rdc
         }
-
-        rdc.desc_de = i10n.get('desc_de') ?: null
-        rdc.desc_en = i10n.get('desc_en') ?: null
-
-        rdc.isHardData = hardData
-        rdc.save(flush: true)
-
-        rdc
     }
 
   static def refdataFind(params) {
@@ -87,7 +89,6 @@ class RefdataCategory extends AbstractI10n {
   }
 
     static RefdataCategory getByDesc(String desc) {
-
         RefdataCategory.findByDescIlike(desc)
     }
 
@@ -125,7 +126,7 @@ class RefdataCategory extends AbstractI10n {
     }
 
     static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
-        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name),sort)
+        List<RefdataValue> refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDescIlike(category_name), sort)
 
         List result = []
         refdatas.each { rd ->

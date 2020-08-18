@@ -6,8 +6,10 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.CopyElementsService
 import de.laser.DeletionService
 import de.laser.FormService
+import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PropertyService
 import de.laser.SubscriptionsQueryService
@@ -50,6 +52,8 @@ class LicenseController
     SubscriptionsQueryService subscriptionsQueryService
     LinksGenerationService linksGenerationService
     FormService formService
+    CopyElementsService copyElementsService
+    LicenseService licenseService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1080,6 +1084,84 @@ class LicenseController
                 }
 
             }
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def copyElementsIntoLicense() {
+        def result             = [:]
+        result.user            = User.get(springSecurityService.principal.id)
+        result.institution     = contextService.org
+        result.contextOrg      = result.institution
+
+        flash.error = ""
+        flash.message = ""
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId ?: params.id
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
+
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.editable = result.sourceObject.isEditableBy(result.user)
+
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+
+        result.allObjects_readRights = licenseService.getMyLicenses_readRights()
+        result.allObjects_writeRights = licenseService.getMyLicenses_writeRights()
+
+        List<String> licTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
+                                                CalculatedType.TYPE_ADMINISTRATIVE]
+        result.isSubscriberVisible =
+                result.sourceObject &&
+                        result.targetObject &&
+                        licTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
+                        licTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
+
+        switch (params.workFlowPart) {
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copyElementsService.copySubElements_DatesOwnerRelations(params)
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                break
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                break
+            case CopyElementsService.WORKFLOW_SUBSCRIBER:
+                result << copyElementsService.copySubElements_Subscriber(params)
+                result << copyElementsService.loadDataFor_Subscriber(params)
+                break
+            case CopyElementsService.WORKFLOW_PROPERTIES:
+                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.loadDataFor_Properties(params)
+                break
+            case CopyElementsService.WORKFLOW_END:
+                result << copyElementsService.copySubElements_Properties(params)
+                if (params.targetObjectId){
+                    flash.error = ""
+                    flash.message = ""
+                    redirect controller: 'license', action: 'show', params: [id: params.targetObjectId]
+                }
+                break
+            default:
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                break
+        }
+
+        if (params.targetObjectId) {
+            result.targetObject = License.get(Long.parseLong(params.targetObjectId))
+        }
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+
+        result
     }
 
     private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {

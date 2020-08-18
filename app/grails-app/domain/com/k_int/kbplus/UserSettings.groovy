@@ -141,7 +141,7 @@ class UserSettings {
     static void delete(User user, KEYS key) {
 
         withTransaction {
-            def uss = findWhere(user: user, key: key)
+            def uss = UserSettings.findWhere(user: user, key: key)
             uss?.delete()
         }
     }
