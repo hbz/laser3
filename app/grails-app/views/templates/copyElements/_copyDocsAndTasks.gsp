@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObjectId), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
@@ -41,7 +41,7 @@
             <tbody class="top aligned">
                 <tr>
                     <td  name="object.takeDocs.source">
-                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
+                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
@@ -93,7 +93,7 @@
                         </g:each>
                     </td>
                     <td  name="object.takeDocs.target">
-                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
+                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
                         <div>
                             <g:if test="${targetObject}">
                                 <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
@@ -151,7 +151,7 @@
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
                     <td name="object.takeAnnouncements.source">
-                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
+                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
@@ -203,7 +203,7 @@
                         </g:each>
                     </td>
                     <td  name="object.takeAnnouncements.target">
-                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
+                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
                         <div>
                             <g:if test="${targetObject}">
                                 <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
@@ -262,7 +262,7 @@
                 %{--TASKS:--}%
                 <tr>
                     <td name="object.takeTasks.source">
-                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
+                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 <label>
@@ -286,7 +286,7 @@
                         </g:each>
                     </td>
                     <td  name="object.takeTasks.target">
-                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
+                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
                         <g:each in="${targetTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                             <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}

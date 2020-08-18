@@ -26,7 +26,7 @@
 
     <% Map params = [id: params.id];
         if (sourceObjectId)   params << [sourceObjectId: sourceObjectId];
-        if (targetObjectId)   params << [targetObjectId: targetObjectId];
+        if (targetObjectId)   params << [targetObjectId: GenericOIDService.getOID(targetObjectId)];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
     %>
     <g:if test="${isRenewSub}">

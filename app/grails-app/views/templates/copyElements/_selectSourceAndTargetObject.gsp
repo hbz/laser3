@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService;" %>
 <g:if test="${! (sourceObject && targetObject)}">
     <% if (params){
         params.remove('sourceObjectId')
@@ -14,7 +14,7 @@
                       name="sourceObjectId"
                       from="${((List<Object>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it.dropdownNamingConvention()}}"
-                      optionKey="id"
+                      optionKey="${{GenericOIDService.getOID(it)}}"
                       value="${sourceObject?.id}"
                       />
             </div>
@@ -45,7 +45,7 @@
                       name="targetObjectId"
                       from="${allObjects_writeRights}"
                       optionValue="${{it.dropdownNamingConvention()}}"
-                      optionKey="id"
+                      optionKey="${{GenericOIDService.getOID(it)}}"
                       value="${targetObject?.id}"
                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>

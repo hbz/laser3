@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.License
+import com.k_int.kbplus.Subscription
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 
@@ -108,6 +109,16 @@ class LicenseService {
 
         return [base_qry, qry_params]
 
+    }
+
+    List getVisibleOrgRelations(License license) {
+        List visibleOrgRelations = []
+        license?.orgLinks?.each { or ->
+            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS])) {
+                visibleOrgRelations << or
+            }
+        }
+        visibleOrgRelations.sort { it.org?.name.toLowerCase() }
     }
 
 }

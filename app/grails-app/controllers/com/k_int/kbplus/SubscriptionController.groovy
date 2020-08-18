@@ -1309,7 +1309,7 @@ class SubscriptionController
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetObjectId
-        params.sourceObjectId = Subscription.get(params.targetObjectId)?.instanceOf?.id
+        params.sourceObjectId = genericOIDService.resolveOID(params.targetObjectId)?.instanceOf?.id
         def result = loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
@@ -1329,7 +1329,7 @@ class SubscriptionController
         params.max = 5000
         params.tab = params.tab ?: 'allIEs'
 
-        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+        Subscription newSub = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : Subscription.get(params.id)
         Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
         params.id = newSub.id
         params.sourceObjectId = baseSub.id
@@ -3986,8 +3986,7 @@ class SubscriptionController
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         redirect controller: 'subscription',
                  action: 'copyElementsIntoSubscription',
-                 id: old_subOID,
-                 params: [sourceObjectId: old_subOID, targetObjectId: new_subscription.id, isRenewSub: true]
+                 params: [sourceObjectId: GenericOIDService.getOID(old_subOID), targetObjectId: GenericOIDService.getOID(new_subscription), isRenewSub: true]
     }
 
 
@@ -4540,8 +4539,7 @@ class SubscriptionController
 
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            id: old_subOID,
-                            params: [sourceObjectId: old_subOID, targetObjectId: newSub.id, isRenewSub: true]
+                            params: [sourceObjectId: GenericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
 
             }
         }
@@ -4619,20 +4617,28 @@ class SubscriptionController
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
+        Map<String, Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId ?: params.id
-        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         if (params.targetObjectId) {
             result.targetObjectId = params.targetObjectId
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+
+        if (!result.editable) {
+            response.sendError(401); return
         }
 
         if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}

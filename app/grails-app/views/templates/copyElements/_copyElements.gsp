@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: sourceObjectId, targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
@@ -51,7 +51,7 @@
                     <td name="object.take${objProperty}.source">
                         <div>
                             <b><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
-                                                   showToolTipp="true"/> ${message(code: "${sourceObject.getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
+                                                   showToolTipp="true"/> ${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
                             <semui:showPropertyValue property="${sourceObject."${objProperty}"}"/>
                         </div>
                     </td>
@@ -73,26 +73,28 @@
                     </td>
 
                     <td name="object.take${objProperty}.target">
-                        <div>
-                            <b><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
-                                                   showToolTipp="true"/> ${message(code: "${targetObject.getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
-                            <semui:showPropertyValue property="${targetObject?."${objProperty}"}"/>
+                        <g:if test="${targetObject}">
+                            <div>
+                                <b><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
+                                                       showToolTipp="true"/> ${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
+                                <semui:showPropertyValue property="${targetObject?."${objProperty}"}"/>
 
-                            <g:if test="${isConsortialObjects}">
-                                <div class="right aligned wide column">
-                                <%
-                                    if (AuditConfig.getConfig(targetObject, objProperty)) {
-                                        if (targetObject.isSlaved) {
-                                            println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                                        } else {
-                                            println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                <g:if test="${isConsortialObjects}">
+                                    <div class="right aligned wide column">
+                                    <%
+                                        if (AuditConfig.getConfig(targetObject, objProperty)) {
+                                            if (targetObject.isSlaved) {
+                                                println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                            } else {
+                                                println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                            }
                                         }
-                                    }
-                                %>
-                                </div>
-                            </g:if>
+                                    %>
+                                    </div>
+                                </g:if>
 
-                        </div>
+                            </div>
+                        </g:if>
                     </td>
 
                     <td>
@@ -168,7 +170,7 @@
                 <td name="object.takeOrgRelations.source">
                     <div>
                         <g:if test="${!source_visibleOrgRelations}">
-                            <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getSimpleName().toLowerCase()}.organisations.label")}:
+                            <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                             </b>
                         </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
@@ -217,7 +219,7 @@
                 <td name="object.takeOrgRelations.target">
                     <div>
                         <g:if test="${!target_visibleOrgRelations}">
-                            <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getSimpleName().toLowerCase()}.organisations.label")}:
+                            <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                             </b>
                         </g:if>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">

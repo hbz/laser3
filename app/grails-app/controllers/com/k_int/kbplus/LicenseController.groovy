@@ -1089,20 +1089,27 @@ class LicenseController
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoLicense() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
+        def result             = [:]
+        result.user            = User.get(springSecurityService.principal.id)
+        result.institution     = contextService.org
+        result.contextOrg      = result.institution
+
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
         result.sourceObjectId = params.sourceObjectId ?: params.id
-        result.sourceObject = License.get(Long.parseLong(params.sourceObjectId ?: params.id))
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         if (params.targetObjectId) {
             result.targetObjectId = params.targetObjectId
-            result.targetObject = License.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.editable = result.sourceObject.isEditableBy(result.user)
+
+        if (!result.editable) {
+            response.sendError(401); return
         }
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false

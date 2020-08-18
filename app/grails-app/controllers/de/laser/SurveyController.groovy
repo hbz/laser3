@@ -2992,8 +2992,7 @@ class SurveyController {
 
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            id: old_subOID,
-                            params: [sourceObjectId: old_subOID, targetObjectId: newSub.id, isRenewSub: true, fromSurvey: true]
+                            params: [sourceObjectId: GenericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true, fromSurvey: true]
 
             }
         }

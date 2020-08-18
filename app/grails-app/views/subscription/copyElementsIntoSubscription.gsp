@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -40,8 +40,8 @@
     <semui:messages data="${flash}"/>
 
     <% Map params = [id: params.id];
-        if (sourceObjectId)   params << [sourceObjectId: sourceObjectId];
-        if (targetObjectId)   params << [targetObjectId: targetObjectId];
+        if (sourceObjectId)   params << [sourceObjectId: GenericOIDService.getOID(sourceObject)];
+        if (targetObjectId)   params << [targetObjectId: GenericOIDService.getOID(targetObjectId)];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
     %>
     <g:if test="${isRenewSub}">

@@ -17,7 +17,7 @@
         </g:if>
 
         <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}"
-                params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: sourceObjectId, targetObjectId: targetObjectId, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+                params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObjectId), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
                 method="post" class="ui form newLicence">
 
                 <%

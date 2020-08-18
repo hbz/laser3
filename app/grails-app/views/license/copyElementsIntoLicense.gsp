@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; de.laser.CopyElementsService; com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -17,9 +17,9 @@
 
 <semui:messages data="${flash}"/>
 
-<% Map params = [id: params.id];
-if (sourceObjectId) params << [sourceObjectId: sourceObjectId]
-if (targetObjectId) params << [targetObjectId: targetObjectId]
+<% Map params = [:];
+if (sourceObjectId) params << [sourceObjectId: GenericOIDService.getOID(sourceObject)]
+if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetObject)]
 %>
 <semui:subNav>
     <semui:complexSubNavItem
@@ -31,7 +31,7 @@ if (targetObjectId) params << [targetObjectId: targetObjectId]
 
             <div class="description">
                 <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                <i class="ellipsis vertical icon"></i>${message(code: 'subscription.status.label')}
+                <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
                 <br>
                 <i class="image outline icon"></i>${message(code: 'subscription.kind.label')}
                 <i class="dolly icon"></i>${message(code: 'subscription.form.label')}
@@ -40,9 +40,7 @@ if (targetObjectId) params << [targetObjectId: targetObjectId]
                 <i class="shipping fast icon"></i>${message(code: 'subscription.isPublicForApi.label')}
                 <i class="flag outline icon"></i>${message(code: 'subscription.hasPerpetualAccess.label')}
                 <br>
-                <i class="balance scale icon"></i>${message(code: 'license.label')}
                 <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
                 <br>
                 <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 
