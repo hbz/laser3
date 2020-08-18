@@ -2359,7 +2359,7 @@ class AjaxController {
         if (params.orgIdList){
             List<Long> orgIds = (params.orgIdList.split( ',')).each { (it instanceof Long) ? it : Long.parseLong(it)}
             List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
-            println(orgList)
+            
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
