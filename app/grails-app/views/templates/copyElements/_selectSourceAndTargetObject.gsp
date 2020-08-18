@@ -15,7 +15,7 @@
                       from="${((List<Object>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it.dropdownNamingConvention()}}"
                       optionKey="${{GenericOIDService.getOID(it)}}"
-                      value="${sourceObject?.id}"
+                      value="${GenericOIDService.getOID(sourceObject)}"
                       />
             </div>
             <div class="eight wide field">
@@ -46,7 +46,7 @@
                       from="${allObjects_writeRights}"
                       optionValue="${{it.dropdownNamingConvention()}}"
                       optionKey="${{GenericOIDService.getOID(it)}}"
-                      value="${targetObject?.id}"
+                      value="${{GenericOIDService.getOID(targetObject)}}"
                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </div>

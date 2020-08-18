@@ -131,7 +131,7 @@
                     %{--COPY:--}%
                     <g:if test="${propValues.containsKey(sourceObject)}">
                         <div class="ui checkbox la-toggle-radio la-replace">
-                            <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
+                            <g:checkBox name="copyObject.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                         </div>
                     </g:if>
                 </g:each>
@@ -180,12 +180,12 @@
                             <g:if test="${propValue instanceof SubscriptionProperty}">
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${! AuditConfig.getConfig(propValue)}">
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
                                             <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                         </span>
                                     </g:if>
                                     <g:else>
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
                                             <i class="thumbtack icon la-js-editmode-icon"></i>
                                         </span>
                                     </g:else>
@@ -207,7 +207,7 @@
             <g:if test="${ targetObject && propValues.containsKey(targetObject)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="ui checkbox la-toggle-radio la-noChange">
-                        <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
+                        <g:checkBox class="bulkcheck"  name="copyObject.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
                     </div>
                 </g:each>
             </g:if>

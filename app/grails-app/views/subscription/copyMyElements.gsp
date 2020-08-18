@@ -16,9 +16,9 @@
 
 <semui:messages data="${flash}"/>
 
-<% Map params = [id: params.id];
+<% Map params = [:];
 if (sourceObjectId) params << [sourceObjectId: GenericOIDService.getOID(sourceObject)];
-if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetObjectId)];
+if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetObject)];
 %>
 
 <semui:subNav>

@@ -160,11 +160,11 @@ class CopyElementsService {
     Map loadDataFor_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-        Object targetObject = params.targetObjectId ? GenericOIDService.getOID(targetObjectId) : null
+        Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(sourceObject)
         result.targetIEs = subscriptionService.getIssueEntitlements(targetObject)
         result.targetObject = targetObject
-        result.subscription = sourceObject
+        result.sourceObject = sourceObject
         result
     }
 
@@ -330,19 +330,19 @@ class CopyElementsService {
         def request = grailsWebRequest.getCurrentRequest()
         def flash = grailsWebRequest.attributes.getFlashScope(request)
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-        Object targetObject = params.targetObjectId ? GenericOIDService.getOID(targetObjectId) : null
+        Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if (formService.validateToken(params)) {
 
-            params.list('object.take').each { takeProperty ->
+            params.list('copyObject.take').each { takeProperty ->
                 if (takeProperty in allowedProperties(sourceObject)) {
                     copyObjectProperty(sourceObject, targetObject, flash, takeProperty)
                 }
             }
 
             allowedProperties(sourceObject).each { allowedProperty ->
-                if (allowedProperty in params.list('object.take')) {
-                    if (allowedProperty in params.list('object.toggleAudit')) {
+                if (allowedProperty in params.list('copyObject.take')) {
+                    if (allowedProperty in params.list('copyObject.toggleAudit')) {
                         toggleAuditObjectProperty(sourceObject, targetObject, flash, allowedProperty)
                     } else {
                         removeToggleAuditObjectProperty(targetObject, flash, allowedProperty)
@@ -351,21 +351,21 @@ class CopyElementsService {
 
             }
 
-            if (params.object?.deleteLicenses && isBothObjectsSet(sourceObject, targetObject)) {
-                List<License> toDeleteLicenses = params.list('object.deleteLicenses').collect { genericOIDService.resolveOID(it) }
+            if (params.copyObject?.deleteLicenses && isBothObjectsSet(sourceObject, targetObject)) {
+                List<License> toDeleteLicenses = params.list('copyObject.deleteLicenses').collect { genericOIDService.resolveOID(it) }
                 deleteLicenses(toDeleteLicenses, targetObject, flash)
-            } else if (params.object?.takeLicenses && isBothObjectsSet(sourceObject, targetObject)) {
-                List<License> toCopyLicenses = params.list('object.takeLicenses').collect { genericOIDService.resolveOID(it) }
+            } else if (params.copyObject?.takeLicenses && isBothObjectsSet(sourceObject, targetObject)) {
+                List<License> toCopyLicenses = params.list('copyObject.takeLicenses').collect { genericOIDService.resolveOID(it) }
                 copyLicenses(toCopyLicenses, targetObject, flash)
             }
 
-            if (params.object?.deleteOrgRelations && isBothObjectsSet(sourceObject, targetObject)) {
-                List<OrgRole> toDeleteOrgRelations = params.list('object.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
+            if (params.copyObject?.deleteOrgRelations && isBothObjectsSet(sourceObject, targetObject)) {
+                List<OrgRole> toDeleteOrgRelations = params.list('copyObject.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
                 deleteOrgRelations(toDeleteOrgRelations, targetObject, flash)
                 //isTargetSubChanged = true
             }
-            if (params.object?.takeOrgRelations && isBothObjectsSet(sourceObject, targetObject)) {
-                List<OrgRole> toCopyOrgRelations = params.list('object.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
+            if (params.copyObject?.takeOrgRelations && isBothObjectsSet(sourceObject, targetObject)) {
+                List<OrgRole> toCopyOrgRelations = params.list('copyObject.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
                 copyOrgRelations(toCopyOrgRelations, sourceObject, targetObject, flash)
                 //isTargetSubChanged = true
 
@@ -395,16 +395,16 @@ class CopyElementsService {
                 //isTargetSubChanged = true
             }
 
-            if (params.object?.deleteIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.deleteIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteIdentifiers = []
-                params.list('object.deleteIdentifierIds').each { identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
+                params.list('copyObject.deleteIdentifierIds').each { identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
                 deleteIdentifiers(toDeleteIdentifiers, targetObject, flash)
                 //isTargetSubChanged = true
             }
 
-            if (params.object?.takeIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.takeIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyIdentifiers = []
-                params.list('object.takeIdentifierIds').each { identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
+                params.list('copyObject.takeIdentifierIds').each { identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
                 copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
                 //isTargetSubChanged = true
             }
@@ -413,8 +413,7 @@ class CopyElementsService {
         /*if (isTargetSubChanged) {
             targetObject = targetObject.refresh()
         }*/
-        result.subscription = sourceObject
-        result.targetObject = targetObject
+        result.sourceObject = sourceObject
         result.targetObject = targetObject
         result
     }
@@ -432,44 +431,44 @@ class CopyElementsService {
 
         if (formService.validateToken(params)) {
             boolean isTargetSubChanged = false
-            if (params.object?.deleteDocIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.deleteDocIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteDocs = []
-                params.list('object.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
+                params.list('copyObject.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
                 deleteDocs(toDeleteDocs, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.object?.takeDocIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.takeDocIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyDocs = []
-                params.list('object.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
+                params.list('copyObject.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
                 copyDocs(sourceObject, toCopyDocs, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.object?.deleteAnnouncementIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.deleteAnnouncementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteAnnouncements = []
-                params.list('object.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
+                params.list('copyObject.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
                 deleteAnnouncements(toDeleteAnnouncements, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.object?.takeAnnouncementIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.takeAnnouncementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyAnnouncements = []
-                params.list('object.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
+                params.list('copyObject.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
                 copyAnnouncements(sourceObject, toCopyAnnouncements, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.object?.deleteTaskIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.deleteTaskIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteTasks = []
-                params.list('object.deleteTaskIds').each { tsk -> toDeleteTasks << Long.valueOf(tsk) }
+                params.list('copyObject.deleteTaskIds').each { tsk -> toDeleteTasks << Long.valueOf(tsk) }
                 deleteTasks(toDeleteTasks, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.object?.takeTaskIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.copyObject?.takeTaskIds && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyTasks = []
-                params.list('object.takeTaskIds').each { tsk -> toCopyTasks << Long.valueOf(tsk) }
+                params.list('copyObject.takeTaskIds').each { tsk -> toCopyTasks << Long.valueOf(tsk) }
                 copyTasks(sourceObject, toCopyTasks, targetObject, flash)
                 isTargetSubChanged = true
             }
@@ -496,16 +495,16 @@ class CopyElementsService {
         }
         boolean isTargetSubChanged = false
 
-        if (params.object?.deleteIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
+        if (params.copyObject?.deleteIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
             def toDeleteIdentifiers =  []
-            params.list('object.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
+            params.list('copyObject.deleteIdentifierIds').each{ identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
             deleteIdentifiers(toDeleteIdentifiers, targetObject, flash)
             isTargetSubChanged = true
         }
 
-        if (params.object?.takeIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
+        if (params.copyObject?.takeIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
             def toCopyIdentifiers =  []
-            params.list('object.takeIdentifierIds').each{ identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
+            params.list('copyObject.takeIdentifierIds').each{ identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
             copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
             isTargetSubChanged = true
         }
@@ -532,8 +531,8 @@ class CopyElementsService {
         }
 
         if (formService.validateToken(params)) {
-            if (params.object?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
-                List<Subscription> toCopySubs = params.list('object.copySubscriber').collect { genericOIDService.resolveOID(it) }
+            if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
                 copySubscriber(toCopySubs, targetObject, flash)
             }
         }
@@ -548,6 +547,10 @@ class CopyElementsService {
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         boolean isRenewSub = params.isRenewSub ? true : false
 
+        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        def request = grailsWebRequest.getCurrentRequest()
+        def flash = grailsWebRequest.attributes.getFlashScope(request)
+
         Object targetObject = null
         List auditProperties = params.list('auditProperties')
         List<Object> subsToCompare = [sourceObject]
@@ -555,12 +558,12 @@ class CopyElementsService {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
             subsToCompare.add(targetObject)
         }
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('object.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('copyObject.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothObjectsSet(sourceObject, targetObject)) {
             copyProperties(propertiesToTake, targetObject, isRenewSub, flash, auditProperties)
         }
 
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('object.deleteProperty').collect{ genericOIDService.resolveOID(it)}
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('copyObject.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
             deleteProperties(propertiesToDelete, targetObject, isRenewSub, flash, auditProperties)
         }
@@ -577,7 +580,7 @@ class CopyElementsService {
         def request = grailsWebRequest.getCurrentRequest()
         def flash = grailsWebRequest.attributes.getFlashScope(request)
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-        Object targetObject = params.targetObjectId ? GenericOIDService.getOID(targetObjectId) : null
+        Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if (formService.validateToken(params)) {
             boolean isTargetSubChanged = false
@@ -632,7 +635,7 @@ class CopyElementsService {
             }
         }
         result.targetObject = targetObject
-        result.subscription = sourceObject
+        result.sourceObject = sourceObject
         result
     }
 
@@ -663,7 +666,7 @@ class CopyElementsService {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
-                    newTask.subscription = targetObject
+                    newTask."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                     save(newTask, flash)
                 }
             }
@@ -679,7 +682,7 @@ class CopyElementsService {
                     save(newDoc, flash)
                     DocContext newDocContext = new DocContext()
                     InvokerHelper.setProperties(newDocContext, dctx.properties)
-                    newDocContext.subscription = targetObject
+                    newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                     newDocContext.owner = newDoc
                     save(newDocContext, flash)
                 }
@@ -699,13 +702,13 @@ class CopyElementsService {
 
     void copyIdentifiers(Object sourceObject, List<String> toCopyIdentifiers, Object targetObject, def flash) {
         toCopyIdentifiers.each{ identifierId ->
-            def ownerSub = targetObject
+            def owner = targetObject
             Identifier sourceIdentifier = Identifier.get(identifierId)
             IdentifierNamespace namespace = sourceIdentifier.ns
             String value = sourceIdentifier.value
 
-            if (ownerSub && namespace && value) {
-                FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: ownerSub, namespace: namespace])
+            if (owner && namespace && value) {
+                FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: owner, namespace: namespace])
 
                 factoryResult.setFlashScopeByStatus(flash)
             }
@@ -738,7 +741,7 @@ class CopyElementsService {
 
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = targetObject
+                        newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                         newDocContext.owner = newDoc
                         save(newDocContext, flash)
 
@@ -780,7 +783,7 @@ class CopyElementsService {
 
                                 // multi occurrence props; add one additional with backref
                                 if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                     additionalProp = targetProp.copyInto(additionalProp)
                                     additionalProp.instanceOf = targetProp
                                     additionalProp.save(flush: true)
@@ -796,7 +799,7 @@ class CopyElementsService {
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                         newProp = targetProp.copyInto(newProp)
                                         newProp.instanceOf = targetProp
                                         newProp.save(flush: true)

@@ -24,9 +24,9 @@
 
     <semui:messages data="${flash}"/>
 
-    <% Map params = [id: params.id];
-        if (sourceObjectId)   params << [sourceObjectId: sourceObjectId];
-        if (targetObjectId)   params << [targetObjectId: GenericOIDService.getOID(targetObjectId)];
+    <% Map params = [:];
+        if (sourceObjectId)   params << [sourceObjectId: GenericOIDService.getOID(sourceObject)];
+        if (targetObjectId)   params << [targetObjectId: GenericOIDService.getOID(targetObject)];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
     %>
     <g:if test="${isRenewSub}">

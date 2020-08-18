@@ -14,7 +14,7 @@
     </g:if>
 
     <g:form controller="${controllerName}" action="${actionName}"  id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">

@@ -4793,12 +4793,12 @@ class SurveyController {
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
         result.sourceObjectId = params.sourceObjectId ?: params.id
-        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         if (params.targetObjectId) {
             result.targetObjectId = params.targetObjectId
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
 
         result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
@@ -4861,7 +4861,7 @@ class SurveyController {
         }
 
         if (params.targetObjectId) {
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
