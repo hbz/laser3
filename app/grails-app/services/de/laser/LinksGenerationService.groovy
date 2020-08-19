@@ -101,6 +101,33 @@ class LinksGenerationService {
         result
     }
 
+
+    Set getSuccessionChain(startingPoint, String position) {
+        Set chain = []
+        Set first = getRecursiveNext([GenericOIDService.getOID(startingPoint)].toSet(),position)
+        Set next
+        while(first.size() > 0) {
+            first.each { row ->
+                chain << genericOIDService.resolveOID(row)
+            }
+            next = getRecursiveNext(first,position)
+            first = next
+        }
+        if(startingPoint instanceof Subscription)
+            chain.sort{ a,b -> a.startDate <=> b.startDate }
+        else chain
+    }
+
+
+    private static Set getRecursiveNext(Set points, String position) {
+        String pair
+        if(position == 'source')
+            pair = 'destination'
+        else if(position == 'destination')
+            pair = 'source'
+        Links.executeQuery('select li.'+pair+' from Links li where li.'+position+' in (:points) and li.linkType = :linkType',[points:points,linkType:RDStore.LINKTYPE_FOLLOWS])
+    }
+
     /**
      * connects the context object with the given pair.
      *

@@ -144,6 +144,7 @@
         <g:if test="${params.formSubmit}">
             $.ajax({
                 url: "<g:createLink action="loadChartData" />",
+                method: "POST",
                 data: {
                 <g:if test="${params.subscription}">
                     subscription: ${params.subscription}
@@ -186,21 +187,23 @@
                 }
                 if(data.graphC) {
                     console.log(data.graphC);
-                    let benchmark = '<div><h5 class="ui red header">BenchMark</h5><table class="ui celled la-table compact table la-ignore-fixed"><thead><tr><th>Step</th><th>Comment</th><th>(Step_x+1 - Step_x) MS</th></tr></thead><tbody>';
-                    let sum = 0;
-                    for(let i = 0;i < data.graphC.benchmark.length;i++) {
+                    if(typeof(data.graphC.benchmark) !== 'undefined') {
+                        let benchmark = '<div><h5 class="ui red header">BenchMark</h5><table class="ui celled la-table compact table la-ignore-fixed"><thead><tr><th>Step</th><th>Comment</th><th>(Step_x+1 - Step_x) MS</th></tr></thead><tbody>';
+                        let sum = 0;
+                        for(let i = 0;i < data.graphC.benchmark.length;i++) {
                         let bm = data.graphC.benchmark[i];
                         benchmark += '<tr><td>'+(i+1)+'</td><td>'+bm[0]+'</td><td>';
                         if (i < data.graphC.benchmark.length - 1) {
-                            benchmark += (data.graphC.benchmark[i+1][1] - bm[1])
+                        benchmark += (data.graphC.benchmark[i+1][1] - bm[1])
                         }
                         else {
-                            benchmark += '--> ' + ( bm[1] - data.graphC.benchmark[0][1] ) + ' <--'
+                        benchmark += '--> ' + ( bm[1] - data.graphC.benchmark[0][1] ) + ' <--'
                         }
                         benchmark += '</td></tr>';
+                        }
+                        benchmark += '</tbody></table></div>';
+                        $('#debugInfo div.content').html(benchmark);
                     }
-                    benchmark += '</tbody></table></div>';
-                    $('#debugInfo div.content').html(benchmark);
                     new Chartist.Bar('#chartC',data.graphC,{
                         stackBars: true,
                         plugins: [
