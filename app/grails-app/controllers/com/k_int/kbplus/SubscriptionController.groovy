@@ -5179,14 +5179,15 @@ class SubscriptionController
             newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
-        }
-
+            
         List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, flash, auditProperties)
+        }
+            
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
         if (newSub) {
