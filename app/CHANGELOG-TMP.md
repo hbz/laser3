@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      19.08.2020  rc1.5       David   Feature     Improved management of identifier namespaces
+
 --      18.08.2020  rc1.5       Andreas Bug         Identifikatoren von Einrichtungen konnten nicht bearbeitet werden
 
 2788    17.08.2020  rc1.5       Moe     Bug         Mailadressen von Teilnehmer in Umfragen werden nicht ausgegeben
