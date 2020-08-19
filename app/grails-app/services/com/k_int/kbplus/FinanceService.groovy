@@ -1153,7 +1153,7 @@ class FinanceService {
 
     Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
-        if(configMap.subscription || configMap.package) {
+        if(configMap.subscription) {
             String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
             if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
                 ciQuery += 'and ci.sub.instanceOf in (:subs)'
@@ -1171,11 +1171,6 @@ class FinanceService {
                 linkedSubscriptionSet << starting
                 //get successors
                 linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc", subQueryParams))
-            } else if (configMap.package) {
-                if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-                    subFilter += ' and sp.subscription.instanceOf is null'
-                }
-                linkedSubscriptionSet.addAll(Subscription.executeQuery("select sub from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :contextOrg and sp.pkg = :pkg" + subFilter, [contextOrg: configMap.institution, pkg: Package.get(configMap.package)]))
             }
             result.linkedSubscriptionSet = linkedSubscriptionSet
             result.costItems = CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet])

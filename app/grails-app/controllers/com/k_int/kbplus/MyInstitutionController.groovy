@@ -44,6 +44,7 @@ class MyInstitutionController extends AbstractDebugController {
     def genericOIDService
     PendingChangeService pendingChangeService
     ExportService exportService
+    PackageService packageService
     def escapeService
     def institutionsService
     def docstoreService
@@ -85,10 +86,13 @@ class MyInstitutionController extends AbstractDebugController {
         @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
      */
+    /*
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
         ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER")
     })
+     */
+    @Secured(['ROLE_ADMIN'])
     def reporting() {
         //log.debug(params.toMapString())
         Map<String, Object> result = setResultGenerics()
@@ -139,11 +143,15 @@ class MyInstitutionController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def loadChartData() {
         Org contextOrg = contextService.org
-        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg]), result = [:]
+        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,institution:contextOrg]), result = [:]
         if(baseMap.costItems)
             result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
-        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM' && params.subscription)
-            result.graphB = subscriptionService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
+        if(params.subscription) {
+            if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+                result.graphB = subscriptionService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
+        }
+        else if(params.package)
+            result.graphA = packageService.getTitlesForYearRings([package: params.package,institution: contextOrg])
         else if(params.subscriber)
             result.graphC = organisationService.getSubscriberProviderPercentages([subscriber: params.subscriber, institution: contextOrg])
         else if(params.provider)
