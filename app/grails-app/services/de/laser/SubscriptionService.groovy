@@ -1320,7 +1320,7 @@ class SubscriptionService {
 
                                 // multi occurrence props; add one additional with backref
                                 if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                     additionalProp = targetProp.copyInto(additionalProp)
                                     additionalProp.instanceOf = targetProp
                                     additionalProp.save(flush: true)
@@ -1336,7 +1336,7 @@ class SubscriptionService {
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                         newProp = targetProp.copyInto(newProp)
                                         newProp.instanceOf = targetProp
                                         newProp.save(flush: true)
@@ -1367,7 +1367,14 @@ class SubscriptionService {
     boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Subscription targetSub, boolean isRenewSub, def flash, List auditProperties){
         if (true){
             properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
-                AuditConfig.removeAllConfigs(prop)
+                if (AuditConfig.getConfig(prop, AuditConfig.COMPLETE_OBJECT)) {
+
+                    AuditConfig.removeAllConfigs(prop)
+
+                    prop.getClass().findAllByInstanceOf(prop).each{ prop2 ->
+                        prop2.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                    }
+                }
             }
         }
         int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true",[properties: properties, org: contextService.org])

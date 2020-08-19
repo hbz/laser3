@@ -933,7 +933,7 @@ class SurveyService {
                             }
                         }
 
-                        replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
+                        replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
                         Object[] args = ["${survey.type.getI10n('value')}"]
                         Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 

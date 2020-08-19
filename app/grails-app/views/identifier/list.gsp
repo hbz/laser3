@@ -1,4 +1,3 @@
-
 <%@ page import="com.k_int.kbplus.Identifier" %>
 <!doctype html>
 <html>
@@ -9,11 +8,9 @@
 	</head>
 	<body>
 		<div>
-
 			<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
 				<semui:totalNumber total="${identifierInstanceTotal}"/>
 			</h1>
-
 
 			<semui:messages data="${flash}" />
 				
@@ -44,8 +41,7 @@
 					</tbody>
 				</table>
 
-					<semui:paginate total="${identifierInstanceTotal}" />
-
+			<semui:paginate total="${identifierInstanceTotal}" />
 		</div>
 	</body>
 </html>

@@ -1578,12 +1578,24 @@ class SubscriptionController
         if (params.exportXLS) {
             exportOrg(orgs, filename, true, 'xlsx')
             return
-        }else if (params.exportIPs) {
+        }else if (params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs){
             SXSSFWorkbook wb
-            filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+            if (params.exportIPs) {
+                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+                wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            }else if (params.exportProxys) {
+                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportProxys.fileName'))
+                wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(result.filteredSubChilds.orgs.flatten())
+            }else if (params.exportEZProxys) {
+                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportEZProxys.fileName'))
+                wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(result.filteredSubChilds.orgs.flatten())
+            }else if (params.exportShibboleths) {
+                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
+                wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(result.filteredSubChilds.orgs.flatten())
+            }
+
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -5167,14 +5179,15 @@ class SubscriptionController
             newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
-        }
-
+            
         List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, flash, auditProperties)
+        }
+            
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, flash, auditProperties)
         }
 
         if (newSub) {

@@ -1208,7 +1208,8 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        result.orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance).groupBy {it.oap.accessMethod.value}.sort {it.key}
+        List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
+        result.orgAccessPointList = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}
 
         if (params.exportXLSX) {
 
@@ -1218,7 +1219,7 @@ class OrganisationController extends AbstractDebugController {
             String filename = "${datetoday}_" + g.message(code: "org.nav.accessPoints")
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints(result.orgAccessPointList.collect {it.oap}, result.institution)
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints(orgAccessPointList.collect {it.oap}, result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1424,6 +1425,7 @@ class OrganisationController extends AbstractDebugController {
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'show':
+            case 'ids':
             case 'readerNumber':
             case 'accessPoints':
                 Org contextOrg = contextService.org
@@ -1447,7 +1449,7 @@ class OrganisationController extends AbstractDebugController {
                                 case 'ORG_BASIC_MEMBER':    isEditable = false; break
                                 case 'ORG_INST':            isEditable = false; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = false; break
+                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                         case 'ORG_CONSORTIUM':
@@ -1455,7 +1457,7 @@ class OrganisationController extends AbstractDebugController {
                                 case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
                                 case 'ORG_INST':            isEditable = userHasEditableRights; break
                                 case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = false; break
+                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                     }

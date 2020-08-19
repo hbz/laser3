@@ -15,10 +15,9 @@
 
 		<semui:messages data="${flash}" />
 
-			<semui:errors bean="${identifierNamespaceInstance}" />
+        <semui:errors bean="${identifierNamespaceInstance}" />
 
         <semui:form message="identifier.namespace.add.label">
-
             <g:form class="ui form" action="manageNamespaces">
                 <div class="two fields">
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'name_de', 'error')} ">
@@ -90,6 +89,38 @@
             </g:form>
         </semui:form>
 
+        <g:if test="${cmd == 'details'}">
+
+            <g:link controller="admin" action="manageNamespaces" class="ui button right floated"><g:message code="default.button.back"/></g:link>
+
+            &nbsp;&nbsp;
+
+            <h2 class="ui header"><g:message code="identifierNamespace.detailsStats" args="${[identifierNamespaceInstance.ns]}" /></h2>
+
+            <g:each in="${detailsStats}" var="list">
+                <g:if test="${list && list.value}">
+                    <p><strong>${list.key} - ${list.value.size()} <g:message code="default.matches.label"/></strong></p>
+                </g:if>
+            </g:each>
+
+            &nbsp;
+
+            <g:each in="${detailsStats}" var="list">
+                <g:if test="${list && list.value}">
+                    <p><strong><i class="ui icon angle right"></i> ${list.key}</strong></p>
+                    <div class="ui list">
+                        <g:each in="${list.value}" var="entry" status="i">
+                            <div class="item" <%= ((i+1)%10)==0 ? 'style="margin-bottom:1.2em"':''%>>
+                                ${entry[0]}
+                                &nbsp;&nbsp;&nbsp;&nbsp; &rarr; &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="${list.key}/${entry[1]}">${list.key}/${entry[1]}</a>
+                            </div>
+                        </g:each>
+                    </div>
+                </g:if>
+            </g:each>
+        </g:if>
+        <g:else>
                 <table class="ui celled la-table compact table">
                     <thead>
 						<tr>
@@ -107,15 +138,13 @@
 						</tr>
                     </thead>
                     <tbody>
-						<g:each in="${identifierNamespaces}" var="idNs">
+						<g:each in="${IdentifierNamespace.where{}.sort('ns')}" var="idNs">
 							<tr>
                                 <g:if test="${Identifier.countByNs(idNs) == 0}">
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="ns"/>
                                     </td>
-                                    <td>
-                                        ${Identifier.countByNs(idNs)}
-                                    </td>
+                                    <td></td>
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
                                     </td>
@@ -140,7 +169,7 @@
                                     </td>
                                     <td>
                                         <g:link controller="admin" action="manageNamespaces"
-                                                params="${[cmd: 'deleteNamespace', oid: 'com.k_int.kbplus.IdentifierNamespace:' + idNs.id]}" class="ui icon negative button">
+                                                params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </td>
@@ -174,12 +203,34 @@
                                     <td>
                                         ${idNs.isUnique}
                                     </td>
-                                    <td></td>
+                                    <td>
+                                        <%
+                                            List tooltip = []
+                                            globalNamespaceStats.each { e ->
+                                                if ( e[1] == idNs.id) {
+                                                    if (e[2] > 0) tooltip.add("Creator: ${e[2]}")
+                                                    if (e[3] > 0) tooltip.add("Verträge: ${e[3]}")
+                                                    if (e[4] > 0) tooltip.add("Organisationen: ${e[4]}")
+                                                    if (e[5] > 0) tooltip.add("Pakete: ${e[5]}")
+                                                    if (e[6] > 0) tooltip.add("Lizenzen: ${e[6]}")
+                                                    if (e[7] > 0) tooltip.add("Titel: ${e[7]}")
+                                                    if (e[8] > 0) tooltip.add("TIPPs: ${e[8]}")
+                                                }
+                                            }
+                                        %>
+                                        <g:if test="${tooltip}">
+                                            <span data-tooltip="Verwendet für ${tooltip.join(', ')}" data-position="left center"
+                                                  class="la-long-tooltip la-popup-tooltip la-delay">
+                                                <g:link class="ui button icon" controller="admin" action="manageNamespaces"
+                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="ui icon question"></i></g:link>
+                                            </span>
+                                        </g:if>
+                                    </td>
                                 </g:else>
                             </tr>
 						</g:each>
                     </tbody>
                 </table>
-
+        </g:else>
 	</body>
 </html>
