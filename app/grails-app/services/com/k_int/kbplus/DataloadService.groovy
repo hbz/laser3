@@ -300,12 +300,12 @@ class DataloadService {
 
             switch(lic._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
-                    //result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                    //result.availableToOrgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                     result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     result.membersCount = License.findAllByInstanceOf(lic).size()?:0
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
-                    //List orgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
+                    //List orgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
                     List orgs = Org.executeQuery("select oo.org from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType in (:roleType)",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
@@ -317,7 +317,7 @@ class DataloadService {
                     }
                     break
                 case CalculatedType.TYPE_LOCAL:
-                    //result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    //result.availableToOrgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
                     result.availableToOrgs = Org.executeQuery("select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType",[lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIBER])
                     break
             }
@@ -823,13 +823,13 @@ class DataloadService {
             if(licProp.isPublic) {
                 switch(licProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
+                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
                         break
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = licProp.owner.orgLinks.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
                         break
                 }
             }

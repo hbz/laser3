@@ -32,7 +32,7 @@
         <tr>
           <th>Organisation</th><th>Roles and Permissions</th>
         </tr>
-        <g:each in="${onixplLicense.license.orgLinks}" var="ol">
+        <g:each in="${onixplLicense.license.orgRelations}" var="ol">
           <tr>
             <td>${ol.org.name}</td>
             <td>

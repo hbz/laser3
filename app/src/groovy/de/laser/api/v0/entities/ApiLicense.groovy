@@ -88,7 +88,7 @@ class ApiLicense {
         Collection<Object> result = []
 
         List<License> available = License.executeQuery(
-                'SELECT DISTINCT(lic) FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
+                'SELECT DISTINCT(lic) FROM License lic JOIN lic.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
                 [
                         owner: owner,
                         roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -160,7 +160,7 @@ class ApiLicense {
                     )
                 }
                 else {
-                    allOrgRoles.addAll(lic.orgLinks)
+                    allOrgRoles.addAll(lic.orgRelations)
 
                     // add derived licenses org roles
                     if (lic.derivedLicenses) {

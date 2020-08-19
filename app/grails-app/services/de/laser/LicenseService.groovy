@@ -66,12 +66,12 @@ class LicenseService {
 
 
         base_qry = """from License as l where (
-                    exists ( select o from l.orgLinks as o where ( 
+                    exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
                         AND o.org = :lic_org 
                         AND l.instanceOf is null
                         AND NOT exists (
-                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                        select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL
                     )
                 )
             )))"""
@@ -88,7 +88,7 @@ class LicenseService {
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
 
         base_qry = """from License as l where (
-                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType  AND o.org = :lic_org ) ) 
+                exists ( select o from l.orgRelations as o where ( o.roleType = :roleType  AND o.org = :lic_org ) ) 
             )"""
         qry_params = [roleType: licensee_cons_role, lic_org: contextService.org]
 
@@ -103,7 +103,7 @@ class LicenseService {
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
 
         base_qry = """from License as l where (
-                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+                exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
         qry_params = [roleType: licensee_role, lic_org: contextService.org]
 
@@ -113,7 +113,7 @@ class LicenseService {
 
     List getVisibleOrgRelations(License license) {
         List visibleOrgRelations = []
-        license?.orgLinks?.each { or ->
+        license?.orgRelations?.each { or ->
             if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS])) {
                 visibleOrgRelations << or
             }

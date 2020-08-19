@@ -28,7 +28,7 @@
 
             <div class="divider"></div>
             <%
-                boolean isCopyLicenseEnabled = license.orgLinks?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
+                boolean isCopyLicenseEnabled = license.orgRelations?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
             %>
             <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
                 <% isCopyLicenseEnabled = true %>

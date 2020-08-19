@@ -85,7 +85,7 @@ class ApiReader {
         }
 
         if (opl.getLicenses().contains(lic)) {
-            lic.orgLinks.each { orgRole ->
+            lic.orgRelations.each { orgRole ->
                 // TODO check orgRole.roleType
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true

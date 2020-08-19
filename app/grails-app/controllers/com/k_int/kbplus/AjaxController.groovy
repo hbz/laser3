@@ -659,7 +659,7 @@ class AjaxController {
                         case 'currentSubscriptions':
                         case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgLinks oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                         case 'listProvider':
                         case 'currentProviders':

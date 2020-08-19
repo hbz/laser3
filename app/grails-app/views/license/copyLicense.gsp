@@ -57,7 +57,7 @@
             </g:else>
             <br>
 
-        <g:each in="${visibleOrgLinks}" var="role">
+        <g:each in="${visibleOrgRelations}" var="role">
             <g:if test="${role.org}">
                 <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="organisation" action="show" target="_blank" id="${role.org.id}">${role?.org?.name}</g:link><br>
             </g:if>

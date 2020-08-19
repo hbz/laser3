@@ -14,7 +14,7 @@
 
         <semui:debugInfo>
             <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />
             <g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />
         </semui:debugInfo>
 
@@ -227,7 +227,7 @@
                         <div class="content">
 
                         <g:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks: visibleOrgLinks,
+                                  model="${[roleLinks: visibleOrgRelations,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
                                             editmode: editable,
@@ -237,7 +237,7 @@
                         <g:render template="/templates/links/orgLinksSimpleModal"
                                   model="${[linkType: license.class.name,
                                             parent: license.class.name + ':' + license.id,
-                                            property: 'orgLinks',
+                                            property: 'orgRelations',
                                             recip_prop: 'lic',
                                             tmplRole: RDStore.OR_LICENSOR,
                                             tmplEntity: message(code:'license.details.tmplEntity'),

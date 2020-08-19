@@ -72,7 +72,7 @@ class ApiDoc {
 
         DocContext.findAllByOwner(doc).each { dc ->
             if (dc.license) {
-                dc.getLicense().getOrgLinks().each { orgRole ->
+                dc.getLicense().getOrgRelations().each { orgRole ->
                     // TODO check orgRole.roleType
                     if (orgRole.getOrg().id == context?.id) {
                         hasAccess = true

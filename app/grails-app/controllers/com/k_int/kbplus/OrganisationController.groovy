@@ -1407,7 +1407,7 @@ class OrganisationController extends AbstractDebugController {
                 if(subs){
                     flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
                 }
-                def lics = License.executeQuery("from License as l where exists ( select o from l.orgLinks as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
+                def lics = License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
                 if(lics){
                     flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
                 }

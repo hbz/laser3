@@ -165,7 +165,7 @@
                 </td>
             </tr>
             </g:if>
-            <g:if test="${sourceObject.hasProperty("orgLinks") || sourceObject.hasProperty("orgRelations")}">
+            <g:if test="${sourceObject.hasProperty("orgRelations")}">
             <tr>
                 <td name="copyObject.takeOrgRelations.source">
                     <div>
