@@ -81,7 +81,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           pkgs           :         Package,
           //subscriptions:Subscription,
           documents      :    DocContext,
-          orgLinks       :     OrgRole,
+          orgRelations       :     OrgRole,
           prsLinks       :     PersonRole,
           derivedLicenses:    License,
           pendingChanges :     PendingChange,
@@ -94,7 +94,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           pkgs:          'license',
           //subscriptions: 'owner',
           documents:     'license',
-          orgLinks:      'lic',
+          orgRelations:      'lic',
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
           pendingChanges:  'license',
@@ -133,7 +133,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
               ids               batchSize: 10
               pkgs              batchSize: 10
               //subscriptions     sort:'name',order:'asc', batchSize: 10
-              orgLinks          batchSize: 10
+              orgRelations          batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
   }
@@ -259,7 +259,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 }
             }
         }
-        orgLinks.each{ sharedObject ->
+        orgRelations.each{ sharedObject ->
             targets.each{ sub ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + sub)
@@ -321,7 +321,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     Org getLicensingConsortium() {
         Org result
-        orgLinks.each { or ->
+        orgRelations.each { or ->
             if ( or.roleType.value == 'Licensing Consortium' )
                 result = or.org
             }
@@ -330,7 +330,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     Org getLicensor() {
         Org result
-        orgLinks.each { or ->
+        orgRelations.each { or ->
             if ( or.roleType.value in ['Licensor'] )
                 result = or.org;
         }
@@ -339,7 +339,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     Org getLicensee() {
         Org result
-        orgLinks.each { or ->
+        orgRelations.each { or ->
             if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
                 result = or.org;
         }
@@ -347,7 +347,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
     List<Org> getAllLicensee() {
         List<Org> result = []
-        orgLinks.each { or ->
+        orgRelations.each { or ->
             if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
                 result << or.org
         }

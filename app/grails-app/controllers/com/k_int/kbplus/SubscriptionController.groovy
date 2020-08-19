@@ -4717,7 +4717,7 @@ class SubscriptionController
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copySubElements_Properties(params)
-                if (params.isRenewSub && params.targetObjectId){
+                if (params.isRenewSub && result.targetObject){
                     flash.error = ""
                     flash.message = ""
                     def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
@@ -4725,7 +4725,7 @@ class SubscriptionController
                     if(surveyConfig && result.fromSurvey) {
                         redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                     }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
+                        redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
                     }
                 } else {
                     result << copyElementsService.loadDataFor_Properties(params)
@@ -4733,7 +4733,7 @@ class SubscriptionController
                 break
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copySubElements_Properties(params)
-                if (params.targetObjectId){
+                if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
 
@@ -4742,7 +4742,7 @@ class SubscriptionController
                     if(surveyConfig && result.fromSurvey) {
                         redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                     }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
+                        redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
                     }
                 }
                 break
@@ -4752,7 +4752,7 @@ class SubscriptionController
         }
 
         if (params.targetObjectId) {
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
@@ -4766,20 +4766,28 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyMyElements() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
+        Map<String, Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId ?: params.id
-        result.sourceObject = Subscription.get(Long.parseLong(params.sourceObjectId ?: params.id))
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
         if (params.targetObjectId == "null") params.remove("targetObjectId")
         if (params.targetObjectId) {
             result.targetObjectId = params.targetObjectId
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+
+        if (!result.editable) {
+            response.sendError(401); return
         }
 
         result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights()
@@ -4798,10 +4806,10 @@ class SubscriptionController
                 break;
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copySubElements_Properties();
-                if (params.targetObjectId){
+                if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
+                    redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
                 }
                 break;
             default:
@@ -4810,7 +4818,7 @@ class SubscriptionController
         }
 
         if (params.targetObjectId) {
-            result.targetObject = Subscription.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_PROPERTIES

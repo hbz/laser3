@@ -328,7 +328,7 @@ class MyInstitutionController extends AbstractDebugController {
 
         if (accessService.checkPerm("ORG_INST")) {
             base_qry = """from License as l where (
-                exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+                exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
             qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
             if(result.editable)
@@ -337,12 +337,12 @@ class MyInstitutionController extends AbstractDebugController {
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
-                    exists ( select o from l.orgLinks as o where ( 
+                    exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
                         AND o.org = :lic_org 
                         AND l.instanceOf is null
                         AND NOT exists (
-                        select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                        select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL
                     )
                 )
             )))"""
@@ -353,7 +353,7 @@ class MyInstitutionController extends AbstractDebugController {
         }
         else {
             base_qry = """from License as l where (
-                exists ( select o from l.orgLinks as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+                exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
             qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
             licenseFilterTable << "licensingConsortium"
@@ -374,7 +374,7 @@ class MyInstitutionController extends AbstractDebugController {
         }
 
         if(params.consortium) {
-            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
             List<Long> consortia = []
             List<String> selCons = params.list('consortium')
             selCons.each { String sel ->
@@ -398,7 +398,7 @@ class MyInstitutionController extends AbstractDebugController {
         }
 
         if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
             List<Long> licensors = []
             List<String> selLicensors = params.list('licensor')
             selLicensors.each { String sel ->
@@ -514,8 +514,8 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.details.linked_subs'),
                 g.message(code:'consortium'),
                 g.message(code:'license.licensor.label'),
-                g.message(code:'license.startDate'),
-                g.message(code:'license.endDate')
+                g.message(code:'license.startDate.label'),
+                g.message(code:'license.endDate.label')
         ]
         Map<License,Set<License>> licChildMap = [:]
         List<License> childLicsOfSet = totalLicenses.isEmpty() ? [] : License.findAllByInstanceOfInList(totalLicenses)

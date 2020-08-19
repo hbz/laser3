@@ -23,7 +23,7 @@
     </sec:ifAnyGranted>
 
     <%--
-    <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
+    <g:if test="${license.orgRelations?.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
         <semui:subNavItem controller="license" action="consortia" params="${[id:params.id]}" message="consortium.plural" />
     </g:if> --%>
 </semui:subNav>

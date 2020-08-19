@@ -47,7 +47,7 @@ class DeletionService {
 
         List ids            = new ArrayList(lic.ids)
         List docContexts    = new ArrayList(lic.documents)
-        List oRoles         = new ArrayList(lic.orgLinks)
+        List oRoles         = new ArrayList(lic.orgRelations)
         List pRoles         = new ArrayList(lic.prsLinks)
         List packages       = new ArrayList(lic.pkgs)  // Package
         List pendingChanges = new ArrayList(lic.pendingChanges)
@@ -160,7 +160,7 @@ class DeletionService {
                     docContexts.each { tmp -> tmp.delete() }
 
                     // org roles
-                    lic.orgLinks.clear()
+                    lic.orgRelations.clear()
                     oRoles.each { tmp -> tmp.delete() }
 
                     // person roles

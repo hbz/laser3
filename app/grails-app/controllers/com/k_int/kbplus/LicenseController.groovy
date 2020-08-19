@@ -127,17 +127,17 @@ class LicenseController
 
             String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgLinks = OrgRole.executeQuery(
+            result.visibleOrgRelations = OrgRole.executeQuery(
                     "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
                     [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM]]
             )
 
-            /*result.license.orgLinks?.each { or ->
+            /*result.license.orgRelations?.each { or ->
                 if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
-                    result.visibleOrgLinks << or
+                    result.visibleOrgRelations << or
                 }
             }*/
-            //result.visibleOrgLinks.sort { it.org.sortname }
+            //result.visibleOrgRelations.sort { it.org.sortname }
         //}
 
         pu.setBenchmark('properties')
@@ -220,7 +220,7 @@ class LicenseController
         //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
         //result.availableSubs = []
 
-        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgLinks.collect { OrgRole oo -> oo.org })
+        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
                 /*OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
                         [lic: result.license.id]
@@ -921,13 +921,13 @@ class LicenseController
             response.sendError(401); return
         }
 
-        result.visibleOrgLinks = []
-        result.license.orgLinks?.each { or ->
+        result.visibleOrgRelations = []
+        result.license.orgRelations?.each { or ->
             if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
-                result.visibleOrgLinks << or
+                result.visibleOrgRelations << or
             }
         }
-        result.visibleOrgLinks.sort{ it.org.sortname }
+        result.visibleOrgRelations.sort{ it.org.sortname }
 
         Org contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
@@ -1051,7 +1051,7 @@ class LicenseController
 
                     }
                     //Copy References
-                        baseLicense.orgLinks.each { OrgRole or ->
+                        baseLicense.orgRelations.each { OrgRole or ->
                             if ((or.org.id == result.institution.id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
@@ -1156,7 +1156,7 @@ class LicenseController
         }
 
         if (params.targetObjectId) {
-            result.targetObject = License.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS

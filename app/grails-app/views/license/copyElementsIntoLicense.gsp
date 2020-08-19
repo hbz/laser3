@@ -33,15 +33,13 @@ if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetOb
                 <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                 <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
                 <br>
-                <i class="image outline icon"></i>${message(code: 'subscription.kind.label')}
-                <i class="dolly icon"></i>${message(code: 'subscription.form.label')}
-                <i class="box icon"></i>${message(code: 'subscription.resource.label')}
+                <i class="image outline icon"></i>${message(code: 'license.type.label')}
+                <i class="cloud icon"></i>${message(code: 'license.licenseUrl.label')}
+                <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
                 <br>
-                <i class="shipping fast icon"></i>${message(code: 'subscription.isPublicForApi.label')}
-                <i class="flag outline icon"></i>${message(code: 'subscription.hasPerpetualAccess.label')}
+                <i class="shipping fast icon"></i>${message(code: 'license.isPublicForApi.label')}
                 <br>
                 <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                <br>
                 <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 
             </div>
