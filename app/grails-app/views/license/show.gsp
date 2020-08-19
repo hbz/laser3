@@ -67,7 +67,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.startDate')}</dt>
+                                    <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
@@ -76,7 +76,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.endDate')}</dt>
+                                    <dt class="control-label">${message(code: 'license.endDate.label')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
@@ -85,7 +85,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.openEnded')}</dt>
+                                    <dt class="control-label">${message(code: 'license.openEnded.label')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
                                     </dd>
@@ -98,7 +98,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt><label class="control-label">${message(code:'license.status')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.status.label')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
@@ -107,7 +107,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt><label class="control-label">${message(code:'license.licenseCategory')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.licenseCategory.label')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>

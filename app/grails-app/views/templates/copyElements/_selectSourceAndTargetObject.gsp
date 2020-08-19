@@ -19,8 +19,8 @@
                       />
             </div>
             <div class="eight wide field">
+                <label>${message(code: 'copyElementsIntoObject.targetObject.name')}: </label>
                 <g:if test="${sourceObject instanceof com.k_int.kbplus.Subscription}">
-                    <label>${message(code: 'copyElementsIntoObject.targetObject.name')}: </label>
                     <div class="ui checkbox">
                         <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
                         <label for="show.activeSubscriptions">${message(code:'copyElementsIntoObject.show.activeSubscriptions.name')}</label>
@@ -52,7 +52,7 @@
         </div>
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field" style="text-align: right;">
-                <input type="submit" class="ui wide button" value="Lizenzen auswählen"/>
+                <input type="submit" class="ui wide button" value="${message(code: 'default.select2.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"/>
             </div>
         </div>
 

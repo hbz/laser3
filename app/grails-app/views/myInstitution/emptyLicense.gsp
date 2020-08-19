@@ -41,9 +41,9 @@
             </div>
 
             <div class="two fields">
-                <semui:datepicker label="license.startDate" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
+                <semui:datepicker label="license.startDate.label" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
 
-                <semui:datepicker label="license.endDate" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
+                <semui:datepicker label="license.endDate.label" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
             <div class="field required">

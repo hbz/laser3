@@ -49,7 +49,7 @@ class CopyElementsService {
         List result = []
         switch (obj.class.simpleName) {
             case License.class.simpleName:
-                result = ['startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi']
+                result = ['startDate', 'endDate', 'status', 'type', 'licenseUrl', 'licenseCategory' , 'openEnded', 'isPublicForApi']
                 break
             case Subscription.class.simpleName:
                 result = ['startDate', 'endDate', 'manualCancellationDate', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess']
@@ -558,14 +558,15 @@ class CopyElementsService {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
             subsToCompare.add(targetObject)
         }
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('copyObject.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake && isBothObjectsSet(sourceObject, targetObject)) {
-            copyProperties(propertiesToTake, targetObject, isRenewSub, flash, auditProperties)
-        }
 
         List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('copyObject.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
             deleteProperties(propertiesToDelete, targetObject, isRenewSub, flash, auditProperties)
+        }
+
+        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('copyObject.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothObjectsSet(sourceObject, targetObject)) {
+            copyProperties(propertiesToTake, targetObject, isRenewSub, flash, auditProperties)
         }
 
         if (targetObject) {
@@ -763,9 +764,8 @@ class CopyElementsService {
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties){
         SubscriptionProperty targetProp
 
-
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetObject.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant.id == sourceProp.tenant }
+            targetProp = targetObject.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
@@ -827,11 +827,17 @@ class CopyElementsService {
     }
 
     boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties){
-        if (true){
             properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
-                AuditConfig.removeAllConfigs(prop)
+                if (AuditConfig.getConfig(prop, AuditConfig.COMPLETE_OBJECT)) {
+
+                    AuditConfig.removeAllConfigs(prop)
+
+                    prop.getClass().findAllByInstanceOf(prop).each{ prop2 ->
+                        prop2.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                    }
+                }
             }
-        }
+
         int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true",[properties: properties, org: contextService.org])
         int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false",[properties: properties, org: contextService.org])
     }

@@ -78,7 +78,7 @@
           </div>
           <div class="three fields">
               <div class="field">
-                  <label for="status">${message(code: 'license.status')}</label>
+                  <label for="status">${message(code: 'license.status.label')}</label>
                   <laser:select class="ui dropdown" name="status"
                                 from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
                                 optionKey="id"

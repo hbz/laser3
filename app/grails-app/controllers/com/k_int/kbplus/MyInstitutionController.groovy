@@ -512,8 +512,8 @@ class MyInstitutionController extends AbstractDebugController {
                 g.message(code:'license.details.linked_subs'),
                 g.message(code:'consortium'),
                 g.message(code:'license.licensor.label'),
-                g.message(code:'license.startDate'),
-                g.message(code:'license.endDate')
+                g.message(code:'license.startDate.label'),
+                g.message(code:'license.endDate.label')
         ]
         Map<License,Set<License>> licChildMap = [:]
         List<License> childLicsOfSet = totalLicenses.isEmpty() ? [] : License.findAllByInstanceOfInList(totalLicenses)

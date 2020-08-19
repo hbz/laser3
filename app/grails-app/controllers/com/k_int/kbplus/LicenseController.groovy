@@ -1156,7 +1156,7 @@ class LicenseController
         }
 
         if (params.targetObjectId) {
-            result.targetObject = License.get(Long.parseLong(params.targetObjectId))
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS

@@ -57,7 +57,7 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
-                            <div class="ui checkbox la-toggle-radio la-share">
+                            <div class="ui checkbox la-toggle-radio la-inherit">
                                 <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" class="ui checkbox" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
                             </div>
                         </td>
