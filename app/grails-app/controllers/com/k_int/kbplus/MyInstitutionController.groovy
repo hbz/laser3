@@ -137,7 +137,7 @@ class MyInstitutionController extends AbstractDebugController {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def loadCostItemChartData() {
+    def loadChartData() {
         Org contextOrg = contextService.org
         Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,package:params.package,institution:contextOrg]), result = [:]
         if(baseMap.costItems)
@@ -145,7 +145,9 @@ class MyInstitutionController extends AbstractDebugController {
         if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM' && params.subscription)
             result.graphB = subscriptionService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
         else if(params.subscriber)
-            result.graphC = organisationService.getSubscriberProviderPercentages([subscriber:params.subscriber,institution:contextOrg])
+            result.graphC = organisationService.getSubscriberProviderPercentages([subscriber: params.subscriber, institution: contextOrg])
+        else if(params.provider)
+            result.graphB = organisationService.getSubscriberProviderPercentages([provider: params.provider, institution: contextOrg])
         render result as JSON
     }
 
@@ -2010,7 +2012,7 @@ join sub.orgRelations or_sub where
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }*/
 
-        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution])
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution]) ?: []
 
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
@@ -3129,7 +3131,7 @@ join sub.orgRelations or_sub where
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }*/
 
-        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant])
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant]) ?: []
 
         params.consortiaOrg = result.institution
 

@@ -387,22 +387,13 @@ class PendingChangeService extends AbstractLockableService {
 
                         log.debug("Update custom property ${targetProperty.type.name}")
 
-                        if (RefdataValue.toString() in [targetProperty.type.type,changeDoc.type]){
+                        if ("class ${RefdataValue.class.getName()}" == changeDoc.type){
                             def newProp = genericOIDService.resolveOID(changeDoc.new instanceof String ?: (changeDoc.new.class + ':' + changeDoc.new.id))
 
                             // Backward compatible
                             if (!newProp) {
                                 def propDef = targetProperty.type
                                 newProp = RefdataValue.getByValueAndCategory(changeDoc.newLabel, propDef.refdataCategory)
-                                // Fallback
-                                if (! newProp) {
-                                    newProp = RefdataValue.construct([
-                                            token   : changeDoc.newLabel,
-                                            rdc     : propDef.refdataCategory,
-                                            hardData: false,
-                                            i10n    : [value_en: changeDoc.newLabel, value_de: changeDoc.newLabel]
-                                    ])
-                                }
                             }
                             targetProperty."${changeDoc.prop}" = newProp
                         }

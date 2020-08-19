@@ -13,6 +13,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
+import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -2637,14 +2638,19 @@ class OrganisationService {
 
     Map<String,Object> getSubscriberProviderPercentages(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('get refdatas')
         Set<RefdataValue> providerRoles = RefdataValue.findAllByValueInListAndOwner(['Agency','Content Provider','Provider','Publisher'],RefdataCategory.findByDesc(RDConstants.ORGANISATIONAL_ROLE))
         Set labels = []
         List series = []
         Map<Org,List> providerYearCount = [:]
+        pu.setBenchmark('get parent subscriptions')
         Set<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.roleType = :consortialType and oo.org = :context',[consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,context:configMap.institution])
         if(configMap.subscriber) {
             //open for any idea how the following may be realised in *one* query!
             //yearRing as grouping unit may be hbz-given, but there surely is an equivalent grouping unit for other institutions
+            pu.setBenchmark('get subscriptions of subscriber')
             Set<Subscription> subscriptionsOfSubscriber = Subscription.executeQuery('select oor.sub from OrgRole oor where oor.roleType in (:subscriberRoleTypes) and oor.org = :subscriber and oor.sub.instanceOf in (:parentSubs) order by oor.sub.startDate asc',[subscriber:Org.get(configMap.subscriber),subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],parentSubs:subscriptions])
             /*subscriptionsOfSubscriber.each { Subscription debugS ->
                 log.debug(debugS.dropdownNamingConvention(configMap.institution))
@@ -2655,11 +2661,14 @@ class OrganisationService {
                 c.setTime(s.startDate)
                 yearRings << c.get(Calendar.YEAR)
             }
+            pu.setBenchmark('get all time providers')
             Set<Org> allTimeProviders = Org.executeQuery('select distinct(oo.org) from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType in (:providerRoleTypes)',[subscriptions:subscriptionsOfSubscriber,providerRoleTypes:providerRoles])
             yearRings.each { int yearRing ->
                 List rows
+                pu.setBenchmark("get total for ${yearRing}")
                 int total = Org.executeQuery('select count(org.id) from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and year(oo.sub.startDate) = :yearRing and oo.sub in (:subscriptions)',[yearRing: yearRing, subscriptions: subscriptionsOfSubscriber, providerRoleTypes: providerRoles])[0]
                 labels << yearRing
+                pu.setBenchmark("get grouped counts for ${yearRing}")
                 rows = Org.executeQuery('select org,count(org.id) from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and year(oo.sub.startDate) = :yearRing and oo.sub in (:subscriptions) group by org.id order by org.name asc', [yearRing: yearRing, subscriptions: subscriptionsOfSubscriber, providerRoleTypes: providerRoles])
                 allTimeProviders.each { Org provider ->
                     //log.debug(row[0]+' '+row[1])
@@ -2676,14 +2685,33 @@ class OrganisationService {
                     providerYearCount.put(provider,providerCount)
                 }
             }
+            pu.setBenchmark('assemble provider-year-counts')
             providerYearCount.each { Org k, List v ->
                 //List absolute = v.collect { Map values -> values.get('absolute') }
                 List relative = v.collect { Map values -> values.get('relative') }
                 series << [name:k.name,data:relative]
             }
-            result.labels = labels
-            result.series = series
+            result.benchmark = pu.stopBenchmark()
         }
+        else if(configMap.provider) {
+            Org provider = Org.get(configMap.provider)
+            //for the moment, we take current year, all subscribers and assemble them in pie chart donut
+            Set subscribersOfSubset = Subscription.executeQuery('select org.sortname,count(s.id) from OrgRole oo join oo.sub s join s.orgRelations oor join oor.org org where s.status = :current and oo.roleType in (:providerRoleTypes) and oo.org = :provider and oor.roleType in (:subscriberRoleTypes) and s.instanceOf in (:parentSubs) group by org.sortname order by org.sortname asc',[current:RDStore.SUBSCRIPTION_CURRENT,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],providerRoleTypes:providerRoles,provider:provider,parentSubs:subscriptions])
+            //Set subscribersOfSubset = Org.executeQuery('select org.sortname,count(sub.id) from OrgRole oo join oo.org org join oo.sub sub where sub in (:subscriptions) and oo.roleType in (:subscriberRoleTypes) group by org.sortname order by org.sortname asc',[subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],subscriptions:subscriptionsSubset])
+            //int total = Org.executeQuery('select count(sub.id) from OrgRole oo join oo.org org join oo.sub sub where sub in (:subscriptions) and oo.roleType in (:subscriberRoleTypes)',[subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],subscriptions:subscribersOfSubset])[0]
+            //int total = 0
+            //double iteration through loop ... very ugly!
+            //subscribersOfSubset.each { row -> total += row[1] }
+            subscribersOfSubset.each { row ->
+                //double percent = row[1] / total
+                //log.debug("${row[1]} / ${total}")
+                String token = row[1] == 1 ? 'subscription' : 'subscription.plural'
+                labels << "${row[0]} (${row[1]} ${messageSource.getMessage(token,null,locale)})"
+                series << row[1]
+            }
+        }
+        result.labels = labels
+        result.series = series
         result
     }
 }
