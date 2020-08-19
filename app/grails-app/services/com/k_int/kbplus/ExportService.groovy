@@ -209,18 +209,19 @@ class ExportService {
 						value << prop.getValue() ?: ' '
 				}
 			}
-			childObjects.get(target).each { childObj ->
-				if(childObj.hasProperty("propertySet")) {
-					childObj.propertySet.each { AbstractPropertyWithCalculatedLastUpdated childProp ->
-						if(childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextService.org || childProp.isPublic)) {
-							if(childProp.refValue)
-								value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childObj)})"
-							else
-								value << childProp.getValue() ? "${childProp.getValue()} (${objectNames.get(childObj)})" : ' '
+			if(childObjects) {
+				childObjects.get(target).each { childObj ->
+					if(childObj.hasProperty("propertySet")) {
+						childObj.propertySet.each { AbstractPropertyWithCalculatedLastUpdated childProp ->
+							if(childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextService.org || childProp.isPublic)) {
+								if(childProp.refValue)
+									value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childObj)})"
+								else
+									value << childProp.getValue() ? "${childProp.getValue()} (${objectNames.get(childObj)})" : ' '
+							}
 						}
 					}
 				}
-
 			}
 			def cell
 			switch(format) {
@@ -269,7 +270,7 @@ class ExportService {
 					typeString += "(${refdataValues.join('/')})"
 				}
 				row.add([field:typeString,style:null])
-				row.add([field:pd.countUsages(),style:null])
+				row.add([field:pd.countOwnUsages(),style:null])
 				row.add([field:pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
 				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
 				row.add([field:pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])

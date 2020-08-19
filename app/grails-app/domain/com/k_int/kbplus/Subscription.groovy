@@ -4,8 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.IssueEntitlementGroup
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -967,8 +967,8 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
-    List<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
-        List<OrgAccessPoint> result = []
+    Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        Collection<OrgAccessPoint> result = []
 
         result = this.getSubscriber().accessPoints
 

@@ -180,12 +180,12 @@
                             <g:if test="${propValue instanceof SubscriptionProperty}">
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${! AuditConfig.getConfig(propValue)}">
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
                                             <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                         </span>
                                     </g:if>
                                     <g:else>
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
                                             <i class="thumbtack icon la-js-editmode-icon"></i>
                                         </span>
                                     </g:else>

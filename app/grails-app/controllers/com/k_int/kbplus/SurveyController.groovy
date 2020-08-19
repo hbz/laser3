@@ -43,6 +43,7 @@ class SurveyController {
     EscapeService escapeService
     InstitutionsService institutionsService
     PropertyService propertyService
+    LinksGenerationService linksGenerationService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -86,7 +87,7 @@ class SurveyController {
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution])
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
@@ -120,6 +121,11 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
             }
+            
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
 
             return
         }else {
@@ -154,7 +160,7 @@ class SurveyController {
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution])
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 
@@ -695,6 +701,7 @@ class SurveyController {
                 if (costItems?.cons) {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
+                result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
             Org contextOrg = contextService.getOrg()
@@ -1405,6 +1412,7 @@ class SurveyController {
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
         }
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it.surveyConfig.configOrder }
@@ -1674,6 +1682,7 @@ class SurveyController {
             if (costItems?.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)    
         }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -1966,20 +1975,21 @@ class SurveyController {
                     config.orgs.org.each { org ->
 
                             config.surveyProperties.each { property ->
+                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: result.surveyInfo.startDate,
+                                            endDate: result.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
 
-                                def surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org ?: null,
-                                        startDate: result.surveyInfo.startDate,
-                                        endDate: result.surveyInfo.endDate ?: null,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
-
-                                if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
-                                } else {
-                                    log.error("Not create surveyResult: "+ surveyResult)
+                                    if (surveyResult.save(flush: true)) {
+                                        log.debug(surveyResult)
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
                                 }
                             }
                         }
@@ -2042,19 +2052,21 @@ class SurveyController {
 
                             config.surveyProperties.each { property ->
 
-                                def surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org ?: null,
-                                        startDate: currentDate,
-                                        endDate: result.surveyInfo.endDate,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
+                                if(!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: currentDate,
+                                            endDate: result.surveyInfo.endDate,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
 
-                                if (surveyResult.save(flush: true)) {
-                                    log.debug(surveyResult)
-                                } else {
-                                    log.debug(surveyResult)
+                                    if (surveyResult.save(flush: true)) {
+                                        log.debug(surveyResult)
+                                    } else {
+                                        log.debug(surveyResult)
+                                    }
                                 }
                             }
                         }

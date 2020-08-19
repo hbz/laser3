@@ -411,35 +411,43 @@ class AccessPointController extends AbstractDebugController {
         }
     }
 
-    @Secured(closure = { ctx.accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (ctx.accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && OrgAccessPoint.get(request.getRequestURI().split('/').last()).org == ctx.contextService.getOrg())
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def delete() {
         OrgAccessPoint accessPoint = OrgAccessPoint.get(params.id)
         if (!accessPoint) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'accessMethod.label'), params.id])
             redirect(url: request.getHeader("referer"))
             return
         }
 
         Org org = accessPoint.org;
-        Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
-        Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
+        boolean inContextOrg = (org.id == contextService.org.id)
 
-        if ( oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0){
-            flash.message = message(code: 'accessPoint.list.deleteDisabledInfo', args: [oapPlatformLinkCount, oapSubscriptionLinkCount])
-            redirect(url: request.getHeader("referer"))
-            return
-        }
-        def orgId = org.id;
+        if(((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')))) {
+            Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
+            Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
 
-        try {
-            accessPoint.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label'), accessPoint.name])
-            redirect controller: 'organisation', action: 'accessPoints', id: orgId
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), accessPoint.id])
-            redirect action: 'show', id: params.id
+            if (oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0) {
+                flash.message = message(code: 'accessPoint.list.deleteDisabledInfo', args: [oapPlatformLinkCount, oapSubscriptionLinkCount])
+                redirect(url: request.getHeader("referer"))
+                return
+            }
+            def orgId = org.id;
+
+            try {
+                accessPoint.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label'), accessPoint.name])
+                redirect controller: 'organisation', action: 'accessPoints', id: orgId
+            }
+            catch (DataIntegrityViolationException e) {
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), accessPoint.id])
+                redirect action: 'show', id: params.id
+            }
+        }else {
+                response.sendError(401)
+                return
         }
     }
 
@@ -448,6 +456,7 @@ class AccessPointController extends AbstractDebugController {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org;
         Long orgId = org.id;
+        boolean inContextOrg = (orgId == contextService.org.id)
 
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -519,10 +528,10 @@ class AccessPointController extends AbstractDebugController {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : true,
+                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
-                    inContextOrg                      : orgId == contextService.org.id,
+                    inContextOrg                      : inContextOrg,
                     activeSubsOnly                    : activeChecksOnly,
             ]
         }
@@ -557,6 +566,7 @@ class AccessPointController extends AbstractDebugController {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org;
         Long orgId = org.id;
+        boolean inContextOrg = (orgId == contextService.org.id)
 
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -573,8 +583,6 @@ class AccessPointController extends AbstractDebugController {
             return
         }else {
 
-            String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
-            String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
             Boolean autofocus = (params.autofocus) ? true : false
             Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
@@ -582,9 +590,6 @@ class AccessPointController extends AbstractDebugController {
 
 
             orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
-
-            String[] ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
-            String[] ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
             List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
@@ -626,16 +631,17 @@ class AccessPointController extends AbstractDebugController {
             ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
 
             return [
-                    accessPoint                       : orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
+                    accessPoint                       : orgAccessPoint,
+                    accessPointDataList               : accessPointDataList,
+                    rgId                              : orgId,
                     platformList                      : orgAccessPoint.getNotLinkedPlatforms(),
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
-                    ip                                : params.ip, editable: true,
-                    ipv4Ranges                        : ipv4Ranges, ipv4Format: ipv4Format,
-                    ipv6Ranges                        : ipv6Ranges, ipv6Format: ipv6Format,
+                    ip                                : params.ip,
+                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
-                    inContextOrg                      : orgId == contextService.org.id,
+                    inContextOrg                      : inContextOrg,
                     activeSubsOnly                    : activeChecksOnly,
             ]
         }

@@ -28,6 +28,7 @@ class SurveyService {
     EscapeService escapeService
     GrailsApplication grailsApplication
     String replyTo
+    GenericOIDService genericOIDService
 
     SimpleDateFormat formatter = DateUtil.getSDF_dmy()
     String from
@@ -344,7 +345,12 @@ class SurveyService {
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
-                        row.add([field: subscription?.owner?.reference ?: '', style: null])
+                        List licenseNames = []
+                        Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                            License l = genericOIDService.resolveOID(li.source)
+                            licenseNames << l.reference
+                        }
+                        row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
                         List packageNames = subscription?.packages?.collect {
                             it.pkg.name
                         }
@@ -413,7 +419,7 @@ class SurveyService {
 
                     List licenseNames = []
                     Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        License l = genericOIDService.resolveOID(li.destination)
+                        License l = genericOIDService.resolveOID(li.source)
                         licenseNames << l.reference
                     }
                     row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -778,7 +784,7 @@ class SurveyService {
 
                             List licenseNames = []
                             Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                                License l = genericOIDService.resolveOID(li.destination)
+                                License l = genericOIDService.resolveOID(li.source)
                                 licenseNames << l.reference
                             }
                             row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -919,7 +925,7 @@ class SurveyService {
 
                         List generalContactsEMails = []
 
-                        survey.owner.getGeneralContactPersons(false)?.each { person ->
+                        survey.owner.getGeneralContactPersons(true)?.each { person ->
                             person.contacts.each { contact ->
                                 if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
                                     generalContactsEMails << contact.content
@@ -927,7 +933,7 @@ class SurveyService {
                             }
                         }
 
-                        replyTo = generalContactsEMails.size() > 1 ? generalContactsEMails.join(";") : (generalContactsEMails[0].toString() ?: null)
+                        replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
                         Object[] args = ["${survey.type.getI10n('value')}"]
                         Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 

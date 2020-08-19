@@ -95,6 +95,9 @@ class LinksGenerationService {
         }
 
         if(link) {
+            link.linkType = configMap.linkType
+            link.source = configMap.source
+            link.destination = configMap.destination
             if(linkComment) {
                 if(configMap.commentContent.length() > 0) {
                     linkComment.content = configMap.commentContent

@@ -2,6 +2,66 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      18.08.2020  rc1.5       Andreas Bug         Identifikatoren von Einrichtungen konnten nicht bearbeitet werden
+
+2788    17.08.2020  rc1.5       Moe     Bug         Mailadressen von Teilnehmer in Umfragen werden nicht ausgegeben
+
+2787    17.08.2020  rc1.5       Andreas Bug         Instanzvergleich löste Neuanlegen von Referenzwerten aus
+
+2786    17.08.2020  rc1.5       Andreas Bug         Regressfehler bei der Zuweisung der Berechtigung behoben
+
+--      14.08.2020  rc1.5       Andreas Bug         DBS-Statistikfelder 19.29 und 19.35 korrigiert
+
+2782    14.08.2020  rc1.5       Andreas Bug         Kopieren von Lizenzen übernahm Werte nicht und stürzte bei Merkmalen ab
+
+2784    14.08.2020  rc1.5       Moe     Bug         User kann nicht auf "Meine Umfragen" zugreifen
+
+2783    14.08.2020  rc1.5       Moe     Bug         Cronjob für Umfrage kann keine Emails verschicken!
+
+2781    13.08.2020  rc1.5       Andreas Bug         inkorrekte Befüllung der Ziellizenzen sorgte für Kostendubletten
+
+2780    12.08.2020  rc1.5       Moe     Bug         Umfragen lässt sich nicht exportieren
+
+2779    12.08.2020  rc1.5       Moe     Bug         Fehlermeldung bei Hauptkontakt
+
+2778    12.08.2020  rc1.5       Moe     Bug         Zugangskonfiguration kann von Konsortialstelle nicht gelöscht werden
+
+2774    12.08.2020  rc1.5       Andreas Bug         Bezeichner Einrichtung in Organisation bei Merkmalsdefinitionen geändert
+
+2773    11.08.2020  rc1.5       Moe     Bug         Für EZproxy kann keine IP-Adresse angegeben werden
+
+2771    11.08.2020  rc1.5       Andreas Bug         Unterbinden der Anzeige der Paketauswahl bei leerer Menge unterbunden, Überprüfung bei Abschicken leerer Menge eingebaut
+
+--      11.08.2020  rc1.5       Andreas Bug         fehlerhafte Abfrage der nicht vererbten Merkmale bei Teilnehmerverträgen korrigiert
+
+2769    11.08.2020  rc1.5       Anja    Bug         Identifikatoren immer anzeigen; GlobaleUID auch anzeigen
+
+2768    10.08.2020  rc1.5       Moe     Bug         Fehlermeldungen bei Nutzer
+
+2734    10.08.2020  rc1.5       Andreas Bug         Export unter "Meine Lizenzen pro Einrichtung" funktionierte nicht
+
+2732    10.08.2020  rc1.5       Andreas Bug         Löschen von Verträgen funktionierte nicht
+
+2697    10.08.2020  rc1.5       Andreas Bug         Falsche Zahl beim Export der Merkmalsnutzung
+
+2611    10.08.2020  rc1.5       Andreas Bug         Anlegen von Merkmalsdefinitionen gleichen Namens funktionierte nach wie vor nicht
+
+2575    10.08.2020  rc1.5       Andreas Bug         Überflüssiges Währungssymbol entfernt bei der Ausgabe von Listenpreisen in CSV/KBART    
+
+--      10.08.2020  rc1.5       Moe     Bug         Hotfix: API Subscription Endpunkt
+
+2767    07.08.2020  rc1.5       Moe     Bug         Hotfix: Keine Lizenzmerkmale und keine Vertragsmerkmale werden in der Umfrage angezeigt
+
+2763    07.08.2020  rc1.5       Andreas Bug         Sortierung der Teilnehmer in Teilnehmermerkmale verwalten behoben
+
+--      07.08.2020  rc1.5       Andreas Bug         Legacy-Aufrufe XCustomProperties entfernt
+
+2760    06.08.2020  rc1.5       Andreas Bug         Export der Merkmale für Einrichtungen funktionierte nicht
+
+2757    06.08.2020  rc1.5       Andreas Bug         Teil zwei: Sicherung der Merkmalsbearbeitung gegen mehrfaches Abschicken des Formulars überarbeitet
+
+2756    06.08.2020  rc1.5       Andreas Bug         Bearbeitung von Verknüpfungen funktionierte nicht
+
 2755    05.08.2020  rc1.5       Andreas Bug         Zugriff auf Nutzerzahlen und Zugangskonfigurationen für Konsorten abgestuft
 
 2753    05.08.2020  rc1.5       Andreas Bug         falsches Laden verknüpfbarer Objekte, falsche Darstellung verknüpfter Objekte

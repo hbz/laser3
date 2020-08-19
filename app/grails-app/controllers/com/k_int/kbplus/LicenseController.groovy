@@ -171,8 +171,8 @@ class LicenseController
                         default: localizedName = "name_en"
                             break
                     }
-                    String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null order by lp.type.${localizedName} asc"
-                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics] )
+                    String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null and lp.tenant = :context order by lp.type.${localizedName} asc"
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics,context:result.institution] )
                     result.memberProperties = memberProperties
                 }
             }
@@ -536,7 +536,7 @@ class LicenseController
             //}
         }
         String subQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source in (:licenses) and l.linkType = :linkType)"
-        if(params.status == "FETCH_ALL")
+        if(params.status == "FETCH_ALL" && validMemberLicenses)
             result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> GenericOIDService.getOID(lic)}])
         else if(validMemberLicenses) {
             result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])

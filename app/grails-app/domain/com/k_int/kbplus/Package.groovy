@@ -439,7 +439,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     }
 
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, subList:subList])
-                    log.debug("before flush")
+                    //log.debug("before flush")
                     session.flush()
                     return true
                 }
@@ -466,7 +466,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
     private def removePackagePendingChanges(List subIds, confirmed) {
-        log.debug("begin remove pending changes")
+        //log.debug("begin remove pending changes")
         String tipp_class = TitleInstancePackagePlatform.class.getName()
         String tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
         String change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
@@ -475,7 +475,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
         List pc_to_delete = []
         pendingChanges.each { pc ->
-            log.debug("begin pending changes")
+            //log.debug("begin pending changes")
             if(pc[1]){
                 def payload = JSON.parse(pc[1])
                 if (payload.tippID) {
