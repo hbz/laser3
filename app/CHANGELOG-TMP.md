@@ -2,6 +2,19 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      19.08.2020  rc1.5       David   Feature     Improved management of identifier namespaces
+
+2795    18.08.2020  rc1.5       Moe     Feature     alle Zugangskonfigurationen für Teilnehmer in einer Lizenz exportieren
+
+--      18.08.2020  rc1.5       Moe     Bug         Export Zugangskonfigurationen fehlerhaft
+
+--      18.08.2020  rc1.5       Andreas Bug         Identifikatoren von Einrichtungen konnten nicht bearbeitet werden
+
+2788    17.08.2020  rc1.5       Moe     Bug         Mailadressen von Teilnehmer in Umfragen werden nicht ausgegeben
+
+2787    17.08.2020  rc1.5       Andreas Bug         Instanzvergleich löste Neuanlegen von Referenzwerten aus
+
+2786    17.08.2020  rc1.5       Andreas Bug         Regressfehler bei der Zuweisung der Berechtigung behoben
 
 --      14.08.2020  rc1.5       Andreas Bug         DBS-Statistikfelder 19.29 und 19.35 korrigiert
 

@@ -38,12 +38,9 @@
            value="${surveyResult.findAll { it.participant.hasAccessOrg() }}"/>
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
-        <g:link data-orgIdList="${(surveyParticipantsHasAccess?.participant?.id).join(',')}"
-                    data-targetId="copyEmailaddresses_ajaxModal44"
-                    class="ui icon button right floated trigger-modal">
-            <g:message
-                    code="survey.copyEmailaddresses.participantsHasAccess"/>
-        </g:link>
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.participant.id)?.join(',')}" href="#copyEmailaddresses_static">
+            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+        </a>
     </g:if>
     </div>
 
@@ -169,12 +166,9 @@
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasNotAccess}">
-        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.participant?.id).join(',')}"
-                    data-targetId="copyEmailaddresses_ajaxModal55"
-                    class="ui icon button right floated trigger-modal">
-            <g:message
-                    code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-        </g:link>
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.participant.id)?.join(',')}" href="#copyEmailaddresses_static">
+            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+        </a>
     </g:if>
     </div>
 
