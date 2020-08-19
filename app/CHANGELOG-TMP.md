@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2795    18.08.2020  rc1.5       Moe     Feature     alle Zugangskonfigurationen für Teilnehmer in einer Lizenz exportieren
+
+--      18.08.2020  rc1.5       Moe     Bug         Export Zugangskonfigurationen fehlerhaft
+
 --      18.08.2020  rc1.5       Andreas Bug         Identifikatoren von Einrichtungen konnten nicht bearbeitet werden
 
 2788    17.08.2020  rc1.5       Moe     Bug         Mailadressen von Teilnehmer in Umfragen werden nicht ausgegeben

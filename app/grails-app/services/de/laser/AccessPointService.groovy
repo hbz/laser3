@@ -68,10 +68,37 @@ class AccessPointService {
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_EZPROXY) {
-                List row = []
-                row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
-                row.add([field: accessPoint.url ?: '', style: null])
-                accessPointData.add(row)
+                accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
+                    List row = []
+                    row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
+                    row.add([field: it ?: '', style: null])
+                    row.add([field: accessPoint.url ?: '', style: null])
+                    accessPointData.add(row)
+                }
+
+                accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
+                    List row = []
+                    row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
+                    row.add([field: it ?: '', style: null])
+                    row.add([field: accessPoint.url ?: '', style: null])
+                    accessPointData.add(row)
+                }
+            }
+
+            if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_PROXY) {
+                accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
+                    List row = []
+                    row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
+                    row.add([field: it ?: '', style: null])
+                    accessPointData.add(row)
+                }
+
+                accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
+                    List row = []
+                    row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
+                    row.add([field: it ?: '', style: null])
+                    accessPointData.add(row)
+                }
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
@@ -144,5 +171,167 @@ class AccessPointService {
         }
 
         return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+    }
+
+    def exportProxysOfOrgs(List<Org> orgs) {
+
+        List titles = []
+        def local = LocaleContextHolder.getLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+                       'Name',
+                       messageSource.getMessage('org.shortname.label',null, local),
+                       messageSource.getMessage('accessPoint.ip.name.label',null, local),
+                       messageSource.getMessage('accessMethod.label',null, local),
+                       messageSource.getMessage('accessPoint.ip.format.range',null, local),
+                       messageSource.getMessage('accessPoint.ip.format.cidr',null, local)
+        ])
+
+        List accessPointData = []
+        orgs.each { Org org ->
+            List row = []
+            row.add([field: org.sortname ?: '', style: null])
+            row.add([field: org.name ?: '', style: null])
+            row.add([field: org.shortname ?: '', style: null])
+            accessPointData.add(row)
+
+            List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
+            accessPoints.each { accessPoint ->
+
+                if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_PROXY) {
+
+                    Map accessPointDataList = accessPoint.getAccessPointIpRanges()
+
+                    accessPointDataList.ipv4Ranges.each {
+                        row = []
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: it.name ?: '', style: null])
+                        row.add([field: 'IPv4', style: null])
+                        row.add([field: it.ipRange ?: '', style: null])
+                        row.add([field: it.ipCidr ?: '', style: null])
+                        accessPointData.add(row)
+                    }
+
+                    accessPointDataList.ipv6Ranges.each {
+                        row = []
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: it.name ?: '', style: null])
+                        row.add([field: 'IPv6', style: null])
+                        row.add([field: it.ipRange ?: '', style: null])
+                        row.add([field: it.ipCidr ?: '', style: null])
+                        accessPointData.add(row)
+                    }
+                }
+            }
+            accessPointData.add([[field: '', style: null]])
+
+        }
+
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+    }
+    def exportEZProxysOfOrgs(List<Org> orgs) {
+
+        List titles = []
+        def local = LocaleContextHolder.getLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+                       'Name',
+                       messageSource.getMessage('org.shortname.label',null, local),
+                       messageSource.getMessage('accessPoint.ezproxy.name.label',null, local),
+                       messageSource.getMessage('accessMethod.label',null, local),
+                       messageSource.getMessage('accessPoint.ip.format.range',null, local),
+                       messageSource.getMessage('accessPoint.ip.format.cidr',null, local),
+                       messageSource.getMessage('accessPoint.url',null, local)
+        ])
+
+        List accessPointData = []
+        orgs.each { Org org ->
+            List row = []
+            row.add([field: org.sortname ?: '', style: null])
+            row.add([field: org.name ?: '', style: null])
+            row.add([field: org.shortname ?: '', style: null])
+            accessPointData.add(row)
+
+            List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
+            accessPoints.each { accessPoint ->
+
+                if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_EZPROXY) {
+
+                    Map accessPointDataList = accessPoint.getAccessPointIpRanges()
+
+                    accessPointDataList.ipv4Ranges.each {
+                        row = []
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: it.name ?: '', style: null])
+                        row.add([field: 'IPv4', style: null])
+                        row.add([field: it.ipRange ?: '', style: null])
+                        row.add([field: it.ipCidr ?: '', style: null])
+                        row.add([field: accessPoint.url ?: '', style: null])
+                        accessPointData.add(row)
+                    }
+
+                    accessPointDataList.ipv6Ranges.each {
+                        row = []
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: it.name ?: '', style: null])
+                        row.add([field: 'IPv6', style: null])
+                        row.add([field: it.ipRange ?: '', style: null])
+                        row.add([field: it.ipCidr ?: '', style: null])
+                        row.add([field: accessPoint.url ?: '', style: null])
+                        accessPointData.add(row)
+                    }
+                }
+            }
+            accessPointData.add([[field: '', style: null]])
+
+        }
+
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+    }
+    def exportShibbolethsOfOrgs(List<Org> orgs) {
+
+        List titles = []
+        def local = LocaleContextHolder.getLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+                       'Name',
+                       messageSource.getMessage('org.shortname.label',null, local),
+                       messageSource.getMessage('accessPoint.shibboleth.name.label',null, local),
+                       messageSource.getMessage('accessMethod.label',null, local),
+                       messageSource.getMessage('accessPoint.entitiyId.label',null, local)
+        ])
+
+        List accessPointData = []
+        orgs.each { Org org ->
+            List row = []
+            row.add([field: org.sortname ?: '', style: null])
+            row.add([field: org.name ?: '', style: null])
+            row.add([field: org.shortname ?: '', style: null])
+
+            List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
+            accessPoints.each { accessPoint ->
+
+                if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
+
+                    row.add([field: accessPoint.name ?: '', style: null])
+                    row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
+                    row.add([field: accessPoint.entityId ?: '', style: null])
+                }
+            }
+            accessPointData.add(row)
+            accessPointData.add([[field: '', style: null]])
+
+
+        }
+
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
     }
 }
