@@ -1,5 +1,4 @@
 <%@ page import="com.k_int.kbplus.Identifier" %>
-
 <!doctype html>
 <html>
 	<head>

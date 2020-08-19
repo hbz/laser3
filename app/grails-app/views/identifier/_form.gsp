@@ -1,7 +1,5 @@
 <%@ page import="com.k_int.kbplus.Identifier" %>
 
-
-
 <div class="field fieldcontain ${hasErrors(bean: identifierInstance, field: 'ns', 'error')} required">
 	<label for="ns">
 		<g:message code="identifier.ns.label" default="Ns" />
