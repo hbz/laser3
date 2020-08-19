@@ -58,6 +58,39 @@
                 <g:else>
                     <g:link class="item" action="members" params="${params+[exportIPs:true]}">${message(code:'subscriptionDetails.members.exportIPs')}</g:link>
                 </g:else>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="subscription" action="members"
+                            params="${params+[exportProxys:true]}">
+                        ${message(code:'subscriptionDetails.members.exportProxys')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="members" params="${params+[exportProxys:true]}">${message(code:'subscriptionDetails.members.exportProxys')}</g:link>
+                </g:else>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="subscription" action="members"
+                            params="${params+[exportEZProxys:true]}">
+                        ${message(code:'subscriptionDetails.members.exportEZProxys')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="members" params="${params+[exportEZProxys:true]}">${message(code:'subscriptionDetails.members.exportEZProxys')}</g:link>
+                </g:else>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="subscription" action="members"
+                            params="${params+[exportShibboleths:true]}">
+                        ${message(code:'subscriptionDetails.members.exportShibboleths')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="members" params="${params+[exportShibboleths:true]}">${message(code:'subscriptionDetails.members.exportShibboleths')}</g:link>
+                </g:else>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
         <g:render template="actions" />

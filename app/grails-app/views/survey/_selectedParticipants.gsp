@@ -21,11 +21,9 @@
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
-        <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id)?.join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal4"
-                class="ui icon button right floated trigger-modal">
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-        </g:link>
+        </a>
     </g:if>
     </div>
     <br>
@@ -45,11 +43,9 @@
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasNotAccess}">
-        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id)?.join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal5"
-                class="ui icon button right floated trigger-modal">
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-        </g:link>
+        </a>
     </g:if>
     </div>
 
