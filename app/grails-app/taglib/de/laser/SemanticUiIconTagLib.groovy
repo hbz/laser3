@@ -69,8 +69,20 @@ class SemanticUiIconTagLib {
             case 'endDate':
                 out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
                 break
+            case 'type':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon image outline"></i> '
+                break
             case 'manualCancellationDate':
                 out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                break
+            case 'licenseUrl':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon cloud"></i> '
+                break
+            case 'licenseCategory':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon clipboard list"></i> '
+                break
+            case 'openEnded':
+                out << '<i aria-hidden="true" class="'+aClass+ ' icon key"></i> '
                 break
 
             default:

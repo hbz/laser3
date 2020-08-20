@@ -13,7 +13,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>

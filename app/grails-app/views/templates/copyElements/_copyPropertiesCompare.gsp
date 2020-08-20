@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController"%>
+<%@page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;"%>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -17,25 +17,18 @@
         </g:if>
 
         <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}"
-                params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObjectId), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+                params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
                 method="post" class="ui form newLicence">
-
-                <%
-                    List subscriptions = [Subscription.get(sourceObjectId)]
-                    if (targetObjectId) subscriptions.add(Subscription.get(targetObjectId))
-                %>
-
-                <g:set var="subscriptionsCount" value="${subscriptions?.size()}"/>
 
                     <g:if test="${customProperties?.size() > 0}">
                         <table class="ui celled table la-table">
-                            <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'subscription.properties'), subscriptions:subscriptions]" />
+                            <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'subscription.properties'), sourceObject:sourceObject]" />
                         </table>
                     </g:if>
 
                     <g:if test="${privateProperties?.size() > 0}">
                         <table class="ui celled table la-table">
-                            <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:privateProperties, key:message(code:'subscription.properties.private')+' '+contextService.getOrg().name, subscriptions:subscriptions]" />
+                            <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:privateProperties, key:message(code:'subscription.properties.private')+' '+contextService.getOrg().name, sourceObject:sourceObject]" />
                         </table>
                     </g:if>
             <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>

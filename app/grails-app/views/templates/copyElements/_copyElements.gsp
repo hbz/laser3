@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: targetObject?.id, isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
@@ -48,7 +48,7 @@
 
             <g:each in="${copyElementsService.allowedProperties(sourceObject)}" var="objProperty">
                 <tr>
-                    <td name="object.take${objProperty}.source">
+                    <td name="copyObject.take${objProperty}.source">
                         <div>
                             <b><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
                                                    showToolTipp="true"/> ${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
@@ -57,8 +57,8 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
-                            <div class="ui checkbox la-toggle-radio la-share">
-                                <g:checkBox name="object.toggleAudit" value="${objProperty}" class="ui checkbox" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
+                            <div class="ui checkbox la-toggle-radio la-inherit">
+                                <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" class="ui checkbox" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
                             </div>
                         </td>
                     </g:if>
@@ -66,13 +66,13 @@
                     <td class="center aligned">
                         <g:if test="${sourceObject.hasProperty("${objProperty}")}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="object.take" id="object.take${objProperty}" value="${objProperty}" data-action="copy"
+                                <g:checkBox name="copyObject.take" id="copyObject.take${objProperty}" value="${objProperty}" data-action="copy"
                                             checked="${true}"/>
                             </div>
                         </g:if>
                     </td>
 
-                    <td name="object.take${objProperty}.target">
+                    <td name="copyObject.take${objProperty}.target">
                         <g:if test="${targetObject}">
                             <div>
                                 <b><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
@@ -100,7 +100,7 @@
                     <td>
                         <g:if test="${targetObject?.hasProperty("${objProperty}")}">
                             <div class="ui checkbox la-toggle-radio la-noChange">
-                                <g:checkBox name="object.delete" id="object.delete${objProperty}" value="${objProperty}" data-action="delete"/>
+                                <g:checkBox name="copyObject.delete" id="copyObject.delete${objProperty}" value="${objProperty}" data-action="delete"/>
                             </div>
                         </g:if>
                     </td>
@@ -109,7 +109,7 @@
 
             <g:if test="${sourceLicenses}">
             <tr>
-                <td name="object.takeLicenses.source">
+                <td name="copyObject.takeLicenses.source">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
                         <g:each in="${sourceLicenses}" var="license">
@@ -133,13 +133,13 @@
                 <td class="center aligned">
                     <g:each in="${sourceLicenses}" var="license">
                         <div class="ui checkbox la-toggle-radio la-replace">
-                            <g:checkBox name="object.takeLicenses" data-action="copy"
+                            <g:checkBox name="copyObject.takeLicenses" data-action="copy"
                                         value="${GenericOIDService.getOID(license)}" checked="${true}"/>
                         </div>
                     </g:each>
                 </td>
 
-                <td name="object.takeLicenses.target">
+                <td name="copyObject.takeLicenses.target">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
                         <g:each in="${targetLicenses}" var="license">
@@ -158,16 +158,16 @@
                 <td>
                     <g:each in="${targetLicenses}" var="license">
                         <div class="ui checkbox la-toggle-radio la-noChange">
-                            <g:checkBox name="object.deleteLicenses" data-action="delete"
+                            <g:checkBox name="copyObject.deleteLicenses" data-action="delete"
                                         value="${GenericOIDService.getOID(license)}" checked="${false}"/>
                         </div>
                     </g:each>
                 </td>
             </tr>
             </g:if>
-            <g:if test="${sourceObject.hasProperty("orgLinks") || sourceObject.hasProperty("orgRelations")}">
+            <g:if test="${sourceObject.hasProperty("orgRelations")}">
             <tr>
-                <td name="object.takeOrgRelations.source">
+                <td name="copyObject.takeOrgRelations.source">
                     <div>
                         <g:if test="${!source_visibleOrgRelations}">
                             <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
@@ -209,14 +209,14 @@
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="object.takeOrgRelations" data-action="copy"
+                                <g:checkBox name="copyObject.takeOrgRelations" data-action="copy"
                                             value="${GenericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
                         </g:if>
                     </g:each>
                 </td>
 
-                <td name="object.takeOrgRelations.target">
+                <td name="copyObject.takeOrgRelations.target">
                     <div>
                         <g:if test="${!target_visibleOrgRelations}">
                             <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
@@ -258,7 +258,7 @@
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
                             <div class="ui checkbox la-toggle-radio la-noChange">
-                                <g:checkBox name="object.deleteOrgRelations" data-action="delete"
+                                <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete"
                                             value="${GenericOIDService.getOID(target_role)}" checked="${false}"/>
                             </div>
                             <br/>
@@ -458,7 +458,7 @@
 
             <g:if test="${sourceObject.hasProperty("ids")}">
                 <tr>
-                    <td name="object.takeIdentifier.source">
+                    <td name="copyObject.takeIdentifier.source">
                         <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br/>
                         <g:each in="${sourceIdentifiers}" var="ident">
                             <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br/>
@@ -474,13 +474,13 @@
                         <g:each in="${sourceIdentifiers}" var="ident">
                             <div data-id="${ident.id}" class="la-element">
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                    <g:checkBox name="object.takeIdentifierIds" value="${ident.id}"
+                                    <g:checkBox name="copyObject.takeIdentifierIds" value="${ident.id}"
                                                 data-action="copy"/>
                                 </div>
                             </div>
                         </g:each>
                     </td>
-                    <td name="object.takeIdentifier.target">
+                    <td name="copyObject.takeIdentifier.target">
                         <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br/>
                         <g:each in="${targetIdentifiers}" var="ident">
                             <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br/>
@@ -491,7 +491,7 @@
                         <g:each in="${targetIdentifiers}" var="ident">
                             <div data-id="${ident.id}" class="la-element">
                                 <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="object.deleteIdentifierIds" value="${ident.id}"
+                                    <g:checkBox name="copyObject.deleteIdentifierIds" value="${ident.id}"
                                                 data-action="delete" checked="${false}"/>
                                 </div>
                             </div>
@@ -537,10 +537,10 @@
     var subCopyController = {
 
         checkboxes : {
-            $takeLicenses: $('input:checkbox[name="object.takeLicenses"]'),
-            $deleteLicenses: $('input:checkbox[name="object.deleteLicenses"]'),
-            $takeOrgRelations: $('input:checkbox[name="object.takeOrgRelations"]'),
-            $deleteOrgRelations: $('input:checkbox[name="object.deleteOrgRelations"]'),
+            $takeLicenses: $('input:checkbox[name="copyObject.takeLicenses"]'),
+            $deleteLicenses: $('input:checkbox[name="copyObject.deleteLicenses"]'),
+            $takeOrgRelations: $('input:checkbox[name="copyObject.takeOrgRelations"]'),
+            $deleteOrgRelations: $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
             $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
             $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]')
         },
@@ -572,7 +572,7 @@
                 subCopyController.deleteSpecificSubscriptionEditors(this);
             }).trigger('change')
 
-            $("input:checkbox[name^='object']").change(function() {
+            $("input:checkbox[name^='copyObject']").change(function() {
                 subCopyController.checkCheckBoxesOfProperties(this);
             }).trigger('change');
 
@@ -582,43 +582,43 @@
 
         takeLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="object.takeLicenses.target"] div div').addClass('willStay');
+                $('.table tr td[name="copyObject.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="copyObject.takeLicenses.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="object.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeLicenses') < 1) {
-                    $('.table tr td[name="object.takeLicenses.target"] div div').removeClass('willStay');
+                $('.table tr td[name="copyObject.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeLicenses') < 1) {
+                    $('.table tr td[name="copyObject.takeLicenses.target"] div div').removeClass('willStay');
                 }
             }
         },
 
         deleteLicenses: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="copyObject.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
             } else {
-                $('.table tr td[name="object.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="copyObject.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 
         takeOrgRelations: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="object.takeOrgRelations.target"] div div').addClass('willStay');
+                $('.table tr td[name="copyObject.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="copyObject.takeOrgRelations.target"] div div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="object.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeOrgRelations') < 1) {
-                    $('.table tr td[name="object.takeOrgRelations.target"] div div').removeClass('willStay');
+                $('.table tr td[name="copyObject.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeOrgRelations') < 1) {
+                    $('.table tr td[name="copyObject.takeOrgRelations.target"] div div').removeClass('willStay');
                 }
             }
         },
 
         deleteOrgRelations: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="copyObject.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
             } else {
-                $('.table tr td[name="object.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="copyObject.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
             }
         },
 
@@ -647,22 +647,22 @@
         checkCheckBoxesOfProperties: function(elem) {
             var $input = $( elem );
             var checkBoxID = $input.attr("id");
-            if (checkBoxID.includes("object.take")) {
+            if (checkBoxID.includes("copyObject.take")) {
 
                 if ($input.prop( "checked" ) == true) {
-                    $(".table tr td[name='object.take"+$input.attr("value")+".source'] div").addClass("willStay");
-                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").addClass("willBeReplaced");
+                    $(".table tr td[name='copyObject.take"+$input.attr("value")+".source'] div").addClass("willStay");
+                    $(".table tr td[name='copyObject.take"+$input.attr("value")+".target'] div").addClass("willBeReplaced");
                 } else {
-                    $(".table tr td[name='object.take"+$input.attr("value")+".source'] div").removeClass("willStay");
-                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").removeClass("willBeReplaced");
+                    $(".table tr td[name='copyObject.take"+$input.attr("value")+".source'] div").removeClass("willStay");
+                    $(".table tr td[name='copyObject.take"+$input.attr("value")+".target'] div").removeClass("willBeReplaced");
                 }
             }
-            if (checkBoxID.includes("object.delete")) {
+            if (checkBoxID.includes("copyObject.delete")) {
 
                 if ($input.prop( "checked" ) == true) {
-                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").addClass("willBeReplacedStrong");
+                    $(".table tr td[name='copyObject.take"+$input.attr("value")+".target'] div").addClass("willBeReplacedStrong");
                 } else {
-                    $(".table tr td[name='object.take"+$input.attr("value")+".target'] div").removeClass("willBeReplacedStrong");
+                    $(".table tr td[name='copyObject.take"+$input.attr("value")+".target'] div").removeClass("willBeReplacedStrong");
                 }
             }
         },

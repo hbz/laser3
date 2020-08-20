@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService;" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService; com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection />
 
 <g:set var="formService" bean="formService"/>
@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObjectId), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
@@ -40,7 +40,7 @@
             </thead>
             <tbody class="top aligned">
                 <tr>
-                    <td  name="object.takeDocs.source">
+                    <td  name="copyObject.takeDocs.source">
                         <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
@@ -86,13 +86,13 @@
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                    <g:checkBox name="object.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
+                                    <g:checkBox name="copyObject.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
                                 </div>
                                 %{--</div>--}%
                             </g:if>
                         </g:each>
                     </td>
-                    <td  name="object.takeDocs.target">
+                    <td  name="copyObject.takeDocs.target">
                         <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
                         <div>
                             <g:if test="${targetObject}">
@@ -140,7 +140,7 @@
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="object.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
+                                    <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
                                 </div>
                                 %{--</div>--}%
                             </g:if>
@@ -150,7 +150,7 @@
 
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
-                    <td name="object.takeAnnouncements.source">
+                    <td name="copyObject.takeAnnouncements.source">
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
@@ -195,14 +195,14 @@
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                        <g:checkBox name="object.takeAnnouncementIds" value="${docctx.id}" data-action="copy" checked="${true}" />
+                                        <g:checkBox name="copyObject.takeAnnouncementIds" value="${docctx.id}" data-action="copy" checked="${true}" />
                                 </div>
                                     %{--</div>--}%
                                 %{--</div>--}%
                             </g:if>
                         </g:each>
                     </td>
-                    <td  name="object.takeAnnouncements.target">
+                    <td  name="copyObject.takeAnnouncements.target">
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
                         <div>
                             <g:if test="${targetObject}">
@@ -249,7 +249,7 @@
                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                         %{--<div class="ui checkbox">--}%
                                         <div class="ui checkbox la-toggle-radio la-noChange">
-                                            <g:checkBox name="object.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
+                                            <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
                                         </div>
                                         %{--</div>--}%
                                     </g:if>
@@ -261,7 +261,7 @@
 
                 %{--TASKS:--}%
                 <tr>
-                    <td name="object.takeTasks.source">
+                    <td name="copyObject.takeTasks.source">
                         <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
@@ -279,13 +279,13 @@
                             <div data-id="${tsk?.id}" class="la-element">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                        <g:checkBox name="object.takeTaskIds" value="${tsk?.id}" data-action="copy"  />
+                                        <g:checkBox name="copyObject.takeTaskIds" value="${tsk?.id}" data-action="copy"  />
                                 </div>
                                 %{--</div>--}%
                             </div>
                         </g:each>
                     </td>
-                    <td  name="object.takeTasks.target">
+                    <td  name="copyObject.takeTasks.target">
                         <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
                         <g:each in="${targetTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
@@ -301,7 +301,7 @@
                             <g:if test="${tsk.creator.id == userId || isInstAdm}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="object.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
+                                    <g:checkBox name="copyObject.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
                                 </div>
                                 %{--</div>--}%
                             </g:if>
@@ -324,7 +324,7 @@
         <g:else>
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(Subscription.get(sourceObjectId), true)}" />
+                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(genericOIDService.resolveOID(sourceObjectId), true)}" />
                     <g:link controller="survey" action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
                         <g:message code="renewalWithSurvey.back"/>
                     </g:link>
@@ -342,12 +342,12 @@
     var subCopyController = {
 
         checkboxes : {
-            $takeDocIds: $('input[name="object.takeDocIds"]'),
-            $deleteDocIds: $('input[name="object.deleteDocIds"]'),
-            $takeAnnouncementIds: $('input[name="object.takeAnnouncementIds"]'),
-            $deleteAnnouncementIds: $('input[name="object.deleteAnnouncementIds"]'),
-            $takeTaskIds: $('input[name="object.takeTaskIds"]'),
-            $deleteTaskIds: $('input[name="object.deleteTaskIds"]')
+            $takeDocIds: $('input[name="copyObject.takeDocIds"]'),
+            $deleteDocIds: $('input[name="copyObject.deleteDocIds"]'),
+            $takeAnnouncementIds: $('input[name="copyObject.takeAnnouncementIds"]'),
+            $deleteAnnouncementIds: $('input[name="copyObject.deleteAnnouncementIds"]'),
+            $takeTaskIds: $('input[name="copyObject.takeTaskIds"]'),
+            $deleteTaskIds: $('input[name="copyObject.deleteTaskIds"]')
         },
 
         init: function (elem) {
@@ -380,67 +380,67 @@
 
         takeDocIds: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="object.takeDocs.target"] div').addClass('willStay');
+                $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="copyObject.takeDocs.target"] div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="object.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeDocIds') < 1) {
-                    $('.table tr td[name="object.takeDocs.target"] div').removeClass('willStay');
+                $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
+                    $('.table tr td[name="copyObject.takeDocs.target"] div').removeClass('willStay');
                 }
             }
         },
 
         deleteDocIds: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
             }
             else {
-                $('.table tr td[name="object.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
             }
         },
 
         takeAnnouncementIds: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="object.takeAnnouncements.target"] div').addClass('willStay');
+                $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="copyObject.takeAnnouncements.target"] div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="object.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeAnnouncementIds') < 1) {
-                    $('.table tr td[name="object.takeAnnouncements.target"] div').removeClass('willStay');
+                $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
+                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div').removeClass('willStay');
                 }
             }
         },
 
         deleteAnnouncementIds: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
             }
             else {
-                $('.table tr td[name="object.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
             }
         },
 
         takeTaskIds: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="object.takeTasks.target"] div').addClass('willStay');
+                $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="copyObject.takeTasks.target"] div').addClass('willStay');
             }
             else {
-                $('.table tr td[name="object.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('object.takeTaskIds') < 1){
-                    $('.table tr td[name="object.takeTasks.target"] div').removeClass('willStay');
+                $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
+                    $('.table tr td[name="copyObject.takeTasks.target"] div').removeClass('willStay');
                 }
             }
         },
 
         deleteTaskIds: function(elem) {
             if (elem.checked) {
-                $('.table tr td[name="object.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
             }
             else {
-                $('.table tr td[name="object.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
             }
         },
 

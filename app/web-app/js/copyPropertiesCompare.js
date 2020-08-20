@@ -18,8 +18,8 @@ function toggleAllCheckboxes(source) {
 }
 
 // ONLY FOR PROPERIES
-var takeProperty = $('input[name="subscription.takeProperty"]');
-var deleteProperty = $('input[name="subscription.deleteProperty"]');
+var takeProperty = $('input[name="copyObject.takeProperty"]');
+var deleteProperty = $('input[name="copyObject.deleteProperty"]');
 
 function selectAllTake(source) {
     var table = $(source).closest('table');
@@ -82,7 +82,7 @@ markAffectedTake = function (that) {
         }
         else {
             sourceElem.removeClass('willStay');
-            if ( (that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')){
+            if ( (that).parents('tr').find('input[name="copyObject.deleteProperty"]').is(':checked')){
             } else {
                 targetElem.removeClass('willBeReplaced');
             }
@@ -108,7 +108,7 @@ markAffectedDelete = function (that) {
     // |_|
     //
     else {
-        if ($(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+        if ($(that).parents('tr').find('input[name="copyObject.takeProperty"]').is(':checked')) {
             if ($(that).attr('data-multipleOccurrence') == 'true') {
                 targetElem = $(that).closest('tr').find('.la-colorCode-target:nth-child(' + (indexOfDeleteCheckbox + 1) + ')').addClass('willBeReplaced');
                 targetElem.removeClass('willBeReplaced');

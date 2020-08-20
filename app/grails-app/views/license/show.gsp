@@ -14,7 +14,7 @@
 
         <semui:debugInfo>
             <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />
             <g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />
         </semui:debugInfo>
 
@@ -67,7 +67,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.startDate')}</dt>
+                                    <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
@@ -76,7 +76,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.endDate')}</dt>
+                                    <dt class="control-label">${message(code: 'license.endDate.label')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
@@ -85,7 +85,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code: 'license.openEnded')}</dt>
+                                    <dt class="control-label">${message(code: 'license.openEnded.label')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
                                     </dd>
@@ -98,7 +98,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt><label class="control-label">${message(code:'license.status')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.status.label')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
@@ -107,7 +107,7 @@
                                     </g:if>
                                 </dl>
                                 <dl>
-                                    <dt><label class="control-label">${message(code:'license.licenseCategory')}</label></dt>
+                                    <dt><label class="control-label">${message(code:'license.licenseCategory.label')}</label></dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
@@ -227,7 +227,7 @@
                         <div class="content">
 
                         <g:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks: visibleOrgLinks,
+                                  model="${[roleLinks: visibleOrgRelations,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
                                             editmode: editable,
@@ -237,7 +237,7 @@
                         <g:render template="/templates/links/orgLinksSimpleModal"
                                   model="${[linkType: license.class.name,
                                             parent: license.class.name + ':' + license.id,
-                                            property: 'orgLinks',
+                                            property: 'orgRelations',
                                             recip_prop: 'lic',
                                             tmplRole: RDStore.OR_LICENSOR,
                                             tmplEntity: message(code:'license.details.tmplEntity'),

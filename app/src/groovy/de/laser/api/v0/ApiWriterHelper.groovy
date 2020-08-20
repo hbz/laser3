@@ -134,7 +134,7 @@ class ApiWriterHelper {
     }
 
     @Deprecated
-    static getOrgLinks(def data, def owner, Org context) {
+    static getOrgRelations(def data, def owner, Org context) {
         def result = []
 
         data?.each { it ->   // com.k_int.kbplus.OrgRole

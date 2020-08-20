@@ -23,7 +23,7 @@
             <th>${message(code:'subscription.details.permissionInfo.roles_and_perm')}</th>
           </tr>
         </thead>
-        <g:each in="${license.orgLinks}" var="ol">
+        <g:each in="${license.orgRelations}" var="ol">
           <tr>
             <td>${ol.org.name}</td>
             <td>

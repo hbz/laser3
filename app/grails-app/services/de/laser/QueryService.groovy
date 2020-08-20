@@ -196,7 +196,7 @@ class QueryService {
         if (isLicensee) {
             base_qry = """
 from License as l where (
-    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+    exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
 )
 """
             qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:institution]
@@ -205,11 +205,11 @@ from License as l where (
         if (isLicensingConsortium) {
             base_qry = """
 from License as l where (
-    exists ( select o from l.orgLinks as o where ( 
+    exists ( select o from l.orgRelations as o where ( 
             ( o.roleType = :roleTypeC 
                 AND o.org = :lic_org 
                 AND NOT exists (
-                    select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                    select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL
                 )
             )
         ))

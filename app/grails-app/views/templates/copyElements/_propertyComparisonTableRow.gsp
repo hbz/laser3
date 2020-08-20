@@ -131,7 +131,7 @@
                     %{--COPY:--}%
                     <g:if test="${propValues.containsKey(sourceObject)}">
                         <div class="ui checkbox la-toggle-radio la-replace">
-                            <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
+                            <g:checkBox name="copyObject.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                         </div>
                     </g:if>
                 </g:each>
@@ -207,7 +207,7 @@
             <g:if test="${ targetObject && propValues.containsKey(targetObject)}">
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <div class="ui checkbox la-toggle-radio la-noChange">
-                        <g:checkBox class="bulkcheck"  name="subscription.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
+                        <g:checkBox class="bulkcheck"  name="copyObject.deleteProperty" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="${false}"/>
                     </div>
                 </g:each>
             </g:if>

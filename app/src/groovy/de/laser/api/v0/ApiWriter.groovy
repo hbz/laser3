@@ -54,10 +54,10 @@ class ApiWriter {
                 // not supported: license.documents
                 // not supported: license.onixplLicense
 
-                // TO CHECK: save license before saving orgLinks
+                // TO CHECK: save license before saving orgRelations
                 license.save()
 
-                license.orgLinks = ApiWriterHelper.getOrgLinks(data.organisations, license, context)
+                license.orgRelations = ApiWriterHelper.getOrgRelations(data.organisations, license, context)
 
                 // TODO: set subscription.owner = license
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
@@ -167,7 +167,7 @@ class ApiWriter {
                 // TO CHECK: save subscriptions before saving orgRelations
                 sub.save()
 
-                sub.orgRelations     = ApiWriterHelper.getOrgLinks(data.organisations, sub, context)
+                sub.orgRelations     = ApiWriterHelper.getOrgRelations(data.organisations, sub, context)
 
                 // not supported: documents
                 // not supported: derivedSubscriptions

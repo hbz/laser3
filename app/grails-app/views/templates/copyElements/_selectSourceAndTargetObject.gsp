@@ -15,12 +15,12 @@
                       from="${((List<Object>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it.dropdownNamingConvention()}}"
                       optionKey="${{GenericOIDService.getOID(it)}}"
-                      value="${sourceObject?.id}"
+                      value="${GenericOIDService.getOID(sourceObject)}"
                       />
             </div>
             <div class="eight wide field">
+                <label>${message(code: 'copyElementsIntoObject.targetObject.name')}: </label>
                 <g:if test="${sourceObject instanceof com.k_int.kbplus.Subscription}">
-                    <label>${message(code: 'copyElementsIntoObject.targetObject.name')}: </label>
                     <div class="ui checkbox">
                         <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
                         <label for="show.activeSubscriptions">${message(code:'copyElementsIntoObject.show.activeSubscriptions.name')}</label>
@@ -46,13 +46,13 @@
                       from="${allObjects_writeRights}"
                       optionValue="${{it.dropdownNamingConvention()}}"
                       optionKey="${{GenericOIDService.getOID(it)}}"
-                      value="${targetObject?.id}"
+                      value="${{GenericOIDService.getOID(targetObject)}}"
                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </div>
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field" style="text-align: right;">
-                <input type="submit" class="ui wide button" value="Lizenzen auswählen"/>
+                <input type="submit" class="ui wide button" value="${message(code: 'default.select2.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"/>
             </div>
         </div>
 

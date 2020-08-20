@@ -47,7 +47,7 @@ class OrgTypeService {
      */
     List<License> getCurrentLicenses(Org context) {
         return License.executeQuery( """
-            select l from License as l join l.orgLinks as ogr where
+            select l from License as l join l.orgRelations as ogr where
                 ( l = ogr.lic and ogr.org = :licOrg ) and
                 ( ogr.roleType = (:roleLic) or ogr.roleType = (:roleLicCons) or ogr.roleType = (:roleLicConsortia) )
         """, [licOrg: context,

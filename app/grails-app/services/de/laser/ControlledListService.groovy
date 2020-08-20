@@ -252,7 +252,7 @@ class ControlledListService {
                 licFilter += " and l.instanceOf != null "
                 break
         }
-        result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
+        result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             log.debug("licenses found")
@@ -413,8 +413,8 @@ class ControlledListService {
                         status = RefdataValue.get(Long.parseLong(params.status))
                     }
                     else status = RDStore.LICENSE_CURRENT
-                    links = License.executeQuery("select l.reference as name, l.id as id from License l join l.orgLinks oo where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status and oo.org = :context group by l.id",[destination:params.destination,linkTypes:params.linkTypes,status:status,context:contextOrg])
-                    //links = License.executeQuery("select oo from License l join l.orgLinks oo where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status and oo.org = :context",[destination:params.destination,linkTypes:params.linkTypes,status:status,context:contextOrg])
+                    links = License.executeQuery("select l.reference as name, l.id as id from License l join l.orgRelations oo where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status and oo.org = :context group by l.id",[destination:params.destination,linkTypes:params.linkTypes,status:status,context:contextOrg])
+                    //links = License.executeQuery("select oo from License l join l.orgRelations oo where concat('"+License.class.name+":',l.id) in (select li.source from Links li where li.destination = :destination and li.linkType in (:linkTypes)) and l.status = :status and oo.org = :context",[destination:params.destination,linkTypes:params.linkTypes,status:status,context:contextOrg])
                     break
             }
             links.each { row ->
