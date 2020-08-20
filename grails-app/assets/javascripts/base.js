@@ -7,10 +7,9 @@
 //= require libs/moment-with-locales.min.js
 //= require libs/moment.min.js
 //= require libs/jquery.readmore.min.js
-//= require libs/select2.min.js
+//= require /select2/js/select2.min.js      // vendor
 //= require libs/readmore.min.js
-//= require submodules/dict.js.gsp.js               // TODO
-//= require application.js.gsp.js                   // TODO
+//= require application.js
 //= require submodules/decksaver.js
 //= require submodules/tooltip.js
 //= require submodules/bb8.js

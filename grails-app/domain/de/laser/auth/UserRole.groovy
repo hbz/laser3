@@ -26,8 +26,8 @@ class UserRole implements Serializable, Comparable {
 				}
 			}
 		}
-		lastUpdated	nullable: true, blank: false
-		dateCreated nullable: true, blank: false
+		lastUpdated nullable: true
+		dateCreated nullable: true
 	}
 
 	static mapping = {
@@ -73,9 +73,11 @@ class UserRole implements Serializable, Comparable {
 	}
 
 	static UserRole create(User user, Role role, boolean flush = false) {
-		def instance = new UserRole(user: user, role: role)
-		instance.save(flush: flush)
-		instance
+		UserRole.withTransaction {
+			def instance = new UserRole(user: user, role: role)
+			instance.save()
+			instance
+		}
 	}
 
 	static boolean remove(User u, Role r) {

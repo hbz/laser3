@@ -31,7 +31,9 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
             pattern = "%level %logger - %msg%n"
         }
     }
-    logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
+    logger("StackTrace",    ERROR, ['FULL_STACKTRACE'], false)
+    logger("de.laser",      DEBUG, ["STDOUT"], false)
+    logger("com.k_int",     DEBUG, ["STDOUT"], false)
 }
 //root(ERROR, ['STDOUT'])
 root(INFO, ['STDOUT'])
