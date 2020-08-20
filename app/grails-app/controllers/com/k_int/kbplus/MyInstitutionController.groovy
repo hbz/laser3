@@ -2580,8 +2580,8 @@ join sub.orgRelations or_sub where
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
-        log.debug(result.taskInstanceList)
-        log.debug(result.myTaskInstanceList)
+        log.debug(result.taskInstanceList.toString())
+        log.debug(result.myTaskInstanceList.toString())
         result
     }
 

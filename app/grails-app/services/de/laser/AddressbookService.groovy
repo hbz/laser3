@@ -19,7 +19,7 @@ class AddressbookService {
     def propertyService
 
     List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
-        def orgList = []
+        List orgList = []
         orgRoles.each { or ->
             orgList << or.org
         }
@@ -27,14 +27,14 @@ class AddressbookService {
     }
 
     List<Person> getAllVisiblePersons(User user, Org org) {
-        def orgList = [org]
+        List orgList = [org]
         getAllVisiblePersons(user, orgList)
     }
 
-    List<Person> getAllVisiblePersons(User user, List orgs) {
-        def membershipOrgIds = [contextService.org.id]
+    List<Person> getAllVisiblePersons(User user, List<Org> orgs) {
+        List membershipOrgIds = [contextService.org.id]
 
-        def visiblePersons = []
+        List visiblePersons = []
         orgs.each { org ->
             org.prsLinks.each { pl ->
                 if (pl.prs && ! pl.prs.isPublic) {
@@ -50,7 +50,7 @@ class AddressbookService {
     }
 
     List<Person> getPrivatePersonsByTenant(Org tenant) {
-        def result = []
+        List result = []
 
         Person.findAllByTenant(tenant)?.each{ prs ->
             if (! prs.isPublic) {
@@ -63,11 +63,11 @@ class AddressbookService {
     }
 
     boolean isAddressEditable(Address address, User user) {
-        def org = address.getPrs()?.tenant ?: address.org
+        Org org = address.getPrs()?.tenant ?: address.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
     boolean isContactEditable(Contact contact, User user) {
-        def org = contact.getPrs()?.tenant ?: contact.org
+        Org org = contact.getPrs()?.tenant ?: contact.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
     boolean isPersonEditable(Person person, User user) {
@@ -129,7 +129,7 @@ class AddressbookService {
         String query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
             query = psq.query
             qParams = psq.queryParams
         }
