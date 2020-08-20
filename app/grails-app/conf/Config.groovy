@@ -4,7 +4,6 @@
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.log4j.RollingFileAppender
 
-
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
@@ -226,14 +225,6 @@ environments {
 // Log file variable.
 def logFile = logWatchFile.canonicalPath
 def globalDataSyncFile = globalDataSyncLogWatchFile.canonicalPath
-
-grails {
-    fileViewer {
-        locations = ["${logFile}"]
-        linesCount = 250
-        areDoubleDotsAllowedInFilePath = false
-    }
-}
 
 // log4j configuration
 log4j = {
