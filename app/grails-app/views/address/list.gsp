@@ -8,19 +8,15 @@
 	</head>
 	<body>
 		<div>
-				
-
 					<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
 						<semui:totalNumber total="${addressInstanceTotal}"/>
 					</h1>
-
 
 			<semui:messages data="${flash}" />
 				
 				<table class="ui sortable celled la-table table">
 					<thead>
 						<tr>
-						
 							<g:sortableColumn property="street_1" title="${message(code: 'address.street_1.label')}" />
 						
 							<g:sortableColumn property="street_2" title="${message(code: 'address.street_2.label')}" />
@@ -45,7 +41,6 @@
 					<tbody>
 					<g:each in="${addressInstanceList}" var="addressInstance">
 						<tr>
-						
 							<td>${fieldValue(bean: addressInstance, field: "street_1")}</td>
 						
 							<td>${fieldValue(bean: addressInstance, field: "street_2")}</td>
@@ -73,9 +68,7 @@
 					</tbody>
 				</table>
 
-					<semui:paginate total="${addressInstanceTotal}" />
-
-
+			<semui:paginate total="${addressInstanceTotal}" />
 		</div>
 	</body>
 </html>

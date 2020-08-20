@@ -1,7 +1,5 @@
 <%@ page import="com.k_int.kbplus.Cluster" %>
 
-
-
 <div class="field fieldcontain ${hasErrors(bean: clusterInstance, field: 'definition', 'error')} required">
 	<label for="definition">
 		<g:message code="cluster.definition.label" default="Definition" />

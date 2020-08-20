@@ -18,6 +18,11 @@ class ContactController extends AbstractDebugController {
 
     static allowedMethods = [create: ['GET', 'POST'], delete: 'POST']
 
+	@Secured(['ROLE_USER'])
+	def index() {
+		redirect action: 'list', params: params
+	}
+
     @Secured(['ROLE_USER'])
     def list() {
 		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
