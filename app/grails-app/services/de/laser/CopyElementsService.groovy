@@ -10,6 +10,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.apache.lucene.index.DocIDMerger
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -136,22 +137,22 @@ class CopyElementsService {
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
-        List<Subscription> subsToCompare = [sourceObject]
+        List<Object> objectsToCompare = [sourceObject]
         if (params.targetObjectId) {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            subsToCompare.add(targetObject)
+            objectsToCompare.add(targetObject)
         }
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
         }
         Org contextOrg = contextService.org
-        subsToCompare.each{ Subscription sub ->
+        objectsToCompare.each{ Object obj ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,obj,obj.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,obj,obj.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -553,11 +554,6 @@ class CopyElementsService {
 
         Object targetObject = null
         List auditProperties = params.list('auditProperties')
-        List<Object> subsToCompare = [sourceObject]
-        if (params.targetObjectId) {
-            targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            subsToCompare.add(targetObject)
-        }
 
         List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('copyObject.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
@@ -926,7 +922,12 @@ class CopyElementsService {
                     //Vererbung ausschalten
                     newOrgRole.sharedFrom  = null
                     newOrgRole.isShared = false
-                    newOrgRole.sub = targetObject
+                    if(sourceObject instanceof Subscription) {
+                        newOrgRole.sub = targetObject
+                    }
+                    if(sourceObject instanceof License) {
+                        newOrgRole.lic = targetObject
+                    }
                     save(newOrgRole, flash)
                 }
             }
