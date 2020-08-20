@@ -28,7 +28,7 @@
 
             <div class="content">
                 <ul>
-                    <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link action="download" controller="doc"
+                    <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link action="index" controller="docstore"
                                                                                 id="${doc.uuid}">${doc.uuid}</g:link>
                     <g:if test="${doc.owner}">
                         (Owner: <g:link action="show" controller="org"
