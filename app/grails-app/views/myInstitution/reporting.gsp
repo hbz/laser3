@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants" %>
 <!doctype html>
 <r:require module="chartist"/>
 <html>
@@ -57,6 +57,15 @@
                                   noSelection="['':message(code:'default.select.choose.label')]"
                                   class="ui search selection dropdown"/>
                     </div>
+                    <div class="field">
+                        <label for="subscriber">
+                            <g:message code="default.institution"/>
+                        </label>
+                        <g:select name="subscriber" from="${subscribers}" value="${params.subscriber}"
+                                  optionKey="${{it.id}}" optionValue="${{it.sortname ?: it.name}}"
+                                  noSelection="['':message(code:'default.select.choose.label')]"
+                                  class="ui search selection dropdown"/>
+                    </div>
                 </div>
                 <div class="three fields">
                     <div class="field">
@@ -65,15 +74,6 @@
                         </label>
                         <g:select name="provider" from="${providers}" value="${params.provider}"
                                   optionKey="${{it.id}}" optionValue="${{it.name}}"
-                                  noSelection="['':message(code:'default.select.choose.label')]"
-                                  class="ui search selection dropdown"/>
-                    </div>
-                    <div class="field">
-                        <label for="subscriber">
-                            <g:message code="default.institution"/>
-                        </label>
-                        <g:select name="subscriber" from="${subscribers}" value="${params.subscriber}"
-                                  optionKey="${{it.id}}" optionValue="${{it.sortname ?: it.name}}"
                                   noSelection="['':message(code:'default.select.choose.label')]"
                                   class="ui search selection dropdown"/>
                     </div>
@@ -88,8 +88,8 @@
 
         <g:if test="${formSubmit}">
         <%-- this is just for that we see something. Micha surely has concrete ideas which cause refactoring. --%>
-            <g:if test="${costItems}">
-                <table class="ui celled la-table table">
+            <table class="ui celled la-table table">
+                <g:if test="${costItemsByElement}">
                     <thead>
                         <tr>
                             <th colspan="4"><g:message code="myinst.reporting.costItems"/></th>
@@ -102,7 +102,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <g:each in="${costItems}" var="row">
+                        <g:each in="${costItemsByElement}" var="row">
                             <tr>
                                 <td>${row.getKey().getI10n("value")}</td>
                                 <g:each in="${linkedSubscriptionSet}" var="subscription">
@@ -117,8 +117,44 @@
                             </tr>
                         </g:each>
                     </tbody>
-                </table>
-            </g:if>
+                </g:if>
+                <g:elseif test="${costItemsByProvider}">
+                    <tbody>
+                        <g:if test="${costItemsByProvider.billingSums}">
+                            <g:each in="${costItemsByProvider.billingSums}" var="entry">
+                                <tr>
+                                    <td>
+                                        ${message(code:'financials.sum.billing')} ${entry.currency}<br>
+                                    </td>
+                                    <td class="la-exposed-bg">
+                                        <g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol="${entry.currency}"/>
+                                    </td>
+                                    <td>
+                                        ${message(code:'financials.sum.billingAfterTax')}
+                                    </td>
+                                    <td class="la-exposed-bg">
+                                        <g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/>
+                                    </td>
+                                </tr>
+                            </g:each>
+                            <tr>
+                                <td>
+                                    ${message(code:'financials.sum.local')}<br>
+                                </td>
+                                <td class="la-exposed-bg">
+                                    <g:formatNumber number="${costItemsByProvider.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br>
+                                </td>
+                                <td>
+                                    ${message(code:'financials.sum.localAfterTax')}
+                                </td>
+                                <td class="la-exposed-bg">
+                                    <g:formatNumber number="${costItemsByProvider.localSums.localSumAfterTax}" type="currency" currencySymbol="" currencyCode="EUR"/>
+                                </td>
+                            </tr>
+                        </g:if>
+                    </tbody>
+                </g:elseif>
+            </table>
             <p>
                 <h2>Meine Subskriptionen</h2><%-- a placeholder title and a gag for that finally, there is really a page like on the landing page screenshot --%>
             </p>
@@ -135,6 +171,10 @@
                 <div id="chartC"></div>
             </div>
 
+            <div class="ui top attached segment">
+                <div id="chartD"></div>
+            </div>
+
         </g:if>
         <semui:debugInfo>
 
@@ -146,18 +186,10 @@
                 url: "<g:createLink action="loadChartData" />",
                 method: "POST",
                 data: {
-                <g:if test="${params.subscription}">
-                    subscription: ${params.subscription}
-                </g:if>
-                <g:elseif test="${params.package}">
-                    package: ${params.package}
-                </g:elseif>
-                <g:elseif test="${params.provider}">
-                    provider: ${params.provider}
-                </g:elseif>
-                <g:elseif test="${params.subscriber}">
-                    subscriber: ${params.subscriber}
-                </g:elseif>
+                <g:if test="${params.subscription}">subscription: ${params.subscription}</g:if>
+                <g:elseif test="${params.package}">package: ${params.package}</g:elseif>
+                <g:elseif test="${params.provider}">provider: ${params.provider}</g:elseif>
+                <g:elseif test="${params.subscriber}">subscriber: ${params.subscriber}</g:elseif>
                 }
             }).done(function(data){
                 if(data.graphA) {
@@ -210,6 +242,26 @@
                             Chartist.plugins.legend()
                         ],
                         height: '500px'
+                    }).on('draw', function(data) {
+                        if(data.type === 'bar') {
+                            data.element.attr({
+                                style: 'stroke-width: 30px'
+                            });
+                        }
+                    });
+                }
+                if(data.graphD) {
+                    console.log(data.graphD);
+                    new Chartist.Pie('#chartD',data.graphD,{
+                        plugins: [
+                            Chartist.plugins.legend()
+                        ],
+                        height: '500px',
+                        donut: true,
+                        donutWidth: 60,
+                        startAngle: 270,
+                        total: 10,
+                        showLabel: false
                     }).on('draw', function(data) {
                         if(data.type === 'bar') {
                             data.element.attr({

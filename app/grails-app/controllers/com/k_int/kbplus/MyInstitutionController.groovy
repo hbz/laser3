@@ -102,8 +102,9 @@ class MyInstitutionController extends AbstractDebugController {
         if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
             instanceFilter += ' and sub.instanceOf is null '
         }
+        Set<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]
         String spQuery = 'select sp from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where sub.status = :active and oo.org = :org and oo.roleType in (:roleTypes)'+instanceFilter+' order by sub.name asc'
-        Map<String,Object> spParams = [active:RDStore.SUBSCRIPTION_CURRENT,org:result.institution,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]
+        Map<String,Object> spParams = [active:RDStore.SUBSCRIPTION_CURRENT,org:result.institution,roleTypes:roleTypes]
         if(params.formSubmit) {
             Map<String,Object> configMap = [institution:result.institution]
             if(params.subscription)
@@ -117,23 +118,32 @@ class MyInstitutionController extends AbstractDebugController {
             result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
             if(result.costItems) {
                 //test for ERMS-1125: group by elements
-                costItemElementGroups.putAll(financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_ELEMENT, costItems:result.costItems, contextOrg:result.institution]))
+                if(params.subscription) {
+                    costItemElementGroups.putAll(financeService.groupCostItems([groupOption: FinanceService.GROUP_OPTION_ELEMENT, costItems: result.costItems, contextOrg: result.institution]))
+                    result.costItemsByElement = costItemElementGroups
+                }
+                else if(params.provider) {
+                    result.costItemsByProvider = financeService.calculateResults(result.costItems)
+                }
             }
         }
         Set<SubscriptionPackage> currentSubscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
-        Set<Subscription> subscriptions = []
+        Set<Subscription> subscriptions = Subscription.executeQuery('select sub from OrgRole oo join oo.sub sub where sub.status = :current and oo.org = :contextOrg and oo.roleType in (:roleTypes)'+instanceFilter,[contextOrg:result.institution,current:RDStore.SUBSCRIPTION_CURRENT,roleTypes:roleTypes])
         Set<Package> packages = []
-        Set<Org> providers = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:orgTypes) order by o.name asc',[orgTypes:[RDStore.OT_PROVIDER,RDStore.OT_AGENCY]])
+        Set<Org> providers = Org.executeQuery("select or_pa.org from OrgRole or_pa join or_pa.sub sub join sub.orgRelations or_sub where ( sub = or_sub.sub and or_sub.org = :subOrg ) and ( or_sub.roleType in (:subRoleTypes) ) and( or_pa.roleType in (:paRoleTypes) )",
+                [
+                    subOrg:       result.institution,
+                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                    paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                ])
         Set<Org> subscribers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :context and c.type = :comboType order by c.fromOrg.sortname asc, c.fromOrg.name asc',[context:result.institution,comboType:RDStore.COMBO_TYPE_CONSORTIUM])
         currentSubscriptionPackages.each { SubscriptionPackage sp ->
-            subscriptions << sp.subscription
             packages << sp.pkg
         }
         result.subscriptions = subscriptions
         result.packages = packages
         result.providers = providers
         result.subscribers = subscribers
-        result.costItems = costItemElementGroups
         result
     }
 
@@ -153,9 +163,10 @@ class MyInstitutionController extends AbstractDebugController {
         else if(params.package)
             result.graphA = packageService.getTitlesForYearRings([package: params.package,institution: contextOrg])
         else if(params.subscriber)
-            result.graphC = organisationService.getSubscriberProviderPercentages([subscriber: params.subscriber, institution: contextOrg])
-        else if(params.provider)
-            result.graphB = organisationService.getSubscriberProviderPercentages([provider: params.provider, institution: contextOrg])
+            result.putAll(organisationService.getSubscriberProviderPercentages([subscriber: params.subscriber, institution: contextOrg]))
+        else if(params.provider) {
+            result.putAll(organisationService.getSubscriberProviderPercentages([provider: params.provider, institution: contextOrg]))
+        }
         render result as JSON
     }
 
@@ -726,7 +737,7 @@ join sub.orgRelations or_sub where
         ( or_pa.roleType in (:paRoleTypes) )
 """, [
         subOrg:       contextService.getOrg(),
-        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_COLLECTIVE, RDStore.OR_SUBSCRIPTION_COLLECTIVE],
+        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
         paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
     ])
             orgIds = matches.collect{ it.id }

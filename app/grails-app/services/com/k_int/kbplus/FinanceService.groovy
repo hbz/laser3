@@ -1153,7 +1153,7 @@ class FinanceService {
 
     Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
-        if(configMap.subscription) {
+        if(configMap.subscription || configMap.provider) {
             String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
             if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
                 ciQuery += 'and ci.sub.instanceOf in (:subs)'
@@ -1172,8 +1172,12 @@ class FinanceService {
                 //get successors
                 linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc", subQueryParams))
             }
+            else if(configMap.provider) {
+                Org starting = Org.get(configMap.provider)
+                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s join s.orgRelations oo join s.orgRelations op where oo.roleType in (:subscrRoleTypes) and oo.org = :context and op.org = :starting",[subscrRoleTypes:[RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA],context:configMap.institution,starting:starting]))
+            }
             result.linkedSubscriptionSet = linkedSubscriptionSet
-            result.costItems = CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet])
+            result.costItems = linkedSubscriptionSet ? CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet]) : []
         }
         result
     }
@@ -1364,7 +1368,7 @@ class FinanceService {
                     result.showCollectiveFunctions = true
                     result.editConf.showVisibilitySettings = true
                     result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
-                    Set<Org> consMembers = Subscription.executeQuery(
+                    Set<Org> consMembers = Org.executeQuery(
                             'select oo.org, oo.org.sortname as sortname from Subscription s ' +
                                     'join s.instanceOf subC ' +
                                     'join subC.orgRelations roleC ' +
