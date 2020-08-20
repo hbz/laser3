@@ -81,10 +81,10 @@ class AddressbookService {
     }
 
     List getVisiblePersons(String fromSite,params) {
-        def qParts = [
+        List qParts = [
                 'p.isPublic = :public'
         ]
-        def qParams = [:]
+        Map qParams = [:]
         switch(fromSite) {
             case "addressbook":
                 qParams.public = false
@@ -126,7 +126,7 @@ class AddressbookService {
 
         }
 
-        def query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
+        String query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
             def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
@@ -138,7 +138,7 @@ class AddressbookService {
         if (params?.order != null && params?.order != 'null'){
             order = params.order
         }
-        query = query + " ORDER BY p.last_name "+order+" p.first_name "+order
+        query = query + " ORDER BY p.last_name ${order}, p.first_name ${order}"
         List result = Person.executeQuery(query, qParams)
         result
     }
