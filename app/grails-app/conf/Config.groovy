@@ -106,25 +106,11 @@ isSendEmailsForDueDatesOfAllUsers = true
 quartzHeartbeat = 'Never'
 //showDebugInfo = false
 
-/*globalDataSync = [
-  "replaceLocalImpIds": [
-    "Org": true,
-    "TitleInstance": true,
-    "Platform": true,
-    "Package": true,
-    "TIPP": true
-  ]
-]*/
-
 appDefaultPrefs {
     globalDatepickerFormat    = 'yyyy-mm-dd'
     globalDateFormat          = 'yyyy-MM-dd'
     globalDateFormatSQL       = '%Y-%m-%d'
 }
-
-// @NotificationsJob
-// - enable notification
-// - enable reminder
 
 //
 // ---  cache, gorm & database ---
@@ -171,13 +157,7 @@ grails.mime.types = [
         multipartForm: 'multipart/form-data'
 ]
 
-// URL Mapping Cache Max Size, defaults to 5000
-//grails.urlmapping.cache.maxsize = 1000
-
 // What URL patterns should be processed by the resources plugin
-//rails.resources.resourceLocatorEnabled = true // upgrade to 1.2.14
-//grails.resources.uriToUrlCacheTimeout = 0  // upgrade to 1.2.14
-//grails.resources.processing.startup = "delayed" // upgrade to 1.2.14
 grails.resources.adhoc.patterns = [
         '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*']
 grails.resources.adhoc.includes = [
@@ -212,10 +192,7 @@ grails.plugins.remotepagination.enableBootstrap = true // Finance
 //grails.mail.default.from = "server@yourhost.com" //override system wide
 grails.mail.disabled = false //System wide
 grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
-//grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
 //grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
-
-// grails.databinding.dateFormats = ['MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
 //
 // --- logging ---
@@ -250,8 +227,6 @@ environments {
 def logFile = logWatchFile.canonicalPath
 def globalDataSyncFile = globalDataSyncLogWatchFile.canonicalPath
 
-//System.out.println("~ using log file location: ${logFile}")
-
 grails {
     fileViewer {
         locations = ["${logFile}"]
@@ -262,15 +237,6 @@ grails {
 
 // log4j configuration
 log4j = {
-  // Example of changing the log pattern for the default console
-  // appender:
-  //
-  //appenders {
-  //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-  //}
-  //trace 'org.hibernate.type'
-  //debug 'org.hibernate.SQL'
-
   appenders {
     console name: "stdout", threshold: org.apache.log4j.Level.ALL
     if (environment_dev) {
@@ -327,6 +293,4 @@ log4j = {
       'com.k_int',
   // 'org.springframework.security'
       'grails.app.taglib.InplaceTagLib'
-
-  // info   'com.linkedin.grails'
 }
