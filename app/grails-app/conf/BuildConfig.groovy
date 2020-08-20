@@ -5,8 +5,6 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 
-grails.plugin.location.'file-viewer' = "localRepository/file-viewer/hbz-file-viewer-0.3"
-
 grails.project.dependency.resolver = "maven"
 
 grails.project.dependency.resolution = {
@@ -133,8 +131,6 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
-
-        //compile ":file-viewer:0.3" //security issue
 
         runtime ":database-migration:1.4.0"
 

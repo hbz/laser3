@@ -15,7 +15,7 @@ class PropertyService {
     def contextService
 
     private List<String> splitQueryFromOrderBy(String sql) {
-        String order_by = null
+        String order_by
         int pos = sql.toLowerCase().indexOf("order by")
         if (pos >= 0) {
             order_by = sql.substring(pos-1)
@@ -25,10 +25,8 @@ class PropertyService {
     }
 
     Map<String, Object> evalFilterQuery(Map params, String base_qry, String hqlVar, Map base_qry_params) {
-        def order_by
+        String order_by
         (base_qry, order_by) = splitQueryFromOrderBy(base_qry)
-
-
 
         if (params.filterPropDef) {
             PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)

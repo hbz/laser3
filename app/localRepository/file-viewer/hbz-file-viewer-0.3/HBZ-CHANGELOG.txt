@@ -1,6 +1,0 @@
-
-
-Changed:
-
-def locations              => List locations
-List<String> locations     => List locations

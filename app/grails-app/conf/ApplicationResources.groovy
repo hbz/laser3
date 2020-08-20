@@ -17,19 +17,6 @@ modules = {
 //        resource url:'css/deprecated/legacy.annotations.css', attrs: [media: 'screen,print']
 //    }
 
-//    onixMatrix { //  modules="onixMatrix" not used in working code of laser
-//        dependsOn 'semanticUI'
-//
-//        resource url:'css/legacy.onix.css', attrs: [media: 'screen,print']
-//        resource url:'js/legacy.onix.js'
-//    }
-
-//    deprecated {
-//        //resource url:'css/select2.css'
-//        resource url:'js/tmp_semui.js'   // only tmp
-//        resource url:'css/tmp_semui.css', attrs: [media: 'screen,print']   // only tmp
-//    }
-
     semanticUI {
         dependsOn 'base'
 
