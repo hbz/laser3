@@ -715,7 +715,7 @@ class LicenseController
         result.todoHistoryLinesTotal = PendingChange.executeQuery(
                 baseQuery,
                 baseParams
-        )[0]
+        )[0] ?: 0
 
         result
     }

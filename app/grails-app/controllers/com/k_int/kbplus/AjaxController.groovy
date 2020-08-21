@@ -2286,9 +2286,8 @@ class AjaxController {
     // TODO: BUG !? multiple occurrences on the same object allowed
     //def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
 
-    def duplicates = Identifier.executeQuery(
-            "select ident from Identifier ident where ident.value = ? and ident.${owner_type} != ?", [identifier.value, owner]
-    )
+    String query = "select ident from Identifier ident where ident.value = :iv and ident.${owner_type} != :ot"
+    def duplicates = Identifier.executeQuery( query, [iv: identifier.value, ot: owner] )
 
     if(duplicates){
       result.duplicates = duplicates.collect{ it."${owner_type}" }

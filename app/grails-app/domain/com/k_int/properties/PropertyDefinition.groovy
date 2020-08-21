@@ -442,17 +442,16 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
   @Transient
   def getOccurrencesOwner(String cls){
-    List<PropertyDefinition> qparams = [this]
-    String qry = 'select c.owner from ' + cls + " as c where c.type = ?"
-    return PropertyDefinition.executeQuery(qry,qparams); 
+    String qry = 'select c.owner from ' + cls + " as c where c.type = :type"
+    return PropertyDefinition.executeQuery(qry, [type: this])
   }
 
   @Transient
   def countOccurrences(String cls) {
-    List<PropertyDefinition> qparams = [this]
-    String qry = 'select count(c) from ' + cls + " as c where c.type = ?"
-    return (PropertyDefinition.executeQuery(qry,qparams))[0]; 
+    String qry = 'select count(c) from ' + cls + " as c where c.type = :type"
+    return (PropertyDefinition.executeQuery(qry, [type: this]))[0] ?: 0
   }
+
   @Transient
   int countOccurrences(String[] cls){
     int total_count = 0
