@@ -19,9 +19,18 @@ class RefdataReorderService {
         List semesters = RefdataValue.findAllByOwner(RefdataCategory.getByDesc(RDConstants.SEMESTER),[sort:'id', order:'asc'])
         //RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
         int order = 10
-        semesters.each { s ->
+        semesters.each { RefdataValue s ->
             s.order = order
             s.save()
+            order += 10
+        }
+        //price categories: take the order of insertion and make then the ID ascending
+        //I do not use the getAllRefdataValues because this does the ordering in an incorrect way
+        List priceCategories = RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc in (:priceCategories) order by rdv.id asc',[priceCategories:[RDConstants.CATEGORY_A_F,RDConstants.CATEGORY_BAUTABELLEN,RDConstants.CATEGORY_EUROMONITOR,RDConstants.CATEGORY_IGI,RDConstants.CATEGORY_JURIS,RDConstants.CATEGORY_UNWTO,RDConstants.CATEGORY_WORLD_BANK]])
+        order = 0
+        priceCategories.each { RefdataValue pc ->
+            pc.order = order
+            pc.save()
             order += 10
         }
         //number types: defined by external
@@ -33,7 +42,7 @@ class RefdataReorderService {
         List currencies = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.getByDesc('Currency'),'EUR',[sort:'value',order:'asc'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'EUR'])
         order = 10
-        currencies.each { c ->
+        currencies.each { RefdataValue c ->
             c.order = order
             c.save()
             order += 10

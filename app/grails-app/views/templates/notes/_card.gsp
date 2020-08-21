@@ -55,7 +55,9 @@
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- START First Button --%>
                             <g:if test="${!docctx.isShared}">
-                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button"
+                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
+                                        data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                     <i class="trash alternate icon"></i>
                                 </g:link>
