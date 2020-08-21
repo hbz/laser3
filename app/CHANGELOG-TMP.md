@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      21.08.2020 rc1.5        Moe     Feature     Umfrage Jahresringe
+
 --      21.08.2020 rc1.5        Moe     Feature     Anpassung Umfrage-Emailbetreff
 
 2807    21.08.2020  rc1.5       Moe     Bug         Die Ausschüttungsfunktion in Umfragen geht nicht mehr
