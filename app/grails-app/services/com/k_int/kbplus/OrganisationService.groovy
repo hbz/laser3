@@ -2638,20 +2638,20 @@ class OrganisationService {
 
     Map<String,Object> getSubscriberProviderPercentages(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('get refdatas')
         Set<RefdataValue> providerRoles = RefdataValue.findAllByValueInListAndOwner(['Agency','Content Provider','Provider','Publisher'],RefdataCategory.findByDesc(RDConstants.ORGANISATIONAL_ROLE))
-        Set labels = []
-        List series = []
         Map<Org,List> providerYearCount = [:]
         pu.setBenchmark('get parent subscriptions')
-        Set<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.roleType = :consortialType and oo.org = :context',[consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,context:configMap.institution])
+        Set<Subscription> currentSubscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.roleType = :consortialType and oo.org = :context and oo.sub.status = :status',[status:RDStore.SUBSCRIPTION_CURRENT,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,context:configMap.institution])
+        Set<Subscription> testSubscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.roleType = :consortialType and oo.org = :context and oo.sub.status = :status',[status:RefdataValue.getByValueAndCategory('Test access',RDConstants.SUBSCRIPTION_STATUS),consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,context:configMap.institution])
         if(configMap.subscriber) {
+            Set labels = []
+            List series = []
             //open for any idea how the following may be realised in *one* query!
             //yearRing as grouping unit may be hbz-given, but there surely is an equivalent grouping unit for other institutions
             pu.setBenchmark('get subscriptions of subscriber')
-            Set<Subscription> subscriptionsOfSubscriber = Subscription.executeQuery('select oor.sub from OrgRole oor where oor.roleType in (:subscriberRoleTypes) and oor.org = :subscriber and oor.sub.instanceOf in (:parentSubs) order by oor.sub.startDate asc',[subscriber:Org.get(configMap.subscriber),subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],parentSubs:subscriptions])
+            Set<Subscription> subscriptionsOfSubscriber = Subscription.executeQuery('select oor.sub from OrgRole oor where oor.roleType in (:subscriberRoleTypes) and oor.org = :subscriber and oor.sub.instanceOf in (:parentSubs) order by oor.sub.startDate asc',[subscriber:Org.get(configMap.subscriber),subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],parentSubs:currentSubscriptions])
             /*subscriptionsOfSubscriber.each { Subscription debugS ->
                 log.debug(debugS.dropdownNamingConvention(configMap.institution))
             }*/
@@ -2669,7 +2669,7 @@ class OrganisationService {
                 int total = Org.executeQuery('select count(org.id) from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and year(oo.sub.startDate) = :yearRing and oo.sub in (:subscriptions)',[yearRing: yearRing, subscriptions: subscriptionsOfSubscriber, providerRoleTypes: providerRoles])[0]
                 labels << yearRing
                 pu.setBenchmark("get grouped counts for ${yearRing}")
-                rows = Org.executeQuery('select org,count(org.id) from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and year(oo.sub.startDate) = :yearRing and oo.sub in (:subscriptions) group by org.id order by org.name asc', [yearRing: yearRing, subscriptions: subscriptionsOfSubscriber, providerRoleTypes: providerRoles])
+                rows = Org.executeQuery('select org,count(org.id) as orgCount from OrgRole oo join oo.org org where oo.roleType in (:providerRoleTypes) and year(oo.sub.startDate) = :yearRing and oo.sub in (:subscriptions) group by org.id order by orgCount desc, org.name asc', [yearRing: yearRing, subscriptions: subscriptionsOfSubscriber, providerRoleTypes: providerRoles])
                 allTimeProviders.each { Org provider ->
                     //log.debug(row[0]+' '+row[1])
                     def count = rows.find { row -> row[0].id == provider.id }
@@ -2687,31 +2687,40 @@ class OrganisationService {
             }
             pu.setBenchmark('assemble provider-year-counts')
             providerYearCount.each { Org k, List v ->
-                //List absolute = v.collect { Map values -> values.get('absolute') }
-                List relative = v.collect { Map values -> values.get('relative') }
-                series << [name:k.name,data:relative]
+                List absolute = v.collect { Map values -> values.get('absolute') }
+                //List relative = v.collect { Map values -> values.get('relative') }
+                series << [name:k.name,data:absolute]
             }
             result.benchmark = pu.stopBenchmark()
+            result.graphC = [labels:labels,series:series]
         }
         else if(configMap.provider) {
             Org provider = Org.get(configMap.provider)
             //for the moment, we take current year, all subscribers and assemble them in pie chart donut
-            Set subscribersOfSubset = Subscription.executeQuery('select org.sortname,count(s.id) from OrgRole oo join oo.sub s join s.orgRelations oor join oor.org org where s.status = :current and oo.roleType in (:providerRoleTypes) and oo.org = :provider and oor.roleType in (:subscriberRoleTypes) and s.instanceOf in (:parentSubs) group by org.sortname order by org.sortname asc',[current:RDStore.SUBSCRIPTION_CURRENT,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],providerRoleTypes:providerRoles,provider:provider,parentSubs:subscriptions])
-            //Set subscribersOfSubset = Org.executeQuery('select org.sortname,count(sub.id) from OrgRole oo join oo.org org join oo.sub sub where sub in (:subscriptions) and oo.roleType in (:subscriberRoleTypes) group by org.sortname order by org.sortname asc',[subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],subscriptions:subscriptionsSubset])
-            //int total = Org.executeQuery('select count(sub.id) from OrgRole oo join oo.org org join oo.sub sub where sub in (:subscriptions) and oo.roleType in (:subscriberRoleTypes)',[subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],subscriptions:subscribersOfSubset])[0]
-            //int total = 0
-            //double iteration through loop ... very ugly!
-            //subscribersOfSubset.each { row -> total += row[1] }
-            subscribersOfSubset.each { row ->
-                //double percent = row[1] / total
-                //log.debug("${row[1]} / ${total}")
-                String token = row[1] == 1 ? 'subscription' : 'subscription.plural'
-                labels << "${row[0]} (${row[1]} ${messageSource.getMessage(token,null,locale)})"
-                series << row[1]
-            }
+            //unfortunately, it is impossible to group them in one query - I cannot distinct them!
+            result.graphD = assembleSubscriberGraphs(Subscription.executeQuery('select org.sortname,count(s.id) as subCount from OrgRole oo join oo.sub s join s.orgRelations oor join oor.org org where oo.roleType in (:providerRoleTypes) and oo.org = :provider and oor.roleType in (:subscriberRoleTypes) and s.instanceOf in (:parentSubs) group by org.sortname order by subCount desc, org.sortname asc',[subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],providerRoleTypes:providerRoles,provider:provider,parentSubs:testSubscriptions]))
+            result.graphB = assembleSubscriberGraphs(Subscription.executeQuery('select org.sortname,count(s.id) as subCount from OrgRole oo join oo.sub s join s.orgRelations oor join oor.org org where oo.roleType in (:providerRoleTypes) and oo.org = :provider and oor.roleType in (:subscriberRoleTypes) and s.instanceOf in (:parentSubs) group by org.sortname order by subCount desc, org.sortname asc',[subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],providerRoleTypes:providerRoles,provider:provider,parentSubs:currentSubscriptions]))
         }
-        result.labels = labels
-        result.series = series
         result
     }
+
+    Map<String,Object> assembleSubscriberGraphs(List subscribersOfSubset) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Map<String,Object> graph = [:]
+        Set labels = []
+        List series = []
+        subscribersOfSubset.each { row ->
+            String orgName = row[0]
+            int count = (int) row[1]
+            //double percent = row[1] / total
+            //log.debug("${row[1]} / ${total}")
+            String token = count == 1 ? 'subscription' : 'subscription.plural'
+            labels << "${orgName} (${count} ${messageSource.getMessage(token,null,locale)})"
+            series << count
+        }
+        graph.labels = labels
+        graph.series = series
+        graph
+    }
+
 }
