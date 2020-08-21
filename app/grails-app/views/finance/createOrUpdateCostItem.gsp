@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -55,27 +55,27 @@
                   <input type="date" name="newDatePaid" value="${params.newDatePaid}"/><br/>
 
                   <g:select name="newCostItemStatus"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.COST_ITEM_STATUS)}"
+                            from="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc = :desc', [desc: RDConstants.COST_ITEM_STATUS])}"
                             optionKey="id"
                             noSelection="${['':'No Status']}"/>
 
                   <g:select name="newCostItemCategory"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.COST_ITEM_CATEGORY)}"
+                            from="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc = :desc', [desc: RDConstants.COST_ITEM_CATEGORY])}"
                             optionKey="id"
                             noSelection="${['':'No Category']}"/>
 
                   <g:select name="newCostItemElement"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.COST_ITEM_ELEMENT)}"
+                            from="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc = :desc', [desc: RDConstants.COST_ITEM_ELEMENT])}"
                             optionKey="id"
                             noSelection="${['':'No Element']}"/>
 
                   <g:select name="newCostCurrency"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.CURRENCY)}"
+                            from="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc = :desc', [desc: RDConstants.CURRENCY])}"
                             optionKey="id"
                             noSelection="${['':'No Currency']}"/>
 
                   <g:select name="newCostTaxType"
-                            from="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', RDConstants.TAX_TYPE)}"
+                            from="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc = :desc', [desc: RDConstants.TAX_TYPE])}"
                             optionKey="id"
                             noSelection="${['':'No Tax Type']}"/>
               </td>

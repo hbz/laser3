@@ -970,8 +970,8 @@ class CopyElementsService {
         if (packagesToDelete) {
 
             packagesToDelete.each { subPkg ->
-                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
-                PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=:sp", [sp: subPkg])
+                PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp", [sp: subPkg])
 
                 CostItem.findAllBySubPkg(subPkg).each { costItem ->
                     costItem.subPkg = null

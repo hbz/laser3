@@ -13,7 +13,7 @@
         <g:form name="addIncomingCombo" controller="organisation" action="addOrgCombo" class="form-search" method="get">
           <g:hiddenField name="toOrg" value="${orgInstance.id}" />
           <g:select name="fromOrg"
-                    from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? and o <> ? order by o.name', ['Higher Education', orgInstance])}"
+                    from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = :sv and o <> :org order by o.name', [sv: 'Higher Education', org: orgInstance])}"
                     optionKey="id"
                     optionValue="name"
                     class="input-medium"/>
