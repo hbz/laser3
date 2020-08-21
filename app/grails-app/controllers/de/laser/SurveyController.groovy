@@ -1013,7 +1013,6 @@ class SurveyController {
                     surveyCostItem.save(flush:true)
                 }
             }
-        }
 
         redirect(url: request.getHeader('referer'))
     }
