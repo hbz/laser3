@@ -9,7 +9,7 @@
         <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
     </g:if>
     <g:else>
-        <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label')}</title>
+        <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
     </g:else>
 </head>
 <body>
@@ -19,7 +19,7 @@
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')} </h1>
     </g:if>
     <g:else>
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'copyElementsIntoObject.label')} </h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])} </h1>
     </g:else>
 
     <semui:messages data="${flash}"/>

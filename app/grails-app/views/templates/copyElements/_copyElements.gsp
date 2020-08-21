@@ -22,7 +22,7 @@
             <thead>
             <tr>
                 <th class="six wide">
-                    <g:if test="${sourceObject}"><g:link controller="subscription" action="show"
+                    <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show"
                                                                id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                 </th>
                 <g:if test="${isConsortialObjects}">
@@ -34,7 +34,7 @@
                                                            data-action="copy" onClick="toggleAllCheckboxes(this)"
                                                            checked/>
                 <th class="six wide">
-                    <g:if test="${targetObject}"><g:link controller="subscription" action="show"
+                    <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show"
                                                                id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
                 </th>
                 <th class="one wide center aligned">
