@@ -1816,7 +1816,7 @@ class SurveyController {
                     token       : params.pd_name,
                     category    : PropertyDefinition.SUR_PROP,
                     type        : params.pd_type,
-                    rdc         : rdc.getDesc(),
+                    rdc         : rdc ? rdc.getDesc() : null,
                     tenant      : result.institution.globalUID,
                     i10n        : [
                             name_de: params.pd_name,

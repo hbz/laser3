@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2806    21.08.2020  rc1.5       Moe     Bug         Umfrage Merkmal kann nicht in Umfrage Bereich erstellt werden
+
 --      21.08.2020 rc1.5        Moe     Feature     Umfrage Jahresringe
 
 --      21.08.2020 rc1.5        Moe     Feature     Anpassung Umfrage-Emailbetreff
