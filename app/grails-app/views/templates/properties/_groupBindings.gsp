@@ -11,7 +11,7 @@
                     <th></th>
                     <th>Voreinstellung</th>
                     <th>Für dieses Objekt überschreiben</th>
-                    <g:if test="${showConsortiaFunctions}">
+                    <g:if test="${showConsortiaFunctions == true}">
                         <th>Für Teilnehmer anzeigen</th>
                     </g:if>
                     <th class="la-action-info">${message(code:'default.actions.label')}</th>
@@ -53,7 +53,7 @@
                                 <semui:xEditableBoolean owner="${binding}" field="isVisible" />
                             </g:if>
                         </td>
-                        <g:if test="${showConsortiaFunctions}">
+                        <g:if test="${showConsortiaFunctions == true}">
                             <td>
                                 <g:if test="${editable && binding}">
                                     <semui:xEditableBoolean owner="${binding}" field="isVisibleForConsortiaMembers" />
