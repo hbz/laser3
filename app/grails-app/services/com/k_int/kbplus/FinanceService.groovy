@@ -1167,10 +1167,12 @@ class FinanceService {
                 Subscription starting = Subscription.get(configMap.subscription)
                 Map<String, Object> subQueryParams = [starting: GenericOIDService.getOID(starting), linkType: RDStore.LINKTYPE_FOLLOWS]
                 //get precedents
-                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc", subQueryParams))
+                String query1 = "select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc"
+                linkedSubscriptionSet.addAll(Subscription.executeQuery(query1, subQueryParams))
                 linkedSubscriptionSet << starting
                 //get successors
-                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc", subQueryParams))
+                String query2 = "select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc"
+                linkedSubscriptionSet.addAll(Subscription.executeQuery(query2, subQueryParams))
             }
             result.linkedSubscriptionSet = linkedSubscriptionSet
             result.costItems = CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet])

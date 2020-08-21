@@ -2419,7 +2419,8 @@ class SurveyController {
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
-            result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)", [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+            String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+            result.memberLicenses = License.executeQuery(query, [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
 
         result.properties = []
@@ -3316,7 +3317,8 @@ class SurveyController {
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
-            result.memberLicenses = License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)", [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+            String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+            result.memberLicenses = License.executeQuery(query, [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
 
         result
@@ -3897,7 +3899,8 @@ class SurveyController {
                     }
                 }
                 if(params.generateSlavedLics == "all") {
-                    licensesToProcess.addAll(License.executeQuery("select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)",[subscription:GenericOIDService.getOID(newParentSub),linkType:RDStore.LINKTYPE_LICENSE]))
+                    String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
+                    licensesToProcess.addAll(License.executeQuery(query, [subscription:GenericOIDService.getOID(newParentSub),linkType:RDStore.LINKTYPE_LICENSE]))
                 }
                 else if(params.generateSlavedLics == "partial") {
                     List<String> licenseKeys = params.list("generateSlavedLicsReference")

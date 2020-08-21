@@ -197,7 +197,8 @@ class SubscriptionsQueryService {
         }
 
         if (params.q?.length() > 0) {
-            Set<String> licenses = License.executeQuery("select concat('"+License.class.name+":',l.id) from License l where genfunc_filter_matcher(l.reference, :name_filter) = true ",[name_filter:params.q])
+            String query = "select concat('"+License.class.name+":',l.id) from License l where genfunc_filter_matcher(l.reference, :name_filter) = true "
+            Set<String> licenses = License.executeQuery(query, [name_filter:params.q])
 
             String licenseFilter = ""
             if(licenses) {
