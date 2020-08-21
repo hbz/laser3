@@ -719,7 +719,7 @@ class AjaxController {
             config = [
                 domain      :'RefdataValue',
                 countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'

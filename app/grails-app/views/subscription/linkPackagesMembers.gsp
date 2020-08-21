@@ -167,13 +167,15 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative"
-                                type="submit" name="processOption"
+                        <button class="ui button negative js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" type="submit" name="processOption"
                                 value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
                         <div class="or" data-text="${message(code:'default.or')}"></div>
-                        <button class="ui button negative "
-                                type="submit" name="processOption"
+                        <button class="ui button negative js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                                data-confirm-term-how="ok" type="submit" name="processOption"
                                 value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
                     </div>
 

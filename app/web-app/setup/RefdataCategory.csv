@@ -5,7 +5,13 @@ access.method.ip,Access Method IP,Access Method IP
 access.point.type,Access Point Type,Access Point Type
 address.type,Art der Adresse,Address Type
 authority,Autorität,Authority
-category.a.f,Kategorie A - F,Category A-F
+category.a.f,Preiskategorie Beck,Price category Beck
+category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
+category.euromonitor,Preiskategorie Euromonitor,Price category Euromonitor
+category.igi,Preiskategorie IGI InfoSci Journals,Price category IGI InfoSci Journals
+category.juris,Preiskategorie juris,Price category juris
+category.unwto,Preiskategorie UNWTO,Price category UNWTO
+category.world.bank,Preiskategorie World Bank,Price category World Bank
 cluster.role,Cluster Role,Cluster Role
 cluster.type,Cluster Type,Cluster Type
 combo.status,Combo Status,Combo Status
