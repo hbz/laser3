@@ -9,7 +9,7 @@
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
-        <semui:totalNumber total="${todoHistoryLinesTotal?:'0'}"/>
+        <semui:totalNumber total="${todoHistoryLinesTotal}"/>
     </h1>
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
