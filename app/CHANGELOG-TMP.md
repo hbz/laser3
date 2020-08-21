@@ -2,6 +2,22 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      21.08.2020  rc1.5       Andreas Bug         korrektes Einladen der Merkmale der Elternlizenz bei Teilnehmer verwalten
+
+2808    21.08.2020  rc1.5       Andreas Bug         eigene Merkmalsgruppen sind in Kindlizenzen konfigurierbar
+
+2806    21.08.2020  rc1.5       Moe     Bug         Umfrage Merkmal kann nicht in Umfrage Bereich erstellt werden
+
+--      21.08.2020 rc1.5        Moe     Feature     Umfrage Jahresringe
+
+--      21.08.2020 rc1.5        Moe     Feature     Anpassung Umfrage-Emailbetreff
+
+2807    21.08.2020  rc1.5       Moe     Bug         Die Ausschüttungsfunktion in Umfragen geht nicht mehr
+
+--      21.08.2020  rc1.5       Andreas Feature     neue Referenzwertkategorien inkl. Werte sowie Lizenz- und Umfragemerkmale eingeführt, Bugfix im Referenzwertauswahldropdown
+
+2805    20.08.2020  rc1.5       Andreas Bug         Löschungsbestätigungen an drei Stellen eingefügt
+
 --      19.08.2020  rc1.5       David   Feature     Improved management of identifier namespaces
 
 2795    18.08.2020  rc1.5       Moe     Feature     alle Zugangskonfigurationen für Teilnehmer in einer Lizenz exportieren

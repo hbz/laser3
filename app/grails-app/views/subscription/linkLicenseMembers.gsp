@@ -90,7 +90,9 @@
 
             <div class="eight wide field" style="text-align: right;">
                 <div class="ui buttons">
-                    <button class="ui button negative"
+                    <button class="ui button negative js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
+                            data-confirm-term-how="ok" action="processUnLinkLicenseMembers"
                             type="submit" name="processOption"
                             value="unlinkLicense">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</button>
                 </div>

@@ -13,6 +13,12 @@ class RDConstants {
     public static final String AUTHORITY              = 'authority'
 
     public static final String CATEGORY_A_F           = 'category.a.f'
+    public static final String CATEGORY_BAUTABELLEN   = 'category.bautabellen'
+    public static final String CATEGORY_EUROMONITOR   = 'category.euromonitor'
+    public static final String CATEGORY_IGI           = 'category.igi'
+    public static final String CATEGORY_JURIS         = 'category.juris'
+    public static final String CATEGORY_UNWTO         = 'category.unwto'
+    public static final String CATEGORY_WORLD_BANK    = 'category.world.bank'
     public static final String CLUSTER_ROLE           = 'cluster.role'
     public static final String CLUSTER_TYPE           = 'cluster.type'
     public static final String COMBO_STATUS           = 'combo.status'

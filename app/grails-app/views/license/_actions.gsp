@@ -41,9 +41,9 @@
             </g:else>
 
             <g:if test="${actionName == 'show'}">
-                <g:if test="${(license.getLicensingConsortium()?.id == org.id) || (license.getCalculatedType() == CalculatedType.TYPE_LOCAL && license.getLicensee()?.id == org.id)}">
+                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')}">
                     <div class="divider"></div>
-                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
+                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>
 
                 <g:if test="${editable}">

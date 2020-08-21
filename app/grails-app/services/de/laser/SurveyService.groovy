@@ -671,8 +671,8 @@ class SurveyService {
                     Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
                     String currentServer = ServerUtils.getCurrentServer()
-                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
-                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + messageSource.getMessage('email.subject.surveysParticipationFinish', null, language) +  " (" + participationFinish.sortname + ")")
+                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
 
                         try {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {
