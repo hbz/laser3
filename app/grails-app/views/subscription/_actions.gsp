@@ -201,11 +201,10 @@
             </g:if>
 
             <g:if test="${actionName == 'show'}">
-                <g:if test="${editable}">
-                    <g:if test="${accessService.checkMinUserOrgRole(user,org,"INST_EDITOR")}">
-                        <div class="divider"></div>
-                        <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
-                    </g:if>
+                <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
+                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')}">
+                    <div class="divider"></div>
+                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>
 
                 <g:if test="${editable}">

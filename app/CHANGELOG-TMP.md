@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      21.08.2020  rc1.5       Andreas Bug         korrektes Einladen der Merkmale der Elternlizenz bei Teilnehmer verwalten
+
+2808    21.08.2020  rc1.5       Andreas Bug         eigene Merkmalsgruppen sind in Kindlizenzen konfigurierbar
+
 2806    21.08.2020  rc1.5       Moe     Bug         Umfrage Merkmal kann nicht in Umfrage Bereich erstellt werden
 
 --      21.08.2020 rc1.5        Moe     Feature     Umfrage Jahresringe

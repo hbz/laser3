@@ -11,6 +11,7 @@
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: subscriptionInstance,
+            editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
             availPropDefGroups: availPropDefGroups
     ]}" />
 
