@@ -19,7 +19,6 @@ class TitleController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'title', action: 'list', params: params
-        return // ----- deprecated
     }
 
     @Secured(['ROLE_USER'])
