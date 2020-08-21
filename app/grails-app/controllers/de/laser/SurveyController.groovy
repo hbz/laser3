@@ -987,16 +987,13 @@ class SurveyController {
 
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
-
-            selectedMembers.each { id ->
-                SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(Org.get(Long.parseLong(id)), result.surveyConfig)
-                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
-                if(surveyCostItem){
+            List<CostItem> surveyCostItems = CostItem.executeQuery('select costItem from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and surOrg.org.id in (:orgIDs) and costItem.costItemStatus != :status', [survConfig:  result.surveyConfig, orgIDs: selectedMembers.collect{Long.parseLong(it)}, status: RDStore.COST_ITEM_DELETED])
+            surveyCostItems.each { surveyCostItem ->
 
                     if(params.percentOnOldPrice){
                         Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
-                        Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(Org.get(Long.parseLong(id)))
-                        CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, contextService.getOrg(), RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+                        Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
+                        CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
                         surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency*(1+(percentOnOldPrice/100)) : surveyCostItem.costInBillingCurrency
                     }
                     else
@@ -1842,7 +1839,7 @@ class SurveyController {
                     token       : params.pd_name,
                     category    : PropertyDefinition.SUR_PROP,
                     type        : params.pd_type,
-                    rdc         : rdc.getDesc(),
+                    rdc         : rdc ? rdc.getDesc() : null,
                     tenant      : result.institution.globalUID,
                     i10n        : [
                             name_de: params.pd_name,
