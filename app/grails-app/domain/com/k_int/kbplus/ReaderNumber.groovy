@@ -3,8 +3,6 @@ package com.k_int.kbplus
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
-import javax.persistence.Transient
-
 class ReaderNumber {
 
     /*@RefdataAnnotation(cat = '?')
@@ -26,19 +24,13 @@ class ReaderNumber {
     final static String READER_NUMBER_SCIENTIFIC_STAFF = 'Scientific staff'
     final static String READER_NUMBER_FTE = 'FTE'
     final static String READER_NUMBER_STUDENTS = 'Students'
-    final static Set<String> CONSTANTS_WITH_SEMESTER = [READER_NUMBER_STUDENTS,READER_NUMBER_SCIENTIFIC_STAFF,READER_NUMBER_FTE]
-    final static Set<String> CONSTANTS_WITH_DUE_DATE = [READER_NUMBER_PEOPLE,READER_NUMBER_USER]
+    final static Set<String> CONSTANTS_HIGH_SCHOOL = [READER_NUMBER_STUDENTS, READER_NUMBER_SCIENTIFIC_STAFF, READER_NUMBER_FTE]
+    final static Set<String> CONSTANTS_STATE_LIBRARY = [READER_NUMBER_USER] //for further extension
+    final static Set<String> CONSTANTS_PUBLIC_LIBRARY = [READER_NUMBER_PEOPLE] //for further extension
 
     static constraints = {
         //type            (blank:false)
-        referenceGroup(blank: false, validator: { String val, ReaderNumber obj ->
-            if (val in RefdataValue.findAllByValueInListAndOwner(CONSTANTS_WITH_SEMESTER, RefdataCategory.findByDesc(RDConstants.NUMBER_TYPE)) && (!obj.semester || obj.dueDate)) {
-                return ['use students, FTE or scientific staff only with semester']
-            }
-            if ((val in RefdataValue.findAllByValueInListAndOwner(CONSTANTS_WITH_DUE_DATE, RefdataCategory.findByDesc(RDConstants.NUMBER_TYPE)) || !RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where :value in (rdv.value,rdv.value_de,rdv.value_en) and rdc.desc = :desc', [value: val, desc: RDConstants.NUMBER_TYPE])) && (!obj.dueDate || obj.semester)) {
-                return ['use user, people or non-refdata number types only with due date']
-            }
-        })
+        referenceGroup(blank: false)
         value(nullable: true)
         semester(nullable: true, validator: { RefdataValue val, ReaderNumber obj ->
             if (obj.dueDate && obj.semester) {

@@ -4,17 +4,21 @@
     SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
     Date startOfYear = de.laser.helper.DateUtil.getSDF_ymd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
     Set<String> preloadGroups
-    if(withDueDate)
-        preloadGroups = ReaderNumber.CONSTANTS_WITH_DUE_DATE
-    else if(withSemester)
-        preloadGroups = ReaderNumber.CONSTANTS_WITH_SEMESTER
+    switch(formId) {
+        case 'newForUni': preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL
+            break
+        case 'newForPublic': preloadGroups = ReaderNumber.CONSTANTS_PUBLIC_LIBRARY
+            break
+        case 'newForState': preloadGroups = ReaderNumber.CONSTANTS_STATE_LIBRARY
+            break
+    }
     List<Map<String,Object>> referenceGroups = []
     if(preloadGroups) {
         preloadGroups.each { String groupConst ->
             RefdataValue group = RefdataValue.getByValueAndCategory(groupConst,RDConstants.NUMBER_TYPE)
             if(group)
                 referenceGroups << [id:group.id,value:group.getI10n("value"),expl:group.getI10n("expl")]
-            else println "eee"
+            //else println "eee"
         }
     }
 %>
@@ -28,7 +32,7 @@
                     <label for="referenceGroup">
                         <g:message code="readerNumber.referenceGroup.label" />
                     </label>
-                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup"
+                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
                                                         from="${referenceGroups}"
                                                         optionKey="id" optionValue="value" optionExpl="expl" noSelection="${message(code:'default.select.choose.label')}"
                                                         value="${numbersInstance?.referenceGroup}"
