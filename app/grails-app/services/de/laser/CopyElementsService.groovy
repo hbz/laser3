@@ -10,6 +10,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.apache.lucene.index.DocIDMerger
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -136,22 +137,22 @@ class CopyElementsService {
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
-        List<Subscription> subsToCompare = [sourceObject]
+        List<Object> objectsToCompare = [sourceObject]
         if (params.targetObjectId) {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            subsToCompare.add(targetObject)
+            objectsToCompare.add(targetObject)
         }
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
         }
         Org contextOrg = contextService.org
-        subsToCompare.each{ Subscription sub ->
+        objectsToCompare.each{ Object obj ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
+            customProperties = comparisonService.buildComparisonTree(customProperties,obj,obj.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,obj,obj.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
             result.privateProperties = privateProperties
         }
         result
@@ -552,12 +553,11 @@ class CopyElementsService {
         def flash = grailsWebRequest.attributes.getFlashScope(request)
 
         Object targetObject = null
-        List auditProperties = params.list('auditProperties')
-        List<Object> subsToCompare = [sourceObject]
         if (params.targetObjectId) {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            subsToCompare.add(targetObject)
         }
+
+        List auditProperties = params.list('auditProperties')
 
         List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('copyObject.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
@@ -661,7 +661,14 @@ class CopyElementsService {
 
     boolean copyTasks(Object sourceObject, def toCopyTasks, Object targetObject, def flash) {
         toCopyTasks.each { tsk ->
-            def task = Task.findBySubscriptionAndId(sourceObject, tsk)
+            def task
+
+            if(sourceObject instanceof Subscription) {
+                task = Task.findBySubscriptionAndId(sourceObject, tsk)
+            }
+            else if (sourceObject instanceof License){
+                task = Task.findByLicenseAndId(sourceObject, tsk)
+            }
             if (task) {
                 if (task.status != RDStore.TASK_STATUS_DONE) {
                     Task newTask = new Task()
@@ -762,13 +769,15 @@ class CopyElementsService {
     }
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties){
-        SubscriptionProperty targetProp
-
+        String classString = targetObject.getClass().toString()
+        String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
+        ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
+        def targetProp
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetObject.propertySet.find { it.typeId == sourceProp.typeId && sourceProp.tenant == sourceProp.tenant }
+            targetProp = targetObject.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
-                targetProp = new SubscriptionProperty(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
+                targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.isPublic = sourceProp.isPublic //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
@@ -776,9 +785,9 @@ class CopyElementsService {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
 
-                        Subscription.findAllByInstanceOf(targetObject).each { Subscription member ->
+                        targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
 
-                            def existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, targetProp)
+                            def existingProp =  targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
                             if (! existingProp) {
 
                                 // multi occurrence props; add one additional with backref
@@ -789,7 +798,7 @@ class CopyElementsService {
                                     additionalProp.save(flush: true)
                                 }
                                 else {
-                                    def matchingProps = SubscriptionProperty.findByOwnerAndType(member, targetProp.type)
+                                    def matchingProps =  targetProp.getClass().findByOwnerAndType(member, targetProp.type)
                                     // unbound prop found with matching type, set backref
                                     if (matchingProps) {
                                         matchingProps.each { memberProp ->
@@ -808,7 +817,7 @@ class CopyElementsService {
                             }
                         }
 
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionProperty.class.name, sourceProp.id)
+                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
                         auditConfigs.each {
                             AuditConfig ac ->
                                 //All ReferenceFields were copied!
@@ -836,10 +845,8 @@ class CopyElementsService {
                         prop2.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
                     }
                 }
+                prop.delete(flush: true)
             }
-
-        int anzCP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = true",[properties: properties, org: contextService.org])
-        int anzPP = SubscriptionProperty.executeUpdate("delete from SubscriptionProperty p where p in (:properties) and p.tenant = :org and p.isPublic = false",[properties: properties, org: contextService.org])
     }
 
 
@@ -914,7 +921,7 @@ class CopyElementsService {
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
         sourceObject.orgRelations?.each { or ->
-            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
+            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
                 if (targetObject.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                     Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
@@ -926,7 +933,12 @@ class CopyElementsService {
                     //Vererbung ausschalten
                     newOrgRole.sharedFrom  = null
                     newOrgRole.isShared = false
-                    newOrgRole.sub = targetObject
+                    if(sourceObject instanceof Subscription) {
+                        newOrgRole.sub = targetObject
+                    }
+                    if(sourceObject instanceof License) {
+                        newOrgRole.lic = targetObject
+                    }
                     save(newOrgRole, flash)
                 }
             }
@@ -1098,9 +1110,10 @@ class CopyElementsService {
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()
         def flash = grailsWebRequest.attributes.getFlashScope(request)
-        if (! sourceObject || !targetObject) {
-            if (!sourceObject) flash.error += messageSource.getMessage('copyElementsIntoObject.noSubscriptionSource', null, locale) + '<br />'
-            if (!targetObject)  flash.error += messageSource.getMessage('copyElementsIntoObject.noSubscriptionTarget', null, locale) + '<br />'
+        if (!sourceObject || !targetObject) {
+            Object[] args = [messageSource.getMessage("${sourceObject.getClass().getSimpleName().toLowerCase()}.label", null, locale)]
+            if (!sourceObject) flash.error += messageSource.getMessage('copyElementsIntoObject.noSourceObject', args, locale) + '<br />'
+            if (!targetObject)  flash.error += messageSource.getMessage('copyElementsIntoObject.noTargetObject', args, locale) + '<br />'
             return false
         }
         return true

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 <br>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'copyElementsIntoObject.label')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</h1>
 
 <semui:messages data="${flash}"/>
 

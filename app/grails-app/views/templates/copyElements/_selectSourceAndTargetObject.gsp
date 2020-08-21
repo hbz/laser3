@@ -9,7 +9,7 @@
             method="post" class="ui form newLicence">
         <div class="fields" style="justify-content: flex-end;">
             <div class="eight wide field">
-                <label>${message(code: 'copyElementsIntoObject.sourceObject.name')}: </label>
+                <label>${message(code: 'copyElementsIntoObject.sourceObject.name', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}: </label>
                 <g:select class="ui search selection dropdown"
                       name="sourceObjectId"
                       from="${((List<Object>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
@@ -19,7 +19,7 @@
                       />
             </div>
             <div class="eight wide field">
-                <label>${message(code: 'copyElementsIntoObject.targetObject.name')}: </label>
+                <label>${message(code: 'copyElementsIntoObject.targetObject.name', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}: </label>
                 <g:if test="${sourceObject instanceof com.k_int.kbplus.Subscription}">
                     <div class="ui checkbox">
                         <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
