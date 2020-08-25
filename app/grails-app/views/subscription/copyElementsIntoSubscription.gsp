@@ -47,7 +47,6 @@
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps la-clear-before">
             <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
-                <div class="content">
                     <div class="content" >
                         <div class="title">
                             <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: null]}">
@@ -70,7 +69,6 @@
 
                         </div>
                     </div>
-                </div>
             </div>
             <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
@@ -222,6 +220,6 @@
     <g:else>
         <g:render template="/templates/copyElements/copyElements" />
     </g:else>
-    <g:javascript src="copyPropertiesCompare.js"/>
+    <g:render template="/templates/copyElements/copyElementsJS"/>
 </body>
 </html>

@@ -207,6 +207,6 @@
     <g:else>
         <g:render template="/templates/subscription/copyElements" />
     </g:else>
-    <g:javascript src="copyPropertiesCompare.js"/>
+    <g:render template="/templates/copyElements/copyElementsJS"/>
 </body>
 </html>

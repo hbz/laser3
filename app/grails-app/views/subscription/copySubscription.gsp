@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.PendingChangeConfiguration; com.k_int.kbplus.Person;" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -12,339 +12,80 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
-    <g:if test="${subscriptionInstance}">
-        <semui:crumb action="show" controller="subscription" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
+    <g:if test="${sourceObject}">
+        <semui:crumb action="show" controller="subscription" id="${sourceObject.id}" text="${sourceObject.name}" />
         <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
 </semui:breadcrumbs>
+<br>
 
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copySubscription')}: ${sourceObject.name}</h1>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${subscriptionInstance.name}</h1>
-<h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'myinst.copySubscription')}</h2>
 
 <semui:messages data="${flash}"/>
 
-<semui:form>
-    <g:form action="processcopySubscription" controller="subscription" method="post" class="ui form newSubscription">
+<% Map params = [:]
+if (sourceObjectId) params << [sourceObjectId: GenericOIDService.getOID(sourceObject)]
+if (targetObjectId)   params << [targetObjectId: GenericOIDService.getOID(targetObject)]
+%>
 
+<div class="ui tablet stackable steps la-clear-before">
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+            <div class="content" >
+                <div class="title">
+                        ${message(code: 'copyElementsIntoObject.general_data.label')}
+                </div>
+                <div class="description">
+                    <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
+                    <i class="dolly icon"></i>${message(code:'subscription.form.label')}
+                    <i class="box icon"></i>${message(code:'subscription.resource.label')}
+                    <br>
+                    <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
+                    <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
+                    <br>
+                    <i class="balance scale icon"></i>${message(code: 'license.label')}
+                    <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
+                    <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
+                    <br>
+                    <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 
-        <div class="field required">
-            <label>${message(code: 'myinst.emptySubscription.name')}</label>
-            <input required type="text" name="sub_name" value="" placeholder=""/>
+                </div>
         </div>
+    </div>
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+        <div class="content">
+            <div class="title">
+                    ${message(code: 'copyElementsIntoObject.attachements.label')}
+            </div>
+            <div class="description">
+                <i class="file outline icon"></i>${message(code: 'default.documents.label')}
+                <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
+                <i class="checked calendar icon"></i>${message(code: 'menu.institutions.tasks')}
+            </div>
+        </div>
+    </div>
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''} step">
+        <div class="content">
+            <div class="title">
+                    ${message(code: 'properties')}
+            </div>
+            <div class="description">
+                <i class="tags icon"></i>${message(code: 'properties')}
+            </div>
+        </div>
+    </div>
+</div>
 
+<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+    <g:render template="/templates/copyElements/copyDocsAndTasks" />
+</g:if>
+<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+    <g:render template="/templates/copyElements/copyPropertiesCompare" />
+</g:elseif>
+<g:else>
+    <g:render template="/templates/copyElements/copyElements" />
+</g:else>
+<g:render template="/templates/copyElements/copyElementsJS"/>
 
-        <hr>
-        <table class="ui celled table">
-            <tbody>
-
-            <input type="hidden" name="baseSubscription" value="${params.id}"/>
-
-            <tr>
-                <th>${message(code:'default.select.label')}</th>
-                <th>${message(code:'subscription.property')}</th>
-                <th>${message(code:'default.value.label')}</th>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyDates" value="${true}" /></th>
-                <th>${message(code:'subscription.copyDates')}</th>
-                <td>
-                    <b>${message(code:'subscription.copyDates.startDate')}</b>:&nbsp<g:if test="${ ! subscription.startDate}">-</g:if><g:formatDate date="${subscription.startDate}" format="${message(code:'default.date.format.notime')}"/> &nbsp
-                    <b>${message(code:'subscription.copyDates.endDate')}</b>:&nbsp<g:if test="${ ! subscription.endDate}">-</g:if><g:formatDate date="${subscription.endDate}" format="${message(code:'default.date.format.notime')}"/>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyStatus" value="${true}" /></th>
-                <th>${message(code:'subscription.copyStatus')}</th>
-                <td>
-                    <b>${message(code:'subscription.status.label')}</b>:&nbsp${subscription.status.getI10n('value')}
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyKind" value="${true}" /></th>
-                <th>${message(code:'subscription.copyKind')}</th>
-                <td>
-                    <b>${message(code:'subscription.kind.label')}</b>:&nbsp${subscription.kind?.getI10n('value')}
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyForm" value="${true}" /></th>
-                <th>${message(code:'subscription.copyForm')}</th>
-                <td>
-                    <b>${message(code:'subscription.form.label')}</b>:&nbsp${subscription.form?.getI10n('value')}
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyResource" value="${true}" /></th>
-                <th>${message(code:'subscription.copyResource')}</th>
-                <td>
-                    <b>${message(code:'subscription.resource.label')}</b>:&nbsp${subscription.resource?.getI10n('value')}
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyPublicForApi" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPublicForApi')}</th>
-                <td>
-                    <b>${message(code:'subscription.isPublicForApi.label')}</b>:&nbsp${subscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyPerpetualAccess" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPerpetualAccess')}</th>
-                <td>
-                    <b>${message(code:'subscription.hasPerpetualAccess.label')}</b>:&nbsp${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                </td>
-            </tr>
-            <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
-                <tr>
-                    <th><g:checkBox name="subscription.copylinktoSubscription" value="${true}" /></th>
-                    <th>${message(code:'subscription.copylinktoSubscription')}</th>
-                    <td>
-                        <b>${message(code:'subscription.linktoSubscription')}:</b>
-                        <g:if test="${subscription.instanceOf}">
-                            <g:link controller="subscription" action="show" target="_blank" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
-                        </g:if>
-                        <g:else>
-                            ${message(code:'subscription.linktoSubscriptionEmpty')}
-                        </g:else>
-                    </td>
-                </tr>
-            </g:if>
-            <tr>
-                <th><g:checkBox name="subscription.copyLicense" value="${true}" /></th>
-                <th>${message(code:'subscription.copyLicense')}</th>
-                <td>
-                    <g:each in="${licenses}" var="license">
-                        <b>${message(code:'subscription.linktoLicense')}:</b>
-                        <g:link controller="license" action="show" target="_blank" id="${license.id}">${license.reference}</g:link>
-                        <g:if test="${license.licenseCategory}">
-                            (${license.licenseCategory.getI10n("value")})
-                        </g:if><br>
-                    </g:each>
-                    <g:if test="${!licenses}">
-                        ${message(code:'subscription.linktoLicenseEmpty')}
-                    </g:if>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyPackages" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPackages')}</th>
-                <td>
-                    <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
-                        <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="package" action="show" target="_blank"
-                                id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-
-                        <g:if test="${sp.pkg?.contentProvider}">
-                            (${sp.pkg?.contentProvider?.name})
-                        </g:if><br>
-                    </g:each>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyPackageSettings" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPackageSettings')}</th>
-                <td>
-                    <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                    <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
-                        <b>${message(code: 'subscription.packages.config.header')} - ${sp.pkg.name}:</b>
-                        <ul>
-                            <g:each in="${sp.pendingChangeConfig.sort { it.settingKey }}" var="pcc">
-                                <li>
-                                    <g:message code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR')}">
-                                        <g:if test="${!(pcc.settingKey in excludes)}">
-                                            <g:if test="${auditService.getAuditConfig(subscription,pcc.settingKey)}">
-                                                <span data-tooltip="${message(code:'subscription.packages.auditable')}"><i class="ui thumbtack icon"></i></span>
-                                            </g:if>
-                                        </g:if>
-                                    </g:if>
-                                </li>
-                            </g:each>
-                        </ul>
-                    </g:each>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyLinks" value="${true}" /></th>
-                <th>${message(code:'subscription.copyLinks')}</th>
-                <td>
-                    <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
-                        <g:if test="${role.org}">
-                            <b>${role.roleType?.getI10n("value")}:</b> <g:link controller="organisation"
-                                                                                action="show" target="_blank"
-                                                                                id="${role.org.id}">${role.org.name}</g:link><br>
-                        </g:if>
-                    </g:each>
-                </td>
-            </tr>
-
-            <tr>
-                <th><g:checkBox name="subscription.copySpecificSubscriptionEditors" value="${true}" /></th>
-                <th>${message(code:'subscription.copySpecificSubscriptionEditors')}</th>
-                <td>
-                    <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
-                        <g:if test="${role.org}">
-                            <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', contextService.getOrg()) ||
-                                    Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor')}">
-                            <%-- public --%>
-                                <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor')}"
-                                        var="resp">
-                                        <span class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'address.public')}"
-                                              data-position="top right">
-                                            <i class="address card icon"></i>
-                                        </span>
-                                        <g:link controller="person" action="show"
-                                                id="${resp.id}">${resp}</g:link>
-                                        (<b><i class="university icon"></i>&nbsp${role.roleType?.getI10n("value")}:</b>
-                                        <g:link controller="organisation" action="show" target="_blank"
-                                                id="${role.org.id}">${role.org.name}</g:link>)
-                                </g:each>
-                            <%-- public --%>
-                            <%-- private --%>
-
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', contextService.getOrg())}"
-                                        var="resp">
-                                        <span class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'address.private')}"
-                                              data-position="top right">
-                                            <i class="address card outline icon"></i>
-                                        </span>
-                                        <g:link controller="person" action="show"
-                                                id="${resp.id}">${resp}</g:link>
-                                        (<b><i class="university icon"></i>&nbsp${role.roleType?.getI10n("value")}:</b>
-                                        <g:link controller="organisation" action="show" target="_blank"
-                                                id="${role.org.id}">${role.org.name}</g:link>)
-                                </g:each>
-                            <%-- private --%>
-                            </g:if>
-                        </g:if>
-                    </g:each>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyEntitlements" value="${true}"/></th>
-                <th>${message(code: 'subscription.copyEntitlements')}</th>
-                <td><b>${message(code: 'issueEntitlement.countSubscription')}</b> <g:link controller="subscription" action="index" target="_blank" id="${subscription.id}">${subscription.issueEntitlements.findAll {
-                    it.status != RDStore.TIPP_STATUS_DELETED
-                }.size()}</g:link>
-
-                    %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
-                                                <g:if test="${ie.status != RDStore.TIPP_STATUS_DELETED}">
-                    ${ie.tipp.title.title}
-                </g:if>
-                </g:each>--}%
-                </td>
-            </tr>
-
-            <tr>
-                <th><g:checkBox name="subscription.copyIssueEntitlementGroupItem" value="${true}"/></th>
-                <th>${message(code: 'subscription.copyIssueEntitlementGroupItem')}</th>
-                <td><b>${message(code: 'subscription.details.ieGroups')}:</b><br>
-                    <ul>
-                        <g:each in="${subscription.ieGroups.sort{it.name}}" var="titleGroup" status="i">
-                            <li>
-                                <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
-                                ${titleGroup.name} (${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items.size()})
-                                    </g:link>
-                            </li>
-                        </g:each>
-                    </ul>
-                </td>
-            </tr>
-
-            <tr>
-                <th><g:checkBox name="subscription.copyCustomProperties" value="${true}" /></th>
-                <th>${message(code:'subscription.copyCostumProperty')}</th>
-                <td>${message(code:'subscription.properties')}<br>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyPrivateProperties" value="${true}" /></th>
-                <th>${message(code:'subscription.copyPrivateProperty')}</th>
-                <td>${message(code:'subscription.properties.private')} ${contextOrg.name}<br>
-                </td>
-            </tr>
-
-            <tr>
-                <th><g:checkBox name="subscription.copyIds" value="${true}" /></th>
-                <th>${message(code:'subscription.copyIds')}</th>
-                <td>
-                    <g:each in="${subscription.ids.sort { it.ns.ns }}"
-                            var="id">
-                        <span class="ui small blue image label">
-                            ${id.ns.ns}: <div class="detail">${id.value}</div>
-                        </span>
-                    </g:each>
-                </td>
-            </tr>
-
-            <tr>
-                <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
-                <th>${message(code:'subscription.copyDocs')}</th>
-                <td>
-                    <g:each in="${subscription.documents.sort{it.owner?.title}}" var="docctx">
-                        <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                <g:if test="${docctx.owner?.title}">
-                                    ${docctx.owner.title}
-                                </g:if>
-                                <g:else>
-                                    <g:if test="${docctx.owner?.filename}">
-                                        ${docctx.owner.filename}
-                                    </g:if>
-                                    <g:else>
-                                        ${message(code:'template.documents.missing')}
-                                    </g:else>
-                                </g:else>
-
-                            </g:link>(${docctx.owner.type.getI10n("value")}) <br>
-                        </g:if>
-                    </g:each>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyAnnouncements" value="${true}" /></th>
-                <th>${message(code:'subscription.copyAnnouncements')}</th>
-                <td>
-                    <g:each in="${subscription.documents.sort{it.owner?.title}}" var="docctx">
-                        <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
-                            <g:if test="${docctx.owner.title}">
-                                <b>${docctx.owner.title}</b>
-                            </g:if>
-                            <g:else>
-                                <b>Ohne Titel</b>
-                            </g:else>
-
-                            (${message(code:'template.notes.created')}
-                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>)
-
-                            <br>
-                        </g:if>
-                    </g:each>
-                </td>
-            </tr>
-            <tr>
-                <th><g:checkBox name="subscription.copyTasks" value="${true}" /></th>
-                <th>${message(code:'subscription.copyTasks')}</th>
-                <td>
-                    <g:each in="${tasks}" var="tsk">
-                        <div id="summary" class="summary">
-                        <b>${tsk.title}</b> (${message(code:'task.endDate.label')}
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>)
-                        <br>
-                    </g:each>
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
-    </g:form>
-</semui:form>
 </body>
 </html>

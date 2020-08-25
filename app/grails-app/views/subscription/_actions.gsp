@@ -83,10 +83,10 @@
                 <% isCopySubEnabled = true %>
             </sec:ifAnyGranted>
             <g:if test="${isCopySubEnabled}">
-                <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
-                <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+                <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:else>
 
             <g:if test="${(accessService.checkPerm("ORG_INST") && !subscriptionInstance.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
@@ -94,9 +94,9 @@
             </g:if>
 
             <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: params.id]}" message="myinst.copyMyElements" />
+                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetObjectId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(navPrevSubscription[0]), targetObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElementsFromPrevSubscription" />
                 </g:if>
             </g:if>
 

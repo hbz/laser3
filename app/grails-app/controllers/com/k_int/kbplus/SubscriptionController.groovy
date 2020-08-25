@@ -4599,37 +4599,10 @@ class SubscriptionController
         result
     }
 
-    private getMySubscriptions_readRights(){
-        def params = [:]
-        List result
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result
-    }
-    private getMySubscriptions_writeRights(){
-        List result
-        Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result
-    }
-
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def copyElementsIntoSubscription() {
         Map<String, Object> result = [:]
         result.user = contextService.user
@@ -4660,6 +4633,8 @@ class SubscriptionController
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
+        if (params.copyObject) {result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)}
+
         result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
@@ -4677,7 +4652,7 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copyElementsService.copySubElements_DatesOwnerRelations(params)
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                 if (params.isRenewSub){
                     params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << copyElementsService.loadDataFor_PackagesEntitlements(params)
@@ -4686,7 +4661,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copyElementsService.copySubElements_PackagesEntitlements(params)
+                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
                 if (params.isRenewSub){
                     params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
@@ -4695,7 +4670,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                 if (params.isRenewSub){
                     if (!params.fromSurvey && result.isSubscriberVisible){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
@@ -4709,7 +4684,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copyElementsService.copySubElements_Subscriber(params)
+                result << copyElementsService.copyObjectElements_Subscriber(params)
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << copyElementsService.loadDataFor_Properties(params)
@@ -4718,7 +4693,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (params.isRenewSub && result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4734,7 +4709,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4797,17 +4772,17 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copySubElements_DocsAnnouncementsTasks();
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks();
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
 
                 break;
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copySubElements_Properties();
+                result << copyElementsService.copyObjectElements_Properties();
                 result << copyElementsService.loadDataFor_Properties()
 
                 break;
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copySubElements_Properties();
+                result << copyElementsService.copyObjectElements_Properties();
                 if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4828,77 +4803,107 @@ class SubscriptionController
     }
 
 
-
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def copySubscription() {
+        Map<String, Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
+        flash.error = ""
+        flash.message = ""
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+
+        if (!result.editable) {
             response.sendError(401); return
         }
 
-        // tasks
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscriptionInstance)
-        def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
-        result << preCon
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+        result.copyObject = true
 
+        if (params.name && !result.targetObject) {
+            String sub_name = params.name ?: "Kopie von ${result.sourceObject.name}"
 
-        result.visibleOrgRelations = []
-        result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                result.visibleOrgRelations << or
+            Object targetObject = new Subscription(
+                    name: sub_name,
+                    status: RDStore.SUBSCRIPTION_NO_STATUS,
+                    identifier: java.util.UUID.randomUUID().toString(),
+                    type: result.sourceObject.type,
+                    isSlaved: result.sourceObject.isSlaved
+            )
+            //Copy InstanceOf
+            if (params.targetObject?.copylinktoSubscription) {
+                targetObject.instanceOf = result.sourceObject?.instanceOf ?: null
             }
-        }
 
-        // -- private properties
 
-        //result.authorizedOrgs = result.user?.authorizedOrgs
-        //result.contextOrg = contextService.getOrg()
+            if (!targetObject.save()) {
+                log.error("Problem saving subscription ${targetObject.errors}");
+            }else {
+                result.targetObject = targetObject
+                params.targetObjectId = GenericOIDService.getOID(targetObject)
 
-        // create mandatory OrgPrivateProperties if not existing
-
-        Set<PropertyDefinition> mandatories = []
-        List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.institution)
-        if (ppd) {
-            mandatories << ppd
-        }
-        mandatories.flatten().each { pd ->
-            if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
-                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
-
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors.toString())
-                } else {
-                    log.debug("New subscription private property created via mandatory: " + newProp.type.name)
-                }
-            }
-        }
-
-        // -- private properties
-
-        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
-        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-
-        result.visiblePrsLinks = []
-
-        result.subscriptionInstance.prsLinks.each { pl ->
-            if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic) {
-                    result.visiblePrsLinks << pl
-                } else {
-                    // nasty lazy loading fix
-                    result.user.authorizedOrgs.each { ao ->
-                        if (ao.getId() == pl.prs.tenant.getId()) {
-                            result.visiblePrsLinks << pl
-                        }
+                //Copy References
+                result.sourceObject.orgRelations.each { OrgRole or ->
+                    if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id])) {
+                        OrgRole newOrgRole = new OrgRole()
+                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        newOrgRole.sub = result.targetObject
+                        newOrgRole.save()
                     }
                 }
+
             }
         }
 
-        result
 
+        switch (params.workFlowPart) {
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
+                if(result.targetObject) {
+                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                }
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                break
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                result << copyElementsService.loadDataFor_Properties(params)
+                break
+            case CopyElementsService.WORKFLOW_END:
+                result << copyElementsService.copyObjectElements_Properties(params)
+                if (result.targetObject){
+                        redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
+                }
+                break
+            default:
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                break
+        }
+
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+
+        result
     }
 
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def processcopySubscription() {
 
         params.id = params.baseSubscription

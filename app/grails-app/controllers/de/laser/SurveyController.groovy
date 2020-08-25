@@ -4810,7 +4810,7 @@ class SurveyController {
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copySubElements_DatesOwnerRelations()
+                result << copyObjectElements_DatesOwnerRelations()
                 if (params.isRenewSub){
                     params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
@@ -4819,7 +4819,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks()
+                result << copyObjectElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
                     if (result.isSubscriberVisible){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
@@ -4833,7 +4833,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copySubElements_Subscriber()
+                result << copyObjectElements_Subscriber()
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << loadDataFor_Properties()
@@ -4842,7 +4842,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties()
+                result << copyObjectElements_Properties()
                 if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
@@ -4852,7 +4852,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
-                result << copySubElements_Properties()
+                result << copyObjectElements_Properties()
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
