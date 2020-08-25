@@ -2,7 +2,7 @@
 ${message(code: 'email.text.title', locale: language)} ${userName},
 
 ${message(code: 'email.survey.text', locale: language)}
-${survey.type.getI10n('value')} - ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.startDate}"/> - <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.endDate}"/>)
+${escapeService.replaceUmlaute(survey.type.getI10n('value'))} - ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.startDate}"/> - <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${survey.endDate}"/>)
 
 ${survey.isMandatory ? message(code: 'email.survey.text.isMandatory', locale: language) : ''}
 
