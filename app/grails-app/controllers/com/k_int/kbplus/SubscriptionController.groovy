@@ -4843,7 +4843,8 @@ class SubscriptionController
                     status: RDStore.SUBSCRIPTION_NO_STATUS,
                     identifier: java.util.UUID.randomUUID().toString(),
                     type: result.sourceObject.type,
-                    isSlaved: result.sourceObject.isSlaved
+                    isSlaved: result.sourceObject.isSlaved,
+                    administrative: result.sourceObject.administrative
             )
             //Copy InstanceOf
             if (params.targetObject?.copylinktoSubscription) {
@@ -4900,6 +4901,7 @@ class SubscriptionController
         result
     }
 
+    @Deprecated
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -4912,7 +4914,7 @@ class SubscriptionController
             response.sendError(401); return
         }
 
-        Subscription baseSubscription = Subscription.get(params.baseSubscription)
+        /*Subscription baseSubscription = Subscription.get(params.baseSubscription)
 
         if (baseSubscription) {
 
@@ -5171,7 +5173,7 @@ class SubscriptionController
 
                 redirect controller: 'subscription', action: 'show', params: [id: newSubscriptionInstance.id]
             }
-        }
+        }*/
 
     }
 
