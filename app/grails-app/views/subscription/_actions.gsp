@@ -144,31 +144,27 @@
                                            %{--message="menu.institutions.imp_renew"/>--}%
                 %{--</g:if>--}%
 
-                %{--<g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">--}%
-                    %{--<semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"--}%
-                                               %{--params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>--}%
-                %{--</g:if>--}%
                 %{--<div class="divider"></div>--}%
             %{--</sec:ifAnyGranted>--}%
 
             <g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <div class="divider"></div>
                 <g:if test="${previousSubscriptions}">
-                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
+                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                 </g:if>
                 <g:else>
-                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Consortia"
+                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
                                            params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
                 </g:else>
             </g:if>
             <g:if test ="${subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
                 <g:if test ="${previousSubscriptions}">
-                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Local"
-                                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
+                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
                 </g:if>
                 <g:else>
-                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Local"
+                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>

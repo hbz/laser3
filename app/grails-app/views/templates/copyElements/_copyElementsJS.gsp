@@ -1,7 +1,7 @@
 <g:javascript>
     function jsConfirmation() {
         if ($("td input[data-action='delete']").is(":checked")) {
-            return confirm('Wollen Sie wirklich diese(s) Element(e) in der Ziellizenz löschen?')
+            return confirm("${g.message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}")
         }
     }
     // FOR ALL THE OTHER TABLES THEN PROPERTIES

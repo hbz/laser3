@@ -8,32 +8,16 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
     <semui:crumb message="myinst.renewals" class="active"/>
 </semui:breadcrumbs>
 
-<g:if test="${(errors && (errors.size() > 0))}">
-    <div>
-        <ul>
-            <g:each in="${errors}" var="e">
-                <li>${e}</li>
-            </g:each>
-        </ul>
-    </div>
-</g:if>
-
 <semui:messages data="${flash}"/>
-
-<g:set var="counter" value="${-1}"/>
-<g:set var="index" value="${0}"/>
 
 <g:form action="processSimpleRenewal_Local" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
         <hr/>
-
-        ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br/>
         <table class="ui celled la-table table">
             <tbody>
                 <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
@@ -80,7 +64,6 @@
         </div>
 
     </div>
-    <input type="hidden" name="ecount" value="${counter}"/>
 </g:form>
 
 </body>
