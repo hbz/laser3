@@ -1,5 +1,6 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService;"%>
 <laser:serviceInjection/>
+<g:set var="formService" bean="formService"/>
 
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
@@ -11,7 +12,7 @@
             id="${params.id ?: params.sourceSubscriptionId}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
-
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceSubscription, true)}">
             <semui:msg class="negative" message="subscription.details.copyElementsIntoSubscription.surveyExist"/>
         </g:if>

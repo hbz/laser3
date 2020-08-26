@@ -1,5 +1,7 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService;"%>
 <laser:serviceInjection />
+<g:set var="formService" bean="formService"/>
+
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
@@ -14,6 +16,7 @@
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceSubscriptionId}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
             <thead>
             %{--DOCUMENTS:--}%

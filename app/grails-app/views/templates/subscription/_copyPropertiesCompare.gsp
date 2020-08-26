@@ -1,5 +1,7 @@
-<%@page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController"%>
+<%@page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController; de.laser.FormService;"%>
 <laser:serviceInjection/>
+<g:set var="formService" bean="formService"/>
+
 <!doctype html>
 <html>
     %{--<head>--}%
@@ -19,7 +21,7 @@
         <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceSubscriptionId}"
                 params="[workFlowPart: SubscriptionController.WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
                 method="post" class="ui form newLicence">
-
+                <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
                 <%
                     List subscriptions = [Subscription.get(sourceSubscriptionId)]
                     if (targetSubscriptionId) subscriptions.add(Subscription.get(targetSubscriptionId))
