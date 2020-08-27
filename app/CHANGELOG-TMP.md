@@ -6,6 +6,12 @@
 
 2166    25.08.2020  rc1.5       Moe     Feature     "Lizenz kopieren" angleichen an "Verlängern" und "Elemente kopieren".
 
+2819    25.08.2020  rc1.5       Moe     Bug         Beim Triggern der Merkmalsvererbung passiert nichts
+
+2810    25.08.2020  rc1.5       Moe     Bug         Umlaute Problem bei Umfrage-Emails
+
+2813    25.08.2020  rc1.5       Moe     Bug         Export Umfragekosten fehlende Angaben hinzufügen
+
 2809    24.08.2020  rc1.5       Moe     Bug         Grüne Meldung nach Erstellung von Zugangskonfiguration entfernen
 
 --      21.08.2020  rc1.5       Andreas Bug         korrektes Einladen der Merkmale der Elternlizenz bei Teilnehmer verwalten
