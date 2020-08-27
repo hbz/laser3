@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2801    27.08.2020  rc1.5       Moe     Feature     Bei einer Lizenzverlängerung kann man keine Mehrjahreslaufzeit auswählen
+
 2166    25.08.2020  rc1.5       Moe     Feature     "Lizenz kopieren" angleichen an "Verlängern" und "Elemente kopieren".
 
 2809    24.08.2020  rc1.5       Moe     Bug         Grüne Meldung nach Erstellung von Zugangskonfiguration entfernen

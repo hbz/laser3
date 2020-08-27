@@ -203,13 +203,13 @@ class CopyElementsService {
                         instanceOf: targetObject,
                         //previousSubscription: subMember?.id,
                         isSlaved: subMember.isSlaved,
-                        //owner: targetObject.owner ? subMember.owner : null,
                         resource: targetObject.resource ?: null,
                         form: targetObject.form ?: null,
                         isPublicForApi: targetObject.isPublicForApi,
-                        hasPerpetualAccess: targetObject.hasPerpetualAccess
+                        hasPerpetualAccess: targetObject.hasPerpetualAccess,
+                        administrative: subMember.administrative
                 )
-                newSubscription.save(flush: true)
+                newSubscription.save()
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
                     try {
@@ -532,6 +532,7 @@ class CopyElementsService {
         }
 
         if (formService.validateToken(params)) {
+
             if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
                 List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
                 copySubscriber(toCopySubs, targetObject, flash)
@@ -575,7 +576,7 @@ class CopyElementsService {
         result
     }
 
-    Map copySubElements_PackagesEntitlements(Map params) {
+    Map copyObjectElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()

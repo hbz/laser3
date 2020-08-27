@@ -132,20 +132,8 @@
                 </g:if>
             </sec:ifAnyGranted>
 
-
-
             <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,GenericOIDService.getOID(subscriptionInstance))}"/>
-            %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
-                %{--<div class="divider">OLD:</div>--}%
-                %{--<g:if test="${subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_LOCAL && !previousSubscriptions}">--}%
-                    %{--<semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"--}%
-                                           %{--params="${[id: params.id]}" message="subscription.details.renewals.label"/>--}%
-                    %{--<semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"--}%
-                                           %{--message="menu.institutions.imp_renew"/>--}%
-                %{--</g:if>--}%
 
-                %{--<div class="divider"></div>--}%
-            %{--</sec:ifAnyGranted>--}%
 
             <g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <div class="divider"></div>

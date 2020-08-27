@@ -66,6 +66,7 @@
             </thead>
             <tbody>
 
+
             <g:each in="${copyElementsService.allowedProperties(sourceObject)}" var="objProperty">
                 <tr>
                     <td name="copyObject.take${objProperty}.source">
@@ -77,15 +78,17 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
-                            <div class="ui checkbox la-toggle-radio la-inherit">
-                                <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" class="ui checkbox"
-                                            checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
-                            </div>
+                            <g:if test="${!isRenewSub}">
+                                <div class="ui checkbox la-toggle-radio la-inherit">
+                                    <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" class="ui checkbox"
+                                                checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
+                                </div>
+                            </g:if>
                         </td>
                     </g:if>
                 %{--AKTIONEN:--}%
                     <td class="center aligned">
-                        <g:if test="${sourceObject.hasProperty("${objProperty}")}">
+                        <g:if test="${sourceObject.hasProperty("${objProperty}") && !isRenewSub}">
                             <div class="ui checkbox la-toggle-radio la-replace">
                                 <g:checkBox name="copyObject.take" id="copyObject.take${objProperty}"
                                             value="${objProperty}" data-action="copy"
@@ -120,7 +123,7 @@
                         </td>
 
                         <td>
-                            <g:if test="${targetObject?.hasProperty("${objProperty}")}">
+                            <g:if test="${targetObject?.hasProperty("${objProperty}") && !isRenewSub}">
                                 <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="copyObject.delete" id="copyObject.delete${objProperty}"
                                                 value="${objProperty}" data-action="delete"/>

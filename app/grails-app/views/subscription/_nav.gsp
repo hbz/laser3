@@ -38,9 +38,6 @@
 
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
-
-
-    <%-- <semui:subNavItem controller="subscription" action="renewals" params="${[id:params.id]}" message="subscription.details.renewals.label" /> --%>
     <%--
         <semui:subNavItem controller="subscription" action="previous" params="${[id:params.id]}" message="subscription.details.previous.label" />
         <semui:subNavItem controller="subscription" action="expected" params="${[id:params.id]}" message="subscription.details.expected.label" />

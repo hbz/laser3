@@ -3157,20 +3157,6 @@ class SubscriptionController
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewals() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-        }
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         def ctxlist = []
 
@@ -3192,27 +3178,6 @@ class SubscriptionController
         result
     }
 
-    @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def launchRenewalsProcess() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-
-//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true)
-//
-//        log.debug("Clear basket....");
-//        shopping_basket.items?.clear();
-//        shopping_basket.save(flush: true)
-//
-//        def oid = "com.k_int.kbplus.Subscription:${params.id}"
-//        shopping_basket.addIfNotPresent(oid)
-//        Subscription.get(params.id).packages.each {
-//            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
-//            shopping_basket.addIfNotPresent(oid)
-//        }
-
-        redirect controller: 'myInstitution', action: 'renewalsSearch'
-    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
@@ -3901,154 +3866,49 @@ class SubscriptionController
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewSubscription_Local() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
 
-        if (!accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
-            response.sendError(401)
-            return;
-        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
-            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin')
-            response.sendError(401)
-            return;
-        }
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processRenewSubscription() {
 
-        Subscription subscription = Subscription.get(params.id)
-        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, GenericOIDService.getOID(subscription))
-        if (prevSubs){
-            flash.error = message(code: 'subscription.renewSubExist')
-            response.sendError(401)
-            return;
-        }
-
-        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-
-        result.errors = []
-        def newStartDate
-        def newEndDate
-        use(TimeCategory) {
-            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
-            newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
-        }
-
-        result.isRenewSub = true
-        result.permissionInfo = [sub_startDate: newStartDate? sdf.format(newStartDate) : null,
-                                 sub_endDate: newEndDate? sdf.format(newEndDate) : null,
-                                 sub_name: subscription.name,
-                                 sub_id: subscription.id,
-                                 sub_status: RDStore.SUBSCRIPTION_INTENDED]
-
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def processSimpleRenewal_Local() {
-        log.debug("-> renewalsUpload params: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result.editable) {
             response.sendError(401); return
         }
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
-
-        def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-        def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
-        def sub_status = params.subStatus
-        def old_subOID = params.subscription.old_subid
-        Subscription oldSubscription = Subscription.get(old_subOID)
-        def new_subname = params.subscription.name
-
-        def new_subscription = new Subscription(
-                identifier: java.util.UUID.randomUUID().toString(),
-                status: sub_status,
-                name: new_subname,
-                startDate: sub_startDate,
-                endDate: sub_endDate,
-                type: oldSubscription.type ?: null,
-                resource: oldSubscription.resource ?: null,
-                form: oldSubscription.form ?: null
-        )
-        log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
-
-        if (new_subscription.save(flush:true)) {
-            // assert an org-role
-            OrgRole org_link = new OrgRole(org: result.institution,
-                    sub: new_subscription,
-                    roleType: RDStore.OR_SUBSCRIBER
-            ).save(flush: true)
-
-            Links prevLink
-            if(old_subOID) {
-                prevLink = new Links(source: GenericOIDService.getOID(new_subscription), destination: GenericOIDService.getOID(oldSubscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg)
-                prevLink.save(flush:true)
-            }
-            else { log.error("Problem linking new subscription, ${prevLink.errors}") }
-        } else {
-            log.error("Problem saving new subscription, ${new_subscription.errors}");
-        }
-
-        new_subscription.save(flush:true)
-
-        if (params.targetObjectId == "null") params.remove("targetObjectId")
-        redirect controller: 'subscription',
-                 action: 'copyElementsIntoSubscription',
-                 params: [sourceObjectId: GenericOIDService.getOID(old_subOID), targetObjectId: GenericOIDService.getOID(new_subscription), isRenewSub: true]
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def processSimpleRenewal_Consortia() {
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
-            response.sendError(401); return
-        }
-
-        Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
-
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
-            /*def sub_type = params.subType
-            def sub_kind = params.subKind ?: null
-            def sub_form = params.subForm ?: null
-            def sub_resource = params.subResource ?: null
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
-            def sub_isPublicForApi = params.subIsPublicForApi == '1'*/
-            def old_subOID = params.subscription.old_subid
+            def sub_isMultiYear = params.subscription.isMultiYear
             def new_subname = params.subscription.name
             def manualCancellationDate = null
 
             use(TimeCategory) {
-                manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
+                manualCancellationDate =  result.subscription.manualCancellationDate ? (result.subscription.manualCancellationDate + 1.year) : null
             }
+
             Subscription newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
                     manualCancellationDate: manualCancellationDate,
                     identifier: UUID.randomUUID().toString(),
-                    isSlaved: baseSub.isSlaved,
-                    type: baseSub.type,
+                    isSlaved: result.subscription.isSlaved,
+                    type: result.subscription.type,
+                    kind: result.subscription.kind,
+                    resource: result.subscription.resource,
+                    form: result.subscription.form,
+                    isPublicForApi: result.subscription.isPublicForApi,
+                    hasPerpetualAccess: result.subscription.hasPerpetualAccess,
                     status: sub_status,
-                    /*kind: sub_kind,
-                    resource: sub_resource,
-                    form: sub_form,*/
-                    administrative: baseSub.administrative,
-                    /*hasPerpetualAccess: sub_hasPerpetualAccess,
-                    isPublicForApi: sub_isPublicForApi*/
+                    isMultiYear: sub_isMultiYear ?: false,
+                    administrative: result.subscription.administrative,
             )
 
             if (!newSub.save(flush:true)) {
@@ -4056,30 +3916,29 @@ class SubscriptionController
                 return newSub
             } else {
                 log.debug("Save ok");
-
-                if (params.list('auditList')) {
-                    //copy audit
-                    params.list('auditList').each { auditField ->
-                        //All ReferenceFields were copied!
-                        //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
-                        //println(auditField)
-                        AuditConfig.addConfig(newSub, auditField)
+                if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if (params.list('auditList')) {
+                        //copy audit
+                        params.list('auditList').each { auditField ->
+                            //All ReferenceFields were copied!
+                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                            AuditConfig.addConfig(newSub, auditField)
+                        }
                     }
-
                 }
                 //Copy References
                 //OrgRole
-                baseSub.orgRelations?.each { or ->
+                result.subscription.orgRelations?.each { or ->
 
-                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS,  RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save(flush:true)
+                        newOrgRole.save()
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(result.subscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
@@ -4088,10 +3947,9 @@ class SubscriptionController
                 if (params.targetObjectId == "null") params.remove("targetObjectId")
                 result.isRenewSub = true
 
-                    redirect controller: 'subscription',
+                redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            params: [sourceObjectId: GenericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
-
+                            params: [sourceObjectId: GenericOIDService.getOID(result.subscription), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
             }
         }
     }
