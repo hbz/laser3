@@ -92,28 +92,54 @@
                                     <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                     <g:if test="${! AuditConfig.getConfig(prop)}">
-                                        <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
-                                                          controller="ajax"
-                                                          action="togglePropertyAuditConfig"
-                                                          params='[propClass: prop.getClass(),
-                                                                   ownerId: "${ownobj.id}",
-                                                                   ownerClass: "${ownobj.class}",
-                                                                   custom_props_div: "${custom_props_div}",
-                                                                   editable: "${overwriteEditable}",
-                                                                   showConsortiaFunctions: true,
-                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                          ]'
-                                                          data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
-                                                          data-confirm-term-how="inherit"
-                                                          id="${prop.id}"
-                                                          data-content="${message(code:'property.audit.off.tooltip')}"
-                                                          data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                          data-always="c3po.loadJsAfterAjax()"
-                                                          data-update="${custom_props_div}"
-                                                          role="button"
-                                        >
-                                            <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
+                                        <g:if test="${prop.type in memberProperties}">
+                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                              controller="ajax"
+                                                              action="togglePropertyAuditConfig"
+                                                              params='[propClass: prop.getClass(),
+                                                                       ownerId: "${ownobj.id}",
+                                                                       ownerClass: "${ownobj.class}",
+                                                                       custom_props_div: "${custom_props_div}",
+                                                                       editable: "${overwriteEditable}",
+                                                                       showConsortiaFunctions: true,
+                                                                       (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                              ]'
+                                                              data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit2.property", args: [prop.type.getI10n('name')])}"
+                                                              data-confirm-term-how="inherit"
+                                                              id="${prop.id}"
+                                                              data-content="${message(code:'property.audit.off.tooltip')}"
+                                                              data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                              data-always="c3po.loadJsAfterAjax()"
+                                                              data-update="${custom_props_div}"
+                                                              role="button"
+                                            >
+                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                            </laser:remoteLink>
+                                        </g:if>
+                                        <g:else>
+                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                              controller="ajax"
+                                                              action="togglePropertyAuditConfig"
+                                                              params='[propClass: prop.getClass(),
+                                                                       ownerId: "${ownobj.id}",
+                                                                       ownerClass: "${ownobj.class}",
+                                                                       custom_props_div: "${custom_props_div}",
+                                                                       editable: "${overwriteEditable}",
+                                                                       showConsortiaFunctions: true,
+                                                                       (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                              ]'
+                                                              data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
+                                                              data-confirm-term-how="inherit"
+                                                              id="${prop.id}"
+                                                              data-content="${message(code:'property.audit.off.tooltip')}"
+                                                              data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                              data-always="c3po.loadJsAfterAjax()"
+                                                              data-update="${custom_props_div}"
+                                                              role="button"
+                                            >
+                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                            </laser:remoteLink>
+                                        </g:else>
                                     </g:if>
                                     <g:else>
 
