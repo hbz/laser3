@@ -122,7 +122,7 @@ class LicenseController
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgLinks = OrgRole.executeQuery(
                     "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
-                    [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM]]
+                    [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
             )
 
             /*result.license.orgLinks?.each { or ->

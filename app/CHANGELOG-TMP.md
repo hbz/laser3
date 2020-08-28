@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2821    28.08.2020  rc1.5       Moe     Bug         Umfrage Mails: Umfragetyp wird falsch übersetzt
+
 --      26.08.2020  rc1.5       Moe     Bug         Neue RefdataValues für Kostenelemente 
 
 2819    26.08.2020  rc1.5       Moe     Bug         Beim Triggern der Merkmalsvererbung passiert nichts
