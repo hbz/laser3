@@ -418,6 +418,27 @@
                                         </div>
                                     </div>
                                 </g:if>
+                                <g:if test="${isProviderOrAgency && (user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                                    <div class="ui list">
+
+                                        <div class="item">
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalTechnichalSupport')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalTechnichalSupport"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalTechnichalSupport',
+                                                              tmplHideFunctions: true]"/>
+
+                                        </div>
+                                    </div>
+                                </g:if>
                             </dd>
                         </dl>
                         %{--ERMS:1236--}%
