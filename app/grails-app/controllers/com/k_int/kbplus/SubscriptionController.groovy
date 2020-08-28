@@ -1463,6 +1463,45 @@ class SubscriptionController
         redirect(url: request.getHeader('referer'))
     }
 
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def linkNextPrevMemberSub() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+
+        Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
+        Org org = Org.get(Long.parseLong(params.memberOrg))
+        Subscription prevMemberSub = (result.navPrevSubscription?.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+        Subscription nextMemberSub = (result.navNextSubscription?.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+
+        if(params.prev && prevMemberSub) {
+
+            Links prevLink = new Links(source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            if (!prevLink.save(flush: true)) {
+                log.error("Problem linking to previous subscription: ${prevLink.errors}")
+                redirect(url: request.getHeader('referer'))
+            }else {
+                redirect(action: 'show', id: prevMemberSub.id)
+            }
+        }
+
+        if(params.next && nextMemberSub) {
+
+            Links nextLink = new Links(source: GenericOIDService.getOID(nextMemberSub), destination: GenericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            if (!nextLink.save(flush: true)) {
+                log.error("Problem linking to next subscription: ${nextLink.errors}")
+                redirect(url: request.getHeader('referer'))
+            }else {
+                redirect(action: 'show', id: nextMemberSub.id)
+            }
+        }
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {

@@ -917,7 +917,7 @@ class CopyElementsService {
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
         sourceObject.orgRelations?.each { or ->
-            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
+            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
                 if (targetObject.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                     Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
