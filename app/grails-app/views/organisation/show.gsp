@@ -418,7 +418,7 @@
                                         </div>
                                     </div>
                                 </g:if>
-                                <g:if test="${isProviderOrAgency && (user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                                <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
                                     <div class="ui list">
 
                                         <div class="item">
