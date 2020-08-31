@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2827    28.08.2020  rc1.5       Moe     Bug         Bei Verträge kann man keine Merkmal bei Allgemeine Merkmale (ohne Gruppenzuweisung) eintragen 
+
 2821    28.08.2020  rc1.5       Moe     Bug         Umfrage Mails: Umfragetyp wird falsch übersetzt
 
 --      26.08.2020  rc1.5       Moe     Bug         Neue RefdataValues für Kostenelemente 
