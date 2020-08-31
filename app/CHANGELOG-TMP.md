@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2804    31.08.2020  hbz-dev     Moe     Feature     Anpassung der Suchschlitze
+
 1875    28.08.2020  hbz-dev     Moe     Feature     Anbieter und Lieferanten: Technischer Support muss eingetragen werden können
 
 2820    28.08.2020  hbz-dev     Moe     Feature     Hinweis bei Trigger einer Vererbung wenn das Merkmal schon in TN-Lizenzen vorhanden ist
