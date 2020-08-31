@@ -109,6 +109,7 @@
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
+                    editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
