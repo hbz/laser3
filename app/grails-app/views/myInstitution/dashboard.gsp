@@ -187,7 +187,7 @@
 
                                 <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01"}">
                                     <div class="right aligned wide column">
-                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[id: entry.change.subscription.id]}">
+                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[id: entry.change.subscription.getCalculatedPrevious()?.id, targetSubscriptionId: entry.change.subscription.id]}">
                                             <g:message code="myinst.copyMyElements"/>
                                         </g:link>
                                     </div>
