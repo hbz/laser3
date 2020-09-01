@@ -3894,6 +3894,10 @@ class SurveyController {
                 copyCostItem.surveyOrg = null
                 copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
+                if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+                    copyCostItem.currencyRate = 1.0
+                    copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                }
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
                 }
@@ -3972,6 +3976,11 @@ class SurveyController {
                 copyCostItem.surveyOrg = null
                 copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
+                if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+                    copyCostItem.currencyRate = 1.0
+                    copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                }
+
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
                 }
