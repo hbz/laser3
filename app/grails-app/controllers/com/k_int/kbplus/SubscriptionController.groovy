@@ -4103,7 +4103,11 @@ class SubscriptionController
                         result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
                         params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        result << copyElementsService.loadDataFor_Properties(params)
+                        if(accessService.checkPerm("ORG_CONSORTIUM")){
+                            result << copyElementsService.loadDataFor_Properties(params)
+                        }else{
+                            result << copyElementsService.loadDataFor_MyProperties(params)
+                        }
                     }
                 } else {
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
@@ -4113,7 +4117,11 @@ class SubscriptionController
                 result << copyElementsService.copyObjectElements_Subscriber(params)
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    result << copyElementsService.loadDataFor_Properties(params)
+                    if(accessService.checkPerm("ORG_CONSORTIUM")){
+                        result << copyElementsService.loadDataFor_Properties(params)
+                    }else{
+                        result << copyElementsService.loadDataFor_MyProperties(params)
+                    }
                 } else {
                     result << copyElementsService.loadDataFor_Subscriber(params)
                 }
@@ -4131,7 +4139,11 @@ class SubscriptionController
                         redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
                     }
                 } else {
-                    result << copyElementsService.loadDataFor_Properties(params)
+                    if(accessService.checkPerm("ORG_CONSORTIUM")){
+                        result << copyElementsService.loadDataFor_Properties(params)
+                    }else{
+                        result << copyElementsService.loadDataFor_MyProperties(params)
+                    }
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
@@ -4184,10 +4196,8 @@ class SubscriptionController
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
 
-        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
-        result.consortialView = result.showConsortiaFunctions
-
-        result.editable = result.sourceObject?.isEditableBy(result.user)
+        //isVisibleBy benötigt hier um zu schauen, ob das Objekt überhaupt angesehen darf
+        result.editable = result.sourceObject?.isVisibleBy(result.user)
 
         if (!result.editable) {
             response.sendError(401); return
@@ -4198,17 +4208,17 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks();
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
 
                 break;
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copyObjectElements_Properties();
-                result << copyElementsService.loadDataFor_Properties()
+                result << copyElementsService.copyObjectElements_Properties(params)
+                result << copyElementsService.loadDataFor_MyProperties(params)
 
                 break;
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copyObjectElements_Properties();
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4216,7 +4226,7 @@ class SubscriptionController
                 }
                 break;
             default:
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break;
         }
 
@@ -4309,7 +4319,11 @@ class SubscriptionController
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                 params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                result << copyElementsService.loadDataFor_Properties(params)
+                if(accessService.checkPerm("ORG_CONSORTIUM")){
+                    result << copyElementsService.loadDataFor_Properties(params)
+                }else{
+                    result << copyElementsService.loadDataFor_MyProperties(params)
+                }
                 break
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copyObjectElements_Properties(params)

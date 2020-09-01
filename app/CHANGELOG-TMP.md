@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2825    01.09.2020  hbz-dev       Moe     Feature     Eigene "Allgemeine Merkmale" können nicht an Nachfolgelizenz kopiert werden
+
+2815    01.09.2020  hbz-dev       Moe     Feature     Elemente kopieren: Reiter Merkmale überarbeiten
+
 --      31.08.2020  rc1.5       Moe     Bug         Auf dem Dashboard wird keine Änderungsmitteilung angezeigt, wenn eine neue Lizenz für den Teilnehmer durch die Verlängerungsumfrage erstellt wurde
 
 2804    31.08.2020  hbz-dev     Moe     Feature     Anpassung der Suchschlitze

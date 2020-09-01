@@ -1,4 +1,4 @@
-<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*; de.laser.AuditConfig;" %>
+<%@page import="de.laser.interfaces.CalculatedType; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*; de.laser.AuditConfig;" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -52,6 +52,28 @@
 <tbody>
 <g:each in="${group}" var="prop">
     <% PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey()) %>
+    <g:set var="propValues" value="${prop.getValue()}" />
+    <% Set propValuesForSourceSub = propValues.get(sourceObject) %>
+    <% Set propValuesForTargetSub = propValues.get(targetObject) %>
+    <%
+        boolean showProp = false
+        if(accessService.checkPerm('ORG_INST')){
+            if((propValuesForSourceSub[0].tenant?.id == contextOrg.id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic))) ||
+                    (propValuesForTargetSub[0].tenant?.id == contextOrg.id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic )))){
+                showProp = true
+            }
+        }
+
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            if((propValuesForSourceSub[0].tenant?.id == contextOrg.id || !propValuesForSourceSub[0].tenant) || propValuesForSourceSub[0].isPublic || (propValuesForSourceSub[0].hasProperty('instanceOf') && propValuesForSourceSub[0].instanceOf && AuditConfig.getConfig(propValuesForSourceSub[0].instanceOf)) ||
+                    (propValuesForTargetSub[0].tenant?.id == contextOrg.id || !propValuesForTargetSub[0].tenant) || propValuesForTargetSub[0].isPublic || (propValuesForTargetSub[0].hasProperty('instanceOf') && propValuesForTargetSub[0].instanceOf && AuditConfig.getConfig(propValuesForTargetSub[0].instanceOf))){
+                showProp = true
+            }
+        }
+    %>
+
+
+    <g:if test="${showProp}">
     <tr>
         <td>
             ${propKey.getI10n("name")}
@@ -61,9 +83,7 @@
                 </span>
             </g:if>
         </td>
-        <g:set var="propValues" value="${prop.getValue()}" />
-        <% Set propValuesForSourceSub = propValues.get(sourceObject) %>
-        <% Set propValuesForTargetSub = propValues.get(targetObject) %>
+
         %{--SOURCE-SUBSCRIPTION--}%
         <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceObject)}">
@@ -219,5 +239,6 @@
             </td>
         </g:if>
     </tr>
+    </g:if>
 </g:each>
 </tbody>

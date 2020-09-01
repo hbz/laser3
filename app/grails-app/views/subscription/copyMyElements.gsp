@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -62,7 +62,7 @@ if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetOb
     <g:render template="/templates/copyElements/copyDocsAndTasks"/>
 </g:if>
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <g:render template="/templates/copyElements/copyPrivatePropertiesCompare"/>
+    <g:render template="/templates/copyElements/copyPropertiesCompare"/>
 </g:elseif>
 <g:render template="/templates/copyElements/copyElementsJS"/>
 

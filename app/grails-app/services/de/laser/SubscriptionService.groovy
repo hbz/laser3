@@ -814,7 +814,7 @@ class SubscriptionService {
 
 
 
-    Map regroupSubscriptionProperties(List<Subscription> subsToCompare) {
+    Map regroupSubscriptionProperties(List<Subscription> subsToCompare, Org org) {
         LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
         subsToCompare.each{ sub ->
             Map allPropDefGroups = sub._getCalculatedPropDefGroups(org)
@@ -872,7 +872,7 @@ class SubscriptionService {
                 }
             }
             TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll { it.type.tenant?.id == org.id })
             result.privateProperties = privateProperties
         }
         result

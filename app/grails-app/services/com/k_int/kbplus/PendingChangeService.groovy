@@ -527,7 +527,6 @@ class PendingChangeService extends AbstractLockableService {
             }
         int pendingCount = pending.size()
         int notificationsCount = accepted.size()
-        println(pending)
         [pending:pendingChanges,packages:pendingChangePackages,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
     }
 
