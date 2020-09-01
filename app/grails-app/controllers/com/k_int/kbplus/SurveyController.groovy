@@ -2446,7 +2446,7 @@ class SurveyController {
         result.orgsWithParticipationInParentSuccessor = []
         result.parentSuccessorSubChilds.each { sub ->
             sub.getAllSubscribers().each { org ->
-                if(! (org.id in currentParticipantIDs)) {
+                if(!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
                     result.orgsWithParticipationInParentSuccessor  << sub
                 }
             }

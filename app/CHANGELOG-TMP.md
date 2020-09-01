@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2832    01.09.2020  rc1.5       Moe     Bug         Umfrage: Verlängerungssicht enthält dublette von TNs bei "Bereits" und "Mehrjahreslaufzeiten""
+
 2834    01.09.2020  rc1.5       Moe     Bug         Renewal excel funktioniert nicht
 
 2837    01.09.2020  rc1.5       Moe     Feature     Lizenzinformationen einblenden in Umfrage
