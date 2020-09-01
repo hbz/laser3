@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2837    01.09.2020  rc1.5       Moe     Feature     Lizenzinformationen einblenden in Umfrage
+
 2831    01.09.2020  rc1.5       Moe     Bug         Beim Kopiervorgang vom Umfrage-Kosten zu Lizenzkosten bleibt der "Wert in EUR" leer
 
 --      31.08.2020  rc1.5       Moe     Bug         Auf dem Dashboard wird keine Änderungsmitteilung angezeigt, wenn eine neue Lizenz für den Teilnehmer durch die Verlängerungsumfrage erstellt wurde
