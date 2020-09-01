@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2834    01.09.2020  rc1.5       Moe     Bug         Renewal excel funktioniert nicht
+
 2837    01.09.2020  rc1.5       Moe     Feature     Lizenzinformationen einblenden in Umfrage
 
 2831    01.09.2020  rc1.5       Moe     Bug         Beim Kopiervorgang vom Umfrage-Kosten zu Lizenzkosten bleibt der "Wert in EUR" leer

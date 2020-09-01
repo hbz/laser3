@@ -4707,9 +4707,9 @@ class SurveyController {
             }
 
             participantResult.properties.sort { it.type.name }.each { participantResultProperty ->
-                row.add([field: participantResult.getResult() ?: "", style: null])
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
-                row.add([field: participantResult.comment ?: "", style: null])
+                row.add([field: participantResultProperty.comment ?: "", style: null])
 
             }
 
@@ -4833,7 +4833,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -4870,7 +4870,7 @@ class SurveyController {
             participantResult.properties.sort {
                 it.type.name
             }.each { participantResultProperty ->
-                row.add([field: participantresultProperty.getResult() ?: "", style: null])
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
                 row.add([field: participantResultProperty.comment ?: "", style: null])
 
