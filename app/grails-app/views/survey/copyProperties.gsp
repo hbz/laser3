@@ -398,15 +398,15 @@ ${surveyInfo.name}
                                                                 config="${participant.oldCustomProperty.type.refdataCategory}"/>
                                     </g:elseif>
 
-                                    <%
-                                        if (AuditConfig.getConfig(participant.oldCustomProperty)) {
-                                            if (parentSuccessorSubscription.isSlaved) {
-                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                                            } else {
-                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                            }
-                                        }
-                                    %>
+                                    <g:if test="${participant.oldCustomProperty.hasProperty('instanceOf') && participant.oldCustomProperty.instanceOf && AuditConfig.getConfig(participant.oldCustomProperty.instanceOf)}">
+                                        <g:if test="${participant.oldSub.isSlaved}">
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="large icon thumbtack blue"></i></span>
+                                        </g:if>
+                                        <g:else>
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="large icon thumbtack grey"></i></span>
+                                        </g:else>
+                                    </g:if>
+
 
                                 </g:elseif><g:else>
 
@@ -560,15 +560,14 @@ ${surveyInfo.name}
                                                                 config="${participant.newCustomProperty.type.refdataCategory}"/>
                                     </g:elseif>
 
-                                    <%
-                                        if (AuditConfig.getConfig(participant.newCustomProperty)) {
-                                            if (parentSuccessorSubscription.isSlaved) {
-                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                                            } else {
-                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                            }
-                                        }
-                                    %>
+                                    <g:if test="${participant.newCustomProperty.hasProperty('instanceOf') && participant.newCustomProperty.instanceOf && AuditConfig.getConfig(participant.newCustomProperty.instanceOf)}">
+                                        <g:if test="${participant.newSub.isSlaved}">
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="large icon thumbtack blue"></i></span>
+                                        </g:if>
+                                        <g:else>
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="large icon thumbtack grey"></i></span>
+                                        </g:else>
+                                    </g:if>
 
                                 </g:if><g:else>
 
