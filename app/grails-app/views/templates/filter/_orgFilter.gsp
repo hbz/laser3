@@ -109,7 +109,7 @@
             <g:if test="${field.equalsIgnoreCase('country')}">
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
-                    <laser:select class="ui dropdown" id="country" name="country"
+                    <laser:select class="ui search dropdown" id="country" name="country"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
