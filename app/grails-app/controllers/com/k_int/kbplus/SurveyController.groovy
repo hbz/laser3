@@ -969,27 +969,32 @@ class SurveyController {
             List<CostItem> surveyCostItems = CostItem.executeQuery('select costItem from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and surOrg.org.id in (:orgIDs) and costItem.costItemStatus != :status', [survConfig:  result.surveyConfig, orgIDs: selectedMembers.collect{Long.parseLong(it)}, status: RDStore.COST_ITEM_DELETED])
             surveyCostItems.each { surveyCostItem ->
 
-                    if(params.percentOnOldPrice){
-                        Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
-                        Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
-                        CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
-                        surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency*(1+(percentOnOldPrice/100)) : surveyCostItem.costInBillingCurrency
-                    }
-                    else
+                    if(params.deleteCostItems == "true")
                     {
-                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                        surveyCostItem.delete()
                     }
+                    else {
 
-                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
-                    //Not specified default to GDP
-                    //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+                        if (params.percentOnOldPrice) {
+                            Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
+                            Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
+                            CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+                            surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100)) : surveyCostItem.costInBillingCurrency
+                        } else {
+                            surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                        }
 
-                    surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+                        surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
+                        //Not specified default to GDP
+                        //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
 
-                    //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
-                    surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
+                        surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
 
-                    surveyCostItem.save()
+                        //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
+                        surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
+
+                        surveyCostItem.save()
+                    }
             }
         }
 
@@ -2029,6 +2034,25 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def processBackInProcessingSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if (result.editable) {
+
+            result.surveyInfo.status = RDStore.SURVEY_IN_PROCESSING
+            result.surveyInfo.save(flush: true)
+        }
+
+        redirect(uri: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def processOpenSurveyNow() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -2133,6 +2157,10 @@ class SurveyController {
                 SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, Org.get(Long.parseLong(soId)))
 
                 CostItem.findAllBySurveyOrg(surveyOrg).each {
+                    it.delete(flush: true)
+                }
+
+                SurveyResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
                     it.delete(flush: true)
                 }
 
