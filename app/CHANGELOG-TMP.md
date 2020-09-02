@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2839    02.09.2020  rc1.5       Moe     Feature     "Vertrag" als Vertragskategorie aufnehmen
+
 2838    02.09.2020  rc1.5       Moe     Bug         Vererbung Datenaustausch + dauerhafter Zugriff
 
 2833    02.09.2020  rc1.5       Moe     Bug         Beim Kopieren von Umfrage-Merkmale zu Lizenzmerkmale werden die Lizenzmerkmale nicht richtig übernommen
