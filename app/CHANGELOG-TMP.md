@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2841    02.09.2020  rc1.5       Moe     Bug         Umfrage wieder auf In Bearbeitung setzten
+
 2822    02.09.2020  rc1.5       Moe     Bug         Neuer lokal angelegter Vertrag wird nicht angzeigt wenn keine Lizenz verknüpft ist
 
 2839    02.09.2020  rc1.5       Moe     Feature     "Vertrag" als Vertragskategorie aufnehmen
