@@ -490,8 +490,8 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry += " order by lower(trim(l.reference)) asc"
         }
 
-        log.debug("query = ${base_qry}");
-        log.debug("params = ${qry_params}");
+        //log.debug("query = ${base_qry}");
+        //log.debug("params = ${qry_params}");
         du.setBenchmark('execute query')
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
