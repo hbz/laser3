@@ -2446,7 +2446,7 @@ class SurveyController {
         result.orgsWithParticipationInParentSuccessor = []
         result.parentSuccessorSubChilds.each { sub ->
             sub.getAllSubscribers().each { org ->
-                if(! (org.id in currentParticipantIDs)) {
+                if(!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
                     result.orgsWithParticipationInParentSuccessor  << sub
                 }
             }
@@ -2512,7 +2512,7 @@ class SurveyController {
 
                         def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
 
-                        if (participantPropertyTwo.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 2.year) : null
@@ -2526,7 +2526,7 @@ class SurveyController {
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
                         def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                        if (participantPropertyThree.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 3.year) : null
@@ -2547,7 +2547,7 @@ class SurveyController {
 
                         def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
 
-                        if (participantPropertyTwo?.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 2.year) : null
@@ -2561,7 +2561,7 @@ class SurveyController {
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
                         def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                        if (participantPropertyThree?.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 3.year) : null
@@ -3894,6 +3894,10 @@ class SurveyController {
                 copyCostItem.surveyOrg = null
                 copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
+                if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+                    copyCostItem.currencyRate = 1.0
+                    copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                }
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
                 }
@@ -3972,6 +3976,11 @@ class SurveyController {
                 copyCostItem.surveyOrg = null
                 copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
+                if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+                    copyCostItem.currencyRate = 1.0
+                    copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                }
+
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
                 }
@@ -4038,28 +4047,29 @@ class SurveyController {
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
                     def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
+
                     newMap.newCustomProperty = (sub && propDef) ? sub.propertySet.find {
-                        it.type.id == propDef.id
+                        it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.propertySet.find {
-                        it.type.id == propDef.id
+                        it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
                 if(params.tab == 'customProperties') {
                     newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
                     newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                     newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                 }
 
@@ -4134,11 +4144,11 @@ class SurveyController {
                         } else {
                             if (params.tab == 'privateProperties') {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
-                                    it.type.id == propDef.id && it.type.tenant.id == result.institution.id
+                                    it.type.id == propDef.id && it.type.tenant.id == result.contextOrg.id
                                 } : []
                             } else {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
-                                    it.type.id == propDef.id && it.tenant.id == result.institution.id
+                                    it.type.id == propDef.id && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                                 } : []
                             }
                         }
@@ -4147,12 +4157,12 @@ class SurveyController {
                             if (propDef.tenant != null) {
                                 //private Property
                                 def existingProps = sub.propertySet.findAll {
-                                    it.owner.id == sub.id && it.type.id == propDef.id
+                                    it.owner.id == sub.id && it.type.id == propDef.id && it.type.tenant.id == result.contextOrg.id
                                 }
                                 existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
                                 if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, org)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, result.contextOrg)
                                     if (newProp.hasErrors()) {
                                         log.error(newProp.errors)
                                     } else {
@@ -4168,11 +4178,11 @@ class SurveyController {
                             } else {
                                 //custom Property
                                 def existingProp = sub.propertySet.find {
-                                    it.type.id == propDef.id && it.owner.id == sub.id
+                                    it.type.id == propDef.id && it.owner.id == sub.id && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                                 }
 
                                 if (existingProp == null || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, org)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, result.contextOrg)
                                     if (newProp.hasErrors()) {
                                         log.error(newProp.errors)
                                     } else {
@@ -4279,8 +4289,7 @@ class SurveyController {
                 if (result.multiYearTermTwoSurvey) {
 
                     def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
-
-                    if (participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
+                    if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
@@ -4301,7 +4310,7 @@ class SurveyController {
                 else if (result.multiYearTermThreeSurvey) {
 
                     def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                    if (participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
+                    if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
@@ -4501,7 +4510,7 @@ class SurveyController {
                         }
 
                         if(org.getCustomerType() == 'ORG_INST') {
-                            PendingChange.construct([target: memberSub, msgToken: "pendingChange.message_SU_NEW_01", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
+                            PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_01", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
                         }
 
                         return memberSub
@@ -4698,9 +4707,9 @@ class SurveyController {
             }
 
             participantResult.properties.sort { it.type.name }.each { participantResultProperty ->
-                row.add([field: participantResult.getResult() ?: "", style: null])
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
-                row.add([field: participantResult.comment ?: "", style: null])
+                row.add([field: participantResultProperty.comment ?: "", style: null])
 
             }
 
@@ -4824,7 +4833,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -4861,7 +4870,7 @@ class SurveyController {
             participantResult.properties.sort {
                 it.type.name
             }.each { participantResultProperty ->
-                row.add([field: participantresultProperty.getResult() ?: "", style: null])
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
                 row.add([field: participantResultProperty.comment ?: "", style: null])
 
