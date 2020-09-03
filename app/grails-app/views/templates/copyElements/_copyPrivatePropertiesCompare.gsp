@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController;; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;"%>" %>
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController;com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;"%>" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
