@@ -1,6 +1,5 @@
 package de.laser
 
-import com.k_int.kbplus.Cluster
 import com.k_int.kbplus.Contact
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
@@ -346,12 +345,7 @@ class PersonController extends AbstractDebugController {
             }
             else if('resp' == roleType){
                 
-                if(roleRdv?.value == "Specific cluster editor") {
-                    allSubjects             = Cluster.getAll()
-                    subjectType             = "cluster"
-                    subjectFormOptionValue  = "name"
-                }
-                else if(roleRdv?.value == "Specific license editor") {
+                if(roleRdv?.value == "Specific license editor") {
                     allSubjects             = License.getAll()
                     subjectType             = "license"
                     subjectFormOptionValue  = "reference"
@@ -519,12 +513,6 @@ class PersonController extends AbstractDebugController {
                def subjectType = params.subjectType[key]
 
                switch (subjectType) {
-                   case "cluster":
-                       if (params.cluster) {
-                           subject = Cluster.get(params.cluster[key])
-                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, cluster: subject)
-                       }
-                       break;
                    case "license":
                        if (params.license) {
                            subject = License.get(params.license[key])

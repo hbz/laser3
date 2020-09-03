@@ -275,9 +275,6 @@ class ApiCollectionReader {
             if (it.org && (ApiReader.IGNORE_ORGANISATION != ignoreRelationType)) {
                 tmp.organisation = ApiUnsecuredMapReader.getOrganisationStubMap(it.org) // com.k_int.kbplus.Org
             }
-            if (it.cluster && (ApiReader.IGNORE_CLUSTER != ignoreRelationType)) {
-                tmp.cluster = ApiUnsecuredMapReader.getClusterStubMap(it.cluster) // com.k_int.kbplus.Cluster
-            }
             if (it.lic && (ApiReader.IGNORE_LICENSE != ignoreRelationType)) {
                 tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // com.k_int.kbplus.License
             }
@@ -407,9 +404,6 @@ class ApiCollectionReader {
                     //    role.organisation = ApiStubReader.resolveOrganisationStub(it.org, context) // com.k_int.kbplus.Org
                     //}
 
-                    if (it.cluster) {
-                        role.cluster = ApiStubReader.resolveClusterStub(it.cluster) // com.k_int.kbplus.Cluster
-                    }
                     if (it.lic) {
                         role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
                     }

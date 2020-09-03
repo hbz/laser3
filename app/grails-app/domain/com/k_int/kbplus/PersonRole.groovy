@@ -21,7 +21,6 @@ class PersonRole implements Comparable<PersonRole>{
     RefdataValue    responsibilityType  // exclusive other types
 
     License         lic
-    Cluster         cluster
     Package         pkg
     Subscription    sub   
     TitleInstance   title
@@ -45,7 +44,6 @@ class PersonRole implements Comparable<PersonRole>{
         prs         column:'pr_prs_fk',     index: 'pr_prs_org_idx'
         lic         column:'pr_lic_fk'
         org         column:'pr_org_fk',     index: 'pr_prs_org_idx'
-        cluster     column:'pr_cluster_fk'
         pkg         column:'pr_pkg_fk'
         sub         column:'pr_sub_fk'
         title       column:'pr_title_fk'
@@ -62,7 +60,6 @@ class PersonRole implements Comparable<PersonRole>{
         responsibilityType  (nullable:true)
         lic         (nullable:true)
         org         (nullable:true)
-        cluster     (nullable:true)
         pkg         (nullable:true)
         sub         (nullable:true)
         title       (nullable:true)
@@ -81,7 +78,6 @@ class PersonRole implements Comparable<PersonRole>{
         org     = owner instanceof Org ? owner : org
 
         lic     = owner instanceof License ? owner : lic
-        cluster = owner instanceof Cluster ? owner : cluster
         pkg     = owner instanceof Package ? owner : pkg
         sub     = owner instanceof Subscription ? owner : sub
         title   = owner instanceof TitleInstance ? owner : title
@@ -90,7 +86,6 @@ class PersonRole implements Comparable<PersonRole>{
     def getReference() {
 
         if (lic)        return 'lic:' + lic.id
-        if (cluster)    return 'cluster:' + cluster.id
         if (pkg)        return 'pkg:' + pkg.id
         if (sub)        return 'sub:' + sub.id
         if (title)      return 'title:' + title.id

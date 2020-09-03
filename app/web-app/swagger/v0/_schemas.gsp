@@ -1003,7 +1003,7 @@
         organisation:
           $ref: "#/components/schemas/OrganisationStub"
           description: |
-            Exclusive with cluster, license, package, subscription and title
+            Exclusive with license, package, subscription and title
         roleType:
           type: string
           description: Mapping RefdataCategory "${RDConstants.ORGANISATIONAL_ROLE}"
