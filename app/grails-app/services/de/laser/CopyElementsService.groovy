@@ -798,7 +798,7 @@ class CopyElementsService {
                                     additionalProp.instanceOf = targetProp
                                     additionalProp.save(flush: true)
                                 } else {
-                                    def matchingProps = targetProp.getClass().findByOwnerAndType(member, targetProp.type)
+                                    def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
                                     // unbound prop found with matching type, set backref
                                     if (matchingProps) {
                                         matchingProps.each { memberProp ->

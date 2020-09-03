@@ -191,7 +191,7 @@ grails.plugins.remotepagination.enableBootstrap = true // Finance
 //grails.mail.default.from = "server@yourhost.com" //override system wide
 grails.mail.disabled = false //System wide
 grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
-//grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
+grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
 
 //
 // --- logging ---
