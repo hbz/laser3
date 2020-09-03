@@ -394,7 +394,7 @@
                                     <g:message code="license.plural"/>
                                 </h5>
 
-                                <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
+                                <g:if test="${links && links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                                     <table class="ui fixed table">
                                         <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
                                             <tr><g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>

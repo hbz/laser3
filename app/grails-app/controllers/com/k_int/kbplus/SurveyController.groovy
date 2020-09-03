@@ -631,7 +631,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo.surveyConfigs.size() ? surveyInfo.surveyConfigs.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs?.size() ? surveyInfo.surveyConfigs.size() + 1 : 1,
                     type: 'IssueEntitlementsSurvey',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: false,
@@ -1267,6 +1267,8 @@ class SurveyController {
     })
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
