@@ -773,40 +773,6 @@ class LicenseController
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def properties() {
-        log.debug("license id: ${params.id}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        result.authorizedOrgs = result.user?.authorizedOrgs
-
-        // create mandatory LicensePrivateProperties if not existing
-
-        List<PropertyDefinition> mandatories = []
-        result.user?.authorizedOrgs?.each{ org ->
-            List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, org)
-            if (ppd) {
-                mandatories << ppd
-            }
-        }
-        mandatories.flatten().each{ PropertyDefinition pd ->
-            if (! LicenseProperty.findWhere(owner: result.licenseInstance, type: pd, tenant: result.institution, isPublic: false)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.licenseInstance, pd, result.institution)
-
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors.toString())
-                } else {
-                    log.debug("New license private property created via mandatory: " + newProp.type.name)
-                }
-            }
-        }
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
         log.debug("license id:${params.id}");
 

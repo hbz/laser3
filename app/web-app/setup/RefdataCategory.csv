@@ -12,8 +12,6 @@ category.igi,Preiskategorie IGI InfoSci Journals,Price category IGI InfoSci Jour
 category.juris,Preiskategorie juris,Price category juris
 category.unwto,Preiskategorie UNWTO,Price category UNWTO
 category.world.bank,Preiskategorie World Bank,Price category World Bank
-cluster.role,Cluster Role,Cluster Role
-cluster.type,Cluster Type,Cluster Type
 combo.status,Combo Status,Combo Status
 combo.type,Combo Type,Combo Type
 concurrent.access,SimUser,Concurrent Access

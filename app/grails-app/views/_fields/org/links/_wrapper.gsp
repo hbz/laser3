@@ -14,9 +14,6 @@
             <g:elseif test="${ol.lic?.id}">
               <g:link controller="license" action="show" id="${ol.lic.id}" >${ol.lic.reference ?: ol.lic.id} (${message(code:'license.label')})</g:link>
             </g:elseif>
-            <g:elseif test="${ol.cluster?.id}">
-              <g:link controller="cluster" action="show" id="${ol.cluster.id}" >${ol.cluster.name ?: ol.cluster.id} (${message(code:'cluster.label')})</g:link>
-            </g:elseif>
             <g:elseif test="${ol.title?.id}">
               <g:link controller="title" action="show" id="${ol.title.id}" >${ol.title.title ?: ol.title.id} (${message(code:'title.label')})</g:link>
             </g:elseif>

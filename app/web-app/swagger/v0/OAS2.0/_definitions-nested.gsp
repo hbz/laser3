@@ -142,10 +142,6 @@
       - $ref: "#/definitions/PersonRole"
       - type: object
         properties:
-          cluster:
-            description: |
-              Exclusive with license, organisation, package, subscription and title
-            $ref: "#/definitions/ClusterStub"
           license:
             description: |
               Exclusive with cluster, organisation, package, subscription and title

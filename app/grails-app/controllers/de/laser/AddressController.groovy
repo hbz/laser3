@@ -20,13 +20,7 @@ class AddressController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
-        [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
+        redirect controller: 'myInstitution', action: 'addressbook'
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

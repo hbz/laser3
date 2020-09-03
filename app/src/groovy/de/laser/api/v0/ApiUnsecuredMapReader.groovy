@@ -12,22 +12,6 @@ class ApiUnsecuredMapReader {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> getClusterStubMap(Cluster cluster) {
-        if (!cluster) {
-            return null
-        }
-
-        Map<String, Object> result = [:]
-
-        result.id           = cluster.id
-        result.name         = cluster.name
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * @return Map<String, Object>
-     */
     static Map<String, Object> getLicenseStubMap(License lic) {
         if (!lic) {
             return null

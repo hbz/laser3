@@ -1,16 +1,6 @@
 
   ### stubs ###
 
-<%--
-  ClusterStub:
-    type: object
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
---%>
-
   LicenseStub:
     type: object
     properties:
