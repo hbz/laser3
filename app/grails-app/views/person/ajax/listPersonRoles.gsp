@@ -10,9 +10,6 @@
 
             <div class="two fields">
                 <div class="field wide twelve">
-                    <g:if test="${link.cluster}">
-                        <g:link controller="${linkController}" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>  <br />
-                    </g:if>
                     <g:if test="${link.lic}">
                         <g:link controller="${linkController}" action="show" id="${link.lic.id}">${link.lic.reference}</g:link>  <br />
                     </g:if>

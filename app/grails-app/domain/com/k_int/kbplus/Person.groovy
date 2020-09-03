@@ -172,10 +172,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
             q = ' and pr.lic = :obj '
             p << ['obj': obj]
         }
-        if (obj instanceof Cluster) {
-            q = ' and pr.cluster = :obj '
-            p << ['obj': obj]
-        }
         if (obj instanceof Package) {
             q = ' and pr.pkg = :obj '
             p << ['obj': obj]
@@ -212,10 +208,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '
-            p << ['obj': obj]
-        }
-        if (obj instanceof Cluster) {
-            q = ' and pr.cluster = :obj '
             p << ['obj': obj]
         }
         if (obj instanceof Package) {

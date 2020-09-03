@@ -607,14 +607,6 @@ class YodaController {
         redirect controller: 'home'
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def appLogfile() {
-        return // TODO
-
-        File f = new File("${Holders.config.log_location}")
-        return [file: "${f.canonicalPath}"]
-    }
-
     @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")

@@ -42,23 +42,6 @@
       additionSecond:
         type: string
 --%>
-<%--
-  Cluster:
-    allOf:
-      - $ref: "#/definitions/ClusterStub"
-      - type: object
-        properties:
-          definition:
-            type: string
-          organisations: # mapping attr orgs
-            type: array
-            items:
-              $ref: "#/definitions/OrganisationStub" # resolved OrgRole
-          persons: # mapping attr prsLinks
-            type: array
-            items:
-              $ref: "#/definitions/Person" # resolved PersonRole
---%>
   <%--
   Contact:
     type: object
@@ -340,10 +323,6 @@
 #    properties:
 #      id:
 #        type: integer
-#      cluster:
-#        $ref: "#/definitions/ClusterStub"
-#        description: |
-#          Exclusive with license, organisation, package, subscription and title
 #      endDate:
 #        type: string
 #        format: date

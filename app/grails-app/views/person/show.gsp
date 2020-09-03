@@ -283,11 +283,6 @@
                                                         <i class="ui icon university la-list-icon"></i>
                                                     </span>
                                                 </g:if>
-                                                <g:if test="${link.cluster}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'cluster.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon university la-list-icon"></i>
-                                                    </span>
-                                                </g:if>
                                                 <g:if test="${link.sub}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon clipboard outline la-list-icon"></i>
@@ -313,9 +308,6 @@
 
                                                     <g:if test="${link.pkg}">
                                                         <g:link controller="package" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
-                                                    </g:if>
-                                                    <g:if test="${link.cluster}">
-                                                        <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
                                                     </g:if>
                                                     <g:if test="${link.sub}">
                                                         <g:link controller="subscription" action="show" id="${link.sub.id}">${link.sub.name}</g:link>

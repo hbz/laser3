@@ -84,7 +84,6 @@ class ShareService {
                 org:            share.org ,
                 lic:            (target instanceof License) ? target : share.lic,
                 sub:            (target instanceof Subscription) ? target : share.sub,
-                cluster:        (target instanceof Cluster) ? target : share.cluster,
                 pkg:            (target instanceof Package) ? target : share.pkg,
                 title:          (target instanceof TitleInstance) ? target : share.title,
                 roleType:       share.roleType,
@@ -111,9 +110,8 @@ class ShareService {
                 (target instanceof License) ? 'lic' :
                         (target instanceof Subscription) ? 'sub' :
                                 (target instanceof Package) ? 'pkg' :
-                                        (target instanceof Cluster) ? 'cluster' :
-                                                (target instanceof TitleInstance) ? 'title' :
-                                                        null
+                                        (target instanceof TitleInstance) ? 'title' :
+                                                null
 
         if (tp) {
             OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])

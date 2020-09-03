@@ -20,14 +20,8 @@ class ContactController extends AbstractDebugController {
 
 	@Secured(['ROLE_USER'])
 	def index() {
-		redirect action: 'list', params: params
+		redirect controller: 'myInstitution', action: 'addressbook'
 	}
-
-    @Secured(['ROLE_USER'])
-    def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
-        [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
-    }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })

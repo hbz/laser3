@@ -918,42 +918,6 @@ class OrganisationController extends AbstractDebugController {
         redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def properties() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Org orgInstance = Org.get(params.id)
-        result.contextOrg      = contextService.org
-
-        result.editable = checkIsEditable(result.user, orgInstance)
-
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        // create mandatory OrgPrivateProperties if not existing
-
-        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, contextService.org)
-        mandatories.flatten().each{ pd ->
-            if (! OrgProperty.findWhere(owner: orgInstance, type: pd, isPublic: false, tenant: contextService.org)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd, contextService.org)
-
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors.toString())
-                } else {
-                    log.debug("New org private property created via mandatory: " + newProp.type.name)
-                }
-            }
-        }
-
-        result.orgInstance = orgInstance
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def users() {
