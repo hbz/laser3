@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService;" %>
+<%@ page import="de.laser.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService;com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection/>
 
 <g:set var="formService" bean="formService"/>
@@ -10,7 +10,6 @@
             allObjects_readRights : allObjects_readRights,
             allObjects_writeRights: allObjects_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription"
-            id="${params.id ?: params.sourceObjectId}"
             params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -30,7 +29,7 @@
                                     <th colspan="5">
             <g:if test="${sourceObject}"><g:link controller="subscription"
                                                        action="show"
-                                                       id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
+                                                       id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
             </th>
         </tr>
             <tr>
@@ -49,7 +48,9 @@
                 <tr>
                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                         <td>
-                            ${subscriberOrg.sortname}
+                            <g:link controller="subscription"
+                                    action="show"
+                                    id="${sub.id}">${subscriberOrg.sortname}</g:link>
                             <g:if test="${subscriberOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${subscriberOrg.getCustomerTypeI10n()}">
@@ -64,7 +65,7 @@
                         <td>${sub.status.getI10n('value')}</td>
                         <td>
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="subscription.copySubscriber"
+                                <g:checkBox name="copyObject.copySubscriber"
                                             value="${genericOIDService.getOID(sub)}"
                                             data-action="copy" checked="${true}"/>
                             </div>
@@ -82,7 +83,7 @@
                         <th colspan="4">
                             <g:if test="${targetObject}"><g:link controller="subscription"
                                                                        action="show"
-                                                                       id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
+                                                                       id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                         </th>
                     </tr>
                     <tr>
@@ -96,7 +97,11 @@
                     <g:each in="${validTargetSubChilds}" var="sub">
                         <tr>
                             <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
-                                <td>${subscriberOrg.sortname}</td>
+                                <td>
+                                    <g:link controller="subscription"
+                                            action="show"
+                                            id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                </td>
                                 <td><g:formatDate formatName="default.date.format.notime"
                                                   date="${sub.startDate}"/></td>
                                 <td><g:formatDate formatName="default.date.format.notime"

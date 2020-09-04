@@ -1093,23 +1093,23 @@ class LicenseController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copyElementsService.copySubElements_DatesOwnerRelations(params)
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                 result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copyElementsService.copySubElements_Subscriber(params)
+                result << copyElementsService.copyObjectElements_Subscriber(params)
                 result << copyElementsService.loadDataFor_Subscriber(params)
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.copyObjectElements_Properties(params)
                 result << copyElementsService.loadDataFor_Properties(params)
                 break
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""

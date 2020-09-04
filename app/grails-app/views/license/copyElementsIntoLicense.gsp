@@ -111,6 +111,6 @@ if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetOb
 <g:else>
     <g:render template="/templates/copyElements/copyElements"/>
 </g:else>
-<g:javascript src="copyPropertiesCompare.js"/>
+<g:render template="/templates/copyElements/copyElementsJS"/>
 </body>
 </html>

@@ -3157,20 +3157,6 @@ class SubscriptionController
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewals() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-        }
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         def ctxlist = []
 
@@ -3192,27 +3178,6 @@ class SubscriptionController
         result
     }
 
-    @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def launchRenewalsProcess() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-
-//        def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true)
-//
-//        log.debug("Clear basket....");
-//        shopping_basket.items?.clear();
-//        shopping_basket.save(flush: true)
-//
-//        def oid = "com.k_int.kbplus.Subscription:${params.id}"
-//        shopping_basket.addIfNotPresent(oid)
-//        Subscription.get(params.id).packages.each {
-//            oid = "com.k_int.kbplus.Package:${it.pkg.id}"
-//            shopping_basket.addIfNotPresent(oid)
-//        }
-
-        redirect controller: 'myInstitution', action: 'renewalsSearch'
-    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
@@ -3901,617 +3866,49 @@ class SubscriptionController
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewSubscription_Local() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
 
-        if (!accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
-            response.sendError(401)
-            return;
-        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
-            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin')
-            response.sendError(401)
-            return;
-        }
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processRenewSubscription() {
 
-        Subscription subscription = Subscription.get(params.id)
-        def prevSubs = Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, GenericOIDService.getOID(subscription))
-        if (prevSubs){
-            flash.error = message(code: 'subscription.renewSubExist')
-            response.sendError(401)
-            return;
-        }
-
-        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-
-        result.errors = []
-        def newStartDate
-        def newEndDate
-        use(TimeCategory) {
-            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
-            newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
-        }
-
-        result.isRenewSub = true
-        result.permissionInfo = [sub_startDate: newStartDate? sdf.format(newStartDate) : null,
-                                 sub_endDate: newEndDate? sdf.format(newEndDate) : null,
-                                 sub_name: subscription.name,
-                                 sub_id: subscription.id,
-                                 sub_status: RDStore.SUBSCRIPTION_INTENDED]
-
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def processSimpleRenewal_Local() {
-        log.debug("-> renewalsUpload params: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result.editable) {
             response.sendError(401); return
         }
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
-
-        def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-        def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
-        def sub_status = params.subStatus
-        def old_subOID = params.subscription.old_subid
-        Subscription oldSubscription = Subscription.get(old_subOID)
-        def new_subname = params.subscription.name
-
-        def new_subscription = new Subscription(
-                identifier: java.util.UUID.randomUUID().toString(),
-                status: sub_status,
-                name: new_subname,
-                startDate: sub_startDate,
-                endDate: sub_endDate,
-                type: oldSubscription.type ?: null,
-                resource: oldSubscription.resource ?: null,
-                form: oldSubscription.form ?: null
-        )
-        log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
-
-        if (new_subscription.save(flush:true)) {
-            // assert an org-role
-            OrgRole org_link = new OrgRole(org: result.institution,
-                    sub: new_subscription,
-                    roleType: RDStore.OR_SUBSCRIBER
-            ).save(flush: true)
-
-            Links prevLink
-            if(old_subOID) {
-                prevLink = new Links(source: GenericOIDService.getOID(new_subscription), destination: GenericOIDService.getOID(oldSubscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg)
-                prevLink.save(flush:true)
-            }
-            else { log.error("Problem linking new subscription, ${prevLink.errors}") }
-        } else {
-            log.error("Problem saving new subscription, ${new_subscription.errors}");
-        }
-
-        new_subscription.save(flush:true)
-
-        if (params.targetObjectId == "null") params.remove("targetObjectId")
-        redirect controller: 'subscription',
-                 action: 'copyElementsIntoSubscription',
-                 params: [sourceObjectId: GenericOIDService.getOID(old_subOID), targetObjectId: GenericOIDService.getOID(new_subscription), isRenewSub: true]
-    }
-
-
-    /*@Deprecated
-    @Secured(['ROLE_YODA'])
-    def renewSubscriptionConsortia() {
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
-            response.sendError(401); return
-        }
-
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
-
-            use(TimeCategory) {
-                result.newStartDate = baseSub.startDate ? baseSub.startDate + 1.year : null
-                result.newEndDate = baseSub.endDate ? baseSub.endDate + 1.year : null
-            }
-
-            if (params.workFlowPart == '3') {
-
-                Subscription newSubConsortia = Subscription.get(params.newSubscription)
-
-                def subMembers = []
-
-                params.list('selectedSubs').each { it ->
-                    subMembers << Long.valueOf(it)
-                }
-
-
-                subMembers.each { sub ->
-
-                    Subscription subMember = Subscription.findById(sub)
-
-                    //ChildSub Exist
-                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
-                    if (prevLinks.size() == 0) {
-
-                        *//* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                            [result.subscriptionInstance, it.id])*//*
-
-                        Subscription newSubscription = new Subscription(
-                                type: subMember.type,
-                                kind: subMember.kind,
-                                status: newSubConsortia.status,
-                                name: subMember.name,
-                                startDate: newSubConsortia.startDate,
-                                endDate: newSubConsortia.endDate,
-                                manualRenewalDate: subMember.manualRenewalDate,
-                                *//* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, *//*
-                                identifier: UUID.randomUUID().toString(),
-                                instanceOf: newSubConsortia?.id,
-                                //previousSubscription: subMember?.id,
-                                isSlaved: subMember.isSlaved,
-                                owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
-                                resource: newSubConsortia.resource ?: null,
-                                form: newSubConsortia.form ?: null
-                        )
-                        newSubscription.save(flush: true)
-                        //ERMS-892: insert preceding relation in new data model
-                        if (subMember) {
-                            Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: RDStore.LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
-                            if (!prevLink.save(flush:true)) {
-                                log.error("Subscription linking failed, please check: ${prevLink.errors}")
-                            }
-                        }
-
-                        if (subMember.propertySet) {
-                            //customProperties
-                            for (prop in subMember.propertySet) {
-                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
-                                copiedProp = prop.copyInto(copiedProp)
-                                copiedProp.instanceOf = null
-                                copiedProp.save(flush:true)
-                                //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                            }
-                        }
-                        *//*
-                        if (subMember.privateProperties) {
-                            //privatProperties
-
-                            List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [OR_SUBSCRIBER_CONS, OR_SUBSCRIPTION_CONSORTIA]]).collect {
-                                it -> it.id
-                            }
-                            subMember.privateProperties?.each { prop ->
-                                if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                                    SubscriptionPrivateProperty copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
-                                    copiedProp = prop.copyInto(copiedProp)
-                                    copiedProp.save(flush: true)
-                                    //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                                }
-                            }
-                        }
-                        *//*
-
-                        if (subMember.packages && newSubConsortia.packages) {
-                            //Package
-                            subMember.packages?.each { pkg ->
-                                def pkgOapls = pkg.oapls
-                                pkg.properties.oapls = null
-                                pkg.properties.pendingChangeConfig = null
-                                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
-                                newSubscriptionPackage.subscription = newSubscription
-
-                                if(newSubscriptionPackage.save(flush:true)){
-                                    pkgOapls.each{ oapl ->
-                                        def oaplProperties = oapl.properties
-                                        oaplProperties.globalUID = null
-                                        OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
-                                        InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
-                                        newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                        newOrgAccessPointLink.save(flush: true)
-                                    }
-                                }
-                            }
-                        }
-                        if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
-
-                            subMember.issueEntitlements?.each { ie ->
-
-                                if (ie.status != RDStore.TIPP_STATUS_DELETED) {
-                                    def ieProperties = ie.properties
-                                    ieProperties.globalUID = null
-
-                                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                                    InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
-                                    newIssueEntitlement.subscription = newSubscription
-                                    newIssueEntitlement.coverages = null
-                                    newIssueEntitlement.ieGroups = null
-
-                                    if(newIssueEntitlement.save(flush: true)){
-                                        ie.properties.coverages.each{ coverage ->
-
-                                            def coverageProperties = coverage.properties
-                                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
-                                            InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
-                                            newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                            newIssueEntitlementCoverage.save(flush: true)
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-
-                        //OrgRole
-                        subMember.orgRelations?.each { or ->
-                            if ((or.org?.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
-                                OrgRole newOrgRole = new OrgRole()
-                                InvokerHelper.setProperties(newOrgRole, or.properties)
-                                newOrgRole.sub = newSubscription
-                                newOrgRole.save(flush: true)
-                            }
-                        }
-
-
-
-                        if (subMember.prsLinks && newSubConsortia.prsLinks) {
-                            //PersonRole
-                            subMember.prsLinks?.each { prsLink ->
-                                PersonRole newPersonRole = new PersonRole()
-                                InvokerHelper.setProperties(newPersonRole, prsLink.properties)
-                                newPersonRole.sub = newSubscription
-                                newPersonRole.save(flush: true)
-                            }
-                        }
-                    }
-
-                }
-
-
-                redirect controller: 'subscription', action: 'show', params: [id: newSubConsortia?.id]
-
-            }
-
-            if (params.workFlowPart == '2') {
-                def newSub2 = Subscription.get(params.newSubscription)
-
-                //Copy Docs
-                def toCopyDocs = []
-                params.list('subscription.takeDocs').each { doc ->
-
-                    toCopyDocs << Long.valueOf(doc)
-                }
-
-                //Copy Announcements
-                def toCopyAnnouncements = []
-                params.list('subscription.takeAnnouncements').each { announcement ->
-
-                    toCopyAnnouncements << Long.valueOf(announcement)
-                }
-                if (newSub2.documents.size() == 0) {
-                    baseSub.documents?.each { dctx ->
-
-                        //Copy Docs
-                        if (dctx.id in toCopyDocs) {
-                            if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
-
-                                try {
-
-                                    Doc newDoc = new Doc()
-                                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                                    newDoc.save(flush: true)
-
-                                    DocContext newDocContext = new DocContext()
-                                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                    newDocContext.subscription = newSub2
-                                    newDocContext.owner = newDoc
-                                    newDocContext.save(flush: true)
-
-                                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
-
-                                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
-                                    Path target = new File("${fPath}/${newDoc.uuid}").toPath()
-                                    Files.copy(source, target)
-
-                                }
-                                catch (Exception e) {
-                                    log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
-                                }
-                            }
-                        }
-                        //Copy Announcements
-                        if (dctx.id in toCopyAnnouncements) {
-                            if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                                Doc newDoc = new Doc()
-                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                                newDoc.save(flush: true)
-
-                                DocContext newDocContext = new DocContext()
-                                InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                newDocContext.subscription = newSub2
-                                newDocContext.owner = newDoc
-                                newDocContext.save(flush: true)
-                            }
-                        }
-                    }
-                }
-                if (!Task.findAllBySubscription(newSub2)) {
-                    //Copy Tasks
-                    params.list('subscription.takeTasks').each { tsk ->
-
-                        def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
-                        if (task) {
-                            if (task.status != RefdataValue.getByValueAndCategory('Done', RDConstants.TASK_STATUS)) {
-                                Task newTask = new Task()
-                                InvokerHelper.setProperties(newTask, task.properties)
-                                newTask.systemCreateDate = new Date()
-                                newTask.subscription = newSub2
-                                newTask.save(flush: true)
-                            }
-
-                        }
-                    }
-                }
-                params.workFlowPart = 3
-                params.workFlowPartNext = 4
-                result.newSub = newSub2
-
-                def validSubChilds = Subscription.findAllByInstanceOf(baseSub)
-
-                result.validSubChilds = validSubChilds.sort { a, b ->
-                    def sa = a.getSubscriber()
-                    def sb = b.getSubscriber()
-                    (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-                }
-
-            }
-
-
-            if (params.workFlowPart == '1') {
-
-                if (params.baseSubscription) {
-
-                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
-                    if (previousSubscriptions.size() > 0) {
-                        flash.error = message(code: 'subscription.renewSubExist')
-                    } else {
-
-
-                        def newSub = new Subscription(
-                                name: baseSub.name,
-                                startDate: result.newStartDate,
-                                endDate: result.newEndDate,
-                                //previousSubscription: baseSub.id, overhauled as ERMS-800/ERMS-892
-                                identifier: java.util.UUID.randomUUID().toString(),
-                                isSlaved: baseSub.isSlaved,
-                                type: baseSub.type,
-                                kind: baseSub.kind,
-                                status: RefdataValue.getByValueAndCategory('Intended', RDConstants.SUBSCRIPTION_STATUS),
-                                resource: baseSub.resource ?: null,
-                                form: baseSub.form ?: null
-                        )
-
-                        if (!newSub.save(flush: true)) {
-                            log.error("Problem saving subscription ${newSub.errors}")
-                            return newSub
-                        } else {
-                            log.debug("Save ok")
-
-                            if (params.subscription.takeLinks) {
-                                //License
-                                if(baseSub.owner)
-                                    subscriptionService.setOrgLicRole(newSub,baseSub.owner,false)
-                            }
-                            //Copy References
-                            //OrgRole
-                            baseSub.orgRelations?.each { or ->
-
-                                if ((or.org.id == contextService.getOrg().id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
-                                    OrgRole newOrgRole = new OrgRole()
-                                    InvokerHelper.setProperties(newOrgRole, or.properties)
-                                    newOrgRole.sub = newSub
-                                    newOrgRole.save(flush: true)
-                                }
-                            }
-                            //link to previous subscription
-                            Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-                            if (!prevLink.save(flush: true)) {
-                                log.error("Problem linking to previous subscription: ${prevLink.errors}")
-                            }
-
-                            if (params.subscription.takeLinks) {
-                                //Package
-                                baseSub.packages?.each { pkg ->
-                                    def pkgOapls = pkg.oapls
-                                    Set<PendingChangeConfiguration> pkgPendingChangeConfig = pkg.pendingChangeConfig
-                                    pkg.properties.oapls = null
-                                    pkg.properties.pendingChangeConfig = null
-                                    SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                                    InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
-                                    newSubscriptionPackage.subscription = newSub
-
-                                    if(newSubscriptionPackage.save(flush:true)){
-                                        pkgOapls.each{ oapl ->
-                                            def oaplProperties = oapl.properties
-                                            oaplProperties.globalUID = null
-                                            OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
-                                            InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
-                                            newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                            newOrgAccessPointLink.save(flush: true)
-                                        }
-                                        pkgPendingChangeConfig.each { PendingChangeConfiguration config ->
-                                            Map<String,Object> configSettings = [subscriptionPackage:newSubscriptionPackage,settingValue:config.settingValue,settingKey:config.settingKey,withNotification:config.withNotification]
-                                            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                                            if(newPcc) {
-                                                Set<AuditConfig> auditables = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldInList(baseSub.class.name,baseSub.id,PendingChangeConfiguration.SETTING_KEYS)
-                                                auditables.each { audit ->
-                                                    AuditConfig.addConfig(newSub,audit.referenceField)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                // fixed hibernate error: java.util.ConcurrentModificationException
-                                // change owner before first save
-                                //License
-                                //newSub.owner = baseSub.owner ?: null
-                                //newSub.save(flush: true)
-                            }
-
-                            if (params.subscription.takeEntitlements) {
-
-                                baseSub.issueEntitlements.each { ie ->
-
-                                    if (ie.status != RDStore.TIPP_STATUS_DELETED) {
-                                        def properties = ie.properties
-                                        properties.globalUID = null
-
-                                        IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                                        InvokerHelper.setProperties(newIssueEntitlement, properties)
-                                        newIssueEntitlement.subscription = newSub
-                                        newIssueEntitlement.coverages = null
-                                        newIssueEntitlement.ieGroups = null
-
-                                        if(newIssueEntitlement.save(flush: true)){
-                                            ie.properties.coverages.each{ coverage ->
-
-                                                def coverageProperties = coverage.properties
-                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
-                                                InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
-                                                newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                                newIssueEntitlementCoverage.save(flush: true)
-                                            }
-
-                                        }
-                                    }
-                                }
-
-                            }
-
-                            if (params.subscription.takeCustomProperties) {
-                                //customProperties
-                                baseSub.propertySet.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
-                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
-                                    copiedProp = prop.copyInto(copiedProp)
-                                    copiedProp.instanceOf = null
-                                    copiedProp.save(flush:true)
-                                    //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                                }
-                            }
-                            if (params.subscription.takePrivateProperties) {
-                                //privatProperties
-
-                                baseSub.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
-                                    SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
-                                    copiedProp = prop.copyInto(copiedProp)
-                                    copiedProp.save(flush:true)
-                                    //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                                }
-                            }
-
-                            params.workFlowPart = 2
-                            params.workFlowPartNext = 3
-                            result.newSub = newSub
-                        }
-                    }
-                }
-            }
-
-            // tasks
-            Org contextOrg = contextService.getOrg()
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-
-            result.contextOrg = contextOrg
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-            result.visibleOrgRelations =  subscriptionService.getVisibleOrgRelations(result.subscriptionInstance)
-
-            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-
-            result.visiblePrsLinks = []
-
-            result.subscriptionInstance.prsLinks.each { pl ->
-                if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic) {
-                        result.visiblePrsLinks << pl
-                    } else {
-                        // nasty lazy loading fix
-                        result.user.authorizedOrgs.each { ao ->
-                            if (ao.getId() == pl.prs.tenant.getId()) {
-                                result.visiblePrsLinks << pl
-                            }
-                        }
-                    }
-                }
-            }
-
-            result.workFlowPart = params.workFlowPart ?: 1
-            result.workFlowPartNext = params.workFlowPartNext ?: 2
-
-        }
-        result
-
-    }*/
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def processSimpleRenewal_Consortia() {
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
-            response.sendError(401); return
-        }
-
-        Subscription baseSub = Subscription.get(params.baseSubscription ?: params.id)
-
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
-            /*def sub_type = params.subType
-            def sub_kind = params.subKind ?: null
-            def sub_form = params.subForm ?: null
-            def sub_resource = params.subResource ?: null
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
-            def sub_isPublicForApi = params.subIsPublicForApi == '1'*/
-            def old_subOID = params.subscription.old_subid
+            def sub_isMultiYear = params.subscription.isMultiYear
             def new_subname = params.subscription.name
             def manualCancellationDate = null
 
             use(TimeCategory) {
-                manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
+                manualCancellationDate =  result.subscription.manualCancellationDate ? (result.subscription.manualCancellationDate + 1.year) : null
             }
+
             Subscription newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
                     manualCancellationDate: manualCancellationDate,
                     identifier: UUID.randomUUID().toString(),
-                    isSlaved: baseSub.isSlaved,
-                    type: baseSub.type,
+                    isSlaved: result.subscription.isSlaved,
+                    type: result.subscription.type,
+                    kind: result.subscription.kind,
+                    resource: result.subscription.resource,
+                    form: result.subscription.form,
+                    isPublicForApi: result.subscription.isPublicForApi,
+                    hasPerpetualAccess: result.subscription.hasPerpetualAccess,
                     status: sub_status,
-                    /*kind: sub_kind,
-                    resource: sub_resource,
-                    form: sub_form,*/
-                    administrative: baseSub.administrative,
-                    /*hasPerpetualAccess: sub_hasPerpetualAccess,
-                    isPublicForApi: sub_isPublicForApi*/
+                    isMultiYear: sub_isMultiYear ?: false,
+                    administrative: result.subscription.administrative,
             )
 
             if (!newSub.save(flush:true)) {
@@ -4519,30 +3916,29 @@ class SubscriptionController
                 return newSub
             } else {
                 log.debug("Save ok");
-
-                if (params.list('auditList')) {
-                    //copy audit
-                    params.list('auditList').each { auditField ->
-                        //All ReferenceFields were copied!
-                        //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
-                        //println(auditField)
-                        AuditConfig.addConfig(newSub, auditField)
+                if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if (params.list('auditList')) {
+                        //copy audit
+                        params.list('auditList').each { auditField ->
+                            //All ReferenceFields were copied!
+                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                            AuditConfig.addConfig(newSub, auditField)
+                        }
                     }
-
                 }
                 //Copy References
                 //OrgRole
-                baseSub.orgRelations?.each { or ->
+                result.subscription.orgRelations?.each { or ->
 
-                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS,  RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub
-                        newOrgRole.save(flush:true)
+                        newOrgRole.save()
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(result.subscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
@@ -4551,31 +3947,28 @@ class SubscriptionController
                 if (params.targetObjectId == "null") params.remove("targetObjectId")
                 result.isRenewSub = true
 
-                    redirect controller: 'subscription',
+                redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            params: [sourceObjectId: GenericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
-
+                            params: [sourceObjectId: GenericOIDService.getOID(result.subscription), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
             }
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewSubscription_Consortia() {
-
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def renewSubscription() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         result.institution = contextService.org
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
+        if (!result.editable) {
             response.sendError(401); return
         }
 
-        def subscription = Subscription.get(params.baseSubscription ?: params.id)
-
+        Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
         SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-
-        result.errors = []
-        def newStartDate
-        def newEndDate
+        Date newStartDate
+        Date newEndDate
         use(TimeCategory) {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
@@ -4586,50 +3979,17 @@ class SubscriptionController
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
-                                 sub_type     : subscription.type?.id.toString(),
-                                 sub_form     : subscription.form?.id.toString(),
-                                 sub_resource : subscription.resource?.id.toString(),
-                                 sub_kind     : subscription.kind?.id.toString(),
-                                 sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString()
                                 ]
 
         result.subscription = subscription
         result
     }
 
-    private getMySubscriptions_readRights(){
-        def params = [:]
-        List result
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result
-    }
-    private getMySubscriptions_writeRights(){
-        List result
-        Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result
-    }
-
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def copyElementsIntoSubscription() {
         Map<String, Object> result = [:]
         result.user = contextService.user
@@ -4660,6 +4020,8 @@ class SubscriptionController
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
+        if (params.copyObject) {result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)}
+
         result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
@@ -4677,7 +4039,7 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copyElementsService.copySubElements_DatesOwnerRelations(params)
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                 if (params.isRenewSub){
                     params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << copyElementsService.loadDataFor_PackagesEntitlements(params)
@@ -4686,7 +4048,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copyElementsService.copySubElements_PackagesEntitlements(params)
+                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
                 if (params.isRenewSub){
                     params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
@@ -4695,7 +4057,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copySubElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                 if (params.isRenewSub){
                     if (!params.fromSurvey && result.isSubscriberVisible){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
@@ -4709,7 +4071,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copyElementsService.copySubElements_Subscriber(params)
+                result << copyElementsService.copyObjectElements_Subscriber(params)
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << copyElementsService.loadDataFor_Properties(params)
@@ -4718,7 +4080,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (params.isRenewSub && result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4734,7 +4096,7 @@ class SubscriptionController
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copySubElements_Properties(params)
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4797,17 +4159,17 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copySubElements_DocsAnnouncementsTasks();
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks();
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
 
                 break;
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copySubElements_Properties();
+                result << copyElementsService.copyObjectElements_Properties();
                 result << copyElementsService.loadDataFor_Properties()
 
                 break;
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copySubElements_Properties();
+                result << copyElementsService.copyObjectElements_Properties();
                 if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4828,77 +4190,109 @@ class SubscriptionController
     }
 
 
-
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def copySubscription() {
+        Map<String, Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
+        flash.error = ""
+        flash.message = ""
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+
+        if (!result.editable) {
             response.sendError(401); return
         }
 
-        // tasks
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscriptionInstance)
-        def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
-        result << preCon
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+        result.copyObject = true
 
+        if (params.name && !result.targetObject) {
+            String sub_name = params.name ?: "Kopie von ${result.sourceObject.name}"
 
-        result.visibleOrgRelations = []
-        result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                result.visibleOrgRelations << or
+            Object targetObject = new Subscription(
+                    name: sub_name,
+                    status: RDStore.SUBSCRIPTION_NO_STATUS,
+                    identifier: java.util.UUID.randomUUID().toString(),
+                    type: result.sourceObject.type,
+                    isSlaved: result.sourceObject.isSlaved,
+                    administrative: result.sourceObject.administrative
+            )
+            //Copy InstanceOf
+            if (params.targetObject?.copylinktoSubscription) {
+                targetObject.instanceOf = result.sourceObject?.instanceOf ?: null
             }
-        }
 
-        // -- private properties
 
-        //result.authorizedOrgs = result.user?.authorizedOrgs
-        //result.contextOrg = contextService.getOrg()
+            if (!targetObject.save()) {
+                log.error("Problem saving subscription ${targetObject.errors}");
+            }else {
+                result.targetObject = targetObject
+                params.targetObjectId = GenericOIDService.getOID(targetObject)
 
-        // create mandatory OrgPrivateProperties if not existing
-
-        Set<PropertyDefinition> mandatories = []
-        List<PropertyDefinition> ppd = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.institution)
-        if (ppd) {
-            mandatories << ppd
-        }
-        mandatories.flatten().each { pd ->
-            if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscriptionInstance, pd, result.institution, false)) {
-                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
-
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors.toString())
-                } else {
-                    log.debug("New subscription private property created via mandatory: " + newProp.type.name)
-                }
-            }
-        }
-
-        // -- private properties
-
-        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
-        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-
-        result.visiblePrsLinks = []
-
-        result.subscriptionInstance.prsLinks.each { pl ->
-            if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic) {
-                    result.visiblePrsLinks << pl
-                } else {
-                    // nasty lazy loading fix
-                    result.user.authorizedOrgs.each { ao ->
-                        if (ao.getId() == pl.prs.tenant.getId()) {
-                            result.visiblePrsLinks << pl
-                        }
+                //Copy References
+                result.sourceObject.orgRelations.each { OrgRole or ->
+                    if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id])) {
+                        OrgRole newOrgRole = new OrgRole()
+                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        newOrgRole.sub = result.targetObject
+                        newOrgRole.save()
                     }
                 }
+
             }
         }
 
-        result
 
+        switch (params.workFlowPart) {
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
+                if(result.targetObject) {
+                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                }
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                break
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                result << copyElementsService.loadDataFor_Properties(params)
+                break
+            case CopyElementsService.WORKFLOW_END:
+                result << copyElementsService.copyObjectElements_Properties(params)
+                if (result.targetObject){
+                        redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
+                }
+                break
+            default:
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                break
+        }
+
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+
+        result
     }
 
+    @Deprecated
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def processcopySubscription() {
 
         params.id = params.baseSubscription
@@ -4907,7 +4301,7 @@ class SubscriptionController
             response.sendError(401); return
         }
 
-        Subscription baseSubscription = Subscription.get(params.baseSubscription)
+        /*Subscription baseSubscription = Subscription.get(params.baseSubscription)
 
         if (baseSubscription) {
 
@@ -5166,7 +4560,7 @@ class SubscriptionController
 
                 redirect controller: 'subscription', action: 'show', params: [id: newSubscriptionInstance.id]
             }
-        }
+        }*/
 
     }
 

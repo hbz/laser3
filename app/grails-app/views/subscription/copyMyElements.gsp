@@ -64,7 +64,7 @@ if (targetObjectId) params << [targetObjectId: GenericOIDService.getOID(targetOb
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
     <g:render template="/templates/copyElements/copyPrivatePropertiesCompare"/>
 </g:elseif>
-<g:javascript src="copyPropertiesCompare.js"/>
+<g:render template="/templates/copyElements/copyElementsJS"/>
 
 </body>
 </html>

@@ -230,7 +230,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_IP
             accessPoint.save(flush: true)
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            //flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
             redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
         }
     }
@@ -268,7 +268,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.entityId = params.entityId
             accessPoint.save(flush: true)
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            //flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
             redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
         }
     }
@@ -299,7 +299,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_PROXY
             accessPoint.save(flush: true)
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            //flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
             redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
         }
     }
@@ -330,7 +330,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_VPN
             accessPoint.save(flush: true)
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            //flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
             redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
         }
     }
@@ -368,7 +368,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_EZPROXY
             accessPoint.save(flush: true)
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            //flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
             redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
         }
     }
@@ -406,7 +406,7 @@ class AccessPointController extends AbstractDebugController {
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_SHIBBOLETH
             accessPoint.save(flush: true)
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            //flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
             redirect controller: 'accessPoint', action: 'edit_'+accessPoint.accessMethod.value, id: accessPoint.id
         }
     }

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController" %>
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController;com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;"%>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -39,7 +39,7 @@
             </div>
         </g:if>
         <g:else>
-            ${message(code: 'copyElementsIntoObject.copyProperties.empty')}
+            <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
             <br><br>
 
             <div class="sixteen wide field" style="text-align: right;">

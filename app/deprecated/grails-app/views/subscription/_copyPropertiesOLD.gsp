@@ -16,10 +16,10 @@
             <tbody>
                 <tr>
                     <td><b>${message(code: 'copyElementsIntoObject.sourceObject.name')}:</b>
-                    <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
+                    <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </td>
                     <td><b>${message(code: 'copyElementsIntoObject.targetObject.name')}:</b>
-                        <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                     </td>
                 </tr>
                 <tr>
