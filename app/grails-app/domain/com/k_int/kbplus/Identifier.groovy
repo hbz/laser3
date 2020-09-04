@@ -21,6 +21,8 @@ class Identifier implements CalculatedLastUpdated {
     Date lastUpdated
     Date lastUpdatedCascading
 
+    static transients = ['URL'] // mark read-only accessor methods
+
     static belongsTo = [
             lic:    License,
             org:    Org,

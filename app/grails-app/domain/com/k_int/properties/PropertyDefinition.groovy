@@ -121,6 +121,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             propDefGroupItems: 'propDef'
     ]
 
+    static transients = ['descrClass', 'propertyType'] // mark read-only accessor methods
+
     static mapping = {
                     cache  true
                       id column: 'pd_id'

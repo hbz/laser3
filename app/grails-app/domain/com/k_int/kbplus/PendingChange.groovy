@@ -70,6 +70,8 @@ class PendingChange {
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_STATUS)
     RefdataValue status
 
+    static transients = ['payloadAsJSON', 'changeDocAsJSON', 'message', 'parsedParams'] // mark read-only accessor methods
+
     static mapping = {
         systemObject column:'pc_sys_obj'
         subscription column:'pc_sub_fk',        index:'pending_change_sub_idx'

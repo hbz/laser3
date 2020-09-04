@@ -44,6 +44,8 @@ class SurveyProperty implements I10nTrait {
         refdataCategory(nullable: true, blank: false)
     }
 
+    static transients = ['localizedType'] // mark read-only accessor methods
+
     static mapping = {
         id column: 'surpro_id'
         version column: 'surpro_version'

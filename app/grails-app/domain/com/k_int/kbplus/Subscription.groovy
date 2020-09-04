@@ -90,8 +90,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   SortedSet issueEntitlements
   SortedSet packages
 
-  static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
-
   static hasMany = [
           ids                 : Identifier,
           packages            : SubscriptionPackage,
@@ -120,6 +118,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       propertySet: 'owner',
                       //privateProperties: 'owner',
                       ]
+
+    static transients = [
+            'nameConcatenated', 'isSlavedAsString', 'provider', 'collective', 'multiYearSubscription',
+            'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate', 'holdingTypes',
+            'commaSeperatedPackagesIsilList', 'allocationTerm',
+            'subscriber', 'providers', 'agencies', 'consortia'
+    ] // mark read-only accessor methods
 
     static mapping = {
         sort name: 'asc'

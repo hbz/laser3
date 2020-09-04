@@ -10,6 +10,8 @@ class SystemObject {
   Date dateCreated
   Date lastUpdated
 
+  static transients = ['notificationEndpoints'] // mark read-only accessor methods
+
   static mapping = {
     id column:'sys_id'
     sysId column:'sys_id_str'

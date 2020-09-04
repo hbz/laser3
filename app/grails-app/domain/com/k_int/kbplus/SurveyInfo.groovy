@@ -42,6 +42,8 @@ class SurveyInfo {
         comment (nullable:true, blank:true)
     }
 
+    static transients = ['editable', 'completedforOwner'] // mark read-only accessor methods
+
     static mapping = {
         id column: 'surin_id'
         version column: 'surin_version'

@@ -83,6 +83,11 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     title:TitleInstance
   ]
 
+    static transients = [
+            'derivedAccessStartDate', 'derivedAccessEndDate',
+            'availabilityStatus', 'availabilityStatusAsString', 'availabilityStatusExplanation'
+    ] // mark read-only accessor methods
+
   static mapping = {
                 id column:'tipp_id'
          globalUID column:'tipp_guid'

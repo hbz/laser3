@@ -76,6 +76,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
   //static hasOne = [onixplLicense: OnixplLicense]
 
+    static transients = ['referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'genericLabel', 'nonDeletedDerivedLicenses'] // mark read-only accessor methods
+
   static hasMany = [
           ids            : Identifier,
           pkgs           :         Package,

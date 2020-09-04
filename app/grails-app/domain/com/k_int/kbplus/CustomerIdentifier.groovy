@@ -15,6 +15,8 @@ class CustomerIdentifier {
     Org owner           // owner
     boolean isPublic = false    // true = visible only for owner
 
+    static transients = ['provider'] // mark read-only accessor methods
+
     static mapping = {
                 id column:'cid_id'
            version column:'cid_version'

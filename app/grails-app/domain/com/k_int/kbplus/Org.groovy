@@ -95,6 +95,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     Set ids = []
 
+    static transients = ['deleted', 'customerType', 'customerTypeI10n', 'designation', 'empty', 'consortiaMember', 'department'] // mark read-only accessor methods
+
     static mappedBy = [
         ids:                'org',
         outgoingCombos:     'fromOrg',

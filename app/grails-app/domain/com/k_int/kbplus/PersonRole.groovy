@@ -35,6 +35,8 @@ class PersonRole implements Comparable<PersonRole>{
         prs:        Person,
         org:        Org
     ]
+
+    static transients = ['reference'] // mark read-only accessor methods
     
     static mapping = {
         id          column:'pr_id'

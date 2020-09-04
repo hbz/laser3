@@ -82,8 +82,12 @@ class SurveyConfig {
         propertySet(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
         createTitleGroups (nullable: true, blank: false)
-
     }
+
+    static transients = [
+            'currentDocs', 'configNameShort', 'surveyName', 'configName',
+            'typeInLocaleI10n', 'surveyOrgsIDs', 'configNavigation', 'transferWorkflowAsJSON'
+    ] // mark read-only accessor methods
 
     static mapping = {
         id column: 'surconf_id'
