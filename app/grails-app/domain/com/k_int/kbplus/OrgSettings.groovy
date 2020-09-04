@@ -46,6 +46,8 @@ class OrgSettings {
     String       strValue
     Role         roleValue
 
+    static transients = ['value'] // mark read-only accessor methods
+
     static mapping = {
         id         column:'os_id'
         version    column:'os_version'

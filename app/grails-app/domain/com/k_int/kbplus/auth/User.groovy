@@ -42,6 +42,12 @@ class User {
     shibbScope blank: true, nullable: true
   }
 
+    static transients = [
+            'displayName', 'defaultPageSize', 'defaultPageSizeAsInteger',
+            'authorizedAffiliations', 'authorizedOrgs', 'authorizedOrgsIds',
+            'admin', 'yoda', 'lastInstAdmin'
+    ] // mark read-only accessor methods
+
   static mapping = {
       cache   true
       table (name: '`user`')

@@ -37,6 +37,8 @@ class OrgRole implements ShareableTrait {
     @Transient
     ownerStatus
 
+    static transients = ['owner'] // mark read-only accessor methods
+
   static mapping = {
           id column:'or_id'
      version column:'or_version'

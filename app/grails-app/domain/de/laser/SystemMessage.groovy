@@ -15,6 +15,8 @@ class SystemMessage {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['localizedContent'] // mark read-only accessor methods
+
     static mapping = {
         id          column: 'sm_id'
         version     column: 'sm_version'

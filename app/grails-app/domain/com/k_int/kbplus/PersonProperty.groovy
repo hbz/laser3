@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
 

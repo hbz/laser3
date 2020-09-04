@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Contact;com.k_int.kbplus.Person;com.k_int.kbplus.Org;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Person;de.laser.Contact;com.k_int.kbplus.Org;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
 
 <semui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">

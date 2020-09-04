@@ -8,6 +8,9 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.Address
+import de.laser.Contact
+import de.laser.Person
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -18,7 +21,6 @@ import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -92,6 +94,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     RefdataValue costConfigurationPreset
 
     Set ids = []
+
+    static transients = ['deleted', 'customerType', 'customerTypeI10n', 'designation', 'empty', 'consortiaMember', 'department'] // mark read-only accessor methods
 
     static mappedBy = [
         ids:                'org',

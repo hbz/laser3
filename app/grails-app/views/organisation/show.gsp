@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Person; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
+<%@ page import="de.laser.Person; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.OrgSubjectGroup; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup; com.k_int.kbplus.OrgSettings" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -322,7 +322,7 @@
                                     <g:each in="${allPRMap.get(rdv.id)}" var="pr">
                                         <g:if test="pr">
                                         %{--Workaround wg NPE bei CacheEntry.getValue--}%
-                                            <% com.k_int.kbplus.Person prs = PersonRole.get(pr.id).prs%>
+                                            <% Person prs = PersonRole.get(pr.id).prs%>
                                             <g:render template="/templates/cpa/person_full_details" model="${[
                                                     person              : prs,
                                                     personRole          : pr,

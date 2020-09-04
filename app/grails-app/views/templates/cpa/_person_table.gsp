@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole" %>
 
 <table class="ui table la-table">
     <colgroup>

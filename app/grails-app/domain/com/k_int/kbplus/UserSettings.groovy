@@ -86,6 +86,8 @@ class UserSettings {
     @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
     RefdataValue rdValue
 
+    static transients = ['value'] // mark read-only accessor methods
+
     static mapping = {
         id         column:'us_id'
         version    column:'us_version'

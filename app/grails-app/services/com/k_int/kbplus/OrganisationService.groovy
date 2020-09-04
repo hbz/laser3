@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
-
+import de.laser.Address
+import de.laser.Contact
+import de.laser.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
@@ -12,7 +14,6 @@ import de.laser.AuditConfig
 import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -106,7 +107,7 @@ class OrganisationService {
             identifiers[o] = orgIdentifiers
         }
         Map<Org,Map<String,List<String>>> contacts = [:]
-        List contactList = Contact.executeQuery("select c.content, pr.org, pr.functionType from PersonRole pr join pr.prs p join p.contacts c where pr.org in (:orgs) and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",[orgs:orgs,functionTypes:[generalContact,responsibleAdmin,billingContact],type: RDStore.CCT_EMAIL])
+        List contactList = Contact.executeQuery("select c.content, pr.org, pr.functionType from PersonRole pr join pr.prs p join p.contacts c where pr.org in (:orgs) and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",[orgs:orgs, functionTypes:[generalContact, responsibleAdmin, billingContact], type: RDStore.CCT_EMAIL])
         contactList.each { row ->
             String c = row[0]
             Org o = (Org) row[1]

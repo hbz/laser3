@@ -65,6 +65,8 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
                     creators: CreatorTitle
                     ]
 
+    static transients = ['publisher'] // mark read-only accessor methods
+
   static mapping = {
                id column:'ti_id'
         globalUID column:'ti_guid'

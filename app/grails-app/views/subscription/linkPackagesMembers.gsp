@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem;de.laser.FormService" %>
+<%@ page import="de.laser.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem;de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>

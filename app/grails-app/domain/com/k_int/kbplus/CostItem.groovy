@@ -108,6 +108,8 @@ class CostItem extends AbstractBase
 
     static final TAX_RATES = [ 0, 7, 19 ]
 
+    static transients = ['deleted', 'derivedStartDate', 'derivedEndDate'] // mark read-only accessor methods
+
     static mapping = {
         id              column: 'ci_id'
         globalUID       column: 'ci_guid'

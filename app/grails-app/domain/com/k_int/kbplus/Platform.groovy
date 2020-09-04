@@ -45,13 +45,15 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
   Org org
 
-
   static mappedBy = [tipps: 'platform']
+
   static hasMany = [
           tipps      : TitleInstancePackagePlatform,
           oapp       : OrgAccessPointLink,
           propertySet:   PlatformProperty,
   ]
+
+  static transients = ['currentTipps'] // mark read-only accessor methods
 
   static mapping = {
                 id column:'plat_id'

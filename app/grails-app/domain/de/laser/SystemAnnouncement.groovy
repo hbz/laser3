@@ -28,6 +28,8 @@ class SystemAnnouncement {
     Date    dateCreated
     Date    lastUpdated
 
+    static transients = ['cleanTitle', 'cleanContent'] // mark read-only accessor methods
+
     static mapping = {
         id              column: 'sa_id'
         version         column: 'sa_version'

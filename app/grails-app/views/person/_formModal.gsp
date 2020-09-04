@@ -1,4 +1,4 @@
-<%@ page import="de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
+<%@ page import="de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.PersonRole; de.laser.Contact" %>
 <laser:serviceInjection/>
 
 

@@ -121,6 +121,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             propDefGroupItems: 'propDef'
     ]
 
+    static transients = ['descrClass', 'propertyType'] // mark read-only accessor methods
+
     static mapping = {
                     cache  true
                       id column: 'pd_id'
@@ -482,7 +484,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         return [
                 "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
                 "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
-                "com.k_int.kbplus.Person"   : PropertyDefinition.PRS_PROP
+                "de.laser.Person"           : PropertyDefinition.PRS_PROP
         ]
     }
 

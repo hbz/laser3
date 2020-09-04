@@ -5,6 +5,9 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
+import de.laser.Address
+import de.laser.Contact
+import de.laser.Person
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.transaction.Transactional

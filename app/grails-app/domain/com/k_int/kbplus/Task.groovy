@@ -49,6 +49,8 @@ class Task {
         dateCreated (nullable: true)
     }
 
+    static transients = ['objects'] // mark read-only accessor methods
+
     static mapping = {
         id              column:'tsk_id'
         version         column:'tsk_version'
