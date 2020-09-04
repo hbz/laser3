@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.Person; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection/>
 
 <!doctype html>

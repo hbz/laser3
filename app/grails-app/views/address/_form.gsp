@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.Address;de.laser.Person;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
 	<label for="type">
@@ -6,7 +6,7 @@
 
 	</label>
 	<laser:select class="ui dropdown" id="type" name="type.id"
-				  from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
+				  from="${Address.getAllRefdataValues()}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.type?.id}"
@@ -18,7 +18,7 @@
         <g:message code="address.prs.label" />
 
     </label>
-    <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+    <g:select id="prs" name="prs.id" from="${Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">

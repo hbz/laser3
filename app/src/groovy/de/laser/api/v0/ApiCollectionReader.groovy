@@ -2,6 +2,8 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.Address
+import de.laser.Contact
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage
@@ -14,7 +16,7 @@ class ApiCollectionReader {
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {
         Collection<Object> result = []
 
-        list.each { it ->   // com.k_int.kbplus.Address
+        list.each { it ->   // de.laser.Address
             Map<String, Object> tmp = [:]
 
             tmp.street1         = it.street_1
@@ -46,7 +48,7 @@ class ApiCollectionReader {
     static Collection<Object> getContactCollection(Collection<Contact> list, allowedTypes) {
         Collection<Object> result = []
 
-        list.each { it ->       // com.k_int.kbplus.Contact
+        list.each { it ->       // de.laser.Contact
             Map<String, Object> tmp = [:]
 
             tmp.content         = it.content
@@ -367,7 +369,7 @@ class ApiCollectionReader {
                 def person = tmp.find {it.globalUID == x}
 
                 if(!person) {
-                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
+                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.Person
 
                     // export public
                     if("No" != person.isPublic?.value?.toString()) {
