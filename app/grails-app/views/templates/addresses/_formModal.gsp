@@ -1,4 +1,4 @@
-<%@ page import="de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 <semui:modal id="addressFormModal" text="${modalText}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">

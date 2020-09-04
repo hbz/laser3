@@ -1,5 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
@@ -14,9 +17,9 @@ class Contact implements Comparable<Contact>{
     private static final String REFDATA_EMAIL = "E-Mail"
     private static final String REFDATA_URL =   "Url"
 
-    String       content
-    Person       prs            // person related contact; exclusive with org
-    Org          org            // org related contact; exclusive with prs
+    String content
+    Person prs            // person related contact; exclusive with org
+    Org    org            // org related contact; exclusive with prs
 
     Date dateCreated
     Date lastUpdated

@@ -1,10 +1,9 @@
 package de.laser
 
-import com.k_int.kbplus.Contact
+
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.Person
 import com.k_int.kbplus.PersonProperty
 import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.RefdataCategory

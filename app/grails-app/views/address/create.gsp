@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="de.laser.Address" %>
 
 <!doctype html>
 <html>

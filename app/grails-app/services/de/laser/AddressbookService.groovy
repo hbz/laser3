@@ -1,9 +1,7 @@
 package de.laser
 
-import com.k_int.kbplus.Address
-import com.k_int.kbplus.Contact
+
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.Person
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
