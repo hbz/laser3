@@ -54,7 +54,7 @@
                     <th class="six wide">
                         <g:if test="${targetObject}"><g:link
                                 controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show"
-                                id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
+                                id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
                         <g:if test="${targetObject}">
@@ -71,8 +71,8 @@
                 <tr>
                     <td name="copyObject.take${objProperty}.source">
                         <div>
-                            <b><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
-                                                   showToolTipp="true"/> ${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
+                            <strong><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
+                                                   showToolTipp="true"/> ${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</strong>
                             <semui:showPropertyValue property="${sourceObject."${objProperty}"}"/>
                         </div>
                     </td>
@@ -100,9 +100,9 @@
                         <td name="copyObject.take${objProperty}.target">
                             <g:if test="${targetObject}">
                                 <div>
-                                    <b><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
-                                                           showToolTipp="true"/> ${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</b>
-                                    <semui:showPropertyValue property="${targetObject?."${objProperty}"}"/>
+                                    <strong><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
+                                                           showToolTipp="true"/> ${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</strong>
+                                    <semui:showPropertyValue property="${targetObject."${objProperty}"}"/>
 
                                     <g:if test="${isConsortialObjects}">
                                         <div class="right aligned wide column">
@@ -123,7 +123,7 @@
                         </td>
 
                         <td>
-                            <g:if test="${targetObject?.hasProperty("${objProperty}") && !isRenewSub}">
+                            <g:if test="${targetObject.hasProperty("${objProperty}") && !isRenewSub}">
                                 <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="copyObject.delete" id="copyObject.delete${objProperty}"
                                                 value="${objProperty}" data-action="delete"/>
@@ -138,7 +138,7 @@
                 <tr>
                     <td>
                         <div>
-                            <b><i class="clipboard icon"></i>${message(code: 'subscription.linktoSubscription')}:</b>
+                            <strong><i class="clipboard icon"></i>${message(code: 'subscription.linktoSubscription')}:</strong>
                             <g:if test="${sourceObject.instanceOf}">
                                 <g:link controller="subscription" action="show" target="_blank"
                                         id="${sourceObject.instanceOf.id}">${sourceObject.instanceOf}</g:link>
@@ -166,12 +166,12 @@
                 <tr>
                     <td name="copyObject.takeLicenses.source">
                         <div>
-                            <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
+                            <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                             <g:each in="${sourceLicenses}" var="license">
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                     <div data-oid="${GenericOIDService.getOID(license)}" class="la-multi-sources">
-                                        <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
-                                        </b>
+                                        <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                        </strong>
                                         ${license.reference}
                                         <br>
                                     </div>
@@ -196,11 +196,11 @@
                     <g:if test="${!copyObject}">
                         <td name="copyObject.takeLicenses.target">
                             <div>
-                                <b><i class="balance scale icon"></i>${message(code: 'license.label')}:</b>
+                                <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
                                     <div data-oid="${GenericOIDService.getOID(license)}">
-                                        <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
-                                        </b>
+                                        <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                        </strong>
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                             ${license.reference}
                                         </g:link>
@@ -226,13 +226,13 @@
                     <td name="copyObject.takeOrgRelations.source">
                         <div>
                 <g:if test="${!source_visibleOrgRelations}">
-                    <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
-                    </b>
+                    <strong><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                    </strong>
                 </g:if>
                 <g:each in="${source_visibleOrgRelations}" var="source_role">
                     <g:if test="${source_role.org}">
                         <div data-oid="${GenericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <b><i class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:</b>
+                            <strong><i class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:</strong>
                             <g:link controller="organisation" action="show" target="_blank"
                                     id="${source_role.org.id}">
                                 ${source_role.org.name}
@@ -276,14 +276,14 @@
                     <td name="copyObject.takeOrgRelations.target">
                         <div>
                             <g:if test="${!target_visibleOrgRelations}">
-                                <b><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
-                                </b>
+                                <strong><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                                </strong>
                             </g:if>
                             <g:each in="${target_visibleOrgRelations}" var="target_role">
                                 <g:if test="${target_role.org}">
                                     <div data-oid="${GenericOIDService.getOID(target_role)}">
-                                        <b><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
-                                        </b>
+                                        <strong><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                        </strong>
                                         <g:link controller="organisation" action="show" target="_blank"
                                                 id="${target_role.org.id}">
                                             ${target_role.org.name}
@@ -331,10 +331,10 @@
                 <tr>
                     <td name="subscription.takeSpecificSubscriptionEditors.source">
                         <div>
-                            <b>
+                            <strong>
                                 <i class="address card icon"></i>
                                 ${message(code: 'subscription.specificSubscriptionEditors')}:
-                            </b>
+                            </strong>
                             <g:each in="${source_visibleOrgRelations}" var="source_role">
                                 <g:if test="${source_role.org}">
                                     <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor') ||
@@ -353,9 +353,9 @@
                                                 </span>
                                                 <g:link controller="person" action="show"
                                                         id="${resp.id}">${resp}</g:link>
-                                                (<b><i
+                                                (<strong><i
                                                     class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
-                                            </b>
+                                            </strong>
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
                                             </div>
@@ -374,9 +374,9 @@
                                                 </span>
                                                 <g:link controller="person" action="show"
                                                         id="${resp.id}">${resp}</g:link>
-                                                (<b><i
+                                                (<strong><i
                                                     class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
-                                            </b>
+                                            </strong>
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
                                             </div>
@@ -429,10 +429,10 @@
                     <g:if test="${!copyObject}">
                         <td name="subscription.takeSpecificSubscriptionEditors.target">
                             <div>
-                                <b>
+                                <strong>
                                     <i class="address card icon"></i>
                                     ${message(code: 'subscription.specificSubscriptionEditors')}:
-                                </b>
+                                </strong>
                                 <g:each in="${target_visibleOrgRelations}" var="target_role">
                                     <g:if test="${target_role.org}">
                                         <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetObject, 'Specific subscription editor', contextService.getOrg()) ||
@@ -450,9 +450,9 @@
                                                     </span>
                                                     <g:link controller="person" action="show"
                                                             id="${resp.id}">${resp}</g:link>
-                                                    (<b><i
+                                                    (<strong><i
                                                         class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
-                                                </b>
+                                                </strong>
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
                                                 </div>
@@ -472,9 +472,9 @@
                                                     </span>
                                                     <g:link controller="person" action="show"
                                                             id="${resp.id}">${resp}</g:link>
-                                                    (<b><i
+                                                    (<strong><i
                                                         class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
-                                                </b>
+                                                </strong>
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
                                                 </div>
@@ -527,9 +527,9 @@
             <g:if test="${sourceObject.hasProperty("ids")}">
                 <tr>
                     <td name="copyObject.takeIdentifier.source">
-                        <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br/>
+                        <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
                         <g:each in="${sourceIdentifiers}" var="ident">
-                            <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br/>
+                            <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
                         </g:each>
                     </td>
                     <g:if test="${isConsortialObjects}">
@@ -551,9 +551,9 @@
                     </td>
                     <g:if test="${!copyObject}">
                         <td name="copyObject.takeIdentifier.target">
-                            <b><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</b><br/>
+                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
                             <g:each in="${targetIdentifiers}" var="ident">
-                                <b>${ident.ns.ns}:</b>&nbsp${ident.value}<br/>
+                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
                             </g:each>
                         </td>
                     %{--DELETE:--}%

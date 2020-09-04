@@ -39,7 +39,7 @@
             </div>
         </g:if>
         <g:else>
-            <b>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</b>
+            <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
             <br><br>
 
             <div class="sixteen wide field" style="text-align: right;">

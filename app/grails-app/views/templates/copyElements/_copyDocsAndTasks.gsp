@@ -23,14 +23,14 @@
             %{--DOCUMENTS:--}%
                 <tr>
                     <th class="six wide">
-                        <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
                         <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     </th>
                     <g:if test="${!copyObject}">
                                 <th class="six wide">
-                                    <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
+                                    <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                                 </th>
                                 <th class="one wide center aligned">
                                     <g:if test="${targetObject}">
@@ -43,7 +43,7 @@
             <tbody class="top aligned">
                 <tr>
                     <td  name="copyObject.takeDocs.source">
-                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
+                        <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
@@ -97,10 +97,10 @@
                     </td>
                     <g:if test="${!copyObject}">
                         <td  name="copyObject.takeDocs.target">
-                            <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
+                            <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                             <div>
                                 <g:if test="${targetObject}">
-                                    <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                    <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                         <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                             <div data-id="${docctx.id}" class="la-element">
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}">
@@ -141,7 +141,7 @@
                         %{--DELETE:--}%
                         <td>
                             <br />
-                            <g:each in="${targetObject?.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:each in="${targetObject.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                 <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                     %{--<div class="ui checkbox">--}%
                                     <div class="ui checkbox la-toggle-radio la-noChange">
@@ -157,16 +157,16 @@
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
                     <td name="copyObject.takeAnnouncements.source">
-                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
+                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
-                                            <b>${docctx.owner.title}</b>
+                                            <strong>${docctx.owner.title}</strong>
                                         </g:if>
                                         <g:else>
-                                            <b>Ohne Titel</b>
+                                            <strong>Ohne Titel</strong>
                                         </g:else>
                                         (${message(code: 'template.notes.created')}
                                         <g:formatDate
@@ -210,17 +210,17 @@
                     </td>
                         <g:if test="${!copyObject}">
                                     <td  name="copyObject.takeAnnouncements.target">
-                                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
+                                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                                         <div>
                                             <g:if test="${targetObject}">
-                                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                                <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                                         <div data-id="${docctx.id}" class="la-element">
                                                             <g:if test="${docctx.owner.title}">
-                                                                <b>${docctx.owner.title}</b>
+                                                                <strong>${docctx.owner.title}</strong>
                                                             </g:if>
                                                             <g:else>
-                                                                <b>Ohne Titel</b>
+                                                                <strong>Ohne Titel</strong>
                                                             </g:else>
                                                             (${message(code: 'template.notes.created')}
                                                             <g:formatDate
@@ -252,7 +252,7 @@
                                     <br />
                                         <div>
                                             <g:if test="${targetObject}">
-                                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                                <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                                         %{--<div class="ui checkbox">--}%
                                                         <div class="ui checkbox la-toggle-radio la-noChange">
@@ -270,11 +270,11 @@
                 %{--TASKS:--}%
                 <tr>
                     <td name="copyObject.takeTasks.source">
-                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
+                        <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 <label>
-                                    <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
+                                    <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
                                     <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk.endDate}"/>)
                                 </label>
                             </div>
@@ -295,10 +295,10 @@
                     </td>
                     <g:if test="${!copyObject}">
                                 <td  name="copyObject.takeTasks.target">
-                                    <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
+                                    <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                                     <g:each in="${targetTasks}" var="tsk">
                                         <div data-id="${tsk?.id}" class="la-element">
-                                        <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
+                                        <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk?.endDate}"/>)
                                         </div>
                                     </g:each>
