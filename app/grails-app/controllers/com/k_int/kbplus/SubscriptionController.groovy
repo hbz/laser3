@@ -4103,11 +4103,7 @@ class SubscriptionController
                         result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
                         params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        if(accessService.checkPerm("ORG_CONSORTIUM")){
-                            result << copyElementsService.loadDataFor_Properties(params)
-                        }else{
-                            result << copyElementsService.loadDataFor_MyProperties(params)
-                        }
+                        result << copyElementsService.loadDataFor_Properties(params)
                     }
                 } else {
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
@@ -4117,11 +4113,7 @@ class SubscriptionController
                 result << copyElementsService.copyObjectElements_Subscriber(params)
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    if(accessService.checkPerm("ORG_CONSORTIUM")){
-                        result << copyElementsService.loadDataFor_Properties(params)
-                    }else{
-                        result << copyElementsService.loadDataFor_MyProperties(params)
-                    }
+                    result << copyElementsService.loadDataFor_Properties(params)
                 } else {
                     result << copyElementsService.loadDataFor_Subscriber(params)
                 }
@@ -4139,11 +4131,7 @@ class SubscriptionController
                         redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
                     }
                 } else {
-                    if(accessService.checkPerm("ORG_CONSORTIUM")){
-                        result << copyElementsService.loadDataFor_Properties(params)
-                    }else{
-                        result << copyElementsService.loadDataFor_MyProperties(params)
-                    }
+                    result << copyElementsService.loadDataFor_Properties(params)
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
@@ -4319,11 +4307,7 @@ class SubscriptionController
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                 params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                if(accessService.checkPerm("ORG_CONSORTIUM")){
-                    result << copyElementsService.loadDataFor_Properties(params)
-                }else{
-                    result << copyElementsService.loadDataFor_MyProperties(params)
-                }
+                result << copyElementsService.loadDataFor_Properties(params)
                 break
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copyObjectElements_Properties(params)

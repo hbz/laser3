@@ -62,6 +62,7 @@
 .ui.checkbox.la-toggle-radio input:checked ~ label:before {
   background-color:@backgroundColor;
 }
+
 /* AFTER */
 .ui.checkbox.la-toggle-radio input:checked~label:after,
 .ui.radio.checkbox.la-toggle-radio input:checked~label:after {
@@ -97,7 +98,13 @@
     font-family: Icons;
     content: "\f08d";
   }
+
 }
+.ui.checkbox.la-toggle-radio.la-inherit input:checked ~ label:before {
+   font-family: Icons;
+   content: "\f08d";
+   background-color#D4E096;
+ }
 /* SHARE*/
 .ui.checkbox.la-toggle-radio.la-share {
   label:before {

@@ -146,22 +146,17 @@ class CopyElementsService {
             objectsToCompare.add(targetObject)
         }
 
+        Org contextOrg = contextService.org
+
+        result = regroupObjectProperties(objectsToCompare, contextOrg)
+
         if (targetObject) {
             result.targetObject = targetObject.refresh()
-        }
-        Org contextOrg = contextService.org
-        objectsToCompare.each { Object obj ->
-            Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic)) }.sort { it.type.getI10n('name') })
-            result.customProperties = customProperties
-            Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, obj, obj.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
-            result.privateProperties = privateProperties
         }
         result
     }
 
-    Map loadDataFor_MyProperties(Map params) {
+    /*Map loadDataFor_MyProperties(Map params) {
         LinkedHashMap result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
@@ -173,14 +168,14 @@ class CopyElementsService {
 
 
         Org contextOrg = contextService.org
-        /*objectsToCompare.each { Object obj ->
+        *//*objectsToCompare.each { Object obj ->
             Map customProperties = result.customProperties
             customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && it.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties, obj, obj.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
             result.privateProperties = privateProperties
-        }*/
+        }*//*
 
         result = regroupObjectProperties(objectsToCompare, contextOrg)
 
@@ -189,7 +184,7 @@ class CopyElementsService {
         }
 
         result
-    }
+    }*/
 
     Map loadDataFor_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]

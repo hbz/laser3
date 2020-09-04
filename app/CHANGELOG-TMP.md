@@ -18,9 +18,9 @@
 
 2833    02.09.2020  rc1.5       Moe     Bug         Beim Kopieren von Umfrage-Merkmale zu Lizenzmerkmale werden die Lizenzmerkmale nicht richtig übernommen
 
-2825    01.09.2020  hbz-dev       Moe     Feature     Eigene "Allgemeine Merkmale" können nicht an Nachfolgelizenz kopiert werden
+2825    01.09.2020  hbz-dev     Moe     Feature     Eigene "Allgemeine Merkmale" können nicht an Nachfolgelizenz kopiert werden
 
-2815    01.09.2020  hbz-dev       Moe     Feature     Elemente kopieren: Reiter Merkmale überarbeiten
+2815    01.09.2020  hbz-dev     Moe     Feature     Elemente kopieren: Reiter Merkmale überarbeiten
 
 2832    01.09.2020  rc1.5       Moe     Bug         Umfrage: Verlängerungssicht enthält dublette von TNs bei "Bereits" und "Mehrjahreslaufzeiten""
 

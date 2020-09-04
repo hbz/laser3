@@ -25,7 +25,7 @@
                                 <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'subscription.properties'), sourceObject:sourceObject]" />
                             </table>
                         </g:if>--}%
-        <g:if test="${groupedProperties.size() > 0}">
+        <g:if test="${groupedProperties?.size() > 0}">
             <g:each in="${groupedProperties}" var="groupedProps">
                 <g:if test="${groupedProps.getValue()}">
 
@@ -55,11 +55,11 @@
             </g:each>
         </g:if>
 
-        <g:if test="${orphanedProperties.size() > 0}">
+        <g:if test="${orphanedProperties?.size() > 0}">
 
             <div class="content">
                 <h5 class="ui header">
-                    <g:if test="${groupedProperties.size() > 0}">
+                    <g:if test="${groupedProperties?.size() > 0}">
                         ${message(code: 'subscription.properties.orphaned')}
                     </g:if>
                     <g:else>
@@ -76,7 +76,7 @@
 
             <div class="ui divider"></div>
         </g:if>
-        <g:if test="${privateProperties.size() > 0}">
+        <g:if test="${privateProperties?.size() > 0}">
 
             <div class="content">
                 <h5 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h5>
