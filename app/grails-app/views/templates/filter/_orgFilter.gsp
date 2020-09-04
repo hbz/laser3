@@ -46,7 +46,7 @@
                     <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
                         <g:set var="orgTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_TYPE])}" scope="request"/>
                     </g:if>
-                    <laser:select class="ui dropdown" id="orgType" name="orgType"
+                    <laser:select class="ui dropdown search" id="orgType" name="orgType"
                                   from="${orgTypes}"
                                   optionKey="id"
                                   optionValue="value"
@@ -62,7 +62,7 @@
                         %{--<g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"/>--}%
                         <g:set var="orgRoles" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORGANISATIONAL_ROLE])}" scope="request"/>
                     </g:if>
-                    <laser:select class="ui dropdown" id="orgRole" name="orgRole"
+                    <laser:select class="ui dropdown search" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
                                   optionKey="id"
                                   optionValue="value"
@@ -75,7 +75,7 @@
                 <div class="field">
                     <label for="orgSector">${message(code: 'org.sector.label')}</label>
                     <g:set var="orgSectors" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_SECTOR])}" scope="request"/>
-                    <laser:select class="ui dropdown" id="orgSector" name="orgSector"
+                    <laser:select class="ui dropdown search" id="orgSector" name="orgSector"
                                   from="${orgSectors}"
                                   optionKey="id"
                                   optionValue="value"
@@ -118,7 +118,7 @@
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
                     <g:set var="countries" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COUNTRY])}" scope="request"/>
-                    <laser:select class="ui dropdown" id="country" name="country"
+                    <laser:select class="ui dropdown search" id="country" name="country"
                                   from="${countries}"
                                   optionKey="id"
                                   optionValue="value"

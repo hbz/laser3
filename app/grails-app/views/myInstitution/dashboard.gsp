@@ -185,9 +185,9 @@
                             <div class="seven wide column">
                                 ${raw(row.eventString)}
 
-                                <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01"}">
+                                <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01" && accessService.checkPerm('ORG_INST')}">
                                     <div class="right aligned wide column">
-                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(entry.change.subscription)]}">
+                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(entry.change.subscription._getCalculatedPrevious()), targetObjectId: GenericOIDService.getOID(entry.change.subscription)]}">
                                             <g:message code="myinst.copyMyElements"/>
                                         </g:link>
                                     </div>

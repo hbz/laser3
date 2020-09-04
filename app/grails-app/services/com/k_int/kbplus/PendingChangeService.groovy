@@ -452,6 +452,7 @@ class PendingChangeService extends AbstractLockableService {
         if(configMap.notifications)
             result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
+
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {
                     def changedObject = genericOIDService.resolveOID(change.oid)
@@ -485,6 +486,12 @@ class PendingChangeService extends AbstractLockableService {
                                     acceptedChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
                                 }
                             }
+                        }
+
+                        if(change.status == RDStore.PENDING_CHANGE_PENDING) {
+                            if(pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty})
+                                pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty}.change = change
+                            else pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
                         }
                     }
                     else {
