@@ -6,7 +6,7 @@
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
-    <g:if test="${!fromSurvey}">
+    <g:if test="${!fromSurvey && !copyObject}">
         <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject: sourceObject,
                 targetObject: targetObject,
@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table table-tworow la-table">
@@ -23,25 +23,27 @@
             %{--DOCUMENTS:--}%
                 <tr>
                     <th class="six wide">
-                        <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
+                        <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
                         <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     </th>
-                    <th class="six wide">
-                        <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${targetObject?.id}">${targetObject?.dropdownNamingConvention()}</g:link></g:if>
-                    </th>
-                    <th class="one wide center aligned">
-                        <g:if test="${targetObject}">
-                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
-                        </g:if>
-                    </th>
+                    <g:if test="${!copyObject}">
+                                <th class="six wide">
+                                    <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
+                                </th>
+                                <th class="one wide center aligned">
+                                    <g:if test="${targetObject}">
+                                        <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
+                                    </g:if>
+                                </th>
+                    </g:if>
                 </tr>
             </thead>
             <tbody class="top aligned">
                 <tr>
                     <td  name="copyObject.takeDocs.source">
-                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
+                        <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
@@ -89,78 +91,82 @@
                                     <g:checkBox name="copyObject.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
                                 </div>
                                 %{--</div>--}%
+                                <br>
                             </g:if>
                         </g:each>
                     </td>
-                    <td  name="copyObject.takeDocs.target">
-                        <b><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</b><br />
-                        <div>
-                            <g:if test="${targetObject}">
-                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                    <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
-                                        <div data-id="${docctx.id}" class="la-element">
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                                <g:if test="${docctx.owner?.title}">
-                                                    ${docctx.owner.title}
-                                                </g:if>
-                                                <g:else>
-                                                    <g:if test="${docctx.owner?.filename}">
-                                                        ${docctx.owner.filename}
+                    <g:if test="${!copyObject}">
+                        <td  name="copyObject.takeDocs.target">
+                            <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
+                            <div>
+                                <g:if test="${targetObject}">
+                                    <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                        <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                                            <div data-id="${docctx.id}" class="la-element">
+                                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                                    <g:if test="${docctx.owner?.title}">
+                                                        ${docctx.owner.title}
                                                     </g:if>
                                                     <g:else>
-                                                        ${message(code: 'template.documents.missing')}
+                                                        <g:if test="${docctx.owner?.filename}">
+                                                            ${docctx.owner.filename}
+                                                        </g:if>
+                                                        <g:else>
+                                                            ${message(code: 'template.documents.missing')}
+                                                        </g:else>
                                                     </g:else>
-                                                </g:else>
-                                            </g:link>(${docctx.owner.type.getI10n("value")})
-                                        </div>
-                                        <g:if test="${isConsortialObjects}">
-                                            <div class="right aligned wide column">
-                                                <g:if test="${docctx.isShared}">
-                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                        <i class="la-share icon la-js-editmode-icon"></i>
-                                                    </span>
-                                                </g:if>
-                                                <g:else>
-                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
-                                                    </span>
-                                                </g:else>
-
+                                                </g:link>(${docctx.owner.type.getI10n("value")})
                                             </div>
+                                            <g:if test="${isConsortialObjects}">
+                                                <div class="right aligned wide column">
+                                                    <g:if test="${docctx.isShared}">
+                                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                            <i class="la-share icon la-js-editmode-icon"></i>
+                                                        </span>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                            <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                        </span>
+                                                    </g:else>
+
+                                                </div>
+                                            </g:if>
+                                            <br>
                                         </g:if>
-                                    </g:if>
-                                </g:each>
-                            </g:if>
-                        </div>
-                    </td>
-                    %{--DELETE:--}%
-                    <td>
-                        <br />
-                        <g:each in="${targetObject?.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                            <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
-                                %{--<div class="ui checkbox">--}%
-                                <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
-                                </div>
-                                %{--</div>--}%
-                            </g:if>
-                        </g:each>
-                    </td>
+                                    </g:each>
+                                </g:if>
+                            </div>
+                        </td>
+                        %{--DELETE:--}%
+                        <td>
+                            <br />
+                            <g:each in="${targetObject.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                                    %{--<div class="ui checkbox">--}%
+                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                        <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
+                                    </div>
+                                    %{--</div>--}%
+                                </g:if>
+                            </g:each>
+                        </td>
+                    </g:if>
                 </tr>
 
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
                     <td name="copyObject.takeAnnouncements.source">
-                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
+                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
-                                            <b>${docctx.owner.title}</b>
+                                            <strong>${docctx.owner.title}</strong>
                                         </g:if>
                                         <g:else>
-                                            <b>Ohne Titel</b>
+                                            <strong>Ohne Titel</strong>
                                         </g:else>
                                         (${message(code: 'template.notes.created')}
                                         <g:formatDate
@@ -202,71 +208,73 @@
                             </g:if>
                         </g:each>
                     </td>
-                    <td  name="copyObject.takeAnnouncements.target">
-                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</b><br />
-                        <div>
-                            <g:if test="${targetObject}">
-                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
-                                        <div data-id="${docctx.id}" class="la-element">
-                                            <g:if test="${docctx.owner.title}">
-                                                <b>${docctx.owner.title}</b>
-                                            </g:if>
-                                            <g:else>
-                                                <b>Ohne Titel</b>
-                                            </g:else>
-                                            (${message(code: 'template.notes.created')}
-                                            <g:formatDate
-                                                    format="${message(code: 'default.date.format.notime')}"
-                                                    date="${docctx.owner.dateCreated}"/>)
-                                        </div>
-                                        <g:if test="${isConsortialObjects}">
-                                            <div class="right aligned wide column">
-                                                <g:if test="${docctx.isShared}">
-                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                        <i class="la-share icon la-js-editmode-icon"></i>
-                                                    </span>
-                                                </g:if>
-                                                <g:else>
-                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
-                                                    </span>
-                                                </g:else>
+                        <g:if test="${!copyObject}">
+                                    <td  name="copyObject.takeAnnouncements.target">
+                                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
+                                        <div>
+                                            <g:if test="${targetObject}">
+                                                <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                                                        <div data-id="${docctx.id}" class="la-element">
+                                                            <g:if test="${docctx.owner.title}">
+                                                                <strong>${docctx.owner.title}</strong>
+                                                            </g:if>
+                                                            <g:else>
+                                                                <strong>Ohne Titel</strong>
+                                                            </g:else>
+                                                            (${message(code: 'template.notes.created')}
+                                                            <g:formatDate
+                                                                    format="${message(code: 'default.date.format.notime')}"
+                                                                    date="${docctx.owner.dateCreated}"/>)
+                                                        </div>
+                                                        <g:if test="${isConsortialObjects}">
+                                                            <div class="right aligned wide column">
+                                                                <g:if test="${docctx.isShared}">
+                                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                                    </span>
+                                                                </g:if>
+                                                                <g:else>
+                                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                                    </span>
+                                                                </g:else>
 
-                                            </div>
-                                        </g:if>
-                                    </g:if>
-                                </g:each>
-                            </g:if>
-                        </div>
-                    </td>
-                    %{--DELETE:--}%
-                    <td>
-                    <br />
-                        <div>
-                            <g:if test="${targetObject}">
-                                <g:each in="${targetObject?.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
-                                        %{--<div class="ui checkbox">--}%
-                                        <div class="ui checkbox la-toggle-radio la-noChange">
-                                            <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
+                                                            </div>
+                                                        </g:if>
+                                                    </g:if>
+                                                </g:each>
+                                            </g:if>
                                         </div>
-                                        %{--</div>--}%
-                                    </g:if>
-                                </g:each>
-                            </g:if>
-                        </div>
-                    </td>
+                                    </td>
+                                    %{--DELETE:--}%
+                                    <td>
+                                    <br />
+                                        <div>
+                                            <g:if test="${targetObject}">
+                                                <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                                                        %{--<div class="ui checkbox">--}%
+                                                        <div class="ui checkbox la-toggle-radio la-noChange">
+                                                            <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
+                                                        </div>
+                                                        %{--</div>--}%
+                                                    </g:if>
+                                                </g:each>
+                                            </g:if>
+                                        </div>
+                                    </td>
+                        </g:if>
                 </tr>
 
                 %{--TASKS:--}%
                 <tr>
                     <td name="copyObject.takeTasks.source">
-                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
+                        <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 <label>
-                                    <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
+                                    <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
                                     <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk.endDate}"/>)
                                 </label>
                             </div>
@@ -285,29 +293,31 @@
                             </div>
                         </g:each>
                     </td>
-                    <td  name="copyObject.takeTasks.target">
-                        <b><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</b><br />
-                        <g:each in="${targetTasks}" var="tsk">
-                            <div data-id="${tsk?.id}" class="la-element">
-                            <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk?.endDate}"/>)
-                            </div>
-                        </g:each>
-                    </td>
-                    %{--DELETE:--}%
-                    <td>
-                        <br />
-                        <g:each in="${targetTasks}" var="tsk">
-                            <g:if test="${tsk.creator.id == userId || isInstAdm}">
-                                %{--<div class="ui checkbox">--}%
-                                <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="copyObject.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
-                                </div>
-                                %{--</div>--}%
-                            </g:if>
-                            <g:else><br></g:else>
-                        </g:each>
-                    </td>
+                    <g:if test="${!copyObject}">
+                                <td  name="copyObject.takeTasks.target">
+                                    <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
+                                    <g:each in="${targetTasks}" var="tsk">
+                                        <div data-id="${tsk?.id}" class="la-element">
+                                        <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk?.endDate}"/>)
+                                        </div>
+                                    </g:each>
+                                </td>
+                                %{--DELETE:--}%
+                                <td>
+                                    <br />
+                                    <g:each in="${targetTasks}" var="tsk">
+                                        <g:if test="${tsk.creator.id == userId || isInstAdm}">
+                                            %{--<div class="ui checkbox">--}%
+                                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                                <g:checkBox name="copyObject.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
+                                            </div>
+                                            %{--</div>--}%
+                                        </g:if>
+                                        <g:else><br></g:else>
+                                    </g:each>
+                                </td>
+                    </g:if>
                 </tr>
             </tbody>
         </table>
@@ -315,12 +325,17 @@
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'copyElementsIntoObject.copyDocsAndTasks.button')}" />
 
-        <g:if test="${!fromSurvey}">
+        <g:if test="${!fromSurvey && !copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
             </div>
         </g:if>
+        <g:elseif test="${copyObject}">
+            <div class="sixteen wide field" style="text-align: right;">
+                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.copy.label')}"/>
+            </div>
+        </g:elseif>
         <g:else>
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
@@ -337,124 +352,126 @@
         </g:else>
     </g:form>
 </semui:form>
-<r:script>
+<g:if test="${!copyObject}">
+    <r:script>
 
-    var subCopyController = {
+        var subCopyController = {
 
-        checkboxes : {
-            $takeDocIds: $('input[name="copyObject.takeDocIds"]'),
-            $deleteDocIds: $('input[name="copyObject.deleteDocIds"]'),
-            $takeAnnouncementIds: $('input[name="copyObject.takeAnnouncementIds"]'),
-            $deleteAnnouncementIds: $('input[name="copyObject.deleteAnnouncementIds"]'),
-            $takeTaskIds: $('input[name="copyObject.takeTaskIds"]'),
-            $deleteTaskIds: $('input[name="copyObject.deleteTaskIds"]')
-        },
+            checkboxes : {
+                $takeDocIds: $('input[name="copyObject.takeDocIds"]'),
+                $deleteDocIds: $('input[name="copyObject.deleteDocIds"]'),
+                $takeAnnouncementIds: $('input[name="copyObject.takeAnnouncementIds"]'),
+                $deleteAnnouncementIds: $('input[name="copyObject.deleteAnnouncementIds"]'),
+                $takeTaskIds: $('input[name="copyObject.takeTaskIds"]'),
+                $deleteTaskIds: $('input[name="copyObject.deleteTaskIds"]')
+            },
 
-        init: function (elem) {
-            var ref = subCopyController.checkboxes
+            init: function (elem) {
+                var ref = subCopyController.checkboxes
 
-            ref.$takeDocIds.change( function(event) {
-                subCopyController.takeDocIds(this);
-            }).trigger('change')
+                ref.$takeDocIds.change( function(event) {
+                    subCopyController.takeDocIds(this);
+                }).trigger('change')
 
-            ref.$deleteDocIds.change( function(event) {
-                subCopyController.deleteDocIds(this);
-            }).trigger('change')
+                ref.$deleteDocIds.change( function(event) {
+                    subCopyController.deleteDocIds(this);
+                }).trigger('change')
 
-            ref.$takeAnnouncementIds.change( function(event) {
-                subCopyController.takeAnnouncementIds(this);
-            }).trigger('change')
+                ref.$takeAnnouncementIds.change( function(event) {
+                    subCopyController.takeAnnouncementIds(this);
+                }).trigger('change')
 
-            ref.$deleteAnnouncementIds.change( function(event) {
-                subCopyController.deleteAnnouncementIds(this);
-            }).trigger('change')
+                ref.$deleteAnnouncementIds.change( function(event) {
+                    subCopyController.deleteAnnouncementIds(this);
+                }).trigger('change')
 
-            ref.$takeTaskIds.change( function(event) {
-                subCopyController.takeTaskIds(this);
-            }).trigger('change')
+                ref.$takeTaskIds.change( function(event) {
+                    subCopyController.takeTaskIds(this);
+                }).trigger('change')
 
-            ref.$deleteTaskIds.change( function(event) {
-                subCopyController.deleteTaskIds(this);
-            }).trigger('change')
-        },
+                ref.$deleteTaskIds.change( function(event) {
+                    subCopyController.deleteTaskIds(this);
+                }).trigger('change')
+            },
 
-        takeDocIds: function(elem) {
-            if (elem.checked) {
-                $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="copyObject.takeDocs.target"] div').addClass('willStay');
-            }
-            else {
-                $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
-                    $('.table tr td[name="copyObject.takeDocs.target"] div').removeClass('willStay');
+            takeDocIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeDocs.target"] div').addClass('willStay');
                 }
-            }
-        },
-
-        deleteDocIds: function(elem) {
-            if (elem.checked) {
-                $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-            }
-            else {
-                $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-            }
-        },
-
-        takeAnnouncementIds: function(elem) {
-            if (elem.checked) {
-                $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="copyObject.takeAnnouncements.target"] div').addClass('willStay');
-            }
-            else {
-                $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div').removeClass('willStay');
+                else {
+                    $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
+                        $('.table tr td[name="copyObject.takeDocs.target"] div').removeClass('willStay');
+                    }
                 }
-            }
-        },
+            },
 
-        deleteAnnouncementIds: function(elem) {
-            if (elem.checked) {
-                $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-            }
-            else {
-                $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-            }
-        },
-
-        takeTaskIds: function(elem) {
-            if (elem.checked) {
-                $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="copyObject.takeTasks.target"] div').addClass('willStay');
-            }
-            else {
-                $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
-                    $('.table tr td[name="copyObject.takeTasks.target"] div').removeClass('willStay');
+            deleteDocIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
                 }
-            }
-        },
-
-        deleteTaskIds: function(elem) {
-            if (elem.checked) {
-                $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-            }
-            else {
-                $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-            }
-        },
-
-        getNumberOfCheckedCheckboxes: function(inputElementName) {
-            var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
-            var numberOfChecked = 0;
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
-                    numberOfChecked++;
+                else {
+                    $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
                 }
+            },
+
+            takeAnnouncementIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div').addClass('willStay');
+                }
+                else {
+                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
+                        $('.table tr td[name="copyObject.takeAnnouncements.target"] div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteAnnouncementIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                }
+                else {
+                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                }
+            },
+
+            takeTaskIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeTasks.target"] div').addClass('willStay');
+                }
+                else {
+                    $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
+                        $('.table tr td[name="copyObject.takeTasks.target"] div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteTaskIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                }
+                else {
+                    $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                }
+            },
+
+            getNumberOfCheckedCheckboxes: function(inputElementName) {
+                var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
+                var numberOfChecked = 0;
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        numberOfChecked++;
+                    }
+                }
+                return numberOfChecked;
             }
-            return numberOfChecked;
         }
-    }
 
-    subCopyController.init()
-</r:script>
+        subCopyController.init()
+    </r:script>
+</g:if>

@@ -203,13 +203,13 @@ class CopyElementsService {
                         instanceOf: targetObject,
                         //previousSubscription: subMember?.id,
                         isSlaved: subMember.isSlaved,
-                        //owner: targetObject.owner ? subMember.owner : null,
                         resource: targetObject.resource ?: null,
                         form: targetObject.form ?: null,
                         isPublicForApi: targetObject.isPublicForApi,
-                        hasPerpetualAccess: targetObject.hasPerpetualAccess
+                        hasPerpetualAccess: targetObject.hasPerpetualAccess,
+                        administrative: subMember.administrative
                 )
-                newSubscription.save(flush: true)
+                newSubscription.save()
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
                     try {
@@ -325,7 +325,7 @@ class CopyElementsService {
         }
     }
 
-    Map copySubElements_DatesOwnerRelations(Map params) {
+    Map copyObjectElements_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()
@@ -352,20 +352,20 @@ class CopyElementsService {
 
             }
 
-            if (params.copyObject?.deleteLicenses && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.deleteLicenses') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<License> toDeleteLicenses = params.list('copyObject.deleteLicenses').collect { genericOIDService.resolveOID(it) }
                 deleteLicenses(toDeleteLicenses, targetObject, flash)
-            } else if (params.copyObject?.takeLicenses && isBothObjectsSet(sourceObject, targetObject)) {
+            } else if (params.list('copyObject.takeLicenses') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<License> toCopyLicenses = params.list('copyObject.takeLicenses').collect { genericOIDService.resolveOID(it) }
                 copyLicenses(toCopyLicenses, targetObject, flash)
             }
 
-            if (params.copyObject?.deleteOrgRelations && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.deleteOrgRelations') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<OrgRole> toDeleteOrgRelations = params.list('copyObject.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
                 deleteOrgRelations(toDeleteOrgRelations, targetObject, flash)
                 //isTargetSubChanged = true
             }
-            if (params.copyObject?.takeOrgRelations && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.takeOrgRelations') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<OrgRole> toCopyOrgRelations = params.list('copyObject.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
                 copyOrgRelations(toCopyOrgRelations, sourceObject, targetObject, flash)
                 //isTargetSubChanged = true
@@ -385,25 +385,25 @@ class CopyElementsService {
                 }
             }
 
-            if (params.subscription?.deleteSpecificSubscriptionEditors && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('subscription.deleteSpecificSubscriptionEditors') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<PersonRole> toDeleteSpecificSubscriptionEditors = params.list('subscription.deleteSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
                 deleteSpecificSubscriptionEditors(toDeleteSpecificSubscriptionEditors, targetObject, flash)
                 //isTargetSubChanged = true
             }
-            if (params.subscription?.takeSpecificSubscriptionEditors && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('subscription.takeSpecificSubscriptionEditors') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<PersonRole> toCopySpecificSubscriptionEditors = params.list('subscription.takeSpecificSubscriptionEditors').collect { genericOIDService.resolveOID(it) }
                 copySpecificSubscriptionEditors(toCopySpecificSubscriptionEditors, sourceObject, targetObject, flash)
                 //isTargetSubChanged = true
             }
 
-            if (params.copyObject?.deleteIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.deleteIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteIdentifiers = []
                 params.list('copyObject.deleteIdentifierIds').each { identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
                 deleteIdentifiers(toDeleteIdentifiers, targetObject, flash)
                 //isTargetSubChanged = true
             }
 
-            if (params.copyObject?.takeIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.takeIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyIdentifiers = []
                 params.list('copyObject.takeIdentifierIds').each { identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
                 copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
@@ -419,7 +419,7 @@ class CopyElementsService {
         result
     }
 
-    Map copySubElements_DocsAnnouncementsTasks(Map params) {
+    Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
         Map<String, Object> result = [:]
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()
@@ -432,42 +432,42 @@ class CopyElementsService {
 
         if (formService.validateToken(params)) {
             boolean isTargetSubChanged = false
-            if (params.copyObject?.deleteDocIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.deleteDocIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteDocs = []
                 params.list('copyObject.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
                 deleteDocs(toDeleteDocs, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.copyObject?.takeDocIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.takeDocIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyDocs = []
                 params.list('copyObject.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
                 copyDocs(sourceObject, toCopyDocs, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.copyObject?.deleteAnnouncementIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.deleteAnnouncementIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteAnnouncements = []
                 params.list('copyObject.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
                 deleteAnnouncements(toDeleteAnnouncements, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.copyObject?.takeAnnouncementIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.takeAnnouncementIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyAnnouncements = []
                 params.list('copyObject.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
                 copyAnnouncements(sourceObject, toCopyAnnouncements, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.copyObject?.deleteTaskIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.deleteTaskIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toDeleteTasks = []
                 params.list('copyObject.deleteTaskIds').each { tsk -> toDeleteTasks << Long.valueOf(tsk) }
                 deleteTasks(toDeleteTasks, targetObject, flash)
                 isTargetSubChanged = true
             }
 
-            if (params.copyObject?.takeTaskIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.list('copyObject.takeTaskIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 def toCopyTasks = []
                 params.list('copyObject.takeTaskIds').each { tsk -> toCopyTasks << Long.valueOf(tsk) }
                 copyTasks(sourceObject, toCopyTasks, targetObject, flash)
@@ -484,7 +484,7 @@ class CopyElementsService {
         result
     }
 
-    Map copySubElements_Identifiers(Map params) {
+    Map copyObjectElements_Identifiers(Map params) {
         Map<String, Object> result = [:]
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()
@@ -520,7 +520,7 @@ class CopyElementsService {
         result
     }
 
-    Map copySubElements_Subscriber(Map params) {
+    Map copyObjectElements_Subscriber(Map params) {
         Map<String, Object> result = [:]
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()
@@ -532,6 +532,7 @@ class CopyElementsService {
         }
 
         if (formService.validateToken(params)) {
+
             if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
                 List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
                 copySubscriber(toCopySubs, targetObject, flash)
@@ -543,7 +544,7 @@ class CopyElementsService {
         result
     }
 
-    Map copySubElements_Properties(Map params) {
+    Map copyObjectElements_Properties(Map params) {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         boolean isRenewSub = params.isRenewSub ? true : false
@@ -575,7 +576,7 @@ class CopyElementsService {
         result
     }
 
-    Map copySubElements_PackagesEntitlements(Map params) {
+    Map copyObjectElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
         def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         def request = grailsWebRequest.getCurrentRequest()
@@ -797,7 +798,7 @@ class CopyElementsService {
                                     additionalProp.instanceOf = targetProp
                                     additionalProp.save(flush: true)
                                 } else {
-                                    def matchingProps = targetProp.getClass().findByOwnerAndType(member, targetProp.type)
+                                    def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
                                     // unbound prop found with matching type, set backref
                                     if (matchingProps) {
                                         matchingProps.each { memberProp ->

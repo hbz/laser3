@@ -3007,7 +3007,7 @@ class SurveyController {
         if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
-        result.putAll(financeService.setEditVars(result.institution))
+        //result.putAll(financeService.setEditVars(result.institution))
 
         /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
 
@@ -3016,11 +3016,11 @@ class SurveyController {
         if (params.exportXLSX) {
             def sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyCostItems(result.surveyConfig, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -4422,72 +4422,6 @@ class SurveyController {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    private def exportSurveyCostItems(SurveyConfig surveyConfig, String format, Org org) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List titles = ['Name',
-                       '',
-                       g.message(code: 'surveyConfig.type.label'),
-                       g.message(code: 'surveyConfigsInfo.comment'),
-
-                       g.message(code: 'surveyParticipants.label'),
-                       g.message(code: 'org.shortname.label'),
-                       g.message(code: 'org.libraryNetwork.label'),
-                       g.message(code: 'surveyProperty.subName'),
-                       g.message(code: 'surveyConfigsInfo.newPrice'),
-                       g.message(code: 'financials.currency'),
-                       g.message(code: 'surveyConfigsInfo.newPrice.comment')
-        ]
-
-        List surveyData = []
-
-        def surveyOrgs = SurveyOrg.findAllBySurveyConfig(surveyConfig)
-
-        surveyOrgs.each { surveyOrg ->
-            List row = []
-
-            row.add([field: surveyConfig.surveyInfo.name ?: '', style: null])
-
-            row.add([field: surveyConfig.getConfigNameShort() ?: '', style: null])
-
-            row.add([field: surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig.surveyProperty.type) + ')', style: null])
-
-            row.add([field: surveyConfig.comment ?: '', style: null])
-
-            row.add([field: surveyOrg.org.name ?: '', style: null])
-
-            row.add([field: surveyOrg.org.shortname ?: '', style: null])
-
-            row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
-
-            row.add([field: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
-
-
-            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
-
-            if (!surveyOrg.existsMultiYearTerm()) {
-                if (costItem) {
-                    row.add([field: g.formatNumber(number: costItem.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number"), style: null])
-                    row.add([field: costItem.billingCurrency?.getI10n('value').split('-').first(), style: null])
-                }
-            } else {
-                row.add([field: g.message(code: "surveyOrg.perennialTerm.available"), style: null])
-                row.add([field: '', style: null])
-            }
-
-            row.add([field: costItem.costDescription ?: '', style: null])
-
-            surveyData.add(row)
-        }
-
-        switch (format) {
-            case 'xls':
-            case 'xlsx':
-                Map sheetData = [:]
-                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
-                return exportService.generateXLSXWorkbook(sheetData)
-        }
-    }
-
     private def getSurveyConfigCounts() {
         Map<String, Object> result = [:]
 
@@ -4810,7 +4744,7 @@ class SurveyController {
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copySubElements_DatesOwnerRelations()
+                result << copyObjectElements_DatesOwnerRelations()
                 if (params.isRenewSub){
                     params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
@@ -4819,7 +4753,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks()
+                result << copyObjectElements_DocsAnnouncementsTasks()
                 if (params.isRenewSub){
                     if (result.isSubscriberVisible){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
@@ -4833,7 +4767,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copySubElements_Subscriber()
+                result << copyObjectElements_Subscriber()
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     result << loadDataFor_Properties()
@@ -4842,7 +4776,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties()
+                result << copyObjectElements_Properties()
                 if (params.isRenewSub && params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
@@ -4852,7 +4786,7 @@ class SurveyController {
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
-                result << copySubElements_Properties()
+                result << copyObjectElements_Properties()
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""

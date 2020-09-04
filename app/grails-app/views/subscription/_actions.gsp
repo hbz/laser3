@@ -83,10 +83,10 @@
                 <% isCopySubEnabled = true %>
             </sec:ifAnyGranted>
             <g:if test="${isCopySubEnabled}">
-                <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
-                <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+                <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:else>
 
             <g:if test="${(accessService.checkPerm("ORG_INST") && !subscriptionInstance.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
@@ -94,9 +94,9 @@
             </g:if>
 
             <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: params.id]}" message="myinst.copyMyElements" />
+                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetObjectId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(navPrevSubscription[0]), targetObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElementsFromPrevSubscription" />
                 </g:if>
             </g:if>
 
@@ -132,43 +132,27 @@
                 </g:if>
             </sec:ifAnyGranted>
 
-
-
             <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,GenericOIDService.getOID(subscriptionInstance))}"/>
-            %{--<sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">--}%
-                %{--<div class="divider">OLD:</div>--}%
-                %{--<g:if test="${subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_LOCAL && !previousSubscriptions}">--}%
-                    %{--<semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"--}%
-                                           %{--params="${[id: params.id]}" message="subscription.details.renewals.label"/>--}%
-                    %{--<semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"--}%
-                                           %{--message="menu.institutions.imp_renew"/>--}%
-                %{--</g:if>--}%
 
-                %{--<g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">--}%
-                    %{--<semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"--}%
-                                               %{--params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>--}%
-                %{--</g:if>--}%
-                %{--<div class="divider"></div>--}%
-            %{--</sec:ifAnyGranted>--}%
 
             <g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <div class="divider"></div>
                 <g:if test="${previousSubscriptions}">
-                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
+                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                 </g:if>
                 <g:else>
-                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Consortia"
+                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
                                            params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
                 </g:else>
             </g:if>
             <g:if test ="${subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
                 <g:if test ="${previousSubscriptions}">
-                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Local"
-                                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+                    <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
+                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
                 </g:if>
                 <g:else>
-                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Local"
+                    <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
