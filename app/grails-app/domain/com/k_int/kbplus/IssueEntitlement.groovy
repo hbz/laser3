@@ -68,6 +68,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     return cmp
   }
 
+    static transients = ['derivedAccessStartDate', 'derivedAccessEndDate', 'availabilityStatus'] // mark read-only accessor methods
+
   static mapping = {
                 id column:'ie_id'
          globalUID column:'ie_guid'

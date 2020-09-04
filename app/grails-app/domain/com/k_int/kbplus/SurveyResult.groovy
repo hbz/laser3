@@ -64,6 +64,8 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         lastUpdatedCascading (nullable: true)
     }
 
+    static transients = ['resultProcessed', 'costItem', 'result'] // mark read-only accessor methods
+
     static mapping = {
 
         id column: 'surre_id'

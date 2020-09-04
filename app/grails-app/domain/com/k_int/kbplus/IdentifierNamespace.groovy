@@ -13,7 +13,6 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     static Log static_logger = LogFactory.getLog(IdentifierNamespace)
 
-
     public static final String UNKNOWN    = "Unknown"
 
     public static final NS_ORGANISATION = "com.k_int.kbplus.Org"
@@ -86,6 +85,8 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
+
+    static transients = ['coreOrgNamespace'] // mark read-only accessor methods
 
     static mapping = {
         id              column:'idns_id'

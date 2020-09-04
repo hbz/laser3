@@ -14,6 +14,8 @@ class UserRole implements Serializable, Comparable {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['sortString'] // mark read-only accessor methods
+
     static mapping = {
         id composite: ['role', 'user']
         version false

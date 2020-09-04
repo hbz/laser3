@@ -19,6 +19,7 @@ class BookInstance extends TitleInstance {
     String  editionStatement
     String editionDifferentiator
 
+    static transients = ['ebookFirstAutorOrFirstEditor'] // mark read-only accessor methods
 
     static mapping = {
         includes TitleInstance.mapping
@@ -67,16 +68,13 @@ class BookInstance extends TitleInstance {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
 
-        if(firstEditor && firstAuthor)
-        {
+        if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }
-        else if(firstAuthor)
-        {
+        else if(firstAuthor) {
             return firstAuthor
         }
-        else if(firstEditor)
-        {
+        else if(firstEditor) {
             return firstEditor + ' ' + label
         }
     }

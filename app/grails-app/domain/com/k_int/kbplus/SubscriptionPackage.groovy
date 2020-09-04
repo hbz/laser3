@@ -14,6 +14,8 @@ class SubscriptionPackage implements Comparable {
   Date dateCreated
   Date lastUpdated
 
+  static transients = ['issueEntitlementsofPackage', 'IEandPackageSize', 'currentTippsofPkg', 'packageName'] // mark read-only accessor methods
+
   static mapping = {
                 id column:'sp_id'
            version column:'sp_version'
@@ -80,18 +82,14 @@ class SubscriptionPackage implements Comparable {
 
   def getIssueEntitlementsofPackage(){
 
-
     def result = []
 
     this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id) && (it.acceptStatus?.id == RDStore.IE_ACCEPT_STATUS_FIXED.id)}.each { iE ->
-
       if(TitleInstancePackagePlatform.findByIdAndPkg(iE.tipp?.id, pkg))
       {
         result << iE
       }
-
     }
-
     result
   }
 

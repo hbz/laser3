@@ -15,6 +15,8 @@ class AccessPointData extends AbstractBase {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['inputStr'] // mark read-only accessor methods
+
     static belongsTo = [
         orgAccessPoint:OrgAccessPoint
     ]

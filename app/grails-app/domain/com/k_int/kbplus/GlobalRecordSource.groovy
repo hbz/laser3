@@ -21,6 +21,8 @@ class GlobalRecordSource {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['baseUrl', 'baseEditUrl', 'numberLocalPackages'] // mark read-only accessor methods
+
   static mapping = {
                    id column:'grs_id'
               version column:'grs_version'

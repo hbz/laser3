@@ -95,6 +95,8 @@ class SystemEvent {
         public String value
     }
 
+    static transients = ['source', 'event', 'descr'] // mark read-only accessor methods
+
     static mapping = {
         id          column:'se_id'
         token       column:'se_token'

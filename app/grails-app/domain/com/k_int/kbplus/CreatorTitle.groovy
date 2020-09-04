@@ -28,7 +28,5 @@ class CreatorTitle {
     ]
 
     static constraints = {
-
     }
-
 }
