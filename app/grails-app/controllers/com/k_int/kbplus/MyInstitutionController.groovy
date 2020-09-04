@@ -383,14 +383,64 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
                     // + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " filter by subscription
             + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+            + "   orgR.roleType in (:licRoleTypes) and ( "
             + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-            + " ) ) " // filter by Anbieter, Konsortium, Agency
-            +  " ) ")
+            + " ) ) ) " // filter by Lizenzgeber, Konsortium
+            +  " ")
             qry_params += [name_filter:"${params['keyword-search']}"]
+            qry_params += [licRoleTypes: [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]]
             result.keyWord = params['keyword-search']
         }
+
+        Set<String> subscriptionOIDs
+        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
+            Set<String> subscrQueryFilter = []
+            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
+            Map<String,Object> subscrQueryParams = [:]
+
+            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
+                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
+                subscrQueryParams.name_filter = params['keyword-search']
+                result.keyWord = params['keyword-search']
+            }
+
+            if(params.subStatus || !params.filterSubmit) {
+                subscrQueryFilter <<  "s.status.id = :subStatus"
+                if(!params.filterSubmit) {
+                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.filterSet = true
+                }
+                subscrQueryParams.subStatus = params.subStatus as Long
+            }
+
+            if(params.subKind) {
+                subscrQueryFilter << "s.kind.id in (:subKinds)"
+                List<Long> subKinds = []
+                List<String> selKinds = params.list('subKind')
+                selKinds.each { String sel ->
+                    subKinds << Long.parseLong(sel)
+                }
+                subscrQueryParams.subKinds = subKinds
+            }
+
+            if(subscrQueryFilter)
+                subscrQuery += " where "+subscrQueryFilter.join(" and ")
+
+            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
+            base_qry += " AND ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+            if(subscriptionOIDs)
+                qry_params.subOIDs = subscriptionOIDs
+            else qry_params.subOIDs = ['false'] //workaround against empty list
+        }
+
+        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
+            base_qry += " ) "
+        }
+
+
 
         if(params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
@@ -436,47 +486,7 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params.categorisations = categorisations
         }
 
-        Set<String> subscriptionOIDs
-        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
-            Set<String> subscrQueryFilter = []
-            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
-            Map<String,Object> subscrQueryParams = [:]
 
-            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
-                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-                subscrQueryParams.name_filter = params['keyword-search']
-                result.keyWord = params['keyword-search']
-            }
-
-            if(params.subStatus || !params.filterSubmit) {
-                subscrQueryFilter <<  "s.status.id = :subStatus"
-                if(!params.filterSubmit) {
-                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
-                    result.filterSet = true
-                }
-                subscrQueryParams.subStatus = params.subStatus as Long
-            }
-
-            if(params.subKind) {
-                subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                subscrQueryParams.subKinds = subKinds
-            }
-
-            if(subscrQueryFilter)
-                subscrQuery += " where "+subscrQueryFilter.join(" and ")
-
-            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
-            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
-            qry_params.linkType = RDStore.LINKTYPE_LICENSE
-            if(subscriptionOIDs)
-                qry_params.subOIDs = subscriptionOIDs
-            else qry_params.subOIDs = ['false'] //workaround against empty list
-        }
 
         if(params.status || !params.filterSubmit) {
             base_qry += " and l.status.id = :status "

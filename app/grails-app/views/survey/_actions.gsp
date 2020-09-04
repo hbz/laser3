@@ -11,12 +11,18 @@
             <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL}">
                 <semui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
                                            message="copySurvey.label"/>
+
+                <semui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[id: params.id]"
+                                           message="copySurvey.label"/>
                 <div class="ui divider"></div>
             </g:if>
 
-            <semui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[id: params.id]"
-                                       message="copySurvey.label"/>
-            <div class="ui divider"></div>
+            <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_READY.id) && surveyInfo.checkOpenSurvey()}">
+                <semui:actionsDropdownItem controller="survey" action="processBackInProcessingSurvey" params="[id: params.id]"
+                                           message="backInProcessingSurvey.button"
+                                           />
+                <div class="ui divider"></div>
+            </g:if>
 
             <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
                 <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
