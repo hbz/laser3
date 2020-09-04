@@ -1463,6 +1463,45 @@ class SubscriptionController
         redirect(url: request.getHeader('referer'))
     }
 
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def linkNextPrevMemberSub() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+
+        Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
+        Org org = Org.get(Long.parseLong(params.memberOrg))
+        Subscription prevMemberSub = (result.navPrevSubscription?.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+        Subscription nextMemberSub = (result.navNextSubscription?.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+
+        if(params.prev && prevMemberSub) {
+
+            Links prevLink = new Links(source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            if (!prevLink.save(flush: true)) {
+                log.error("Problem linking to previous subscription: ${prevLink.errors}")
+                redirect(url: request.getHeader('referer'))
+            }else {
+                redirect(action: 'show', id: prevMemberSub.id)
+            }
+        }
+
+        if(params.next && nextMemberSub) {
+
+            Links nextLink = new Links(source: GenericOIDService.getOID(nextMemberSub), destination: GenericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            if (!nextLink.save(flush: true)) {
+                log.error("Problem linking to next subscription: ${nextLink.errors}")
+                redirect(url: request.getHeader('referer'))
+            }else {
+                redirect(action: 'show', id: nextMemberSub.id)
+            }
+        }
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
@@ -4064,7 +4103,11 @@ class SubscriptionController
                         result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
                         params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        result << copyElementsService.loadDataFor_Properties(params)
+                        if(accessService.checkPerm("ORG_CONSORTIUM")){
+                            result << copyElementsService.loadDataFor_Properties(params)
+                        }else{
+                            result << copyElementsService.loadDataFor_MyProperties(params)
+                        }
                     }
                 } else {
                     result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
@@ -4074,7 +4117,11 @@ class SubscriptionController
                 result << copyElementsService.copyObjectElements_Subscriber(params)
                 if (params.isRenewSub) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    result << copyElementsService.loadDataFor_Properties(params)
+                    if(accessService.checkPerm("ORG_CONSORTIUM")){
+                        result << copyElementsService.loadDataFor_Properties(params)
+                    }else{
+                        result << copyElementsService.loadDataFor_MyProperties(params)
+                    }
                 } else {
                     result << copyElementsService.loadDataFor_Subscriber(params)
                 }
@@ -4092,7 +4139,11 @@ class SubscriptionController
                         redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
                     }
                 } else {
-                    result << copyElementsService.loadDataFor_Properties(params)
+                    if(accessService.checkPerm("ORG_CONSORTIUM")){
+                        result << copyElementsService.loadDataFor_Properties(params)
+                    }else{
+                        result << copyElementsService.loadDataFor_MyProperties(params)
+                    }
                 }
                 break
             case CopyElementsService.WORKFLOW_END:
@@ -4145,10 +4196,8 @@ class SubscriptionController
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
 
-        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.sourceObject)
-        result.consortialView = result.showConsortiaFunctions
-
-        result.editable = result.sourceObject?.isEditableBy(result.user)
+        //isVisibleBy benötigt hier um zu schauen, ob das Objekt überhaupt angesehen darf
+        result.editable = result.sourceObject?.isVisibleBy(result.user)
 
         if (!result.editable) {
             response.sendError(401); return
@@ -4159,17 +4208,17 @@ class SubscriptionController
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks();
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
 
                 break;
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copyObjectElements_Properties();
-                result << copyElementsService.loadDataFor_Properties()
+                result << copyElementsService.copyObjectElements_Properties(params)
+                result << copyElementsService.loadDataFor_MyProperties(params)
 
                 break;
             case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copyObjectElements_Properties();
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (result.targetObject){
                     flash.error = ""
                     flash.message = ""
@@ -4177,7 +4226,7 @@ class SubscriptionController
                 }
                 break;
             default:
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks()
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break;
         }
 
@@ -4270,7 +4319,11 @@ class SubscriptionController
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                 params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                result << copyElementsService.loadDataFor_Properties(params)
+                if(accessService.checkPerm("ORG_CONSORTIUM")){
+                    result << copyElementsService.loadDataFor_Properties(params)
+                }else{
+                    result << copyElementsService.loadDataFor_MyProperties(params)
+                }
                 break
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copyObjectElements_Properties(params)

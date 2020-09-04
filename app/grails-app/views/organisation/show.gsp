@@ -418,6 +418,27 @@
                                         </div>
                                     </div>
                                 </g:if>
+                                <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
+                                    <div class="ui list">
+
+                                        <div class="item">
+
+                                            <input class="ui button" size="35"
+                                                   value="${message(code: 'personFormModalTechnichalSupport')}"
+                                                   data-semui="modal"
+                                                   data-href="#personFormModalTechnichalSupport"/>
+
+                                            <g:render template="/person/formModal"
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : true,
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
+                                                              modalId                          : 'personFormModalTechnichalSupport',
+                                                              tmplHideFunctions: true]"/>
+
+                                        </div>
+                                    </div>
+                                </g:if>
                             </dd>
                         </dl>
                         %{--ERMS:1236--}%

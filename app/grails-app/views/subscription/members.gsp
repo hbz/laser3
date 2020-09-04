@@ -190,7 +190,9 @@
                 <tr>
                     <td>${i + 1}</td>
                     <g:set var="filteredSubscribers" value="${zeile.orgs}" />
+                    <g:set var="org" value="${null}" />
                     <g:each in="${filteredSubscribers}" var="subscr">
+                        <g:set var="org" value="${subscr}" />
                         <td>
                             ${subscr.sortname}</td>
                         <td>
@@ -243,20 +245,26 @@
                     </g:if>
                     <%
                         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
-                        Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
-                        Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                        Subscription navPrevSubMember = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                        Subscription navNextSubMember = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
                     <td class="center aligned">
-                        <g:if test="${navPrevSubscription}">
-                            <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
+                        <g:if test="${navPrevSubMember}">
+                            <g:link controller="subscription" action="show" id="${navPrevSubMember.id}"><i class="arrow left icon"></i></g:link>
                         </g:if>
+                        <g:elseif test="${(navPrevSubscription?.size() > 0) && navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org)}">
+                            <g:link controller="subscription" action="linkNextPrevMemberSub" id="${subscriptionInstance.id}" params="[prev: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow left icon grey"></i></g:link>
+                        </g:elseif>
                     </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td class="center aligned">
-                        <g:if test="${navNextSubscription}">
-                            <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
+                        <g:if test="${navNextSubMember}">
+                            <g:link controller="subscription" action="show" id="${navNextSubMember.id}"><i class="arrow right icon"></i></g:link>
                         </g:if>
+                        <g:elseif test="${(navNextSubscription?.size() > 0) && navNextSubscription[0].getDerivedSubscriptionBySubscribers(org)}">
+                            <g:link controller="subscription" action="linkNextPrevMemberSub" id="${subscriptionInstance.id}" params="[next: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
+                        </g:elseif>
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
