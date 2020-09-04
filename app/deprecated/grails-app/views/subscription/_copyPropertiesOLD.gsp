@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.properties.PropertyDefinition; de.laser.Person; com.k_int.kbplus.Subscription" %>
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <%@ page import="static com.k_int.kbplus.Subscription.WORKFLOW_END" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService");

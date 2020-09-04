@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Person; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Person;com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <!doctype html>

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="de.laser.Contact" %>
 <!doctype html>
 <html>
 	<head>

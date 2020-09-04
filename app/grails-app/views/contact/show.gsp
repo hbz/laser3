@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 	<head>

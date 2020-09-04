@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.Org;de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">
@@ -39,7 +39,7 @@
 
     </label>
     <laser:select class="ui dropdown" id="gender" name="gender"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.GENDER)}"
+                  from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.gender?.id}"
@@ -52,7 +52,7 @@
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
+                  from="${Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.roleType?.id}"
@@ -65,7 +65,7 @@
 
     </label>
     <laser:select class="ui dropdown" id="contactType" name="contactType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
+                  from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.contactType?.id}"
@@ -115,7 +115,7 @@
         <g:message code="person.isPublic.label" />
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.Y_N)}"
+                  from="${Person.getAllRefdataValues(RDConstants.Y_N)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.isPublic?.id}" /><%-- todo: ERMS-1562 --%>

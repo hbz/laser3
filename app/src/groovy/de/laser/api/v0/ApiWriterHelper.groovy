@@ -2,6 +2,9 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.Address
+import de.laser.Contact
+import de.laser.Person
 import de.laser.api.v0.entities.ApiOrg
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants

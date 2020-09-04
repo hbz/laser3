@@ -9,7 +9,6 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 import grails.web.Action
 import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder

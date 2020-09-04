@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.AuditConfig "%>
+<%@ page import="de.laser.Person; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.AuditConfig "%>
 <%@ page import="com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.RefdataValue;" %>
 <laser:serviceInjection />
 

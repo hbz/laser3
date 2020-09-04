@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService; com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection />
 
 <g:set var="formService" bean="formService"/>

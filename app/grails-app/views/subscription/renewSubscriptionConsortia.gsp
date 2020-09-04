@@ -1,5 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Person" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.Person;com.k_int.kbplus.RefdataValue" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <!doctype html>
 <html>

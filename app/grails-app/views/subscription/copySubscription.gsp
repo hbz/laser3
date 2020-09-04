@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.PendingChangeConfiguration; com.k_int.kbplus.Person;" %>
+<%@ page import="de.laser.Person; de.laser.helper.RDStore;de.laser.PendingChangeConfiguration;" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
