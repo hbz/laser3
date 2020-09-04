@@ -1370,13 +1370,9 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitlesSubscriber() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         result.participant = params.participant ? Org.get(params.participant) : null
 
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.editable = result.surveyInfo.isEditable() ?: false
@@ -4991,7 +4987,7 @@ class SurveyController {
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
-        result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs.size() > 1)
+        result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo.isEditable() ?: false
 

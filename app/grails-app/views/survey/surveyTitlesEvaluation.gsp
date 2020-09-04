@@ -166,7 +166,7 @@
                                 <td>
 
                                     <g:link action="surveyTitlesSubscriber"
-                                            id="${surveyConfig.id}" params="[participant: participant?.id]"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
                                     </g:link>
@@ -243,7 +243,7 @@
                                 <td>
 
                                     <g:link action="surveyTitlesSubscriber"
-                                            id="${surveyConfig.id}" params="[participant: participant?.id]"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
                                     </g:link>
@@ -337,7 +337,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -414,7 +414,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -508,7 +508,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -585,7 +585,7 @@
                             <td>
 
                                 <g:link action="surveyTitlesSubscriber"
-                                        id="${surveyConfig.id}" params="[participant: participant?.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>

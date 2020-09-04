@@ -116,7 +116,7 @@
 
                             <g:if test="${surveyConfig.pickAndChoose}">
                                 <g:link controller="survey" action="surveyTitlesSubscriber"
-                                        id="${surveyConfig.id}" params="[participant: participant.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                                         class="ui icon button"><i
                                         class="chart pie icon"></i>
                                 </g:link>
@@ -303,7 +303,7 @@
 
                             <g:if test="${surveyConfig.pickAndChoose}">
                                 <g:link controller="survey" action="surveyTitlesSubscriber"
-                                        id="${surveyConfig.id}" params="[participant: participant.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                                         class="ui icon button"><i
                                         class="chart pie icon"></i>
                                 </g:link>
