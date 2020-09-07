@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2836    07.09.2020  hbz-dev     Moe     Feature     Umfrage Teilnehmer-Bemerkungsfeld
+
 2849    07.09.2020  hbz-dev     Moe     Feature     xEditable Zeichenzähler bei Input Felder mit Text
 
 2797    04.09.2020  hbz-dev     Moe     Feature     Kopierverhalten bei Merkmale kopieren
