@@ -858,24 +858,28 @@ class SurveyService {
                         replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
                         Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
                         Object[] args = ["${survey.type.getI10n('value', language)}"]
-                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " (" + survey.name + ")")
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " " + survey.name + "")
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {
+                                multipart true
                                 to emailReceiver
                                 from from
                                 cc ccAddress
                                 replyTo replyTo
                                 subject mailSubject
-                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                                text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                             }
                         } else {
                             mailService.sendMail {
+                                multipart true
                                 to emailReceiver
                                 from from
                                 replyTo replyTo
                                 subject mailSubject
-                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                                text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                             }
                         }
 

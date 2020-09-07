@@ -536,7 +536,13 @@ class PendingChangeService extends AbstractLockableService {
         String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
         List<Object> eventData
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        if(change.oid) {
+
+        if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
+            eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
+            instanceIcon = '<span data-tooltip="' + messageSource.getMessage('subscription', null, locale) + '"><i class="clipboard icon"></i></span>'
+            eventString = messageSource.getMessage('pendingChange.message_SU_NEW_01.eventString', null, locale)
+        }
+        else if(change.oid) {
             if(change.oid.contains(IssueEntitlement.class.name)){
                 IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
