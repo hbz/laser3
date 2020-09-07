@@ -167,8 +167,6 @@ class SurveyConfig {
     }
 
     String getConfigName() {
-
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
         if (type == 'Subscription') {
