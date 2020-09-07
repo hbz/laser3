@@ -4,10 +4,6 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import org.hibernate.Session
-
-import javax.persistence.Transient
-import java.sql.Blob
 
 class Doc {
 
@@ -17,7 +13,7 @@ class Doc {
     static final CONTENT_TYPE_STRING              = 0
     @Deprecated
     static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
-    static final CONTENT_TYPE_BLOB                = 3
+    static final CONTENT_TYPE_FILE                = 3
 
   static transients = [ 'sessionFactory' ]
 
@@ -94,7 +90,7 @@ class Doc {
 
     // erms-790
     def beforeInsert = {
-        if (contentType == CONTENT_TYPE_BLOB) {
+        if (contentType == CONTENT_TYPE_FILE) {
             uuid = java.util.UUID.randomUUID().toString()
             log.info('generating new uuid: '+ uuid)
         }

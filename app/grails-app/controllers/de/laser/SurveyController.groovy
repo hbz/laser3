@@ -28,11 +28,9 @@ import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -4625,7 +4623,7 @@ class SurveyController {
         oldSurveyConfig.documents.each { dctx ->
                 //Copy Docs
                 if (params.copySurvey.copyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                    if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
                                 status: dctx.owner.status,
                                 type: dctx.owner.type,

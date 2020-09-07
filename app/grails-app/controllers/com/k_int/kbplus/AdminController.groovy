@@ -638,7 +638,7 @@ class AdminController extends AbstractDebugController {
 
                 result.listOfFilesMatchingDocs = Doc.executeQuery(
                         'select doc from Doc doc where doc.contentType = :ct and doc.uuid in (:files)',
-                        [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
+                        [ct: Doc.CONTENT_TYPE_FILE, files: result.listOfFiles]
                 )
                 List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
 
@@ -656,12 +656,12 @@ class AdminController extends AbstractDebugController {
 
         List<Doc> listOfDocs = Doc.executeQuery(
                 'select doc from Doc doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_BLOB]
+                [ct: Doc.CONTENT_TYPE_FILE]
         )
 
         result.listOfDocsInUse = Doc.executeQuery(
                 'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_BLOB]
+                [ct: Doc.CONTENT_TYPE_FILE]
         )
 
         result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
@@ -681,12 +681,12 @@ class AdminController extends AbstractDebugController {
 
         result.numberOfDocContextsInUse = DocContext.executeQuery(
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and (dc.status is null or dc.status != :del)',
-                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+                [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
         result.numberOfDocContextsDeleted = DocContext.executeQuery(
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
-                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+                [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
         result
