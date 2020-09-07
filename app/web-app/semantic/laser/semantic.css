@@ -32559,6 +32559,12 @@ a.ui.card:hover,
   content: "\f08d";
 }
 
+.ui.checkbox.la-toggle-radio.la-inherit input:checked ~ label:before {
+  font-family: Icons;
+  content: "\f08d";
+  background-color:#D4E096;
+}
+
 /* SHARE*/
 
 .ui.checkbox.la-toggle-radio.la-share label:before {

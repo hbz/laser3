@@ -8,7 +8,7 @@
     <th class="five wide center aligned">
         <div class="la-copyElements-th-flex-container">
             <div class="la-copyElements-th-flex-item">
-                <g:if test="${propBinding && propBinding.get(sourceObject)?.isVisibleForConsortiaMembers}">
+                <g:if test="${sourceObject && propBinding && propBinding.get(sourceObject)?.isVisibleForConsortiaMembers}">
                     <g:if test="${sourceObject}"><g:link
                             controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show"
                             id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if><span
@@ -36,7 +36,7 @@
         <th class="six wide center aligned">
             <div class="la-copyElements-th-flex-container">
                 <div class="la-copyElements-th-flex-item">
-                    <g:if test="${propBinding && propBinding.get(targetObject)?.isVisibleForConsortiaMembers}">
+                    <g:if test="${targetObject && propBinding && propBinding.get(targetObject)?.isVisibleForConsortiaMembers}">
                         <g:if test="${targetObject}"><g:link
                                 controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show"
                                 id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if><span
@@ -63,20 +63,21 @@
 <g:each in="${group}" var="prop">
     <% PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey()) %>
     <g:set var="propValues" value="${prop.getValue()}"/>
-    <% Set propValuesForSourceSub = propValues.get(sourceObject) %>
-    <% Set propValuesForTargetSub = propValues.get(targetObject) %>
+    <% List propValuesForSourceSub = propValues.get(sourceObject) %>
+    <% List propValuesForTargetSub = propValues.get(targetObject) %>
     <%
+
         boolean showProp = false
         if (accessService.checkPerm('ORG_INST')) {
-            if ((propValuesForSourceSub[0].tenant?.id == contextOrg.id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic))) ||
-                    (propValuesForTargetSub[0].tenant?.id == contextOrg.id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic)))) {
+            if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic)))) ||
+                    ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic))))) {
                 showProp = true
             }
         }
 
         if (accessService.checkPerm('ORG_CONSORTIUM')) {
-            if ((propValuesForSourceSub[0].tenant?.id == contextOrg.id || !propValuesForSourceSub[0].tenant) || propValuesForSourceSub[0].isPublic || (propValuesForSourceSub[0].hasProperty('instanceOf') && propValuesForSourceSub[0].instanceOf && AuditConfig.getConfig(propValuesForSourceSub[0].instanceOf)) ||
-                    (propValuesForTargetSub[0].tenant?.id == contextOrg.id || !propValuesForTargetSub[0].tenant) || propValuesForTargetSub[0].isPublic || (propValuesForTargetSub[0].hasProperty('instanceOf') && propValuesForTargetSub[0].instanceOf && AuditConfig.getConfig(propValuesForTargetSub[0].instanceOf))) {
+            if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || !propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic || (propValuesForSourceSub[0].hasProperty('instanceOf') && propValuesForSourceSub[0].instanceOf && AuditConfig.getConfig(propValuesForSourceSub[0].instanceOf)))) ||
+                    ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || !propValuesForTargetSub[0].tenant) || propValuesForTargetSub[0].isPublic || (propValuesForTargetSub[0].hasProperty('instanceOf') && propValuesForTargetSub[0].instanceOf && AuditConfig.getConfig(propValuesForTargetSub[0].instanceOf)))) {
                 showProp = true
             }
         }

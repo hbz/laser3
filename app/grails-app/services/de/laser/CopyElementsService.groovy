@@ -812,7 +812,7 @@ class CopyElementsService {
         ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
         def targetProp
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetObject.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
+            targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
                 targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
@@ -866,8 +866,12 @@ class CopyElementsService {
                     }
                 }
             } else {
-                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
-                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
+                //Replace
+                targetProp = sourceProp.copyInto(targetProp)
+                targetProp.save()
+
+                Object[] args = [sourceProp.type.getI10n("name") ?: targetProp.class.getSimpleName()]
+                flash.error += messageSource.getMessage('subscription.replaceInTargetSub', args, locale)
             }
         }
     }
