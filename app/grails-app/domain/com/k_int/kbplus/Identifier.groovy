@@ -29,8 +29,7 @@ class Identifier implements CalculatedLastUpdated {
             pkg:    Package,
             sub:    Subscription,
             ti:     TitleInstance,
-            tipp:   TitleInstancePackagePlatform,
-            cre:    Creator
+            tipp:   TitleInstancePackagePlatform
     ]
 
 	static constraints = {
@@ -48,7 +47,6 @@ class Identifier implements CalculatedLastUpdated {
 	  	sub     (nullable:true)
 	  	ti      (nullable:true)
 	  	tipp    (nullable:true)
-	  	cre     (nullable:true)
 
 		// Nullable is true, because values are already in the database
         dateCreated (nullable: true)
@@ -68,7 +66,6 @@ class Identifier implements CalculatedLastUpdated {
        sub  column:'id_sub_fk'
        ti   column:'id_ti_fk',      index:'id_title_idx'
        tipp column:'id_tipp_fk',    index:'id_tipp_idx'
-       cre  column:'id_cre_fk'
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
@@ -157,14 +154,13 @@ class Identifier implements CalculatedLastUpdated {
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
         ti   = owner instanceof TitleInstance ? owner : ti
-        cre  = owner instanceof Creator ? owner : cre
     }
 
     Object getReference() {
         int refCount = 0
         def ref
 
-        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'ti', 'tipp', 'cre']
+        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'ti', 'tipp']
         fks.each { fk ->
             if (this."${fk}") {
                 refCount++
@@ -188,7 +184,6 @@ class Identifier implements CalculatedLastUpdated {
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
         name = object instanceof TitleInstance ?                'ti' :   name
-        name = object instanceof Creator ?                      'cre' :  name
 
         name
     }

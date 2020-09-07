@@ -208,13 +208,12 @@
                                             List tooltip = []
                                             globalNamespaceStats.each { e ->
                                                 if ( e[1] == idNs.id) {
-                                                    if (e[2] > 0) tooltip.add("Creator: ${e[2]}")
-                                                    if (e[3] > 0) tooltip.add("Verträge: ${e[3]}")
-                                                    if (e[4] > 0) tooltip.add("Organisationen: ${e[4]}")
-                                                    if (e[5] > 0) tooltip.add("Pakete: ${e[5]}")
-                                                    if (e[6] > 0) tooltip.add("Lizenzen: ${e[6]}")
-                                                    if (e[7] > 0) tooltip.add("Titel: ${e[7]}")
-                                                    if (e[8] > 0) tooltip.add("TIPPs: ${e[8]}")
+                                                    if (e[2] > 0) tooltip.add("Verträge: ${e[2]}")
+                                                    if (e[3] > 0) tooltip.add("Organisationen: ${e[3]}")
+                                                    if (e[4] > 0) tooltip.add("Pakete: ${e[4]}")
+                                                    if (e[5] > 0) tooltip.add("Lizenzen: ${e[5]}")
+                                                    if (e[6] > 0) tooltip.add("Titel: ${e[6]}")
+                                                    if (e[7] > 0) tooltip.add("TIPPs: ${e[7]}")
                                                 }
                                             }
                                         %>

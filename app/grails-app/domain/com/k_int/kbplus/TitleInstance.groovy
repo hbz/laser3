@@ -61,8 +61,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
                     ids:    Identifier,
                     orgs:   OrgRole,
                     historyEvents: TitleHistoryEventParticipant,
-                    prsLinks: PersonRole,
-                    creators: CreatorTitle
+                    prsLinks: PersonRole
                     ]
 
     static transients = ['publisher'] // mark read-only accessor methods
@@ -89,7 +88,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
       orgs          batchSize: 10
       historyEvents batchSize: 10
       prsLinks      batchSize: 10
-      creators      batchSize: 10
   }
 
     static constraints = {
@@ -101,7 +99,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
         normTitle(nullable:true, blank:false,maxSize:2048)
         sortTitle(nullable:true, blank:false,maxSize:2048)
         keyTitle(nullable:true, blank:false,maxSize:2048)
-        creators(nullable:true, blank:false)
         gokbId (blank:false, unique: true, maxSize:511)
         seriesName(nullable:true, blank:false)
         subjectReference(nullable:true, blank:false)

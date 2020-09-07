@@ -20,7 +20,6 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final NS_SUBSCRIPTION = "com.k_int.kbplus.Subscription"
     public static final NS_PACKAGE      = "com.k_int.kbplus.Package"
     public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
-    public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
 
     public static final String ISIL       = "ISIL"
     public static final String WIBID      = "wibid"
@@ -64,8 +63,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             NS_LICENSE,
             NS_SUBSCRIPTION,
             NS_PACKAGE,
-            NS_TITLE,
-            NS_CREATOR
+            NS_TITLE
     ]
 
     String ns

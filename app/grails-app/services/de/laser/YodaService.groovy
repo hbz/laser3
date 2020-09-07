@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ChangeNotificationService
-import com.k_int.kbplus.CreatorTitle
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.OrgAccessPointLink
@@ -347,7 +346,6 @@ class YodaService {
                     OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title in :from',[to:mergeTarget, from:others])
                     TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant in :from',[to:mergeTarget, from:others])
                     PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title in :from',[to:mergeTarget, from:others])
-                    CreatorTitle.executeUpdate('update CreatorTitle ct set ct.title = :to where ct.title in :from',[to:mergeTarget, from:others])
                     toDelete.addAll(others)
                 }
                 result.remappingTitles.each { entry ->
@@ -366,7 +364,6 @@ class YodaService {
                             OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title = :from',[to:mergeTarget, from:other])
                             TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant = :from',[to:mergeTarget, from:other])
                             PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title = :from',[to:mergeTarget, from:other])
-                            CreatorTitle.executeUpdate('update CreatorTitle ct set ct.title = :to where ct.title = :from',[to:mergeTarget, from:other])
                             toDelete << other
                         }
                     }
@@ -380,7 +377,6 @@ class YodaService {
                         OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title in :from',[to:mergeTarget, from:others])
                         TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant in :from',[to:mergeTarget, from:others])
                         PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title in :from',[to:mergeTarget, from:others])
-                        CreatorTitle.executeUpdate('update CreatorTitle ct set ct.title = :to where ct.title in :from',[to:mergeTarget, from:others])
                         toDelete.addAll(others)
                     }
                     else {
@@ -394,7 +390,6 @@ class YodaService {
                     OrgRole.executeUpdate('delete from OrgRole oo where oo.title in :toDelete',[toDelete:toDelete])
                     TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in :toDelete',[toDelete:toDelete])
                     PersonRole.executeUpdate('delete from PersonRole pr where pr.title in :toDelete',[toDelete:toDelete])
-                    CreatorTitle.executeUpdate('delete from CreatorTitle ct where ct.title in :toDelete',[toDelete:toDelete])
                     Fact.executeUpdate('delete from Fact f where f.relatedTitle in :toDelete',[toDelete:toDelete])
                     TitleInstance.executeUpdate('delete from TitleInstance ti where ti in :toDelete',[toDelete:toDelete])
                 }

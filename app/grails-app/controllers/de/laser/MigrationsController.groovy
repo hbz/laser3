@@ -171,8 +171,7 @@ class MigrationsController {
                     pkg  : old.pkg,
                     sub  : old.sub,
                     ti   : old.ti,
-                    tipp : old.tipp,
-                    cre  : old.cre
+                    tipp : old.tipp
             ])
             def reference = old.getReference()
 
