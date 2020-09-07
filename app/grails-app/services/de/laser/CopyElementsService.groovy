@@ -773,7 +773,7 @@ class CopyElementsService {
     boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
-                if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
+                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB) && (dctx.status?.value != 'Deleted')) {
                     try {
 
                         Doc newDoc = new Doc()

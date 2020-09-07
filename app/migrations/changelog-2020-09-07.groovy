@@ -76,4 +76,8 @@ databaseChangeLog = {
 	changeSet(author: "klober (generated)", id: "1599469610364-18") {
 		dropTable(tableName: "creator_title")
 	}
+
+	changeSet(author: "klober (generated)", id: "1599469610364-19") {
+		dropColumn(columnName: "doc_blob_content", tableName: "doc")
+	}
 }

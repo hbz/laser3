@@ -717,7 +717,6 @@ class AdminController extends AbstractDebugController {
             result.doc = doc
 
             List docs = Doc.findAllWhere(
-                    blobContent: doc.blobContent,
                     status: doc.status,
                     type: doc.type,
                     content: doc.content,
