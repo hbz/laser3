@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.UserSettings; com.k_int.kbplus.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>

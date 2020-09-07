@@ -1,10 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.Role
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-
-import javax.persistence.Transient
 
 class OrgSettings {
 
