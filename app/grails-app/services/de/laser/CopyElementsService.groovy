@@ -254,13 +254,23 @@ class CopyElementsService {
                 }
 
                 if (subMember.propertySet) {
-                    //customProperties
-                    for (prop in subMember.propertySet) {
+                    Org org = contextService.getOrg()
+                        //customProperties of ContextOrg && privateProperties of ContextOrg
+                        subMember.propertySet.each {subProp ->
+                            if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
+                            {
+                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
+                                copiedProp = subProp.copyInto(copiedProp)
+                                copiedProp.save()
+                            }
+                        }
+
+                   /* for (prop in subMember.propertySet) {
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
                         //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                    }
+                    }*/
                 }
                 /*
                 if (subMember.privateProperties) {
