@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2849    07.09.2020  hbz-dev     Moe     Feature     xEditable Zeichenzähler bei Input Felder mit Text
+
 2845    04.09.2020  hbz-dev     Moe     Bug         Modal Anbieter verknüpfen: Sortierung komisch + Suche funktioniert nicht richtig
 
 2842    03.09.2020  rc1.5       Moe     Bug         Umfrage Mailtexte
