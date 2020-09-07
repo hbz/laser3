@@ -39,7 +39,6 @@ class CascadingUpdateService {
         if (obj.ti)  { update(obj.ti,  luc) }
 
         //        tipp:   TitleInstancePackagePlatform
-        //        cre:    Creator
     }
 
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {

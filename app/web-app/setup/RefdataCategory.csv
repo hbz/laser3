@@ -25,7 +25,6 @@ cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
 cost.item.type,Typ,Type
 country,Land,Country
-creator.type,Creator Type,Creator Type
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status

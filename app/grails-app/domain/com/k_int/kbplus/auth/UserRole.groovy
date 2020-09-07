@@ -1,9 +1,6 @@
 package com.k_int.kbplus.auth
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
 import org.apache.commons.lang.builder.HashCodeBuilder
-
 import javax.persistence.Transient
 
 class UserRole implements Serializable, Comparable {
@@ -24,8 +21,8 @@ class UserRole implements Serializable, Comparable {
     }
 
     static constraints = {
-        lastUpdated (nullable: true)
-        dateCreated (nullable: true)
+        lastUpdated     nullable: true
+        dateCreated     nullable: true
     }
 
     boolean equals(other) {
