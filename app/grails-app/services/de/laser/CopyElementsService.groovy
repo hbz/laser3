@@ -869,9 +869,6 @@ class CopyElementsService {
                 //Replace
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.save()
-
-                Object[] args = [sourceProp.type.getI10n("name") ?: targetProp.class.getSimpleName()]
-                flash.error += messageSource.getMessage('subscription.replaceInTargetSub', args, locale)
             }
         }
     }
