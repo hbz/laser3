@@ -2,9 +2,31 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2842    03.09.2020  rc1.5       Moe     Bug         Umfrage Mailtexte
+
+--      03.09.2020  rc1.5       Moe     Bug         Bugfix in Umfrage-Bearbeitung
+
+2841    02.09.2020  rc1.5       Moe     Bug         Umfrage wieder auf In Bearbeitung setzten
+
+2822    02.09.2020  rc1.5       Moe     Bug         Neuer lokal angelegter Vertrag wird nicht angzeigt wenn keine Lizenz verknüpft ist
+
+2839    02.09.2020  rc1.5       Moe     Feature     "Vertrag" als Vertragskategorie aufnehmen
+
+2838    02.09.2020  rc1.5       Moe     Bug         Vererbung Datenaustausch + dauerhafter Zugriff
+
+2833    02.09.2020  rc1.5       Moe     Bug         Beim Kopieren von Umfrage-Merkmale zu Lizenzmerkmale werden die Lizenzmerkmale nicht richtig übernommen
+
 2825    01.09.2020  hbz-dev       Moe     Feature     Eigene "Allgemeine Merkmale" können nicht an Nachfolgelizenz kopiert werden
 
 2815    01.09.2020  hbz-dev       Moe     Feature     Elemente kopieren: Reiter Merkmale überarbeiten
+
+2832    01.09.2020  rc1.5       Moe     Bug         Umfrage: Verlängerungssicht enthält dublette von TNs bei "Bereits" und "Mehrjahreslaufzeiten""
+
+2834    01.09.2020  rc1.5       Moe     Bug         Renewal excel funktioniert nicht
+
+2837    01.09.2020  rc1.5       Moe     Feature     Lizenzinformationen einblenden in Umfrage
+
+2831    01.09.2020  rc1.5       Moe     Bug         Beim Kopiervorgang vom Umfrage-Kosten zu Lizenzkosten bleibt der "Wert in EUR" leer
 
 --      31.08.2020  rc1.5       Moe     Bug         Auf dem Dashboard wird keine Änderungsmitteilung angezeigt, wenn eine neue Lizenz für den Teilnehmer durch die Verlängerungsumfrage erstellt wurde
 

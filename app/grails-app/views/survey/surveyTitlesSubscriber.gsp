@@ -48,6 +48,7 @@
                                                            id="${subscriptionInstance.id}">${surveyConfig.getConfigNameShort()}</g:link>
 </h1>
 
+<g:render template="nav"/>
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>

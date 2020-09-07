@@ -123,7 +123,7 @@
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
                                 <g:link controller="survey" action="surveyTitlesSubscriber"
-                                        id="${surveyConfig?.id}" params="[participant: institution.id]"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: institution.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
