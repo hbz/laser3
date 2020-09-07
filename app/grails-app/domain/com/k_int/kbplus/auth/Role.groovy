@@ -21,8 +21,8 @@ class Role implements I10nTrait {
     ]
 
     static constraints = {
-        authority blank: false, unique: true
-        roleType blank: false, nullable: true
+        authority   blank: false, unique: true
+        roleType    blank: false, nullable: true
     }
 
     static def refdataFind(params) {

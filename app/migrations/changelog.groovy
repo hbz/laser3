@@ -69,7 +69,6 @@ databaseChangeLog = {
 	include file: 'done/changelog-2020-03-26.groovy'
 	include file: 'done/changelog-2020-03-27.groovy'
 	//include file: 'done/changelog-2020-03-30.groovy' chicken-and-egg problem due oo access
-
 	include file: 'changelog-2020-04-16.groovy'
 	include file: 'changelog-2020-04-27.groovy'
 	include file: 'changelog-2020-05-03.groovy'
@@ -98,4 +97,5 @@ databaseChangeLog = {
 	include file: 'changelog-2020-07-22.groovy'
 	//include file: 'changelog-2020-07-24.groovy' to be activated as soon as data migration has been talked over with Micha
 	include file: 'changelog-2020-09-03.groovy'
+	include file: 'changelog-2020-09-07.groovy'
 }

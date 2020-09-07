@@ -3,7 +3,6 @@ package com.k_int.kbplus.auth
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import grails.plugin.springsecurity.SpringSecurityUtils
-
 import javax.persistence.Transient
 
 class User {
@@ -35,11 +34,11 @@ class User {
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
 
   static constraints = {
-    username blank: false, unique: true
-    password blank: false
-    display blank: true, nullable: true
-    email blank: true, nullable: true
-    shibbScope blank: true, nullable: true
+    username    blank: false, unique: true
+    password    blank: false
+    display     blank: true, nullable: true
+    email       blank: true, nullable: true
+    shibbScope  blank: true, nullable: true
   }
 
     static transients = [

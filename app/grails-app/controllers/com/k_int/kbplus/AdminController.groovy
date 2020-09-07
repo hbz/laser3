@@ -1516,9 +1516,6 @@ class AdminController extends AbstractDebugController {
                 else if (params.cmd == 'details') {
 
                     if (idnsInstance) {
-                        detailsStats.putAt(g.createLink(controller:'creator', action:'show'),
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.cre.id from Identifier i join i.ns idns where idns = :idns and i.cre is not null order by i.value, i.cre.id", [idns: idnsInstance]))
                         detailsStats.putAt(g.createLink(controller:'license', action:'show'),
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.lic.id from Identifier i join i.ns idns where idns = :idns and i.lic is not null order by i.value, i.lic.id", [idns: idnsInstance]))
@@ -1560,7 +1557,6 @@ class AdminController extends AbstractDebugController {
 SELECT * FROM (
       SELECT idns.idns_ns,
              idns.idns_id,
-             sum(CASE WHEN i.id_cre_fk is null THEN 0 ELSE 1 END)  cre,
              sum(CASE WHEN i.id_lic_fk is null THEN 0 ELSE 1 END)  lic,
              sum(CASE WHEN i.id_org_fk is null THEN 0 ELSE 1 END)  org,
              sum(CASE WHEN i.id_pkg_fk is null THEN 0 ELSE 1 END)  pkg,
@@ -1572,7 +1568,6 @@ SELECT * FROM (
       GROUP BY idns.idns_ns, idns.idns_id
       order by idns.idns_ns
 ) sq WHERE (
-    CASE WHEN sq.cre > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.lic > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.org > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.pkg > 0 THEN 1 ELSE 0 END +

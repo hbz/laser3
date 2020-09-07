@@ -698,7 +698,6 @@ No Host Platform URL Content
     void setIdentifierNamespace() {
 
         def namespaces = [
-                [ns: "GND", typ: "com.k_int.kbplus.Creator"],
                 [ns: "ISIL"],
                 [ns: "ISIL_Paketsigel"],
                 [ns: "uri"],
