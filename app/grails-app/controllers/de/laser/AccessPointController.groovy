@@ -1,9 +1,17 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.AccessPointData
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgAccessPoint
+import com.k_int.kbplus.OrgAccessPointEzproxy
+import com.k_int.kbplus.OrgAccessPointLink
+import com.k_int.kbplus.OrgAccessPointOA
+import com.k_int.kbplus.OrgAccessPointShibboleth
+import com.k_int.kbplus.OrgAccessPointVpn
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
-import de.laser.AccessPointService
-import de.laser.AccessService
-import de.laser.EscapeService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
