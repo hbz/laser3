@@ -181,7 +181,7 @@
 
 </g:each>
 
-
+<%--
 <g:set var="allFields" value="${tmplConfigShow.flatten()}" />
 
 <g:if test="${! allFields.contains('type') && params.orgType}">
@@ -205,6 +205,7 @@
 <g:if test="${! allFields.contains('country') && params.country}">
     <input type="hidden" name="country" value="${params.country}" />
 </g:if>
+--%>
 
 
 <div class="field la-field-right-aligned">

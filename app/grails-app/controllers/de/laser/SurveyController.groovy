@@ -1338,7 +1338,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1395,7 +1395,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1626,7 +1626,7 @@ class SurveyController {
     def evaluateIssueEntitlementsSurvey() {
         def result = setResultGenericsAndCheckAccess()
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1652,7 +1652,7 @@ class SurveyController {
     })
     def evaluationParticipant() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             response.sendError(401); return
         }
 
@@ -3027,7 +3027,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             response.sendError(401); return
         }
         //result.putAll(financeService.setEditVars(result.institution))
