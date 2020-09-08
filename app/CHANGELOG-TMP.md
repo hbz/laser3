@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+--      07.09.2020  rc1.5       Moe     Bug         Copy Properties by Copy Subscriber in Copy Elements Process
+
 2842    03.09.2020  rc1.5       Moe     Bug         Umfrage Mailtexte
 
 --      03.09.2020  rc1.5       Moe     Bug         Bugfix in Umfrage-Bearbeitung
