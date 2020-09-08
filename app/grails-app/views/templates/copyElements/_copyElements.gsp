@@ -80,7 +80,7 @@
                         <td class="center aligned">
                             <g:if test="${!isRenewSub}">
                                 <div class="ui checkbox la-toggle-radio la-inherit">
-                                    <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" class="ui checkbox"
+                                    <g:checkBox name="copyObject.toggleAudit" value="${objProperty}"
                                                 checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
                                 </div>
                             </g:if>

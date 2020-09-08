@@ -146,22 +146,17 @@ class CopyElementsService {
             objectsToCompare.add(targetObject)
         }
 
+        Org contextOrg = contextService.org
+
+        result = regroupObjectProperties(objectsToCompare, contextOrg)
+
         if (targetObject) {
             result.targetObject = targetObject.refresh()
-        }
-        Org contextOrg = contextService.org
-        objectsToCompare.each { Object obj ->
-            Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic)) }.sort { it.type.getI10n('name') })
-            result.customProperties = customProperties
-            Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, obj, obj.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
-            result.privateProperties = privateProperties
         }
         result
     }
 
-    Map loadDataFor_MyProperties(Map params) {
+    /*Map loadDataFor_MyProperties(Map params) {
         LinkedHashMap result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
@@ -173,14 +168,14 @@ class CopyElementsService {
 
 
         Org contextOrg = contextService.org
-        /*objectsToCompare.each { Object obj ->
+        *//*objectsToCompare.each { Object obj ->
             Map customProperties = result.customProperties
             customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && it.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties, obj, obj.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
             result.privateProperties = privateProperties
-        }*/
+        }*//*
 
         result = regroupObjectProperties(objectsToCompare, contextOrg)
 
@@ -189,7 +184,7 @@ class CopyElementsService {
         }
 
         result
-    }
+    }*/
 
     Map loadDataFor_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
@@ -259,13 +254,23 @@ class CopyElementsService {
                 }
 
                 if (subMember.propertySet) {
-                    //customProperties
-                    for (prop in subMember.propertySet) {
+                    Org org = contextService.getOrg()
+                        //customProperties of ContextOrg && privateProperties of ContextOrg
+                        subMember.propertySet.each {subProp ->
+                            if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
+                            {
+                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
+                                copiedProp = subProp.copyInto(copiedProp)
+                                copiedProp.save()
+                            }
+                        }
+
+                   /* for (prop in subMember.propertySet) {
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
                         //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                    }
+                    }*/
                 }
                 /*
                 if (subMember.privateProperties) {
@@ -807,7 +812,7 @@ class CopyElementsService {
         ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
         def targetProp
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
-            targetProp = targetObject.propertySet.find { it.typeId == sourceProp.typeId && it.tenant == sourceProp.tenant }
+            targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ((!targetProp) || isAddNewProp) {
                 targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
@@ -861,8 +866,9 @@ class CopyElementsService {
                     }
                 }
             } else {
-                Object[] args = [sourceProp.type.getI10n("name") ?: sourceProp.class.getSimpleName()]
-                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
+                //Replace
+                targetProp = sourceProp.copyInto(targetProp)
+                targetProp.save()
             }
         }
     }

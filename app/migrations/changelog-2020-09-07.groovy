@@ -76,4 +76,16 @@ databaseChangeLog = {
 	changeSet(author: "klober (generated)", id: "1599469610364-18") {
 		dropTable(tableName: "creator_title")
 	}
+
+	changeSet(author: "djebeniani (generated)", id: "1599469610364-19") {
+		modifyDataType(columnName: "surre_comment", newDataType: "text", tableName: "survey_result")
+	}
+
+	changeSet(author: "djebeniani (generated)", id: "1599469610364-20") {
+		modifyDataType(columnName: "surre_owner_comment", newDataType: "text", tableName: "survey_result")
+	}
+
+	changeSet(author: "djebeniani (generated)", id: "1599469610364-21") {
+		modifyDataType(columnName: "surre_participant_comment", newDataType: "text", tableName: "survey_result")
+	}
 }
