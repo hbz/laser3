@@ -88,8 +88,6 @@ r2d2 = {
         r2d2.initDynamicSemuiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
-
-
         $("html").css("cursor", "auto");
 
         console.log("r2d2 - laser.gspLocale: " + laser.gspLocale + ", laser.gspDateFormat: " + laser.gspDateFormat);
@@ -392,14 +390,10 @@ r2d2 = {
 
     countSettedFilters: function () {
         // DROPDOWN AND INPUT FIELDS
-        var dropdownFilter = 0;
-        var inputTextFilter = 0;
-        var calendarFilter = 0;
-        var checkboxFilter = 0;
-        dropdownFilter = $('.la-filter-dropdown-selected').length;
-        inputTextFilter = $('.la-filter-selected').length;
-        calendarFilter = $('.la-calendar-selected').length;
-
+        var dropdownFilter  = $('.la-filter-dropdown-selected').length;
+        var inputTextFilter = $('.la-filter-selected').length;
+        var calendarFilter  = $('.la-calendar-selected').length;
+        var checkboxFilter  = 0;
 
         // CHECKBOXES
         // LOOP TROUGH CHECKBOXES
@@ -566,7 +560,6 @@ r2d2 = {
             $( '.la-filter .ui.dropdown' ).each(function( index ) {
                 toggleFilterDropdown(this,true)
             });
-
         });
 
         function toggleFilterDropdown(that, initial) {
@@ -575,7 +568,6 @@ r2d2 = {
             if(initial) {
                 r2d2.countSettedFilters();
             }
-
         }
 
         $('.la-filter .checkbox').checkbox({
@@ -650,28 +642,29 @@ r2d2 = {
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
                 var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
+                var $jscb = $('#js-confirmation-button')
 
                 switch (how) {
                     case "delete":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.delete',currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.delete',currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
                         break;
                     case "unlink":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.unlink',currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.unlink',currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.share',currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.share',currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
                         break;
                     case "inherit":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.inherit',currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.inherit',currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
                         break;
                     case "ok":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.ok',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.ok',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "concludeBinding":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "clearUp":
-                        $('#js-confirmation-button').html(dict.get('confirm.dialog.clearUp',currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.clearUp',currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
