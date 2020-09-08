@@ -1,5 +1,21 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.BudgetCode
+import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.CostItemElementConfiguration
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.IdentifierNamespace
+import com.k_int.kbplus.Invoice
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Order
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.auth.User
 import de.laser.AccessService
 import de.laser.ContextService

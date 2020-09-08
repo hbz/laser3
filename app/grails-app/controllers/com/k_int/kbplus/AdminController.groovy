@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.OrgSettings
+import de.laser.StatusUpdateService
 import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
 import de.laser.UserSettings

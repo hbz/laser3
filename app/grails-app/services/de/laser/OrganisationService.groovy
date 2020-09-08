@@ -1,5 +1,29 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Combo
+import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.CostItemElementConfiguration
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
+import com.k_int.kbplus.Links
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.ReaderNumber
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.Task
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.Address
 import de.laser.Contact
 import de.laser.OrgSettings
@@ -297,7 +321,7 @@ class OrganisationService {
      *      ...data for objects related to the main object, e.g. providers, etc...
      *      ]
      * ]
-     * For {@link License}s, we have a third field after the addParams - baseLicense - which contains a license base to copy.
+     * For {@link com.k_int.kbplus.License}s, we have a third field after the addParams - baseLicense - which contains a license base to copy.
      * @param current - the {@link Org} for which the dataset should be generated
      * @return is the set successfully created?
      */
