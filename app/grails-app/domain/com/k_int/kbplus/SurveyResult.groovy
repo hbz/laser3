@@ -93,9 +93,9 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         type column: 'surre_type_fk'
         surveyConfig column: 'surre_survey_config_fk'
 
-        comment column: 'surre_comment'
-        participantComment column: 'surre_participant_comment'
-        ownerComment column: 'surre_owner_comment'
+        comment column: 'surre_comment', type: 'text'
+        participantComment column: 'surre_participant_comment', type: 'text'
+        ownerComment column: 'surre_owner_comment', type: 'text'
 
         isRequired column: 'surre_is_required'
     }
