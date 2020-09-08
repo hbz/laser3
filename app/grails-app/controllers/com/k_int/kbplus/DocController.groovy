@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -112,20 +113,49 @@ class DocController extends AbstractDebugController {
 			break
 		}
     }
+
+	@Secured(['ROLE_USER'])
+	def createNote() {
+		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
+
+		User user = User.get(springSecurityService.principal.id)
+		def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
+
+		if (domain_class) {
+			def instance = domain_class.getClazz().get(params.ownerid)
+			if (instance) {
+				log.debug("Got owner instance ${instance}")
+
+				Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
+						title: params.licenseNoteTitle,
+						content: params.licenseNote,
+						type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
+						owner: contextService.org,
+						user: user).save(flush:true)
+
+				log.debug("Setting new context type to ${params.ownertp}..")
+
+				DocContext doc_context = new DocContext(
+						"${params.ownertp}": instance,
+						owner: doc_content,
+						doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE))
+				doc_context.save(flush:true)
+			}
+			else {
+				log.debug("no instance")
+			}
+		}
+		else {
+			log.debug("no type")
+		}
+
+		redirect(url: request.getHeader('referer'))
+	}
+
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
 		switch (request.method) {
-		/*case 'GET':
-	        def docInstance = Doc.get(params.id)
-	        if (!docInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [docInstance: docInstance]
-			break*/
 			case 'POST':
 				Doc docInstance = Doc.get(params.id)
 				if (!docInstance) {
