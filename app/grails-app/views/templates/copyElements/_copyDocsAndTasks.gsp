@@ -43,7 +43,7 @@
             <tbody class="top aligned">
                 <tr>
                     <td  name="copyObject.takeDocs.source">
-                        <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
+                        <strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.org.id))}">
                                 <div data-id="${docctx.id}" class="la-element">
@@ -95,7 +95,7 @@
                             </g:if>
                         </g:each>
                     </td>
-                    <g:if test="${!copyObject}">
+                    <g:if test="${!copyObject && targetObject}">
                         <td  name="copyObject.takeDocs.target">
                             <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                             <div>
@@ -157,7 +157,7 @@
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
                     <td name="copyObject.takeAnnouncements.source">
-                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
+                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
                                 <div data-id="${docctx.id}" class="la-element">
@@ -208,7 +208,7 @@
                             </g:if>
                         </g:each>
                     </td>
-                        <g:if test="${!copyObject}">
+                        <g:if test="${!copyObject && targetObject}">
                                     <td  name="copyObject.takeAnnouncements.target">
                                         <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                                         <div>
@@ -270,7 +270,7 @@
                 %{--TASKS:--}%
                 <tr>
                     <td name="copyObject.takeTasks.source">
-                        <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
+                        <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 <label>
@@ -293,7 +293,7 @@
                             </div>
                         </g:each>
                     </td>
-                    <g:if test="${!copyObject}">
+                    <g:if test="${!copyObject && targetObject}">
                                 <td  name="copyObject.takeTasks.target">
                                     <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                                     <g:each in="${targetTasks}" var="tsk">

@@ -2,6 +2,14 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2836    07.09.2020  hbz-dev     Moe     Feature     Umfrage Teilnehmer-Bemerkungsfeld
+
+2849    07.09.2020  hbz-dev     Moe     Feature     xEditable Zeichenzähler bei Input Felder mit Text
+
+2797    04.09.2020  hbz-dev     Moe     Feature     Kopierverhalten bei Merkmale kopieren
+
+2845    04.09.2020  hbz-dev     Moe     Bug         Modal Anbieter verknüpfen: Sortierung komisch + Suche funktioniert nicht richtig
+
 2842    03.09.2020  rc1.5       Moe     Bug         Umfrage Mailtexte
 
 --      03.09.2020  rc1.5       Moe     Bug         Bugfix in Umfrage-Bearbeitung
@@ -16,9 +24,9 @@
 
 2833    02.09.2020  rc1.5       Moe     Bug         Beim Kopieren von Umfrage-Merkmale zu Lizenzmerkmale werden die Lizenzmerkmale nicht richtig übernommen
 
-2825    01.09.2020  hbz-dev       Moe     Feature     Eigene "Allgemeine Merkmale" können nicht an Nachfolgelizenz kopiert werden
+2825    01.09.2020  hbz-dev     Moe     Feature     Eigene "Allgemeine Merkmale" können nicht an Nachfolgelizenz kopiert werden
 
-2815    01.09.2020  hbz-dev       Moe     Feature     Elemente kopieren: Reiter Merkmale überarbeiten
+2815    01.09.2020  hbz-dev     Moe     Feature     Elemente kopieren: Reiter Merkmale überarbeiten
 
 2832    01.09.2020  rc1.5       Moe     Bug         Umfrage: Verlängerungssicht enthält dublette von TNs bei "Bereits" und "Mehrjahreslaufzeiten""
 
