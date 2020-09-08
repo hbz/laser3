@@ -226,7 +226,8 @@ class OrganisationController extends AbstractDebugController {
 
         if (params.filterPropDef) {
             def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
-            fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
+            params.constraint_orgIds = orgIdList
+            fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
         result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()

@@ -744,7 +744,9 @@ join sub.orgRelations or_sub where
 		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
 		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
+        params.constraint_orgIds = orgIds
+        def fsq  = filterService.getOrgQuery(params)
+
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)

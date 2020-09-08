@@ -4,6 +4,8 @@
 
 2852    08.09.2020  rc1.5       Moe     Bug         Umfrage: Konsortialstelle sieht zuviele Umfrage
 
+2835    08.09.2020  rc1.5       David   Bug         Org-Filter (u.a. Länder-Dropdown)
+
 --      07.09.2020  rc1.5       Moe     Bug         Copy Properties by Copy Subscriber in Copy Elements Process
 
 2842    03.09.2020  rc1.5       Moe     Bug         Umfrage Mailtexte
