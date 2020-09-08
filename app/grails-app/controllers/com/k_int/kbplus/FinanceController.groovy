@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.Invoice
 import de.laser.controller.AbstractDebugController
 import de.laser.IssueEntitlementGroup
 import de.laser.PendingChangeConfiguration

@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.AccessPointData
+
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgAccessPoint
 import com.k_int.kbplus.OrgAccessPointEzproxy

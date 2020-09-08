@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.PlatformAccessMethod" %>
+<%@ page import="de.laser.PlatformAccessMethod" %>
 <!doctype html>
 <html>
 	<head>

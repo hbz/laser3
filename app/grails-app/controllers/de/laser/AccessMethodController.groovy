@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.Platform
-import com.k_int.kbplus.PlatformAccessMethod
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
