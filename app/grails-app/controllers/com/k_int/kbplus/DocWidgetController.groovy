@@ -77,7 +77,7 @@ class DocWidgetController extends AbstractDebugController {
                     // def docstore_uuid = docstoreService.uploadStream(input_stream, original_filename, params.upload_title)
                     // log.debug("Docstore uuid is ${docstore_uuid}");
 
-                    Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_BLOB,
+                    Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_FILE,
                             filename: original_filename,
                             mimeType: request.getFile("upload_file")?.contentType,
                             title: params.upload_title ?: original_filename,
@@ -103,9 +103,7 @@ class DocWidgetController extends AbstractDebugController {
                         input_file.transferTo(new_File)
                     }
                     catch (Exception e) {
-                        // fallback
-                        doc_content.setBlobData(input_stream, input_file.size)
-                        doc_content.save(flush:true)
+                        log.error(e)
                     }
 
                     DocContext doc_context = new DocContext(
@@ -125,7 +123,7 @@ class DocWidgetController extends AbstractDebugController {
 
                             if (instance != config) {
 
-                                Doc doc_content2 = new Doc(contentType: Doc.CONTENT_TYPE_BLOB,
+                                Doc doc_content2 = new Doc(contentType: Doc.CONTENT_TYPE_FILE,
                                         filename: doc_content.filename,
                                         mimeType: doc_content.mimeType,
                                         title: doc_content.title,
@@ -150,10 +148,7 @@ class DocWidgetController extends AbstractDebugController {
                                     dst << new_File.text
                                 }
                                 catch (Exception e) {
-                                    // fallback
-                                    log.debug("Fallback:"+ doc_content2)
-                                    doc_content2.setBlobData(new_File.newInputStream(), new_File?.size())
-                                    doc_content2.save(flush:true)
+                                    log.error(e)
                                 }
 
                                 DocContext doc_context2 = new DocContext(

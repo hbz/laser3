@@ -583,7 +583,7 @@ class DataloadService {
             result.status= docCon.status?.value ?: ''
             result.statusId= docCon.status?.id ?: ''
             result.visible = 'Private'
-            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+            result.rectype = (docCon.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
 
             result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
 

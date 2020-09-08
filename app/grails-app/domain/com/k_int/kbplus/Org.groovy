@@ -10,6 +10,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.Address
 import de.laser.Contact
+import de.laser.OrgSettings
 import de.laser.Person
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants

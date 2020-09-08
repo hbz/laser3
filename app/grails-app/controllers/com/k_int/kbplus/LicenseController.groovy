@@ -943,9 +943,8 @@ class LicenseController
 
                         //Copy Docs
                         if (params.license.copyDocs) {
-                            if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                            if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
                                 Doc clonedContents = new Doc(
-                                        blobContent: dctx.owner.blobContent,
                                         status: dctx.owner.status,
                                         type: dctx.owner.type,
                                         content: dctx.owner.content,
@@ -979,7 +978,6 @@ class LicenseController
                         if (params.license.copyAnnouncements) {
                             if ((dctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
                                 Doc clonedContents = new Doc(
-                                        blobContent: dctx.owner.blobContent,
                                         status: dctx.owner.status,
                                         type: dctx.owner.type,
                                         content: dctx.owner.content,

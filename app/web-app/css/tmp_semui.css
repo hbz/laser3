@@ -4,7 +4,6 @@
     padding-bottom: 3em;
 }
 
-
 /* myInstitutions/../dashboard */
 .ui.main .home-page {
     margin-bottom: 1em;
@@ -14,13 +13,6 @@
 }
 
 /* hyperlinks */
-/*
-.ui.main a {
-    border-bottom: 1px solid transparent;
-}
-.ui.main a:hover {
-    /*border-bottom: 1px solid #4183c4;
-}*/
 .ui.main a[class~=button],.ui.main a[class~=button]:hover {
     border-bottom: none;
 }
@@ -34,8 +26,6 @@
 .ui.form select:focus:invalid:focus,
 .ui.form input.calc.invalidCostCalc {
     border-color: #e9322d;
-    -webkit-box-shadow: 0 0 6px #f8b9b7;
-    -moz-box-shadow: 0 0 6px #f8b9b7;
     box-shadow: 0 0 6px #f8b9b7;
 }
 /* form validation */
@@ -62,7 +52,6 @@
     top: 15%;
     z-index: 9999;
 }
-
 
 .ui.button > i.icon {
     margin-right: 0 !important;
@@ -122,7 +111,6 @@
 
 body.yoda_appSecurity .secInfoWrapper span {
     font-weight: bolder;
-    color: white;
     padding: 0px 5px;
     color: #FF00FF;
 }
@@ -163,8 +151,7 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_STATISTICS_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR
-{
+body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR {
     color: #8B4513;
 }
 
@@ -192,7 +179,7 @@ body.myInstitution_dashboard .ui.tab .item span {
     line-height: 30px;
 }
 
-    /* mainSearch */
+/* mainSearch */
 
 #mainSearch {
 }
@@ -248,7 +235,6 @@ aside.metaboxContent + .metaboxContent-spacer {
 .ui.form .la-account-currency .field .calc {
     float: left;
 }
-
 
 /* hotfix - visible elements with class hidden */
 
@@ -316,7 +302,6 @@ h1 .icon.h1-icon-overwrite {
     background-color: #ffdf00  !important;
 }
 
-
 /* debug info */
 
 #showSystemInfo {
@@ -336,12 +321,4 @@ h1 .icon.h1-icon-overwrite {
     bottom: 3px;
     right: 1px;
 }
-
-
-
-
-
-
-
-
 

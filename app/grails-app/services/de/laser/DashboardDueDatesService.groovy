@@ -3,14 +3,12 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import grails.plugin.mail.MailService
-import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 

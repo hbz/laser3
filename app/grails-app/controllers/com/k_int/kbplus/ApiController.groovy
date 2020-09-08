@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.ContextService
+import de.laser.OrgSettings
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -252,7 +253,7 @@ class ApiController {
                             response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '"')
                             response.outputStream << result.content
                         }
-                        else if (result.contentType == Doc.CONTENT_TYPE_BLOB) {
+                        else if (result.contentType == Doc.CONTENT_TYPE_FILE) {
                             result.render(response, result.filename)
                         }
                         response.outputStream.flush()
