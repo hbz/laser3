@@ -8,7 +8,7 @@ import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 
-import com.k_int.kbplus.UserSettings.KEYS
+import de.laser.UserSettings.KEYS
 
 @Transactional
 class QueryService {

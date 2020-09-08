@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import au.com.bytecode.opencsv.CSVReader
+
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -8,8 +8,10 @@ import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.OrgSettings
 import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
+import de.laser.UserSettings
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.I10nTranslation
@@ -636,7 +638,7 @@ class AdminController extends AbstractDebugController {
 
                 result.listOfFilesMatchingDocs = Doc.executeQuery(
                         'select doc from Doc doc where doc.contentType = :ct and doc.uuid in (:files)',
-                        [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
+                        [ct: Doc.CONTENT_TYPE_FILE, files: result.listOfFiles]
                 )
                 List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
 
@@ -654,12 +656,12 @@ class AdminController extends AbstractDebugController {
 
         List<Doc> listOfDocs = Doc.executeQuery(
                 'select doc from Doc doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_BLOB]
+                [ct: Doc.CONTENT_TYPE_FILE]
         )
 
         result.listOfDocsInUse = Doc.executeQuery(
                 'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_BLOB]
+                [ct: Doc.CONTENT_TYPE_FILE]
         )
 
         result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
@@ -679,12 +681,12 @@ class AdminController extends AbstractDebugController {
 
         result.numberOfDocContextsInUse = DocContext.executeQuery(
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and (dc.status is null or dc.status != :del)',
-                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+                [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
         result.numberOfDocContextsDeleted = DocContext.executeQuery(
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
-                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+                [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
         result
@@ -715,7 +717,6 @@ class AdminController extends AbstractDebugController {
             result.doc = doc
 
             List docs = Doc.findAllWhere(
-                    blobContent: doc.blobContent,
                     status: doc.status,
                     type: doc.type,
                     content: doc.content,
@@ -1516,9 +1517,6 @@ class AdminController extends AbstractDebugController {
                 else if (params.cmd == 'details') {
 
                     if (idnsInstance) {
-                        detailsStats.putAt(g.createLink(controller:'creator', action:'show'),
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.cre.id from Identifier i join i.ns idns where idns = :idns and i.cre is not null order by i.value, i.cre.id", [idns: idnsInstance]))
                         detailsStats.putAt(g.createLink(controller:'license', action:'show'),
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.lic.id from Identifier i join i.ns idns where idns = :idns and i.lic is not null order by i.value, i.lic.id", [idns: idnsInstance]))
@@ -1560,7 +1558,6 @@ class AdminController extends AbstractDebugController {
 SELECT * FROM (
       SELECT idns.idns_ns,
              idns.idns_id,
-             sum(CASE WHEN i.id_cre_fk is null THEN 0 ELSE 1 END)  cre,
              sum(CASE WHEN i.id_lic_fk is null THEN 0 ELSE 1 END)  lic,
              sum(CASE WHEN i.id_org_fk is null THEN 0 ELSE 1 END)  org,
              sum(CASE WHEN i.id_pkg_fk is null THEN 0 ELSE 1 END)  pkg,
@@ -1572,7 +1569,6 @@ SELECT * FROM (
       GROUP BY idns.idns_ns, idns.idns_id
       order by idns.idns_ns
 ) sq WHERE (
-    CASE WHEN sq.cre > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.lic > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.org > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.pkg > 0 THEN 1 ELSE 0 END +

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.OrgSettings
 import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
 import grails.transaction.Transactional

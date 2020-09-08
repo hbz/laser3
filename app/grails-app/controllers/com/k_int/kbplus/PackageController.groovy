@@ -3,6 +3,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.EscapeService
+import de.laser.OrgSettings
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -20,7 +21,6 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
-import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])

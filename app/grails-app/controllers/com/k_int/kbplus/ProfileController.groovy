@@ -3,11 +3,10 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.UserSettings.KEYS
-import com.k_int.properties.PropertyDefinition
+import de.laser.UserSettings
+import de.laser.UserSettings.KEYS
 import de.laser.DeletionService
 import de.laser.FormService
-import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils

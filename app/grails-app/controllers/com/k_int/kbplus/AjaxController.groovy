@@ -2604,18 +2604,6 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
-    @Secured(['ROLE_ADMIN'])
-    def addCreatorToTitle() {
-
-        if(params.role && params.creator && params.title) {
-            def creatorTitleInstance = new CreatorTitle(role: params.role.id, creator: params.creator.id, title: params.title.id)
-            if (!creatorTitleInstance.save(flush: true)) {
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-        }
-        redirect(url: request.getHeader('referer'))
-    }
 
     @Secured(['ROLE_USER'])
     def TaskEdit() {

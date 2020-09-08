@@ -1,7 +1,7 @@
 package de.laser.web
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgSettings
+import de.laser.OrgSettings
 import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON

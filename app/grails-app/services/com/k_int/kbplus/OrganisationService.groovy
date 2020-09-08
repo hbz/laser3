@@ -2,7 +2,9 @@ package com.k_int.kbplus
 
 import de.laser.Address
 import de.laser.Contact
+import de.laser.OrgSettings
 import de.laser.Person
+import de.laser.UserSettings
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User

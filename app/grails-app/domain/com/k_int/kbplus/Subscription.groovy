@@ -866,19 +866,15 @@ select distinct oap from OrgAccessPoint oap
     }
 
     def dropdownNamingConventionWithoutOrg(Org contextOrg){
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
         period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
-
         period = period ? '('+period+')' : ''
 
         String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
-
         return name + ' - ' + statusString + ' ' +period
-
     }
 
     def getDerivedSubscriptionBySubscribers(Org org) {

@@ -32,8 +32,6 @@ grails.project.dependency.resolution = {
         mavenLocal()
 
         mavenRepo "https://oss.sonatype.org/content/repositories/releases"
-        mavenRepo "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/"
-        mavenRepo "http://jasperreports.sourceforge.net/maven2/com/lowagie/itext/2.1.7.js2/"
         // Added because I'm strugging to get cglib - CGLib is causing problems - not sure what
         mavenRepo "http://central.maven.org/maven2/"
 
