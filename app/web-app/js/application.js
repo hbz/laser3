@@ -226,6 +226,7 @@ r2d2 = {
             '			<div class="editable-buttons">' +
             '			</div>' +
             '		</div>' +
+            '        <div id="characters-count"></div>' +
             '		<div class="editable-error-block">' +
             '		</div>' +
             '	</div>' +
@@ -318,7 +319,19 @@ r2d2 = {
                 $(ctxSel + ' .editable-clear-x').click(function() {
                     $('.calendar').calendar('clear');
                 });
+            }else {
+                var dType = $(this).attr('data-type')
+                if (dType == "text") {
+                    var maxLength = 255;
+                    $('input').keyup(function () {
+                        if($(this).attr('type') == 'text') {
+                            var textlen = maxLength - $(this).val().length;
+                            $('#characters-count').text(textlen + '/' + maxLength);
+                        }
+                    });
+                }
             }
+
             $(".table").trigger('reflow')
         }).on('hidden', function() {
             c3po.loadJsAfterAjax();

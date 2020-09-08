@@ -27,7 +27,13 @@
         </semui:breadcrumbs>
     </g:if>
     <g:else>
-    <g:render template="breadcrumb" model="${[params: params]}"/>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+
+            <g:if test="${sourceObject}">
+                <semui:crumb class="active" controller="subscription" action="show" id="${sourceObject.id}" text="${sourceObject.name}" />
+            </g:if>
+        </semui:breadcrumbs>
     </g:else>
         <br>
     <g:if test="${isRenewSub}">
