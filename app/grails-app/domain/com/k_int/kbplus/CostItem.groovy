@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.Invoice
 import de.laser.base.AbstractBase
 import de.laser.IssueEntitlementGroup
 import de.laser.helper.RDConstants

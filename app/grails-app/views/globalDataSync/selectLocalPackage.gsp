@@ -3,7 +3,7 @@
   <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'package.label')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title>${message(code:'laser')} : <g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
 

@@ -5,7 +5,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-    <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]"/></title>
     <g:javascript>
         $(function() {
             $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');

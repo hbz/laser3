@@ -1,5 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.OrgAccessPoint
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
 import de.laser.base.AbstractBase
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper

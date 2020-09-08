@@ -1,10 +1,10 @@
-<%@ page import="com.k_int.kbplus.PlatformAccessMethod" %>
+<%@ page import="de.laser.PlatformAccessMethod" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'accessMethod.label')}" />
-		<title><g:message code="default.edit.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
 

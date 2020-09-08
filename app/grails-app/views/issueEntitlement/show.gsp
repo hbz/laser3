@@ -1,10 +1,10 @@
-<%@ page import="de.laser.helper.ConfigUtils; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.ApiSource; com.k_int.kbplus.BookInstance; com.k_int.kbplus.JournalInstance;" %>
+<%@ page import="de.laser.ApiSource; de.laser.helper.ConfigUtils; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.BookInstance; com.k_int.kbplus.JournalInstance;" %>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 </head>
 
 <body>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.BookInstance;com.k_int.kbplus.ApiSource" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.BookInstance;de.laser.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
     <g:set var="sumlistPrice" value="${0}"/>
@@ -181,7 +181,7 @@
                                         <i class="book icon"></i>
                                     </g:link>
                                 </g:if>
-                                <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                         var="gokbAPI">
                                     <g:if test="${tipp?.gokbId}">
                                         <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"

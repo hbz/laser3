@@ -9,20 +9,20 @@
     if(docctx && doc) {
         modalText = message(code:'template.documents.edit')
         submitButtonLabel = message(code:'default.button.edit.label')
-        formUrl = createLink(controller:'docWidget',action:'editDocument')
+        formUrl = createLink(controller:'docstore', action:'editDocument')
         modalId = "modalEditDocument_${docctx.id}"
     }
     else if(owntp == 'surveyConfig') {
         modalText = message(code:'surveyConfigDocs.createSurveyDoc')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
+        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
         modalId = "modalCreateDocument"
         docForAll = false
     }
     else {
         modalText = message(code:'template.documents.add')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
+        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
         modalId = "modalCreateDocument"
     }
 %>

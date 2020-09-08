@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <title>Kostenposten berechnen</title>
+        <title>${message(code:'laser')} : Kostenposten berechnen</title>
     </head>
 
     <body>

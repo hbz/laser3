@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
     <head>
