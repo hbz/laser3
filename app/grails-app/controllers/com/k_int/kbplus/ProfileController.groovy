@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.SystemTicket
 import de.laser.UserSettings
 import de.laser.UserSettings.KEYS
 import de.laser.DeletionService

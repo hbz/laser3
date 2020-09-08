@@ -1,8 +1,10 @@
-package com.k_int.kbplus
+package de.laser
+
+import com.k_int.kbplus.Org
 
 class BudgetCode {
 
-    Org    owner
+    Org owner
     String value
     String descr
 

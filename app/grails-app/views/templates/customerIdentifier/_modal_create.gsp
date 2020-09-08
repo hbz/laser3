@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Platform; com.k_int.kbplus.CustomerIdentifier; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.Platform; de.laser.CustomerIdentifier; com.k_int.kbplus.IdentifierNamespace" %>
 <semui:modal id="modalCreateCustomerIdentifier"
              text="${customeridentifier? message(code:'org.customerIdentifier.create.edit') : message(code:'org.customerIdentifier.create.new')}"
              isEditModal="true"
