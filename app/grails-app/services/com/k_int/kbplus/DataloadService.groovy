@@ -1256,7 +1256,7 @@ class DataloadService {
 
                     Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-                    String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
+                    String query_str = "rectype: '${ft.domainClassName.replaceAll("com\\.k_int\\.kbplus.", "").replaceAll("de\\.laser\\.", "")}'"
 
                     if (ft.domainClassName == DocContext.name) {
                         query_str = "rectype:'Note' OR rectype:'Document'"
