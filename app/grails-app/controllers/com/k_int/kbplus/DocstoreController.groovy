@@ -2,10 +2,12 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -54,7 +56,7 @@ class DocstoreController extends AbstractDebugController {
         String original_filename = request.getFile("upload_file")?.originalFilename
 
         User user = User.get(springSecurityService.principal.id)
-        def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
+        GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
         if (domain_class) {
             def instance = domain_class.getClazz().get(params.ownerid)
@@ -166,7 +168,7 @@ class DocstoreController extends AbstractDebugController {
     def editDocument() {
         log.debug("edit document....")
 
-        def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
+        GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
         if (domain_class) {
             def instance = domain_class.getClazz().get(params.ownerid)

@@ -92,4 +92,13 @@ databaseChangeLog = {
 	changeSet(author: "djebeniani (generated)", id: "1599469610364-22") {
 		modifyDataType(columnName: "surre_participant_comment", newDataType: "text", tableName: "survey_result")
 	}
+
+	changeSet(author: "klober (modified)", id: "1599469610364-23") {
+		grailsChange {
+			change {
+				sql.execute("update org_access_point set class = replace(class, 'com.k_int.kbplus.', 'de.laser.') where class is not null")
+			}
+			rollback {}
+		}
+	}
 }

@@ -227,7 +227,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
   /*
   void raisePendingChange(oldMap,newMap,cp) {
-      def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
+      GrailsClass domain_class = AppUtils.getDomainClassGeneric( 'TitleInstancePackagePlatform' )
       def prop_info = domain_class.getPersistentProperty(cp)
 
       def oldLabel = stringify(oldMap[cp])
