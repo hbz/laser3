@@ -3,7 +3,6 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.OrgAccessPointLink
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PersonRole

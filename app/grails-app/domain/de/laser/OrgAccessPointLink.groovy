@@ -1,5 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.SubscriptionPackage
+import de.laser.OrgAccessPoint
 import de.laser.base.AbstractBase
 
 class OrgAccessPointLink extends AbstractBase {

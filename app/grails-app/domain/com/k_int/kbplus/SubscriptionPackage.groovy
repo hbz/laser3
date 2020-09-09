@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.OrgAccessPoint
+import de.laser.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
 import de.laser.helper.RDStore
 

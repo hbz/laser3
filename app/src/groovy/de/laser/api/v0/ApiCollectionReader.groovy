@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact
+import de.laser.OrgAccessPoint
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage

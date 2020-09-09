@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.IssueEntitlementCoverage
+import de.laser.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants

@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.OrgAccessPoint
+import de.laser.OrgAccessPointLink
 import de.laser.PlatformAccessMethod
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation

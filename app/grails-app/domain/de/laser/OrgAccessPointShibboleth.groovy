@@ -1,9 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
+import de.laser.OrgAccessPoint
 import groovy.util.logging.Log4j
 
 @Log4j
-class OrgAccessPointOA extends OrgAccessPoint{
+class OrgAccessPointShibboleth extends OrgAccessPoint{
 
     String entityId
 

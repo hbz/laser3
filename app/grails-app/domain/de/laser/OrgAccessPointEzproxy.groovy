@@ -1,14 +1,16 @@
-package com.k_int.kbplus
+package de.laser
 
+import de.laser.OrgAccessPoint
 import groovy.util.logging.Log4j
 
 @Log4j
-class OrgAccessPointVpn extends OrgAccessPoint{
+class OrgAccessPointEzproxy extends OrgAccessPoint{
 
     String url
 
     static mapping = {
         includes OrgAccessPoint.mapping
+        url            column:'oar_url'
     }
 
     static constraints = {
