@@ -27,6 +27,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -1701,12 +1702,11 @@ join sub.orgRelations or_sub where
     }
 
     def resolveOID(oid_components) {
-        def result = null;
-        def domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
+        GrailsClass domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
         if (domain_class) {
-            result = domain_class.getClazz().get(oid_components[1])
+            return domain_class.getClazz().get(oid_components[1])
         }
-        result
+        null
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

@@ -12,6 +12,7 @@ import de.laser.Address
 import de.laser.Contact
 import de.laser.OrgAccessPoint
 import de.laser.OrgSettings
+import de.laser.OrgSubjectGroup
 import de.laser.Person
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants

@@ -13,6 +13,7 @@ import de.laser.interfaces.ShareSupport
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
@@ -168,7 +169,7 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def setFieldNote() {
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
+      GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(params.id)
       if ( instance ) {
@@ -193,7 +194,7 @@ class AjaxController {
    @Secured(['ROLE_USER'])
   def setFieldTableNote() {
     // log.debug("setFieldTableNote(${params})")
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
+    GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(params.id)
        
@@ -227,8 +228,7 @@ class AjaxController {
     // params.elementid (The id from the html element)  must be formed as domain:pk:property:otherstuff
     String[] oid_components = params.elementid.split(":");
 
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${oid_components[0]}")
-
+    GrailsClass domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(oid_components[1])
       if ( instance ) {
