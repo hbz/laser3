@@ -6,7 +6,14 @@ import org.codehaus.groovy.grails.commons.GrailsClass
 class AppUtils {
 
     static GrailsClass getDomainClass(String qualifiedName) {
-        Holders.grailsApplication.getArtefact('Domain', qualifiedName)
+        // fallback
+        String fallback = qualifiedName.replace("class ", "")
+        GrailsClass dc = Holders.grailsApplication.getArtefact('Domain', fallback)
+
+        if (! dc) {
+            println "WARNING: AppUtils.getDomainClass( ${qualifiedName} ) found no result"
+        }
+        dc
     }
 
     static GrailsClass getDomainClassGeneric(String name) {
@@ -17,7 +24,13 @@ class AppUtils {
             dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + name)
             if (dc) { break }
         }
-        // println dc?.getClazz()
+        if (! dc) {
+            println "WARNING: AppUtils.getDomainClassGeneric( ${name} ) found no result"
+        }
         dc
+    }
+
+    static List<GrailsClass> getAllDomainClasses() {
+        Holders.grailsApplication.getArtefacts("Domain").toList()
     }
 }

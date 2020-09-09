@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -119,7 +121,7 @@ class DocController extends AbstractDebugController {
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
 		User user = User.get(springSecurityService.principal.id)
-		def domain_class = grailsApplication.getArtefact('Domain', params.ownerclass)
+		GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
 		if (domain_class) {
 			def instance = domain_class.getClazz().get(params.ownerid)
