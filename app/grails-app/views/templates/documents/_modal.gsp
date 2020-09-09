@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.helper.RDConstants"%>
+<%@page import="com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDStore; de.laser.helper.RDConstants"%>
 <laser:serviceInjection/>
 <%
     String modalText

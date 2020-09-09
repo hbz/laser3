@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.*; de.laser.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
 
 <%
     String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
