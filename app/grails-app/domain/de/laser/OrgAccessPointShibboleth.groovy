@@ -1,15 +1,15 @@
-package com.k_int.kbplus
+package de.laser
 
 import groovy.util.logging.Log4j
 
 @Log4j
-class OrgAccessPointEzproxy extends OrgAccessPoint{
+class OrgAccessPointShibboleth extends OrgAccessPoint{
 
-    String url
+    String entityId
 
     static mapping = {
         includes OrgAccessPoint.mapping
-        url            column:'oar_url'
+        entityId        column:'oar_entity_id'
     }
 
     static constraints = {

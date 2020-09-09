@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.BudgetCode
+
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.CostItemElementConfiguration
 import com.k_int.kbplus.GenericOIDService

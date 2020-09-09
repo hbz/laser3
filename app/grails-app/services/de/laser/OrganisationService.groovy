@@ -16,7 +16,6 @@ import com.k_int.kbplus.OrgProperty
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PersonRole
-import com.k_int.kbplus.ReaderNumber
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
@@ -24,11 +23,6 @@ import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import de.laser.Address
-import de.laser.Contact
-import de.laser.OrgSettings
-import de.laser.Person
-import de.laser.UserSettings
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
@@ -36,8 +30,6 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.AuditConfig
-import de.laser.IssueEntitlementCoverage
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.ProfilerUtils

@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.*;java.text.SimpleDateFormat" %>
+<%@page import="com.k_int.kbplus.*;de.laser.*;java.text.SimpleDateFormat" %>
 <semui:form>
     <g:form class="ui form" id="compare" name="compare" action="compare" method="post">
         <input type="hidden" name="institution" value="${institution.id}"/>

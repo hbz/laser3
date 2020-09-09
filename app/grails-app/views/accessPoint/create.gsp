@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgAccessPoint" %>
+<%@ page import="de.laser.OrgAccessPoint" %>
 <!doctype html>
 <html>
 	<head>

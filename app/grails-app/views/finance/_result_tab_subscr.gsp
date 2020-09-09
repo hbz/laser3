@@ -1,5 +1,5 @@
 <!-- _result_tab_subscr.gsp -->
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*" %>
 
 <laser:serviceInjection />
 

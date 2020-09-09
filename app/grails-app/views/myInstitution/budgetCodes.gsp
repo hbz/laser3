@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItemGroup"%>
+<%@ page import="com.k_int.kbplus.CostItemGroup;de.laser.BudgetCode"%>
 
 <!doctype html>
 <html>
@@ -83,7 +83,7 @@
                             <g:if test="${!CostItemGroup.findAllByBudgetCode(bcode)}">
                                 <g:link controller="myInstitution"
                                         action="budgetCodes"
-                                        params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}"
+                                        params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
                                         data-confirm-term-how="delete"
                                         class="ui icon negative button js-open-confirm-modal">

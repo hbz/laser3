@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*; de.laser.helper.RDStore;" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 
 <%
@@ -17,7 +17,7 @@
 
 
     if(ownobj.subscription) {
-        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Usage Statistics", de.laser.helper.RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
+        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == RefdataValue.getByValueAndCategory("Usage Statistics", RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
 
     }
 %>

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ReaderNumber" %>
+<%@ page import="de.laser.ReaderNumber" %>
 
 
 
