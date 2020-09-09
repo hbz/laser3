@@ -241,7 +241,7 @@ class TitleController extends AbstractDebugController {
 
     def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
 
-    def query_params = [ instCls:'com.k_int.kbplus.TitleInstance', instId:params.id]
+    def query_params = [ instCls: TitleInstance.class.name, instId: params.id]
 
     log.debug("base_query: ${base_query}, params:${query_params}, limits:${limits}");
 
@@ -256,7 +256,7 @@ class TitleController extends AbstractDebugController {
         def linetype = null
 
         switch(hl.className) {
-          case 'com.k_int.kbplus.TitleInstance':
+          case TitleInstance.class.name :
               TitleInstance instance_obj = TitleInstance.get(hl.persistedObjectId);
             line_to_add = [ link: createLink(controller:'title', action: 'show', id:hl.persistedObjectId),
                             name: instance_obj.title,

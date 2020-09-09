@@ -29,7 +29,7 @@ class RefdataService {
             while (cls != Object.class) {
                 dcFields.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                 )
                 cls = cls.getSuperclass()
             }
@@ -74,7 +74,7 @@ class RefdataService {
             while (cls != Object.class) {
                 dcFields.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                 )
                 cls = cls.getSuperclass()
             }
@@ -112,7 +112,7 @@ class RefdataService {
                 List tmp = []
                 tmp.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                         .collect { it ->
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)

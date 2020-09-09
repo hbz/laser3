@@ -28,7 +28,7 @@ class SemanticUiIdentifierTagLib {
         out << '<form id="' + formSelector + '" class="ui form' + cssClass + '" action="' + formUrl +'" method="post">'
         out <<   body()
 
-        out <<   '<input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.Identifier" />'
+        out <<   '<input type="hidden" name="__newObjectClass" value="' + Identifier.class.name + '" />'
         out <<   '<input type="hidden" name="__context" value="' + context + '" />'
         out <<   '<input type="hidden" name="__recip" value="' + recip + '" />'
 

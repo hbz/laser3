@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Org;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <g:render template="/templates/filter/javascript" />
@@ -120,14 +120,14 @@
         <div class="four fields">
             <% /* 3-1 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                         <div class="inline fields la-filter-inline">
                             <%
                                 List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                if(institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)
+                                if(institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                                 else
                                     subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
@@ -218,7 +218,7 @@
                     <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
 
                     <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                              optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                              optionKey="${{ Org.class.name + ':' + it.id }}"
                               optionValue="${{ it.getName() }}"
                               name="consortia"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
