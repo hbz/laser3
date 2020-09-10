@@ -69,7 +69,7 @@
                     id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
                 <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-                ${de.laser.SurveyConfig.getLocalizedValue(config?.type)}
+                ${SurveyConfig.getLocalizedValue(config?.type)}
 
 
                 <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>

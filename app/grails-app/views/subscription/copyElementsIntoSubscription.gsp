@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -18,7 +18,7 @@
             <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
             <g:if test="${sourceObject}">
-                <g:set var="surveyConfig" value="${de.laser.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
+                <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
                 <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
             </g:if>
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ReaderNumber; de.laser.Contact; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; de.laser.SurveyOrg; com.k_int.kbplus.RefdataValue; de.laser.OrgSettings" %>
+<%@ page import="de.laser.ReaderNumber; de.laser.Contact; com.k_int.kbplus.CostItem; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; com.k_int.kbplus.RefdataValue; de.laser.OrgSettings" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -176,7 +176,7 @@
         <g:if test="${tmplShowCheckbox}">
             <td>
                 <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
-                    <g:if test="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}">
+                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}">
                         <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:if>
@@ -431,7 +431,7 @@
                         <div class="la-flexbox">
 
                             <g:set var="participantSurveys"
-                                   value="${de.laser.SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.org, org, new Date(System.currentTimeMillis()))}"/>
+                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.org, org, new Date(System.currentTimeMillis()))}"/>
                             <g:set var="numberOfSurveys"
                                    value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
@@ -629,7 +629,7 @@
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
-                        <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqual(orgSub, institution, RDStore.COST_ITEM_DELETED)}"
+                        <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqual(orgSub, institution, RDStore.COST_ITEM_DELETED)}"
                                 var="costItem">
 
                             <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
@@ -667,7 +667,7 @@
                     <g:else>
 
                         <g:set var="costItem" scope="request"
-                               value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
+                               value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
 
                         <g:if test="${costItem}">
 
@@ -715,7 +715,7 @@
 
                 <td class="center aligned">
                     <g:set var="costItem" scope="request"
-                           value="${com.k_int.kbplus.CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
+                           value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
                     <g:if test="${costItem && costItem.costDescription}">
 
                         <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.ApiSource; de.laser.SurveyOrg; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -37,7 +37,7 @@
     <semui:messages data="${flash}"/>
 </g:if>
 
-<g:if test="${de.laser.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

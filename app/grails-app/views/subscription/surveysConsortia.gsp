@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.interfaces.CalculatedType" %>
+<%@ page import="com.k_int.kbplus.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.interfaces.CalculatedType; de.laser.SurveyOrg; de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -77,10 +77,10 @@
 
 
             <g:set var="participantsFinish"
-                   value="${surveyConfig.pickAndChoose ? de.laser.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : de.laser.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${surveyConfig.pickAndChoose ? SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <g:set var="participantsTotal"
-                   value="${surveyConfig.pickAndChoose ? de.laser.SurveyOrg.findAllBySurveyConfig(surveyConfig) : de.laser.SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${surveyConfig.pickAndChoose ? SurveyOrg.findAllBySurveyConfig(surveyConfig) : SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <tr>
                 <td class="center aligned">
