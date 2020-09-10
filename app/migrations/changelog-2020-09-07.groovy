@@ -101,4 +101,13 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "klober (modified)", id: "1599469610364-24") {
+		grailsChange {
+			change {
+				sql.execute("update i10n_translation set i10n_reference_class = replace(i10n_reference_class, 'com.k_int.kbplus.Survey', 'de.laser.Survey') where i10n_reference_class is not null")
+			}
+			rollback {}
+		}
+	}
 }
