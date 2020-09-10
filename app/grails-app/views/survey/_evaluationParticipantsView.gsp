@@ -73,9 +73,25 @@
                 <div class="ui grid">
                     <div class="right aligned wide column">
 
-                        <g:link controller="survey" action="evaluationParticipant"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
-                                class="chart pie icon"></i></g:link>
+
+
+                        <g:if test="${!surveyConfig.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button">
+                                    <i class="chart pie icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${surveyConfig.pickAndChoose}">
+                            <g:link controller="survey" action="surveyTitlesSubscriber"
+                                    id="${surveyConfig.id}" params="[participant: participant.id]"
+                                    class="ui icon button"><i
+                                    class="chart pie icon"></i>
+                            </g:link>
+                        </g:if>
 
                         <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
                             <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -242,9 +258,25 @@
                    <div class="ui grid">
                        <div class="right aligned wide column">
 
-                           <g:link controller="survey" action="evaluationParticipant"
-                                   params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
-                                   class="chart pie icon"></i></g:link>
+
+
+                           <g:if test="${!surveyConfig.pickAndChoose}">
+                               <span class="la-popup-tooltip la-delay"
+                                     data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                   <g:link controller="survey" action="evaluationParticipant"
+                                           params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button">
+                                       <i class="chart pie icon"></i>
+                                   </g:link>
+                               </span>
+                           </g:if>
+
+                           <g:if test="${surveyConfig.pickAndChoose}">
+                               <g:link controller="survey" action="surveyTitlesSubscriber"
+                                       params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                       class="ui icon button"><i
+                                       class="chart pie icon"></i>
+                               </g:link>
+                           </g:if>
 
                            <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
                                <span data-position="top right" class="la-popup-tooltip la-delay"

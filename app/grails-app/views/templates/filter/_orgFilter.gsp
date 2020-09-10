@@ -109,7 +109,7 @@
             <g:if test="${field.equalsIgnoreCase('country')}">
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
-                    <laser:select class="ui dropdown" id="country" name="country"
+                    <laser:select class="ui search dropdown" id="country" name="country"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -172,7 +172,7 @@
 
 </g:each>
 
-
+<%--
 <g:set var="allFields" value="${tmplConfigShow.flatten()}" />
 
 <g:if test="${! allFields.contains('type') && params.orgType}">
@@ -196,6 +196,7 @@
 <g:if test="${! allFields.contains('country') && params.country}">
     <input type="hidden" name="country" value="${params.country}" />
 </g:if>
+--%>
 
 
 <div class="field la-field-right-aligned">

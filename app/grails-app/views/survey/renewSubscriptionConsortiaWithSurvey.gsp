@@ -167,7 +167,7 @@ ${surveyInfo.name}
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'isPublicForApi') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="isPublicForApi" ${AuditConfig.getConfig(subscription, 'isPublicForApi') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -183,7 +183,7 @@ ${surveyInfo.name}
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'hasPerpetualAccess') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="hasPerpetualAccess" ${AuditConfig.getConfig(subscription, 'hasPerpetualAccess') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>

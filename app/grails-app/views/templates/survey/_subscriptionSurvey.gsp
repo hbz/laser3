@@ -233,14 +233,14 @@
 
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
-                            class="ui button">Lizenzinformationen anzeigen</button>
+                            class="ui button blue">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
                     <script>
                         $('#subscription-info-toggle').on('click', function () {
-                            $('#subscription-info').toggleClass('hidden')
-                            if ($('#subscription-info').hasClass('hidden')) {
-                                $(this).text('Lizenzinformationen anzeigen')
+                            $("#subscription-info").transition('slide down');
+                            if ($("#subscription-info").hasClass('visible')) {
+                                $(this).html('Lizenzinformationen anzeigen <i class="ui angle double down icon"></i>')
                             } else {
-                                $(this).text('Lizenzinformationen ausblenden')
+                                $(this).html('Lizenzinformationen ausblenden <i class="ui angle double up icon"></i>')
                             }
                         })
                     </script>
@@ -372,27 +372,9 @@
                         <br>
                            
                            <div class="ui form">
-                            <div class="two fields">
-                                <div class="sixteen wide field" style="text-align: left;">
-                                    <button id="subscription-properties-toggle"
-                                            class="ui button">Lizenzmerkmale anzeigen</button>
-                                    <script>
-                                        $('#subscription-properties-toggle').on('click', function () {
-                                            $('#subscription-properties').toggleClass('hidden')
-                                            if ($('#subscription-properties').hasClass('hidden')) {
-                                                $(this).text('Lizenzmerkmale anzeigen')
-                                            } else {
-                                                $(this).text('Lizenzmerkmale ausblenden')
-                                            }
-                                        })
-                                    </script>
-                                </div>
-                            </div>
-
-
 
                             <g:set var="oldEditable" value="${editable}"/>
-                            <div id="subscription-properties" class="hidden" style="margin: 1em 0">
+                            <div id="subscription-properties" style="margin: 1em 0">
                                 <g:set var="editable" value="${false}" scope="request"/>
                                 <g:set var="editable" value="${false}" scope="page"/>
                                 <g:render template="/subscription/properties" model="${[
@@ -412,7 +394,7 @@
                                     <g:message code="license.plural"/>
                                 </h5>
 
-                                <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
+                                <g:if test="${links && links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                                     <table class="ui fixed table">
                                         <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
                                             <tr><g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>

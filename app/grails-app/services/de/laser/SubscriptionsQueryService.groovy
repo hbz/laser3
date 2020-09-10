@@ -211,7 +211,7 @@ class SubscriptionsQueryService {
                             + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " // filter by pkg
                             + licenseFilter
                             + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
-                            "   orgR.roleType in (:roleTypeAgency) and ( "
+                            "   orgR.roleType in (:subRoleTypes) and ( "
                                 + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
                                 + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
                                 + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
@@ -219,7 +219,7 @@ class SubscriptionsQueryService {
                         +  " ) "
             )
             qry_params.put('name_filter', params.q)
-            qry_params.put('roleTypeAgency', [RDStore.OR_AGENCY, RDStore.OR_PROVIDER])
+            qry_params.put('subRoleTypes', [RDStore.OR_AGENCY, RDStore.OR_PROVIDER, RDStore.OR_SUBSCRIPTION_CONSORTIA])
             filterSet = true
         }
         // eval property filter

@@ -672,7 +672,7 @@ class SurveyService {
                     String emailReceiver = user.getEmail()
                     String currentServer = ServerUtils.getCurrentServer()
                     String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
-                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value') + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
 
                         try {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {
@@ -934,27 +934,30 @@ class SurveyService {
                         }
 
                         replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
-                        Object[] args = ["${survey.type.getI10n('value')}"]
                         Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
-
-                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " (" + survey.name + ")")
+                        Object[] args = ["${survey.type.getI10n('value', language)}"]
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " " + survey.name + "")
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {
+                                multipart true
                                 to emailReceiver
                                 from from
                                 cc ccAddress
                                 replyTo replyTo
                                 subject mailSubject
-                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                                text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                             }
                         } else {
                             mailService.sendMail {
+                                multipart true
                                 to emailReceiver
                                 from from
                                 replyTo replyTo
                                 subject mailSubject
-                                body(view: "/mailTemplates/text/notificationSurvey", model: [user: user, org: org, survey: survey])
+                                text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                             }
                         }
 

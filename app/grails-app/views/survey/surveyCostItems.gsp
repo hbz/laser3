@@ -24,7 +24,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" action="exportSurCostItems" id="${surveyInfo.id}"
-                    params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportCostItems')}</g:link>
+                    params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>
@@ -365,6 +365,13 @@
                     </div>
 
                 </g:if>
+
+                <br>
+                <br>
+                <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')">
+                    <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                </button>
+
             </g:form>
             <br>
             <br>

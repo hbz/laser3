@@ -14,6 +14,13 @@
                 <div class="ui divider"></div>
             </g:if>
 
+            <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_READY.id) && surveyInfo.checkOpenSurvey()}">
+                <semui:actionsDropdownItem controller="survey" action="processBackInProcessingSurvey" params="[id: params.id]"
+                                           message="backInProcessingSurvey.button"
+                                           />
+                <div class="ui divider"></div>
+            </g:if>
+
             <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
                 <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"

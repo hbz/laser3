@@ -370,14 +370,64 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
                     // + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " filter by subscription
             + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+            + "   orgR.roleType in (:licRoleTypes) and ( "
             + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
             + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-            + " ) ) " // filter by Anbieter, Konsortium, Agency
-            +  " ) ")
+            + " ) ) ) " // filter by Lizenzgeber, Konsortium
+            +  " ")
             qry_params += [name_filter:"${params['keyword-search']}"]
+            qry_params += [licRoleTypes: [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]]
             result.keyWord = params['keyword-search']
         }
+
+        Set<String> subscriptionOIDs
+        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
+            Set<String> subscrQueryFilter = []
+            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
+            Map<String,Object> subscrQueryParams = [:]
+
+            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
+                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
+                subscrQueryParams.name_filter = params['keyword-search']
+                result.keyWord = params['keyword-search']
+            }
+
+            if(params.subStatus || !params.filterSubmit) {
+                subscrQueryFilter <<  "s.status.id = :subStatus"
+                if(!params.filterSubmit) {
+                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.filterSet = true
+                }
+                subscrQueryParams.subStatus = params.subStatus as Long
+            }
+
+            if(params.subKind) {
+                subscrQueryFilter << "s.kind.id in (:subKinds)"
+                List<Long> subKinds = []
+                List<String> selKinds = params.list('subKind')
+                selKinds.each { String sel ->
+                    subKinds << Long.parseLong(sel)
+                }
+                subscrQueryParams.subKinds = subKinds
+            }
+
+            if(subscrQueryFilter)
+                subscrQuery += " where "+subscrQueryFilter.join(" and ")
+
+            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
+            base_qry += " AND ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+            if(subscriptionOIDs)
+                qry_params.subOIDs = subscriptionOIDs
+            else qry_params.subOIDs = ['false'] //workaround against empty list
+        }
+
+        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
+            base_qry += " ) "
+        }
+
+
 
         if(params.consortium) {
             base_qry += " and ( exists ( select o from l.orgLinks as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
@@ -423,47 +473,7 @@ class MyInstitutionController extends AbstractDebugController {
             qry_params.categorisations = categorisations
         }
 
-        Set<String> subscriptionOIDs
-        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
-            Set<String> subscrQueryFilter = []
-            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
-            Map<String,Object> subscrQueryParams = [:]
 
-            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
-                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-                subscrQueryParams.name_filter = params['keyword-search']
-                result.keyWord = params['keyword-search']
-            }
-
-            if(params.subStatus || !params.filterSubmit) {
-                subscrQueryFilter <<  "s.status.id = :subStatus"
-                if(!params.filterSubmit) {
-                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
-                    result.filterSet = true
-                }
-                subscrQueryParams.subStatus = params.subStatus as Long
-            }
-
-            if(params.subKind) {
-                subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                subscrQueryParams.subKinds = subKinds
-            }
-
-            if(subscrQueryFilter)
-                subscrQuery += " where "+subscrQueryFilter.join(" and ")
-
-            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
-            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
-            qry_params.linkType = RDStore.LINKTYPE_LICENSE
-            if(subscriptionOIDs)
-                qry_params.subOIDs = subscriptionOIDs
-            else qry_params.subOIDs = ['false'] //workaround against empty list
-        }
 
         if(params.status || !params.filterSubmit) {
             base_qry += " and l.status.id = :status "
@@ -734,7 +744,9 @@ join sub.orgRelations or_sub where
 		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
 		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
+        params.constraint_orgIds = orgIds
+        def fsq  = filterService.getOrgQuery(params)
+
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
@@ -3380,8 +3392,8 @@ AND EXISTS (
                 }
             }
     }
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
         Map<String, Object> result = setResultGenerics()
 
@@ -4062,8 +4074,8 @@ AND EXISTS (
                      org   : participant,
                      owner : contextOrg]).groupBy { it.id[1] }.size()
 
-            result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
-                    "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true) and surInfo.owner = :owner",
+            result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
+                    "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true)) and surInfo.owner = :owner",
                     [org  : participant,
                      owner: contextOrg]).groupBy { it.id[1] }.size()
 
@@ -4079,8 +4091,8 @@ AND EXISTS (
 
         }else {
 
-            result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                    "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",
+            result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status)) " +
+                    "or (exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))",
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant]).groupBy { it.id[1] }.size()
 
@@ -4088,8 +4100,8 @@ AND EXISTS (
                     [status: RDStore.SURVEY_SURVEY_STARTED,
                      org   : participant]).groupBy { it.id[1] }.size()
 
-            result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
-                    "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true)",
+            result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where (exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null)) " +
+                    "or (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true))",
                     [org: participant]).groupBy { it.id[1] }.size()
 
             result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surConfig.subSurveyUseForTransfer = false and (surInfo.status in (:status) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))",
