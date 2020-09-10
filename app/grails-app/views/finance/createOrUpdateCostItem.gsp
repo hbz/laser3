@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionPackage; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -150,7 +150,7 @@
         data: {
           format:'json',
           subFilter:selectedSub,
-          baseClass:'com.k_int.kbplus.SubscriptionPackage'
+          baseClass:'${SubscriptionPackage.class.name}'
         },
         dataType:'json'
       }).done(function(data) {
@@ -180,7 +180,7 @@
                 format:'json',
                 q: term,
                 subFilter: $('#newSubscription').val(),
-                baseClass:'com.k_int.kbplus.IssueEntitlement'
+                baseClass:'${IssueEntitlement.class.name}'
             };
         },
         results: function (data, page) {

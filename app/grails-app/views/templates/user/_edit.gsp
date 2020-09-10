@@ -194,7 +194,7 @@
                               return {
                                   q: term, // search term
                                   page_limit: 10,
-                                  baseClass:'com.k_int.kbplus.auth.Role'
+                                  baseClass: '${Role.class.name}'
                               };
                           },
                           results: function (data, page) {

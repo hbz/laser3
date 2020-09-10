@@ -403,7 +403,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     int countUsages() {
-        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
         if(this.descr == "Organisation Property")
             table = "OrgProperty"
 
@@ -415,7 +415,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     int countOwnUsages() {
-        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
         Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
         if(this.descr == "Organisation Property")

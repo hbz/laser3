@@ -1,4 +1,4 @@
-<%@ page import="de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.GenericOIDService" %>
 <!doctype html>
 <html>
 	<head>
@@ -345,7 +345,7 @@
 						return {
 							q: term, // search term
 							page_limit: 10,
-							baseClass:'com.k_int.kbplus.RefdataCategory'
+							baseClass:'${RefdataCategory.class.name}'
 						};
 					},
 					results: function (data, page) {

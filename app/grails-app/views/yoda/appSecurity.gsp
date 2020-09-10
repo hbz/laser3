@@ -112,17 +112,6 @@
         </div>
 
     </div>
-    <%--
-    <div class="four wide column">
-        <div class="ui sticky">
-            <aside>
-                <g:each in="${controller}" var="c">
-                    <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceFirst('de.laser.','').replaceAll('Controller', '  ')}</a> |
-                </g:each>
-            </aside>
-        </div>
-    </div>
-    --%>
 </div>
 
 </body>

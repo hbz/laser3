@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
   <head>
@@ -281,7 +282,7 @@
                 	endDate: $("#end"+filter).val(),
                     q: term , // search term
                     page_limit: 10,
-                    baseClass:'com.k_int.kbplus.Package'
+                    baseClass:'${Package.class.name}'
                 };
             },
             

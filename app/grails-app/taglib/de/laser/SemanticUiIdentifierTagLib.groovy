@@ -98,7 +98,7 @@ class SemanticUiIdentifierTagLib {
                         return {
                             q: term,
                             page_limit: 10,
-                            baseClass:'com.k_int.kbplus.Identifier'
+                            baseClass:'${Identifier.class.name}'
                         };
                     },
                     results: function (data, page) {
@@ -106,7 +106,7 @@ class SemanticUiIdentifierTagLib {
                     }
                 },
                 createSearchChoice:function(term, data) {
-                    return {id:'com.k_int.kbplus.Identifier:__new__:' + \$("#${namespaceSelector}").val() + ':' + term, text:term};
+                    return {id:'${Identifier.class.name}:__new__:' + \$("#${namespaceSelector}").val() + ':' + term, text:term};
                 }
             });
         });
