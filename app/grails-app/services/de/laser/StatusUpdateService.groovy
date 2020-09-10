@@ -4,26 +4,17 @@ import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Links
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import de.laser.IssueEntitlementCoverage
-import de.laser.PendingChangeConfiguration
-import de.laser.SystemEvent
-import de.laser.TIPPCoverage
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.interfaces.CalculatedType
-import grails.converters.JSON
 import grails.transaction.Transactional
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
-import org.codehaus.groovy.grails.web.json.JSONElement
 import org.hibernate.Session
 
 @Transactional

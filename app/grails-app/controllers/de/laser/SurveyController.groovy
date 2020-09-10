@@ -9,7 +9,6 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Links
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
@@ -19,11 +18,6 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.SurveyConfig
-import com.k_int.kbplus.SurveyConfigProperties
-import com.k_int.kbplus.SurveyInfo
-import com.k_int.kbplus.SurveyOrg
-import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition

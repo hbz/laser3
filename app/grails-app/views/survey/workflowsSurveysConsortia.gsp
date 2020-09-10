@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -249,7 +249,7 @@
 
 
                     <g:set var="participantsFinish"
-                           value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                           value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
                     <g:set var="participantsTotal"
                            value="${surveyConfig?.orgs}"/>
@@ -361,10 +361,10 @@
                             <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription' && surveyConfig?.pickAndChoose}">
 
                                 <g:set var="participantsTitleSurveyFinish"
-                                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
+                                       value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
                                 <g:set var="participantsTitleSurveyTotal"
-                                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>
+                                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>
                                 <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig?.id]"
                                         class="ui icon">

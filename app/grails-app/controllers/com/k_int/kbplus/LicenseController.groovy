@@ -10,6 +10,7 @@ import de.laser.CopyElementsService
 import de.laser.DeletionService
 import de.laser.FormService
 import de.laser.LicenseService
+import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.PropertyService
 import de.laser.SubscriptionsQueryService

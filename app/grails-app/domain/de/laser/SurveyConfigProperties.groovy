@@ -1,4 +1,5 @@
-package com.k_int.kbplus
+package de.laser
+
 
 import com.k_int.properties.PropertyDefinition
 

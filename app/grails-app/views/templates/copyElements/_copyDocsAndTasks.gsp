@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription; de.laser.FormService; com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection />
 
 <g:set var="formService" bean="formService"/>
@@ -339,7 +339,7 @@
         <g:else>
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(genericOIDService.resolveOID(sourceObjectId), true)}" />
+                    <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(genericOIDService.resolveOID(sourceObjectId), true)}" />
                     <g:link controller="survey" action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
                         <g:message code="renewalWithSurvey.back"/>
                     </g:link>

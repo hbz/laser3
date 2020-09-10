@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance; de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -59,7 +59,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </div>
 </div>
 
-<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

@@ -41,7 +41,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
 <br>
 
-<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
+<g:if test="${de.laser.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

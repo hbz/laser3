@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.SurveyOrg
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

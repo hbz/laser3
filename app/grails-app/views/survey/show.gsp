@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.SurveyResult; com.k_int.kbplus.SurveyConfig;" %>
+<%@ page import="de.laser.SurveyOrg; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>

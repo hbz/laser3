@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole; com.k_int.kbplus.SurveyConfig;" %>
+<%@ page import="de.laser.SurveyConfig; com.k_int.kbplus.OrgRole" %>
 
 <h3><g:message code="surveys.active"/></h3>
 
@@ -7,7 +7,7 @@
     <g:each in="${surveys}" var="survey" status="i">
 
         <g:set var="surveyConfig"
-               value="${com.k_int.kbplus.SurveyConfig.get(survey.key)}"/>
+               value="${SurveyConfig.get(survey.key)}"/>
 
         <g:set var="surveyInfo"
                value="${surveyConfig.surveyInfo}"/>

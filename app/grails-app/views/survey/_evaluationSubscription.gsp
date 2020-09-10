@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${surveyConfig}">
@@ -128,7 +128,7 @@
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
-                            <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
@@ -315,7 +315,7 @@
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
-                            <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
