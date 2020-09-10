@@ -1,6 +1,8 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -10,6 +12,8 @@ import grails.transaction.Transactional
 
 @Transactional
 class ComparisonService {
+
+  GenericOIDService genericOIDService
 
   /**
    * Builds into the grouped properties return map the given group key and binding for the given object.
@@ -124,4 +128,35 @@ class ComparisonService {
       }
       result
     }
+
+  /**
+   * COPY from ComparisonService with small changes
+   * Builds into the grouped properties return map the given group key and binding for the given object.
+   *
+   * @param groupedProperties - the return map groupedProperties. Please check if it is really necessary to reassign again and again the whole map.
+   * @param groupKey
+   * @param groupBinding
+   * @param cmpObject
+   * @return
+   */
+  Map getGroupedPropertyTreesSortedAndAllowed(Map groupedProperties, PropertyDefinitionGroup groupKey, PropertyDefinitionGroupBinding groupBinding, cmpObject, Org contextOrg) {
+    //get the current properties within each group for each object
+    ArrayList<AbstractPropertyWithCalculatedLastUpdated> properties = groupKey.getCurrentProperties(cmpObject)
+    LinkedHashMap group = (LinkedHashMap) groupedProperties.get(groupKey)
+    if(properties.size() > 0) {
+      List allowedProperties = properties.findAll {prop -> (prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}
+      if(group) {
+        group.groupTree = buildComparisonTree(group.groupTree, cmpObject, allowedProperties)
+        group.binding.put(cmpObject, groupBinding)
+      }
+      else if(!group) {
+        TreeMap groupTree = new TreeMap()
+        LinkedHashMap binding = new LinkedHashMap()
+        binding.put(cmpObject,groupBinding)
+        group = [groupTree: buildComparisonTree(groupTree, cmpObject, allowedProperties), binding:binding]
+      }
+      group.groupTree = group.groupTree.sort {genericOIDService.resolveOID(it.key).getI10n('name')}
+    }
+    group
+  }
 }

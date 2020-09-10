@@ -231,12 +231,14 @@
 </g:each>
 
 		<r:script>
+$(document).ready(function(){
 			$("div.dropdown").dropdown({
 				apiSettings: {
-				    url: '<g:link controller="ajax" action="lookupSubscriptions"/>?query={query}',
+				    url: "${createLink([controller: "ajax", action: "lookupSubscriptions"])}",
 				    cache: false
 				},
 				clearable: true
+			});
 			});
 		</r:script>
 	</body>

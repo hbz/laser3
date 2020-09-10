@@ -133,12 +133,12 @@
                             <div class="divider"></div>
 
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
-                            <semui:securedMainNavItemDisabled role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
-                            <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
+                            <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
 
                             <%--
                             <div class="divider"></div>

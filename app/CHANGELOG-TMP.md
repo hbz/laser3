@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2854    10.09.2020  hbz-dev     Moe     Feature     Generalisierung von Objekt Vergleich
+
 2836    07.09.2020  hbz-dev     Moe     Feature     Umfrage Teilnehmer-Bemerkungsfeld
 
 2849    07.09.2020  hbz-dev     Moe     Feature     xEditable Zeichenzähler bei Input Felder mit Text

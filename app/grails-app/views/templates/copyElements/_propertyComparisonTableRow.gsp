@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*; de.laser.AuditConfig;" %>
+<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.AuditConfig; com.k_int.kbplus.LicenseProperty" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -87,7 +87,17 @@
     <g:if test="${showProp}">
         <tr>
             <td>
-                ${propKey.getI10n("name")}
+                <g:if test="${propKey.getI10n('expl') != null && !propKey.getI10n('expl').contains(' °')}">
+                    ${propKey.getI10n('name')}
+                    <g:if test="${propKey.getI10n('expl')}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${propKey.getI10n('expl')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </g:if>
+                </g:if>
+                <g:else>
+                    ${propKey.getI10n('name')}
+                </g:else>
                 <g:if test="${propKey.multipleOccurrence}">
                     <span data-position="top right" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
@@ -140,6 +150,11 @@
                                     <g:if test="${propValue.note}">
                                         <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
                                              data-content="${propValue.note}">Anm.</div>
+                                    </g:if>
+
+                                    <g:if test="${sourceObject instanceof License && propValue.paragraph}">
+                                        <div class="ui circular huge label la-long-tooltip la-popup-tooltip la-delay"
+                                             data-content="${propValue.paragraph}">§</div><br>
                                     </g:if>
 
                                     <g:if test="${propValues.get(sourceObject)?.size() > 1}"><br></g:if>
@@ -223,7 +238,7 @@
                                                              overwriteEditable="${overwriteEditable}"
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${propValue.value}">
-                                                <semui:linkIcon/>
+                                                <semui:linkIcon href="${propValue.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.type == RefdataValue.toString()}">
@@ -240,6 +255,11 @@
                                             <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
                                                  data-content="${propValue.note}">Anm.</div>
                                         </g:if>
+
+                                        <g:if test="${targetObject instanceof License && propValue.paragraph}">
+                                                <div class="ui circular huge label la-long-tooltip la-popup-tooltip la-delay"
+                                                     data-content="${propValue.paragraph}">§</div><br>
+                                        </g:if>
                                         <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>
                                     </g:if>
                                     <g:else>
@@ -251,21 +271,26 @@
 
 
                                 <g:if test="${isConsortialObjects}">
-                                    <g:if test="${propValue instanceof SubscriptionProperty}">
-                                        <div class="la-copyElements-flex-item">
-                                            <g:if test="${!AuditConfig.getConfig(propValue)}">
-                                                <span data-position="top left" class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.off.tooltip')}">
-                                                    <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                                </span>
+                                    <g:if test="${propValue instanceof SubscriptionProperty || propValue instanceof LicenseProperty}">
+                                        <g:if test="${targetObject instanceof License}">
+                                            <g:set var="consortium" value="${targetObject.getLicensingConsortium()}"/>
+                                        </g:if>
+                                        <g:elseif test="${targetObject instanceof Subscription}">
+                                            <g:set var="consortium" value="${targetObject.getConsortia()}"/>
+                                            <g:set var="atSubscr" value="${targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+                                        </g:elseif>
+                                        <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
+                                            <g:if test="${targetObject.isSlaved}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>
                                             </g:if>
                                             <g:else>
-                                                <span data-position="top left" class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.on.tooltip')}">
-                                                    <i class="thumbtack icon la-js-editmode-icon"></i>
-                                                </span>
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
                                             </g:else>
-                                        </div>
+                                        </g:if>
+                                        <g:elseif test="${propValue.tenant?.id == consortium?.id && atSubscr}">
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down blue"></i></span>
+                                        </g:elseif>
+
                                     </g:if>
                                 </g:if>
                                 <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>

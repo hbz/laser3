@@ -35,6 +35,7 @@ class CopyElementsService {
     DocstoreService docstoreService
     FormService formService
     LicenseService licenseService
+    CompareService compareService
 
     static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -146,9 +147,7 @@ class CopyElementsService {
             objectsToCompare.add(targetObject)
         }
 
-        Org contextOrg = contextService.org
-
-        result = regroupObjectProperties(objectsToCompare, contextOrg)
+        result = regroupObjectProperties(objectsToCompare)
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
@@ -177,7 +176,7 @@ class CopyElementsService {
             result.privateProperties = privateProperties
         }*//*
 
-        result = regroupObjectProperties(objectsToCompare, contextOrg)
+        result = regroupObjectProperties(objectsToCompare)
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
@@ -1153,68 +1152,8 @@ class CopyElementsService {
         return true
     }
 
-    Map regroupObjectProperties(List<Object> objectsToCompare, Org org) {
-        LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
-        objectsToCompare.each{ object ->
-            Map allPropDefGroups = object._getCalculatedPropDefGroups(org)
-            allPropDefGroups.entrySet().each { propDefGroupWrapper ->
-                //group group level
-                //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
-                String wrapperKey = propDefGroupWrapper.getKey()
-                if(wrapperKey.equals("orphanedProperties")) {
-                    TreeMap orphanedProperties = result.orphanedProperties
-                    orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties, object, propDefGroupWrapper.getValue())
-                    result.orphanedProperties = orphanedProperties
-                }
-                else {
-                    LinkedHashMap groupedProperties = result.groupedProperties
-                    //group level
-                    //Each group may have different property groups
-                    propDefGroupWrapper.getValue().each { propDefGroup ->
-                        PropertyDefinitionGroup groupKey
-                        PropertyDefinitionGroupBinding groupBinding
-                        switch(wrapperKey) {
-                            case "global":
-                                groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.isVisible)
-                                    groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTrees(groupedProperties, groupKey,null, object))
-                                break
-                            case "local":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.isVisible) {
-                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTrees(groupedProperties, groupKey, groupBinding, object))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                            case "member":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
-                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTrees(groupedProperties, groupKey, groupBinding, object))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                        }
-                    }
-                    result.groupedProperties = groupedProperties
-                }
-            }
-            TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, object, object.propertySet.findAll { it.type.tenant?.id == org.id })
-            result.privateProperties = privateProperties
-        }
-        result
+    Map regroupObjectProperties(List<Object> objectsToCompare) {
+        compareService.compareProperties(objectsToCompare)
     }
 }
 
