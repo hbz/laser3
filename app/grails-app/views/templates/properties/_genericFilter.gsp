@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
@@ -20,8 +20,8 @@
                     iconWhich = "shield alternate"
                     optionKey="${{
                         it.refdataCategory ?
-                                "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.getByDesc(it.refdataCategory)?.id}"
-                                : "com.k_int.properties.PropertyDefinition:${it.id}"
+                                "${PropertyDefinition.class.name}:${it.id}\" data-rdc=\"${RefdataCategory.class.name}:${RefdataCategory.getByDesc(it.refdataCategory)?.id}"
+                                : "${PropertyDefinition.class.name}:${it.id}"
                     }}"
                     optionValue="${{ it.getI10n('name') }}"
                     noSelection="${message(code: 'default.select.choose.label')}"/>

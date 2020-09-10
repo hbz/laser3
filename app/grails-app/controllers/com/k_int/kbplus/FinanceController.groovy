@@ -805,7 +805,7 @@ class FinanceController extends AbstractDebugController {
                   invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush:true)
 
               Set<Subscription> subsToDo = []
-              if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
+              if (params.newSubscription.contains("${Subscription.class.name}:"))
               {
                   try {
                       subsToDo << genericOIDService.resolveOID(params.newSubscription)
@@ -816,10 +816,10 @@ class FinanceController extends AbstractDebugController {
 
               switch (params.newLicenseeTarget) {
 
-                  case 'com.k_int.kbplus.Subscription:forParent':
+                  case "${Subscription.class.name}:forParent":
                       // keep current
                       break
-                  case 'com.k_int.kbplus.Subscription:forAllSubscribers':
+                  case "${Subscription.class.name}:forAllSubscribers":
                       // iterate over members
                       subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
                               genericOIDService.resolveOID(params.newSubscription),
@@ -841,7 +841,7 @@ class FinanceController extends AbstractDebugController {
               }
 
               SubscriptionPackage pkg
-              if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
+              if (params.newPackage?.contains("${SubscriptionPackage.class.name}:"))
               {
                   try {
                       if (params.newPackage.split(":")[1] != 'null') {

@@ -145,7 +145,7 @@
                                     <label for="namespace">${message(code:'identifier.namespace.label')}</label>
                                     <g:select name="namespace" id="namespace" class="ui search dropdown"
                                               from="${nsList}"
-                                              optionKey="${{'com.k_int.kbplus.IdentifierNamespace:' + it.id}}"
+                                              optionKey="${{ IdentifierNamespace.class.name + ':' + it.id }}"
                                               optionValue="${{ it.getI10n('name') ?: it.ns }}" />
                                 </div>
                                 <div class="field">

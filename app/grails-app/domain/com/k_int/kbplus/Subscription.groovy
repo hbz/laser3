@@ -589,7 +589,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     ds,
                     ds.getSubscriber(),
                     [
-                            changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
+                            changeTarget:"${Subscription.class.name}:${ds.id}",
                             changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                             changeDoc:changeDocument
                     ],

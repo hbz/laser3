@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.License" %>
 <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
 
 <semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
@@ -157,7 +158,7 @@
                         <br>
                         <g:select from="${memberLicenses}"
                                   class="ui fluid search multiple dropdown hide"
-                                  optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                  optionKey="${{ License.class.name + ':' + it.id }}"
                                   optionValue="${{ it.reference }}"
                                   noSelection="${['' : message(code:'default.select.all.label')]}"
                                   name="generateSlavedLicsReference"/>

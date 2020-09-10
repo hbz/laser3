@@ -1063,7 +1063,7 @@
 <r:script>
                                    $('body #participation').editable({
                                         validate: function (value) {
-                                            if (value == "com.k_int.kbplus.RefdataValue:${RDStore.YN_NO.id}") {
+                                            if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
                                                 if (r == false) {
                                                    return "Sie haben die Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"

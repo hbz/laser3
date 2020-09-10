@@ -1,5 +1,5 @@
 <!-- _copyModal.gsp -->
-<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;de.laser.BudgetCode;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;de.laser.BudgetCode;com.k_int.kbplus.Subscription;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${message(code:'financials.costItem.copy.tooltip')}">
@@ -15,12 +15,12 @@
                 <g:if test="${costItem?.sub?.id == sub.id}">
                     <label for="newLicenseeTargets">Für folgende Lizenz kopieren</label>
                     <input type="text" id="newLicenseeTargets" readonly="readonly" value="${sub.name}" />
-                    <input type="hidden" name="newLicenseeTargets" value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
+                    <input type="hidden" name="newLicenseeTargets" value="${Subscription.class.name + ':' + sub.id}" />
                 </g:if>
 
                 <g:else>
                     <%
-                        def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOf( sub )
+                        def validSubChilds = Subscription.findAllByInstanceOf( sub )
                     %>
                     <g:if test="${validSubChilds}">
                         <label for="newLicenseeTargets">Für folgende Teilnehmer kopieren</label>
@@ -28,9 +28,9 @@
                         <g:select name="newLicenseeTargets" id="newLicenseeTargets" class="ui search dropdown" multiple="multiple"
                                   from="${validSubChilds}"
                                   optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
-                                  optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
+                                  optionKey="${{Subscription.class.name + ':' + it?.id}}"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                  value="${'com.k_int.kbplus.Subscription:' + it?.id}" />
+                                  value="${Subscription.class.name + ':' + it?.id}" />
 
                     </g:if>
                 </g:else>

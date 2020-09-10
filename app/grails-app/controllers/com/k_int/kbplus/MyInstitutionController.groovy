@@ -1849,10 +1849,10 @@ join sub.orgRelations or_sub where
         }
 
         PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
-          result.institutional_objects.add(['com.k_int.kbplus.License:'+it.id,"${message(code:'license.label')}: "+it.reference]);
+          result.institutional_objects.add([License.class.name + ':' + it.id, "${message(code:'license.label')}: " + it.reference])
         }
         PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
-          result.institutional_objects.add(['com.k_int.kbplus.Subscription:'+it.id,"${message(code:'subscription')}: "+it.name]);
+          result.institutional_objects.add([Subscription.class.name + ':' + it.id, "${message(code:'subscription')}: " + it.name])
         }
 
         if ( params.restrict == 'ALL' )

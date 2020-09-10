@@ -77,10 +77,10 @@ class DataManagerController extends AbstractDebugController {
     String base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
 
         def types_to_include = []
-        if ( params.packages=="Y" ) types_to_include.add('com.k_int.kbplus.Package');
-        if ( params.licenses=="Y" ) types_to_include.add('com.k_int.kbplus.License');
-        if ( params.titles=="Y" ) types_to_include.add('com.k_int.kbplus.TitleInstance');
-        if ( params.tipps=="Y" ) types_to_include.add('com.k_int.kbplus.TitleInstancePackagePlatform');
+        if ( params.packages=="Y" ) types_to_include.add( Package.class.name )
+        if ( params.licenses=="Y" ) types_to_include.add( License.class.name )
+        if ( params.titles=="Y" ) types_to_include.add( TitleInstance.class.name )
+        if ( params.tipps=="Y" ) types_to_include.add( TitleInstancePackagePlatform.class.name )
         // com.k_int.kbplus.Subscription                 |
         // com.k_int.kbplus.IdentifierOccurrence         |
 
@@ -92,7 +92,7 @@ class DataManagerController extends AbstractDebugController {
         def actors_dms = []
         def actors_users = []
 
-        def all_types = [ 'com.k_int.kbplus.Package','com.k_int.kbplus.License','com.k_int.kbplus.TitleInstance','com.k_int.kbplus.TitleInstancePackagePlatform' ]
+        List<String> all_types = [ Package.class.name, License.class.name, TitleInstance.class.name, TitleInstancePackagePlatform.class.name ]
 
         // Get a distinct list of actors
         def auditActors = AuditLogEvent.executeQuery('select distinct(al.actor) from AuditLogEvent as al where al.className in ( :l  )',[l:all_types])
@@ -129,7 +129,7 @@ class DataManagerController extends AbstractDebugController {
 
         log.debug("${params}");
         if ( types_to_include.size() == 0 ) {
-            types_to_include.add('com.k_int.kbplus.Package')
+            types_to_include.add( Package.class.name )
             params.packages="Y"
         }
 
@@ -187,7 +187,7 @@ class DataManagerController extends AbstractDebugController {
                 def linetype = null
 
         switch(hl.className) {
-          case 'com.k_int.kbplus.License':
+          case License.class.name:
             License license_object = License.get(hl.persistedObjectId);
             if (license_object) {
                 def license_name = license_object.type ? license_object.type.value+': ' : ''
@@ -197,9 +197,11 @@ class DataManagerController extends AbstractDebugController {
             }
             linetype = 'License'
             break;
-          case 'com.k_int.kbplus.Subscription':
+
+          case Subscription.class.name :
             break;
-          case 'com.k_int.kbplus.Package':
+
+          case Package.class.name :
             Package package_object = Package.get(hl.persistedObjectId);
             if (package_object) {
                 line_to_add.link = createLink(controller:'package', action: 'show', id:hl.persistedObjectId)
@@ -207,7 +209,8 @@ class DataManagerController extends AbstractDebugController {
             }
             linetype = 'Package'
             break;
-          case 'com.k_int.kbplus.TitleInstancePackagePlatform':
+
+          case TitleInstancePackagePlatform.class.name :
             TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
             if ( tipp_object != null ) {
                 line_to_add.link = createLink(controller:'tipp', action: 'show', id:hl.persistedObjectId)
@@ -215,7 +218,8 @@ class DataManagerController extends AbstractDebugController {
             }
             linetype = 'TIPP'
             break;
-          case 'com.k_int.kbplus.TitleInstance':
+
+          case TitleInstance.class.name :
             TitleInstance title_object = TitleInstance.get(hl.persistedObjectId);
             if (title_object) {
                 line_to_add.link = createLink(controller:'title', action: 'show', id:hl.persistedObjectId)
@@ -223,8 +227,10 @@ class DataManagerController extends AbstractDebugController {
             }
             linetype = 'Title'
             break;
-          case 'com.k_int.kbplus.Identifier':
+
+          case Identifier.class.name :
             break;
+
           default:
             log.error("Unexpected event class name found ${hl.className}")
             break;

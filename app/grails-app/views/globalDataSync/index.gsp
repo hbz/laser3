@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
 <head>
@@ -110,7 +111,7 @@
                     <td colspan="6">
                         -> ${message(code: 'globalDataSync.using_id')}
                         <g:if test="${tracker.localOid != null}">
-                            <g:if test="${tracker.localOid.startsWith('com.k_int.kbplus.Package')}">
+                            <g:if test="${tracker.localOid.startsWith(Package.class.name)}">
                                 <g:link controller="package" action="show"
                                         id="${tracker.localOid.split(':')[1]}">
                                     ${tracker.name ?: message(code: 'globalDataSync.noname')}</g:link>

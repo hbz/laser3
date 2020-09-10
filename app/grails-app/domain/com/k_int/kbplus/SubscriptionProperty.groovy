@@ -172,7 +172,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                         scp.owner,
                         scp.owner.getSubscriber(),
                         [
-                                changeTarget:"com.k_int.kbplus.Subscription:${scp.owner.id}",
+                                changeTarget:"${Subscription.class.name}:${scp.owner.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                         ],

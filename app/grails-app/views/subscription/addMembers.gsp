@@ -103,7 +103,7 @@
                             <br>
                             <g:select from="${memberLicenses}"
                                       class="ui fluid search multiple dropdown hide"
-                                      optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                      optionKey="${{ License.class.name + ':' + it.id }}"
                                       optionValue="${{ it.reference }}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
                                       name="generateSlavedLicsReference"/>

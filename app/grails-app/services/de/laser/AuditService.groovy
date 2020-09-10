@@ -141,7 +141,7 @@ class AuditService {
 
                             if (!isSubOrLic || (isSubOrLic && getAuditConfig(obj, cp))) {
 
-                                if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
+                                if (clazz.equals( RefdataValue.class.name )) {
 
                                     String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
                                     String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null

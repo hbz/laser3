@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSettings" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; de.laser.UserSettings" %>
 <!doctype html>
 <html>
 <head>
@@ -151,71 +151,71 @@
                     <input class="search" id="filterPropDef">
                     <div class="default text">Bitte auswählen</div>
                     <div class="menu">
-                        <div class="item selected" data-value="com.k_int.properties.PropertyDefinition:418">Abbestellgrund</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:414">Abbestellquote</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:269">AGB <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:384">Alternativname <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:448" data-rdc="com.k_int.kbplus.RefdataCategory:1">Archivzugriff</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:225" data-rdc="com.k_int.kbplus.RefdataCategory:1">Bei hbz Aufnahme der Metadaten nachfragen <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:415">Bestellnummer im Erwerbungssystem</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:393" data-rdc="com.k_int.kbplus.RefdataCategory:1">Bundesweit offen</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:447" data-rdc="com.k_int.kbplus.RefdataCategory:1">DBIS-Eintrag</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:566">DBIS-Link</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:256">DBIS-Nummer <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:424">Eingeschränkter Benutzerkreis</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:387" data-rdc="com.k_int.kbplus.RefdataCategory:1">EZB Gelbschaltung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:217" data-rdc="com.k_int.kbplus.RefdataCategory:1">EZB-Gelbschaltungen <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:423">Fachstatistik / Klassifikation</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:450">GASCO-Anzeigename</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:121" data-rdc="com.k_int.kbplus.RefdataCategory:1">GASCO-Eintrag</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:461">GASCO-Informations-Link</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:451">GASCO-Verhandlername</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:419">Hosting-Gebühr</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:214">Institut <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:406" data-rdc="com.k_int.kbplus.RefdataCategory:1">KBART</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:248">Kostensplitting <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:293">Kostensplitting 2 <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:445" data-rdc="com.k_int.kbplus.RefdataCategory:1">Kündigungsfrist</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:409" data-rdc="com.k_int.kbplus.RefdataCategory:1">Mehrjahreslaufzeit</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:395" data-rdc="com.k_int.kbplus.RefdataCategory:1">Mengenrabatt Stichtag</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:389">Metadaten Quelle</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:388" data-rdc="com.k_int.kbplus.RefdataCategory:1">Metadatenlieferung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:398" data-rdc="com.k_int.kbplus.RefdataCategory:1">Neueinsteigerrabatt</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:234" data-rdc="com.k_int.kbplus.RefdataCategory:1">Open Access <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:421">PDA/EBS-Programm</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:420">Pick&amp;Choose-Paket</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:413">Preis abhängig von</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:403" data-rdc="com.k_int.kbplus.RefdataCategory:1">Preis gerundet</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:446">Preissteigerung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:390" data-rdc="com.k_int.kbplus.RefdataCategory:1">Preisvorteil durch weitere Produktteilnahme</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:408" data-rdc="com.k_int.kbplus.RefdataCategory:1">Private Einrichtungen</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:391" data-rdc="com.k_int.kbplus.RefdataCategory:1">Produktabhängigkeit</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:422">Produktsigel beantragt</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:410">Rabatt</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:411" data-rdc="com.k_int.kbplus.RefdataCategory:1">Rabatt Zählung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:392">Rabattstaffel</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:394" data-rdc="com.k_int.kbplus.RefdataCategory:1">Rechnungsstellung durch Anbieter</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:401">Rechnungszeitpunkt</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:407" data-rdc="com.k_int.kbplus.RefdataCategory:1">reverse charge</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:449" data-rdc="com.k_int.kbplus.RefdataCategory:1">SFX-Eintrag</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:399" data-rdc="com.k_int.kbplus.RefdataCategory:1">Simuser</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:400">Simuser Zahl</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:405">Statistik</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:564">Statistik-Link</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:444">Statistikzugang</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:563" data-rdc="com.k_int.kbplus.RefdataCategory:1">Steuerbefreiung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:565">Subskriptionsnummer des Lieferanten</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:417">Subskriptionsnummer des Verlags</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:404" data-rdc="com.k_int.kbplus.RefdataCategory:1">Teilzahlung</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:377" data-rdc="com.k_int.kbplus.RefdataCategory:2">Testeigenschaft zum Übertragen original</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:186">Testmerkmal <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:257" data-rdc="com.k_int.kbplus.RefdataCategory:101">Testmerkmal zum Verschieben von Referenzwerten <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:396">Testzeitraum</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:397" data-rdc="com.k_int.kbplus.RefdataCategory:1">Unterjähriger Einstieg</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:402">Zahlungsziel</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:235">Zugangskennungen (pro DB) <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:416">Zugangskennungen für Nutzer (pro Zeitschrift)</div>
-                        <div class="item" data-value="com.k_int.properties.PropertyDefinition:412" data-rdc="com.k_int.kbplus.RefdataCategory:1">Zusätzliche Software erforderlich?</div>
+                        <div class="item selected" data-value="${PropertyDefinition.class.name}:418">Abbestellgrund</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:414">Abbestellquote</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:269">AGB <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:384">Alternativname <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:448" data-rdc="${RefdataCategory.class.name}:1">Archivzugriff</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:225" data-rdc="${RefdataCategory.class.name}:1">Bei hbz Aufnahme der Metadaten nachfragen <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:415">Bestellnummer im Erwerbungssystem</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:393" data-rdc="${RefdataCategory.class.name}:1">Bundesweit offen</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:447" data-rdc="${RefdataCategory.class.name}:1">DBIS-Eintrag</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:566">DBIS-Link</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:256">DBIS-Nummer <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:424">Eingeschränkter Benutzerkreis</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:387" data-rdc="${RefdataCategory.class.name}:1">EZB Gelbschaltung</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:217" data-rdc="${RefdataCategory.class.name}:1">EZB-Gelbschaltungen <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:423">Fachstatistik / Klassifikation</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:450">GASCO-Anzeigename</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:121" data-rdc="${RefdataCategory.class.name}:1">GASCO-Eintrag</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:461">GASCO-Informations-Link</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:451">GASCO-Verhandlername</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:419">Hosting-Gebühr</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:214">Institut <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:406" data-rdc="${RefdataCategory.class.name}:1">KBART</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:248">Kostensplitting <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:293">Kostensplitting 2 <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:445" data-rdc="${RefdataCategory.class.name}:1">Kündigungsfrist</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:409" data-rdc="${RefdataCategory.class.name}:1">Mehrjahreslaufzeit</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:395" data-rdc="${RefdataCategory.class.name}:1">Mengenrabatt Stichtag</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:389">Metadaten Quelle</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:388" data-rdc="${RefdataCategory.class.name}:1">Metadatenlieferung</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:398" data-rdc="${RefdataCategory.class.name}:1">Neueinsteigerrabatt</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:234" data-rdc="${RefdataCategory.class.name}:1">Open Access <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:421">PDA/EBS-Programm</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:420">Pick&amp;Choose-Paket</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:413">Preis abhängig von</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:403" data-rdc="${RefdataCategory.class.name}:1">Preis gerundet</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:446">Preissteigerung</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:390" data-rdc="${RefdataCategory.class.name}:1">Preisvorteil durch weitere Produktteilnahme</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:408" data-rdc="${RefdataCategory.class.name}:1">Private Einrichtungen</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:391" data-rdc="${RefdataCategory.class.name}:1">Produktabhängigkeit</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:422">Produktsigel beantragt</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:410">Rabatt</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:411" data-rdc="${RefdataCategory.class.name}:1">Rabatt Zählung</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:392">Rabattstaffel</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:394" data-rdc="${RefdataCategory.class.name}:1">Rechnungsstellung durch Anbieter</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:401">Rechnungszeitpunkt</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:407" data-rdc="${RefdataCategory.class.name}:1">reverse charge</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:449" data-rdc="${RefdataCategory.class.name}:1">SFX-Eintrag</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:399" data-rdc="${RefdataCategory.class.name}:1">Simuser</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:400">Simuser Zahl</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:405">Statistik</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:564">Statistik-Link</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:444">Statistikzugang</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:563" data-rdc="${RefdataCategory.class.name}:1">Steuerbefreiung</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:565">Subskriptionsnummer des Lieferanten</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:417">Subskriptionsnummer des Verlags</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:404" data-rdc="${RefdataCategory.class.name}:1">Teilzahlung</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:377" data-rdc="${RefdataCategory.class.name}:2">Testeigenschaft zum Übertragen original</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:186">Testmerkmal <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:257" data-rdc="${RefdataCategory.class.name}:101">Testmerkmal zum Verschieben von Referenzwerten <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:396">Testzeitraum</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:397" data-rdc="${RefdataCategory.class.name}:1">Unterjähriger Einstieg</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:402">Zahlungsziel</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:235">Zugangskennungen (pro DB) <i aria-hidden="true" class="shield alternate icon"></i></div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:416">Zugangskennungen für Nutzer (pro Zeitschrift)</div>
+                        <div class="item" data-value="${PropertyDefinition.class.name}:412" data-rdc="${RefdataCategory.class.name}:1">Zusätzliche Software erforderlich?</div>
                     </div>
                 </div>
             </div>

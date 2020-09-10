@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Contact; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition;de.laser.helper.RDConstants;" %>
+<%@ page import="de.laser.Contact; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition;de.laser.helper.RDConstants;" %>
 
 <!doctype html>
 <html>
@@ -68,7 +68,7 @@
                             <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
 
                             <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                                optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                                optionKey="${{ Org.class.name + ':' + it.id }}"
                                 optionValue="${{ it.getName() }}"
                                 name="consortia"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
