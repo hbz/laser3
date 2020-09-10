@@ -85,7 +85,7 @@ class PendingChangeService extends AbstractLockableService {
                 switch ( payload.changeType ) {
 
                     case EVENT_TIPP_DELETE :
-                        // "changeType":"TIPPDeleted","tippId":"com.k_int.kbplus.TitleInstancePackagePlatform:6482"}
+                        // "changeType":"TIPPDeleted","tippId":"${TitleInstancePackagePlatform.class.name}:6482"}
                         def sub_to_change = pendingChange.subscription
                         def tipp = genericOIDService.resolveOID(payload.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)

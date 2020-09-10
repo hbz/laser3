@@ -306,12 +306,12 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   @Transient
   def notifyDependencies(changeDocument) {
     log.debug("notifyDependencies(${changeDocument})")
-    changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument)
+    changeNotificationService.broadcastEvent("${Package.class.name}:${pkg.id}", changeDocument)
     changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
     Locale locale = LocaleContextHolder.getLocale()
 
     RefdataValue deleted_tipp_status = RDStore.TIPP_STATUS_DELETED
-    String deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
+    String deleted_tipp_status_oid = "${RefdataValue.class.name}:${deleted_tipp_status.id}".toString()
     // Tipp Property Change Event.. notify any dependent IEs
     List<IssueEntitlement> dep_ies = IssueEntitlement.findAllByTipp(this)
 
@@ -367,7 +367,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                                                                 "(${changeDocument.new}). "+description,
                                                         sub?.getSubscriber(),
                                                         [
-                                                          changeTarget:"com.k_int.kbplus.IssueEntitlement:${dep_ie.id}",
+                                                          changeTarget:"${IssueEntitlement.class.name}:${dep_ie.id}",
                                                           changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                                           changeDoc:changeDocument
                                                         ])
@@ -389,7 +389,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                     "Eine neue Verknüpfung (TIPP) für den Titel <a href='${titleLink}'>${this.title.title}</a> mit der Plattform <a href='${pkgLink}'>${this.platform.name}</a>",
                     sub.subscriber,
                     [
-                            newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
+                            newObjectClass: "${TitleInstancePackagePlatform.class.name}",
                             changeType    : PendingChangeService.EVENT_TIPP_ADD,
                             changeDoc     : changeDocument
                     ])

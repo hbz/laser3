@@ -479,15 +479,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
-    /* tmp only */
-    static Map<String, Object> getAvailablePropertyDescriptions() {
-        return [
-                "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
-                "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
-                "de.laser.Person"           : PropertyDefinition.PRS_PROP
-        ]
-    }
-
     static getLocalizedValue(key){
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 

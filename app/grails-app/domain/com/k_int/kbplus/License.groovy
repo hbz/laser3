@@ -489,7 +489,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                         dl,
                         dl.getLicensee(),
                               [
-                                changeTarget:"com.k_int.kbplus.License:${dl.id}",
+                                changeTarget:"${License.class.name}:${dl.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                               ],
