@@ -95,7 +95,7 @@
                                                             case RDStore.YN_NO:
                                                             case RDStore.YNO_NO: value = raw('<i class="red thumbs down icon huge"></i>')
                                                                 break
-                                                            case RDStore.YNO_OTHER: value = raw('<i class="yellow dot circle huge"></i>')
+                                                            case RDStore.YNO_OTHER: value = raw('<i class="yellow dot circle icon huge"></i>')
                                                                 break
                                                         }
                                                         break
@@ -122,7 +122,7 @@
                                                 }
 
                                             %>
-                                            ${value}
+                                            ${value ?: propValue.refValue.getI10n("value")}
                                         </g:if>
                                         <g:else>
                                             ${propValue.refValue.getI10n("value")}

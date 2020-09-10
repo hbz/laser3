@@ -9,6 +9,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -30,18 +31,19 @@ class CompareController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
-        result.availableLicenses = compareService.getMyLicenses()
+        params.status = RDStore.LICENSE_CURRENT.id
+        result.availableLicenses = compareService.getMyLicenses(params)
 
         result.objects = []
 
-        params.tab =  params.tab ?: "compareElements"
+        params.tab = params.tab ?: "compareElements"
 
-        if(params.selectedObjects){
+        if (params.selectedObjects) {
             result.objects = License.findAllByIdInList(params.list('selectedObjects').collect { Long.parseLong(it) })
         }
 
-        if(params.tab == "compareProperties"){
-            result = result+compareService.compareProperties(result.objects)
+        if (params.tab == "compareProperties") {
+            result = result + compareService.compareProperties(result.objects)
         }
 
         result
@@ -56,18 +58,19 @@ class CompareController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
-        result.availableSubscriptions = compareService.getMySubscriptions()
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        result.availableSubscriptions = compareService.getMySubscriptions(params)
 
         result.objects = []
 
-        params.tab =  params.tab ?: "compareElements"
+        params.tab = params.tab ?: "compareElements"
 
-        if(params.selectedObjects){
+        if (params.selectedObjects) {
             result.objects = Subscription.findAllByIdInList(params.list('selectedObjects').collect { Long.parseLong(it) })
         }
 
-        if(params.tab == "compareProperties"){
-            result = result+compareService.compareProperties(result.objects)
+        if (params.tab == "compareProperties") {
+            result = result + compareService.compareProperties(result.objects)
         }
 
         result

@@ -333,6 +333,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
+        result.compare = params.compare ?: ''
 
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
@@ -830,6 +831,8 @@ join sub.orgRelations or_sub where
 		//pu.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+
+        result.compare = params.compare ?: ''
 
         // Write the output to a file
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()

@@ -50,7 +50,7 @@ class CompareService {
                  */
                 String wrapperKey = propDefGroupWrapper.getKey()
                 if (wrapperKey.equals("orphanedProperties")) {
-                    List allowedProperties = propDefGroupWrapper.getValue().findAll {prop -> (prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}
+                    List allowedProperties = propDefGroupWrapper.getValue().findAll { prop -> (prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) }
                     Map orphanedProperties = result.orphanedProperties
                     orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties, object, allowedProperties)
                     result.orphanedProperties = orphanedProperties
@@ -105,25 +105,23 @@ class CompareService {
             result.privateProperties = privateProperties
         }
 
-        result.orphanedProperties = result.orphanedProperties.sort {genericOIDService.resolveOID(it.key).getI10n('name')}
-        result.privateProperties = result.privateProperties.sort {genericOIDService.resolveOID(it.key).getI10n('name')}
+        result.orphanedProperties = result.orphanedProperties.sort { genericOIDService.resolveOID(it.key).getI10n('name') }
+        result.privateProperties = result.privateProperties.sort { genericOIDService.resolveOID(it.key).getI10n('name') }
 
         result.objects = objects
         result
     }
 
 
-
-    List getMyLicenses()
-    {
+    List getMyLicenses(Map params) {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.institution  = contextService.getOrg()
+        result.institution = contextService.getOrg()
 
-        RefdataValue licensee_role           = RDStore.OR_LICENSEE
-        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue licensee_role = RDStore.OR_LICENSEE
+        RefdataValue licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
         String base_qry
         Map qry_params
@@ -132,10 +130,9 @@ class CompareService {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
+            qry_params = [roleType1: licensee_role, roleType2: licensee_cons_role, lic_org: result.institution]
 
-        }
-        else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        } else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
@@ -146,55 +143,75 @@ class CompareService {
                     )
                 )
             )))"""
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
-        }
-        else {
+            qry_params = [roleTypeC: lic_cons_role, roleTypeL: licensee_cons_role, lic_org: result.institution]
+        } else {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
+            qry_params = [roleType: licensee_cons_role, lic_org: result.institution]
+        }
+
+        if (params.status) {
+            if (params.status instanceof List) {
+                base_qry += " and l.status.id in (:status) "
+                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+
+            } else {
+                base_qry += " and l.status.id = :status "
+                qry_params.put('status', (params.status as Long))
+            }
         }
 
         base_qry += " order by lower(trim(l.reference)) asc"
 
-        List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
+        List<License> totalLicenses = License.executeQuery("select l " + base_qry, qry_params)
 
         totalLicenses
 
     }
 
-    List getMySubscriptions()
-    {
+    List getMySubscriptions(Map params) {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.institution  = contextService.getOrg()
+        result.institution = contextService.getOrg()
 
-        RefdataValue role_sub            = RDStore.OR_SUBSCRIBER
-        RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_subColl        = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
+        RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_subColl = RDStore.OR_SUBSCRIBER_COLLECTIVE
         RefdataValue role_sub_collective = RDStore.OR_SUBSCRIPTION_COLLECTIVE
 
 
         String base_qry
         Map qry_params = [:]
 
-        if (accessService.checkPerm(result.institution,'ORG_CONSORTIUM')) {
-                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                            " AND s.instanceOf is null "
-                    qry_params << ['roleType':role_sub_consortia, 'activeInst':result.institution]
+        if (accessService.checkPerm(result.institution, 'ORG_CONSORTIUM')) {
+            base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    " AND s.instanceOf is null "
+            qry_params << ['roleType': role_sub_consortia, 'activeInst': result.institution]
         } else {
 
-        base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+            base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-        qry_params << ['roleType1':role_sub, 'roleType2':[role_subCons,role_subColl], 'activeInst':result.institution, 'scRoleType':[role_sub_consortia,role_sub_collective]]
-    }
+            qry_params << ['roleType1': role_sub, 'roleType2': [role_subCons, role_subColl], 'activeInst': result.institution, 'scRoleType': [role_sub_consortia, role_sub_collective]]
+        }
+
+        if (params.status) {
+            if (params.status instanceof List) {
+                base_qry += " and s.status.id in (:status) "
+                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+
+            } else {
+                base_qry += " and s.status.id = :status "
+                qry_params.put('status', (params.status as Long))
+            }
+        }
 
 
         base_qry += " order by lower(trim(s.name)) asc"
 
-        List<Subscription> totalSubscriptions = Subscription.executeQuery( "select s " + base_qry, qry_params )
+        List<Subscription> totalSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
 
         totalSubscriptions
 
