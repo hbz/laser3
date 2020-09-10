@@ -249,7 +249,7 @@
 
 
                     <g:set var="participantsFinish"
-                           value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                           value="${de.laser.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
                     <g:set var="participantsTotal"
                            value="${surveyConfig?.orgs}"/>
@@ -361,10 +361,10 @@
                             <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription' && surveyConfig?.pickAndChoose}">
 
                                 <g:set var="participantsTitleSurveyFinish"
-                                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
+                                       value="${de.laser.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
                                 <g:set var="participantsTitleSurveyTotal"
-                                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>
+                                       value="${de.laser.SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>
                                 <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig?.id]"
                                         class="ui icon">

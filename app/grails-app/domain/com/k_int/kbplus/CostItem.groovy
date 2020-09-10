@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.BudgetCode
 import de.laser.Invoice
+import de.laser.SurveyOrg
 import de.laser.base.AbstractBase
 import de.laser.IssueEntitlementGroup
 import de.laser.helper.RDConstants

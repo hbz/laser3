@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.Links
+import de.laser.SurveyConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait

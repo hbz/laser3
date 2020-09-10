@@ -18,7 +18,7 @@
             <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
             <g:if test="${sourceObject}">
-                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
+                <g:set var="surveyConfig" value="${de.laser.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
                 <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
             </g:if>
 

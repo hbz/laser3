@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SurveyResult
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 

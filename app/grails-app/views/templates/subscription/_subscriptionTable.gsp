@@ -220,8 +220,8 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:set var="surveysConsortiaSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
-                                <g:set var="surveysSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s.instanceOf ,true)}" />
+                                <g:set var="surveysConsortiaSub" value="${de.laser.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
+                                <g:set var="surveysSub" value="${de.laser.SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s.instanceOf ,true)}" />
                                 <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) }">
                                     <g:link controller="subscription" action="surveys" id="${s.id}"
                                             class="ui icon button">

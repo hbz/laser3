@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.SurveyConfig; com.k_int.kbplus.CostItem; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.SurveyConfig; com.k_int.kbplus.RefdataCategory;com.k_int.properties.PropertyDefinition; com.k_int.kbplus.CostItem; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -73,7 +73,7 @@
                 id="${config?.surveyInfo.id}" params="[surveyConfigID: config?.id]">
 
             <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-            ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+            ${de.laser.SurveyConfig.getLocalizedValue(config?.type)}
 
 
             <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>

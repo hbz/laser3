@@ -77,10 +77,10 @@
 
 
             <g:set var="participantsFinish"
-                   value="${surveyConfig.pickAndChoose ? com.k_int.kbplus.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${surveyConfig.pickAndChoose ? de.laser.SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : de.laser.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <g:set var="participantsTotal"
-                   value="${surveyConfig.pickAndChoose ? com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig) : com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${surveyConfig.pickAndChoose ? de.laser.SurveyOrg.findAllBySurveyConfig(surveyConfig) : de.laser.SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
             <tr>
                 <td class="center aligned">

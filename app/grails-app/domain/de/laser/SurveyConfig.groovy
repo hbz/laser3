@@ -1,7 +1,11 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
 import com.k_int.properties.PropertyDefinition
-import de.laser.I10nTranslation
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.web.json.JSONElement

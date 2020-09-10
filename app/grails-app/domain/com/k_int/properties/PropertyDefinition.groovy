@@ -473,7 +473,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
             PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PlatformProperty c where c.type = :self', [self: this])
             PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SurveyResult c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from de.laser.SurveyResult c where c.type = :self', [self: this])
 
             this.delete()
         }

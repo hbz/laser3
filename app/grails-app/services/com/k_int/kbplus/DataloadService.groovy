@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.SurveyConfig
+import de.laser.SurveyOrg
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
@@ -451,7 +453,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
+        updateES(SurveyConfig.class) { surveyConfig ->
             def result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
@@ -488,7 +490,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.SurveyOrg.class) { surOrg ->
+        updateES(SurveyOrg.class) { surOrg ->
             def result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id

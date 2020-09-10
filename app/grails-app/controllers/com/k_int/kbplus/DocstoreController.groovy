@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.SurveyConfig
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.SurveyOrg; de.laser.SurveyConfigProperties" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -270,9 +270,9 @@
 
                     </td>
                     <td>
-                        <g:if test="${editable && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING &&
-                                com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && (de.laser.helper.RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
+                        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                                SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                                && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty.id}">
@@ -285,7 +285,7 @@
             </tbody>
             <tfoot>
             <tr>
-                <g:if test="${editable && properties && surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
+                <g:if test="${editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
                             <g:hiddenField name="id" value="${surveyInfo.id}"/>

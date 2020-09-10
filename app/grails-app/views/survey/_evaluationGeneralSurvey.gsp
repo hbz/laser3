@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${surveyConfig}">
@@ -91,7 +91,7 @@
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
                                     class="chart pie icon"></i></g:link>
 
-                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == de.laser.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
