@@ -130,7 +130,7 @@
                             </dl>
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
+                                    <dt class="control-label">alter Sub-Typ</dt>
                                     <dd>
                                         %{--
                                         <%
