@@ -1,16 +1,17 @@
 <%@ page import="de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.PersonRole; de.laser.Contact" %>
 <laser:serviceInjection/>
 
-
 <g:set var="modalId" value="${modalId ?: 'personFormModal'}"/>
 <%
-    Map params = [:]
-    params.sort = params.sort ?: " LOWER(o.name)"
+    Map fmQuery = [
+            query:  "from Org o where (o.status is null or o.status != :orgStatus)",
+            params: [orgStatus: RDStore.ORG_STATUS_DELETED]
+    ]
     if (org.getCustomerType() == 'ORG_INST'){
-        params.orgType = [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id]
+        fmQuery.query = fmQuery.query + " and exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
+        fmQuery.params << [orgType: [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id]]
     }
-    Map fsq = filterService.getOrgQuery(params)
-    List orgList  = Org.findAll(fsq.query, fsq.queryParams)
+    List<Org> orgList = Org.findAll(fmQuery.query + " order by LOWER(o.name) asc", fmQuery.params)
     if ( ! orgList.contains(org)){
         orgList.add(org)
         orgList.sort{it.name.toLowerCase()}

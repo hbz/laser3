@@ -2,7 +2,9 @@ package com.k_int.kbplus
 
 
 import com.k_int.kbplus.auth.User
+import de.laser.ApiSource
 import de.laser.EscapeService
+import de.laser.OrgSettings
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -20,7 +22,6 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
-import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -1022,15 +1023,15 @@ class PackageController extends AbstractDebugController {
         def subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
 
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
-        //def query_params = [ pkgcls:'com.k_int.kbplus.Package', tippcls:'com.k_int.kbplus.TitleInstancePackagePlatform', pkgid:params.id, subQueryResult:subQueryResult]
+        //def query_params = [ pkgcls: Package.class.name, tippcls: TitleInstancePackagePlatform.class.name, pkgid: params.id, subQueryResult: subQueryResult ]
 
         String base_query   = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
-        def query_params = [ pkgcls:'com.k_int.kbplus.Package', pkgid:params.id]
+        def query_params = [ pkgcls: Package.class.name, pkgid: params.id]
 
       // postgresql migration
         if (subQueryResult) {
             base_query += ' or ( e.className = :tippcls and e.persistedObjectId in (:subQueryResult) )'
-            query_params.'tippcls' = 'com.k_int.kbplus.TitleInstancePackagePlatform'
+            query_params.'tippcls' = TitleInstancePackagePlatform.class.name
             query_params.'subQueryResult' = subQueryResult
         }
 
@@ -1048,7 +1049,7 @@ class PackageController extends AbstractDebugController {
             def linetype = null
 
             switch (hl.className) {
-                case 'com.k_int.kbplus.Package':
+                case Package.class.name :
                     Package package_object = Package.get(hl.persistedObjectId);
                     line_to_add = [link        : createLink(controller: 'package', action: 'show', id: hl.persistedObjectId),
                                    name        : package_object.toString(),
@@ -1060,7 +1061,7 @@ class PackageController extends AbstractDebugController {
                     ]
                     linetype = 'Package'
                     break;
-                case 'com.k_int.kbplus.TitleInstancePackagePlatform':
+                case TitleInstancePackagePlatform.class.name :
                     TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
                     if (tipp_object != null) {
                         line_to_add = [link        : createLink(controller: 'tipp', action: 'show', id: hl.persistedObjectId),

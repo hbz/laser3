@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg;com.k_int.kbplus.auth.Role" %>
+<%@ page import="de.laser.UserSettings; com.k_int.kbplus.Org;com.k_int.kbplus.auth.UserOrg;com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection />
 
 <!doctype html>

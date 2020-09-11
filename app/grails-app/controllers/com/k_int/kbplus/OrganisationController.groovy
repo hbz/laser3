@@ -4,8 +4,12 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.CustomerIdentifier
 import de.laser.DeletionService
 import de.laser.FormService
+import de.laser.OrgSettings
+import de.laser.OrgSubjectGroup
+import de.laser.ReaderNumber
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -226,7 +230,8 @@ class OrganisationController extends AbstractDebugController {
 
         if (params.filterPropDef) {
             def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
-            fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
+            params.constraint_orgIds = orgIdList
+            fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
         result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeAsInteger()

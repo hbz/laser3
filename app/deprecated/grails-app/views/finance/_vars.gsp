@@ -5,4 +5,4 @@
 <g:set var="costItemElement"  scope="request" value="${com.k_int.kbplus.RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:org])}"/>
 <g:set var="taxType"          scope="request" value="${RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE)}"/>
 <g:set var="yn"               scope="request" value="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"/>
-<g:set var="currency"         scope="request" value="${com.k_int.kbplus.FinanceService.orderedCurrency()}"/>
+<g:set var="currency"         scope="request" value="${de.laser.FinanceService.orderedCurrency()}"/>

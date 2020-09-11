@@ -6,12 +6,14 @@ import de.laser.SubscriptionService
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
+import de.laser.helper.AppUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
@@ -83,7 +85,7 @@ class PendingChangeService extends AbstractLockableService {
                 switch ( payload.changeType ) {
 
                     case EVENT_TIPP_DELETE :
-                        // "changeType":"TIPPDeleted","tippId":"com.k_int.kbplus.TitleInstancePackagePlatform:6482"}
+                        // "changeType":"TIPPDeleted","tippId":"${TitleInstancePackagePlatform.class.name}:6482"}
                         def sub_to_change = pendingChange.subscription
                         def tipp = genericOIDService.resolveOID(payload.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
@@ -112,7 +114,7 @@ class PendingChangeService extends AbstractLockableService {
                             if ( target_object ) {
                                 target_object.refresh()
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
-                                def domain_class = grailsApplication.getArtefact('Domain',target_object.class.name);
+                                GrailsClass domain_class = AppUtils.getDomainClass( target_object.class.name )
                                 def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
                                 if(prop_info == null){
                                     log.debug("We are dealing with custom properties: ${payload}")
@@ -166,7 +168,7 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_OBJECT_NEW :
-                        def new_domain_class = grailsApplication.getArtefact('Domain',payload.newObjectClass);
+                        GrailsClass new_domain_class = AppUtils.getDomainClass( payload.newObjectClass )
                         if ( new_domain_class != null ) {
                             def new_instance = new_domain_class.getClazz().newInstance()
                             // like bindData(destination, map), that only exists in controllers

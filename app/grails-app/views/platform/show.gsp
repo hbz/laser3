@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.Platform" %>
 <!doctype html>
 <html>
 <head>
@@ -46,7 +46,7 @@
                   <dt>GOKb ID</dt>
                   <dd>
                     ${platformInstance?.gokbId}
-                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                       <g:if test="${platformInstance?.gokbId}">
                         <a target="_blank"

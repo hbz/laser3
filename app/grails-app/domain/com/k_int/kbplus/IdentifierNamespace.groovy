@@ -15,11 +15,11 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     public static final String UNKNOWN    = "Unknown"
 
-    public static final NS_ORGANISATION = "com.k_int.kbplus.Org"
-    public static final NS_LICENSE      = "com.k_int.kbplus.License"
-    public static final NS_SUBSCRIPTION = "com.k_int.kbplus.Subscription"
-    public static final NS_PACKAGE      = "com.k_int.kbplus.Package"
-    public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
+    public static final NS_ORGANISATION = Org.class.name
+    public static final NS_LICENSE      = License.class.name
+    public static final NS_SUBSCRIPTION = Subscription.class.name
+    public static final NS_PACKAGE      = Package.class.name
+    public static final NS_TITLE        = TitleInstance.class.name
 
     public static final String ISIL       = "ISIL"
     public static final String WIBID      = "wibid"

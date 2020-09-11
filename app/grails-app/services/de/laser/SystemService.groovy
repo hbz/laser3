@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.ApiSource
 import com.k_int.kbplus.GlobalRecordSource
 import de.laser.helper.ConfigUtils
 import grails.plugin.springsecurity.SpringSecurityUtils

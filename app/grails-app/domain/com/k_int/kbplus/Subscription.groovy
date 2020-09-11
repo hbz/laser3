@@ -5,6 +5,8 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.IssueEntitlementGroup
+import de.laser.Links
+import de.laser.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
@@ -588,7 +590,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     ds,
                     ds.getSubscriber(),
                     [
-                            changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
+                            changeTarget:"${Subscription.class.name}:${ds.id}",
                             changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                             changeDoc:changeDocument
                     ],
@@ -866,19 +868,15 @@ select distinct oap from OrgAccessPoint oap
     }
 
     def dropdownNamingConventionWithoutOrg(Org contextOrg){
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
         period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
-
         period = period ? '('+period+')' : ''
 
         String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
-
         return name + ' - ' + statusString + ' ' +period
-
     }
 
     def getDerivedSubscriptionBySubscribers(Org org) {

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource;com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.IssueEntitlement; de.laser.Person;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.IssueEntitlement; de.laser.Person;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection/>
 
 <table class="ui three column table">

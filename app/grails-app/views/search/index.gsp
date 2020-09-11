@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
@@ -157,24 +157,6 @@ String period
                             <label for="radioMyObjects">${message(code: 'menu.my')}</label>
                         </div>
                     </div>
-
-                    %{--<div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioSpecObject" type="radio" value="specObjects" name="searchObjects" tabindex="0" class="hidden"
-                                   <g:if test="${params.searchObjects == 'specObjects'}">checked=""</g:if>
-                            >
-                            <label for="radioSpecObject">${message(code: 'menu.my')}
-
-                            <g:select class="ui dropdown" name="status"
-                                      from="${ com.k_int.kbplus.FTControl.findAll() }"
-                                      optionKey="id"
-                                      optionValue="${{message(code: 'search.object.'+it.domainClassName.replace('com.k_int.kbplus.','').toLowerCase())}}"
-                                      value="${params.searchObject}"
-                                      noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-
-                            </label>
-                        </div>
-                    </div>--}%
                 </div>
 
             </div>

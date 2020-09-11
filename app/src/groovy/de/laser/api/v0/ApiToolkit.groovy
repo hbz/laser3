@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgSettings
+import de.laser.OrgSettings
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.RandomStringUtils

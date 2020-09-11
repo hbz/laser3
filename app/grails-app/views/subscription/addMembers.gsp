@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants;de.laser.FormService" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.*;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants;de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -103,7 +103,7 @@
                             <br>
                             <g:select from="${memberLicenses}"
                                       class="ui fluid search multiple dropdown hide"
-                                      optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                      optionKey="${{ License.class.name + ':' + it.id }}"
                                       optionValue="${{ it.reference }}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
                                       name="generateSlavedLicsReference"/>

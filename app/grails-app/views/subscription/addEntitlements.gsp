@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform;com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.ApiSource; grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform;com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -218,7 +218,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                         <i class="book icon"></i>
                     </g:link>
                 </g:if>
-                <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                         var="gokbAPI">
                     <g:if test="${tipp?.gokbId}">
                         <a role="button"

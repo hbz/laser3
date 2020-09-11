@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.BudgetCode
+
 import javax.persistence.Transient
 
 /**

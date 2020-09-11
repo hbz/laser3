@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; com.k_int.kbplus.*; de.laser.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
 
 <%
     String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
@@ -181,7 +181,7 @@
 
 </g:each>
 
-
+<%--
 <g:set var="allFields" value="${tmplConfigShow.flatten()}" />
 
 <g:if test="${! allFields.contains('type') && params.orgType}">
@@ -205,6 +205,7 @@
 <g:if test="${! allFields.contains('country') && params.country}">
     <input type="hidden" name="country" value="${params.country}" />
 </g:if>
+--%>
 
 
 <div class="field la-field-right-aligned">

@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <title>Datenbereinigung: TIPPs ohne GOKb ID</title>
+        <title>${message(code:'laser')} : Datenbereinigung: TIPPs ohne GOKb ID</title>
     </head>
 
     <body>

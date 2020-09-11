@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Subscription" %>
 <!doctype html>
 <html>
 <head>
@@ -178,13 +179,13 @@
                 <tbody>
                 <g:each in="${basket}" var="itm">
                     <tr></tr>
-                    <td><g:if test="${itm.getClass().getName() != 'com.k_int.kbplus.Subscription'}">
+                    <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <i class="gift icon"></i>${itm.name}
                     </g:if><g:else>
                         <i class="folder open outline icon"></i>${itm.name}<hr/>
                     </g:else>
                     </td>
-                    <td><g:if test="${itm.getClass().getName() != 'com.k_int.kbplus.Subscription'}">
+                    <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <button type="submit" class="ui icon basic negative button" name="clearOnlyoneitemBasket"
                                 value="${itm.id}"><i class="trash icon"></i></button>
                     </g:if>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DeletionService" %>
+<%@ page import="com.k_int.kbplus.auth.User; de.laser.DeletionService" %>
 <g:set var="deletionService" bean="deletionService" />
 <laser:serviceInjection />
 <!doctype html>
@@ -55,7 +55,7 @@
 
                             <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
                                       from="${substituteList.sort()}"
-                                      optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}"
+                                      optionKey="${{ User.class.name + ':' + it.id }}"
                                       optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">

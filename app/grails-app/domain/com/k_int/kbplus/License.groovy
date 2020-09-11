@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.Links
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
@@ -489,7 +490,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                         dl,
                         dl.getLicensee(),
                               [
-                                changeTarget:"com.k_int.kbplus.License:${dl.id}",
+                                changeTarget:"${License.class.name}:${dl.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                               ],

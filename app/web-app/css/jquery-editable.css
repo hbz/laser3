@@ -131,11 +131,9 @@
    position: absolute;
    opacity: 0.6;
    z-index: 100;
-   
    top: 50%;
    right: 6px;
    margin-top: -6px;
-   
 }
 
 .editable-clear-x:hover {
@@ -179,31 +177,11 @@ a.editable-click.editable-disabled:hover {
    cursor: default;
    border-bottom: none;
 }
-/*
-.editable-empty, .editable-empty:hover, .editable-empty:focus{
-  font-style: italic; 
-  color: #DD1144;
-  text-decoration: none;
-}
-*/
+
 .editable-empty, .editable-empty:hover, .editable-empty:focus{
     background:#f1ebe5;
     padding: 0 4px;
 }
-/*
-.editable-empty:after {
-    right:-3px;
-    top: -3px;
-    content: '';
-    position: absolute;
-    width: 3px;
-    height: 3px;
-
-    border-radius: 12px;
-    background-color: #fa820a;
-
-}
-*/
 
 .editable-unsaved {
   font-weight: bold; 
@@ -217,16 +195,15 @@ a.editable-click.editable-disabled:hover {
   -webkit-transition: background-color 1400ms ease-out;
   -moz-transition: background-color 1400ms ease-out;
   -o-transition: background-color 1400ms ease-out;
-  -ms-transition: background-color 1400ms ease-out;
   transition: background-color 1400ms ease-out;  
 }
 
 /*see https://github.com/vitalets/x-editable/issues/139 */
-.form-horizontal .editable
-{ 
+.form-horizontal .editable {
     padding-top: 5px;
     display:inline-block;
 }
+
 .ui.table tr th a.editable-empty,
 .ui.table tr th a.editable-empty:hover,
 .ui.table tr th a.editable-empty:focus {

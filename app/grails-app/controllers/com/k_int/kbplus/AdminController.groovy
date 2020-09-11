@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import au.com.bytecode.opencsv.CSVReader
+
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -8,8 +8,11 @@ import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.OrgSettings
+import de.laser.StatusUpdateService
 import de.laser.SystemAnnouncement
 import de.laser.SystemEvent
+import de.laser.UserSettings
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.I10nTranslation
@@ -636,7 +639,7 @@ class AdminController extends AbstractDebugController {
 
                 result.listOfFilesMatchingDocs = Doc.executeQuery(
                         'select doc from Doc doc where doc.contentType = :ct and doc.uuid in (:files)',
-                        [ct: Doc.CONTENT_TYPE_BLOB, files: result.listOfFiles]
+                        [ct: Doc.CONTENT_TYPE_FILE, files: result.listOfFiles]
                 )
                 List<String> matches = result.listOfFilesMatchingDocs.collect{ it.uuid }
 
@@ -654,12 +657,12 @@ class AdminController extends AbstractDebugController {
 
         List<Doc> listOfDocs = Doc.executeQuery(
                 'select doc from Doc doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_BLOB]
+                [ct: Doc.CONTENT_TYPE_FILE]
         )
 
         result.listOfDocsInUse = Doc.executeQuery(
                 'select distinct(doc) from DocContext dc join dc.owner doc where doc.contentType = :ct order by doc.id',
-                [ct: Doc.CONTENT_TYPE_BLOB]
+                [ct: Doc.CONTENT_TYPE_FILE]
         )
 
         result.listOfDocsNotInUse = listOfDocs - result.listOfDocsInUse
@@ -679,12 +682,12 @@ class AdminController extends AbstractDebugController {
 
         result.numberOfDocContextsInUse = DocContext.executeQuery(
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and (dc.status is null or dc.status != :del)',
-                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+                [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
         result.numberOfDocContextsDeleted = DocContext.executeQuery(
                 'select distinct(dc) from DocContext dc join dc.owner doc where doc.contentType = :ct and dc.status = :del',
-                [ct: Doc.CONTENT_TYPE_BLOB, del: RDStore.DOC_CTX_STATUS_DELETED]
+                [ct: Doc.CONTENT_TYPE_FILE, del: RDStore.DOC_CTX_STATUS_DELETED]
         ).size()
 
         result
@@ -715,7 +718,6 @@ class AdminController extends AbstractDebugController {
             result.doc = doc
 
             List docs = Doc.findAllWhere(
-                    blobContent: doc.blobContent,
                     status: doc.status,
                     type: doc.type,
                     content: doc.content,

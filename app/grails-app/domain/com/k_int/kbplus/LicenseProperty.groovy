@@ -195,7 +195,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                         lcp.owner,
                         lcp.owner.getLicensee(),
                         [
-                                changeTarget:"com.k_int.kbplus.License:${lcp.owner.id}",
+                                changeTarget:"${License.class.name}:${lcp.owner.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                         ],

@@ -5,12 +5,10 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.FinanceService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Links
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
@@ -20,19 +18,12 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.SurveyConfig
-import com.k_int.kbplus.SurveyConfigProperties
-import com.k_int.kbplus.SurveyInfo
-import com.k_int.kbplus.SurveyOrg
-import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.interfaces.ShareSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -1341,7 +1332,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1398,7 +1389,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1629,7 +1620,7 @@ class SurveyController {
     def evaluateIssueEntitlementsSurvey() {
         def result = setResultGenericsAndCheckAccess()
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1655,7 +1646,7 @@ class SurveyController {
     })
     def evaluationParticipant() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             response.sendError(401); return
         }
 
@@ -3030,7 +3021,7 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             response.sendError(401); return
         }
         //result.putAll(financeService.setEditVars(result.institution))
@@ -4660,9 +4651,8 @@ class SurveyController {
         oldSurveyConfig.documents.each { dctx ->
                 //Copy Docs
                 if (params.copySurvey.copyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                    if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
-                                blobContent: dctx.owner.blobContent,
                                 status: dctx.owner.status,
                                 type: dctx.owner.type,
                                 content: dctx.owner.content,
@@ -4694,9 +4684,8 @@ class SurveyController {
                 }
                 //Copy Announcements
                 if (params.copySurvey.copyAnnouncements) {
-                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                    if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                         Doc clonedContents = new Doc(
-                                blobContent: dctx.owner.blobContent,
                                 status: dctx.owner.status,
                                 type: dctx.owner.type,
                                 content: dctx.owner.content,
