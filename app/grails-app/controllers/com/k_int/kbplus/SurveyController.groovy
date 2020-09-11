@@ -2769,6 +2769,11 @@ class SurveyController {
             result.num_sub_rows = subscriptions.size()
             result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         }
+
+        if(result.surveyConfig.subscription) {
+            String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: GenericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
+        }
         
         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
 
