@@ -13,7 +13,7 @@
                     <tr>
                         <g:if test="${compare}">
                             <th scope="col" rowspan="2" class="center aligned">
-                                <g:message code="default.compare.compare"/>
+                                <g:message code="default.compare.submit.label"/>
                             </th>
                         </g:if>
                         <th scope="col" rowspan="2" class="center aligned">

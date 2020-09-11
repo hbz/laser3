@@ -142,7 +142,7 @@
                   <tr>
                       <g:if test="${compare}">
                           <th rowspan="2" class="center aligned">
-                              <g:message code="default.compare.compare"/>
+                              <g:message code="default.compare.submit.label"/>
                           </th>
                       </g:if>
                       <th rowspan="2"><g:message code="sidewide.number"/></th>
