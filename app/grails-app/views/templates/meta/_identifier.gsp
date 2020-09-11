@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.IssueEntitlement; de.laser.helper.RDStore; com.k_int.kbplus.IdentifierNamespace" %>
 <%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription; com.k_int.kbplus.IssueEntitlement" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
@@ -145,7 +145,7 @@
                                     <label for="namespace">${message(code:'identifier.namespace.label')}</label>
                                     <g:select name="namespace" id="namespace" class="ui search dropdown"
                                               from="${nsList}"
-                                              optionKey="${{'com.k_int.kbplus.IdentifierNamespace:' + it.id}}"
+                                              optionKey="${{ IdentifierNamespace.class.name + ':' + it.id }}"
                                               optionValue="${{ it.getI10n('name') ?: it.ns }}" />
                                 </div>
                                 <div class="field">

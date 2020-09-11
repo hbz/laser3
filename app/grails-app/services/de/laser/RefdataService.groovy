@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
+import de.laser.helper.AppUtils
 import de.laser.helper.RefdataAnnotation
 import grails.transaction.Transactional
 
@@ -16,7 +17,7 @@ class RefdataService {
         def usedRdvList     = []
         def allDcs          = [:]
 
-        List classes = grailsApplication.getArtefacts("Domain").toList().findAll {
+        List classes = AppUtils.getAllDomainClasses().findAll {
             ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
         }
 
@@ -28,7 +29,7 @@ class RefdataService {
             while (cls != Object.class) {
                 dcFields.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                 )
                 cls = cls.getSuperclass()
             }
@@ -65,7 +66,7 @@ class RefdataService {
         def count = 0
         def fortytwo = [:]
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        AppUtils.getAllDomainClasses().each { dc ->
             def dcFields = []
             def cls = dc.clazz
 
@@ -73,7 +74,7 @@ class RefdataService {
             while (cls != Object.class) {
                 dcFields.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                 )
                 cls = cls.getSuperclass()
             }
@@ -103,7 +104,7 @@ class RefdataService {
     Map<String, Object> integrityCheck() {
         Map checkResult = [:]
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        AppUtils.getAllDomainClasses().each { dc ->
             def cls = dc.clazz
 
             // find all rdv_fk from superclasses
@@ -111,7 +112,7 @@ class RefdataService {
                 List tmp = []
                 tmp.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                         .collect { it ->
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)

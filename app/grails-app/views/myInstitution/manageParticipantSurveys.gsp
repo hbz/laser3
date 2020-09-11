@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SurveyInfo; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyResult" %>
+<%@ page import="de.laser.SurveyInfo; de.laser.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.Org;de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -199,7 +199,7 @@
             <g:each in="${surveyResults}" var="surveyResult" status="i">
 
                 <g:set var="surveyConfig"
-                       value="${com.k_int.kbplus.SurveyConfig.get(surveyResult.key)}"/>
+                       value="${SurveyConfig.get(surveyResult.key)}"/>
 
                 <g:set var="surveyInfo"
                        value="${surveyConfig.surveyInfo}"/>

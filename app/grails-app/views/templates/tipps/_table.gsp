@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Platform" %>
 
 <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
     <thead>
@@ -153,7 +153,7 @@
                             <i class="book icon"></i>
                         </g:link>
                     </g:if>
-                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                         <g:if test="${tipp?.gokbId}">
                             <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"

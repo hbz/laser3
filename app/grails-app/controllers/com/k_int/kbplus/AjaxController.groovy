@@ -13,6 +13,7 @@ import de.laser.interfaces.ShareSupport
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
@@ -168,7 +169,7 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def setFieldNote() {
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
+      GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(params.id)
       if ( instance ) {
@@ -193,7 +194,7 @@ class AjaxController {
    @Secured(['ROLE_USER'])
   def setFieldTableNote() {
     // log.debug("setFieldTableNote(${params})")
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
+    GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(params.id)
        
@@ -227,8 +228,7 @@ class AjaxController {
     // params.elementid (The id from the html element)  must be formed as domain:pk:property:otherstuff
     String[] oid_components = params.elementid.split(":");
 
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${oid_components[0]}")
-
+    GrailsClass domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(oid_components[1])
       if ( instance ) {
@@ -668,13 +668,22 @@ class AjaxController {
                     }
                 }
 
-                if(values) {
-                    if(propDef.type == Integer.toString()) {
+                if (values) {
+                    if (propDef.type == Integer.toString()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text}
+                    }
+                    else if (propDef.type == Date.toString()) {
+                        values.sort{ x,y -> y.dateValue - x.dateValue }.each {
+                            AbstractPropertyWithCalculatedLastUpdated v ->
+                                if(v.dateValue != null) {
+                                    String vt = g.formatDate(formatName:"default.date.format.notime", date:v.dateValue)
+                                    result.add([value: vt, text: vt])
+                                }
+                        }
                     }
                     else {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
@@ -1214,7 +1223,7 @@ class AjaxController {
         def error
         def msg
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-        def owner      = grailsApplication.getArtefact("Domain", ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+        def owner      = AppUtils.getDomainClass( ownerClass )?.getClazz()?.get(params.ownerId)
 
         // TODO ownerClass
         if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
@@ -1310,7 +1319,7 @@ class AjaxController {
     if(params.propIdent.length() > 0) {
       def error
       def newProp
-      def owner = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+      def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
       def type = PropertyDefinition.get(params.propIdent.toLong())
       Org contextOrg = contextService.getOrg()
       def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant.id == contextOrg.id }
@@ -1430,7 +1439,7 @@ class AjaxController {
         def error
         def newProp
         Org tenant = Org.get(params.tenantId)
-        def owner  = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+          def owner  = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
           PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
@@ -1695,7 +1704,7 @@ class AjaxController {
     def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+        def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1796,7 +1805,7 @@ class AjaxController {
     def deleteCustomProperty() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+        def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1858,7 +1867,7 @@ class AjaxController {
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant
-    def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
+    def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
     owner.propertySet.remove(property)
@@ -2109,9 +2118,9 @@ class AjaxController {
 
     // log.debug("AjaxController::lookup ${params}");
     Map<String, Object> result = [:]
-    // params.max = params.max ?: 20;
-    params.max = params.max ?: 40;
-    def domain_class = grailsApplication.getArtefact('Domain',params.baseClass)
+    params.max = params.max ?: 40
+
+    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
     if ( domain_class ) {
       result.values = domain_class.getClazz().refdataFind(params);
       result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
@@ -2133,7 +2142,7 @@ class AjaxController {
       params.shortcode  = contextService.getOrg().shortcode
 
     Map<String, Object> result = [:]
-    def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
+    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
     if (domain_class) {
       result.values = domain_class.getClazz().refdataFind2(params);
       result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
@@ -2202,7 +2211,7 @@ class AjaxController {
     log.debug("AjaxController::addToCollection ${params}");
 
     def contextObj = resolveOID2(params.__context)
-    def domain_class = grailsApplication.getArtefact('Domain',params.__newObjectClass)
+    GrailsClass domain_class = AppUtils.getDomainClass( params.__newObjectClass )
     if ( domain_class ) {
 
       if ( contextObj ) {
@@ -2300,10 +2309,9 @@ class AjaxController {
   }
     
   def resolveOID2(oid) {
-    def oid_components = oid.split(':');
-    def result = null;
-    def domain_class=null;
-    domain_class = grailsApplication.getArtefact('Domain',oid_components[0])
+    def oid_components = oid.split(':')
+    def result = null
+    GrailsClass domain_class = AppUtils.getDomainClass( oid_components[0] )
     if ( domain_class ) {
       if ( oid_components[1]=='__new__' ) {
         result = domain_class.getClazz().refdataCreate(oid_components)

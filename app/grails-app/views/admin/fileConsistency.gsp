@@ -61,13 +61,13 @@
             <tbody>
                 <tr>
                     <td><strong>Dateiobjekte in der Datenbank</strong></td>
-                    <td>Doc(contentType = CONTENT_TYPE_BLOB)</td>
+                    <td>Doc(contentType = CONTENT_TYPE_FILE)</td>
                     <td>${listOfDocsInUse.size() + listOfDocsNotInUse.size()}</td>
                 </tr>
 
                 <tr>
                     <td><strong>Referenzierte Dateiobjekte</strong></td>
-                    <td>DocContext.owner => Doc(contentType = CONTENT_TYPE_BLOB)</td>
+                    <td>DocContext.owner => Doc(contentType = CONTENT_TYPE_FILE)</td>
                     <td>${listOfDocsInUse.size()}</td>
                 </tr>
                 <tr>
@@ -83,7 +83,7 @@
 
                 <tr>
                     <td><strong>Nicht referenzierte Dateiobjekte</strong></td>
-                    <td>Doc(contentType = CONTENT_TYPE_BLOB); ohne entspr. DocContext.owner</td>
+                    <td>Doc(contentType = CONTENT_TYPE_FILE); ohne entspr. DocContext.owner</td>
                     <td>${listOfDocsNotInUse.size()}</td>
                 </tr>
                 <tr>
@@ -112,17 +112,17 @@
             <tbody>
                 <tr>
                     <td><strong>Referenzen auf Dateiobjekte in der Datenbank</strong></td>
-                    <td>DocContext.owner => Doc(contentType = CONTENT_TYPE_BLOB)</td>
+                    <td>DocContext.owner => Doc(contentType = CONTENT_TYPE_FILE)</td>
                     <td>${numberOfDocContextsInUse + numberOfDocContextsDeleted}</td>
                 </tr>
             <tr>
                     <td>- gültige Referenzen</td>
-                    <td>DocContext.owner(status != deleted) => Doc(contentType = CONTENT_TYPE_BLOB)</td>
+                    <td>DocContext.owner(status != deleted) => Doc(contentType = CONTENT_TYPE_FILE)</td>
                     <td>${numberOfDocContextsInUse}</td>
                 </tr>
                 <tr>
                     <td>- ungültige Referenzen</td>
-                    <td>DocContext.owner(status = deleted) => Doc(contentType = CONTENT_TYPE_BLOB)</td>
+                    <td>DocContext.owner(status = deleted) => Doc(contentType = CONTENT_TYPE_FILE)</td>
                     <td>${numberOfDocContextsDeleted}</td>
                 </tr>
             </tbody>

@@ -77,15 +77,37 @@ databaseChangeLog = {
 		dropTable(tableName: "creator_title")
 	}
 
-	changeSet(author: "djebeniani (generated)", id: "1599469610364-19") {
+	changeSet(author: "klober (generated)", id: "1599469610364-19") {
+		dropColumn(columnName: "doc_blob_content", tableName: "doc")
+  }
+  
+	changeSet(author: "djebeniani (generated)", id: "1599469610364-20") {
 		modifyDataType(columnName: "surre_comment", newDataType: "text", tableName: "survey_result")
 	}
 
-	changeSet(author: "djebeniani (generated)", id: "1599469610364-20") {
+	changeSet(author: "djebeniani (generated)", id: "1599469610364-21") {
 		modifyDataType(columnName: "surre_owner_comment", newDataType: "text", tableName: "survey_result")
 	}
 
-	changeSet(author: "djebeniani (generated)", id: "1599469610364-21") {
+	changeSet(author: "djebeniani (generated)", id: "1599469610364-22") {
 		modifyDataType(columnName: "surre_participant_comment", newDataType: "text", tableName: "survey_result")
+	}
+
+	changeSet(author: "klober (modified)", id: "1599469610364-23") {
+		grailsChange {
+			change {
+				sql.execute("update org_access_point set class = replace(class, 'com.k_int.kbplus.', 'de.laser.') where class is not null")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1599469610364-24") {
+		grailsChange {
+			change {
+				sql.execute("update i10n_translation set i10n_reference_class = replace(i10n_reference_class, 'com.k_int.kbplus.Survey', 'de.laser.Survey') where i10n_reference_class is not null")
+			}
+			rollback {}
+		}
 	}
 }

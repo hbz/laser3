@@ -1,11 +1,14 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.BudgetCode
+import de.laser.Invoice
 import de.laser.controller.AbstractDebugController
 import de.laser.IssueEntitlementGroup
 import de.laser.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
+import de.laser.helper.AppUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -23,6 +26,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
@@ -801,7 +805,7 @@ class FinanceController extends AbstractDebugController {
                   invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush:true)
 
               Set<Subscription> subsToDo = []
-              if (params.newSubscription.contains("com.k_int.kbplus.Subscription:"))
+              if (params.newSubscription.contains("${Subscription.class.name}:"))
               {
                   try {
                       subsToDo << genericOIDService.resolveOID(params.newSubscription)
@@ -812,10 +816,10 @@ class FinanceController extends AbstractDebugController {
 
               switch (params.newLicenseeTarget) {
 
-                  case 'com.k_int.kbplus.Subscription:forParent':
+                  case "${Subscription.class.name}:forParent":
                       // keep current
                       break
-                  case 'com.k_int.kbplus.Subscription:forAllSubscribers':
+                  case "${Subscription.class.name}:forAllSubscribers":
                       // iterate over members
                       subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
                               genericOIDService.resolveOID(params.newSubscription),
@@ -837,7 +841,7 @@ class FinanceController extends AbstractDebugController {
               }
 
               SubscriptionPackage pkg
-              if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
+              if (params.newPackage?.contains("${SubscriptionPackage.class.name}:"))
               {
                   try {
                       if (params.newPackage.split(":")[1] != 'null') {
@@ -1410,7 +1414,7 @@ class FinanceController extends AbstractDebugController {
         def result         = [:]
         result.create      = false
         def oid_components = oid.split(':');
-        def dynamic_class  = grailsApplication.getArtefact('Domain',oid_components[0]).getClazz()
+        def dynamic_class  = AppUtils.getDomainClass( oid_components[0] )?.getClazz()
         if ( dynamic_class)
         {
             if (oid_components[1].equals("create"))

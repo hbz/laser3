@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory" %>
 
 <!doctype html>
 <html>
@@ -472,7 +472,7 @@
                           </g:link>
                       </g:if>
 
-                      <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                      <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                               var="gokbAPI">
                           <g:if test="${t?.gokbId}">
                               <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
@@ -540,7 +540,7 @@
               return {
                   q: term, // search term
                   page_limit: 10,
-                  baseClass:'com.k_int.kbplus.Org'
+                  baseClass:'${Org.class.name}'
               };
           },
           results: function (data, page) {
@@ -562,7 +562,7 @@
               return {
                   q: term, // search term
                   page_limit: 10,
-                  baseClass:'com.k_int.kbplus.RefdataValue'
+                  baseClass:'${RefdataValue.class.name}'
               };
           },
           results: function (data, page) {

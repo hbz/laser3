@@ -5,6 +5,8 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
@@ -251,7 +253,8 @@ class TaskService {
         if (contextOrg) {
             boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE'])
             boolean isConsortium  = (contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
-            def params       = [:]
+
+            GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
             def fsq          = filterService.getOrgQuery(params)
             //validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)

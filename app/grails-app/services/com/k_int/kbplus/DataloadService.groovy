@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.SurveyConfig
+import de.laser.SurveyOrg
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
@@ -451,7 +453,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.SurveyConfig.class) { surveyConfig ->
+        updateES(SurveyConfig.class) { surveyConfig ->
             def result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
@@ -488,7 +490,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.SurveyOrg.class) { surOrg ->
+        updateES(SurveyOrg.class) { surOrg ->
             def result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
@@ -583,7 +585,7 @@ class DataloadService {
             result.status= docCon.status?.value ?: ''
             result.statusId= docCon.status?.id ?: ''
             result.visible = 'Private'
-            result.rectype = (docCon.owner?.contentType == 0) ? 'Note' : 'Document'
+            result.rectype = (docCon.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
 
             result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
 
@@ -1256,7 +1258,7 @@ class DataloadService {
 
                     Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-                    String query_str = "rectype: '${ft.domainClassName.replaceAll("com.k_int.kbplus.", "")}'"
+                    String query_str = "rectype: '${ft.domainClassName.replaceAll("com\\.k_int\\.kbplus.", "").replaceAll("de\\.laser\\.", "")}'"
 
                     if (ft.domainClassName == DocContext.name) {
                         query_str = "rectype:'Note' OR rectype:'Document'"

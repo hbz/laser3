@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.ApiSource; de.laser.SurveyOrg; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -37,7 +37,7 @@
     <semui:messages data="${flash}"/>
 </g:if>
 
-<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 
@@ -232,7 +232,7 @@
                                     <i class="book icon"></i>
                                 </g:link>
                             </g:if>
-                            <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                     var="gokbAPI">
                                 <g:if test="${tipp?.gokbId}">
                                     <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"

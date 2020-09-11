@@ -45,7 +45,7 @@ deckSaver = {
         selection.editable('option', 'disabled', false);
 
     },
-    diableXeditable: function(cssClass){
+    disableXeditable: function(cssClass){
 
         var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', true);
@@ -112,15 +112,14 @@ deckSaver = {
             tooltip.initializePopup(deckSaver.configs.toggleButton);
 
 
-
             $(deckSaver.configs.toggleIcon ).addClass( "slash" );
             $(deckSaver.configs.toggleButton).removeClass('active');
 
 
-            deckSaver.diableXeditable ('.xEditableValue');
-            deckSaver.diableXeditable ('.xEditable');
-            deckSaver.diableXeditable ('.xEditableDatepicker');
-            deckSaver.diableXeditable ('.xEditableManyToOne');
+            deckSaver.disableXeditable ('.xEditableValue');
+            deckSaver.disableXeditable ('.xEditable');
+            deckSaver.disableXeditable ('.xEditableDatepicker');
+            deckSaver.disableXeditable ('.xEditableManyToOne');
 
             $('.la-action-info').css('text-align', 'right').text(dict.get('default.informations',currLanguage))
         }

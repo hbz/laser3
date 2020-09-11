@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Org" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -89,7 +89,7 @@
     </table>
 </g:if>
 
-%{--<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)?.finishDate != null}">
+%{--<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

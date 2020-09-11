@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*;de.laser.helper.RDStore;" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 
 <%
@@ -17,7 +17,7 @@
 
 
     if(ownobj.subscription) {
-        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Usage Statistics", de.laser.helper.RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
+        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == RefdataValue.getByValueAndCategory("Usage Statistics", RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
 
     }
 %>
@@ -25,7 +25,7 @@
 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM")}">
     <semui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
         <g:each in="${baseItems}" var="docctx">
-           <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
+           <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="twelve wide column">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SurveyConfig" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue; de.laser.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -256,7 +256,7 @@ data: function (term, page) {
 return {
 q: term, // search term
 page_limit: 10,
-baseClass:'com.k_int.kbplus.RefdataCategory'
+baseClass:'${RefdataCategory.class.name}'
 };
 },
 results: function (data, page) {

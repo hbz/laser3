@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.SurveyConfig;" %>
+<%@ page import="de.laser.SurveyConfig; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 <laser:serviceInjection/>
 
 <!doctype html>

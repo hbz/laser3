@@ -1,14 +1,11 @@
 package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgAccessPoint
+import de.laser.OrgAccessPoint
 import de.laser.api.v0.*
 import de.laser.helper.Constants
-import de.laser.helper.RDStore
 import grails.converters.JSON
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
-import java.sql.Timestamp
 
 class ApiOrgAccessPoint {
 

@@ -4,7 +4,6 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Links
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
@@ -81,8 +80,11 @@ class LinksGenerationService {
         // links
         List oIDs = ownerSubscriptions.collect {GenericOIDService.getOID(it)}
         if (oIDs) {
-            sources = Links.executeQuery("from Links where source in (:oIDs) and destination like 'com.k_int.kbplus.Subscription%'", [oIDs: oIDs])
-            destinations = Links.executeQuery("from Links where destination in (:oIDs) and source like 'com.k_int.kbplus.Subscription%'", [oIDs: oIDs])
+            String srcQuery = "from Links where source in (:oIDs) and destination like '${Subscription.class.name}%'"
+            String dstQuery = "from Links where destination in (:oIDs) and source like '${Subscription.class.name}%'"
+            sources = Links.executeQuery( srcQuery, [oIDs: oIDs])
+            destinations = Links.executeQuery( dstQuery, [oIDs: oIDs])
+
             //IN is from the point of view of the context object (= obj)
 
             sources.each { Links link ->

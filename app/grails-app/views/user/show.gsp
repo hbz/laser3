@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title>${user.display}</title>
+    <title>${message(code:'laser')} : ${user.display}</title>
   </head>
   <body>
 

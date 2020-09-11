@@ -1,10 +1,10 @@
-<%@ page import="com.k_int.kbplus.Platform;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.Platform;de.laser.PlatformAccessMethod;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'platform.label')}" />
-        <title><g:message code="default.show.label" args="[entityName]" /></title>
+        <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
 
@@ -85,7 +85,7 @@
                         <td>
                             <laser:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
-                                          from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
+                                          from="${PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                           optionKey="id"
                                           optionValue="value"
                             />

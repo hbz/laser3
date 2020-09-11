@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.IssueEntitlementGroup; com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; de.laser.BudgetCode; de.laser.UserSettings; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
@@ -228,7 +228,7 @@
                                value="${costItem.sub.getName()}" />
                         <input name="newSubscription" id="pickedSubscription"
                                type="hidden"
-                               value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
+                               value="${Subscription.class.name + ':' + costItem.sub.id}" />
                     </g:if>
                     <g:else>
                         <g:if test="${subscription}">
@@ -237,7 +237,7 @@
                                    value="${subscription.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
-                                   value="${'com.k_int.kbplus.Subscription:'+subscription.id}" />
+                                   value="${Subscription.class.name + ':' + subscription.id}" />
                         </g:if>
                         <g:else>
                             <div class="ui search selection dropdown newCISelect" id="newSubscription">
@@ -261,9 +261,9 @@
                             <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown multiple search"
                                       from="${validSubChilds}"
                                       optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
-                                      optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
+                                      optionKey="${{Subscription.class.name + ':' + it.id}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                      value="${'com.k_int.kbplus.Subscription:' + costItem?.sub?.id}"
+                                      value="${Subscription.class.name + ':' + costItem?.sub?.id}"
                                       onchange="onSubscriptionUpdate()"
                             />
                         </g:else>
@@ -278,14 +278,14 @@
                             <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + costItem?.sub?.packages}"
                                       optionValue="${{it?.pkg?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
-                                      optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                      optionKey="${{SubscriptionPackage.class.name + ':' + it?.id}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                      value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
+                                      value="${SubscriptionPackage.class.name + ':' + costItem?.subPkg?.id}" />
                         </g:if>
                         <g:else>
                             <%--<input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
                             <div class="ui search selection dropdown newCISelect" id="newPackage">
-                                <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "com.k_int.kbplus.SubscriptionPackage:${costItem.subPkg.id}" : params.newPackage}">
+                                <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "${SubscriptionPackage.class.name}:${costItem.subPkg.id}" : params.newPackage}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -296,7 +296,7 @@
                         <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                         <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                         <div class="ui search selection dropdown newCISelect" id="newIE">
-                            <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "com.k_int.kbplus.IssueEntitlement:${costItem.issueEntitlement.id}" : params.newIE}">
+                            <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
                             <div class="default text"></div>
@@ -306,7 +306,7 @@
                 <div class="field">
                     <label>${message(code:'financials.newCosts.titleGroup')}</label>
                     <div class="ui search selection dropdown newCISelect" id="newTitleGroup">
-                        <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "com.k_int.kbplus.IssueEntitlementGroup:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                        <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"></div>

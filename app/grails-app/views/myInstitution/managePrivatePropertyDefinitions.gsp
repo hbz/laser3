@@ -303,7 +303,7 @@
                 return {
                     q: term, // search term
                     page_limit: 10,
-                    baseClass:'com.k_int.kbplus.RefdataCategory'
+                    baseClass:'${RefdataCategory.class.name}'
                 };
             },
             results: function (data, page) {

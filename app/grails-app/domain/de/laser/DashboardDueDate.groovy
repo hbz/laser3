@@ -2,9 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.Task
-import com.k_int.kbplus.UserSettings
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils

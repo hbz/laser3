@@ -403,7 +403,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     int countUsages() {
-        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
         if(this.descr == "Organisation Property")
             table = "OrgProperty"
 
@@ -415,7 +415,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     int countOwnUsages() {
-        String table = this.descr.minus('com.k_int.kbplus.').replace(" ","")
+        String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
         Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
         if(this.descr == "Organisation Property")
@@ -468,24 +468,15 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         log.debug("removeProperty")
 
         withTransaction {
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.LicenseProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.OrgProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PersonProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.PlatformProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SubscriptionProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from com.k_int.kbplus.SurveyResult c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from LicenseProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from OrgProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from PersonProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from PlatformProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from SubscriptionProperty c where c.type = :self', [self: this])
+            PropertyDefinition.executeUpdate('delete from SurveyResult c where c.type = :self', [self: this])
 
             this.delete()
         }
-    }
-
-    /* tmp only */
-    static Map<String, Object> getAvailablePropertyDescriptions() {
-        return [
-                "com.k_int.kbplus.Org"      : PropertyDefinition.ORG_PROP,
-                "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
-                "de.laser.Person"           : PropertyDefinition.PRS_PROP
-        ]
     }
 
     static getLocalizedValue(key){

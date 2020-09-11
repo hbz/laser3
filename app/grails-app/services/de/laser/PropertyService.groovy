@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.AppUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
@@ -115,7 +116,7 @@ class PropertyService {
         Map detailsMap = [:]
         List multiplePdList = []
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        AppUtils.getAllDomainClasses().each { dc ->
 
             if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
 

@@ -1,4 +1,4 @@
-<%@page import="com.k_int.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.*" %>
+<%@page import="com.k_int.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.*;de.laser.*" %>
 <%
     String unknownString = g.message(code:"default.compare.propertyNotSet")
 %>

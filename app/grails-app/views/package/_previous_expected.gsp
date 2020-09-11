@@ -159,20 +159,20 @@
 
             <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
             <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-            <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
+            <input type="hidden" name="__newObjectClass" value="${TitleInstancePackagePlatform.class.name}"/>
             <input type="hidden" name="__recip" value="pkg"/>
 
             <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
-            <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+            <input type="hidden" name="status" value="${RefdataValue.class.name}:29"/>
 
               <div class="two fluid fields">
                   <div class="field">
                     <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
+                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="${TitleInstance.class.name}"/><br/>
                     </div>
                   <div class="field">
                     <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
+                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="${Platform.class.name}"/><br/>
                   </div>
               </div>
             <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>

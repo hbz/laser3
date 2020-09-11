@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.AppUtils
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClass
@@ -17,16 +18,10 @@ class GenericOIDService {
     if ( oid != null ) {
       def oid_components = oid.toString().split(':');
   
-      GrailsClass domain_class
-  
-      if ( oid_components[0].startsWith("com.k_int") ) {
-        domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
-      }
-      else if ( oid_components[0].startsWith("de.laser") ) {
-        domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
-      }
-      else {
-        domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
+      GrailsClass domain_class = AppUtils.getDomainClass( oid_components[0] )
+
+      if (! domain_class) {
+        domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
       }
   
       if ( domain_class ) {

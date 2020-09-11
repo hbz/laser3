@@ -4,7 +4,6 @@ import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
@@ -13,7 +12,6 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
 import grails.util.Holders
-import org.apache.lucene.index.DocIDMerger
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -778,7 +776,7 @@ class CopyElementsService {
     boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
-                if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
+                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
                     try {
 
                         Doc newDoc = new Doc()

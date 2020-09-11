@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.IssueEntitlementCoverage
+import de.laser.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
@@ -483,7 +484,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
     changeNotificationService.fireEvent([
-                                                 OID:"com.k_int.kbplus.Package:${id}",
+                                                 OID:"${Package.class.name}:${id}",
                                                  event:'Package.created'
                                                 ])
 
@@ -497,7 +498,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   def notifyDependencies(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     if ( changeDocument.event=='Package.created' ) {
-      changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);
+      changeNotificationService.broadcastEvent("${SystemObject.class.name}:1", changeDocument);
     }
   }
      */

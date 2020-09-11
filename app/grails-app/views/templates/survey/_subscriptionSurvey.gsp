@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SurveyOrg; com.k_int.kbplus.CostItem; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory;  com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="de.laser.SurveyOrg; de.laser.SurveyConfigProperties; com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.CostItem; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.GenericOIDService;" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -867,7 +867,7 @@
                     </td>
                     <td>
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                                SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
@@ -1063,7 +1063,7 @@
 <r:script>
                                    $('body #participation').editable({
                                         validate: function (value) {
-                                            if (value == "com.k_int.kbplus.RefdataValue:${RDStore.YN_NO.id}") {
+                                            if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
                                                 if (r == false) {
                                                    return "Sie haben die Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"

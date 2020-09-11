@@ -56,7 +56,7 @@
 
                             <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
                                       from="${substituteList.sort()}"
-                                      optionKey="${{'com.k_int.kbplus.auth.Org:' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
+                                      optionKey="${{Org.class.name + ':' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
                                       --%>
                         </g:if>
                         <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">

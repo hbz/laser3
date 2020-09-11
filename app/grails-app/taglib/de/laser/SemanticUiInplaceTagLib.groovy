@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.SurveyResult
+import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -181,7 +181,7 @@ class SemanticUiInplaceTagLib {
 
                 if (obj && obj."${attrs.field}") {
                     def tmpId = obj."${attrs.field}".id
-                    dataValue = " data-value=\"com.k_int.kbplus.RefdataValue:${tmpId}\" "
+                    dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
                 }
 
                 // Output an editable link
@@ -297,7 +297,7 @@ class SemanticUiInplaceTagLib {
 
         if ( value ) {
             switch ( value.class ) {
-                case com.k_int.kbplus.RefdataValue.class:
+                case RefdataValue.class:
 
                     if ( value.icon != null ) {
                         result = "<span class=\"select-icon ${value.icon}\"></span>";

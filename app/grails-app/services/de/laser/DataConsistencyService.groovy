@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import de.laser.helper.AppUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.SwissKnife
 import grails.transaction.Transactional
@@ -204,7 +205,7 @@ class DataConsistencyService {
         List<String> candidates = []
         List<String> statements = []
 
-        grailsApplication.getArtefacts("Domain").toList().sort{ it.clazz.simpleName }.each { dc ->
+        AppUtils.getAllDomainClasses().sort{ it.clazz.simpleName }.each { dc ->
 
             Collection bools = dc.persistentProperties.findAll {it.type in [boolean, java.lang.Boolean]}
 

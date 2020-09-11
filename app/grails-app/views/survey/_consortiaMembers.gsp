@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyConfig;" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.helper.RDStore;" %>
 <br>
 
 <semui:filter>

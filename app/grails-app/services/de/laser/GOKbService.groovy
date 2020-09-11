@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.ApiSource
+
 import grails.transaction.Transactional
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method

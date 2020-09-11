@@ -1,15 +1,12 @@
 package de.laser
 
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import grails.util.Holders
 import net.sf.json.JSON
-
-import javax.persistence.Transient
 
 class SystemAnnouncement {
 
