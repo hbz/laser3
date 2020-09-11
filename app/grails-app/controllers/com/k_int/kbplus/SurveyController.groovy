@@ -1528,7 +1528,7 @@ class SurveyController {
             ie.save(flush: true)
 
             if(issueEntitlementGroup){
-                println(issueEntitlementGroup)
+                //println(issueEntitlementGroup)
                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                         ie: ie,
                         ieGroup: issueEntitlementGroup)
