@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch  Version     Author  Feature/Bug     Description/Keywords**
 
+2851    11.09.2020  rc1.5   1.5.8       Moe     Bug         Fehler bei Filterung zentral verwalteter Lizenzen
+
 2858    11.09.2020  rc1.5   1.5.8       Moe     Bug         Umfrage kopieren wirft No such property: owner for class: com.k_int.kbplus.Subscription
 
 2853    08.09.2020  rc1.5   1.5.7       David   Bug         Merkmalsfilter nach Wert Datum formatiert falsch
