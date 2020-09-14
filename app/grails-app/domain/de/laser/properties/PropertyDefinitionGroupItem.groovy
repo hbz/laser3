@@ -1,5 +1,7 @@
-package com.k_int.properties
+package de.laser.properties
 
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
 import groovy.util.logging.Log4j
 
 @Log4j

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*" %>
+<%@ page import="de.laser.properties.PropertyDefinitionGroupBinding; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 
 <!-- _propertyGroupBindings -->

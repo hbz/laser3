@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage

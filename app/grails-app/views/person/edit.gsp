@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.Person; de.laser.properties.PropertyDefinition" %>
 <!doctype html>
 <html>
 	<head>

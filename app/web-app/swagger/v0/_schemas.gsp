@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; de.laser.properties.PropertyDefinition" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''
@@ -1042,11 +1042,11 @@
           scope:
             type: string
             enum:
-              [${ com.k_int.properties.PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(com.k_int.properties.PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+              [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
           type:
             type: string
             enum:
-              [${ com.k_int.properties.PropertyDefinition.validTypes2.collect{ it.value['en'] }.join(', ') }]
+              [${ PropertyDefinition.validTypes2.collect{ it.value['en'] }.join(', ') }]
           label_de:
             type: string
           label_en:

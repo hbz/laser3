@@ -1,15 +1,13 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.util.WebUtils

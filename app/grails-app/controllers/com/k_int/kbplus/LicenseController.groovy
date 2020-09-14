@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.CopyElementsService
 import de.laser.DeletionService

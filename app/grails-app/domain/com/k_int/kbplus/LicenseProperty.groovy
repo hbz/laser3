@@ -1,12 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
-
-import javax.persistence.Transient
 
 class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 

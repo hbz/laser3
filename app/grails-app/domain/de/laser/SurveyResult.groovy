@@ -4,9 +4,9 @@ import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
+import de.laser.properties.PropertyDefinition
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 

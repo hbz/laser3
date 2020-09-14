@@ -1,6 +1,6 @@
 package de.laser.helper
 
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

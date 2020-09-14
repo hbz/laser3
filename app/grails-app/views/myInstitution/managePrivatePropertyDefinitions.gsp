@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService" %>
 
 <!doctype html>
 <html>

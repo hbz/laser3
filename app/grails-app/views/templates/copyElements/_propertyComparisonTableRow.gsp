@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.AuditConfig; com.k_int.kbplus.LicenseProperty; com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.License; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.AuditConfig; com.k_int.kbplus.LicenseProperty; com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.License; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>

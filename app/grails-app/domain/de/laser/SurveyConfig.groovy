@@ -5,9 +5,9 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
 

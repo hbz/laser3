@@ -5,11 +5,9 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.transaction.Transactional
 
 @Transactional

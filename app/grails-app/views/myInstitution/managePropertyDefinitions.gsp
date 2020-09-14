@@ -1,4 +1,4 @@
-<%@ page import="de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.I10nTranslation; de.laser.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>

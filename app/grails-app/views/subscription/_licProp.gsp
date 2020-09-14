@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.properties.*; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 <!-- _licProp -->
 
