@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;de.laser.SurveyConfig" %>
+<%@ page import="com.k_int.kbplus.GenericOIDService;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;de.laser.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -148,7 +148,7 @@
                         </thead>
 
                         <tbody>
-                        <g:each in="${surveyConfig.surveyProperties.sort { it.surveyProperty.get10n('name') }}"
+                        <g:each in="${surveyConfig.surveyProperties.sort { it.surveyProperty.getI10n('name') }}"
                                 var="surveyProperty"
                                 status="i">
                             <tr>
@@ -465,12 +465,16 @@
                                             </g:if>
                                         </g:if>
                                     </g:link>
-                                    <g:if test="${s.owner}">
-                                        <div class="la-flexbox">
-                                            <i class="icon balance scale la-list-icon"></i>
-                                            <g:link controller="license" action="show"
-                                                    id="${s.owner.id}">${s.owner.reference ?: message(code: 'missingLicenseReference', default: '** No License Reference Set **')}</g:link>
-                                        </div>
+                                    <g:if test="${sourceLicenses}">
+                                        <g:each in="${sourceLicenses}" var="license">
+                                            <g:link controller="license" action="show" target="_blank" id="${license.id}">
+                                                <div data-oid="${GenericOIDService.getOID(license)}" class="la-multi-sources">
+                                                    <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
+                                                    ${license.reference}
+                                                    <br>
+                                                </div>
+                                            </g:link>
+                                        </g:each>
                                     </g:if>
                                 </td>
                                 <td>
@@ -529,7 +533,7 @@
                                 <td class="x">
                                     <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
                                             <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                                    data-content="${message(code: 'survey.toggleSurveySub.add.label', [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
+                                                    data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                                     controller="survey" action="copySurvey"
                                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">
                                                 <g:message code="createSubscriptionSurvey.selectButton"/>
