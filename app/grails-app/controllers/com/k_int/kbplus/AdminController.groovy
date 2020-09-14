@@ -2062,8 +2062,8 @@ SELECT * FROM (
             }
 
             flash.message = "Verbearbeitet: ${count} /Geändert ${countChanges}"
-            println(count)
-            println(countChanges)
+            //println(count)
+            //println(countChanges)
             params.remove("kbartPreselct")
         }
 

@@ -1,66 +1,70 @@
 ## temporary change log
 
-**Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
+**Ticket    Date    Branch  Version     Author  Feature/Bug     Description/Keywords**
 
-2853    08.09.2020  rc1.5       David   Bug         Merkmalsfilter nach Wert Datum formatiert falsch
+2851    11.09.2020  rc1.5   1.5.8       Moe     Bug         Fehler bei Filterung zentral verwalteter Lizenzen
 
-2852    08.09.2020  rc1.5       Moe     Bug         Umfrage: Konsortialstelle sieht zuviele Umfrage
+2858    11.09.2020  rc1.5   1.5.8       Moe     Bug         Umfrage kopieren wirft No such property: owner for class: com.k_int.kbplus.Subscription
 
-2835    08.09.2020  rc1.5       David   Bug         Org-Filter (u.a. Länder-Dropdown)
+2853    08.09.2020  rc1.5   1.5.7       David   Bug         Merkmalsfilter nach Wert Datum formatiert falsch
 
---      07.09.2020  rc1.5       Moe     Bug         Copy Properties by Copy Subscriber in Copy Elements Process
+2852    08.09.2020  rc1.5   1.5.7       Moe     Bug         Umfrage: Konsortialstelle sieht zuviele Umfrage
 
-2842    03.09.2020  rc1.5       Moe     Bug         Umfrage Mailtexte
+2835    08.09.2020  rc1.5   1.5.7       David   Bug         Org-Filter (u.a. Länder-Dropdown)
 
---      03.09.2020  rc1.5       Moe     Bug         Bugfix in Umfrage-Bearbeitung
+--      07.09.2020  rc1.5   1.5.7       Moe     Bug         Copy Properties by Copy Subscriber in Copy Elements Process
 
-2841    02.09.2020  rc1.5       Moe     Bug         Umfrage wieder auf In Bearbeitung setzten
+2842    03.09.2020  rc1.5   1.5.6       Moe     Bug         Umfrage Mailtexte
 
-2822    02.09.2020  rc1.5       Moe     Bug         Neuer lokal angelegter Vertrag wird nicht angzeigt wenn keine Lizenz verknüpft ist
+--      03.09.2020  rc1.5   1.5.6       Moe     Bug         Bugfix in Umfrage-Bearbeitung
 
-2839    02.09.2020  rc1.5       Moe     Feature     "Vertrag" als Vertragskategorie aufnehmen
+2841    02.09.2020  rc1.5   1.5.6       Moe     Bug         Umfrage wieder auf In Bearbeitung setzten
 
-2838    02.09.2020  rc1.5       Moe     Bug         Vererbung Datenaustausch + dauerhafter Zugriff
+2822    02.09.2020  rc1.5   1.5.6       Moe     Bug         Neuer lokal angelegter Vertrag wird nicht angzeigt wenn keine Lizenz verknüpft ist
 
-2833    02.09.2020  rc1.5       Moe     Bug         Beim Kopieren von Umfrage-Merkmale zu Lizenzmerkmale werden die Lizenzmerkmale nicht richtig übernommen
+2839    02.09.2020  rc1.5   1.5.6       Moe     Feature     "Vertrag" als Vertragskategorie aufnehmen
 
-2832    01.09.2020  rc1.5       Moe     Bug         Umfrage: Verlängerungssicht enthält dublette von TNs bei "Bereits" und "Mehrjahreslaufzeiten""
+2838    02.09.2020  rc1.5   1.5.6       Moe     Bug         Vererbung Datenaustausch + dauerhafter Zugriff
 
-2834    01.09.2020  rc1.5       Moe     Bug         Renewal excel funktioniert nicht
+2833    02.09.2020  rc1.5   1.5.6       Moe     Bug         Beim Kopieren von Umfrage-Merkmale zu Lizenzmerkmale werden die Lizenzmerkmale nicht richtig übernommen
 
-2837    01.09.2020  rc1.5       Moe     Feature     Lizenzinformationen einblenden in Umfrage
+2832    01.09.2020  rc1.5   1.5.6       Moe     Bug         Umfrage: Verlängerungssicht enthält dublette von TNs bei "Bereits" und "Mehrjahreslaufzeiten""
 
-2831    01.09.2020  rc1.5       Moe     Bug         Beim Kopiervorgang vom Umfrage-Kosten zu Lizenzkosten bleibt der "Wert in EUR" leer
+2834    01.09.2020  rc1.5   1.5.6       Moe     Bug         Renewal excel funktioniert nicht
 
---      31.08.2020  rc1.5       Moe     Bug         Auf dem Dashboard wird keine Änderungsmitteilung angezeigt, wenn eine neue Lizenz für den Teilnehmer durch die Verlängerungsumfrage erstellt wurde
+2837    01.09.2020  rc1.5   1.5.6       Moe     Feature     Lizenzinformationen einblenden in Umfrage
 
-2827    31.08.2020  rc1.5       Moe     Bug         Bei Verträge kann man keine Merkmal bei Allgemeine Merkmale (ohne Gruppenzuweisung) eintragen 
+2831    01.09.2020  rc1.5   1.5.6       Moe     Bug         Beim Kopiervorgang vom Umfrage-Kosten zu Lizenzkosten bleibt der "Wert in EUR" leer
 
-2821    28.08.2020  rc1.5       Moe     Bug         Umfrage Mails: Umfragetyp wird falsch übersetzt
+--      31.08.2020  rc1.5   1.5.6       Moe     Bug         Auf dem Dashboard wird keine Änderungsmitteilung angezeigt, wenn eine neue Lizenz für den Teilnehmer durch die Verlängerungsumfrage erstellt wurde
 
---      26.08.2020  rc1.5       Moe     Bug         Neue RefdataValues für Kostenelemente 
+2827    31.08.2020  rc1.5   1.5.6       Moe     Bug         Bei Verträge kann man keine Merkmal bei Allgemeine Merkmale (ohne Gruppenzuweisung) eintragen 
 
-2819    26.08.2020  rc1.5       Moe     Bug         Beim Triggern der Merkmalsvererbung passiert nichts
+2821    28.08.2020  rc1.5   1.5.6       Moe     Bug         Umfrage Mails: Umfragetyp wird falsch übersetzt
 
-2810    25.08.2020  rc1.5       Moe     Bug         Umlaute Problem bei Umfrage-Emails
+--      26.08.2020  rc1.5   1.5.6       Moe     Bug         Neue RefdataValues für Kostenelemente 
 
-2813    25.08.2020  rc1.5       Moe     Bug         Export Umfragekosten fehlende Angaben hinzufügen
+2819    26.08.2020  rc1.5   1.5.6       Moe     Bug         Beim Triggern der Merkmalsvererbung passiert nichts
 
---      21.08.2020  rc1.5       Andreas Bug         korrektes Einladen der Merkmale der Elternlizenz bei Teilnehmer verwalten
+2810    25.08.2020  rc1.5   1.5.6       Moe     Bug         Umlaute Problem bei Umfrage-Emails
 
-2808    21.08.2020  rc1.5       Andreas Bug         eigene Merkmalsgruppen sind in Kindlizenzen konfigurierbar
+2813    25.08.2020  rc1.5   1.5.6       Moe     Bug         Export Umfragekosten fehlende Angaben hinzufügen
 
-2806    21.08.2020  rc1.5       Moe     Bug         Umfrage Merkmal kann nicht in Umfrage Bereich erstellt werden
+--      21.08.2020  rc1.5  1.5.5       Andreas Bug         korrektes Einladen der Merkmale der Elternlizenz bei Teilnehmer verwalten
 
---      21.08.2020 rc1.5        Moe     Feature     Umfrage Jahresringe
+2808    21.08.2020  rc1.5  1.5.5       Andreas Bug         eigene Merkmalsgruppen sind in Kindlizenzen konfigurierbar
 
---      21.08.2020 rc1.5        Moe     Feature     Anpassung Umfrage-Emailbetreff
+2806    21.08.2020  rc1.5  1.5.5       Moe     Bug         Umfrage Merkmal kann nicht in Umfrage Bereich erstellt werden
 
-2807    21.08.2020  rc1.5       Moe     Bug         Die Ausschüttungsfunktion in Umfragen geht nicht mehr
+--      21.08.2020  rc1.5  1.5.5       Moe     Feature     Umfrage Jahresringe
 
---      21.08.2020  rc1.5       Andreas Feature     neue Referenzwertkategorien inkl. Werte sowie Lizenz- und Umfragemerkmale eingeführt, Bugfix im Referenzwertauswahldropdown
+--      21.08.2020  rc1.5  1.5.5       Moe     Feature     Anpassung Umfrage-Emailbetreff
 
-2805    20.08.2020  rc1.5       Andreas Bug         Löschungsbestätigungen an drei Stellen eingefügt
+2807    21.08.2020  rc1.5  1.5.5       Moe     Bug         Die Ausschüttungsfunktion in Umfragen geht nicht mehr
+
+--      21.08.2020  rc1.5  1.5.5       Andreas Feature     neue Referenzwertkategorien inkl. Werte sowie Lizenz- und Umfragemerkmale eingeführt, Bugfix im Referenzwertauswahldropdown
+
+2805    20.08.2020  rc1.5  1.5.5       Andreas Bug         Löschungsbestätigungen an drei Stellen eingefügt
 
 --      19.08.2020  rc1.5       David   Feature     Improved management of identifier namespaces
 
