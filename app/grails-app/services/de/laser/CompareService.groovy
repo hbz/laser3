@@ -5,15 +5,12 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SurveyConfig
-import com.k_int.kbplus.SurveyInfo
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
-import org.apache.lucene.index.DocIDMerger
 
 @Transactional
 class CompareService {
