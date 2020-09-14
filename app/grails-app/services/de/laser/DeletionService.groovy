@@ -511,7 +511,6 @@ class DeletionService {
         List facts              = Fact.findAllByInst(org)
         List readerNumbers      = ReaderNumber.findAllByOrg(org)
         List orgAccessPoints    = OrgAccessPoint.findAllByOrg(org)
-        List orgTitleStats      = OrgTitleStats.findAllByOrg(org)
 
         List surveyInfos        = SurveyInfo.findAllByOwner(org)
         List surveyProperties   = PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, org)
@@ -566,7 +565,6 @@ class DeletionService {
         result.info << ['Facts', facts, FLAG_BLOCKER]
         result.info << ['ReaderNumbers', readerNumbers, FLAG_BLOCKER]
         result.info << ['OrgAccessPoints', orgAccessPoints, FLAG_BLOCKER]
-        result.info << ['OrgTitleStats', orgTitleStats, FLAG_BLOCKER]
 
         result.info << ['SurveyInfos', surveyInfos, FLAG_BLOCKER]
         result.info << ['Umfrage-Merkmale', surveyProperties, FLAG_BLOCKER]
