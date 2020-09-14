@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Task;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.Task;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <semui:modal id="modalEditTask" message="task.edit" isEditModal="true" >

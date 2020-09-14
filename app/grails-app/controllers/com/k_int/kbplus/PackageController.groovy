@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.ApiSource
 import de.laser.EscapeService
 import de.laser.OrgSettings
+import de.laser.Task
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
