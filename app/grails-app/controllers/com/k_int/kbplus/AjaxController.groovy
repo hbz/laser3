@@ -678,13 +678,22 @@ class AjaxController {
                     }
                 }
 
-                if(values) {
-                    if(propDef.type == Integer.toString()) {
+                if (values) {
+                    if (propDef.type == Integer.toString()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text}
+                    }
+                    else if (propDef.type == Date.toString()) {
+                        values.sort{ x,y -> y.dateValue - x.dateValue }.each {
+                            AbstractPropertyWithCalculatedLastUpdated v ->
+                                if(v.dateValue != null) {
+                                    String vt = g.formatDate(formatName:"default.date.format.notime", date:v.dateValue)
+                                    result.add([value: vt, text: vt])
+                                }
+                        }
                     }
                     else {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
@@ -719,7 +728,7 @@ class AjaxController {
             config = [
                 domain      :'RefdataValue',
                 countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.value_" + locale,
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + locale,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -1750,7 +1759,7 @@ class AjaxController {
                         additionalProp.save()
                     }
                     else {
-                        Set<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findByOwnerAndTypeAndTenant(member, property.type, contextOrg)
+                        AbstractPropertyWithCalculatedLastUpdated matchingProps = property.getClass().findByOwnerAndTypeAndTenant(member, property.type, contextOrg)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
@@ -2357,8 +2366,9 @@ class AjaxController {
     def getEmailAddresses() {
         Set result = []
         if (params.orgIdList){
-            List<Long> orgIds = params.orgIdList.split ','
+            List<Long> orgIds = (params.orgIdList.split( ',')).each { (it instanceof Long) ? it : Long.parseLong(it)}
             List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
+            
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
 
@@ -2402,6 +2412,7 @@ class AjaxController {
             }
 
         }
+
         render result as JSON
     }
 

@@ -21,11 +21,9 @@
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
-        <g:link data-orgIdList="${(surveyParticipantsHasAccess.participant.id).join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal2"
-                class="ui icon button right floated trigger-modal">
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.participant.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-        </g:link>
+        </a>
     </g:if>
     </div>
 
@@ -75,9 +73,25 @@
                 <div class="ui grid">
                     <div class="right aligned wide column">
 
-                        <g:link controller="survey" action="evaluationParticipant"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
-                                class="chart pie icon"></i></g:link>
+
+
+                        <g:if test="${!surveyConfig.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button">
+                                    <i class="chart pie icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${surveyConfig.pickAndChoose}">
+                            <g:link controller="survey" action="surveyTitlesSubscriber"
+                                    id="${surveyConfig.id}" params="[participant: participant.id]"
+                                    class="ui icon button"><i
+                                    class="chart pie icon"></i>
+                            </g:link>
+                        </g:if>
 
                         <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
                             <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -193,11 +207,9 @@
 
     <div class="four wide column">
         <g:if test="${surveyParticipantsHasNotAccess}">
-            <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.participant.id).join(',')}"
-                    data-targetId="copyEmailaddresses_ajaxModal3"
-                    class="ui icon button right floated trigger-modal">
+            <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.participant.id)?.join(',')}" href="#copyEmailaddresses_static">
                 <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-            </g:link>
+            </a>
         </g:if>
     </div>
 
@@ -246,9 +258,25 @@
                    <div class="ui grid">
                        <div class="right aligned wide column">
 
-                           <g:link controller="survey" action="evaluationParticipant"
-                                   params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"><i
-                                   class="chart pie icon"></i></g:link>
+
+
+                           <g:if test="${!surveyConfig.pickAndChoose}">
+                               <span class="la-popup-tooltip la-delay"
+                                     data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                   <g:link controller="survey" action="evaluationParticipant"
+                                           params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button">
+                                       <i class="chart pie icon"></i>
+                                   </g:link>
+                               </span>
+                           </g:if>
+
+                           <g:if test="${surveyConfig.pickAndChoose}">
+                               <g:link controller="survey" action="surveyTitlesSubscriber"
+                                       params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                       class="ui icon button"><i
+                                       class="chart pie icon"></i>
+                               </g:link>
+                           </g:if>
 
                            <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
                                <span data-position="top right" class="la-popup-tooltip la-delay"

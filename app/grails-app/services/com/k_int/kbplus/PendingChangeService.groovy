@@ -387,25 +387,13 @@ class PendingChangeService extends AbstractLockableService {
 
                         log.debug("Update custom property ${targetProperty.type.name}")
 
-                        if (RefdataValue.toString() in [targetProperty.type.type,changeDoc.type]){
+                        if ("class ${RefdataValue.class.getName()}" == changeDoc.type){
                             def newProp = genericOIDService.resolveOID(changeDoc.new instanceof String ?: (changeDoc.new.class + ':' + changeDoc.new.id))
 
                             // Backward compatible
                             if (!newProp) {
                                 def propDef = targetProperty.type
                                 newProp = RefdataValue.getByValueAndCategory(changeDoc.newLabel, propDef.refdataCategory)
-                                // Fallback
-                                if (! newProp) {
-                                    // ERMS-2016: newProp = RefdataCategory.lookupOrCreate(propDef.refdataCategory, changeDoc.newLabel)
-                                    // if value exists --> RefdataValue.getByValueAndCategory()
-
-                                    newProp = RefdataValue.construct([
-                                            token   : changeDoc.newLabel,
-                                            rdc     : propDef.refdataCategory,
-                                            hardData: false,
-                                            i10n    : [value_en: changeDoc.newLabel, value_de: changeDoc.newLabel]
-                                    ])
-                                }
                             }
                             targetProperty."${changeDoc.prop}" = newProp
                         }
@@ -464,6 +452,7 @@ class PendingChangeService extends AbstractLockableService {
         if(configMap.notifications)
             result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
         result.each { PendingChange change ->
+
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {
                     def changedObject = genericOIDService.resolveOID(change.oid)
@@ -497,6 +486,12 @@ class PendingChangeService extends AbstractLockableService {
                                     acceptedChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
                                 }
                             }
+                        }
+
+                        if(change.status == RDStore.PENDING_CHANGE_PENDING) {
+                            if(pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty})
+                                pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty}.change = change
+                            else pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
                         }
                     }
                     else {
@@ -541,7 +536,13 @@ class PendingChangeService extends AbstractLockableService {
         String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
         List<Object> eventData
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        if(change.oid) {
+
+        if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
+            eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
+            instanceIcon = '<span data-tooltip="' + messageSource.getMessage('subscription', null, locale) + '"><i class="clipboard icon"></i></span>'
+            eventString = messageSource.getMessage('pendingChange.message_SU_NEW_01.eventString', null, locale)
+        }
+        else if(change.oid) {
             if(change.oid.contains(IssueEntitlement.class.name)){
                 IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])

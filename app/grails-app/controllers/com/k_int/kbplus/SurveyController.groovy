@@ -87,7 +87,7 @@ class SurveyController {
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution])
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
@@ -121,6 +121,11 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
             }
+            
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
 
             return
         }else {
@@ -155,7 +160,7 @@ class SurveyController {
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution])
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
 
@@ -626,7 +631,7 @@ class SurveyController {
         if (subscription && !SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo)) {
             SurveyConfig surveyConfig = new SurveyConfig(
                     subscription: subscription,
-                    configOrder: surveyInfo.surveyConfigs.size() ? surveyInfo.surveyConfigs.size() + 1 : 1,
+                    configOrder: surveyInfo.surveyConfigs?.size() ? surveyInfo.surveyConfigs.size() + 1 : 1,
                     type: 'IssueEntitlementsSurvey',
                     surveyInfo: surveyInfo,
                     subSurveyUseForTransfer: false,
@@ -961,34 +966,35 @@ class SurveyController {
                         break
                 }
             }
+            List<CostItem> surveyCostItems = CostItem.executeQuery('select costItem from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and surOrg.org.id in (:orgIDs) and costItem.costItemStatus != :status', [survConfig:  result.surveyConfig, orgIDs: selectedMembers.collect{Long.parseLong(it)}, status: RDStore.COST_ITEM_DELETED])
+            surveyCostItems.each { surveyCostItem ->
 
-            selectedMembers.each { id ->
-                SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(Org.get(Long.parseLong(id)), result.surveyConfig)
-                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
-                if(surveyCostItem){
-
-                    if(params.percentOnOldPrice){
-                        Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
-                        Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(Org.get(Long.parseLong(id)))
-                        CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, contextService.getOrg(), RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
-                        surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency*(1+(percentOnOldPrice/100)) : surveyCostItem.costInBillingCurrency
-                    }
-                    else
+                    if(params.deleteCostItems == "true")
                     {
-                        surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                        surveyCostItem.delete()
                     }
+                    else {
 
-                    surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
-                    //Not specified default to GDP
-                    //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
+                        if (params.percentOnOldPrice) {
+                            Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
+                            Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
+                            CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+                            surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100)) : surveyCostItem.costInBillingCurrency
+                        } else {
+                            surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
+                        }
 
-                    surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+                        surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
+                        //Not specified default to GDP
+                        //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
 
-                    //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
-                    surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
+                        surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
 
-                    surveyCostItem.save()
-                }
+                        //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
+                        surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
+
+                        surveyCostItem.save()
+                    }
             }
         }
 
@@ -1262,6 +1268,8 @@ class SurveyController {
     def surveyTitlesEvaluation() {
         def result = setResultGenericsAndCheckAccess()
 
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
@@ -1312,7 +1320,7 @@ class SurveyController {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1362,18 +1370,14 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitlesSubscriber() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
         result.participant = params.participant ? Org.get(params.participant) : null
 
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1524,7 +1528,7 @@ class SurveyController {
             ie.save(flush: true)
 
             if(issueEntitlementGroup){
-                println(issueEntitlementGroup)
+                //println(issueEntitlementGroup)
                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                         ie: ie,
                         ieGroup: issueEntitlementGroup)
@@ -1604,7 +1608,7 @@ class SurveyController {
     def evaluateIssueEntitlementsSurvey() {
         def result = setResultGenericsAndCheckAccess()
 
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
@@ -1630,7 +1634,7 @@ class SurveyController {
     })
     def evaluationParticipant() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             response.sendError(401); return
         }
 
@@ -1815,7 +1819,7 @@ class SurveyController {
                     token       : params.pd_name,
                     category    : PropertyDefinition.SUR_PROP,
                     type        : params.pd_type,
-                    rdc         : rdc.getDesc(),
+                    rdc         : rdc ? rdc.getDesc() : null,
                     tenant      : result.institution.globalUID,
                     i10n        : [
                             name_de: params.pd_name,
@@ -2028,6 +2032,25 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def processBackInProcessingSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if (result.editable) {
+
+            result.surveyInfo.status = RDStore.SURVEY_IN_PROCESSING
+            result.surveyInfo.save(flush: true)
+        }
+
+        redirect(uri: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def processOpenSurveyNow() {
         def result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -2132,6 +2155,10 @@ class SurveyController {
                 SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, Org.get(Long.parseLong(soId)))
 
                 CostItem.findAllBySurveyOrg(surveyOrg).each {
+                    it.delete(flush: true)
+                }
+
+                SurveyResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
                     it.delete(flush: true)
                 }
 
@@ -2445,7 +2472,7 @@ class SurveyController {
         result.orgsWithParticipationInParentSuccessor = []
         result.parentSuccessorSubChilds.each { sub ->
             sub.getAllSubscribers().each { org ->
-                if(! (org.id in currentParticipantIDs)) {
+                if(!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
                     result.orgsWithParticipationInParentSuccessor  << sub
                 }
             }
@@ -2511,7 +2538,7 @@ class SurveyController {
 
                         def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
 
-                        if (participantPropertyTwo.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 2.year) : null
@@ -2525,7 +2552,7 @@ class SurveyController {
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
                         def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                        if (participantPropertyThree.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 3.year) : null
@@ -2546,7 +2573,7 @@ class SurveyController {
 
                         def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
 
-                        if (participantPropertyTwo?.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 2.year) : null
@@ -2560,7 +2587,7 @@ class SurveyController {
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
                         def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                        if (participantPropertyThree?.refValue.id == RDStore.YN_YES.id) {
+                        if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 3.year) : null
@@ -2741,6 +2768,11 @@ class SurveyController {
             }
             result.num_sub_rows = subscriptions.size()
             result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        }
+
+        if(result.surveyConfig.subscription) {
+            String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: GenericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
         
         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
@@ -3507,10 +3539,10 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
         def result = setResultGenericsAndCheckAccess()
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!result.editable) {
             response.sendError(401); return
         }
-        result.putAll(financeService.setEditVars(result.institution))
+        //result.putAll(financeService.setEditVars(result.institution))
 
         /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
 
@@ -3519,11 +3551,11 @@ class SurveyController {
         if (params.exportXLSX) {
             def sdf = DateUtil.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyCostItems(result.surveyConfig, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -3893,6 +3925,10 @@ class SurveyController {
                 copyCostItem.surveyOrg = null
                 copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
+                if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+                    copyCostItem.currencyRate = 1.0
+                    copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                }
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
                 }
@@ -3971,6 +4007,11 @@ class SurveyController {
                 copyCostItem.surveyOrg = null
                 copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
                 copyCostItem.sub = participantSub
+                if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
+                    copyCostItem.currencyRate = 1.0
+                    copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
+                }
+
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
                 }
@@ -4037,28 +4078,29 @@ class SurveyController {
                     newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
                     def propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
 
+
                     newMap.newCustomProperty = (sub && propDef) ? sub.propertySet.find {
-                        it.type.id == propDef.id
+                        it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.propertySet.find {
-                        it.type.id == propDef.id
+                        it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
                 if(params.tab == 'customProperties') {
                     newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                     newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                     } : null
                 }
 
                 if(params.tab == 'privateProperties') {
                     newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                     newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty))
+                        it.type.id == (result.selectedProperty instanceof Long ? result.selectedProperty : Long.parseLong(result.selectedProperty)) && it.type.tenant?.id == result.contextOrg.id
                     } : null
                 }
 
@@ -4133,11 +4175,11 @@ class SurveyController {
                         } else {
                             if (params.tab == 'privateProperties') {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
-                                    it.type.id == propDef.id && it.type.tenant.id == result.institution.id
+                                    it.type.id == propDef.id && it.type.tenant.id == result.contextOrg.id
                                 } : []
                             } else {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
-                                    it.type.id == propDef.id && it.tenant.id == result.institution.id
+                                    it.type.id == propDef.id && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                                 } : []
                             }
                         }
@@ -4146,12 +4188,12 @@ class SurveyController {
                             if (propDef.tenant != null) {
                                 //private Property
                                 def existingProps = sub.propertySet.findAll {
-                                    it.owner.id == sub.id && it.type.id == propDef.id
+                                    it.owner.id == sub.id && it.type.id == propDef.id && it.type.tenant.id == result.contextOrg.id
                                 }
                                 existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
                                 if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, org)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, result.contextOrg)
                                     if (newProp.hasErrors()) {
                                         log.error(newProp.errors)
                                     } else {
@@ -4167,11 +4209,11 @@ class SurveyController {
                             } else {
                                 //custom Property
                                 def existingProp = sub.propertySet.find {
-                                    it.type.id == propDef.id && it.owner.id == sub.id
+                                    it.type.id == propDef.id && it.owner.id == sub.id && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
                                 }
 
                                 if (existingProp == null || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, org)
+                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, result.contextOrg)
                                     if (newProp.hasErrors()) {
                                         log.error(newProp.errors)
                                     } else {
@@ -4278,8 +4320,7 @@ class SurveyController {
                 if (result.multiYearTermTwoSurvey) {
 
                     def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
-
-                    if (participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
+                    if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
@@ -4300,7 +4341,7 @@ class SurveyController {
                 else if (result.multiYearTermThreeSurvey) {
 
                     def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                    if (participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
+                    if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
@@ -4697,9 +4738,9 @@ class SurveyController {
             }
 
             participantResult.properties.sort { it.type.name }.each { participantResultProperty ->
-                row.add([field: participantResult.getResult() ?: "", style: null])
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
-                row.add([field: participantResult.comment ?: "", style: null])
+                row.add([field: participantResultProperty.comment ?: "", style: null])
 
             }
 
@@ -4823,7 +4864,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -4860,7 +4901,7 @@ class SurveyController {
             participantResult.properties.sort {
                 it.type.name
             }.each { participantResultProperty ->
-                row.add([field: participantresultProperty.getResult() ?: "", style: null])
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
                 row.add([field: participantResultProperty.comment ?: "", style: null])
 
@@ -4923,72 +4964,6 @@ class SurveyController {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    private def exportSurveyCostItems(SurveyConfig surveyConfig, String format, Org org) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        List titles = ['Name',
-                       '',
-                       g.message(code: 'surveyConfig.type.label'),
-                       g.message(code: 'surveyConfigsInfo.comment'),
-
-                       g.message(code: 'surveyParticipants.label'),
-                       g.message(code: 'org.shortname.label'),
-                       g.message(code: 'org.libraryNetwork.label'),
-                       g.message(code: 'surveyProperty.subName'),
-                       g.message(code: 'surveyConfigsInfo.newPrice'),
-                       g.message(code: 'financials.currency'),
-                       g.message(code: 'surveyConfigsInfo.newPrice.comment')
-        ]
-
-        List surveyData = []
-
-        def surveyOrgs = SurveyOrg.findAllBySurveyConfig(surveyConfig)
-
-        surveyOrgs.each { surveyOrg ->
-            List row = []
-
-            row.add([field: surveyConfig.surveyInfo.name ?: '', style: null])
-
-            row.add([field: surveyConfig.getConfigNameShort() ?: '', style: null])
-
-            row.add([field: surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig.type) : com.k_int.kbplus.SurveyConfig.getLocalizedValue(config.type) + '(' + PropertyDefinition.getLocalizedValue(surveyConfig.surveyProperty.type) + ')', style: null])
-
-            row.add([field: surveyConfig.comment ?: '', style: null])
-
-            row.add([field: surveyOrg.org.name ?: '', style: null])
-
-            row.add([field: surveyOrg.org.shortname ?: '', style: null])
-
-            row.add([field: surveyOrg.org.libraryType?.getI10n('value') ?: '', style: null])
-
-            row.add([field: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(surveyOrg.org).name ?: '', style: null])
-
-
-            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg,RDStore.COST_ITEM_DELETED)
-
-            if (!surveyOrg.existsMultiYearTerm()) {
-                if (costItem) {
-                    row.add([field: g.formatNumber(number: costItem.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number"), style: null])
-                    row.add([field: costItem.billingCurrency?.getI10n('value').split('-').first(), style: null])
-                }
-            } else {
-                row.add([field: g.message(code: "surveyOrg.perennialTerm.available"), style: null])
-                row.add([field: '', style: null])
-            }
-
-            row.add([field: costItem.costDescription ?: '', style: null])
-
-            surveyData.add(row)
-        }
-
-        switch (format) {
-            case 'xls':
-            case 'xlsx':
-                Map sheetData = [:]
-                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
-                return exportService.generateXLSXWorkbook(sheetData)
-        }
-    }
-
     private def getSurveyConfigCounts() {
         Map<String, Object> result = [:]
 
@@ -5017,7 +4992,7 @@ class SurveyController {
         result.user = User.get(springSecurityService.principal.id)
         result.surveyInfo = SurveyInfo.get(params.id)
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
-        result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs.size() > 1)
+        result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo.isEditable() ?: false
 

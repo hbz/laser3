@@ -29,6 +29,7 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.hibernate.impl.SQLQueryImpl
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigUtils
@@ -1611,25 +1612,54 @@ class AdminController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def manageNamespaces() {
-        def identifierNamespaceInstance = new IdentifierNamespace(params)
+        IdentifierNamespace idnsInstance = new IdentifierNamespace(params)
+        Map detailsStats = [:]
 
         switch (request.method) {
             case 'GET':
+                idnsInstance = genericOIDService.resolveOID(params.oid)
+
                 if (params.cmd == 'deleteNamespace') {
-                    def idns = genericOIDService.resolveOID(params.oid)
-                    if (idns && Identifier.countByNs(idns) == 0) {
+                    if (idnsInstance && Identifier.countByNs(idnsInstance) == 0) {
                         try {
-                            idns.delete()
-                            flash.message = "Namensraum ${idns.ns} wurde gelöscht."
-                        } catch (Exception e) {
-                            flash.message = "Namensraum ${idns.ns} konnte nicht gelöscht werden."
+                            idnsInstance.delete()
+                            flash.message = "Namensraum ${idnsInstance.ns} wurde gelöscht."
                         }
+                        catch (Exception e) {
+                            flash.message = "Namensraum ${idnsInstance.ns} konnte nicht gelöscht werden."
+                        }
+                    }
+                }
+                else if (params.cmd == 'details') {
+
+                    if (idnsInstance) {
+                        detailsStats.putAt(g.createLink(controller:'creator', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.cre.id from Identifier i join i.ns idns where idns = :idns and i.cre is not null order by i.value, i.cre.id", [idns: idnsInstance]))
+                        detailsStats.putAt(g.createLink(controller:'license', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.lic.id from Identifier i join i.ns idns where idns = :idns and i.lic is not null order by i.value, i.lic.id", [idns: idnsInstance]))
+                        detailsStats.putAt(g.createLink(controller:'org', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.org.id from Identifier i join i.ns idns where idns = :idns and i.org is not null order by i.value, i.org.id", [idns: idnsInstance]))
+                        detailsStats.putAt(g.createLink(controller:'package', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.pkg.id from Identifier i join i.ns idns where idns = :idns and i.pkg is not null order by i.value, i.pkg.id", [idns: idnsInstance]))
+                        detailsStats.putAt(g.createLink(controller:'subscription', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.sub.id from Identifier i join i.ns idns where idns = :idns and i.sub is not null order by i.value, i.sub.id", [idns: idnsInstance]))
+                        detailsStats.putAt(g.createLink(controller:'title', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.ti.id from Identifier i join i.ns idns where idns = :idns and i.ti is not null order by i.value, i.ti.id", [idns: idnsInstance]))
+                        detailsStats.putAt(g.createLink(controller:'tipp', action:'show'),
+                                IdentifierNamespace.executeQuery(
+                                        "select i.value, i.tipp.id from Identifier i join i.ns idns where idns = :idns and i.tipp is not null order by i.value, i.tipp.id", [idns: idnsInstance]))
                     }
                 }
                 break
 
             case 'POST':
-                if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
+                if (IdentifierNamespace.findByNsIlike(params.ns) || ! idnsInstance.save()) {
 
                     if(IdentifierNamespace.findByNsIlike(params.ns)) {
                         flash.error = message(code: 'identifier.namespace.exist', args:[params.ns])
@@ -1638,14 +1668,44 @@ class AdminController extends AbstractDebugController {
                     return
                 }
                 else {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label'), identifierNamespaceInstance.ns])
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label'), idnsInstance.ns])
                 }
                 break
         }
+
+        SQLQueryImpl sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
+SELECT * FROM (
+      SELECT idns.idns_ns,
+             idns.idns_id,
+             sum(CASE WHEN i.id_cre_fk is null THEN 0 ELSE 1 END)  cre,
+             sum(CASE WHEN i.id_lic_fk is null THEN 0 ELSE 1 END)  lic,
+             sum(CASE WHEN i.id_org_fk is null THEN 0 ELSE 1 END)  org,
+             sum(CASE WHEN i.id_pkg_fk is null THEN 0 ELSE 1 END)  pkg,
+             sum(CASE WHEN i.id_sub_fk is null THEN 0 ELSE 1 END)  sub,
+             sum(CASE WHEN i.id_ti_fk is null THEN 0 ELSE 1 END)   title,
+             sum(CASE WHEN i.id_tipp_fk is null THEN 0 ELSE 1 END) tipp
+      FROM identifier i
+               JOIN identifier_namespace idns ON idns.idns_id = i.id_ns_fk
+      GROUP BY idns.idns_ns, idns.idns_id
+      order by idns.idns_ns
+) sq WHERE (
+    CASE WHEN sq.cre > 0 THEN 1 ELSE 0 END +
+    CASE WHEN sq.lic > 0 THEN 1 ELSE 0 END +
+    CASE WHEN sq.org > 0 THEN 1 ELSE 0 END +
+    CASE WHEN sq.pkg > 0 THEN 1 ELSE 0 END +
+    CASE WHEN sq.sub > 0 THEN 1 ELSE 0 END +
+    CASE WHEN sq.title > 0 THEN 1 ELSE 0 END +
+    CASE WHEN sq.tipp > 0 THEN 1 ELSE 0 END
+    ) > 1; """)
+
+        List globalNamespaceStats = sqlQuery.with { list() }
+
         render view: 'manageNamespaces', model: [
                 editable: true, // TODO check role and editable !!!
-                identifierNamespaceInstance: identifierNamespaceInstance,
-                identifierNamespaces: IdentifierNamespace.where{}.sort('ns'),
+                cmd: params.cmd,
+                identifierNamespaceInstance: idnsInstance,
+                globalNamespaceStats: globalNamespaceStats,
+                detailsStats: detailsStats,
                 currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         ]
     }
@@ -2002,8 +2062,8 @@ class AdminController extends AbstractDebugController {
             }
 
             flash.message = "Verbearbeitet: ${count} /Geändert ${countChanges}"
-            println(count)
-            println(countChanges)
+            //println(count)
+            //println(countChanges)
             params.remove("kbartPreselct")
         }
 

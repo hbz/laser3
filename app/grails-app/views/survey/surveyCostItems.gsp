@@ -24,7 +24,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" action="exportSurCostItems" id="${surveyInfo.id}"
-                    params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportCostItems')}</g:link>
+                    params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>
@@ -32,7 +32,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
 </h1>
 
 
@@ -266,11 +266,9 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
-                                data-targetId="copyEmailaddresses_ajaxModal2"
-                                class="ui icon button right floated trigger-modal">
+                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                        </g:link>
+                        </a>
                     </g:if>
 
                         <br>
@@ -292,11 +290,9 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id).join(',')}"
-                                data-targetId="copyEmailaddresses_ajaxModal3"
-                                class="ui icon button right floated trigger-modal">
+                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                        </g:link>
+                        </a>
                     </g:if>
 
                         <br>
@@ -324,11 +320,9 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
-                                data-targetId="copyEmailaddresses_ajaxModal4"
-                                class="ui icon button right floated trigger-modal">
+                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                        </g:link>
+                        </a>
                     </g:if>
 
                     </div>
@@ -351,11 +345,9 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
-                                data-targetId="copyEmailaddresses_ajaxModal6"
-                                class="ui icon button right floated trigger-modal">
+                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                        </g:link>
+                        </a>
                     </g:if>
                     </div>
 
@@ -373,6 +365,13 @@
                     </div>
 
                 </g:if>
+
+                <br>
+                <br>
+                <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')">
+                    <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                </button>
+
             </g:form>
             <br>
             <br>

@@ -35,7 +35,7 @@
         </g:if>
         <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription) ? '' : 'disabled'}"/>
 
-        <g:if test="${customProperties || privateProperties}">
+        <g:if test="${privateProperties}">
             <g:set var="submitButtonText" value="${isRenewSub ?
                     message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStep') :
                     message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}"/>

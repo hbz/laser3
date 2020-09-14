@@ -116,7 +116,7 @@
                     <g:each var="propValue" in="${propValuesForSourceSub}">
                         <g:if test="${propValue instanceof SubscriptionProperty}">
                             <div class="ui checkbox la-toggle-radio la-inherit">
-                                <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked' }/>
+                                <input type="checkbox" name="auditProperties" value="${propValue.id}" ${(AuditConfig.getConfig(propValue)) ? 'checked' : '' }/>
                             </div>
                             <br>
                         </g:if>
@@ -179,13 +179,13 @@
                         <g:if test="${isConsortialSubs}">
                             <g:if test="${propValue instanceof SubscriptionProperty}">
                                 <div class="la-copyElements-flex-item">
-                                    <g:if test="${! AuditConfig.getConfig(propValue)}">
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
+                                    <g:if test="${!AuditConfig.getConfig(propValue)}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
                                             <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                         </span>
                                     </g:if>
                                     <g:else>
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.off.tooltip')}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.on.tooltip')}">
                                             <i class="thumbtack icon la-js-editmode-icon"></i>
                                         </span>
                                     </g:else>
