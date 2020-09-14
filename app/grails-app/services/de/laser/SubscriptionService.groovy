@@ -150,7 +150,11 @@ class SubscriptionService {
         result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextOrg)
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
+        tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        tmpParams.sort = 'o.sortname'
+
+        Map fsq = filterService.getOrgComboQuery(tmpParams, contextOrg)
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
         pu.setBenchmark('filterSubTypes & filterPropList')

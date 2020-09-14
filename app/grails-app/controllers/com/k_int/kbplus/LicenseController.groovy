@@ -23,6 +23,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import de.laser.helper.ConfigUtils
@@ -595,8 +596,7 @@ class LicenseController
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
-        ArrayList<Long> resultOrgIds
-        def tmpParams = params.clone()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))

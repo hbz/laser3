@@ -122,7 +122,7 @@ class FilterService {
         result
     }
 
-    Map<String, Object> getOrgComboQuery(Map params, Org org) {
+    Map<String, Object> getOrgComboQuery(GrailsParameterMap params, Org org) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
@@ -363,7 +363,7 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getSurveyConfigQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
+    Map<String,Object> getSurveyConfigQueryConsortia(GrailsParameterMap params, DateFormat sdFormat, Org contextOrg) {
         Map result = [:]
         Map<String,Object> queryParams = [:]
         String query
@@ -605,7 +605,7 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getParticipantSurveyQuery_New(Map params, DateFormat sdFormat, Org org) {
+    Map<String,Object> getParticipantSurveyQuery_New(GrailsParameterMap params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
@@ -757,7 +757,7 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getSurveyResultQuery(Map params, SurveyConfig surveyConfig) {
+    Map<String,Object> getSurveyResultQuery(GrailsParameterMap params, SurveyConfig surveyConfig) {
         Map result = [:]
         String base_qry = "from SurveyResult as surResult where surResult.surveyConfig = :surveyConfig "
         Map<String,Object> queryParams = [surveyConfig: surveyConfig]
