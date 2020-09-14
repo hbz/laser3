@@ -83,7 +83,7 @@
 </g:if>
 <g:javascript>
     function addressedit(id) {
-        var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+        var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
         private_address_modal(url)
     }
     function private_address_modal(url) {

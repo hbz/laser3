@@ -2616,7 +2616,7 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def TaskEdit() {
+    def editTask() {
         Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
@@ -2631,7 +2631,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def TaskCreate() {
+    def createTask() {
         long backendStart = System.currentTimeMillis()
         Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
@@ -2642,7 +2642,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def AddressEdit() {
+    def editAddress() {
         Map model = [:]
         model.addressInstance = Address.get(params.id)
         if (model.addressInstance){
@@ -2786,7 +2786,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def AddressCreate() {
+    def createAddress() {
         Map model = [:]
         model.orgId = params.orgId
         model.prsId = params.prsId

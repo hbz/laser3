@@ -449,15 +449,15 @@
 </html>
 <g:javascript>
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
-            %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
+            %{--var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
         function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
             private_address_modal(url);
         }
         function addressedit(id) {
-            var url = '<g:createLink controller="ajax" action="AddressEdit"/>?id='+id;
+            var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
             private_address_modal(url)
         }
 
