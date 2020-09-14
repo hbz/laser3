@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+2854    10.09.2020  hbz-dev     Moe     Feature     Generalisierung von Objekt Vergleich
+
 2853    08.09.2020  rc1.5       David   Bug         Merkmalsfilter nach Wert Datum formatiert falsch
 
 2852    08.09.2020  rc1.5       Moe     Bug         Umfrage: Konsortialstelle sieht zuviele Umfrage

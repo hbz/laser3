@@ -239,7 +239,7 @@
                                 <g:set var="consortium" value="${ownobj.getConsortia()}"/>
                                 <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                             </g:elseif>
-                            <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
+                            <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
                                 <g:if test="${ownobj.isSlaved}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="large icon thumbtack blue"></i></span>
                                 </g:if>
