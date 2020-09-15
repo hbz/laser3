@@ -18,17 +18,17 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
@@ -4150,8 +4150,7 @@ class SurveyController {
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess()
-        ArrayList<Long> resultOrgIds
-        def tmpParams = params.clone()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))

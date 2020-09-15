@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact
 import de.laser.OrgAccessPoint
@@ -161,8 +161,8 @@ class ApiCollectionReader {
         list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             Map<String, Object> tmp = [:]
 
-            tmp.token       = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.scope       = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.token       = it.type?.name     // de.laser.properties.PropertyDefinition.String
+            tmp.scope       = it.type?.descr    // de.laser.properties.PropertyDefinition.String
             tmp.note        = it.note
             tmp.isPublic    = "Yes" // derived to substitute private properties tentant
 
@@ -310,8 +310,8 @@ class ApiCollectionReader {
         list.findAll{ (it.owner.id == context.id || it.type.tenant?.id == context.id) && it.tenant?.id == context.id && it.isPublic == false }?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             Map<String, Object> tmp = [:]
 
-            tmp.token   = it.type.name     // com.k_int.kbplus.PropertyDefinition.String
-            tmp.scope   = it.type.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.token   = it.type.name     // de.laser.properties.PropertyDefinition.String
+            tmp.scope   = it.type.descr    // de.laser.properties.PropertyDefinition.String
             tmp.note    = it.note
             //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
 

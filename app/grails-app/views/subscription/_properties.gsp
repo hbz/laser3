@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 

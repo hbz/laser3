@@ -3,13 +3,13 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupItem
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured

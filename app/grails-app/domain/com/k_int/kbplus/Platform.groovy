@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.OrgAccessPoint
 import de.laser.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated

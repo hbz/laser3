@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSettings; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.UserSettings; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -60,7 +60,7 @@ ${message(code: 'surveyInfo.name.label', locale: language)}: <b>${survey.name} <
                     ${surveyResult.type?.getI10n('name')}
                 </td>
                 <td>
-                    ${com.k_int.properties.PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
+                    ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
                     <g:if test="${surveyResult.type.type == 'class com.k_int.kbplus.RefdataValue'}">
                         <g:set var="refdataValues" value="${[]}"/>
                         <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"

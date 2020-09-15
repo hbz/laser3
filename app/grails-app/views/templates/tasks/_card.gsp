@@ -28,7 +28,7 @@
     function taskedit(id) {
 
         $.ajax({
-            url: '<g:createLink controller="ajax" action="TaskEdit"/>?id='+id,
+            url: '<g:createLink controller="ajax" action="editTask"/>?id='+id,
             success: function(result){
                 $("#dynamicModalContainer").empty();
                 $("#modalEditTask").remove();

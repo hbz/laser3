@@ -20,15 +20,11 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.Task
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.ProfilerUtils
@@ -36,6 +32,9 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupItem
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder

@@ -2,11 +2,8 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore

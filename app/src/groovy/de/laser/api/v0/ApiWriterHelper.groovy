@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact
 import de.laser.Person

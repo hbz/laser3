@@ -9,10 +9,9 @@ import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Setting
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SystemObject
 import com.k_int.kbplus.auth.*
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.*
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -46,10 +45,6 @@ class BootStrapService {
         log.info("Documents: " + ConfigUtils.getDocumentStorageLocation())
 
         log.info("--------------------------------------------------------------------------------")
-
-        if (ConfigUtils.getLaserSystemId() != null) {
-            SystemObject system_object = SystemObject.findBySysId(ConfigUtils.getLaserSystemId().toString()) ?: new SystemObject(sysId: ConfigUtils.getLaserSystemId()).save(flush: true)
-        }
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 

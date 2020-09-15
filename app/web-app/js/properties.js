@@ -74,10 +74,10 @@ c3po = {
         var desc = $(cssId + " .customPropSelect").attr('data-desc')
         var oid = $(cssId + " .customPropSelect").attr('data-oid')
 
-        var baseClass = 'com.k_int.properties.PropertyDefinition'
+        var baseClass = 'de.laser.properties.PropertyDefinition'
 
         if (grouped == c3po.PROP_SEARCH_GROUPED) {
-            baseClass = 'com.k_int.properties.PropertyDefinitionGroup'
+            baseClass = 'de.laser.properties.PropertyDefinitionGroup'
         }
 
         $(cssId + " .customPropSelect").select2({

@@ -1,7 +1,6 @@
 package de.laser
 
-
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 
 class SurveyConfigProperties {
 

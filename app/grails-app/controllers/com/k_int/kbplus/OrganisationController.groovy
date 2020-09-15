@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.CustomerIdentifier
 import de.laser.DeletionService
 import de.laser.FormService

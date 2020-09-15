@@ -3,13 +3,13 @@ package com.k_int.kbplus
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -2616,7 +2616,7 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def TaskEdit() {
+    def editTask() {
         Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
@@ -2631,7 +2631,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def TaskCreate() {
+    def createTask() {
         long backendStart = System.currentTimeMillis()
         Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
@@ -2642,7 +2642,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def AddressEdit() {
+    def editAddress() {
         Map model = [:]
         model.addressInstance = Address.get(params.id)
         if (model.addressInstance){
@@ -2786,7 +2786,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def AddressCreate() {
+    def createAddress() {
         Map model = [:]
         model.orgId = params.orgId
         model.prsId = params.prsId

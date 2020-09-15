@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
+
+import de.laser.properties.PropertyDefinition
 import de.laser.EscapeService
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Task" %>
+<%@ page import="de.laser.Task" %>
 <!doctype html>
 
 <html>
