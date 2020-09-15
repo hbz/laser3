@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      15.09.2020  rc1.5   1.5.8       Andreas Bug         temporäre Brücke für unvollständig implementierten GOKb-Titeltyp OtherInstance eingebaut
+
+2860    15.09.2020  rc1.5   1.5.8       Andreas Bug         Nicht vererbte Merkmale werden bei Verträgen ohne Absturz dargestellt
+
+2808    15.09.2020  rc1.5   1.5.8       Andreas Bug         Konfigurierbarkeit der Merkmalsgruppen repariert
+
 2866    15.09.2020  rc1.5   1.5.8       David   Bug         Inkonsistente Merkmalsdefinitionen
 
 2851    11.09.2020  rc1.5   1.5.8       Moe     Bug         Fehler bei Filterung zentral verwalteter Lizenzen

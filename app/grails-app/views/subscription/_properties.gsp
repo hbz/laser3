@@ -50,17 +50,18 @@
             String cat                             = entry[0]
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
+            List numberOfConsortiaProperties       = contextService.getOrg().id != subscriptionInstance.getConsortia().id ? pdg.getCurrentPropertiesOfTenant(subscriptionInstance,subscriptionInstance.getConsortia()) : []
 
             boolean isVisible = false
 
             if (cat == 'global') {
-                isVisible = pdg.isVisible
+                isVisible = pdg.isVisible || numberOfConsortiaProperties.size() > 0
             }
             else if (cat == 'local') {
                 isVisible = binding.isVisible
             }
             else if (cat == 'member') {
-                isVisible = binding.isVisible && binding.isVisibleForConsortiaMembers
+                isVisible = (binding.isVisible || numberOfConsortiaProperties.size() > 0) && binding.isVisibleForConsortiaMembers
             }
         %>
 
@@ -73,10 +74,17 @@
                     ownobj: subscriptionInstance,
                     custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
+            <g:if test="${!binding?.isVisible && !pdg.isVisible}">
+                <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscriptionInstance,contextService.getOrg()).size()-numberOfConsortiaProperties.size()}" />
+                <g:if test="${numberOfProperties > 0}">
+                    <%
+                        hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems.withInheritance', args: [pdg.name, numberOfProperties])}"
+                    %>
+                </g:if>
+            </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(subscriptionInstance)}" />
-
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscriptionInstance,contextService.getOrg())}" />
             <g:if test="${numberOfProperties.size() > 0}">
                 <%
                     hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
