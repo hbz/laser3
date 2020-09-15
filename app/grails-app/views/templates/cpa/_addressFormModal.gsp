@@ -1,19 +1,20 @@
-<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection />
-<semui:modal id="addressFormModal" text="${modalText}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${message(code: 'default.button.save.label')}">
+<semui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>
         <g:if test="${orgId}">
-            <input id="org" name="org.id" type="hidden" value="${orgId}"/>
+            <input id="org" name="org" type="hidden" value="${orgId}"/>
         </g:if>
         <g:if test="${prsId}">
-            <input id="prs" name="prs.id" type="hidden" value="${prsId}"/>
+            <input id="prs" name="prs" type="hidden" value="${prsId}"/>
         </g:if>
-        <input type="hidden" name="redirect" value="true"/>
-        <input id="type" name="type.id" type="hidden" value="${typeId}"/>
+        <g:if test="${typeId}">
+            <input id="type" name="type.id" type="hidden" value="${typeId}"/>
+        </g:if>
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
             <label for="type">
@@ -115,20 +116,6 @@
         </div>
         <div class="field">
             <div class="two fields">
-                <div class="field nine wide fieldcontain ${hasErrors(bean: addressInstance, field: 'region',
-                        'error')}">
-                    <label for="region">
-                        <g:message code="address.region.label" />
-                    </label>
-                    <laser:select class="ui dropdown" id="region" name="region.id"
-                                  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,
-                                                                               RDConstants.REGIONS_AT,
-                                                                               RDConstants.REGIONS_CH])}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                </div>
-
                 <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country',
                         'error')}">
                     <label for="country">
@@ -141,7 +128,52 @@
                                   value="${addressInstance?.country?.id}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
+
+                <div class="field nine wide fieldcontain ${hasErrors(bean: addressInstance, field: 'region',
+                        'error')}">
+                    <label for="region">
+                        <g:message code="address.region.label" />
+                    </label>
+                    <select id="region" name="region" class="ui search fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                    </select>
+                </div>
             </div>
+
         </div>
     </g:form>
+
+    <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
+    <g:javascript>
+         $(document).ready(function () {
+            if($("#country").val()) updateDropdown();
+        });
+
+        $("#country").change(function() { updateDropdown(); });
+
+        function updateDropdown() {
+            var dropdownRegion = $('#region');
+            var selectedCountry = $("#country").val();
+            var selectedRegions = ${raw(params.list('region') as String)};
+
+            dropdownRegion.empty();
+            dropdownRegion.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
+            dropdownRegion.prop('selectedIndex', 0);
+
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="getRegions"/>'
+                + '?country=' + selectedCountry + '&format=json',
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(jQuery.inArray(entry.id, selectedRegions) >=0 ){
+                            dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
+                        }else{
+                            dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
+                        }
+                     });
+                }
+            });
+        }
+    </g:javascript>
+
 </semui:modal>

@@ -190,4 +190,26 @@ class Address {
             result
         }
     }
+
+    String generateGoogleMapURL(){
+        String url = ''
+        if (this.name) url += this.name
+        url += (url.length()>0 && this.street_1)? '+' : ''
+        if (this.street_1) url += this.street_1
+        url += (url.length()>0 && this.street_2)? '+' : ''
+        if (this.street_2) url += this.street_2
+        url += (url.length()>0 && this.zipcode)? '+' : ''
+        if (this.zipcode) url += this.zipcode
+        url += (url.length()>0 && this.city)? '+' : ''
+        if (this.city) url += this.city
+        url += (url.length()>0 && this.country)? '+' : ''
+        if (this.country) url += this.country
+        url = url.replace(' ', '+')
+        //String encodedUrl = URLEncoder.encode(url)
+        url = 'https://maps.google.com/?q='+url
+        //url = 'https://www.google.com/maps/search/?api:1&query='+encodedUrl
+
+        url
+
+    }
 }

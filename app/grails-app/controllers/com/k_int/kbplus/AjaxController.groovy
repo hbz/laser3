@@ -2640,7 +2640,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def AddressEdit() {
+    def addressEdit() {
         Map model = [:]
         model.addressInstance = Address.get(params.id)
         if (model.addressInstance){
@@ -2668,9 +2668,23 @@ class AjaxController {
             model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'address', action: 'edit']
-            render template: "/templates/addresses/formModal", model: model
+            render template: "/templates/cpa/addressFormModal", model: model
         }
     }
+
+    @Secured(['ROLE_USER'])
+    def personEdit() {
+        Map result = [:]
+        result.personInstance = Person.get(params.id)
+        if (result.personInstance){
+            result.modalId = 'personEditModal'
+            result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
+            result.modalMsgSave = message(code: 'default.button.save_changes')
+            result.url = [controller: 'person', action: 'edit']
+            render template: "/templates/cpa/personFormModal", model: result
+        }
+    }
+
     def adjustSubscriptionList(){
         List<Subscription> data
         List result = []
@@ -2724,7 +2738,7 @@ class AjaxController {
         model.modalMsgSave = message(code: 'default.button.create.label')
         model.url = [controller: 'address', action: 'create']
 
-        render template: "/templates/addresses/formModal", model: model
+        render template: "/templates/cpa/addressFormModal", model: model
     }
 
     @Secured(['ROLE_USER'])

@@ -2,6 +2,10 @@
 
 **Ticket    Date    Branch      Author  Feature/Bug     Description/Keywords**
 
+1989    15.09.2020  hbz-dev     Moe     Feature     Überarbeitung Einrichtungskontakte
+
+2643    15.09.2020  hbz-dev     Moe     Feature     Konsortensicht: Einrichtungskontakte (/myInstitution/myPublicContacts) (kein Adressbuch)
+
 2853    08.09.2020  rc1.5       David   Bug         Merkmalsfilter nach Wert Datum formatiert falsch
 
 2852    08.09.2020  rc1.5       Moe     Bug         Umfrage: Konsortialstelle sieht zuviele Umfrage

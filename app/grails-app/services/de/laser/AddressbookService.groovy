@@ -6,6 +6,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.syntax.Numbers
 
 @Transactional
@@ -78,7 +79,7 @@ class AddressbookService {
         //true // TODO: Rechte nochmal überprüfen
     }
 
-    List getVisiblePersons(String fromSite,params) {
+    List getVisiblePersons(String fromSite, GrailsParameterMap params) {
         List qParts = [
                 'p.isPublic = :public'
         ]
@@ -107,20 +108,15 @@ class AddressbookService {
             qParams << [name: "${params.org}"]
         }
 
-        if (params.position || params.function){
-            List s = []
-            if (params.position) { s.addAll(params.position) }
-            if (params.function) { s.addAll(params.function) }
-            List<Long> selectedRoleTypIds = []
-            s.each{ if (it && it !="null") {selectedRoleTypIds.add(Long.valueOf(it))}}
-            List<RefdataValue> selectedRoleTypes = null
-            if (selectedRoleTypIds) {
-                selectedRoleTypes = RefdataValue.findAllByIdInList(selectedRoleTypIds)
-                if (selectedRoleTypes) {
-                    qParts << "pr.functionType in (:selectedRoleTypes) "
-                    qParams << [selectedRoleTypes: selectedRoleTypes]
-                }
-            }
+        if (params.function){
+            qParts << "pr.functionType.id in (:selectedFunctions) "
+            qParams << [selectedFunctions: params.list('function').collect{Long.parseLong(it)}]
+
+        }
+
+        if (params.position){
+            qParts << "pr.positionType.id in (:selectedPositions) "
+            qParams << [selectedPositions: params.list('position').collect{Long.parseLong(it)}]
 
         }
 

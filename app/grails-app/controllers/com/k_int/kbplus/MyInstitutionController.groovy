@@ -2515,8 +2515,15 @@ join sub.orgRelations or_sub where
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
-        params.view = 'contacts'
-//        params.view = 'addresses'
+
+        if (visiblePersons){
+            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
+        }
+
+        params.tab = params.tab ?: 'contacts'
+
+        result.addresses = Address.findAllByOrg(result.institution)
 
         result
       }

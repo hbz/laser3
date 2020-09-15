@@ -107,7 +107,7 @@
             ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>
     </g:if>
-    <% /* <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/> */ %>
+    <% /* <g:render template="/templates/cpa/addressFormModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
