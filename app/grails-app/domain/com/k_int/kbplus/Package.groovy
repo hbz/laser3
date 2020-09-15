@@ -14,6 +14,7 @@ import de.laser.traits.ShareableTrait
 import grails.converters.JSON
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.Session
 
 import javax.persistence.Transient
@@ -505,8 +506,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
      */
 
   @Transient
-  static def refdataFind(params) {
-    def result = [];
+  static def refdataFind(GrailsParameterMap params) {
+    List<Map<String, Object>> result = []
 
     String hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
     def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]

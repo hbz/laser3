@@ -13,6 +13,7 @@ import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -310,8 +311,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
-    static def refdataFind(params) {
-        def result = []
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
         def propDefsInCalcGroups = []
 
         if (params.oid) {

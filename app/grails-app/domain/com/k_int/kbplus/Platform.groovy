@@ -11,6 +11,7 @@ import de.laser.helper.RefdataAnnotation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
@@ -238,16 +239,13 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
   }
 
-  static def refdataFind(params) {
-    def result = [];
-    def ql = null;
-    ql = Platform.findAllByNameIlike("${params.q}%",params)
+  static def refdataFind(GrailsParameterMap params) {
+    List<Map<String, Object>> result = []
+    List<Platform> ql = Platform.findAllByNameIlike("${params.q}%", params)
 
-    if ( ql ) {
       ql.each { t ->
         result.add([id:"${t.class.name}:${t.id}",text:"${t.name}"])
       }
-    }
 
     result
   }

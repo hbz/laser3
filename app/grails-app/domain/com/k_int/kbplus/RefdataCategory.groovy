@@ -4,6 +4,7 @@ import de.laser.base.AbstractI10n
 import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 class RefdataCategory extends AbstractI10n {
@@ -64,8 +65,8 @@ class RefdataCategory extends AbstractI10n {
         }
     }
 
-  static def refdataFind(params) {
-      def result = []
+  static def refdataFind(GrailsParameterMap params) {
+      List<Map<String, Object>> result = []
       List<RefdataCategory> matches = []
 
       if(! params.q) {

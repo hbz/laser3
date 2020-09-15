@@ -1,5 +1,5 @@
 <!-- _copyModal.gsp -->
-<%@ page import="de.laser.finance.CostItem;de.laser.finance.CostItemGroup;de.laser.BudgetCode;com.k_int.kbplus.Subscription;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.finance.CostItem;de.laser.finance.CostItemGroup;de.laser.finance.BudgetCode;com.k_int.kbplus.Subscription;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${message(code:'financials.costItem.copy.tooltip')}">

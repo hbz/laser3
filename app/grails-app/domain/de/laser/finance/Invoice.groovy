@@ -1,6 +1,7 @@
 package de.laser.finance
 
 import com.k_int.kbplus.Org
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 
@@ -51,19 +52,17 @@ class Invoice {
 
 
     @Transient
-    static def refdataFind(params) {
-        Org owner  = Org.findByShortcode(params.shortcode)
-        def result = [];
-        def ql     = null;
-        if (owner)
-            ql = Invoice.findAllByOwnerAndInvoiceNumberIlike(owner,"%${params.q}%",params)
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
+        Org owner = Org.findByShortcode(params.shortcode)
 
-        if ( ql ) {
+        if (owner) {
+            List<Invoice> ql = Invoice.findAllByOwnerAndInvoiceNumberIlike(owner,"%${params.q}%", params)
+
             ql.each { id ->
                 result.add([id:"${id.class.name}:${id.id}",text:"${id.invoiceNumber}"])
             }
         }
-
         result
     }
 }

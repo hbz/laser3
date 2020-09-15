@@ -4,6 +4,7 @@ import de.laser.OrgAccessPoint
 import de.laser.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
 import de.laser.helper.RDStore
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 
@@ -61,9 +62,8 @@ class SubscriptionPackage implements Comparable {
   }
 
   @Transient
-  static def refdataFind(params) {
-
-    def result = [];
+  static def refdataFind(GrailsParameterMap params) {
+    List<Map<String, Object>> result = []
     Map<String, Object> hqlParams = [:]
     String hqlString = "select sp from SubscriptionPackage as sp"
 
