@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2865    15.09.2020  rc1.5   1.5.8       Moe     Bug         Umfrage: Im Renewal Excel werden Teilnehmer ohne Abgabe nicht angezeigt 
+
+--      15.09.2020  rc1.5   1.5.8       Moe     Bug         Kein Zugriff auf Umfrage
+
 --      15.09.2020  rc1.5   1.5.8       Andreas Bug         temporäre Brücke für unvollständig implementierten GOKb-Titeltyp OtherInstance eingebaut
 
 2860    15.09.2020  rc1.5   1.5.8       Andreas Bug         Nicht vererbte Merkmale werden bei Verträgen ohne Absturz dargestellt

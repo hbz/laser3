@@ -4958,6 +4958,48 @@ class SurveyController {
             renewalData.add(row)
         }
 
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size() ?: 0})", style: 'negative']])
+
+
+        renewalResult.orgsWithoutResult.each { participantResult ->
+            List row = []
+
+            row.add([field: participantResult.participant.sortname ?: '', style: null])
+            row.add([field: participantResult.participant.name ?: '', style: null])
+
+            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
+
+            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
+
+            row.add([field: '', style: null])
+
+            if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
+            {
+                row.add([field: '', style: null])
+            }
+
+            participantResult.properties.sort {
+                it.type.name
+            }.each { participantResultProperty ->
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
+
+                row.add([field: participantResultProperty.comment ?: "", style: null])
+
+            }
+
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
+
+            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
+
+            renewalData.add(row)
+        }
+
 
         Map sheetData = [:]
         sheetData[message(code: 'renewalexport.renewals')] = [titleRow: titles, columnData: renewalData]
