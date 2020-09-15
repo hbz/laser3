@@ -6,6 +6,8 @@ import com.k_int.kbplus.auth.UserOrg
 import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
+import de.laser.finance.BudgetCode
+import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup

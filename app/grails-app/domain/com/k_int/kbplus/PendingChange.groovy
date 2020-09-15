@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-
+import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
@@ -12,7 +12,6 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
-import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
 

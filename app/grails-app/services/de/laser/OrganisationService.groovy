@@ -1,8 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.Combo
-import com.k_int.kbplus.CostItem
-import com.k_int.kbplus.CostItemElementConfiguration
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.Identifier
@@ -26,6 +24,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.exceptions.CreationException
+import de.laser.finance.CostItem
+import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.ConfigUtils
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants

@@ -1,6 +1,6 @@
-package com.k_int.kbplus
+package de.laser.finance
 
-import de.laser.BudgetCode
+import com.k_int.kbplus.Org
 
 import javax.persistence.Transient
 

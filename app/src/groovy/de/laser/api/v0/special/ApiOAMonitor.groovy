@@ -1,6 +1,7 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
+import de.laser.finance.CostItem
 import de.laser.OrgSettings
 import de.laser.api.v0.*
 import de.laser.helper.Constants

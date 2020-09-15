@@ -5,6 +5,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.DateUtil
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants

@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.finance
 
 import com.k_int.kbplus.Org
 

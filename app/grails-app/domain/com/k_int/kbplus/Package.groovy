@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage
 import de.laser.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
@@ -329,7 +330,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(this, subscription)
 
         //Not Exist CostItem with Package
-        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:this,sub:subscription])) {
+        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:this, sub:subscription])) {
 
             if (deleteEntitlements) {
                 List<Long> subList = [subscription.id]

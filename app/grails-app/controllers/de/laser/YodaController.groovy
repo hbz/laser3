@@ -5,6 +5,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
+import de.laser.finance.CostItem
+import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import grails.converters.JSON

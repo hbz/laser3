@@ -1,4 +1,6 @@
-package com.k_int.kbplus
+package de.laser.finance
+
+import com.k_int.kbplus.Org
 
 import javax.persistence.Transient
 

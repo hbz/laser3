@@ -1,6 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.finance.CostItem
+import de.laser.finance.CostItemGroup
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact

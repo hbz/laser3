@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
+import de.laser.finance.CostItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore

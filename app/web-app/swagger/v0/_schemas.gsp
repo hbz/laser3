@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory; de.laser.properties.PropertyDefinition" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''
@@ -856,7 +856,7 @@
           taxRate:
             type: string
             enum:
-              [${ com.k_int.kbplus.CostItem.TAX_RATES.collect{ it }.join(', ') }]
+              [${ CostItem.TAX_RATES.collect{ it }.join(', ') }]
 
     EZProxy_in_OrgAccessPoint:
       type: object

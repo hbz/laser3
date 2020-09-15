@@ -1,10 +1,13 @@
-package com.k_int.kbplus
+package de.laser.finance
 
-import de.laser.BudgetCode
-import de.laser.Invoice
-import de.laser.SurveyOrg
-import de.laser.base.AbstractBase
+import com.k_int.kbplus.IssueEntitlement
 import de.laser.IssueEntitlementGroup
+import de.laser.SurveyOrg
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.CalculatedType
