@@ -450,7 +450,7 @@
                             <dt><g:message code="org.contacts.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
+                                    <g:each in="${orgInstance.contacts?.toSorted()}" var="c">
                                         <g:if test="${c.org}">
                                             <g:render template="/templates/cpa/contact" model="${[
                                                     contact             : c,
@@ -468,7 +468,7 @@
                                            value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"
                                            data-semui="modal"
                                            data-href="#contactFormModal"/>
-                                    <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
+                                    <g:render template="/contact/formModal" model="['orgId': orgInstance.id]"/>
                                 </g:if>
                             </dd>
                         </dl>
@@ -487,7 +487,7 @@
                                         typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
                                         typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
                                         Map<String, List> typeAddressMap = [:]
-                                        orgInstance?.addresses.each{
+                                        orgInstance.addresses.each{
                                             String typeName = it.type?.getI10n('value')
                                             typeNames.add(typeName)
                                             List addresses = typeAddressMap.get(typeName)?: []
@@ -519,7 +519,7 @@
                                 <div class="item">
 
                                 <% Map model = [:]
-                                model.orgId = orgInstance?.id
+                                model.orgId = orgInstance.id
                                 model.redirect = '.'
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
