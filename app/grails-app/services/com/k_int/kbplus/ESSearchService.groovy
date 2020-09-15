@@ -27,7 +27,6 @@ class ESSearchService{
                     'name':'name']
 
   def ESWrapperService
-  def grailsApplication
 
   def search(params){
     search(params,reversemap)
@@ -41,7 +40,7 @@ class ESSearchService{
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()
-   Map esSettings =  ESWrapperService.getESSettings()
+   Map<String, String> esSettings =  ESWrapperService.getESSettings()
 
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype) {
@@ -49,7 +48,7 @@ class ESSearchService{
         params.max = Math.min(params.max ? params.int('max') : 15, 10000)
         params.offset = params.offset ? params.int('offset') : 0
 
-        def query_str = buildQuery(params,field_map)
+        String query_str = buildQuery(params,field_map)
         if (params.tempFQ) //add filtered query
         {
             query_str = query_str + " AND ( " + params.tempFQ + " ) "
@@ -150,7 +149,7 @@ class ESSearchService{
     result
   }
 
-  def buildQuery(params,field_map) {
+  String buildQuery(params,field_map) {
     //log.debug("BuildQuery... with params ${params}. ReverseMap: ${field_map}");
 
     StringWriter sw = new StringWriter()
@@ -278,44 +277,6 @@ class ESSearchService{
       sw.write(  " AND ((rectype: \"EBookInstance\") OR (rectype: \"JournalInstance\") OR (rectype: \"BookInstance\") OR (rectype: \"TitleInstance\") OR (rectype: \"DatabaseInstance\")) ")
     }
 
-    def result = sw.toString();
-    result;
+    sw.toString()
   }
-
-  /*def getClient(index) {
-    def esclient = null
-    def es_cluster_name = null
-    def es_index_name = null
-    def es_host = null
-    def es_url = ''
-
-    if(index == 'esgokb') {
-      es_cluster_name = grailsApplication.config.aggr_es_gokb_cluster ?: (ElasticsearchSource.findByIdentifier('gokb')?.cluster ?: "elasticsearch")
-      es_index_name = grailsApplication.config.aggr_es_gokb_index ?: (ElasticsearchSource.findByIdentifier('gokb')?.index ?: "gokb")
-      es_host = grailsApplication.config.aggr_es_gokb_hostname ?: (ElasticsearchSource.findByIdentifier('gokb')?.host ?: "localhost")
-      es_url = grailsApplication.config.aggr_es_gokb_url ?: (ElasticsearchSource.findByIdentifier('gokb')?.url ?: "")
-    }else
-    {
-      es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: 'elasticsearch'
-      es_index_name   = ConfigUtils.getAggrEsIndex()    ?: 'kbplus'
-      es_host         = ConfigUtils.getAggrEsHostname() ?: 'localhost'
-    }
-    log.debug("es_cluster = ${es_cluster_name}");
-    log.debug("es_index_name = ${es_index_name}");
-    log.debug("es_host = ${es_host}");
-    log.debug("es_url = ${es_url}");
-
-    Settings settings = Settings.builder()
-            .put("client.transport.sniff", true)
-            .put("cluster.name", es_cluster_name)
-            .put("network.host", es_host)
-            .put("es_url", es_url)
-            .build();
-
-    esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
-    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));
-
-    return [esclient, es_index_name]
-  }*/
-
 }

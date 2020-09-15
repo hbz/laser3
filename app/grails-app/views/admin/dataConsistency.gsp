@@ -18,37 +18,6 @@
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <%--
-        <h3 class="ui headerline">${message(code: "admin.duplicateImpIds")}</h3>
-        <g:each in="${importIds}" var="obj">
-            <g:if test="${obj.value}">
-
-                <h4 class="ui headerline" id="jumpMark_1_${obj.key}">${obj.key} (${obj.value.size()})</h4>
-
-                <table class="ui sortable celled la-table compact la-ignore-fixed table">
-                    <thead>
-                        <tr>
-                            <th>ImpId</th>
-                            <th>Vorkommen</th>
-                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <g:each in="${obj.value}" var="row">
-                            <tr>
-                                <td>${row[0]}</td>
-                                <td>${row[1]}</td>
-                                <td class="x">
-                                    <button class="ui button icon" data-key="${obj.key}" data-key2="impId" data-value="${row[0]}"><i class="ui icon search"></i></button>
-                                </td>
-                            </tr>
-                        </g:each>
-                    </tbody>
-                </table>
-
-            </g:if>
-        </g:each>--%>
-
         <h3 class="ui headerline">${message(code: "admin.duplicateNamesAndTitles")}</h3>
 
         <g:each in="${titles}" var="obj">
@@ -90,15 +59,6 @@
     <div class="four wide column">
         <div class="ui sticky">
             <aside>
-                <p>${message(code: "admin.duplicateImpIds")}</p>
-
-                <g:each in="${importIds}" var="obj">
-                    <g:if test="${obj.value}">
-                        <a href="#jumpMark_1_${obj.key}">${obj.key}</a> <br />
-                    </g:if>
-                </g:each>
-
-                <br />
                 <p>${message(code: "admin.duplicateNamesAndTitles")}</p>
 
                 <g:each in="${titles}" var="obj">

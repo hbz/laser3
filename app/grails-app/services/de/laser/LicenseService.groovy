@@ -12,8 +12,8 @@ class LicenseService {
     AccessService accessService
     ContextService contextService
 
-    List getMyLicenses_readRights(){
-        List result = []
+    List<License> getMyLicenses_readRights(){
+        List<License> result = []
         List tmpQ
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
@@ -33,8 +33,8 @@ class LicenseService {
         result
     }
 
-    List getMyLicenses_writeRights(){
-        List result = []
+    List<License> getMyLicenses_writeRights(){
+        List<License> result = []
         List tmpQ
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {

@@ -77,7 +77,7 @@ class UserService {
     }
 
     LinkedHashMap setResultGenerics(Map params) {
-        def result = [orgInstance:contextService.org]
+        Map<String, Object> result = [orgInstance: contextService.org]
         result.editor = contextService.user
 
         if (params.get('id')) {

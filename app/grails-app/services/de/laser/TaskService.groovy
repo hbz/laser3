@@ -21,17 +21,17 @@ class TaskService {
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
-    def getTasksByCreator(User user, Map queryMap, flag) {
-        def tasks = []
+    List<Task> getTasksByCreator(User user, Map queryMap, flag) {
+        List<Task> tasks = []
         if (user) {
-            def query
+            String query
             if (flag == WITHOUT_TENANT_ONLY) {
                 query = select_with_join + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
             } else {
                 query = select_with_join + 'where t.creator = :user'
             }
 
-            def params = [user : user]
+            Map params = [user : user]
             if (queryMap){
                 query += queryMap.query
                 query = addDefaultOrder("t", query)
@@ -41,38 +41,38 @@ class TaskService {
         }
         tasks
     }
-    def getTasksByCreatorAndObject(User user, License obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, License obj,  Object params) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, Org obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, Org obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, Package obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, Package obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, License obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, License obj ) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, Org obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Org obj ) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, Package obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Package obj ) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, Subscription obj) {
+    List<Task> getTasksByCreatorAndObject(User user, Subscription obj) {
         (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, SurveyConfig obj) {
+    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
     }
 
-    List chopOffForPageSize(List taskInstanceList, User user, int offset){
+    List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
         //chop everything off beyond the user's pagination limit
         int taskInstanceCount = taskInstanceList?.size() ?: 0
         if (taskInstanceCount > user.getDefaultPageSize()) {
@@ -85,36 +85,38 @@ class TaskService {
         }
         taskInstanceList
     }
-    def getTasksByResponsible(User user, Map queryMap) {
-        def tasks = []
+    List<Task> getTasksByResponsible(User user, Map queryMap) {
+        List<Task> tasks = []
         if (user) {
-            def query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
+            String query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
             query = addDefaultOrder("t", query)
-            def params = [user : user] << queryMap.queryParams
+
+            Map params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
     }
 
-    def getTasksByResponsible(Org org, Map queryMap) {
-        def tasks = []
+    List<Task> getTasksByResponsible(Org org, Map queryMap) {
+        List<Task> tasks = []
         if (org) {
-            def query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
+            String query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
             query = addDefaultOrder("t", query)
-            def params = [org : org] << queryMap.queryParams
+
+            Map params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
     }
 
-    def getTasksByResponsibles(User user, Org org, Map queryMap) {
-        def tasks = []
+    List<Task> getTasksByResponsibles(User user, Org org, Map queryMap) {
+        List<Task> tasks = []
 
         if (user && org) {
-            def query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
+            String query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
             query = addDefaultOrder("t", query)
 
-            def params = [user : user, org: org] << queryMap.queryParams
+            Map params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         } else if (user) {
             tasks = getTasksByResponsible(user, queryMap)
@@ -124,18 +126,16 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsibleAndObject(User user, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
-        tasks
+    List<Task> getTasksByResponsibleAndObject(User user, Object obj) {
+        getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
     }
 
-    def getTasksByResponsibleAndObject(Org org, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
-        tasks
+    List<Task> getTasksByResponsibleAndObject(Org org, Object obj) {
+        getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
     }
 
     List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
-        def tasks = []
+        List<Task> tasks = []
         String tableName = ''
         if (user && org && obj) {
             switch (obj.getClass().getSimpleName()) {
@@ -161,8 +161,8 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
-        def tasks = []
+    List<Task> getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
+        List<Task> tasks = []
         params = addDefaultOrder(null, params)
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
@@ -186,8 +186,8 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
-        def tasks = []
+    List<Task> getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
+        List<Task> tasks = []
         params = addDefaultOrder(null, params)
         if (org && obj) {
             switch (obj.getClass().getSimpleName()) {
@@ -211,10 +211,10 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
-        def tasks = []
-        def a = getTasksByResponsibleAndObject(user, obj, params)
-        def b = getTasksByResponsibleAndObject(org, obj, params)
+    List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
+        List<Task> tasks = []
+        List<Task> a = getTasksByResponsibleAndObject(user, obj, params)
+        List<Task> b = getTasksByResponsibleAndObject(org, obj, params)
 
         tasks = a.plus(b).unique()
         tasks
@@ -291,7 +291,7 @@ class TaskService {
         if (contextOrg) {
             if (binKonsortium) {
 
-                def qry_params_for_sub = [
+                Map qry_params_for_sub = [
                         'roleTypes' : [
                                 RDStore.OR_SUBSCRIBER,
                                 RDStore.OR_SUBSCRIBER_CONS,
@@ -300,7 +300,6 @@ class TaskService {
                         ],
                         'activeInst': contextOrg
                 ]
-                String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
 
                 validSubscriptionsOhneInstanceOf = Subscription.executeQuery("""
 select s.id, s.name, s.startDate, s.endDate, i10.valueDe from Subscription s, I10nTranslation i10 

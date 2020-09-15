@@ -13,52 +13,15 @@ import java.text.SimpleDateFormat
 @Transactional
 class DataConsistencyService {
 
-    def grailsApplication
     def springSecurityService
     def deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-
-    @Deprecated
-    //no need as field impId is going to be removed as of version 1.3, ticket ERMS-1929
-    Map<String, Object> checkImportIds() {
-        /*Map result = [
-                Org: [],
-                Package: [],
-                Platform: [],
-                TitleInstance: [],
-                TitleInstancePackagePlatform: []
-        ]
-
-        result.Org = Org.executeQuery(
-                'SELECT org.impId as impId, count(org.impId) as cnt FROM Org org GROUP BY org.impId ORDER BY org.impId'
-        ).findAll{ it -> it[1] > 1}
-
-        result.Package = Package.executeQuery(
-                'SELECT pkg.impId as impId, count(pkg.impId) as cnt FROM Package pkg GROUP BY pkg.impId ORDER BY pkg.impId'
-        ).findAll{ it -> it[1] > 1}
-
-        result.Platform = Platform.executeQuery(
-                'SELECT pf.impId as impId, count(pf.impId) as cnt FROM Platform pf GROUP BY pf.impId ORDER BY pf.impId'
-        ).findAll{ it -> it[1] > 1}
-
-        result.TitleInstance = TitleInstance.executeQuery(
-                'SELECT ti.impId as impId, count(ti.impId) as cnt FROM TitleInstance ti GROUP BY ti.impId ORDER BY ti.impId'
-        ).findAll{ it -> it[1] > 1}
-
-        result.TitleInstancePackagePlatform = TitleInstancePackagePlatform.executeQuery(
-                'SELECT tipp.impId as impId, count(tipp.impId) as cnt FROM TitleInstancePackagePlatform tipp GROUP BY tipp.impId ORDER BY tipp.impId'
-        ).findAll{ it -> it[1] > 1}
-
-        result*/
-    }
 
     Map<String, Object> checkTitles() {
         Map result = [
                 Org: [:],
                 Package: [:],
                 Platform: [:]
-                // TitleInstances: [:],
-                // Tipps: [:]
         ]
 
         // Orgs
@@ -98,45 +61,13 @@ class DataConsistencyService {
         result.Platform.normname = Platform.executeQuery(
                 'SELECT pf.normname as normname, count(pf.normname) as cnt FROM Platform pf GROUP BY pf.normname ORDER BY pf.normname'
         ).findAll{ it -> it[1] > 1}
-        /*
-        result.Platform.primaryUrl = Platform.executeQuery(
-                'SELECT pf.primaryUrl as primaryUrl, count(pf.primaryUrl) as cnt FROM Platform pf GROUP BY pf.primaryUrl ORDER BY pf.primaryUrl'
-        ).findAll{ it -> it[1] > 1}
-        */
 
-        // TitleInstance
-
-        /*
-        result.TitleInstance.title = TitleInstance.executeQuery(
-                'SELECT ti.title as title, count(ti.title) as cnt FROM TitleInstance ti GROUP BY ti.title ORDER By ti.title'
-        ).findAll{ it -> it[1] > 1}
-
-        result.TitleInstance.normTitle = TitleInstance.executeQuery(
-                'SELECT ti.normTitle as normTitle, count(ti.normTitle) as cnt FROM TitleInstance ti GROUP BY ti.normTitle ORDER BY ti.normTitle'
-        ).findAll{ it -> it[1] > 1}
-
-        result.TitleInstance.keyTitle = TitleInstance.executeQuery(
-                'SELECT ti.keyTitle as keyTitle, count(ti.keyTitle) as cnt FROM TitleInstance ti GROUP BY ti.keyTitle ORDER BY ti.keyTitle'
-        ).findAll{ it -> it[1] > 1}
-
-        result.TitleInstance.sortTitle = TitleInstance.executeQuery(
-                'SELECT ti.sortTitle as sortTitle, count(ti.sortTitle) as cnt FROM TitleInstance ti GROUP BY ti.sortTitle ORDER BY ti.sortTitle'
-        ).findAll{ it -> it[1] > 1}
-        */
-
-        // TitleInstancePackagePlatform
-        /*
-        result.TitleInstancePackagePlatform.hostPlatformURL = TitleInstancePackagePlatform.executeQuery(
-                'SELECT tipp.hostPlatformURL as hostPlatformURL, count(tipp.hostPlatformURL) as cnt FROM TitleInstancePackagePlatform tipp GROUP BY tipp.hostPlatformURL ORDER BY tipp.hostPlatformURL'
-        ).findAll{ it -> it[1] > 1}
-        */
-        
         result
     }
 
-    def ajaxQuery(String key1, String key2, String value) {
+    List<Object> ajaxQuery(String key1, String key2, String value) {
 
-        def result = []
+        List<Object> result = []
         SimpleDateFormat sdfA = DateUtil.getSDF_NoTime()
         SimpleDateFormat sdfB = DateUtil.getSDF_NoZ()
 

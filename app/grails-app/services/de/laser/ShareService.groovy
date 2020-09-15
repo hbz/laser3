@@ -3,13 +3,10 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.interfaces.ShareSupport
 import grails.transaction.Transactional
-import org.codehaus.groovy.grails.commons.GrailsApplication
 
 //@CompileStatic
 @Transactional
 class ShareService {
-
-    GrailsApplication grailsApplication
 
     boolean addDocShareForTarget(DocContext share, ShareSupport target) {
 

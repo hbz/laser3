@@ -594,7 +594,6 @@ class AdminController extends AbstractDebugController {
             redirect controller: 'admin', action: 'dataConsistency'
         }
 
-        result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
 
         result

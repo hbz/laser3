@@ -2069,7 +2069,7 @@ class SurveyController {
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
-        def currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date(System.currentTimeMillis())
 
         if (result.editable) {
 
