@@ -1651,7 +1651,7 @@ SELECT * FROM (
             propDefs << ["${it}": itResult]
         }
 
-        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
 
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,

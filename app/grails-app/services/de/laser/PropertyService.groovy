@@ -111,9 +111,9 @@ class PropertyService {
     }
 
     List getUsageDetails() {
-        List usedPdList  = []
+        List<Long> usedPdList  = []
         Map<String, Object> detailsMap = [:]
-        List multiplePdList = []
+        List<Long> multiplePdList = []
 
         AppUtils.getAllDomainClasses().each { dc ->
 

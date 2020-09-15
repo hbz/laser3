@@ -31,7 +31,7 @@ class TaskService {
                 query = select_with_join + 'where t.creator = :user'
             }
 
-            Map params = [user : user]
+            Map<String, Object> params = [user : user]
             if (queryMap){
                 query += queryMap.query
                 query = addDefaultOrder("t", query)
@@ -116,7 +116,7 @@ class TaskService {
             String query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
             query = addDefaultOrder("t", query)
 
-            Map params = [user : user, org: org] << queryMap.queryParams
+            Map<String, Object>  params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         } else if (user) {
             tasks = getTasksByResponsible(user, queryMap)
@@ -291,7 +291,7 @@ class TaskService {
         if (contextOrg) {
             if (binKonsortium) {
 
-                Map qry_params_for_sub = [
+                Map<String, Object> qry_params_for_sub = [
                         'roleTypes' : [
                                 RDStore.OR_SUBSCRIBER,
                                 RDStore.OR_SUBSCRIBER_CONS,

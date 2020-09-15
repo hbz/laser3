@@ -3554,7 +3554,7 @@ join sub.orgRelations or_sub where
 
         result.propertyDefinitions = propDefs
 
-        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
         result.usedPdList = usedPdList
         result.attrMap = attrMap
         result.multiplePdList = multiplePdList
@@ -3614,7 +3614,7 @@ join sub.orgRelations or_sub where
             propDefs[it] = itResult
         }
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
         result.propertyDefinitions = propDefs
         result.attrMap = attrMap
         result.usedPdList = usedPdList
