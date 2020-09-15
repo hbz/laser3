@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.SystemEvent
+import de.laser.Task
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
@@ -50,7 +51,7 @@ class DataloadService {
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
 
-    def es_index
+    String es_index
     def dataload_running=false
     def dataload_stage=-1
     def dataload_message=''
@@ -525,7 +526,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.Task.class) { task ->
+        updateES(Task.class) { task ->
             def result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id

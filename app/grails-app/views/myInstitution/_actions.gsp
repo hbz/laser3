@@ -9,7 +9,7 @@
             <semui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
         </g:if>
-        <semui:actionsDropdownItemDisabled controller="subscription" action="compare" message="menu.my.comp_sub" />
+        <semui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentSubscriptions" params="${[compare: true]+params}" message="menu.my.comp_sub" />
     </semui:actionsDropdown>
 </g:if>
 
@@ -17,6 +17,9 @@
     <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
         <semui:actionsDropdown>
             <semui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
+
+            <div class="divider"></div>
+            <semui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentLicenses" params="${[compare: true]+params}" message="menu.my.comp_lic" />
         </semui:actionsDropdown>
     </g:if>
 

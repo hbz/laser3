@@ -121,7 +121,7 @@ class SurveyInfo {
 
         if(result)
         {
-            println(result)
+            //println(result)
             return result
         }else {
             return null

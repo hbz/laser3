@@ -133,11 +133,18 @@
       </form>
   </semui:filter>
 
+  <g:form action="compareLicenses" controller="compare" method="post">
+
   <div class="license-results la-clear-before">
       <g:if test="${licenses}">
           <table class="ui sortable celled la-table table">
               <thead>
                   <tr>
+                      <g:if test="${compare}">
+                          <th rowspan="2" class="center aligned">
+                              <g:message code="default.compare.submit.label"/>
+                          </th>
+                      </g:if>
                       <th rowspan="2"><g:message code="sidewide.number"/></th>
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
@@ -163,6 +170,11 @@
               <tbody>
                   <g:each in="${licenses}" var="l" status="jj">
                       <tr>
+                          <g:if test="${compare}">
+                              <td class="center aligned">
+                                  <g:checkBox name="selectedObjects" value="${l.id}" checked="false"/>
+                              </td>
+                          </g:if>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
@@ -241,6 +253,13 @@
             </g:else>
         </g:else>
     </div>
+
+  <g:if test="${licenses && compare}">
+      <br>
+      <input type="submit" class="ui button" value="${message(code:'menu.my.comp_lic')}" />
+  </g:if>
+
+  </g:form>
 
       <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${licenseCount}" />
 

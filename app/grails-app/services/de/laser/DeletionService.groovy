@@ -2,11 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
@@ -511,7 +511,6 @@ class DeletionService {
         List facts              = Fact.findAllByInst(org)
         List readerNumbers      = ReaderNumber.findAllByOrg(org)
         List orgAccessPoints    = OrgAccessPoint.findAllByOrg(org)
-        List orgTitleStats      = OrgTitleStats.findAllByOrg(org)
 
         List surveyInfos        = SurveyInfo.findAllByOwner(org)
         List surveyProperties   = PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, org)
@@ -566,7 +565,6 @@ class DeletionService {
         result.info << ['Facts', facts, FLAG_BLOCKER]
         result.info << ['ReaderNumbers', readerNumbers, FLAG_BLOCKER]
         result.info << ['OrgAccessPoints', orgAccessPoints, FLAG_BLOCKER]
-        result.info << ['OrgTitleStats', orgTitleStats, FLAG_BLOCKER]
 
         result.info << ['SurveyInfos', surveyInfos, FLAG_BLOCKER]
         result.info << ['Umfrage-Merkmale', surveyProperties, FLAG_BLOCKER]
@@ -907,16 +905,16 @@ class DeletionService {
         }
     }
 
-    def deleteDocumentFromIndex(id)
-    {
-        def es_index = ESWrapperService.getESSettings().indexName
+    void deleteDocumentFromIndex(id) {
+        String es_index = ESWrapperService.getESSettings().indexName
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
         try {
             DeleteRequest request = new DeleteRequest(es_index, id)
             DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
             esclient.close()
-        }catch(Exception e) {
+        }
+        catch(Exception e) {
             log.error("deleteDocumentFromIndex with id=${id} failed because: " + e)
             esclient.close()
         }

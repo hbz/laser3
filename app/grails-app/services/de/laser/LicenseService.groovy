@@ -1,8 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Subscription
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 
@@ -12,9 +10,9 @@ class LicenseService {
     AccessService accessService
     ContextService contextService
 
-    List getMyLicenses_readRights(){
-        List result = []
-        List tmpQ
+    List<License> getMyLicenses_readRights(){
+        List<License> result = []
+        List tmpQ // [String, Map<String, Object>]
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getLicensesConsortiaQuery()
@@ -33,9 +31,9 @@ class LicenseService {
         result
     }
 
-    List getMyLicenses_writeRights(){
-        List result = []
-        List tmpQ
+    List<License> getMyLicenses_writeRights(){
+        List<License> result = []
+        List tmpQ // [String, Map<String, Object>]
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getLicensesConsortiaQuery()
@@ -51,21 +49,13 @@ class LicenseService {
             tmpQ = getLicensesLocalLicenseQuery()
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
-
         result.sort {it.dropdownNamingConvention()}
     }
 
 
     //Konsortialverträge
     private List getLicensesConsortiaQuery() {
-        String base_qry
-        Map qry_params
-
-        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-
-
-        base_qry = """from License as l where (
+        String base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
                         AND o.org = :lic_org 
@@ -75,40 +65,26 @@ class LicenseService {
                     )
                 )
             )))"""
-        qry_params = [roleTypeC: lic_cons_role, roleTypeL: licensee_cons_role, lic_org: contextService.org]
 
-        return [base_qry, qry_params]
-
+        return [ base_qry, [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org] ]
     }
 
     //Teilnehmerverträge
     private List getLicensesConsortialLicenseQuery() {
-        String base_qry
-        Map qry_params
-        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-
-        base_qry = """from License as l where (
+        String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType  AND o.org = :lic_org ) ) 
             )"""
-        qry_params = [roleType: licensee_cons_role, lic_org: contextService.org]
 
-        return [base_qry, qry_params]
+        return [ base_qry, [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org] ]
     }
 
     //Lokalverträge
     private List getLicensesLocalLicenseQuery() {
-        String base_qry
-        Map qry_params
-
-        RefdataValue licensee_role           = RDStore.OR_LICENSEE
-
-        base_qry = """from License as l where (
+        String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
-        qry_params = [roleType: licensee_role, lic_org: contextService.org]
 
-        return [base_qry, qry_params]
-
+        return [ base_qry, [roleType: RDStore.OR_LICENSEE, lic_org: contextService.org] ]
     }
 
     List getVisibleOrgRelations(License license) {

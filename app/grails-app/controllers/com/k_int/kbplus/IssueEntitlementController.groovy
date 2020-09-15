@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.OrgSettings
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil

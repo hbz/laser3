@@ -1,11 +1,11 @@
-package com.k_int.properties
+package de.laser.properties
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ContextService
 import de.laser.I10nTranslation
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
 import de.laser.helper.SwissKnife
 import grails.util.Holders

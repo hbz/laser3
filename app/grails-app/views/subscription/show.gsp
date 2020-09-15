@@ -1,5 +1,5 @@
 <%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
-<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
@@ -24,6 +24,9 @@
 
         <semui:debugInfo>
             <div style="padding: 1em 0;">
+                <p>sub.type: <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
+                                                     config="${RDConstants.SUBSCRIPTION_TYPE}"/>
+                </p>
                 <p>sub.instanceOf: <g:if test="${subscriptionInstance.instanceOf}"> <g:link action="show" id="${subscriptionInstance. instanceOf.id}">${subscriptionInstance.instanceOf.name}</g:link>
                     ${subscriptionInstance.instanceOf.getAllocationTerm()}
                 </g:if> </p>
@@ -127,7 +130,7 @@
                             </dl>
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'subscription.type.label')}</dt>
+                                    <dt class="control-label">alter Lizenztyp</dt>
                                     <dd>
                                         %{--
                                         <%
@@ -146,7 +149,10 @@
                                                                     constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
                                             />
                                         </g:else>--}%
-                                        ${subscriptionInstance.type?.getI10n('value')}
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
+                                                                config="${RDConstants.SUBSCRIPTION_TYPE}"
+                                                                constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
+                                        />
                                     </dd>
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
                                 </dl>

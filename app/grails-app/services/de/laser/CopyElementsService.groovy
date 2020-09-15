@@ -1,21 +1,22 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.codehaus.groovy.grails.web.servlet.FlashScope
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 
+import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -33,6 +34,7 @@ class CopyElementsService {
     DocstoreService docstoreService
     FormService formService
     LicenseService licenseService
+    CompareService compareService
 
     static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -144,9 +146,7 @@ class CopyElementsService {
             objectsToCompare.add(targetObject)
         }
 
-        Org contextOrg = contextService.org
-
-        result = regroupObjectProperties(objectsToCompare, contextOrg)
+        result = regroupObjectProperties(objectsToCompare)
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
@@ -175,7 +175,7 @@ class CopyElementsService {
             result.privateProperties = privateProperties
         }*//*
 
-        result = regroupObjectProperties(objectsToCompare, contextOrg)
+        result = regroupObjectProperties(objectsToCompare)
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
@@ -363,9 +363,8 @@ class CopyElementsService {
 
     Map copyObjectElements_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
@@ -457,9 +456,8 @@ class CopyElementsService {
 
     Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
         if (params.targetObjectId) {
@@ -522,9 +520,8 @@ class CopyElementsService {
 
     Map copyObjectElements_Identifiers(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
         if (params.targetObjectId) {
@@ -558,9 +555,8 @@ class CopyElementsService {
 
     Map copyObjectElements_Subscriber(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
         if (params.targetObjectId) {
@@ -585,10 +581,7 @@ class CopyElementsService {
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         boolean isRenewSub = params.isRenewSub ? true : false
 
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
-
+        FlashScope flash = getCurrentFlashScope()
         Object targetObject = null
         if (params.targetObjectId) {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
@@ -614,9 +607,8 @@ class CopyElementsService {
 
     Map copyObjectElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
@@ -1139,9 +1131,8 @@ class CopyElementsService {
     }
 
     boolean isBothObjectsSet(Object sourceObject, Object targetObject) {
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         if (!sourceObject || !targetObject) {
             Object[] args = [messageSource.getMessage("${sourceObject.getClass().getSimpleName().toLowerCase()}.label", null, locale)]
             if (!sourceObject) flash.error += messageSource.getMessage('copyElementsIntoObject.noSourceObject', args, locale) + '<br />'
@@ -1151,68 +1142,15 @@ class CopyElementsService {
         return true
     }
 
-    Map regroupObjectProperties(List<Object> objectsToCompare, Org org) {
-        LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
-        objectsToCompare.each{ object ->
-            Map allPropDefGroups = object._getCalculatedPropDefGroups(org)
-            allPropDefGroups.entrySet().each { propDefGroupWrapper ->
-                //group group level
-                //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
-                String wrapperKey = propDefGroupWrapper.getKey()
-                if(wrapperKey.equals("orphanedProperties")) {
-                    TreeMap orphanedProperties = result.orphanedProperties
-                    orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties, object, propDefGroupWrapper.getValue())
-                    result.orphanedProperties = orphanedProperties
-                }
-                else {
-                    LinkedHashMap groupedProperties = result.groupedProperties
-                    //group level
-                    //Each group may have different property groups
-                    propDefGroupWrapper.getValue().each { propDefGroup ->
-                        PropertyDefinitionGroup groupKey
-                        PropertyDefinitionGroupBinding groupBinding
-                        switch(wrapperKey) {
-                            case "global":
-                                groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.isVisible)
-                                    groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTrees(groupedProperties, groupKey,null, object))
-                                break
-                            case "local":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.isVisible) {
-                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTrees(groupedProperties, groupKey, groupBinding, object))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                            case "member":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
-                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTrees(groupedProperties, groupKey, groupBinding, object))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                        }
-                    }
-                    result.groupedProperties = groupedProperties
-                }
-            }
-            TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, object, object.propertySet.findAll { it.type.tenant?.id == org.id })
-            result.privateProperties = privateProperties
-        }
-        result
+    Map regroupObjectProperties(List<Object> objectsToCompare) {
+        compareService.compareProperties(objectsToCompare)
+    }
+
+    FlashScope getCurrentFlashScope() {
+        GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        HttpServletRequest request = grailsWebRequest.getCurrentRequest()
+
+        grailsWebRequest.attributes.getFlashScope(request)
     }
 }
 

@@ -30,8 +30,7 @@ class EscapeService {
                 .replaceAll("Ö", "Oe")
                 .replaceAll("Ü", "Ue")
 
-        return result;
-
+        result
     }
 
     BigDecimal parseFinancialValue(String input) {

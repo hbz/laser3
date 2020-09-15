@@ -50,7 +50,7 @@ class SystemAnnouncement {
     }
 
     static List<SystemAnnouncement> getPublished(int periodInDays) {
-        def dcCheck = (new Date()).minus(periodInDays)
+        Date dcCheck = (new Date()).minus(periodInDays)
 
         SystemAnnouncement.executeQuery(
                 'select sa from SystemAnnouncement sa ' +

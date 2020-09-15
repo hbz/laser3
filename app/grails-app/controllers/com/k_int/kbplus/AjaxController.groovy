@@ -3,13 +3,13 @@ package com.k_int.kbplus
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -38,6 +38,8 @@ class AjaxController {
     def accessService
     def escapeService
     def formService
+    CompareService compareService
+    LinksGenerationService linksGenerationService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -2614,7 +2616,7 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def TaskEdit() {
+    def editTask() {
         Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
         result.params = params
@@ -2629,7 +2631,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def TaskCreate() {
+    def createTask() {
         long backendStart = System.currentTimeMillis()
         Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditions(contextOrg)
@@ -2640,7 +2642,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def addressEdit() {
+    def editAddress() {
         Map model = [:]
         model.addressInstance = Address.get(params.id)
         if (model.addressInstance){
@@ -2715,8 +2717,90 @@ class AjaxController {
         }
     }
 
+    def adjustCompareSubscriptionList(){
+        List<Subscription> data
+        List result = []
+        boolean showActiveSubs = params.showActiveSubs == 'true'
+        boolean showIntendedSubs = params.showIntendedSubs == 'true'
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedSubs = params.showConnectedSubs == 'true'
+        Map queryParams = [:]
+        queryParams.status = []
+        if (showActiveSubs) { queryParams.status << RDStore.SUBSCRIPTION_CURRENT.id }
+        if (showIntendedSubs) { queryParams.status << RDStore.SUBSCRIPTION_INTENDED.id }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedSubs = showConnectedSubs
+
+        data = compareService.getMySubscriptions(queryParams)
+
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (showSubscriber) {
+                List parents = data.clone()
+                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
+                data.addAll(Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc', [parents: parents, subscriberRoleTypes: subscriberRoleTypes]))
+            }
+        }
+
+        if (showConnectedSubs){
+            data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.user))
+        }
+
+        if(data) {
+            data.each { Subscription s ->
+                result.add([value: s.id, text: s.dropdownNamingConvention()])
+            }
+        }
+        withFormat {
+            json {
+                render result as JSON
+            }
+        }
+    }
+
+    def adjustCompareLicenseList(){
+        List<License> data
+        List result = []
+        boolean showActiveLics = params.showActiveLics == 'true'
+        boolean showIntendedLics = params.showIntendedLics == 'true'
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedLics = params.showConnectedLics == 'true'
+        Map queryParams = [:]
+        queryParams.status = []
+        if (showActiveLics) { queryParams.status << RDStore.LICENSE_CURRENT.id }
+        if (showIntendedLics) { queryParams.status << RDStore.LICENSE_INTENDED.id }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedLics = showConnectedLics
+
+        data = compareService.getMyLicenses(queryParams)
+
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (showSubscriber) {
+                List parents = data.clone()
+                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
+                data.addAll(License.executeQuery('select l from License l join l.orgRelations oo where l.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc', [parents: parents, subscriberRoleTypes: subscriberRoleTypes]))
+            }
+        }
+
+        if (showConnectedLics){
+
+        }
+
+        if(data) {
+            data.each { License l ->
+                result.add([value: l.id, text: l.dropdownNamingConvention()])
+            }
+        }
+        withFormat {
+            json {
+                render result as JSON
+            }
+        }
+    }
+
     @Secured(['ROLE_USER'])
-    def AddressCreate() {
+    def createAddress() {
         Map model = [:]
         model.orgId = params.orgId
         model.prsId = params.prsId
@@ -2761,7 +2845,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def consistencyCheck() {
-        def result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
+        List result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
         render result as JSON
     }
 }

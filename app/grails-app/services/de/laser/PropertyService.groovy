@@ -2,16 +2,15 @@ package de.laser
 
 import com.k_int.kbplus.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.AppUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 
 @Transactional
 class PropertyService {
 
-    def grailsApplication
     def genericOIDService
     def contextService
 
@@ -111,10 +110,10 @@ class PropertyService {
         [query: base_qry, queryParams: base_qry_params]
     }
 
-    def getUsageDetails() {
-        List usedPdList  = []
-        Map detailsMap = [:]
-        List multiplePdList = []
+    List getUsageDetails() {
+        List<Long> usedPdList  = []
+        Map<String, Object> detailsMap = [:]
+        List<Long> multiplePdList = []
 
         AppUtils.getAllDomainClasses().each { dc ->
 

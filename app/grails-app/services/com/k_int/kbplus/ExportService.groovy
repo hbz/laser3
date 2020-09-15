@@ -1,14 +1,15 @@
 package com.k_int.kbplus
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import groovy.time.TimeDuration
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -815,10 +816,10 @@ class ExportService {
 	 * @param event - text which will be print out, describing the event
 	 * @return time when the method is called
 	 */
-	def printStart(event){
-		def starttime = new Date();
+	Date printStart(event){
+		Date starttime = new Date()
 		log.debug("******* Start ${event}: ${starttime} *******")
-		return starttime
+		starttime
 	}
 	
 	/**
@@ -829,9 +830,9 @@ class ExportService {
 	 * @param starttime - the time when the event started
 	 * @param event - text which will be print out, describing the event
 	 */
-	def printDuration(starttime, event){
+	void printDuration(Date starttime, String event){
 		use(groovy.time.TimeCategory) {
-			def duration = new Date() - starttime
+			TimeDuration duration = new Date() - starttime
 			log.debug("******* End ${event}: ${new Date()} *******")
 			log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
 		}

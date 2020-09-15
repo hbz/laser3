@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; de.laser.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Task;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Task;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">

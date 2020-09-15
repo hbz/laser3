@@ -18,17 +18,17 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
@@ -1540,7 +1540,7 @@ class SurveyController {
             ie.save(flush: true)
 
             if(issueEntitlementGroup){
-                println(issueEntitlementGroup)
+                //println(issueEntitlementGroup)
                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                         ie: ie,
                         ieGroup: issueEntitlementGroup)
@@ -2069,7 +2069,7 @@ class SurveyController {
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
-        def currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date(System.currentTimeMillis())
 
         if (result.editable) {
 
@@ -2776,6 +2776,11 @@ class SurveyController {
             }
             result.num_sub_rows = subscriptions.size()
             result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        }
+
+        if(result.surveyConfig.subscription) {
+            String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: GenericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
         
         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
@@ -4145,8 +4150,7 @@ class SurveyController {
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess()
-        ArrayList<Long> resultOrgIds
-        def tmpParams = params.clone()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))

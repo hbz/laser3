@@ -14,7 +14,6 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 
-import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
 class PendingChange {
@@ -38,7 +37,6 @@ class PendingChange {
 
     Subscription subscription
     License license
-    SystemObject systemObject
     @Deprecated
     Package pkg
     CostItem costItem
@@ -73,7 +71,6 @@ class PendingChange {
     static transients = ['payloadAsJSON', 'changeDocAsJSON', 'message', 'parsedParams'] // mark read-only accessor methods
 
     static mapping = {
-        systemObject column:'pc_sys_obj'
         subscription column:'pc_sub_fk',        index:'pending_change_sub_idx'
             license column:'pc_lic_fk',         index:'pending_change_lic_idx'
                 pkg column:'pc_pkg_fk',         index:'pending_change_pkg_idx'
@@ -100,7 +97,6 @@ class PendingChange {
     }
 
     static constraints = {
-        systemObject    (nullable:true)
         subscription    (nullable:true)
         license         (nullable:true)
         payload(nullable:true, blank:false)

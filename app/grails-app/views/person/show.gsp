@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -449,11 +449,11 @@
 </html>
 <g:javascript>
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
-            %{--var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
+            %{--var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
         function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajax" action="AddressCreate"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
+            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
             private_address_modal(url);
         }
         function addressEdit(id) {

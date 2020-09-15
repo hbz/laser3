@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
-import com.k_int.properties.PropertyDefinition
 import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
@@ -10,6 +9,7 @@ import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -23,6 +23,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -117,7 +118,7 @@ class SubscriptionController
 
         result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
         result.contextOrg = contextService.getOrg()
-        def verystarttime = exportService.printStart("subscription")
+        Date verystarttime = exportService.printStart("subscription")
 
         log.debug("subscription id:${params.id} format=${response.format}")
 
@@ -2491,8 +2492,7 @@ class SubscriptionController
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        ArrayList<Long> resultOrgIds
-        def tmpParams = params.clone()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
@@ -4618,6 +4618,7 @@ class SubscriptionController
                         kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
+                        type: genericOIDService.resolveOID(entry.type),
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null

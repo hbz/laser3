@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;com.k_int.kbplus.GenericOIDService" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />

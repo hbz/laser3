@@ -3,11 +3,11 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
+import de.laser.properties.PropertyDefinition
 import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders

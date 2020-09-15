@@ -11,14 +11,9 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
-import com.k_int.properties.PropertyDefinition
-import de.laser.Address
-import de.laser.Contact
-import de.laser.OrgSettings
-import de.laser.Person
-import de.laser.UserSettings
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult

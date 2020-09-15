@@ -5,9 +5,9 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.OrgSettings
 import de.laser.StatusUpdateService
 import de.laser.SystemAnnouncement
@@ -594,7 +594,6 @@ class AdminController extends AbstractDebugController {
             redirect controller: 'admin', action: 'dataConsistency'
         }
 
-        result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
 
         result
@@ -1652,7 +1651,7 @@ SELECT * FROM (
             propDefs << ["${it}": itResult]
         }
 
-        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
 
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,
@@ -1942,8 +1941,8 @@ SELECT * FROM (
             }
 
             flash.message = "Verbearbeitet: ${count} /Geändert ${countChanges}"
-            println(count)
-            println(countChanges)
+            //println(count)
+            //println(countChanges)
             params.remove("kbartPreselct")
         }
 

@@ -9,9 +9,6 @@ import grails.transaction.Transactional
 @Transactional
 class RefdataService {
 
-    def grailsApplication
-    def genericOIDService
-
     List getUsageDetails() {
         def detailsMap      = [:]
         def usedRdvList     = []

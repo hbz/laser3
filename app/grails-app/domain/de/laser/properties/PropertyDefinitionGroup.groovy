@@ -1,4 +1,4 @@
-package com.k_int.properties
+package de.laser.properties
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org

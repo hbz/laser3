@@ -1,5 +1,7 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.SurveyConfig; com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.License;de.laser.Links" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.SurveyConfig; com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.License;de.laser.Links" %>
 <laser:serviceInjection />
+
+<g:form action="compareSubscriptions" controller="compare" method="post">
 
 <div class="subscription-results subscription-results la-clear-before">
     <g:if test="${subscriptions}">
@@ -9,6 +11,11 @@
             <table class="ui celled sortable table table-tworow la-table">
                 <thead>
                     <tr>
+                        <g:if test="${compare}">
+                            <th scope="col" rowspan="2" class="center aligned">
+                                <g:message code="default.compare.submit.label"/>
+                            </th>
+                        </g:if>
                         <th scope="col" rowspan="2" class="center aligned">
                             ${message(code:'sidewide.number')}
                         </th>
@@ -70,6 +77,11 @@
                 <tbody>
                 <g:each in="${subscriptions}" var="s" status="i">
                     <tr>
+                        <g:if test="${compare}">
+                            <td class="center aligned">
+                                <g:checkBox name="selectedObjects" value="${s.id}" checked="false"/>
+                            </td>
+                        </g:if>
                         <td class="center aligned">
                             ${ (params.int('offset') ?: 0)  + i + 1 }
                         </td>
@@ -292,6 +304,13 @@
     </g:else>
 
 </div>
+
+    <g:if test="${compare}">
+        <br>
+        <input type="submit" class="ui button" value="${message(code:'menu.my.comp_sub')}" />
+    </g:if>
+
+</g:form>
 
 <g:if test="${subscriptions}">
     <semui:paginate action="${actionName}" controller="${controllerNamr}" params="${params}"

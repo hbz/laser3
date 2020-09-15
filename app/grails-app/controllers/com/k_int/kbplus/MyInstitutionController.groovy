@@ -3,13 +3,13 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupItem
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -334,6 +334,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
+        result.compare = params.compare ?: ''
 
         RefdataValue licensee_role           = RDStore.OR_LICENSEE
         RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
@@ -833,6 +834,8 @@ join sub.orgRelations or_sub where
 		//pu.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+
+        result.compare = params.compare ?: ''
 
         // Write the output to a file
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
@@ -3558,7 +3561,7 @@ join sub.orgRelations or_sub where
 
         result.propertyDefinitions = propDefs
 
-        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
         result.usedPdList = usedPdList
         result.attrMap = attrMap
         result.multiplePdList = multiplePdList
@@ -3618,7 +3621,7 @@ join sub.orgRelations or_sub where
             propDefs[it] = itResult
         }
 
-        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
         result.propertyDefinitions = propDefs
         result.attrMap = attrMap
         result.usedPdList = usedPdList

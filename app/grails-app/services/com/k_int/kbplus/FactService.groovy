@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import de.laser.OrgSettings
 import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
@@ -36,13 +36,13 @@ class FactService {
 
   static transactional = false
 
-    def registerFact(fact) {
+    boolean registerFact(fact) {
       // log.debug("Enter registerFact");
       boolean result = false
 
-      if ( ( fact.type == null ) ||
-           ( fact.type == '' ) ) 
+      if ( fact.type == null || fact.type == '' ) {
         return result
+      }
 
       try {
           RefdataValue fact_type_refdata_value = RefdataValue.construct([
@@ -54,7 +54,7 @@ class FactService {
 
           // Are we updating an existing fact?
           if ( fact.uid != null ) {
-            def current_fact = Fact.findByFactUid(fact.uid)
+            Fact current_fact = Fact.findByFactUid(fact.uid)
 
             if ( current_fact == null ) {
               // log.debug("Create new fact..");
@@ -88,7 +88,7 @@ class FactService {
       finally {
         // log.debug("Leave registerFact");
       }
-      return result
+      result
     }
 
   def getTotalCostPerUse(subscription, type, existingMetrics) {

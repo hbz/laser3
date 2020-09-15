@@ -5,8 +5,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.*
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.Action
@@ -46,8 +46,6 @@ class YodaController {
     def subscriptionService
     def exportService
     def dataConsistencyService
-
-    static boolean ftupdate_running = false
 
     @Secured(['ROLE_YODA'])
     def index() {
@@ -1727,7 +1725,7 @@ class YodaController {
                         if(surveyResult?.size() > 0) {
                             count++
                             def newMap = [:]
-                            println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
+                            //println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
                             newMap.surveyResult = surveyResult?.id ?: ""
                             newMap.subName = sub.name
                             newMap.subId = sub.id
@@ -1735,12 +1733,12 @@ class YodaController {
                             newMap.sortName = org1?.sortname
                             newMap.propertiesSize = surveyResult?.size()
                             newMap.info = 'Nachfolger Lizenz vorhanden'
-                            println("")
+                            //println("")
                             resultMap << newMap
                         }else{
                             count++
                             def newMap = [:]
-                            println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
+                            //println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
                             newMap.surveyResult = 'Kein Umfrage'
                             newMap.subName = sub.name
                             newMap.subId = sub.id
@@ -1748,7 +1746,7 @@ class YodaController {
                             newMap.sortName = org1?.sortname
                             newMap.propertiesSize = 0
                             newMap.info = 'Nachfolger Lizenz vorhanden'
-                            println("")
+                            //println("")
                             resultMap << newMap
                         }
 
@@ -1799,7 +1797,7 @@ class YodaController {
         }
         def output = JsonOutput.toJson(resultMap)
 
-        println(output)
+        //println(output)
 
         response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
         response.contentType = "text/csv"

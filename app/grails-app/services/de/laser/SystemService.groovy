@@ -11,8 +11,8 @@ class SystemService {
 
     def grailsApplication
 
-    def serviceCheck() {
-        def checks = [:]
+    Map<String, Object> serviceCheck() {
+        Map<String, Object> checks = [:]
 
         if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowSystemInfo()) {
             //GlobalData Sync

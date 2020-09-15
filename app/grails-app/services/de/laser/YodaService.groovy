@@ -45,10 +45,6 @@ class YodaService {
     ChangeNotificationService changeNotificationService = Holders.grailsApplication.mainContext.getBean('changeNotificationService')
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
 
-    // gsp:
-    // grailsApplication.mainContext.getBean("yodaService")
-    // <g:set var="yodaService" bean="yodaService"/>
-
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
         return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
