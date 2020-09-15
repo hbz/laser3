@@ -23,6 +23,7 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.helper.RDConstants
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
@@ -506,17 +507,17 @@ class FinanceService {
      */
     Map<String,Object> calculateResults(Collection<CostItem> costItems) {
         //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List<Map<BigDecimal,BigDecimal>> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        List<Map<BigDecimal,BigDecimal>> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
         Map<BigDecimal,BigDecimal> localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         Map<BigDecimal,BigDecimal> localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
-        List<Map<String,BigDecimal>> billingSums = []
+        List billingSums = []
         Set<String> positiveCurrencies = []
         Map<String,BigDecimal> localSums = [:]
         BigDecimal billingSum = 0.0
         BigDecimal billingSumAfterTax = 0.0
         if(billingSumsPositive.size() > 0) {
-            billingSumsPositive.each { posEntry ->
+            billingSumsPositive.each { CostItem posEntry ->
                 if (billingSumsNegative.size() > 0) {
                     int index = getCurrencyIndexInList(billingSumsNegative,posEntry.currency)
                     if(index > -1) {
@@ -538,7 +539,7 @@ class FinanceService {
             }
         }
         if(billingSumsNegative.size() > 0) {
-            billingSumsNegative.each { negEntry ->
+            billingSumsNegative.each { CostItem negEntry ->
                 if(!positiveCurrencies.contains(negEntry.currency))
                     billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
             }
@@ -1163,6 +1164,8 @@ class FinanceService {
 
     Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
         Map<String,Object> result = [:]
+        //we define some entry points
+        Set<Subscription> linkedSubscriptionSet = []
         if(configMap.subscription || configMap.provider) {
             String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
             if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
@@ -1171,8 +1174,6 @@ class FinanceService {
                 ciQuery += 'and ci.sub in (:subs)'
             }
             Map<String, Object> ciParams = [owner: configMap.institution]
-            //we define some entry points
-            Set<Subscription> linkedSubscriptionSet = []
             if (configMap.subscription) {
                 Subscription starting = Subscription.get(configMap.subscription)
                 Map<String, Object> subQueryParams = [starting: GenericOIDService.getOID(starting), linkType: RDStore.LINKTYPE_FOLLOWS]
@@ -1190,6 +1191,39 @@ class FinanceService {
             }
             result.linkedSubscriptionSet = linkedSubscriptionSet
             result.costItems = linkedSubscriptionSet ? CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet]) : []
+        }
+        else if(configMap.filterPropDef) {
+            PropertyDefinition filterPropDef = genericOIDService.resolveOID(configMap.filterPropDef)
+            String prop, query
+            switch(filterPropDef.descr) {
+                case PropertyDefinition.SUB_PROP: query = "select sp.owner from SubscriptionProperty sp where sp.type = :pd"
+                    prop = "sp"
+                    break
+                case PropertyDefinition.ORG_PROP: query = "select op.owner from OrgProperty op where op.type = :pd"
+                    prop = "op"
+                    break
+                case PropertyDefinition.PLA_PROP: query = "select plp.owner from PlatformProperty plp where plp.type = :pd"
+                    prop = "plp"
+                    break
+            }
+            if (query && prop && configMap.filterProp) {
+                Set<String> filterPropValues = configMap.filterProp.split(',')
+                log.debug(filterPropValues.toString())
+                switch(filterPropDef.type) {
+                    case 'intValue': query += " and ${prop}.intValue in (:values)"
+                        break
+                    case 'decValue': query += " and ${prop}.decValue in (:values)"
+                        break
+                    case 'stringValue': query += " and ${prop}.stringValue in (:values)"
+                        break
+                    case 'dateValue': query += " and ${prop}.dateValue in (:values)"
+                        break
+                    case 'urlValue': query += " and ${prop}.urlValue in (:values)"
+                        break
+                    case 'refValue': query += " and ${prop}.refValue in (:values)"
+                        break
+                }
+            }
         }
         result
     }

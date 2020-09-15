@@ -116,6 +116,12 @@ class MyInstitutionController extends AbstractDebugController {
                 configMap.provider = params.provider
             else if(params.subscriber)
                 configMap.subscriber = params.subscriber
+            if(params.filterPropDef) {
+                configMap.filterPropDef = params.filterPropDef
+                if (params.filterProp) {
+                    configMap.filterProp = params.filterProp //not prepared yet!
+                }
+            }
             result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
             if(result.costItems) {
                 //test for ERMS-1125: group by elements
@@ -145,6 +151,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.packages = packages
         result.providers = providers
         result.subscribers = subscribers
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP], result.institution)
         result
     }
 

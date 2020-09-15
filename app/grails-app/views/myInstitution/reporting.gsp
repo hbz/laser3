@@ -38,7 +38,7 @@
 
         <semui:filter>
             <g:form name="startingPoint" class="ui form" action="reporting">
-                <div class="three fields">
+                <div class="four fields">
                     <div class="field">
                         <label for="subscription">
                             <g:message code="subscription"/>
@@ -66,8 +66,6 @@
                                   noSelection="['':message(code:'default.select.choose.label')]"
                                   class="ui search selection dropdown"/>
                     </div>
-                </div>
-                <div class="three fields">
                     <div class="field">
                         <label for="provider">
                             <g:message code="default.provider.label"/>
@@ -77,6 +75,9 @@
                                   noSelection="['':message(code:'default.select.choose.label')]"
                                   class="ui search selection dropdown"/>
                     </div>
+                </div>
+                <div class="four fields">
+                    <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
                     <div class="field la-field-right-aligned">
                         <g:hiddenField name="formSubmit" value="true"/>
                         <a href="${createLink(action:'reporting')}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
