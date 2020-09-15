@@ -41,7 +41,8 @@
                 </g:else>
             </g:if>
             <g:if test="${actionName == 'show'}">
-                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')}">
+                <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
+                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(org.id == license.getLicensingConsortium().id && license.instanceOf)}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>

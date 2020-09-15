@@ -31,7 +31,21 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propDefGroup.getCurrentProperties(ownobj).sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:if test="${ownobj instanceof License}">
+            <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
+            <g:set var="atSubscr" value="${ownobj.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+        </g:if>
+        <g:elseif test="${ownobj instanceof Subscription}">
+            <g:set var="consortium" value="${ownobj.getConsortia()}"/>
+            <g:set var="atSubscr" value="${ownobj.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+        </g:elseif>
+        <g:if test="${propDefGroup.isVisible || propDefGroupBinding?.isVisible}">
+            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentProperties(ownobj)}" />
+        </g:if>
+        <g:elseif test="${consortium != null}">
+            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentPropertiesOfTenant(ownobj,consortium)}" />
+        </g:elseif>
+        <g:each in="${propDefGroupItems.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
             <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <tr>
@@ -204,13 +218,6 @@
                             </g:else>
                         </g:if>
                         <g:else>
-                            <g:if test="${ownobj instanceof License}">
-                                <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
-                            </g:if>
-                            <g:elseif test="${ownobj instanceof Subscription}">
-                                <g:set var="consortium" value="${ownobj.getConsortia()}"/>
-                                <g:set var="atSubscr" value="${ownobj.getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
-                            </g:elseif>
                             <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                 <g:if test="${ownobj.isSlaved}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="large icon thumbtack blue"></i></span>

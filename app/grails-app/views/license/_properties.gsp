@@ -50,17 +50,18 @@
             String cat                             = entry[0]
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
+            List numberOfConsortiaProperties       = institution.id != license.getLicensingConsortium().id ? pdg.getCurrentPropertiesOfTenant(license,license.getLicensingConsortium()) : []
 
             boolean isVisible = false
 
             if (cat == 'global') {
-                isVisible = pdg.isVisible
+                isVisible = pdg.isVisible || numberOfConsortiaProperties.size() > 0
             }
             else if (cat == 'local') {
                 isVisible = binding.isVisible
             }
             else if (cat == 'member') {
-                isVisible = binding.isVisible && binding.isVisibleForConsortiaMembers
+                isVisible = (binding.isVisible || numberOfConsortiaProperties.size() > 0) && binding.isVisibleForConsortiaMembers
             }
         %>
 
@@ -73,6 +74,14 @@
                     ownobj: license,
                     custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
+            <g:if test="${!binding?.isVisible && !pdg.isVisible}">
+                <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license,institution).size()-numberOfConsortiaProperties.size()}" />
+                <g:if test="${numberOfProperties > 0}">
+                    <%
+                        hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties])}"
+                    %>
+                </g:if>
+            </g:if>
         </g:if>
         <g:else>
             <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(license)}" />
