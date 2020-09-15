@@ -31,7 +31,6 @@ class AddressController extends AbstractDebugController {
 				break
 			case 'POST':
                 if (formService.validateToken(params)) {
-                    println("Test")
                     Address addressInstance = new Address(params)
                     if (!addressInstance.save()) {
                         flash.error = message(code: 'default.save.error.general.message')
@@ -42,7 +41,7 @@ class AddressController extends AbstractDebugController {
 
                     flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.name])
                 }
-                println("Mow")
+              
                 redirect(url: request.getHeader('referer'), params: params)
 			break
 		}
