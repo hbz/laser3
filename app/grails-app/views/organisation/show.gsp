@@ -656,8 +656,8 @@
             var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
         }
-        function addressEdit(id) {
-            var url = '<g:createLink controller="ajax" action="addressEdit"/>?id='+id;
+        function editAddress(id) {
+            var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
             private_address_modal(url)
         }
 

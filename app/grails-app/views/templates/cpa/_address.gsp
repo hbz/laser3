@@ -8,7 +8,7 @@
                 <g:if test="${ ! hideAddressType}">
                     <strong>${address.type?.getI10n('value')}:</strong>
                 </g:if>
-                <div class="item" onclick="addressEdit(${address.id});" >
+                <div class="item" onclick="editAddress(${address.id});" >
                     <g:if test="${address.name}">
                         ${address.name}
                     </g:if>
@@ -65,8 +65,8 @@
 	</div>
 </g:if>
 <g:javascript>
-    function addressEdit(id) {
-        var url = '<g:createLink controller="ajax" action="addressEdit"/>?id='+id;
+    function editAddress(id) {
+        var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
         private_address_modal(url)
     }
     function private_address_modal(url) {

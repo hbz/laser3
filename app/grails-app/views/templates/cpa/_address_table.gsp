@@ -72,7 +72,7 @@
             <td class="x">
                 <g:if test="${editable && tmplShowDeleteButton}">
 
-                    <button type="button" onclick="addressEdit(${address.id})" class="ui icon button">
+                    <button type="button" onclick="editAddress(${address.id})" class="ui icon button">
                         <i class="write icon"></i>
                     </button>
                     <g:link class="ui negative button js-open-confirm-modal"
@@ -89,8 +89,8 @@
 </table>
 
 <g:javascript>
-    function addressEdit(id) {
-        var url = '<g:createLink controller="ajax" action="addressEdit"/>?id='+id;
+    function editAddress(id) {
+        var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
         private_address_modal(url)
     }
     function private_address_modal(url) {
