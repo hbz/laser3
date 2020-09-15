@@ -1,4 +1,4 @@
-<%@ page import="de.laser.FinanceService; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.CostItem; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.FinanceService; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder;" %>
 <br>
 <semui:form>
 

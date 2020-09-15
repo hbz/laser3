@@ -1,6 +1,7 @@
-package com.k_int.kbplus
+package de.laser.finance
 
-import de.laser.BudgetCode
+import com.k_int.kbplus.Org
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 
@@ -26,20 +27,17 @@ class CostItemGroup {
     }
 
     @Transient
-    static def refdataFind(params) {
-        def result     = []
-        def qryResults = []
-        def searchTerm = (params.q ? params.q.toLowerCase() : '' ) + "%"
-        Org orgOwner   = Org.findByShortcode(params.shortcode)
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
+        Org owner = Org.findByShortcode(params.shortcode)
 
-        if (! searchTerm) {
-            qryResults = BudgetCode.findAllByOwner(orgOwner)
-        } else {
-            qryResults = BudgetCode.findAllByOwnerAndValueIlike(orgOwner, searchTerm)
-        }
+        if (owner) {
+            String searchTerm = (params.q ? params.q.toLowerCase() : '' ) + "%"
+            List<BudgetCode> qryResults = BudgetCode.findAllByOwnerAndValueIlike(owner, searchTerm)
 
-        qryResults.each { bc ->
-            result.add([id:bc.id, text:bc.value])
+            qryResults.each { bc ->
+                result.add([id:bc.id, text:bc.value])
+            }
         }
         result
     }

@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.IssueEntitlementGroup
@@ -20,6 +21,7 @@ import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -711,8 +713,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   * OPTIONS: startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser,inst_shortcode
   **/
   @Transient
-  static def refdataFind(params) {
-    def result = [];
+  static def refdataFind(GrailsParameterMap params) {
+      List<Map<String, Object>> result = []
 
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]

@@ -1,5 +1,5 @@
 <!-- _result_tab_owner.gsp -->
-<%@page import="de.laser.helper.RDStore;com.k_int.kbplus.CostItem"%>
+<%@page import="de.laser.helper.RDStore;de.laser.finance.CostItem"%>
 <laser:serviceInjection />
 <%
     int colspan = 2

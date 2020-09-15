@@ -1,6 +1,6 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.CostItem
+import de.laser.finance.CostItem
 import com.k_int.kbplus.Org
 import de.laser.api.v0.*
 import de.laser.helper.Constants
@@ -158,7 +158,7 @@ class ApiCostItem {
         result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // com.k_int.kbplus.Subscription // RECURSION ???
         //result.subPkg   = ApiStubReader.resolveSubscriptionPackageStub(costItem.subPkg, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
         result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
-        result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // com.k_int.kbplus.Order
+        result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // de.laser.finance.Order
         result.invoice  = ApiUnsecuredMapReader.getInvoiceMap(costItem.invoice)
         result.surveyOrg = costItem?.surveyOrg ?: null
 

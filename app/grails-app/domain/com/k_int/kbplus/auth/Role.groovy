@@ -1,6 +1,7 @@
 package com.k_int.kbplus.auth
 
 import de.laser.traits.I10nTrait
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class Role implements I10nTrait {
 
@@ -25,15 +26,12 @@ class Role implements I10nTrait {
         roleType    blank: false, nullable: true
     }
 
-    static def refdataFind(params) {
-        def result = [];
-        def ql = null;
-        ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
+        List<Role> ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
 
-        if (ql) {
-            ql.each { id ->
-                result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
-            }
+        ql.each { id ->
+            result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
         }
 
         result

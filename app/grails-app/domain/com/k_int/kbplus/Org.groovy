@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.PermGrant
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.Address
@@ -24,6 +25,7 @@ import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -421,18 +423,16 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         )
     }
 
-  static def refdataFind(params) {
-    def result = [];
-    List<Org> ql = Org.findAllByNameIlike("%${params.q}%",params)
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
+        List<Org> ql = Org.findAllByNameIlike("%${params.q}%", params)
 
-    if ( ql ) {
       ql.each { id ->
         result.add([id:"${id.class.name}:${id.id}",text:"${id.name}"])
       }
-    }
 
-    result
-  }
+        result
+    }
 
     // called from AjaxController.resolveOID2()
   static Org refdataCreate(value) {

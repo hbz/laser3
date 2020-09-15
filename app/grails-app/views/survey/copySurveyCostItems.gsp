@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:serviceInjection/>
 
 <g:set var="surveyService" bean="surveyService"/>
@@ -283,7 +283,7 @@ ${surveyInfo?.name}
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
+                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>
@@ -318,7 +318,7 @@ ${surveyInfo?.name}
                     </td>
                     <td>
                         <g:if test="${participant.oldSub}">
-                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
+                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSub">
 
                                 ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
@@ -374,7 +374,7 @@ ${surveyInfo?.name}
 
                     <td>
                         <g:if test="${participant.newSub}">
-                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
+                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSuccessorSub">
 
                                 ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br>

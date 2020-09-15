@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.Combo
-import com.k_int.kbplus.CostItemElementConfiguration
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
@@ -11,6 +10,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
+import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition

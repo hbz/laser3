@@ -5,6 +5,7 @@ import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -113,8 +114,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         }
     }
 
-    static def refdataFind(params) {
-        def result = []
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
         List<RefdataValue> matches = []
 
         if(! params.q) {

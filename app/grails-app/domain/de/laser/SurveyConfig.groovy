@@ -1,10 +1,11 @@
 package de.laser
 
-import com.k_int.kbplus.CostItem
+
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
+import de.laser.finance.CostItem
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition

@@ -1,6 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import de.laser.finance.BudgetCode
+import de.laser.finance.CostItem
+import de.laser.finance.Invoice
+import de.laser.finance.Order
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType

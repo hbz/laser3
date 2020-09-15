@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.finance.CostItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore

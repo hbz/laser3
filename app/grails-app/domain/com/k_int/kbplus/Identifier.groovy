@@ -4,6 +4,7 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 
@@ -296,8 +297,8 @@ class Identifier implements CalculatedLastUpdated {
       }
   }
 
-  static def refdataFind(params) {
-    def result = [];
+  static def refdataFind(GrailsParameterMap params) {
+      List<Map<String, Object>> result = []
     def ql = null;
     if ( params.q.contains(':') ) {
       def qp=params.q.split(':');

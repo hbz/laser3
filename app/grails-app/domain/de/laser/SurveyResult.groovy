@@ -1,9 +1,10 @@
 package de.laser
 
-import com.k_int.kbplus.CostItem
+
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.finance.CostItem
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinition

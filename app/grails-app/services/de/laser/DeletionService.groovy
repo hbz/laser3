@@ -2,6 +2,12 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import de.laser.finance.BudgetCode
+import de.laser.finance.CostItem
+import de.laser.finance.CostItemElementConfiguration
+import de.laser.finance.Invoice
+import de.laser.finance.Order
+import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition

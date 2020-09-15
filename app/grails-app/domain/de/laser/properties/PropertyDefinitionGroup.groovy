@@ -8,6 +8,7 @@ import de.laser.helper.EhcacheWrapper
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Log4j
@@ -88,8 +89,8 @@ class PropertyDefinitionGroup {
         result
     }
 
-    static refdataFind(params) {
-        def result = []
+    static refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
 
         def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
         def currentObject = genericOIDService.resolveOID(params.oid)
