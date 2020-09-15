@@ -81,10 +81,10 @@
                                 </div>
                             </g:if>
                             <g:if test="${role.functionType}">
-                                ${role.functionType?.getI10n('value')}
+                                ${role.functionType.getI10n('value')}
                             </g:if>
                             <g:if test="${role.positionType}">
-                                (${role.positionType?.getI10n('value')})
+                                (${role.positionType.getI10n('value')})
                             </g:if>
                         </div>
                     </g:each>
