@@ -642,30 +642,30 @@ class AjaxController {
             if(propDef) {
                 List<AbstractPropertyWithCalculatedLastUpdated> values
                 if(propDef.tenant) {
-                    switch(params.domain) {
-                        case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                    switch(propDef.descr) {
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'currentLicenses': values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'listProvider':
-                        case 'currentProviders':
-                        case 'manageMembers': values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
-                        case 'addressbook': values = PersonProperty.findAllByType(propDef)
+                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
+                            break
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                             break
                     }
                 }
                 else {
-                    switch(params.domain) {
-                        case 'currentSubscriptions':
-                        case 'manageConsortiaSubscriptions': values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                    switch(propDef.descr) {
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
-                        case 'currentLicenses': values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
                             break
-                        case 'listProvider':
-                        case 'currentProviders':
-                        case 'manageMembers': values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
+                        /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                            break
+                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
+                            break*/
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                     }
                 }
