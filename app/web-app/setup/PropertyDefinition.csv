@@ -181,7 +181,7 @@ Subscription Property,DFG funding,DFG-Förderung,DFG funding,class com.k_int.kbp
 Subscription Property,DFG funding amount,DFG-Förderung	Höhe,DFG funding amount,class java.math.BigDecimal,,,,,In welchem Umfang fördert die DFG die Lizenz (Angabe in %)?,,,,,
 Subscription Property,Deep Discount Price,Deep-Discount-Preis,Deep Discount Price,class com.k_int.kbplus.RefdataValue,y.n,,,,Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?,,,,,
 Subscription Property,Discount,Rabatt,Discount,class java.lang.String,,,,,Höhe des Rabattes.,,,,,
-Subscription Property,Due date for volume discount,Mengenrabatt Stichtag,Due date for volume discount,class java.util.Date,y.n,,,,Wann ist der Stichtag für die Findung der erreichten Rabattstufe?,,,,,
+Subscription Property,Due date for volume discount,Mengenrabatt Stichtag,Due date for volume discount,class java.util.Date,,,,,Wann ist der Stichtag für die Findung der erreichten Rabattstufe?,,,,,
 Subscription Property,EZB Collection Transfer,EZB Kollektionsdatenweitergabe an Drittsysteme erlaubt?,EZB Collection Transfer,class com.k_int.kbplus.RefdataValue,y.n,,,,Ist die Kollektionsdatenweitergabe an Drittsysteme erlaubt?,,,,,
 Subscription Property,EZB tagging (yellow),EZB Gelbschaltung,EZB tagging (yellow),class com.k_int.kbplus.RefdataValue,y.n,,,,Wird eine Gelbschaltung in der EZB vorgenommen?,,,,,
 Subscription Property,GASCO display name,GASCO-Anzeigename,GASCO display name,class java.lang.String,,,,true,"Dieses Merkmal setzen, um bei Bedarf im GASCO-Monitor einen anderen Lizenznamen anzugeben als in LAS:eR aufgenommen.",,,,,

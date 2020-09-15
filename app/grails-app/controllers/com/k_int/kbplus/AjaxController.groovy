@@ -677,7 +677,6 @@ class AjaxController {
                             break
                     }
                 }
-
                 if (values) {
                     if (propDef.type == Integer.toString()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
@@ -687,12 +686,9 @@ class AjaxController {
                         result = result.sort { x, y -> x.text.compareTo y.text}
                     }
                     else if (propDef.type == Date.toString()) {
-                        values.sort{ x,y -> y.dateValue - x.dateValue }.each {
-                            AbstractPropertyWithCalculatedLastUpdated v ->
-                                if(v.dateValue != null) {
-                                    String vt = g.formatDate(formatName:"default.date.format.notime", date:v.dateValue)
-                                    result.add([value: vt, text: vt])
-                                }
+                        values.dateValue.findAll().unique().sort().reverse().each { v ->
+                            String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
+                            result.add([value: vt, text: vt])
                         }
                     }
                     else {
