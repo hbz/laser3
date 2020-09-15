@@ -59,7 +59,7 @@
 
     <g:render template="/person/formModal" model="['org'               : institution,
                                                    'isPublic'          : RDStore.YN_YES,
-                                                   'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+                                                   'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
     ]"/>
 
     <g:render template="/templates/copyFilteredEmailAddresses" model="[orgList: [institution], emailAddresses: emailAddresses]"/>
