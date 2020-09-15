@@ -47,8 +47,6 @@ class YodaController {
     def exportService
     def dataConsistencyService
 
-    static boolean ftupdate_running = false
-
     @Secured(['ROLE_YODA'])
     def index() {
         redirect action: 'dashboard'

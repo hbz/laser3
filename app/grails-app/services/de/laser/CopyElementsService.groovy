@@ -10,10 +10,13 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.codehaus.groovy.grails.web.servlet.FlashScope
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 
+import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -360,9 +363,8 @@ class CopyElementsService {
 
     Map copyObjectElements_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
@@ -454,9 +456,8 @@ class CopyElementsService {
 
     Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
         if (params.targetObjectId) {
@@ -519,9 +520,8 @@ class CopyElementsService {
 
     Map copyObjectElements_Identifiers(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
         if (params.targetObjectId) {
@@ -555,9 +555,8 @@ class CopyElementsService {
 
     Map copyObjectElements_Subscriber(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
         if (params.targetObjectId) {
@@ -582,10 +581,7 @@ class CopyElementsService {
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         boolean isRenewSub = params.isRenewSub ? true : false
 
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
-
+        FlashScope flash = getCurrentFlashScope()
         Object targetObject = null
         if (params.targetObjectId) {
             targetObject = genericOIDService.resolveOID(params.targetObjectId)
@@ -611,9 +607,8 @@ class CopyElementsService {
 
     Map copyObjectElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
@@ -1136,9 +1131,8 @@ class CopyElementsService {
     }
 
     boolean isBothObjectsSet(Object sourceObject, Object targetObject) {
-        def grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
-        def request = grailsWebRequest.getCurrentRequest()
-        def flash = grailsWebRequest.attributes.getFlashScope(request)
+        FlashScope flash = getCurrentFlashScope()
+
         if (!sourceObject || !targetObject) {
             Object[] args = [messageSource.getMessage("${sourceObject.getClass().getSimpleName().toLowerCase()}.label", null, locale)]
             if (!sourceObject) flash.error += messageSource.getMessage('copyElementsIntoObject.noSourceObject', args, locale) + '<br />'
@@ -1150,6 +1144,13 @@ class CopyElementsService {
 
     Map regroupObjectProperties(List<Object> objectsToCompare) {
         compareService.compareProperties(objectsToCompare)
+    }
+
+    FlashScope getCurrentFlashScope() {
+        GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
+        HttpServletRequest request = grailsWebRequest.getCurrentRequest()
+
+        grailsWebRequest.attributes.getFlashScope(request)
     }
 }
 

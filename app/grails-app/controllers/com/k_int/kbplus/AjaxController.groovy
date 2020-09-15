@@ -2831,7 +2831,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def consistencyCheck() {
-        def result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
+        List result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
         render result as JSON
     }
 }

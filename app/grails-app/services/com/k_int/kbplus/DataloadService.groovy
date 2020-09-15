@@ -51,7 +51,7 @@ class DataloadService {
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
 
-    def es_index
+    String es_index
     def dataload_running=false
     def dataload_stage=-1
     def dataload_message=''

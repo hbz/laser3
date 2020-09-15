@@ -118,7 +118,7 @@ class SubscriptionController
 
         result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
         result.contextOrg = contextService.getOrg()
-        def verystarttime = exportService.printStart("subscription")
+        Date verystarttime = exportService.printStart("subscription")
 
         log.debug("subscription id:${params.id} format=${response.format}")
 

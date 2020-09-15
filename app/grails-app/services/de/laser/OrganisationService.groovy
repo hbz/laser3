@@ -94,9 +94,11 @@ class OrganisationService {
      * @return a String containing the CSV output or the Excel sheet containing the output
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
-        def titles = [messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),'Name']
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
+        List<String> titles = [
+                messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),
+                messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),
+                'Name'
+        ]
         if(addHigherEducationTitles) {
             titles.add(messageSource.getMessage('org.libraryType.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.libraryNetwork.label',null,LocaleContextHolder.getLocale()))
@@ -254,7 +256,7 @@ class OrganisationService {
      */
     Map<String, Object> getPendingRequests(User user, Org ctxOrg) {
 
-        def result = [
+        Map<String, Object> result = [
                 pendingRequests: [],
                 pendingRequestsForGivenInstAdmins: []
                 ]
@@ -2560,7 +2562,7 @@ class OrganisationService {
     }
 
     void createOrgsFromScratch() {
-        def currentServer = ServerUtils.getCurrentServer()
+        String currentServer = ServerUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           institut:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           singlenutzer:Role.findByAuthority('ORG_INST'),

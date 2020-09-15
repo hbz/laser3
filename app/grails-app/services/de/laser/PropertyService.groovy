@@ -11,7 +11,6 @@ import grails.transaction.Transactional
 @Transactional
 class PropertyService {
 
-    def grailsApplication
     def genericOIDService
     def contextService
 
@@ -111,10 +110,10 @@ class PropertyService {
         [query: base_qry, queryParams: base_qry_params]
     }
 
-    def getUsageDetails() {
-        List usedPdList  = []
-        Map detailsMap = [:]
-        List multiplePdList = []
+    List getUsageDetails() {
+        List<Long> usedPdList  = []
+        Map<String, Object> detailsMap = [:]
+        List<Long> multiplePdList = []
 
         AppUtils.getAllDomainClasses().each { dc ->
 
