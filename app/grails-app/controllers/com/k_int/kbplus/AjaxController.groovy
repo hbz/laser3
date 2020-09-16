@@ -1353,6 +1353,7 @@ class AjaxController {
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
         ])
@@ -1842,6 +1843,7 @@ class AjaxController {
                   showConsortiaFunctions: showConsortiaFunctions,
                   contextOrg      : contextOrg,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
