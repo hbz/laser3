@@ -424,14 +424,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     static def refdataFind(GrailsParameterMap params) {
-        List<Map<String, Object>> result = []
-        List<Org> ql = Org.findAllByNameIlike("%${params.q}%", params)
-
-      ql.each { id ->
-        result.add([id:"${id.class.name}:${id.id}",text:"${id.name}"])
-      }
-
-        result
+        GenericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }
 
     // called from AjaxController.resolveOID2()

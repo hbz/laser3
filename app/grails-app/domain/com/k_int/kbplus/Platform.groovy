@@ -240,14 +240,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   }
 
   static def refdataFind(GrailsParameterMap params) {
-    List<Map<String, Object>> result = []
-    List<Platform> ql = Platform.findAllByNameIlike("${params.q}%", params)
-
-      ql.each { t ->
-        result.add([id:"${t.class.name}:${t.id}",text:"${t.name}"])
-      }
-
-    result
+    GenericOIDService.getOIDMapList( Platform.findAllByNameIlike("${params.q}%", params), 'name' )
   }
 
   @Override

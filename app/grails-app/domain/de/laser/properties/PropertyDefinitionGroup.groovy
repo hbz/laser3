@@ -89,10 +89,10 @@ class PropertyDefinitionGroup {
         result
     }
 
-    static refdataFind(GrailsParameterMap params) {
+    static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
 
-        def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
+        GenericOIDService genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
         def currentObject = genericOIDService.resolveOID(params.oid)
 
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
