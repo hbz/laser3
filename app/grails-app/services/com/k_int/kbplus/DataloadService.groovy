@@ -1038,7 +1038,7 @@ class DataloadService {
                     latest_ft_record.lastTimestamp = highest_timestamp
                     latest_ft_record.esElements = latest_ft_record.esElements ?: 0
                     latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-                    latest_ft_record.save(flush: true);
+                    latest_ft_record.save()
                     cleanUpGorm();
                 }
             }
@@ -1051,8 +1051,9 @@ class DataloadService {
 
             latest_ft_record.esElements = latest_ft_record.esElements ?: 0
             latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-            latest_ft_record.save(flush: true);
-        }else{
+            latest_ft_record.save()
+        }
+        else {
             log.debug("updateES ${domain.name}: FTControle is not active")
         }
 

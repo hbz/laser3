@@ -50,7 +50,9 @@
             String cat                             = entry[0]
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
-            List numberOfConsortiaProperties       = contextService.getOrg().id != subscriptionInstance.getConsortia().id ? pdg.getCurrentPropertiesOfTenant(subscriptionInstance,subscriptionInstance.getConsortia()) : []
+            List numberOfConsortiaProperties       = []
+            if(subscriptionInstance.getConsortia() && contextService.getOrg().id != subscriptionInstance.getConsortia().id)
+                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscriptionInstance,subscriptionInstance.getConsortia()))
 
             boolean isVisible = false
 
@@ -75,7 +77,7 @@
                     custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
             <g:if test="${!binding?.isVisible && !pdg.isVisible}">
-                <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscriptionInstance,contextService.getOrg()).size()-numberOfConsortiaProperties.size()}" />
+                <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(subscriptionInstance).size()-numberOfConsortiaProperties.size()}" />
                 <g:if test="${numberOfProperties > 0}">
                     <%
                         hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems.withInheritance', args: [pdg.name, numberOfProperties])}"
