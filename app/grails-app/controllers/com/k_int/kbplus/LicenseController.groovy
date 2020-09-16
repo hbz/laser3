@@ -1169,7 +1169,7 @@ class LicenseController
 
     boolean showConsortiaFunctions(License license) {
 
-        return (license.getLicensingConsortium()?.id == contextService.getOrg().id)
+        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
 }
