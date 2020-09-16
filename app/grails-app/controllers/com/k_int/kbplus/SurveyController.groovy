@@ -4961,7 +4961,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size() ?: 0})", style: 'negative']])
+        renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size()})", style: 'negative']])
 
 
         renewalResult.orgsWithoutResult.each { participantResult ->
