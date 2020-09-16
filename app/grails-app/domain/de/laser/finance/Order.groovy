@@ -2,6 +2,7 @@ package de.laser.finance
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
+import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -37,12 +38,14 @@ class Order {
     @Transient
     static def refdataFind(GrailsParameterMap params) {
         Org owner = Org.findByShortcode(params.shortcode)
-        if (owner) {
-            return GenericOIDService.getOIDMapList(
-                    Order.findAllByOwnerAndOrderNumberIlike(owner,"%${params.q}%", params),
-                    'orderNumber'
-            )
+        if (! owner) {
+            return []
         }
-        return []
+        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
+
+        genericOIDService.getOIDMapList(
+                Order.findAllByOwnerAndOrderNumberIlike(owner,"%${params.q}%", params),
+                'orderNumber'
+        )
     }
 }

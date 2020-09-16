@@ -8,6 +8,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -240,7 +241,9 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   }
 
   static def refdataFind(GrailsParameterMap params) {
-    GenericOIDService.getOIDMapList( Platform.findAllByNameIlike("${params.q}%", params), 'name' )
+    GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
+
+    genericOIDService.getOIDMapList( Platform.findAllByNameIlike("${params.q}%", params), 'name' )
   }
 
   @Override

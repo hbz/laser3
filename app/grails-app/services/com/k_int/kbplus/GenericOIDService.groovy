@@ -33,7 +33,7 @@ class GenericOIDService {
     GrailsHibernateUtil.unwrapIfProxy(result)
   }
 
-  static List<Map<String, Object>> getOIDMapList(List<Object> objList, String property) {
+  List<Map<String, Object>> getOIDMapList(List<Object> objList, String property) {
     List<Map<String, Object>> result = []
 
     if (!objList.isEmpty()) {
