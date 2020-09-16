@@ -152,7 +152,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Set<String> titlesToUpdate = []
         titleNodes.each { title ->
-            titlesToUpdate << title.'@uuid'.text()
+            //temp fix
+            if(title.type.text() in ['BookInstance','DatabaseInstance','JournalInstance'])
+                titlesToUpdate << title.'@uuid'.text()
+            else {
+                log.warn("Unimplemented title type ${title.type.text()}")
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:title.'@uuid'.text()])
+            }
         }
         List providerNodes = oaiBranch.'**'.findAll { node ->
             node.name() == "nominalProvider"
@@ -238,9 +244,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         List<Map<String,Object>> tipps = []
         Set<String> platformsInPackage = [], titleInstancesInPackage = []
         packageData.TIPPs.TIPP.eachWithIndex { tipp, int ctr ->
-            tipps << tippConv(tipp)
-            platformsInPackage << tipp.platform.'@uuid'.text()
-            titleInstancesInPackage << tipp.title.'@uuid'.text()
+            if(tipp.title.type.text() in ['BookInstance','DatabaseInstance','JournalInstance']) {
+                tipps << tippConv(tipp)
+                platformsInPackage << tipp.platform.'@uuid'.text()
+                titleInstancesInPackage << tipp.title.'@uuid'.text()
+            }
+            else {
+                log.warn("see above - unimplemented title type ${tipp.title.type.text()}")
+            }
         }
         log.info("Rec conversion for package returns object with name ${packageName} and ${tipps.size()} tipps")
         Package.withTransaction { TransactionStatus stat ->

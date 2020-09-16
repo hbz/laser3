@@ -1528,7 +1528,7 @@ class SurveyController {
             ie.save(flush: true)
 
             if(issueEntitlementGroup){
-                println(issueEntitlementGroup)
+                //println(issueEntitlementGroup)
                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                         ie: ie,
                         ieGroup: issueEntitlementGroup)
@@ -2768,6 +2768,11 @@ class SurveyController {
             }
             result.num_sub_rows = subscriptions.size()
             result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        }
+
+        if(result.surveyConfig.subscription) {
+            String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
+            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: GenericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
         
         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
@@ -4918,6 +4923,48 @@ class SurveyController {
 
 
         renewalResult.orgsWithTermination.each { participantResult ->
+            List row = []
+
+            row.add([field: participantResult.participant.sortname ?: '', style: null])
+            row.add([field: participantResult.participant.name ?: '', style: null])
+
+            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
+
+            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
+
+            row.add([field: '', style: null])
+
+            if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
+            {
+                row.add([field: '', style: null])
+            }
+
+            participantResult.properties.sort {
+                it.type.name
+            }.each { participantResultProperty ->
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
+
+                row.add([field: participantResultProperty.comment ?: "", style: null])
+
+            }
+
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
+
+            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
+
+            renewalData.add(row)
+        }
+
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size()})", style: 'negative']])
+
+
+        renewalResult.orgsWithoutResult.each { participantResult ->
             List row = []
 
             row.add([field: participantResult.participant.sortname ?: '', style: null])

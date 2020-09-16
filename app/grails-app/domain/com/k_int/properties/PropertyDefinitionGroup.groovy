@@ -23,6 +23,8 @@ class PropertyDefinitionGroup {
     Date dateCreated
     Date lastUpdated
 
+    def contextService
+
     static hasMany = [
             items: PropertyDefinitionGroupItem,
             bindings: PropertyDefinitionGroupBinding
@@ -60,18 +62,29 @@ class PropertyDefinitionGroup {
     List<PropertyDefinition> getPropertyDefinitions() {
 
         PropertyDefinition.executeQuery(
-            "SELECT pd from PropertyDefinition pd, PropertyDefinitionGroupItem pdgi WHERE pdgi.propDef = pd AND pdgi.propDefGroup = ?",
-            [this]
+            "SELECT pd from PropertyDefinition pd, PropertyDefinitionGroupItem pdgi WHERE pdgi.propDef = pd AND pdgi.propDefGroup = :pdg",
+            [pdg:this]
         )
     }
 
     List getCurrentProperties(def currentObject) {
-
         List result = []
         def givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds) {
+                result << GrailsHibernateUtil.unwrapIfProxy(cp)
+            }
+        }
+        result
+    }
+
+    List getCurrentPropertiesOfTenant(def currentObject, Org tenant) {
+        List result = []
+        def givenIds = getPropertyDefinitions().collect{ it.id } //continue here: wrong number delivered
+
+        currentObject?.propertySet?.each{ cp ->
+            if (cp.type.id in givenIds && cp.tenant.id == tenant.id) {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }
         }
