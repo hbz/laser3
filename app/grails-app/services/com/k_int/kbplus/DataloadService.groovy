@@ -149,7 +149,7 @@ class DataloadService {
             def result = [:]
 
                 if (ti.title != null) {
-                    def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                    /*def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
                     if (ti.keyTitle != new_key_title) {
                         ti.normTitle = com.k_int.kbplus.TitleInstance.generateNormTitle(ti.title)
                         ti.keyTitle = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
@@ -158,7 +158,7 @@ class DataloadService {
                         //
                         ti.save()
                     } else {
-                    }
+                    }*/
 
                     result._id = ti.globalUID
                     result.priority = 20
