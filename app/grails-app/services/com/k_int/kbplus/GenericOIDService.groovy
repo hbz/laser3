@@ -13,11 +13,11 @@ class GenericOIDService {
     (object && DomainClassArtefactHandler.isDomainClass(object.class)) ? "${object.class.name}:${object.id}" : null
   }
 
-  Object resolveOID(String oid) {
+  Object resolveOID(def oid) {
     def result
 
     if (oid) {
-      String[] parts = oid.split(':')
+      String[] parts = oid.toString().split(':')
 
       GrailsClass dc = AppUtils.getDomainClass(parts[0])
       if (! dc) {
@@ -39,10 +39,10 @@ class GenericOIDService {
     if (!objList.isEmpty()) {
       Object tmp = objList.get(0)
       if (! DomainClassArtefactHandler.isDomainClass(tmp.class)) {
-        println "WARNING: GenericOIDService.getOIDMapList() -> ${tmp.class.name} is not a domain class"
+        log.warn("WARNING: GenericOIDService.getOIDMapList() -> ${tmp.class.name} is not a domain class")
       }
       else if (! tmp.metaClass.hasProperty(property)) {
-        println "WARNING: GenericOIDService.getOIDMapList() -> ${tmp.class.name} has no property '${property}'"
+        log.warn("WARNING: GenericOIDService.getOIDMapList() -> ${tmp.class.name} has no property '${property}'")
       }
       else {
         objList.each { obj ->
