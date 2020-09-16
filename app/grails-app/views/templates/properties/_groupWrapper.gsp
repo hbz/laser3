@@ -24,6 +24,7 @@
              <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
             <g:render template="/templates/properties/group" model="${[
                     propDefGroup: propDefGroup,
+                    propDefGroupBinding: propDefGroupBinding,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
                     editable: (!(controllerName in ['survey', 'myInstitution'] ) && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
