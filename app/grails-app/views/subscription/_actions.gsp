@@ -96,7 +96,7 @@
             <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
                 <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: params.id]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetSubscriptionId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
+                    <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[id: navPrevSubscription[0].id, targetSubscriptionId: params.id]}" message="myinst.copyMyElementsFromPrevSubscription" />
                 </g:if>
             </g:if>
 
@@ -203,7 +203,7 @@
             <g:if test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(org.id == subscriptionInstance.getConsortia().id && subscriptionInstance.instanceOf)}">
+                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(org.id == subscriptionInstance.getConsortia()?.id && subscriptionInstance.instanceOf)}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>
