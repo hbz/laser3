@@ -2,6 +2,8 @@
 
 **Ticket    Date    Branch  Version     Author  Feature/Bug     Description/Keywords**
 
+2847    16.09.2020  hbz-dev             Moe     Feature     Überarbeitung org/show bei Anbietern
+
 1989    15.09.2020  hbz-dev             Moe     Feature     Überarbeitung Einrichtungskontakte
 
 2643    15.09.2020  hbz-dev             Moe     Feature     Konsortensicht: Einrichtungskontakte (/myInstitution/myPublicContacts) (kein Adressbuch)

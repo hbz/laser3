@@ -9,7 +9,9 @@
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
     <g:else>
-        <semui:subNavItem disabled="true" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
+        <g:if test="${!isProviderOrAgency}">
+            <semui:subNavItem disabled="true" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
+        </g:if>
     </g:else>
 
     <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">

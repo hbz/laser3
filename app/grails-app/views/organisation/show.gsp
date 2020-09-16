@@ -44,7 +44,7 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -315,38 +315,19 @@
                         <H3><g:message code="org.contactpersons.and.addresses.label" /></H3>
 
                         <div class="ui la-float-right">
-                        <g:link action="myPublicContacts" controller="myInstitution" params="[tab: 'contacts']"  class="ui button">${message('code':'org.edit.contactsAndAddresses')}</g:link>
+
+                            <g:if test="${((orgInstance.id == contextService.getOrg().id  && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                                <g:link action="myPublicContacts" controller="myInstitution" params="[tab: 'contacts']"  class="ui button">${message('code':'org.edit.contactsAndAddresses')}</g:link>
+                            </g:if>
                         </div>
                         <br>
                         <dl>
                             <dt><g:message code="org.prsLinks.label" /></dt>
                             <dd>
-                                <g:each in="${usedRDV}" var="rdv">
-                                    <h3>${rdv.getI10n('value')}</h3>
-                                    <g:each in="${allPRMap.get(rdv.id)}" var="pr">
-                                        <g:if test="pr">
-                                        %{--Workaround wg NPE bei CacheEntry.getValue--}%
-                                            <% Person prs = PersonRole.get(pr.id).prs%>
-                                            <g:render template="/templates/cpa/person_full_details" model="${[
-                                                    person              : prs,
-                                                    personRole          : pr,
-                                                    personContext       : orgInstance,
-                                                    tmplShowDeleteButton    : true,
-                                                    tmplShowAddPersonRoles  : true,
-                                                    tmplShowAddContacts     : true,
-                                                    tmplShowAddAddresses    : true,
-                                                    tmplShowFunctions       : false,
-                                                    tmplShowPositions       : false,
-                                                    tmplShowResponsiblities : true,
-                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                    controller          : 'organisation',
-                                                    action              : 'show',
-                                                    id                  : orgInstance.id,
-                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                            ]}"/>
-                                        </g:if>
-                                    </g:each>
-                                </g:each>
+
+                                <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]" />
+
+
                             <%-- </div> --%>
 %{--                                <g:if test="${((orgInstance.id == contextService.getOrg().id  && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">--}%
 %{--                                    <div class="ui list">--}%
@@ -446,7 +427,7 @@
                             </dd>
                         </dl>
                         %{--ERMS:1236--}%
-                        <dl>
+                       %{-- <dl>
                             <dt><g:message code="org.contacts.label" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -471,7 +452,7 @@
                                     <g:render template="/contact/formModal" model="['orgId': orgInstance.id]"/>
                                 </g:if>
                             </dd>
-                        </dl>
+                        </dl>--}%
                         <dl>
 
                             <dt><g:message code="org.addresses.label" default="Addresses"/>
