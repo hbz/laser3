@@ -1,31 +1,14 @@
 <g:if test="${address}">
 	<div class="ui item address-details">
-        <% String url = ''
-        if (address.name) url += address.name
-        url += (url.length()>0 && address.street_1)? '+' : ''
-        if (address.street_1) url += address.street_1
-        url += (url.length()>0 && address.street_2)? '+' : ''
-        if (address.street_2) url += address.street_2
-        url += (url.length()>0 && address.zipcode)? '+' : ''
-        if (address.zipcode) url += address.zipcode
-        url += (url.length()>0 && address.city)? '+' : ''
-        if (address.city) url += address.city
-        url += (url.length()>0 && address.country)? '+' : ''
-        if (address.country) url += address.country
-        url = url.replace(' ', '+')
-//        String encodedUrl = URLEncoder.encode(url)
-        url = 'https://maps.google.com/?q='+url
-//        url = 'https://www.google.com/maps/search/?api:1&query='+encodedUrl
-        %>
         <div style="display: flex">
-            <a href="${url}" target="_blank">
+            <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
                 <i class="ui js-linkGoogle icon building map marker alternate la-list-icon"></i>
             </a>
             <div class="content la-space-right">
                 <g:if test="${ ! hideAddressType}">
                     <strong>${address.type?.getI10n('value')}:</strong>
                 </g:if>
-                <div class="item" onclick="addressedit(${address.id});" >
+                <div class="item" onclick="editAddress(${address.id});" >
                     <g:if test="${address.name}">
                         ${address.name}
                     </g:if>
@@ -60,7 +43,7 @@
                     </g:if>
     %{--
                     <g:if test="${editable}">
-                        <g:render template="/address/formModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
+                        <g:render template="/templates/cpa/addressFormModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
                     </g:if>
     --}%
                 </div>
@@ -82,7 +65,7 @@
 	</div>
 </g:if>
 <g:javascript>
-    function addressedit(id) {
+    function editAddress(id) {
         var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
         private_address_modal(url)
     }

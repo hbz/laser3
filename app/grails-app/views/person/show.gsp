@@ -54,7 +54,7 @@
                                 <g:message code="person.last_name.label" />
                             </g:if>
                             <g:else>
-                                Bezeichnung
+                                <g:message code="person.funktionName.label"/>
                             </g:else>
                         </dt>
                         <dd><semui:xEditable owner="${personInstance}" field="last_name"/></dd>
@@ -456,7 +456,7 @@
             var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
             private_address_modal(url);
         }
-        function addressedit(id) {
+        function editAddress(id) {
             var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
             private_address_modal(url)
         }

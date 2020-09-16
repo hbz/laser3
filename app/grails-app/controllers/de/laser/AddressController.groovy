@@ -31,9 +31,8 @@ class AddressController extends AbstractDebugController {
 				break
 			case 'POST':
                 if (formService.validateToken(params)) {
-
                     Address addressInstance = new Address(params)
-                    if (!addressInstance.save(flush:true)) {
+                    if (!addressInstance.save()) {
                         flash.error = message(code: 'default.save.error.general.message')
                         log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
                         redirect(url: request.getHeader('referer'), params: params)
@@ -42,6 +41,7 @@ class AddressController extends AbstractDebugController {
 
                     flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.name])
                 }
+              
                 redirect(url: request.getHeader('referer'), params: params)
 			break
 		}
@@ -85,7 +85,7 @@ class AddressController extends AbstractDebugController {
             redirect: '.',
             hideType: true
         ]
-        render template: "/templates/addresses/formModal", model: model
+        render template: "/templates/cpa/addressFormModal", model: model
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -119,7 +119,7 @@ class AddressController extends AbstractDebugController {
             return
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), addressInstance.name])
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), (addressInstance.name ?: '')])
         redirect(url: request.getHeader('referer'))
     }
 
