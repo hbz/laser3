@@ -151,7 +151,7 @@ class DataloadService {
             def result = [:]
 
                 if (ti.title != null) {
-                    def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                    /*def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
                     if (ti.keyTitle != new_key_title) {
                         ti.normTitle = com.k_int.kbplus.TitleInstance.generateNormTitle(ti.title)
                         ti.keyTitle = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
@@ -160,7 +160,7 @@ class DataloadService {
                         //
                         ti.save()
                     } else {
-                    }
+                    }*/
 
                     result._id = ti.globalUID
                     result.priority = 20
@@ -1043,7 +1043,7 @@ class DataloadService {
                     latest_ft_record.lastTimestamp = highest_timestamp
                     latest_ft_record.esElements = latest_ft_record.esElements ?: 0
                     latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-                    latest_ft_record.save(flush: true);
+                    latest_ft_record.save()
                     cleanUpGorm();
                 }
             }
@@ -1056,8 +1056,9 @@ class DataloadService {
 
             latest_ft_record.esElements = latest_ft_record.esElements ?: 0
             latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-            latest_ft_record.save(flush: true);
-        }else{
+            latest_ft_record.save()
+        }
+        else {
             log.debug("updateES ${domain.name}: FTControle is not active")
         }
 

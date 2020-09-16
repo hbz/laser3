@@ -529,26 +529,26 @@
 <r:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedObjects]").prop('checked', true);
+            $("tr[class!=disabled] input[name=selectedObjects]:visible").prop('checked', true);
         }
         else {
-            $("tr[class!=disabled] input[name=selectedObjects]").prop('checked', false);
+            $("tr[class!=disabled] input[name=selectedObjects]:visible").prop('checked', false);
         }
     });
     $('#membersAddListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=newObjects]").prop('checked', true);
+            $("tr[class!=disabled] input[name=newObjects]:visible").prop('checked', true);
         }
         else {
-            $("tr[class!=disabled] input[name=newObjects]").prop('checked', false);
+            $("tr[class!=disabled] input[name=newObjects]:visible").prop('checked', false);
         }
     });
     $('#membersAuditListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=withAudit]").prop('checked', true);
+            $("tr[class!=disabled] input[name=withAudit]:visible").prop('checked', true);
         }
         else {
-            $("tr[class!=disabled] input[name=withAudit]").prop('checked', false);
+            $("tr[class!=disabled] input[name=withAudit]:visible").prop('checked', false);
         }
     });
     $('#filterTableWithoutProp').keyup(function() {

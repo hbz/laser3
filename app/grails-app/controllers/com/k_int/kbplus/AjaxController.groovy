@@ -669,7 +669,6 @@ class AjaxController {
                             break
                     }
                 }
-
                 if (values) {
                     if (propDef.type == Integer.toString()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
@@ -679,12 +678,9 @@ class AjaxController {
                         result = result.sort { x, y -> x.text.compareTo y.text}
                     }
                     else if (propDef.type == Date.toString()) {
-                        values.sort{ x,y -> y.dateValue - x.dateValue }.each {
-                            AbstractPropertyWithCalculatedLastUpdated v ->
-                                if(v.dateValue != null) {
-                                    String vt = g.formatDate(formatName:"default.date.format.notime", date:v.dateValue)
-                                    result.add([value: vt, text: vt])
-                                }
+                        values.dateValue.findAll().unique().sort().reverse().each { v ->
+                            String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
+                            result.add([value: vt, text: vt])
                         }
                     }
                     else {
@@ -1349,6 +1345,7 @@ class AjaxController {
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
         ])
@@ -1838,6 +1835,7 @@ class AjaxController {
                   showConsortiaFunctions: showConsortiaFunctions,
                   contextOrg      : contextOrg,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])

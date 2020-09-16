@@ -247,7 +247,7 @@ class SurveyConfig {
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
 
-                if (!noParticipation) {
+                /*if (!noParticipation) {*/
 
                     List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
@@ -267,9 +267,9 @@ class SurveyConfig {
                             return true
                         }
                     }
-                } else {
+                /*} else {
                     return true
-                }
+                }*/
         }
 
 
