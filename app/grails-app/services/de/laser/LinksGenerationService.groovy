@@ -121,7 +121,7 @@ class LinksGenerationService {
     }
 
 
-    private static Set getRecursiveNext(Set points, String position) {
+    private Set getRecursiveNext(Set points, String position) {
         String pair
         if(position == 'source')
             pair = 'destination'

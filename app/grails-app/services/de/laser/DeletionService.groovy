@@ -24,6 +24,7 @@ class DeletionService {
 
     def ESWrapperService
     def genericOIDService
+    def subscriptionService
 
     static boolean DRY_RUN                  = true
 
@@ -847,7 +848,7 @@ class DeletionService {
     boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         println "processing tipp #${tipp.id}"
         //rebasing subscriptions
-        if(SubscriptionService.rebaseSubscriptions(tipp,replacement)) {
+        if(subscriptionService.rebaseSubscriptions(tipp,replacement)) {
             TitleInstancePackagePlatform.withTransaction { status ->
                 try {
                     //deleting old TIPPs

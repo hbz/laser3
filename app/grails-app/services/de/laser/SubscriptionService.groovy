@@ -1001,7 +1001,7 @@ class SubscriptionService {
         }
     }
 
-    static boolean rebaseSubscriptions(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+    boolean rebaseSubscriptions(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         try {
             Map<String,TitleInstancePackagePlatform> rebasingParams = [old:tipp,replacement:replacement]
             IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',rebasingParams)
