@@ -188,58 +188,6 @@ class AjaxController {
         render result as JSON
     }
 
-  @Secured(['ROLE_USER'])
-  def setFieldNote() {
-      GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-      if ( instance ) {
-        if ( params.elementid?.startsWith('__fieldNote_') ) {
-          def note_domain = params.elementid.substring(12)
-          instance.setNote(note_domain, params.value);
-          instance.save(flush:true)
-        }
-      }
-    }
-    else {
-      log.error("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }
-
-   @Secured(['ROLE_USER'])
-  def setFieldTableNote() {
-    // log.debug("setFieldTableNote(${params})")
-    GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-       
-      if ( instance ) {
-        String temp = '__fieldNote_'+params.name
-        if ( temp?.startsWith('__fieldNote_') ) {
-          def note_domain = temp.substring(12)
-          // log.debug("note_domain: " + note_domain +" : \""+ params.value+"\"")
-          instance.setNote(note_domain, params.value);
-          instance.save(flush:true)
-        }
-      }
-    }
-    else {
-      log.error("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }
-
     @Secured(['ROLE_USER'])
     def genericSetValue() {
         def result = params.value
@@ -2450,14 +2398,6 @@ class AjaxController {
         render result as JSON
     }
 
-  def validationException(final grails.validation.ValidationException exception){
-      log.error( exception.toString() )
-    response.status = 400
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << "Value validation failed"
-  }
-
     @Secured(['ROLE_USER'])
     def editableSetValue() {
         log.debug("editableSetValue ${params}");
@@ -2843,7 +2783,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def NoteEdit() {
+    def editNote() {
         Map<String, Object> result = [:]
         result.params = params
         result.noteInstance = Doc.get(params.id)
