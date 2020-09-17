@@ -2478,7 +2478,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
-        Map result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id
@@ -3316,7 +3316,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def manageProperties() {
-        def result = setResultGenerics()
+        Map<String,Object> result = setResultGenerics()
         if (!result) {
             response.sendError(401); return
         }
@@ -3772,7 +3772,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if(params.id)
         {

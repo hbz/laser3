@@ -91,7 +91,7 @@ class PlatformController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-      Map result = setResultGenerics()
+      Map<String, Object> result = setResultGenerics()
       Platform platformInstance = Platform.get(params.id)
       if (!platformInstance) {
         flash.message = message(code: 'default.not.found.message', 
@@ -456,7 +456,7 @@ class PlatformController extends AbstractDebugController {
         redirect action: 'link', params: [id:params.id]
     }
 
-    private Map setResultGenerics() {
+    private Map<String, Object> setResultGenerics() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = contextService.org

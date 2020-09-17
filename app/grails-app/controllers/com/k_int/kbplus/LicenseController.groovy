@@ -66,7 +66,7 @@ class LicenseController
         pu.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -273,7 +273,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
 
         if (params.process && result.editable) {
             result.delResult = deletionService.deleteLicense(result.license, false)
@@ -290,7 +290,7 @@ class LicenseController
     def processAddMembers() {
         log.debug( params.toMapString() )
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -595,7 +595,7 @@ class LicenseController
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
@@ -617,7 +617,7 @@ class LicenseController
     def pendingChanges() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -651,7 +651,7 @@ class LicenseController
     def history() {
         log.debug("license::history : ${params}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -700,13 +700,13 @@ class LicenseController
     def changes() {
         log.debug("license::changes : ${params}")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
-        def baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
+        String baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
+        Map<String, Object> baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(
                 baseQuery + " order by pc.ts desc",
@@ -727,7 +727,7 @@ class LicenseController
     def notes() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -740,7 +740,7 @@ class LicenseController
     def tasks() {
         log.debug("license id:${params.id}")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -778,7 +778,7 @@ class LicenseController
     def documents() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -791,7 +791,7 @@ class LicenseController
         log.debug("deleteDocuments ${params}");
 
         params.id = params.instanceId // TODO refactoring frontend instanceId -> id
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -822,7 +822,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -883,8 +883,8 @@ class LicenseController
 
     def copyLicense()
     {
-        log.debug("license: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        log.debug("license: ${params}")
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -912,7 +912,7 @@ class LicenseController
     def processcopyLicense() {
 
         params.id = params.baseLicense
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1134,8 +1134,8 @@ class LicenseController
         result
     }
 
-    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
-        def result             = [:]
+    private Map<String,Object> setResultGenericsAndCheckAccess(String checkOption) {
+        Map<String,Object> result = [:]
         result.user            = User.get(springSecurityService.principal.id)
         result.institution     = contextService.org
         result.contextOrg      = result.institution

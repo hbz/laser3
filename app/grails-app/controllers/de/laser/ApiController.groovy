@@ -1,9 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
-import com.k_int.kbplus.auth.User
-import de.laser.ApiService
-import de.laser.ContextService
-import de.laser.OrgSettings
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -11,6 +9,7 @@ import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.GPathResult
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 @Secured(['permitAll']) // TODO
 class ApiController {
@@ -66,13 +65,11 @@ class ApiController {
         }
     }
 
-    private Map<String, Object> fillRequestMap (params) {
+    private Map<String, Object> fillRequestMap (GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        User user
         Org org
 
         if (springSecurityService.isLoggedIn()) {
-            user = User.get(springSecurityService.principal.id)
             org = contextService.getOrg()
         }
 

@@ -1019,7 +1019,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
-        Map result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id
