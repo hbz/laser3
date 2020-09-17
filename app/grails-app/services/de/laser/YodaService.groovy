@@ -94,7 +94,7 @@ class YodaService {
     void executePackageCleanup(List<Long> toDelete) {
         toDelete.each { pkgId ->
             Package pkg = Package.get(pkgId)
-            DeletionService.deletePackage(pkg)
+            deletionService.deletePackage(pkg)
         }
     }
 

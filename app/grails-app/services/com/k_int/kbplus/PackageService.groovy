@@ -18,7 +18,7 @@ class PackageService {
         linkedSubscriptionsOfCurrentYear.each { Subscription currentSub ->
             List<Integer> yearRingTitle = []
             //in the following, we estimate that each subscription is linked to the concerned package only
-            //Set<Subscription> precedingSubscriptions = Subscription.executeQuery('select li from Links li where :subscriptionOID = li.source and li.linkType = :linkType',[subscriptionOID:GenericOIDService.getOID(currentSub),linkType: RDStore.LINKTYPE_FOLLOWS]).collect { li -> li.getOther(currentSub) }
+            //Set<Subscription> precedingSubscriptions = Subscription.executeQuery('select li from Links li where :subscriptionOID = li.source and li.linkType = :linkType',[subscriptionOID:genericOIDService.getOID(currentSub),linkType: RDStore.LINKTYPE_FOLLOWS]).collect { li -> li.getOther(currentSub) }
             Set precedingSubscriptions = linksGenerationService.getSuccessionChain(currentSub, 'source')
             precedingSubscriptions.each { precObj ->
                 Subscription prec = (Subscription) precObj
@@ -29,7 +29,7 @@ class PackageService {
             c.setTime(currentSub.startDate)
             labels << c.get(Calendar.YEAR).toString()
             yearRingTitle << currentSub.issueEntitlements.size()
-            //Set<Subscription> followingSubscriptions = Subscription.executeQuery('select li from Links li where :subscriptionOID = li.destination and li.linkType = :linkType',[subscriptionOID:GenericOIDService.getOID(currentSub),linkType: RDStore.LINKTYPE_FOLLOWS]).collect { li -> li.getOther(currentSub) }
+            //Set<Subscription> followingSubscriptions = Subscription.executeQuery('select li from Links li where :subscriptionOID = li.destination and li.linkType = :linkType',[subscriptionOID:genericOIDService.getOID(currentSub),linkType: RDStore.LINKTYPE_FOLLOWS]).collect { li -> li.getOther(currentSub) }
             Set followingSubscriptions = linksGenerationService.getSuccessionChain(currentSub, 'destination')
             followingSubscriptions.each { follObj ->
                 Subscription foll = (Subscription) follObj

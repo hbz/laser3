@@ -1,4 +1,5 @@
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 	<head>
@@ -132,26 +133,26 @@
 
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left"
-                                                    params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
+                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button">
                                                 <i class="star icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
                                             <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left"
-                                                    params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
                                                 <i class="star yellow icon"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button">
                                                     <i class="redo slash icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
                                                     <i class="redo orange icon"></i>
                                                 </g:link>
                                             </g:else>
@@ -180,7 +181,7 @@
 
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: GenericOIDService.getOID(pd)]}" class="ui icon negative button">
+                                                    params="${[cmd: 'deletePropertyDefinition', pd: genericOIDService.getOID(pd)]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>

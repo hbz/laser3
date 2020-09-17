@@ -9,7 +9,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class GenericOIDService {
 
-  static String getOID(def object) {
+  String getOID(def object) {
     (object && DomainClassArtefactHandler.isDomainClass(object.class)) ? "${object.class.name}:${object.id}" : null
   }
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.helper.ConfigUtils; de.laser.SurveyConfig; com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.License;de.laser.Links" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.helper.ConfigUtils; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -105,7 +105,7 @@
                                         $.ajax({
                                             url: "<g:createLink controller="ajax" action="getLinkedLicenses" />",
                                             data: {
-                                                subscription: "${GenericOIDService.getOID(s)}"
+                                                subscription: "${genericOIDService.getOID(s)}"
                                             }
                                         }).done(function(data) {
                                             <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
@@ -116,7 +116,7 @@
                                         });
                                     </script>
                                 </div>
-                                <%--<g:each in="${allLinkedLicenses.findAll { Links li -> li.destination == GenericOIDService.getOID(s)}}" var="row">
+                                <%--<g:each in="${allLinkedLicenses.findAll { Links li -> li.destination == genericOIDService.getOID(s)}}" var="row">
                                     <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
                                     <div class="la-flexbox">
                                         <i class="icon balance scale la-list-icon"></i>

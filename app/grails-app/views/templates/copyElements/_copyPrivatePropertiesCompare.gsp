@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.GenericOIDService; de.laser.CopyElementsService;"%>
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionController; de.laser.CopyElementsService"%>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -17,7 +17,7 @@
     </g:if>
 
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}"
-            params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
 

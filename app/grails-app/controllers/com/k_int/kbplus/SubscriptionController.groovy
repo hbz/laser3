@@ -1482,7 +1482,7 @@ class SubscriptionController
 
         if(params.prev && prevMemberSub) {
 
-            Links prevLink = new Links(source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            Links prevLink = new Links(source: genericOIDService.getOID(memberSub), destination: genericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
             if (!prevLink.save(flush: true)) {
                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 redirect(url: request.getHeader('referer'))
@@ -1493,7 +1493,7 @@ class SubscriptionController
 
         if(params.next && nextMemberSub) {
 
-            Links nextLink = new Links(source: GenericOIDService.getOID(nextMemberSub), destination: GenericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            Links nextLink = new Links(source: genericOIDService.getOID(nextMemberSub), destination: genericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
             if (!nextLink.save(flush: true)) {
                 log.error("Problem linking to next subscription: ${nextLink.errors}")
                 redirect(url: request.getHeader('referer'))
@@ -1708,7 +1708,7 @@ class SubscriptionController
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
+        result.parentLicenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
 
         result.validLicenses = []
 
@@ -1823,7 +1823,7 @@ class SubscriptionController
             def removeLic = []
             validSubChilds.each { subChild ->
                 if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                    Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
                         License license = genericOIDService.resolveOID(li.source)
                         if (subscriptionService.setOrgLicRole(subChild,license,true)) {
                             removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
@@ -2535,7 +2535,7 @@ class SubscriptionController
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
         String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
+        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:genericOIDService.getOID(result.subscriptionInstance), linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -2595,7 +2595,7 @@ class SubscriptionController
                     }
                     if(params.generateSlavedLics == "all") {
                         String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-                        licensesToProcess.addAll(License.executeQuery(query, [subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                        licensesToProcess.addAll(License.executeQuery(query, [subscription:genericOIDService.getOID(result.subscriptionInstance), linkType:RDStore.LINKTYPE_LICENSE]))
                     }
                     else if(params.generateSlavedLics == "partial") {
                         List<String> licenseKeys = params.list("generateSlavedLicsReference")
@@ -3917,7 +3917,7 @@ class SubscriptionController
             response.sendError(401); return
         }
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription), RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.subscription), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -3977,7 +3977,7 @@ class SubscriptionController
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(result.subscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: genericOIDService.getOID(newSub), destination: genericOIDService.getOID(result.subscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
@@ -3988,7 +3988,7 @@ class SubscriptionController
 
                 redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            params: [sourceObjectId: GenericOIDService.getOID(result.subscription), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
+                            params: [sourceObjectId: genericOIDService.getOID(result.subscription), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true]
             }
         }
     }
@@ -4280,7 +4280,7 @@ class SubscriptionController
                 log.error("Problem saving subscription ${targetObject.errors}");
             }else {
                 result.targetObject = targetObject
-                params.targetObjectId = GenericOIDService.getOID(targetObject)
+                params.targetObjectId = genericOIDService.getOID(targetObject)
 
                 //Copy References
                 result.sourceObject.orgRelations.each { OrgRole or ->
@@ -4372,7 +4372,7 @@ class SubscriptionController
                 //Copy License
                 if (params.subscription.copyLicense) {
                     newSubscriptionInstance.refresh()
-                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
+                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
                     baseSubscriptionLicenses.each { Links link ->
                         subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
                     }
@@ -4759,9 +4759,9 @@ class SubscriptionController
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
         result.contextOrg = contextService.getOrg()
-        result.licenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect {Links li -> genericOIDService.resolveOID(li.source)}
+        result.licenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect { Links li -> genericOIDService.resolveOID(li.source)}
 
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.subscription))
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 

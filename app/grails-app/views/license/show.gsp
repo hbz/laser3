@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
@@ -152,11 +152,11 @@
                             <g:if test="${links.entrySet()}">
                                 <table class="ui three column table">
                                     <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
-                                        <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
+                                        <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
                                             <g:each in="${linkTypes.getValue()}" var="link">
                                                 <tr>
                                                     <%
-                                                        int perspectiveIndex = GenericOIDService.getOID(license) == link.source ? 0 : 1
+                                                        int perspectiveIndex = genericOIDService.getOID(license) == link.source ? 0 : 1
                                                     %>
                                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
                                                     <td>

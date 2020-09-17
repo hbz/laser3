@@ -171,7 +171,7 @@ class PropertyService {
                 case CalculatedType.TYPE_CONSORTIAL:
                 case CalculatedType.TYPE_ADMINISTRATIVE:
                     objMap.manageChildren = "propertiesMembers"
-                    objMap.manageChildrenParams = [id:s.id,filterPropDef:GenericOIDService.getOID(propDef)]
+                    objMap.manageChildrenParams = [id:s.id,filterPropDef:genericOIDService.getOID(propDef)]
                     break
             }
             objMap.displayController = "subscription"

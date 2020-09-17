@@ -718,7 +718,7 @@ class FinanceController extends AbstractDebugController {
         Set<String> pickedSubscriptions = []
         JSON.parse(params.preselectedSubscriptions).each { String ciId ->
             CostItem ci = CostItem.get(Long.parseLong(ciId))
-            pickedSubscriptions << "'${GenericOIDService.getOID(ci.sub)}'"
+            pickedSubscriptions << "'${genericOIDService.getOID(ci.sub)}'"
         }
         result.pickedSubscriptions = pickedSubscriptions
         render(template: "/finance/ajaxModal", model: result)

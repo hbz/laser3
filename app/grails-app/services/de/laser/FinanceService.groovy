@@ -1178,7 +1178,7 @@ class FinanceService {
             Map<String, Object> ciParams = [owner: configMap.institution]
             if (configMap.subscription) {
                 Subscription starting = Subscription.get(configMap.subscription)
-                Map<String, Object> subQueryParams = [starting: GenericOIDService.getOID(starting), linkType: RDStore.LINKTYPE_FOLLOWS]
+                Map<String, Object> subQueryParams = [starting: genericOIDService.getOID(starting), linkType: RDStore.LINKTYPE_FOLLOWS]
                 //get precedents
                 String query1 = "select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc"
                 linkedSubscriptionSet.addAll(Subscription.executeQuery(query1, subQueryParams))
@@ -1287,7 +1287,7 @@ class FinanceService {
             result.subscription = Subscription.get(subId)
             if(!(result.subscription instanceof Subscription))
                 throw new FinancialDataException("Invalid or no subscription found!")
-            Map navigation = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+            Map navigation = linksGenerationService.generateNavigation(genericOIDService.getOID(result.subscription))
             result.navNextSubscription = navigation.nextLink
             result.navPrevSubscription = navigation.prevLink
         }

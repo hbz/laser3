@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation" %>
 
 <!doctype html>
 <html>
@@ -8,6 +8,7 @@
         <title>${message(code:'laser')} : ${message(code: 'menu.institutions.private_props')}</title>
     </head>
     <body>
+    <laser:serviceInjection />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
@@ -106,10 +107,10 @@
                                         <td>
                                             <span class="ui circular label">
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
-                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
-                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:GenericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
                                                 <g:else>
@@ -121,26 +122,26 @@
                                             <td class="x">
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon yellow button">
+                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button">
                                                         <i class="star icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
                                                         <i class="star yellow icon"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon orange button">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button">
                                                             <i class="redo slash icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
                                                         <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: GenericOIDService.getOID(pd)]}" class="ui icon button">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
                                                             <i class="redo orange icon"></i>
                                                         </g:link>
                                                     </g:else>

@@ -269,7 +269,7 @@ class SurveyService {
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                         List licenseNames = []
-                        Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
                             License l = genericOIDService.resolveOID(li.source)
                             licenseNames << l.reference
                         }
@@ -341,7 +341,7 @@ class SurveyService {
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                     List licenseNames = []
-                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                    Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
                         License l = genericOIDService.resolveOID(li.source)
                         licenseNames << l.reference
                     }
@@ -706,7 +706,7 @@ class SurveyService {
                             row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                             List licenseNames = []
-                            Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                            Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
                                 License l = genericOIDService.resolveOID(li.source)
                                 licenseNames << l.reference
                             }

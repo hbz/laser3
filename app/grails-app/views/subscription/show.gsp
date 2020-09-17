@@ -1,5 +1,5 @@
 <%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
@@ -224,11 +224,11 @@
                         <g:if test="${links.entrySet()}">
                             <table class="ui three column table">
                                 <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
-                                    <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
+                                    <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
                                         <g:each in="${linkTypes.getValue()}" var="link">
                                             <tr>
                                                 <%
-                                                    int perspectiveIndex = GenericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
+                                                    int perspectiveIndex = genericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
                                                 %>
                                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
                                                 <td>
@@ -507,9 +507,9 @@
                         <h5 class="ui header">
                             <g:message code="license.plural"/>
                         </h5>
-                        <g:if test="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
+                        <g:if test="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                             <table class="ui fixed table">
-                                <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+                                <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
                                     <tr><g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                         <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
                                         <td>
@@ -802,7 +802,7 @@
             document.body.style.background = "#fcf8e3";
           });</g:if>
 
-          <g:each in="${links[GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+          <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
               $.ajax({
                   url: "<g:createLink controller="ajax" action="getLicensePropertiesForSubscription" />",
                   data: {

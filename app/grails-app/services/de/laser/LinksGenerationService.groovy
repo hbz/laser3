@@ -44,14 +44,14 @@ class LinksGenerationService {
     Map<String,Object> getSourcesAndDestinations(obj,user) {
         Map<String,Set<Links>> links = [:]
         // links
-        Set<Links> sources = Links.findAllBySource(GenericOIDService.getOID(obj))
-        Set<Links> destinations = Links.findAllByDestination(GenericOIDService.getOID(obj))
+        Set<Links> sources = Links.findAllBySource(genericOIDService.getOID(obj))
+        Set<Links> destinations = Links.findAllByDestination(genericOIDService.getOID(obj))
         //IN is from the point of view of the context object (= obj)
 
         sources.each { Links link ->
             def destination = genericOIDService.resolveOID(link.destination)
             if (destination.respondsTo("isVisibleBy") && destination.isVisibleBy(user)) {
-                String index = GenericOIDService.getOID(link.linkType)
+                String index = genericOIDService.getOID(link.linkType)
                 if (links[index] == null) {
                     links[index] = []
                 }
@@ -61,7 +61,7 @@ class LinksGenerationService {
         destinations.each { Links link ->
             def source = genericOIDService.resolveOID(link.source)
             if (source.respondsTo("isVisibleBy") && source.isVisibleBy(user)) {
-                String index = GenericOIDService.getOID(link.linkType)
+                String index = genericOIDService.getOID(link.linkType)
                 if (links[index] == null) {
                     links[index] = []
                 }
@@ -78,7 +78,7 @@ class LinksGenerationService {
         List<Subscription> result = []
 
         // links
-        List oIDs = ownerSubscriptions.collect {GenericOIDService.getOID(it)}
+        List oIDs = ownerSubscriptions.collect {genericOIDService.getOID(it)}
         if (oIDs) {
             String srcQuery = "from Links where source in (:oIDs) and destination like '${Subscription.class.name}%'"
             String dstQuery = "from Links where destination in (:oIDs) and source like '${Subscription.class.name}%'"
@@ -106,7 +106,7 @@ class LinksGenerationService {
 
     Set getSuccessionChain(startingPoint, String position) {
         Set chain = []
-        Set first = getRecursiveNext([GenericOIDService.getOID(startingPoint)].toSet(),position)
+        Set first = getRecursiveNext([genericOIDService.getOID(startingPoint)].toSet(),position)
         Set next
         while(first.size() > 0) {
             first.each { row ->
@@ -160,12 +160,12 @@ class LinksGenerationService {
                         if(pairChild) {
                             Map<String,Object> childConfigMap = [linkType:configMap.linkType,owner:configMap.owner]
                             if(contextInstance.instanceOf == sourceObj) {
-                                childConfigMap.source = GenericOIDService.getOID(contextInstance)
-                                childConfigMap.destination = GenericOIDService.getOID(pairChild)
+                                childConfigMap.source = genericOIDService.getOID(contextInstance)
+                                childConfigMap.destination = genericOIDService.getOID(pairChild)
                             }
                             else if(contextInstance.instanceOf == destObj) {
-                                childConfigMap.source = GenericOIDService.getOID(pairChild)
-                                childConfigMap.destination = GenericOIDService.getOID(contextInstance)
+                                childConfigMap.source = genericOIDService.getOID(pairChild)
+                                childConfigMap.destination = genericOIDService.getOID(contextInstance)
                             }
                             Links.construct(childConfigMap)
                         }
@@ -231,7 +231,7 @@ class LinksGenerationService {
                 else if(sourceChild instanceof License)
                     destinationChild = destinationChildren.find { dest -> dest.getLicensee() == sourceChild.getLicensee() }
                 if(destinationChild)
-                    Links.executeUpdate('delete from Links li where li.source = :source and li.destination = :destination and li.linkType = :linkType and li.owner = :owner',[source:GenericOIDService.getOID(sourceChild),destination:GenericOIDService.getOID(destinationChild),linkType:obj.linkType,owner:obj.owner])
+                    Links.executeUpdate('delete from Links li where li.source = :source and li.destination = :destination and li.linkType = :linkType and li.owner = :owner',[source:genericOIDService.getOID(sourceChild), destination:genericOIDService.getOID(destinationChild), linkType:obj.linkType, owner:obj.owner])
             }
             obj.delete(flush:true)
             true

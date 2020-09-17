@@ -50,6 +50,7 @@ class DataloadService {
     def sessionFactory
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
+    def genericOIDService
 
     String es_index
     def dataload_running=false
@@ -305,13 +306,13 @@ class DataloadService {
                 case CalculatedType.TYPE_CONSORTIAL:
                     //result.availableToOrgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                     String query = "select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType"
-                    result.availableToOrgs = Org.executeQuery(query, [lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
+                    result.availableToOrgs = Org.executeQuery(query, [lic:genericOIDService.getOID(lic), linkType:RDStore.LINKTYPE_LICENSE, roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     result.membersCount = License.findAllByInstanceOf(lic).size()?:0
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
                     //List orgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
                     String query = "select oo.org from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType in (:roleType)"
-                    List orgs = Org.executeQuery(query, [lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+                    List orgs = Org.executeQuery(query, [lic:genericOIDService.getOID(lic), linkType:RDStore.LINKTYPE_LICENSE, roleType:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
                     result.consortiaName = lic.getLicensingConsortium()?.name
@@ -324,7 +325,7 @@ class DataloadService {
                 case CalculatedType.TYPE_LOCAL:
                     //result.availableToOrgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
                     String query = "select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType"
-                    result.availableToOrgs = Org.executeQuery(query, [lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIBER])
+                    result.availableToOrgs = Org.executeQuery(query, [lic:genericOIDService.getOID(lic), linkType:RDStore.LINKTYPE_LICENSE, roleType:RDStore.OR_SUBSCRIBER])
                     break
             }
 

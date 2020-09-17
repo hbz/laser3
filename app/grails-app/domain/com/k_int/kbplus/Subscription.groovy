@@ -389,7 +389,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Set<License> getLicenses() {
         Set<License> result = []
-        Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
             result << genericOIDService.resolveOID(l.source)
         }
         result
@@ -456,7 +456,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Subscription _getCalculatedPrevious() {
         Links match = Links.findWhere(
-                source: GenericOIDService.getOID(this),
+                source: genericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
         return match ? genericOIDService.resolveOID(match.destination) : null
@@ -464,7 +464,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Subscription _getCalculatedSuccessor() {
         Links match = Links.findWhere(
-                destination: GenericOIDService.getOID(this),
+                destination: genericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
         return match ? genericOIDService.resolveOID(match.source) : null
