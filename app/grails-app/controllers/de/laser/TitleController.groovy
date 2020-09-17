@@ -1,5 +1,14 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.BookInstance
+import com.k_int.kbplus.DatabaseInstance
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.JournalInstance
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.TitleHistoryEvent
+import com.k_int.kbplus.TitleInstance
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
@@ -79,8 +88,8 @@ class TitleController extends AbstractDebugController {
     if ( params.proposedTitle ) {
       // def proposed_title_key = com.k_int.kbplus.TitleInstance.generateKeyTitle(params.proposedTitle)
       // result.titleMatches=com.k_int.kbplus.TitleInstance.findAllByKeyTitle(proposed_title_key)
-      def normalised_title = com.k_int.kbplus.TitleInstance.generateNormTitle(params.proposedTitle)
-      result.titleMatches=com.k_int.kbplus.TitleInstance.findAllByNormTitleLike("${normalised_title}%")
+      String normalised_title = TitleInstance.generateNormTitle(params.proposedTitle)
+      result.titleMatches = TitleInstance.findAllByNormTitleLike("${normalised_title}%")
     }
     result
   }
@@ -222,7 +231,7 @@ class TitleController extends AbstractDebugController {
   @Secured(['ROLE_USER'])
   def history() {
     Map<String, Object> result = [:]
-    def exporting = params.format == 'csv' ? true : false
+    boolean exporting = params.format == 'csv'
 
     if ( exporting ) {
       result.max = 9999999

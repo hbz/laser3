@@ -1,5 +1,3 @@
-import com.k_int.kbplus.*
-
 class InplaceTagLib {
 
   def inPlaceEdit = { attrs, body ->

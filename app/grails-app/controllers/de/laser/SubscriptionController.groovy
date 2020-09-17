@@ -1,8 +1,31 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.BookInstance
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.Fact
+import com.k_int.kbplus.GlobalRecordSource
+import com.k_int.kbplus.GlobalSourceSyncService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IdentifierNamespace
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.JournalInstance
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.TitleInstance
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.CreationException
@@ -23,7 +46,6 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -46,9 +68,7 @@ class SubscriptionController
     def taskService
     def genericOIDService
     def exportService
-    GrailsApplication grailsApplication
     def pendingChangeService
-    def institutionsService
     ExecutorService executorService
     ExecutorWrapperService executorWrapperService
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -62,9 +82,7 @@ class SubscriptionController
     def linksGenerationService
     def financeService
     def orgTypeService
-    def subscriptionsQueryService
     def subscriptionService
-    def comparisonService
     def escapeService
     def deletionService
     def auditService
@@ -993,9 +1011,9 @@ class SubscriptionController
                 //after having read off the header row, pop the first row
                 rows.remove(0)
                 //now, assemble the identifiers available to highlight
-                Map<String,IdentifierNamespace> namespaces = [zdb:IdentifierNamespace.findByNs('zdb'),
-                eissn:IdentifierNamespace.findByNs('eissn'),isbn:IdentifierNamespace.findByNs('isbn'),
-                issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn')]
+                Map<String, IdentifierNamespace> namespaces = [zdb  :IdentifierNamespace.findByNs('zdb'),
+                                                               eissn:IdentifierNamespace.findByNs('eissn'), isbn:IdentifierNamespace.findByNs('isbn'),
+                                                               issn :IdentifierNamespace.findByNs('issn'), pisbn:IdentifierNamespace.findByNs('pisbn')]
                 rows.eachWithIndex { row, int i ->
                     log.debug("now processing entitlement ${i}")
                     Map<String,Object> ieCandidate = [:]
