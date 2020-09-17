@@ -1,13 +1,14 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.controller.AbstractDebugController
-import de.laser.IssueEntitlementCoverage
-import de.laser.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
-
-import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PendingChangeController extends AbstractDebugController {
@@ -15,7 +16,6 @@ class PendingChangeController extends AbstractDebugController {
     def genericOIDService
     def pendingChangeService
     def executorWrapperService
-    ExecutorService executorService
     def contextService
     def springSecurityService
 

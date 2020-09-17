@@ -1,7 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
-import de.laser.SurveyConfig
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
