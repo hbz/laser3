@@ -31,7 +31,22 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propDefGroup.getCurrentProperties(ownobj).sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:set var="isGroupVisible" value="${propDefGroup.isVisible || propDefGroupBinding?.isVisible}"/>
+        <g:if test="${ownobj instanceof License}">
+            <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
+            <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+        </g:if>
+        <g:elseif test="${ownobj instanceof Subscription}">
+            <g:set var="consortium" value="${ownobj.getConsortia()}"/>
+            <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+        </g:elseif>
+        <g:if test="${isGroupVisible}">
+            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentProperties(ownobj)}" />
+        </g:if>
+        <g:elseif test="${consortium != null}">
+            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentPropertiesOfTenant(ownobj,consortium)}" />
+        </g:elseif>
+        <g:each in="${propDefGroupItems.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
             <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <tr>
@@ -206,6 +221,7 @@
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),
                                                            propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
+                                                           propDefGroupBinding: "${genericOIDService.getOID(propDefGroupBinding)}",
                                                            ownerId:"${ownobj.id}",
                                                            ownerClass:"${ownobj.class}",
                                                            custom_props_div:"${custom_props_div}",
@@ -232,14 +248,7 @@
                             </g:else>
                         </g:if>
                         <g:else>
-                            <g:if test="${ownobj instanceof License}">
-                                <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
-                            </g:if>
-                            <g:elseif test="${ownobj instanceof Subscription}">
-                                <g:set var="consortium" value="${ownobj.getConsortia()}"/>
-                                <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
-                            </g:elseif>
-                            <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
+                            <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                 <g:if test="${ownobj.isSlaved}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="large icon thumbtack blue"></i></span>
                                 </g:if>
@@ -257,7 +266,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${editable}">
+    <g:if test="${editable && isGroupVisible}">
         <tfoot>
             <tr>
                 <g:if test="${propDefGroup}">
@@ -284,6 +293,7 @@
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
                         <input type="hidden" name="propDefGroup" value="${genericOIDService.getOID(propDefGroup)}"/>
+                        <input type="hidden" name="propDefGroupBinding" value="${genericOIDService.getOID(propDefGroupBinding)}"/>
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>

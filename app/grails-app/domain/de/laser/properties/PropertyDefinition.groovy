@@ -1,13 +1,16 @@
 package de.laser.properties
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
 import de.laser.helper.SwissKnife
+import de.laser.interfaces.CalculatedType
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.Log
@@ -300,10 +303,14 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         withTransaction {
             String classString = owner.getClass().toString()
             String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
-
+            boolean isPublic = false
+            if(owner instanceof Subscription)
+                isPublic = owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && owner.getConsortia()?.id == contextOrg.id
+            else if(owner instanceof License)
+                isPublic = owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && owner.getLicensingConsortium()?.id == contextOrg.id
             ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
 
-            def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: false, tenant: contextOrg)
+            def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
             newProp.setNote("")
 
             newProp.save()

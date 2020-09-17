@@ -626,7 +626,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
             // cons_members
             if (this.instanceOf) {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
+                Long subId
+                if(this.getConsortia().id == contextOrg.id)
+                    subId = this.instanceOf.id
+                else subId = this.id
+                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: subId,ctxOrg:contextOrg])
+                PropertyDefinitionGroupBinding binding = null
+                if(bindings)
+                    binding = bindings.get(0)
 
                 // global groups
                 if (it.tenant == null) {

@@ -248,9 +248,9 @@ class PropertyService {
             }
         }
 
-        log.debug('object             : ' + obj.class.simpleName + ' - ' + obj)
-        log.debug('orphanedIds        : ' + orphanedIds)
-        log.debug('orphaned Properties: ' + result)
+        //log.debug('object             : ' + obj.class.simpleName + ' - ' + obj)
+        //log.debug('orphanedIds        : ' + orphanedIds)
+        //log.debug('orphaned Properties: ' + result)
 
         result
     }

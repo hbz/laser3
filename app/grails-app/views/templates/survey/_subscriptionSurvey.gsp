@@ -994,7 +994,7 @@
                     <g:set var="surveyOrg"
                            value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
 
-                    <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
+                    <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
                         <td>
                             <g:message code="surveyOrg.perennialTerm.available"/>
                         </td>
