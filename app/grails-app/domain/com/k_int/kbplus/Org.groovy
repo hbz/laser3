@@ -20,7 +20,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
@@ -424,14 +424,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     static def refdataFind(GrailsParameterMap params) {
-        List<Map<String, Object>> result = []
-        List<Org> ql = Org.findAllByNameIlike("%${params.q}%", params)
+        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
 
-      ql.each { id ->
-        result.add([id:"${id.class.name}:${id.id}",text:"${id.name}"])
-      }
-
-        result
+        genericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }
 
     // called from AjaxController.resolveOID2()

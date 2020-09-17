@@ -402,7 +402,7 @@ class LicenseController
                 }
             }
             params.remove("unlink")
-            //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+            //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(genericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         }
 
         redirect action: action, params: params
@@ -414,7 +414,7 @@ class LicenseController
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
         result.tableConfig = ['showLinking']
-        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(genericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         result
     }
 
@@ -429,15 +429,15 @@ class LicenseController
         result.putAll(setSubscriptionFilterData())
         if(params.status != 'FETCH_ALL') {
             String query = "select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
-            result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
+            result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:genericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
         else if(params.status == 'FETCH_ALL') {
             String query = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
-            result.subscriptionsForFilter = Subscription.executeQuery( query, [lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
+            result.subscriptionsForFilter = Subscription.executeQuery( query, [lic:genericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-            Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
+            Map<String,Object> queryParams = [lic:genericOIDService.getOID(result.license), subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
             if(params.status != 'FETCH_ALL') {
                 whereClause += " and s.status.id = :status"
@@ -520,7 +520,7 @@ class LicenseController
             //memberLicense.getAllLicensee().sort{ Org a, Org b -> a.sortname <=> b.sortname }.each { Org org ->
             //if(org.id in filteredOrgIds) {
             String dateFilter = ""
-            Map<String,Object> subQueryParams = [lic:GenericOIDService.getOID(memberLicense),linkType:RDStore.LINKTYPE_LICENSE]
+            Map<String,Object> subQueryParams = [lic:genericOIDService.getOID(memberLicense), linkType:RDStore.LINKTYPE_LICENSE]
             if(params.validOn) {
                 dateFilter += " and ((s.startDate = null or s.startDate <= :validOn) and (s.endDate = null or s.endDate >= :validOn))"
                 subQueryParams.validOn = result.dateRestriction
@@ -547,9 +547,9 @@ class LicenseController
         }
         String subQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source in (:licenses) and l.linkType = :linkType)"
         if(params.status == "FETCH_ALL" && validMemberLicenses)
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> GenericOIDService.getOID(lic)}])
+            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> genericOIDService.getOID(lic)}])
         else if(validMemberLicenses) {
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])
+            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses.collect{License lic -> genericOIDService.getOID(lic)}, status:RefdataValue.get(params.status as Long)])
         }
         result.validMemberLicenses = filteredMemberLicenses
         result
@@ -560,7 +560,7 @@ class LicenseController
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
-        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(genericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
         result
     }
@@ -1141,7 +1141,7 @@ class LicenseController
         result.contextOrg      = result.institution
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.license))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.license))
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -59,7 +59,7 @@
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
                 <h2><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-                <g:hiddenField name="filterPropDef" value="${GenericOIDService.getOID(filterPropDef)}"/>
+                <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:set var="refdataValues" value="${[]}"/>
                     <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
@@ -286,7 +286,7 @@
                     </g:if>
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
-                <g:hiddenField name="filterPropDef" value="${GenericOIDService.getOID(filterPropDef)}"/>
+                <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:set var="refdataValues" value="${[]}"/>

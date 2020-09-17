@@ -320,7 +320,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
-        def propDefsInCalcGroups = []
+        List<PropertyDefinition> propDefsInCalcGroups = []
 
         if (params.oid) {
             GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')

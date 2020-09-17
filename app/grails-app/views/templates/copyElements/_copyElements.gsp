@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.AuditConfig; com.k_int.kbplus.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; com.k_int.kbplus.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -15,7 +15,7 @@
     </g:if>
 
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -169,7 +169,7 @@
                             <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                             <g:each in="${sourceLicenses}" var="license">
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
-                                    <div data-oid="${GenericOIDService.getOID(license)}" class="la-multi-sources">
+                                    <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
                                         <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         ${license.reference}
@@ -189,7 +189,7 @@
                         <g:each in="${sourceLicenses}" var="license">
                             <div class="ui checkbox la-toggle-radio la-replace">
                                 <g:checkBox name="copyObject.takeLicenses" data-action="copy"
-                                            value="${GenericOIDService.getOID(license)}" checked="${true}"/>
+                                            value="${genericOIDService.getOID(license)}" checked="${true}"/>
                             </div>
                         </g:each>
                     </td>
@@ -198,7 +198,7 @@
                             <div>
                                 <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
-                                    <div data-oid="${GenericOIDService.getOID(license)}">
+                                    <div data-oid="${genericOIDService.getOID(license)}">
                                         <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
@@ -214,7 +214,7 @@
                             <g:each in="${targetLicenses}" var="license">
                                 <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="copyObject.deleteLicenses" data-action="delete"
-                                                value="${GenericOIDService.getOID(license)}" checked="${false}"/>
+                                                value="${genericOIDService.getOID(license)}" checked="${false}"/>
                                 </div>
                             </g:each>
                         </td>
@@ -231,7 +231,7 @@
                 </g:if>
                 <g:each in="${source_visibleOrgRelations}" var="source_role">
                     <g:if test="${source_role.org}">
-                        <div data-oid="${GenericOIDService.getOID(source_role)}" class="la-multi-sources">
+                        <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
                             <strong><i class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:</strong>
                             <g:link controller="organisation" action="show" target="_blank"
                                     id="${source_role.org.id}">
@@ -266,7 +266,7 @@
                         <g:if test="${source_role.org}">
                             <div class="ui checkbox la-toggle-radio la-replace">
                                 <g:checkBox name="copyObject.takeOrgRelations" data-action="copy"
-                                            value="${GenericOIDService.getOID(source_role)}" checked="${true}"/>
+                                            value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
                             <br/>
                         </g:if>
@@ -281,7 +281,7 @@
                             </g:if>
                             <g:each in="${target_visibleOrgRelations}" var="target_role">
                                 <g:if test="${target_role.org}">
-                                    <div data-oid="${GenericOIDService.getOID(target_role)}">
+                                    <div data-oid="${genericOIDService.getOID(target_role)}">
                                         <strong><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
                                         </strong>
                                         <g:link controller="organisation" action="show" target="_blank"
@@ -317,7 +317,7 @@
                             <g:if test="${target_role.org}">
                                 <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete"
-                                                value="${GenericOIDService.getOID(target_role)}" checked="${false}"/>
+                                                value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                                 </div>
                                 <br/>
                             </g:if>
@@ -344,7 +344,7 @@
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
 
-                                            <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.public')}"
@@ -365,7 +365,7 @@
                                     <%-- private --%>
                                         <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                                 var="resp">
-                                            <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.private')}"
@@ -404,7 +404,7 @@
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br/>
@@ -417,7 +417,7 @@
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br/>
@@ -441,7 +441,7 @@
                                             <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, targetObject, 'Specific subscription editor')}"
                                                     var="resp">
 
-                                                <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.public')}"
@@ -463,7 +463,7 @@
 
                                             <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetObject, 'Specific subscription editor', contextService.getOrg())}"
                                                     var="resp">
-                                                <div data-oid="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.private')}"
@@ -497,7 +497,7 @@
                                             <div class="ui checkbox la-toggle-radio la-noChange">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
-                                                            value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
                                             <br/>
@@ -510,7 +510,7 @@
                                             <div class="ui checkbox la-toggle-radio la-noChange">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
-                                                            value="${GenericOIDService.getOID(com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
                                             <br/>

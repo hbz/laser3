@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -244,7 +244,7 @@
                         <td></td>
                     </g:if>
                     <%
-                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
+                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(sub))
                         Subscription navPrevSubMember = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                         Subscription navNextSubMember = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
@@ -268,7 +268,7 @@
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:set var="license" value="${Links.findByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
+                            <g:set var="license" value="${Links.findByDestinationAndLinkType(genericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
                             <g:if test="${!license}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>

@@ -114,7 +114,7 @@ class SubscriptionService {
         }
         result.allSubscriptions = subscriptions
         /*du.setBenchmark('fetch licenses')
-        result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
         du.setBenchmark('process licenses')
         allLinkedLicenses.each { Links li ->
             Set<String> linkedLicenses = result.allLinkedLicenses.get(li.destination)
@@ -354,7 +354,7 @@ class SubscriptionService {
                     }
                     if (obj[1]) {
                         Subscription subCons = obj[1]
-                        linkedLicenses.put(subCons,Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE).collect {Links row -> genericOIDService.resolveOID(row.source)})
+                        linkedLicenses.put(subCons,Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
                     }
                 }
                 entries
@@ -366,7 +366,7 @@ class SubscriptionService {
             if(memberSubscriptions) {
                 memberSubscriptions.each { row ->
                     Subscription subCons = row[0]
-                    Set<Links> links = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)
+                    Set<Links> links = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)
                     linkedLicenses.put(subCons,links.collect {Links li -> genericOIDService.resolveOID(li.source)})
                 }
             }
@@ -1001,7 +1001,7 @@ class SubscriptionService {
         }
     }
 
-    static boolean rebaseSubscriptions(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+    boolean rebaseSubscriptions(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         try {
             Map<String,TitleInstancePackagePlatform> rebasingParams = [old:tipp,replacement:replacement]
             IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',rebasingParams)
@@ -1018,11 +1018,11 @@ class SubscriptionService {
 
     boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
-        Links curLink = Links.findBySourceAndDestinationAndLinkType(GenericOIDService.getOID(newLicense),GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)
+        Links curLink = Links.findBySourceAndDestinationAndLinkType(genericOIDService.getOID(newLicense),genericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)
         Org subscr = sub.getSubscriber()
         if(!unlink && !curLink) {
             try {
-                if(Links.construct([source: GenericOIDService.getOID(newLicense), destination: GenericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
+                if(Links.construct([source: genericOIDService.getOID(newLicense), destination: genericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
                     RefdataValue licRole
                     switch(sub._getCalculatedType()) {
                         case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
@@ -1227,7 +1227,7 @@ class SubscriptionService {
                     List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
                         License license = licCandidates[0]
-                        candidate.licenses << GenericOIDService.getOID(license)
+                        candidate.licenses << genericOIDService.getOID(license)
                     }
                     else if(licCandidates.size() > 1)
                         mappingErrorBag.multipleLicenseError << licenseKey

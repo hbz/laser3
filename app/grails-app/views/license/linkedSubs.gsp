@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person;com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Person; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.interfaces.CalculatedType; com.k_int.kbplus.Subscription; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -137,7 +137,7 @@
                 <g:set var="sub" value="${row}"/>
             </g:else>
             <%
-                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(sub))
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(sub))
                 Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                 Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>

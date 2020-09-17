@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyOrg; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="de.laser.SurveyOrg; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -79,7 +79,7 @@ ${surveyInfo.name}
 
         <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
         <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription?.id}"
-                params="[sourceObjectId: GenericOIDService.getOID(parentSubscription), targetObjectId: GenericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
+                params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
                 class="ui button ">
             <g:message code="renewalWithSurvey.newSub.change"/>
         </g:link>

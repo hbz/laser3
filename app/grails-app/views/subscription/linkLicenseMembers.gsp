@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Links; com.k_int.kbplus.GenericOIDService; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.Links; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -165,7 +165,7 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
-                        <g:each in="${Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }}" var="license">
+                        <g:each in="${Links.findAllByDestinationAndLinkType(genericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }}" var="license">
                             <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
                         </g:each>
                     </td>

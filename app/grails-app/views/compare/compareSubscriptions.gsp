@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="com.k_int.kbplus.License" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

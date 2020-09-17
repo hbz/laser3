@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="com.k_int.kbplus.Subscription" %>
+<laser:serviceInjection/>
 <g:if test="${! (sourceObject && targetObject)}">
     <% if (params){
         params.remove('sourceObjectId')
@@ -14,8 +15,8 @@
                       name="sourceObjectId"
                       from="${((List<Object>)allObjects_readRights)?.sort {it.dropdownNamingConvention()}}"
                       optionValue="${{it.dropdownNamingConvention()}}"
-                      optionKey="${{GenericOIDService.getOID(it)}}"
-                      value="${GenericOIDService.getOID(sourceObject)}"
+                      optionKey="${{genericOIDService.getOID(it)}}"
+                      value="${genericOIDService.getOID(sourceObject)}"
                       />
             </div>
             <div class="eight wide field">
@@ -45,8 +46,8 @@
                       name="targetObjectId"
                       from="${allObjects_writeRights}"
                       optionValue="${{it.dropdownNamingConvention()}}"
-                      optionKey="${{GenericOIDService.getOID(it)}}"
-                      value="${{GenericOIDService.getOID(targetObject)}}"
+                      optionKey="${{genericOIDService.getOID(it)}}"
+                      value="${{genericOIDService.getOID(targetObject)}}"
                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </div>

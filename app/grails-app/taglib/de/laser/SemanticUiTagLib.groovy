@@ -21,6 +21,7 @@ class SemanticUiTagLib {
     def systemService
     def contextService
     def GOKbService
+    def genericOIDService
     CodecLookup codecLookup
     TagLibraryLookup gspTagLibraryLookup
     LinksGenerationService linksGenerationService
@@ -839,7 +840,7 @@ class SemanticUiTagLib {
         def next
 
         if(surveyConfig.subSurveyUseForTransfer){
-            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(surveyConfig.subscription))
+            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(surveyConfig.subscription))
             prev = links.prevLink ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(links.prevLink[0], true) ?: null) : null
             next = links.nextLink ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(links.nextLink[0], true) ?: null) : null
         }

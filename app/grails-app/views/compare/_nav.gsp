@@ -1,4 +1,3 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService;" %>
 <laser:serviceInjection/>
 
 <div class="ui grid">

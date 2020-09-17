@@ -38,6 +38,7 @@ class AjaxController {
     def accessService
     def escapeService
     def formService
+    def dashboardDueDatesService
     CompareService compareService
     LinksGenerationService linksGenerationService
 
@@ -1935,8 +1936,8 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1994,8 +1995,8 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }

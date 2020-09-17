@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService" %>
+<laser:serviceInjection/>
 <table class="ui table la-table">
     <colgroup>
         <col style="width:  30px;">
@@ -78,7 +78,7 @@
                     <g:link class="ui negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
-                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: GenericOIDService.getOID(adress)]">
+                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(adress)]">
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </g:if>

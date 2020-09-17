@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.*;de.laser.*;de.laser.helper.RDStore;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants" %>
+<laser:serviceInjection/>
 <g:if test="${editmode}">
     <a role="button" class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
         <g:if test="${tmplIcon}">
@@ -37,7 +38,7 @@
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
     <g:form id="link_${tmplModalID}" class="ui form" url="[controller: 'myInstitution', action: 'linkObjects']" method="post">
-        <input type="hidden" name="context" value="${GenericOIDService.getOID(context)}"/>
+        <input type="hidden" name="context" value="${genericOIDService.getOID(context)}"/>
         <%
             LinkedHashMap linkTypes = [:]
             if(!subscriptionLicenseLink) {
@@ -45,20 +46,20 @@
                 refdataValues.each { rv ->
                     String[] linkArray = rv.getI10n("value").split("\\|")
                     linkArray.eachWithIndex { l, int perspective ->
-                        linkTypes.put(GenericOIDService.getOID(rv)+"§"+perspective,l)
+                        linkTypes.put(genericOIDService.getOID(rv)+"§"+perspective,l)
                     }
                     if(link && link.linkType == rv) {
                         int perspIndex
-                        if(GenericOIDService.getOID(context) == link.source) {
+                        if(genericOIDService.getOID(context) == link.source) {
                             perspIndex = 0
                         }
-                        else if(GenericOIDService.getOID(context) == link.destination) {
+                        else if(genericOIDService.getOID(context) == link.destination) {
                             perspIndex = 1
                         }
                         else {
                             perspIndex = 0
                         }
-                        linkType = "${GenericOIDService.getOID(rv)}§${perspIndex}"
+                        linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
                     }
                 }
             }
@@ -70,9 +71,9 @@
             <g:set var="selectPair" value="pair_${link.id}"/>
             <g:set var="selectLink" value="linkType_${link.id}"/>
             <g:set var="linkComment" value="linkComment_${link.id}"/>
-            <input type="hidden" name="link" value="${GenericOIDService.getOID(link)}" />
+            <input type="hidden" name="link" value="${genericOIDService.getOID(link)}" />
             <g:if test="${comment}">
-                <input type="hidden" name="commentID" value="${GenericOIDService.getOID(comment.owner)}" />
+                <input type="hidden" name="commentID" value="${genericOIDService.getOID(comment.owner)}" />
             </g:if>
         </g:if>
         <g:elseif test="${subscriptionLicenseLink}">
@@ -93,7 +94,7 @@
                     </div>
                 </div>
                 <g:if test="${subscriptionLicenseLink}">
-                    <g:hiddenField name="${selectLink}" value="${GenericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
+                    <g:hiddenField name="${selectLink}" value="${genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
                 </g:if>
                 <g:else>
                     <div class="row">
@@ -112,7 +113,7 @@
                     </div>
                     <div class="twelve wide column">
                         <g:if test="${link}">
-                            <input type="hidden" name="${selectPair}" value="${GenericOIDService.getOID(pair)}"/>
+                            <input type="hidden" name="${selectPair}" value="${genericOIDService.getOID(pair)}"/>
                             ${pair}
                         </g:if>
                         <g:else>
@@ -144,7 +145,7 @@
        console.log("${lookupName}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${GenericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Links; com.k_int.kbplus.GenericOIDService; de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="de.laser.Links; de.laser.interfaces.CalculatedType; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
@@ -83,20 +83,20 @@
                 <% isCopySubEnabled = true %>
             </sec:ifAnyGranted>
             <g:if test="${isCopySubEnabled}">
-                <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
-                <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
+                <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:else>
 
             <g:if test="${(accessService.checkPerm("ORG_INST") && !subscriptionInstance.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
-                <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyElementsIntoSubscription" />
+                <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
 
             <g:if test="${accessService.checkPerm("ORG_INST") && subscriptionInstance.instanceOf}">
-                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElements" />
+                <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
-                    <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(navPrevSubscription[0]), targetObjectId: GenericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElementsFromPrevSubscription" />
+                    <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(navPrevSubscription[0]), targetObjectId: genericOIDService.getOID(subscriptionInstance)]}" message="myinst.copyMyElementsFromPrevSubscription" />
                 </g:if>
             </g:if>
 
@@ -132,7 +132,7 @@
                 </g:if>
             </sec:ifAnyGranted>
 
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,GenericOIDService.getOID(subscriptionInstance))}"/>
+            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, genericOIDService.getOID(subscriptionInstance))}"/>
 
 
             <g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">

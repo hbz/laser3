@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; com.k_int.kbplus.GenericOIDService;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Subscription;de.laser.SurveyConfig" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Subscription;de.laser.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -468,7 +468,7 @@
                                     <g:if test="${sourceLicenses}">
                                         <g:each in="${sourceLicenses}" var="license">
                                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
-                                                <div data-oid="${GenericOIDService.getOID(license)}" class="la-multi-sources">
+                                                <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
                                                     <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
                                                     ${license.reference}
                                                     <br>

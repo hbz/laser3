@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.Links;com.k_int.kbplus.GenericOIDService" %>
+<%@ page import="de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.Links" %>
 <!doctype html>
 <html>
   <head>
@@ -185,7 +185,7 @@
                                       $.ajax({
                                           url: "<g:createLink controller="ajax" action="getLinkedSubscriptions" />",
                                           data: {
-                                              license: "${GenericOIDService.getOID(l)}",
+                                              license: "${genericOIDService.getOID(l)}",
                                               status: ${params.subStatus}
                                           }
                                       }).done(function(data) {
@@ -197,7 +197,7 @@
                                       });
                                   </script>
                               </div>
-                              <%--<g:each in="${allLinkedSubscriptions.findAll { Links li -> li.source == GenericOIDService.getOID(l) }}" var="row">
+                              <%--<g:each in="${allLinkedSubscriptions.findAll { Links li -> li.source == genericOIDService.getOID(l) }}" var="row">
                                   <g:set var="sub" value="${genericOIDService.resolveOID(row.destination)}"/>
                                   <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
                                       <%--<g:if test="${institution.id in orgRelations.org.id/* || accessService.checkPerm("ORG_CONSORTIUM")*/}">

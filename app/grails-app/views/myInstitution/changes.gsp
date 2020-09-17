@@ -72,7 +72,7 @@
 
                         <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01"}">
                             <div class="right aligned wide column">
-                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: GenericOIDService.getOID(entry.change.subscription)]}">
+                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.change.subscription)]}">
                                     <g:message code="myinst.copyMyElements"/>
                                 </g:link>
                             </div>

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.properties.PropertyDefinition;com.k_int.kbplus.*;de.laser.*"%>
-
+<laser:serviceInjection />
 <!doctype html>
 <html>
     <head>
@@ -63,7 +63,7 @@
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">
-                                    <g:set var="pdgOID" value="${GenericOIDService.getOID(pdGroup)}" />
+                                    <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
                                         <i class="write icon"></i>
                                     </g:link>

@@ -150,7 +150,7 @@ class DashboardDueDatesService {
                 if (userWantsEmailReminder) {
                     List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
                     orgs.each { org ->
-                        List<DashboardDueDate> dashboardEntries = DashboardDueDatesService.getDashboardDueDates(user, org, false, false)
+                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, org, false, false)
                         sendEmail(user, org, dashboardEntries)
                     }
                 }
@@ -202,7 +202,7 @@ class DashboardDueDatesService {
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
         }
     }
-    static List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
+    List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
         List liste = DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das 
                         join das.dueDateObject ddo 
@@ -212,7 +212,7 @@ class DashboardDueDatesService {
         liste
     }
 
-    static List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone, max, offset){
+    List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone, max, offset){
         List liste = DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
                 where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone

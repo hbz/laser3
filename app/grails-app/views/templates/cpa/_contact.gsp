@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.helper.RDStore" %>
+<laser:serviceInjection/>
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details">
         <div style="display: flex">
@@ -31,7 +32,7 @@
 				<g:link class="ui mini icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
-                        controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: GenericOIDService.getOID(contact)]">
+                        controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]">
 					<i class="trash alternate icon"></i>
 				</g:link>
             </g:if>
