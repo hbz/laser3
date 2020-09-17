@@ -1,13 +1,11 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.SystemTicket
-import de.laser.UserSettings
 import de.laser.UserSettings.KEYS
-import de.laser.DeletionService
-import de.laser.FormService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -16,13 +14,10 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
-    def cacheService
     def contextService
     def genericOIDService
     def springSecurityService
     def passwordEncoder
-    def refdataService
-    def propertyService
     def instAdmService
     def deletionService
     FormService formService
@@ -35,6 +30,7 @@ class ProfileController {
         result.isOrgBasicMember = contextService.org.getCustomerType() == 'ORG_BASIC_MEMBER'
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
+
         result
     }
 
@@ -53,11 +49,10 @@ class ProfileController {
     @Secured(['ROLE_ADMIN'])
     def errorOverview() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.tickets = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
-
+        result.user     = User.get(springSecurityService.principal.id)
+        result.tickets  = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
         result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_YODA,ROLE_TICKET_EDITOR")
+
         result
     }
 
@@ -172,8 +167,7 @@ class ProfileController {
           flash.message+= message(code:'profile.updateProfile.updated.pageSize.error')
         }
       }
-      catch ( Exception e ) {
-      }
+      catch ( Exception e ) {}
     }
 
         user.save(flush: true)

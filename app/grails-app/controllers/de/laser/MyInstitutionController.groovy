@@ -1,9 +1,33 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Combo
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PackageService
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.PendingChangeService
+import com.k_int.kbplus.PersonProperty
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.finance.BudgetCode
@@ -2478,7 +2502,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
-        Map result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id
@@ -3316,7 +3340,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def manageProperties() {
-        def result = setResultGenerics()
+        Map<String,Object> result = setResultGenerics()
         if (!result) {
             response.sendError(401); return
         }
@@ -3772,7 +3796,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if(params.id)
         {

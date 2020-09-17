@@ -1,9 +1,27 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.PersonProperty
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
@@ -169,58 +187,6 @@ class AjaxController {
         Map<String, Object> result = [:]
         render result as JSON
     }
-
-  @Secured(['ROLE_USER'])
-  def setFieldNote() {
-      GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-      if ( instance ) {
-        if ( params.elementid?.startsWith('__fieldNote_') ) {
-          def note_domain = params.elementid.substring(12)
-          instance.setNote(note_domain, params.value);
-          instance.save(flush:true)
-        }
-      }
-    }
-    else {
-      log.error("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }
-
-   @Secured(['ROLE_USER'])
-  def setFieldTableNote() {
-    // log.debug("setFieldTableNote(${params})")
-    GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-       
-      if ( instance ) {
-        String temp = '__fieldNote_'+params.name
-        if ( temp?.startsWith('__fieldNote_') ) {
-          def note_domain = temp.substring(12)
-          // log.debug("note_domain: " + note_domain +" : \""+ params.value+"\"")
-          instance.setNote(note_domain, params.value);
-          instance.save(flush:true)
-        }
-      }
-    }
-    else {
-      log.error("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }
 
     @Secured(['ROLE_USER'])
     def genericSetValue() {
@@ -2432,14 +2398,6 @@ class AjaxController {
         render result as JSON
     }
 
-  def validationException(final grails.validation.ValidationException exception){
-      log.error( exception.toString() )
-    response.status = 400
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << "Value validation failed"
-  }
-
     @Secured(['ROLE_USER'])
     def editableSetValue() {
         log.debug("editableSetValue ${params}");
@@ -2825,7 +2783,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def NoteEdit() {
+    def editNote() {
         Map<String, Object> result = [:]
         result.params = params
         result.noteInstance = Doc.get(params.id)
