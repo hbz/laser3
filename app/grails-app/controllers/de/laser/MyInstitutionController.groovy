@@ -110,18 +110,25 @@ class MyInstitutionController extends AbstractDebugController {
         redirect(action:'dashboard')
     }
 
-    /*may be upgraded to
-        @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-     */
+    @Secured(['ROLE_ADMIN'])
+    def reporting() {
+        Map<String, Object> result = setResultGenerics()
+        result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+        result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)
+        result.subForm = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)
+        result.subResourceType = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)
+        result.subKind = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
+        result
+    }
+
     /*
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
      */
     @Secured(['ROLE_ADMIN'])
-    def reporting() {
+    def reportingBase() {
         //log.debug(params.toMapString())
         Map<String, Object> result = setResultGenerics()
         result.formSubmit = params.formSubmit == 'true'
