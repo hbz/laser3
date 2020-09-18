@@ -7,7 +7,6 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Setting
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.*
 import de.laser.helper.*
@@ -81,15 +80,15 @@ class BootStrapService {
             log.warn("there are user org rows with no role set. Please update the table to add role FKs")
         }
 
-        // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
+        // def auto_approve_memberships = SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
-        Setting mailSent = Setting.findByName('MailSentDisabled')
+        SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
 
         if(mailSent){
             mailSent.delete(flush: true)
         }
 
-        Setting.findByName('MaintenanceMode') ?: new Setting(name: 'MaintenanceMode', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
+        SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
 
         // SpringSecurityUtils.clientRegisterFilter( 'oracleSSOFilter', SecurityFilterPosition.PRE_AUTH_FILTER.order)
         // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
@@ -106,12 +105,6 @@ class BootStrapService {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        //log.debug("createOrgConfig ..")
-        //createOrgConfig()
-
-        //log.debug("createPrivateProperties ..")
-        //createPrivateProperties()
-
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
 
@@ -126,9 +119,6 @@ class BootStrapService {
                 organisationService.createOrgsFromScratch()
             }
         }
-
-//        log.debug("setESGOKB ..")
-//        setESGOKB()
 
         log.debug("setJSONFormatDate ..")
 

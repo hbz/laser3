@@ -4,6 +4,7 @@ class LaserInjectionTagLib {
 
     static namespace = "laser"
 
+    // <laser:serviceInjection/>
     def serviceInjection = { attrs, body ->
 
         g.set( var:'accessService',     bean:'accessService' )

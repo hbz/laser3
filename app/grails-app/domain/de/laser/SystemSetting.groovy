@@ -1,9 +1,9 @@
-package com.k_int.kbplus
+package de.laser
 
-class Setting {
+class SystemSetting {
 
-    static final CONTENT_TYPE_STRING  = 0
-    static final CONTENT_TYPE_BOOLEAN = 1
+    static final int CONTENT_TYPE_STRING  = 0
+    static final int CONTENT_TYPE_BOOLEAN = 1
 
     String name
     int tp = CONTENT_TYPE_STRING // 0=string, 1=boolean

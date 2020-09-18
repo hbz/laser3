@@ -1,6 +1,27 @@
-## temporary change log
 
-**Ticket    Date    Branch  Version     Author  Feature/Bug     Description/Keywords**
+    Declare the current branch and version; 
+    Hotfix changelogs are generated as follows:
+    
+    Changelog for version A.B.C = all tickets in A.B.C-1
+
+
+**Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+
+2867    16.09.2020  rc1.5   1.5.8       Andreas Bug         Prüfung des Vorhandenseins eines Konsortiums bei Lizenz-/Vertragsmerkmalen eingebaut 
+
+2846    16.09.2020  rc1.5   1.5.8       Andreas Bug         korrekte Verarbeitung der ausgewählen Objekte unter "Merkmale verwalten"
+
+2865    15.09.2020  rc1.5   1.5.8       Moe     Bug         Umfrage: Im Renewal Excel werden Teilnehmer ohne Abgabe nicht angezeigt 
+
+--      15.09.2020  rc1.5   1.5.8       Moe     Bug         Kein Zugriff auf Umfrage
+
+--      15.09.2020  rc1.5   1.5.8       Andreas Bug         temporäre Brücke für unvollständig implementierten GOKb-Titeltyp OtherInstance eingebaut
+
+2860    15.09.2020  rc1.5   1.5.8       Andreas Bug         Nicht vererbte Merkmale werden bei Verträgen ohne Absturz dargestellt
+
+2808    15.09.2020  rc1.5   1.5.8       Andreas Bug         Konfigurierbarkeit der Merkmalsgruppen repariert
+
+2866    15.09.2020  rc1.5   1.5.8       David   Bug         Inkonsistente Merkmalsdefinitionen
 
 2847    16.09.2020  hbz-dev             Moe     Feature     Überarbeitung org/show bei Anbietern
 

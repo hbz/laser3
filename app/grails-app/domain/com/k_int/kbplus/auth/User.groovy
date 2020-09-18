@@ -27,10 +27,10 @@ class User {
   boolean accountLocked = false
   boolean passwordExpired = false
 
-  SortedSet affiliations
-  SortedSet roles
+  SortedSet<UserOrg> affiliations
+  SortedSet<UserRole> roles
 
-  static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole ]
+  static hasMany = [ affiliations: UserOrg, roles: UserRole ]
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
 
   static constraints = {
@@ -111,23 +111,16 @@ class User {
 
   @Transient
   String getDisplayName() {
-    String result
-    if ( display ) {
-      result = display
-    }
-    else {
-      result = username
-    }
-    result
+      display ? display : username
   }
 
   protected void encodePassword() {
     password = springSecurityService.encodePassword(password)
   }
 
-  @Transient def getAuthorizedAffiliations() {
-    affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
-  }
+    @Transient Set<UserOrg> getAuthorizedAffiliations() {
+        affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
+    }
 
     @Transient List<Org> getAuthorizedOrgs() {
         String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status = :approved ) order by o.name"
@@ -151,22 +144,22 @@ class User {
         SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
     }
 
-    boolean hasAffiliation(userRoleName) {
+    boolean hasAffiliation(String userRoleName) {
         hasAffiliationAND(userRoleName, 'ROLE_USER')
     }
 
-    boolean hasAffiliationAND(userRoleName, globalRoleName) {
+    boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
         affiliationCheck(userRoleName, globalRoleName, 'AND', contextService.getOrg())
     }
-    boolean hasAffiliationOR(userRoleName, globalRoleName) {
+    boolean hasAffiliationOR(String userRoleName, String globalRoleName) {
         affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
-    boolean hasAffiliationForForeignOrg(userRoleName, orgToCheck) {
+    boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
         affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
-    private boolean affiliationCheck(String userRoleName, String globalRoleName, mode, orgToCheck) {
+    private boolean affiliationCheck(String userRoleName, String globalRoleName, String mode, Org orgToCheck) {
         boolean result = false
         List<String> rolesToCheck = [userRoleName]
 

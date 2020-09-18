@@ -297,39 +297,38 @@ class Identifier implements CalculatedLastUpdated {
       }
   }
 
-  static def refdataFind(GrailsParameterMap params) {
-      List<Map<String, Object>> result = []
-    def ql = null;
-    if ( params.q.contains(':') ) {
-      def qp=params.q.split(':');
-      // println("Search by namspace identifier: ${qp}");
-        IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0]);
-      if ( namespace && qp.size() == 2) {
-        ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
-      }
-    }
-    else {
-      ql = Identifier.findAllByValueIlike("${params.q}%",params)
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
+        List<Identifier> ql = []
+        if (params.q.contains(':')) {
+            String[] qp = params.q.split(':')
+            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0])
+
+            if (namespace && qp.size() == 2) {
+                ql = Identifier.findAllByNsAndValueIlike(namespace, "${qp[1]}%")
+            }
+        }
+        else {
+            ql = Identifier.findAllByValueIlike("${params.q}%", params)
+        }
+
+        ql.each { id ->
+            result.add([id: "${id.class.name}:${id.id}", text: "${id.ns.ns}:${id.value}"])
+        }
+        result
     }
 
-    if ( ql ) {
-      ql.each { id ->
-        result.add([id:"${id.class.name}:${id.id}",text:"${id.ns.ns}:${id.value}"])
-      }
-    }
-
-    result
-  }
     // called from AjaxController.lookup2
     static def refdataFind2(params) {
-        def result = []
+        List<Map<String, Object>> result = []
         if (params.q.contains(':')) {
-            def qp = params.q.split(':');
-            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0]);
+            String[] qp = params.q.split(':')
+            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0])
+
             if (namespace && qp.size() == 2) {
-                def ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
+                List<Identifier> ql = Identifier.findAllByNsAndValueIlike(namespace, "${qp[1]}%")
                 ql.each { id ->
-                    result.add([id:"${id.class.name}:${id.id}", text:"${id.value}"])
+                    result.add([id: "${id.class.name}:${id.id}", text: "${id.value}"])
                 }
             }
         }
@@ -371,24 +370,4 @@ class Identifier implements CalculatedLastUpdated {
 
         result
     }
-
-    /*
-    @Transient
-    def afterInsert = {
-        if(this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
-            if(this.value == IdentifierNamespace.UNKNOWN) {
-                this.value = ''
-                this.save()
-            }
-        }
-
-        if(this.ns?.ns == IdentifierNamespace.ISIL)
-        {
-            if( (this.value != IdentifierNamespace.UNKNOWN) &&
-                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
-            {
-                this.value = 'DE-'+this.value.trim()
-            }
-        }
-    } */
 }

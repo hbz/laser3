@@ -523,7 +523,14 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
             // cons_members
             if (this.instanceOf) {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
+                Long licId
+                if(this.getLicensingConsortium().id == contextOrg.id)
+                    licId = this.instanceOf.id
+                else licId = this.id
+                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: licId,ctxOrg:contextOrg])
+                PropertyDefinitionGroupBinding binding = null
+                if(bindings)
+                    binding = bindings.get(0)
 
                 // global groups
                 if (it.tenant == null) {
@@ -616,7 +623,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     Set<Subscription> getSubscriptions() {
         Set<Subscription> result = []
-        Links.findAllBySourceAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+        Links.findAllBySourceAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
             result << genericOIDService.resolveOID(l.destination)
         }
         result

@@ -1,17 +1,20 @@
-package com.k_int.kbplus
+package de.laser
 
-
+import com.k_int.kbplus.IdentifierNamespace
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.EscapeService
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
-import org.codehaus.groovy.grails.commons.GrailsApplication
 
 @Secured(['permitAll'])
 class PublicController {
-    GrailsApplication grailsApplication
+
     def springSecurityService
     def genericOIDService
     def mailService
@@ -70,8 +73,8 @@ class PublicController {
         }
         else {
 
-            def q = params.q?.trim()
-            def queryParams = [:]
+            String q = params.q?.trim()
+            Map<String, Object> queryParams = [:]
 
             String query = "from Subscription as s where ("
             query += "      lower(s.status.value) = 'current'"
@@ -127,21 +130,6 @@ class PublicController {
                     queryParams.put('subKinds', subKinds)
                 }
             }
-
-/*
-            def subTypes = params.list('subTypes')
-            if (subTypes) {
-                subTypes = subTypes.collect { it as Long }
-                query += " and s.type.id in (:subTypes) "
-
-                queryParams.put('subTypes', subTypes)
-            }
-            else {
-                query += " and s.type.id in (:subTypes) "
-                // fake negative result for query without checked subTypes
-                queryParams.put('subTypes', [0.longValue()])
-            }
-*/
             result.subscriptions = []
 
             if (result.allConsortia && (q || consortia || subKinds)) {
@@ -152,68 +140,6 @@ class PublicController {
 
         result
     }
-
-//    @Secured(['permitAll'])
-//    def gascoDetails() {
-//        Map<String, Object> result = [:]
-//
-//        result.tipps = []
-//
-//        result.idnsPreset = IdentifierNamespace.findAll {
-//            ns in ['eissn', 'issn', 'zdb', 'ezb']
-//        }
-//
-//        if (params.id) {
-//            def sp  = SubscriptionPackage.get(params.long('id'))
-//            def sub = sp?.subscription
-//            def pkg = sp?.pkg
-//            def scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue(
-//                    sub,
-//                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
-//                    RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)
-//            )
-//
-//            if (scp) {
-//                result.subscription = sub
-//
-//                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
-//                def queryParams = [pkg: pkg]
-//
-//                result.tippsCount = TitleInstancePackagePlatform.executeQuery(query, queryParams).size()
-//
-//                def q = params.q?.trim()
-//                if (q) {
-//                    query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
-//
-//                    queryParams.put('q', '%' + q.toLowerCase() + '%')
-//                }
-//
-//                def idv = params.idv?.trim()
-//                if (idv) {
-//                    query += " AND ( EXISTS ( " +
-//                        " SELECT io FROM IdentifierOccurrence AS io " +
-//                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
-//
-//                    if (params.idns) {
-//                        query += " AND io.identifier.ns = :idns "
-//
-//                        queryParams.put('idns', IdentifierNamespace.get(params.idns))
-//                    }
-//
-//                    query += " ) ) "
-//
-//                    queryParams.put('idv', '%' + idv.toLowerCase() + '%')
-//                }
-//
-//                result.tipps = TitleInstancePackagePlatform.executeQuery(query, queryParams)
-//            }
-//            else {
-//                redirect controller: 'public', action: 'gasco'
-//            }
-//        }
-//
-//        result
-//    }
 
     @Secured(['permitAll'])
     def gascoDetailsIssueEntitlements() {
@@ -227,8 +153,8 @@ class PublicController {
 
         if (params.id) {
             SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
-            def sub = sp?.subscription
-            def pkg = sp?.pkg
+            Subscription sub = sp?.subscription
+            Package pkg = sp?.pkg
             SubscriptionProperty scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
@@ -240,20 +166,20 @@ class PublicController {
 
                 String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
-                def queryParams = [sub: sub, pkg: pkg]
+                Map<String, Object> queryParams = [sub: sub, pkg: pkg]
 
                 result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
 
                 String query = "SELECT ie " + base_query
 
-                def q = params.q?.trim()
+                String q = params.q?.trim()
                 if (q) {
                     query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
 
                     queryParams.put('q', '%' + q.toLowerCase() + '%')
                 }
 
-                def idv = params.idv?.trim()
+                String idv = params.idv?.trim()
                 if (idv) {
                     query += " AND ( EXISTS ( " +
                         " SELECT ident FROM Identifier AS ident " +

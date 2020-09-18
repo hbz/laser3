@@ -1,20 +1,20 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
-import de.laser.Task
 import de.laser.properties.PropertyDefinition
-import de.laser.AccessService
-import de.laser.CopyElementsService
-import de.laser.DeletionService
-import de.laser.FormService
-import de.laser.LicenseService
-import de.laser.Links
-import de.laser.LinksGenerationService
-import de.laser.PropertyService
-import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -66,7 +66,7 @@ class LicenseController
         pu.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -273,7 +273,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
 
         if (params.process && result.editable) {
             result.delResult = deletionService.deleteLicense(result.license, false)
@@ -290,7 +290,7 @@ class LicenseController
     def processAddMembers() {
         log.debug( params.toMapString() )
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -402,7 +402,7 @@ class LicenseController
                 }
             }
             params.remove("unlink")
-            //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+            //result.linkedSubscriptions = Links.findAllBySourceAndLinkType(genericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         }
 
         redirect action: action, params: params
@@ -414,7 +414,7 @@ class LicenseController
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
         result.tableConfig = ['showLinking']
-        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(genericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         result
     }
 
@@ -429,15 +429,15 @@ class LicenseController
         result.putAll(setSubscriptionFilterData())
         if(params.status != 'FETCH_ALL') {
             String query = "select s from Subscription s where s.status.id = :status and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
-            result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
+            result.subscriptionsForFilter = Subscription.executeQuery( query, [status:params.status as Long, lic:genericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
         else if(params.status == 'FETCH_ALL') {
             String query = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
-            result.subscriptionsForFilter = Subscription.executeQuery( query, [lic:GenericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
+            result.subscriptionsForFilter = Subscription.executeQuery( query, [lic:genericOIDService.getOID(result.license), linkType:RDStore.LINKTYPE_LICENSE] )
         }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-            Map<String,Object> queryParams = [lic:GenericOIDService.getOID(result.license),subscriberRoleTypes:subscriberRoleTypes,linkType:RDStore.LINKTYPE_LICENSE]
+            Map<String,Object> queryParams = [lic:genericOIDService.getOID(result.license), subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
             if(params.status != 'FETCH_ALL') {
                 whereClause += " and s.status.id = :status"
@@ -520,7 +520,7 @@ class LicenseController
             //memberLicense.getAllLicensee().sort{ Org a, Org b -> a.sortname <=> b.sortname }.each { Org org ->
             //if(org.id in filteredOrgIds) {
             String dateFilter = ""
-            Map<String,Object> subQueryParams = [lic:GenericOIDService.getOID(memberLicense),linkType:RDStore.LINKTYPE_LICENSE]
+            Map<String,Object> subQueryParams = [lic:genericOIDService.getOID(memberLicense), linkType:RDStore.LINKTYPE_LICENSE]
             if(params.validOn) {
                 dateFilter += " and ((s.startDate = null or s.startDate <= :validOn) and (s.endDate = null or s.endDate >= :validOn))"
                 subQueryParams.validOn = result.dateRestriction
@@ -547,9 +547,9 @@ class LicenseController
         }
         String subQuery = "select s from Subscription s where concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source in (:licenses) and l.linkType = :linkType)"
         if(params.status == "FETCH_ALL" && validMemberLicenses)
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> GenericOIDService.getOID(lic)}])
+            result.subscriptionsForFilter = Subscription.executeQuery(subQuery,[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect { License lic -> genericOIDService.getOID(lic)}])
         else if(validMemberLicenses) {
-            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE,licenses:validMemberLicenses.collect{License lic -> GenericOIDService.getOID(lic)},status:RefdataValue.get(params.status as Long)])
+            result.subscriptionsForFilter = Subscription.executeQuery(subQuery+" and s.status = :status",[linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses.collect{License lic -> genericOIDService.getOID(lic)}, status:RefdataValue.get(params.status as Long)])
         }
         result.validMemberLicenses = filteredMemberLicenses
         result
@@ -560,7 +560,7 @@ class LicenseController
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
-        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(GenericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
+        result.linkedSubscriptions = Links.findAllBySourceAndLinkType(genericOIDService.getOID(result.license),RDStore.LINKTYPE_LICENSE).collect { Links l -> genericOIDService.resolveOID(l.destination) }
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
         result
     }
@@ -595,7 +595,7 @@ class LicenseController
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
@@ -617,7 +617,7 @@ class LicenseController
     def pendingChanges() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -651,7 +651,7 @@ class LicenseController
     def history() {
         log.debug("license::history : ${params}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -700,13 +700,13 @@ class LicenseController
     def changes() {
         log.debug("license::changes : ${params}")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
-        def baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
+        String baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
+        Map<String, Object> baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(
                 baseQuery + " order by pc.ts desc",
@@ -727,7 +727,7 @@ class LicenseController
     def notes() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -740,7 +740,7 @@ class LicenseController
     def tasks() {
         log.debug("license id:${params.id}")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -778,7 +778,7 @@ class LicenseController
     def documents() {
         log.debug("license id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -791,7 +791,7 @@ class LicenseController
         log.debug("deleteDocuments ${params}");
 
         params.id = params.instanceId // TODO refactoring frontend instanceId -> id
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -822,7 +822,7 @@ class LicenseController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -883,8 +883,8 @@ class LicenseController
 
     def copyLicense()
     {
-        log.debug("license: ${params}");
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        log.debug("license: ${params}")
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -912,7 +912,7 @@ class LicenseController
     def processcopyLicense() {
 
         params.id = params.baseLicense
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1134,14 +1134,14 @@ class LicenseController
         result
     }
 
-    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
-        def result             = [:]
+    private Map<String,Object> setResultGenericsAndCheckAccess(String checkOption) {
+        Map<String,Object> result = [:]
         result.user            = User.get(springSecurityService.principal.id)
         result.institution     = contextService.org
         result.contextOrg      = result.institution
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.license))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.license))
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
@@ -1169,7 +1169,7 @@ class LicenseController
 
     boolean showConsortiaFunctions(License license) {
 
-        return (license.getLicensingConsortium()?.id == contextService.getOrg().id)
+        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
 }

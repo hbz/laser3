@@ -1,5 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 

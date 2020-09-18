@@ -10,6 +10,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.FlashScope
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 
@@ -76,7 +77,7 @@ class UserService {
         User.executeQuery(baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') , queryParams /*,params */)
     }
 
-    LinkedHashMap setResultGenerics(Map params) {
+    Map<String, Object> setResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [orgInstance: contextService.org]
         result.editor = contextService.user
 

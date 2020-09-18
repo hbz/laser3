@@ -362,7 +362,7 @@ class SurveyController {
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
         allLinkedLicenses.each { Links li ->
             Subscription s = genericOIDService.resolveOID(li.destination)
             License l = genericOIDService.resolveOID(li.source)
@@ -443,7 +443,7 @@ class SurveyController {
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> GenericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
         allLinkedLicenses.each { Links li ->
             Subscription s = genericOIDService.resolveOID(li.destination)
             License l = genericOIDService.resolveOID(li.source)
@@ -673,7 +673,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def show() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
@@ -775,7 +775,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitles() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -809,7 +809,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyConfigDocs() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         result
 
@@ -820,7 +820,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyParticipants() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         // new: filter preset
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
@@ -865,7 +865,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyCostItems() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         result.putAll(financeService.setEditVars(result.institution))
 
@@ -923,7 +923,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSurveyCostItemsBulk() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1019,7 +1019,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyConfigFinish() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1040,7 +1040,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyCostItemsFinish() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1062,7 +1062,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyTransferConfig() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1112,7 +1112,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyEvaluation() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
 
         params.tab = params.tab ?: 'surveyConfigsView'
@@ -1171,7 +1171,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def openParticipantsAgain() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         params.tab = params.tab ?: 'participantsViewAllFinish'
         if(params.tab == 'participantsViewAllNotFinish'){
@@ -1198,7 +1198,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def processOpenParticipantsAgain() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -1279,7 +1279,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyTitlesEvaluation() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
@@ -1619,7 +1619,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def evaluateIssueEntitlementsSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1646,7 +1646,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def evaluationParticipant() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1717,7 +1717,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def allSurveyProperties() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
@@ -1735,7 +1735,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def addSurveyPropToConfig() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1971,7 +1971,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processOpenSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2020,7 +2020,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processEndSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2044,7 +2044,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processBackInProcessingSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2063,7 +2063,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processOpenSurveyNow() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2118,7 +2118,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def openSurveyAgain() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2150,7 +2150,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteSurveyParticipants() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2186,7 +2186,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteDocuments() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2203,7 +2203,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteSurveyInfo() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2268,7 +2268,7 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editSurveyCostItem() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         result.putAll(financeService.setEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
@@ -2296,7 +2296,7 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addForAllSurveyCostItem() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2329,7 +2329,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def setInEvaluation() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2351,7 +2351,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def setCompleted() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2375,7 +2375,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def setCompleteSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2396,7 +2396,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def setSurveyConfigComment() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2416,7 +2416,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def renewalWithSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2434,7 +2434,7 @@ class SurveyController {
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
             String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-            result.memberLicenses = License.executeQuery(query, [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+            result.memberLicenses = License.executeQuery(query, [subscription: genericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
 
         result.properties = []
@@ -2706,7 +2706,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copySurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2781,7 +2781,7 @@ class SurveyController {
 
         if(result.surveyConfig.subscription) {
             String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
-            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: GenericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
+            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: genericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
         
         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
@@ -2795,7 +2795,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def addSubMembersToSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2812,7 +2812,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCopySurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2893,7 +2893,7 @@ class SurveyController {
     })
     def renewSubscriptionConsortiaWithSurvey() {
 
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         result.institution = contextService.org
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
@@ -2936,14 +2936,14 @@ class SurveyController {
     })
     def processRenewalWithSurvey() {
 
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
         Subscription baseSub = Subscription.get(params.parentSub ?: null)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -3006,7 +3006,7 @@ class SurveyController {
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: genericOIDService.getOID(newSub), destination: genericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
@@ -3017,7 +3017,7 @@ class SurveyController {
 
                     redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            params: [sourceObjectId: GenericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true, fromSurvey: true]
+                            params: [sourceObjectId: genericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true, fromSurvey: true]
 
             }
         }
@@ -3026,7 +3026,7 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def exportSurCostItems() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3295,7 +3295,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def compareMembersOfTwoSubs() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3337,7 +3337,7 @@ class SurveyController {
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
             String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-            result.memberLicenses = License.executeQuery(query, [subscription: GenericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+            result.memberLicenses = License.executeQuery(query, [subscription: genericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
         }
 
         result
@@ -3349,7 +3349,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copySurveyCostItems() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3389,7 +3389,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def proccessCopySurveyCostItems() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3436,7 +3436,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copySurveyCostItemsToSub() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3472,7 +3472,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def proccessCopySurveyCostItemsToSub() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3519,7 +3519,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyProperties() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3609,7 +3609,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def proccessCopyProperties() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3737,7 +3737,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processTransferParticipants() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3928,7 +3928,7 @@ class SurveyController {
                 }
                 if(params.generateSlavedLics == "all") {
                     String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-                    licensesToProcess.addAll(License.executeQuery(query, [subscription:GenericOIDService.getOID(newParentSub),linkType:RDStore.LINKTYPE_LICENSE]))
+                    licensesToProcess.addAll(License.executeQuery(query, [subscription:genericOIDService.getOID(newParentSub), linkType:RDStore.LINKTYPE_LICENSE]))
                 }
                 else if(params.generateSlavedLics == "partial") {
                     List<String> licenseKeys = params.list("generateSlavedLicsReference")
@@ -4027,7 +4027,7 @@ class SurveyController {
                         }
 
                         if(oldSub){
-                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(oldSub), owner: contextService.getOrg()).save(flush:true)
+                            new Links(linkType: RDStore.LINKTYPE_FOLLOWS, source: genericOIDService.getOID(memberSub), destination: genericOIDService.getOID(oldSub), owner: contextService.getOrg()).save(flush:true)
                         }
 
                         if(org.getCustomerType() == 'ORG_INST') {
@@ -4150,7 +4150,7 @@ class SurveyController {
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
@@ -4447,6 +4447,48 @@ class SurveyController {
             renewalData.add(row)
         }
 
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size()})", style: 'negative']])
+
+
+        renewalResult.orgsWithoutResult.each { participantResult ->
+            List row = []
+
+            row.add([field: participantResult.participant.sortname ?: '', style: null])
+            row.add([field: participantResult.participant.name ?: '', style: null])
+
+            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
+
+            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
+
+            row.add([field: '', style: null])
+
+            if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
+            {
+                row.add([field: '', style: null])
+            }
+
+            participantResult.properties.sort {
+                it.type.name
+            }.each { participantResultProperty ->
+                row.add([field: participantResultProperty.getResult() ?: "", style: null])
+
+                row.add([field: participantResultProperty.comment ?: "", style: null])
+
+            }
+
+            def costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
+
+            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
+
+            renewalData.add(row)
+        }
+
 
         Map sheetData = [:]
         sheetData[message(code: 'renewalexport.renewals')] = [titleRow: titles, columnData: renewalData]
@@ -4474,7 +4516,7 @@ class SurveyController {
         return result
     }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess() {
+    private Map<String,Object> setResultGenericsAndCheckAccess() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.contextOrg = contextService.getOrg()
@@ -4495,7 +4537,7 @@ class SurveyController {
         result
     }
 
-    private LinkedHashMap setResultGenericsAndCheckAccessforSub(checkOption) {
+    private Map<String,Object> setResultGenericsAndCheckAccessforSub(checkOption) {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
@@ -4752,7 +4794,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def copyElementsIntoSurvey() {
-        def result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
             response.sendError(401); return
         }

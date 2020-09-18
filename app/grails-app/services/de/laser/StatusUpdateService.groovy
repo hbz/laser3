@@ -22,6 +22,7 @@ class StatusUpdateService extends AbstractLockableService {
 
     def globalSourceSyncService
     def changeNotificationService
+    def genericOIDService
     def contextService
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -285,12 +286,12 @@ class StatusUpdateService extends AbstractLockableService {
         int affected = 0
         List<Map<String,Subscription>> subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { Subscription it -> [source:it,destination:it.previousSubscription] }
         subsWithPrevious.each { Map<String,Subscription> sub ->
-            List<Links> linkList = Links.executeQuery('select l from Links as l where l.source = :source and l.destination = :destination and l.linkType = :linkType',[source:GenericOIDService.getOID(sub.source),destination:GenericOIDService.getOID(sub.destination),linkType:RDStore.LINKTYPE_FOLLOWS])
+            List<Links> linkList = Links.executeQuery('select l from Links as l where l.source = :source and l.destination = :destination and l.linkType = :linkType',[source:genericOIDService.getOID(sub.source), destination:genericOIDService.getOID(sub.destination), linkType:RDStore.LINKTYPE_FOLLOWS])
             if(linkList.size() == 0) {
                 log.debug(sub.source+" follows "+sub.destination+", is being refactored")
                 Links link = new Links()
-                link.source = GenericOIDService.getOID(sub.source)
-                link.destination = GenericOIDService.getOID(sub.destination)
+                link.source = genericOIDService.getOID(sub.source)
+                link.destination = genericOIDService.getOID(sub.destination)
                 link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [sub.source,sub.destination]]).get(0)
                 link.linkType = RDStore.LINKTYPE_FOLLOWS
                 if(!link.save(flush:true))
@@ -352,7 +353,7 @@ class StatusUpdateService extends AbstractLockableService {
                                             if(ieCov) {
                                                 covEntry.diffs.each { covDiff ->
                                                     changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                    changeMap.oid = GenericOIDService.getOID(ieA)
+                                                    changeMap.oid = genericOIDService.getOID(ieA)
                                                     changeMap.prop = covDiff.prop
                                                     changeMap.oldValue = ieCov[covDiff.prop]
                                                     changeMap.newValue = covDiff.newValue
@@ -361,20 +362,20 @@ class StatusUpdateService extends AbstractLockableService {
                                             }
                                             else {
                                                 changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                                changeMap.oid = GenericOIDService.getOID(tippCov)
+                                                changeMap.oid = genericOIDService.getOID(tippCov)
                                                 changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                             }
                                             break
                                         case 'add':
                                             changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                            changeMap.oid = GenericOIDService.getOID(tippCov)
+                                            changeMap.oid = genericOIDService.getOID(tippCov)
                                             changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                             break
                                         case 'delete':
                                             IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
                                             if(ieCov) {
                                                 changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                                changeMap.oid = GenericOIDService.getOID(ieCov)
+                                                changeMap.oid = genericOIDService.getOID(ieCov)
                                                 changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                             }
                                             break
@@ -383,7 +384,7 @@ class StatusUpdateService extends AbstractLockableService {
                             }
                             else {
                                 changeDesc = PendingChangeConfiguration.TITLE_UPDATED
-                                changeMap.oid = GenericOIDService.getOID(ieA)
+                                changeMap.oid = genericOIDService.getOID(ieA)
                                 changeMap.prop = diff.prop
                                 if(diff.prop in PendingChange.REFDATA_FIELDS)
                                     changeMap.oldValue = ieA[diff.prop].id
@@ -398,7 +399,7 @@ class StatusUpdateService extends AbstractLockableService {
                     }
                     else {
                         changeDesc = PendingChangeConfiguration.TITLE_DELETED
-                        changeMap.oid = GenericOIDService.getOID(ieA)
+                        changeMap.oid = genericOIDService.getOID(ieA)
                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                     }
                 }
@@ -406,7 +407,7 @@ class StatusUpdateService extends AbstractLockableService {
                 Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_DELETED }
                 inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
                     log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
-                    changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
+                    changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
                 }
                 sess.flush()
                 //sess.clear()

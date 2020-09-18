@@ -1,6 +1,22 @@
-package com.k_int.kbplus
+package de.laser
 
-
+import com.k_int.kbplus.BookInstance
+import com.k_int.kbplus.ContentItem
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IdentifierNamespace
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.PendingChangeService
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.TitleInstance
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -9,15 +25,8 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
-import de.laser.OrgSettings
-import de.laser.StatusUpdateService
-import de.laser.SystemAnnouncement
-import de.laser.SystemEvent
-import de.laser.UserSettings
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
-import de.laser.I10nTranslation
-import de.laser.SystemMessage
 import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -60,16 +69,12 @@ class AdminController extends AbstractDebugController {
     def propertyService
     def dataConsistencyService
     def organisationService
-    GlobalSourceSyncService globalSourceSyncService
-    def GOKbService
-    def docstoreService
-    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-
     def apiService
+
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     @Secured(['ROLE_ADMIN'])
     def index() { }
-
 
     @Secured(['ROLE_ADMIN'])
     def systemAnnouncements() {
@@ -431,23 +436,21 @@ class AdminController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def copyUserRoles(usrMrg, usrKeep){
-        def mergeRoles = usrMrg.getAuthorities()
-        def mergeAffil = usrMrg.getAuthorizedAffiliations()
-        def currentRoles = usrKeep.getAuthorities()
-        def currentAffil = usrKeep.getAuthorizedAffiliations()
+    def copyUserRoles(User usrMrg, User usrKeep){
+        Set<Role> mergeRoles = usrMrg.getAuthorities()
+        Set<UserOrg> mergeAffil = usrMrg.getAuthorizedAffiliations()
+        Set<Role> currentRoles = usrKeep.getAuthorities()
+        Set<UserOrg> currentAffil = usrKeep.getAuthorizedAffiliations()
 
         mergeRoles.each{ role ->
-
             if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
                 UserRole.create(usrKeep,role)
             }
         }
         mergeAffil.each{affil ->
             if(!currentAffil.contains(affil)){
-
                 // We should check that the new role does not already exist
-                def existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole);
+                UserOrg existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole)
 
         if ( existing_affil_check == null ) {
             log.debug("No existing affiliation");
@@ -1775,7 +1778,7 @@ SELECT * FROM (
     def manageRefdatas() {
 
         if (params.cmd == 'deleteRefdataValue') {
-            def rdv = genericOIDService.resolveOID(params.rdv)
+            RefdataValue rdv = (RefdataValue) genericOIDService.resolveOID(params.rdv)
 
             if (rdv) {
                 if (! rdv.isHardData) {
@@ -1791,8 +1794,8 @@ SELECT * FROM (
         }
         else if (params.cmd == 'replaceRefdataValue') {
             if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                RefdataValue rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
-                RefdataValue rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
+                RefdataValue rdvFrom = (RefdataValue) genericOIDService.resolveOID(params.xcgRdvFrom)
+                RefdataValue rdvTo = (RefdataValue) genericOIDService.resolveOID(params.xcgRdvTo)
 
                 boolean check = false
 

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.Fact
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinition
 import de.laser.OrgSettings

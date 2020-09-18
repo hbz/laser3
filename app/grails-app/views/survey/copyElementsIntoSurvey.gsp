@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController" %>
+<%@ page import="de.laser.Person; com.k_int.kbplus.RefdataValue; de.laser.SubscriptionController" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -25,8 +25,8 @@
     <semui:messages data="${flash}"/>
 
     <% Map params = [:];
-        if (sourceObjectId)   params << [sourceObjectId: GenericOIDService.getOID(sourceObject)];
-        if (targetObjectId)   params << [targetObjectId: GenericOIDService.getOID(targetObject)];
+        if (sourceObjectId)   params << [sourceObjectId: genericOIDService.getOID(sourceObject)];
+        if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(targetObject)];
         if (isRenewSub)             params << [isRenewSub: isRenewSub];
     %>
     <g:if test="${isRenewSub}">

@@ -24,6 +24,8 @@ class PropertyDefinitionGroup {
     Date dateCreated
     Date lastUpdated
 
+    def contextService
+
     static hasMany = [
             items: PropertyDefinitionGroupItem,
             bindings: PropertyDefinitionGroupBinding
@@ -66,12 +68,23 @@ class PropertyDefinitionGroup {
     }
 
     List getCurrentProperties(def currentObject) {
-
         List result = []
         def givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds) {
+                result << GrailsHibernateUtil.unwrapIfProxy(cp)
+            }
+        }
+        result
+    }
+
+    List getCurrentPropertiesOfTenant(def currentObject, Org tenant) {
+        List result = []
+        def givenIds = getPropertyDefinitions().collect{ it.id } //continue here: wrong number delivered
+
+        currentObject?.propertySet?.each{ cp ->
+            if (cp.type.id in givenIds && cp.tenant.id == tenant.id) {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }
         }
@@ -89,10 +102,10 @@ class PropertyDefinitionGroup {
         result
     }
 
-    static refdataFind(GrailsParameterMap params) {
+    static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
 
-        def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
+        GenericOIDService genericOIDService = (GenericOIDService) Holders.applicationContext.getBean('genericOIDService')
         def currentObject = genericOIDService.resolveOID(params.oid)
 
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')

@@ -1,5 +1,12 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
@@ -7,8 +14,6 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.finance.Invoice
 import de.laser.controller.AbstractDebugController
-import de.laser.IssueEntitlementGroup
-import de.laser.PendingChangeConfiguration
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.finance.Order
@@ -718,7 +723,7 @@ class FinanceController extends AbstractDebugController {
         Set<String> pickedSubscriptions = []
         JSON.parse(params.preselectedSubscriptions).each { String ciId ->
             CostItem ci = CostItem.get(Long.parseLong(ciId))
-            pickedSubscriptions << "'${GenericOIDService.getOID(ci.sub)}'"
+            pickedSubscriptions << "'${genericOIDService.getOID(ci.sub)}'"
         }
         result.pickedSubscriptions = pickedSubscriptions
         render(template: "/finance/ajaxModal", model: result)
@@ -894,21 +899,21 @@ class FinanceController extends AbstractDebugController {
               //println(issueEntitlementGroup)
               RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
 
-              //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
-              def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
-              def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+              //RefdataValue tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
+              RefdataValue cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
+              RefdataValue cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
               //moved to TAX_TYPES
-              //def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+              //RefdataValue cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
 
-              def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+              RefdataValue cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
 
               NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
-              def cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
-              def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
-              def cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
+              Double cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
+              Double cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
+              Double cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
 
-              def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
-              def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
+              Double cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+              Double cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
               //moved to TAX_TYPES
               //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
               def tax_key = null

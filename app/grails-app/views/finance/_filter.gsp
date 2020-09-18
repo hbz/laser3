@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%
@@ -310,13 +310,13 @@
             let values = []
             switch($(this).attr("id")) {
                 case 'filterCISub':
-                    values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${genericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCISPkg':
-                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${genericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterSubProviders':
-                    values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${com.k_int.kbplus.GenericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${genericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIBudgetCode':
                     values = [<g:each in="${filterPresets?.filterCIBudgetCode}" var="budgetCode" status="i">'${budgetCode.id}'<g:if test="${i < filterPresets.filterCIBudgetCode.size()-1}">,</g:if></g:each>];

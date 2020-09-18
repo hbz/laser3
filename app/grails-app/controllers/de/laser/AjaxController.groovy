@@ -1,9 +1,27 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.PersonProperty
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
@@ -38,6 +56,7 @@ class AjaxController {
     def accessService
     def escapeService
     def formService
+    def dashboardDueDatesService
     CompareService compareService
     LinksGenerationService linksGenerationService
     AddressbookService addressbookService
@@ -169,58 +188,6 @@ class AjaxController {
         Map<String, Object> result = [:]
         render result as JSON
     }
-
-  @Secured(['ROLE_USER'])
-  def setFieldNote() {
-      GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-      if ( instance ) {
-        if ( params.elementid?.startsWith('__fieldNote_') ) {
-          def note_domain = params.elementid.substring(12)
-          instance.setNote(note_domain, params.value);
-          instance.save(flush:true)
-        }
-      }
-    }
-    else {
-      log.error("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }
-
-   @Secured(['ROLE_USER'])
-  def setFieldTableNote() {
-    // log.debug("setFieldTableNote(${params})")
-    GrailsClass domain_class = AppUtils.getDomainClassGeneric( params.type )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-       
-      if ( instance ) {
-        String temp = '__fieldNote_'+params.name
-        if ( temp?.startsWith('__fieldNote_') ) {
-          def note_domain = temp.substring(12)
-          // log.debug("note_domain: " + note_domain +" : \""+ params.value+"\"")
-          instance.setNote(note_domain, params.value);
-          instance.save(flush:true)
-        }
-      }
-    }
-    else {
-      log.error("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }
 
     @Secured(['ROLE_USER'])
     def genericSetValue() {
@@ -670,23 +637,26 @@ class AjaxController {
                             break
                     }
                 }
-
                 if (values) {
                     if (propDef.type == Integer.toString()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
-                        result = result.sort { x, y -> x.text.compareTo y.text}
+                        result = result.sort { x, y -> x.text.compareTo y.text }
                     }
                     else if (propDef.type == Date.toString()) {
-                        values.sort{ x,y -> y.dateValue - x.dateValue }.each {
-                            AbstractPropertyWithCalculatedLastUpdated v ->
-                                if(v.dateValue != null) {
-                                    String vt = g.formatDate(formatName:"default.date.format.notime", date:v.dateValue)
-                                    result.add([value: vt, text: vt])
-                                }
+                        values.dateValue.findAll().unique().sort().reverse().each { v ->
+                            String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
+                            result.add([value: vt, text: vt])
                         }
+                    }
+                    else if (propDef.type == RefdataValue.toString()) {
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
+                            if(v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
                     }
                     else {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
@@ -819,11 +789,16 @@ class AjaxController {
          Map empty = [results: []]
          render empty as JSON
      }
-    }
+   }
+
+  @Secured(['ROLE_USER'])
+  def lookupPropertyDefinitionValues() {
+      render controlledListService.getPropertyDefinitionValues(params) as JSON
+  }
 
   @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
-    render controlledListService.getSubscriptions(params) as JSON
+      render controlledListService.getSubscriptions(params) as JSON
   }
 
   @Secured(['ROLE_USER'])
@@ -1350,6 +1325,7 @@ class AjaxController {
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
         ])
@@ -1839,6 +1815,7 @@ class AjaxController {
                   showConsortiaFunctions: showConsortiaFunctions,
                   contextOrg      : contextOrg,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1938,8 +1915,8 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1997,8 +1974,8 @@ class AjaxController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -2434,14 +2411,6 @@ class AjaxController {
         render result as JSON
     }
 
-  def validationException(final grails.validation.ValidationException exception){
-      log.error( exception.toString() )
-    response.status = 400
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << "Value validation failed"
-  }
-
     @Secured(['ROLE_USER'])
     def editableSetValue() {
         log.debug("editableSetValue ${params}");
@@ -2846,7 +2815,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def NoteEdit() {
+    def editNote() {
         Map<String, Object> result = [:]
         result.params = params
         result.noteInstance = Doc.get(params.id)

@@ -57,7 +57,7 @@ class Links {
     def getOther(key) {
         def context
         if(key instanceof Subscription || key instanceof License)
-            context = GenericOIDService.getOID(key)
+            context = genericOIDService.getOID(key)
         else if(key instanceof GString || key instanceof String)
             context = key
         else {

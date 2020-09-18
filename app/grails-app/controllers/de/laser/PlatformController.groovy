@@ -1,5 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
 import de.laser.OrgAccessPoint
 import de.laser.OrgAccessPointLink
@@ -15,7 +20,6 @@ class PlatformController extends AbstractDebugController {
 
     def springSecurityService
     def contextService
-    def filterService
     def orgTypeService
     def accessService
 
@@ -35,7 +39,7 @@ class PlatformController extends AbstractDebugController {
         result.offset = params.offset ?: 0
 
         RefdataValue deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', RDConstants.PLATFORM_STATUS)
-        def qry_params = [delStatus: deleted_platform_status]
+        Map<String, Object> qry_params = [delStatus: deleted_platform_status]
 
         String base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status = :delStatus)) "
 
@@ -66,33 +70,10 @@ class PlatformController extends AbstractDebugController {
       result
     }
 
-    /*
-    //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    @Secured(['ROLE_ADMIN'])
-    def create() {
-    switch (request.method) {
-    case 'GET':
-          [platformInstance: new Platform(params)]
-      break
-    case 'POST':
-          def platformInstance = new Platform(params)
-          if (!platformInstance.save(flush: true)) {
-              render view: 'create', model: [platformInstance: platformInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.created.message', args: [message(code: 'platform.label'), platformInstance.id])
-          redirect action: 'show', id: platformInstance.id
-      break
-    }
-    }
-     */
-
     @Secured(['ROLE_USER'])
     def show() {
-      Map result = setResultGenerics()
-      Platform platformInstance = Platform.get(params.id)
+      Map<String, Object> result = setResultGenerics()
+        Platform platformInstance = Platform.get(params.id)
       if (!platformInstance) {
         flash.message = message(code: 'default.not.found.message', 
                                 args: [message(code: 'platform.label'), params.id])
@@ -137,112 +118,33 @@ class PlatformController extends AbstractDebugController {
 
     }
 
-    /*
-    @Secured(['ROLE_USER'])
-    def platformTipps() {
-        def editable
-        def platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
-        Map result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        params.max = result.max
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        def qry_params = [platInstance: platformInstance]
-        Date date_filter = params.mode == 'advanced' ? null : new Date()
-        def query = filterService.generateBasePackageQuery(params, qry_params, false, date_filter, "Platform")
-        List<TitleInstancePackagePlatform> platformTipps = TitleInstancePackagePlatform.executeQuery("select tipp ${query.base_qry}",query.qry_params)
-
-        result.countTipps = platformTipps.size()
-        result.tipps = platformTipps.drop(result.offset).take(result.max)
-
-        result
-    }
-     */
-
-    /*
-    //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    @Secured(['ROLE_ADMIN'])
-    def edit() {
-    switch (request.method) {
-    case 'GET':
-          def platformInstance = Platform.get(params.id)
-          if (!platformInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
-              redirect action: 'list'
-              return
-          }
-
-          [platformInstance: platformInstance]
-      break
-    case 'POST':
-          def platformInstance = Platform.get(params.id)
-          if (!platformInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
-              redirect action: 'list'
-              return
-          }
-
-          if (params.version) {
-              def version = params.version.toLong()
-              if (platformInstance.version > version) {
-                  platformInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'platform.label')] as Object[],
-                            "Another user has updated this Platform while you were editing")
-                  render view: 'edit', model: [platformInstance: platformInstance]
-                  return
-              }
-          }
-
-          platformInstance.properties = params
-
-          if (!platformInstance.save(flush: true)) {
-              render view: 'edit', model: [platformInstance: platformInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'platform.label'), platformInstance.id])
-          redirect action: 'show', id: platformInstance.id
-      break
-    }
-    }
-     */
-
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
     def delete() {
-        def platformInstance = Platform.get(params.id)
+        Platform platformInstance = Platform.get(params.id)
         if (!platformInstance) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
             platformInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label'), params.id])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'platform.label'), params.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'show', id: params.id
         }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def accessMethods() {
+        // TODO: editable is undefined
         def editable
-        def platformInstance = Platform.get(params.id)
+        Platform platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
                     args: [message(code: 'platform.label'), params.id])
@@ -250,7 +152,7 @@ class PlatformController extends AbstractDebugController {
             return
         }
 
-        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
+        List<PlatformAccessMethod> platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
 
         [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
     }
@@ -259,26 +161,26 @@ class PlatformController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
         Map<String, Object> result = [:]
-        def platformInstance = Platform.get(params.id)
+        Platform platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
                 args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
             return
         }
-        def selectedInstitution = contextService.getOrg()
+        Org selectedInstitution = contextService.getOrg()
+        List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
 
-        def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+        List<OrgAccessPointLink> results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
 
         String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
             notActiveAPLinkQuery += "and not exists ("
             notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
             notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
 
-        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
+        List<OrgAccessPoint> accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
@@ -306,13 +208,14 @@ class PlatformController extends AbstractDebugController {
         }
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
         hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+        List<OrgAccessPointLink> results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+
         String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
         notActiveAPLinkQuery += "and not exists ("
         notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
         notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
 
-        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
+        List<OrgAccessPoint> accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
@@ -352,7 +255,7 @@ class PlatformController extends AbstractDebugController {
         // The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
         // gets deleted too
         String hql = "delete from OrgAccessPointLink oapl where oapl.platform=:platform_id and oapl.subPkg =:subPkg and oapl.active=true"
-        def oapl = OrgAccessPointLink.executeUpdate(hql, [platform_id:platform, subPkg:subPkg])
+        OrgAccessPointLink.executeUpdate(hql, [platform_id:platform, subPkg:subPkg])
 
         redirect(url: request.getHeader('referer'))
     }
@@ -400,7 +303,7 @@ class PlatformController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkAccessPoint() {
-        def apInstance = null
+        OrgAccessPoint apInstance
         if (params.AccessPoints){
             apInstance = OrgAccessPoint.get(params.AccessPoints)
             if (!apInstance) {
@@ -410,13 +313,13 @@ class PlatformController extends AbstractDebugController {
             }
         }
         // save link
-        def oapl = new OrgAccessPointLink()
+        OrgAccessPointLink oapl = new OrgAccessPointLink()
         oapl.active = true
         oapl.oap = apInstance
         oapl.platform = Platform.get(params.platform_id)
-        List existingActiveAP = []
+        List<OrgAccessPointLink> existingActiveAP = []
         if (params.subscriptionPackage_id){
-            def sp = SubscriptionPackage.get(params.subscriptionPackage_id)
+            SubscriptionPackage sp = SubscriptionPackage.get(params.subscriptionPackage_id)
             if (sp) {
                 oapl.subPkg = sp
             }
@@ -456,7 +359,7 @@ class PlatformController extends AbstractDebugController {
         redirect action: 'link', params: [id:params.id]
     }
 
-    private Map setResultGenerics() {
+    private Map<String, Object> setResultGenerics() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.institution = contextService.org

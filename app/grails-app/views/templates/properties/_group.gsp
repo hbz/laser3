@@ -1,5 +1,5 @@
 <!-- _groups.gsp -->
-<%@ page import="com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
@@ -31,7 +31,22 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propDefGroup.getCurrentProperties(ownobj).sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:set var="isGroupVisible" value="${propDefGroup.isVisible || propDefGroupBinding?.isVisible}"/>
+        <g:if test="${ownobj instanceof License}">
+            <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
+            <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+        </g:if>
+        <g:elseif test="${ownobj instanceof Subscription}">
+            <g:set var="consortium" value="${ownobj.getConsortia()}"/>
+            <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+        </g:elseif>
+        <g:if test="${isGroupVisible}">
+            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentProperties(ownobj)}" />
+        </g:if>
+        <g:elseif test="${consortium != null}">
+            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentPropertiesOfTenant(ownobj,consortium)}" />
+        </g:elseif>
+        <g:each in="${propDefGroupItems.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
             <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <tr>
@@ -95,7 +110,7 @@
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
-                                                                   propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                                   propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                    ownerId:"${ownobj.id}",
                                                                    ownerClass:"${ownobj.class}",
                                                                    custom_props_div:"${custom_props_div}",
@@ -120,7 +135,7 @@
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
-                                                                   propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                                   propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                    ownerId:"${ownobj.id}",
                                                                    ownerClass:"${ownobj.class}",
                                                                    custom_props_div:"${custom_props_div}",
@@ -146,7 +161,7 @@
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
                                                       params='[propClass: prop.getClass(),
-                                                               propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                               propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                ownerId:"${ownobj.id}",
                                                                ownerClass:"${ownobj.class}",
                                                                custom_props_div:"${custom_props_div}",
@@ -171,10 +186,10 @@
                                 <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                     <g:if test="${prop.isPublic}">
                                         <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
-                                                          params='[oid: GenericOIDService.getOID(prop),
+                                                          params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
-                                                                   propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                                   propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                    showConsortiaFunctions: "${showConsortiaFunctions}",
                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
@@ -185,10 +200,10 @@
                                     </g:if>
                                     <g:else>
                                         <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
-                                                          params='[oid: GenericOIDService.getOID(prop),
+                                                          params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
-                                                                   propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                                   propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                    showConsortiaFunctions: "${showConsortiaFunctions}",
                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
@@ -205,7 +220,8 @@
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),
-                                                           propDefGroup: "${GenericOIDService.getOID(propDefGroup)}",
+                                                           propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
+                                                           propDefGroupBinding: "${genericOIDService.getOID(propDefGroupBinding)}",
                                                            ownerId:"${ownobj.id}",
                                                            ownerClass:"${ownobj.class}",
                                                            custom_props_div:"${custom_props_div}",
@@ -232,14 +248,7 @@
                             </g:else>
                         </g:if>
                         <g:else>
-                            <g:if test="${ownobj instanceof License}">
-                                <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
-                            </g:if>
-                            <g:elseif test="${ownobj instanceof Subscription}">
-                                <g:set var="consortium" value="${ownobj.getConsortia()}"/>
-                                <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
-                            </g:elseif>
-                            <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
+                            <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                 <g:if test="${ownobj.isSlaved}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="large icon thumbtack blue"></i></span>
                                 </g:if>
@@ -257,7 +266,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${editable}">
+    <g:if test="${editable && isGroupVisible}">
         <tfoot>
             <tr>
                 <g:if test="${propDefGroup}">
@@ -278,12 +287,13 @@
                                   data-always="c3po.loadJsAfterAjax()"
                                   data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
-                        <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${GenericOIDService.getOID(propDefGroup)}" class="customPropSelect"/>
+                        <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-                        <input type="hidden" name="propDefGroup" value="${GenericOIDService.getOID(propDefGroup)}"/>
+                        <input type="hidden" name="propDefGroup" value="${genericOIDService.getOID(propDefGroup)}"/>
+                        <input type="hidden" name="propDefGroupBinding" value="${genericOIDService.getOID(propDefGroupBinding)}"/>
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService; de.laser.FormService;" %>
+<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; de.laser.SubscriptionController; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Subscription; de.laser.FormService;" %>
 <laser:serviceInjection />
 
 <g:set var="formService" bean="formService"/>
@@ -14,7 +14,7 @@
     </g:if>
 
     <g:form controller="${controllerName}" action="${actionName}"  id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>

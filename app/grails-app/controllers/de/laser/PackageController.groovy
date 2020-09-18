@@ -1,11 +1,13 @@
-package com.k_int.kbplus
+package de.laser
 
-
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
-import de.laser.ApiSource
-import de.laser.EscapeService
-import de.laser.OrgSettings
-import de.laser.Task
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -23,7 +25,6 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
-import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController extends AbstractDebugController {
@@ -33,7 +34,6 @@ class PackageController extends AbstractDebugController {
     def yodaService
     def exportService
     def institutionsService
-    ExecutorService executorService
     ExecutorWrapperService executorWrapperService
     def accessService
     def contextService

@@ -389,7 +389,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Set<License> getLicenses() {
         Set<License> result = []
-        Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
             result << genericOIDService.resolveOID(l.source)
         }
         result
@@ -456,64 +456,38 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Subscription _getCalculatedPrevious() {
         Links match = Links.findWhere(
-                source: GenericOIDService.getOID(this),
+                source: genericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? genericOIDService.resolveOID(match.destination) : null
+        return match ? (Subscription) genericOIDService.resolveOID(match.destination) : null
     }
 
     Subscription _getCalculatedSuccessor() {
         Links match = Links.findWhere(
-                destination: GenericOIDService.getOID(this),
+                destination: genericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? genericOIDService.resolveOID(match.source) : null
+        return match ? (Subscription) genericOIDService.resolveOID(match.source) : null
     }
 
-    boolean isMultiYearSubscription()
-    {
-        if(this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366)) {
-            return true
-        }
-        else {
-            return false
-        }
+    boolean isMultiYearSubscription() {
+        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
     }
 
-    boolean isCurrentMultiYearSubscription()
-    {
+    boolean isCurrentMultiYearSubscription() {
         Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        if(this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366)) {
-            return true
-        }
-        else {
-            return false
-        }
+        return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
 
-    boolean isCurrentMultiYearSubscriptionNew()
-    {
+    boolean isCurrentMultiYearSubscriptionNew() {
         Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        if(this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366)) {
-            return true
-        }
-        else {
-            return false
-        }
+        return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
 
-    boolean islateCommer()
-    {
-        Date currentDate = new Date(System.currentTimeMillis())
-        //println(this.endDate.minus(currentDate))
-        if(this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
-        {
-            return true
-        }else {
-            return false
-        }
+    boolean islateCommer() {
+        return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
     }
 
     boolean isEditableBy(user) {
@@ -626,7 +600,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
             // cons_members
             if (this.instanceOf) {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
+                Long subId
+                if(this.getConsortia().id == contextOrg.id)
+                    subId = this.instanceOf.id
+                else subId = this.id
+                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: subId,ctxOrg:contextOrg])
+                PropertyDefinitionGroupBinding binding = null
+                if(bindings)
+                    binding = bindings.get(0)
 
                 // global groups
                 if (it.tenant == null) {
@@ -699,15 +680,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
   }
 
-  // XML.registerObjectMarshaller Facility, { facility, xml ->
-  //    xml.attribute 'id', facility.id
-  //               xml.build {
-  //      name(facility.name)
-  //    }
-  //  }
-
   Date getRenewalDate() {
-    manualRenewalDate ? manualRenewalDate : null
+    manualRenewalDate
   }
   /**
   * OPTIONS: startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser,inst_shortcode
@@ -768,20 +742,20 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     result
   }
 
-  def setInstitution(inst) {
+  def setInstitution(Org inst) {
       log.debug("Set institution ${inst}")
 
-    def subrole = RDStore.OR_SUBSCRIBER
-    def or = new OrgRole(org:inst, roleType:subrole, sub:this)
-    if ( this.orgRelations == null)
-      this.orgRelations = []
-    this.orgRelations.add(or)
+      OrgRole or = new OrgRole(org:inst, roleType:RDStore.OR_SUBSCRIBER, sub:this)
+      if (this.orgRelations == null) {
+        this.orgRelations = []
+      }
+     this.orgRelations.add(or)
   }
 
   String getCommaSeperatedPackagesIsilList() {
-      List result = []
+      List<String> result = []
       packages.each { it ->
-          def identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
+          String identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
           if (identifierValue) {
               result += identifierValue
           }
@@ -789,7 +763,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       result.join(',')
   }
 
-  def hasPlatformWithUsageSupplierId() {
+  boolean hasPlatformWithUsageSupplierId() {
       boolean hasUsageSupplier = false
       packages.each { it ->
           String hql="select count(distinct sp) from SubscriptionPackage sp "+
@@ -825,11 +799,11 @@ select distinct oap from OrgAccessPoint oap
       types
   }
 
-  def dropdownNamingConvention() {
-      return dropdownNamingConvention(contextService.org)
+  String dropdownNamingConvention() {
+      dropdownNamingConvention(contextService.org)
   }
 
-  def dropdownNamingConvention(contextOrg){
+  String dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
@@ -865,11 +839,11 @@ select distinct oap from OrgAccessPoint oap
        }
   }
 
-    def dropdownNamingConventionWithoutOrg() {
-        return dropdownNamingConventionWithoutOrg(contextService.org)
+    String dropdownNamingConventionWithoutOrg() {
+        dropdownNamingConventionWithoutOrg(contextService.org)
     }
 
-    def dropdownNamingConventionWithoutOrg(Org contextOrg){
+    String dropdownNamingConventionWithoutOrg(Org contextOrg){
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
@@ -881,11 +855,11 @@ select distinct oap from OrgAccessPoint oap
         return name + ' - ' + statusString + ' ' +period
     }
 
-    def getDerivedSubscriptionBySubscribers(Org org) {
-        def result
+    Subscription getDerivedSubscriptionBySubscribers(Org org) {
+        Subscription result
 
         Subscription.findAllByInstanceOf(this).each { s ->
-            def ors = OrgRole.findAllWhere( sub: s )
+            List<OrgRole> ors = OrgRole.findAllWhere( sub: s )
             ors.each { or ->
                 if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] && or.org.id == org.id) {
                     result = or.sub

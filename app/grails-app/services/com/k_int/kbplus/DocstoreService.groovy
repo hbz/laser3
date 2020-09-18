@@ -30,7 +30,7 @@ class DocstoreService {
     return testZip;
   }
 
-  static ArrayList<File> getFileList(File file) {
+  ArrayList<File> getFileList(File file) {
     ArrayList<File> fileList = new ArrayList<File>();
     if (file.isFile()) {
       fileList.add(file);

@@ -1,15 +1,20 @@
-package com.k_int.kbplus
+package de.laser
 
+
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IdentifierNamespace
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.properties.PropertyDefinition
-import de.laser.CustomerIdentifier
-import de.laser.DeletionService
-import de.laser.FormService
-import de.laser.OrgSettings
-import de.laser.OrgSubjectGroup
-import de.laser.ReaderNumber
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -982,7 +987,7 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
-        Map result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id

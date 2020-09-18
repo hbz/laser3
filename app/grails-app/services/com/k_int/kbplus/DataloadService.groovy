@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.FTControl
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.SystemEvent
@@ -50,6 +51,7 @@ class DataloadService {
     def sessionFactory
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
+    def genericOIDService
 
     String es_index
     def dataload_running=false
@@ -151,7 +153,7 @@ class DataloadService {
             def result = [:]
 
                 if (ti.title != null) {
-                    def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                    /*def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
                     if (ti.keyTitle != new_key_title) {
                         ti.normTitle = com.k_int.kbplus.TitleInstance.generateNormTitle(ti.title)
                         ti.keyTitle = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
@@ -160,7 +162,7 @@ class DataloadService {
                         //
                         ti.save()
                     } else {
-                    }
+                    }*/
 
                     result._id = ti.globalUID
                     result.priority = 20
@@ -305,13 +307,13 @@ class DataloadService {
                 case CalculatedType.TYPE_CONSORTIAL:
                     //result.availableToOrgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
                     String query = "select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType"
-                    result.availableToOrgs = Org.executeQuery(query, [lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
+                    result.availableToOrgs = Org.executeQuery(query, [lic:genericOIDService.getOID(lic), linkType:RDStore.LINKTYPE_LICENSE, roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     result.membersCount = License.findAllByInstanceOf(lic).size()?:0
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
                     //List orgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
                     String query = "select oo.org from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType in (:roleType)"
-                    List orgs = Org.executeQuery(query, [lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+                    List orgs = Org.executeQuery(query, [lic:genericOIDService.getOID(lic), linkType:RDStore.LINKTYPE_LICENSE, roleType:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
                     result.consortiaName = lic.getLicensingConsortium()?.name
@@ -324,7 +326,7 @@ class DataloadService {
                 case CalculatedType.TYPE_LOCAL:
                     //result.availableToOrgs = lic.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
                     String query = "select oo.org.id from OrgRole oo where concat('"+Subscription.class.name+":',oo.sub.id) in (select li.destination from Links li where li.source = :lic and li.linkType = :linkType) and oo.roleType = :roleType"
-                    result.availableToOrgs = Org.executeQuery(query, [lic:GenericOIDService.getOID(lic),linkType:RDStore.LINKTYPE_LICENSE,roleType:RDStore.OR_SUBSCRIBER])
+                    result.availableToOrgs = Org.executeQuery(query, [lic:genericOIDService.getOID(lic), linkType:RDStore.LINKTYPE_LICENSE, roleType:RDStore.OR_SUBSCRIBER])
                     break
             }
 
@@ -1043,7 +1045,7 @@ class DataloadService {
                     latest_ft_record.lastTimestamp = highest_timestamp
                     latest_ft_record.esElements = latest_ft_record.esElements ?: 0
                     latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-                    latest_ft_record.save(flush: true);
+                    latest_ft_record.save()
                     cleanUpGorm();
                 }
             }
@@ -1056,8 +1058,9 @@ class DataloadService {
 
             latest_ft_record.esElements = latest_ft_record.esElements ?: 0
             latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
-            latest_ft_record.save(flush: true);
-        }else{
+            latest_ft_record.save()
+        }
+        else {
             log.debug("updateES ${domain.name}: FTControle is not active")
         }
 

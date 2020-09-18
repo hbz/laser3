@@ -1,17 +1,16 @@
 package com.k_int.kbplus
 
+import de.laser.GlobalRecordSource
 import de.laser.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
-import de.laser.exceptions.CreationException
 import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
-import grails.transaction.Transactional
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
@@ -24,7 +23,6 @@ import org.hibernate.classic.Session
 import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
-import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 /**
@@ -36,6 +34,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     SessionFactory sessionFactory
     ExecutorService executorService
     ChangeNotificationService changeNotificationService
+    def genericOIDService
     def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalRecordSource source
 
@@ -140,7 +139,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             catch (Exception e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
                 log.error("sync job has failed, please consult stacktrace as follows: ")
-                e.printStackTrace()
+                log.error(e.getStackTrace())
             }
         }
         running = false
@@ -152,7 +151,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Set<String> titlesToUpdate = []
         titleNodes.each { title ->
-            titlesToUpdate << title.'@uuid'.text()
+            //temp fix
+            if(title.type.text() in ['BookInstance','DatabaseInstance','JournalInstance'])
+                titlesToUpdate << title.'@uuid'.text()
+            else {
+                log.warn("Unimplemented title type ${title.type.text()}")
+                SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:title.'@uuid'.text()])
+            }
         }
         List providerNodes = oaiBranch.'**'.findAll { node ->
             node.name() == "nominalProvider"
@@ -238,9 +243,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         List<Map<String,Object>> tipps = []
         Set<String> platformsInPackage = [], titleInstancesInPackage = []
         packageData.TIPPs.TIPP.eachWithIndex { tipp, int ctr ->
-            tipps << tippConv(tipp)
-            platformsInPackage << tipp.platform.'@uuid'.text()
-            titleInstancesInPackage << tipp.title.'@uuid'.text()
+            if(tipp.title.type.text() in ['BookInstance','DatabaseInstance','JournalInstance']) {
+                tipps << tippConv(tipp)
+                platformsInPackage << tipp.platform.'@uuid'.text()
+                titleInstancesInPackage << tipp.title.'@uuid'.text()
+            }
+            else {
+                log.warn("see above - unimplemented title type ${tipp.title.type.text()}")
+            }
         }
         log.info("Rec conversion for package returns object with name ${packageName} and ${tipps.size()} tipps")
         Package.withTransaction { TransactionStatus stat ->
@@ -436,7 +446,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             catch (Exception e) {
                 log.error("Error on updating package ${result.id} ... rollback!")
-                e.printStackTrace()
+                log.error(e.getStackTrace())
                 stat.setRollbackOnly()
             }
         }
@@ -1109,7 +1119,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     Set<SubscriptionPackage> spConcerned = SubscriptionPackage.findAllByPkg(target)
                     if(notify.event == 'pkgPropUpdate') {
                         spConcerned.each { SubscriptionPackage sp ->
-                            Map<String,Object> changeMap = [target:sp.subscription, oid:GenericOIDService.getOID(target)]
+                            Map<String,Object> changeMap = [target:sp.subscription, oid:genericOIDService.getOID(target)]
                             notify.diffs.each { diff ->
                                 changeMap.oldValue = diff.oldValue
                                 changeMap.newValue = diff.newValue
@@ -1120,7 +1130,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     else if(notify.event == 'pkgDelete') {
                         spConcerned.each { SubscriptionPackage sp ->
-                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(target)],PendingChangeConfiguration.PACKAGE_DELETED,sp)
+                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(target)],PendingChangeConfiguration.PACKAGE_DELETED,sp)
                         }
                     }
                 }
@@ -1129,7 +1139,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(notify.event == 'add') {
                         Set<SubscriptionPackage> spConcerned = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg',[pkg:target.pkg])
                         spConcerned.each { SubscriptionPackage sp ->
-                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:GenericOIDService.getOID(target)],PendingChangeConfiguration.NEW_TITLE,sp)
+                            changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(target)],PendingChangeConfiguration.NEW_TITLE,sp)
                         }
                     }
                     else {
@@ -1148,7 +1158,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                     if(ieCov) {
                                                         covEntry.diffs.each { covDiff ->
                                                             changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                            changeMap.oid = GenericOIDService.getOID(ieCov)
+                                                            changeMap.oid = genericOIDService.getOID(ieCov)
                                                             changeMap.prop = covDiff.prop
                                                             changeMap.oldValue = ieCov[covDiff.prop]
                                                             changeMap.newValue = covDiff.newValue
@@ -1170,7 +1180,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                     IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ie.coverages)
                                                     if(ieCov) {
                                                         changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                                        changeMap.oid = GenericOIDService.getOID(ieCov)
+                                                        changeMap.oid = genericOIDService.getOID(ieCov)
                                                         changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                                     }
                                                     break
@@ -1179,7 +1189,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                     else {
                                         changeDesc = PendingChangeConfiguration.TITLE_UPDATED
-                                        changeMap.oid = GenericOIDService.getOID(ie)
+                                        changeMap.oid = genericOIDService.getOID(ie)
                                         changeMap.prop = diff.prop
                                         if(diff.prop in PendingChange.REFDATA_FIELDS)
                                             changeMap.oldValue = ie[diff.prop].id
@@ -1194,7 +1204,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     break
                                 case 'delete':
                                     changeDesc = PendingChangeConfiguration.TITLE_DELETED
-                                    changeMap.oid = GenericOIDService.getOID(ie)
+                                    changeMap.oid = genericOIDService.getOID(ie)
                                     changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,target.pkg))
                                     break
                             }
@@ -1239,7 +1249,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             record
         }
         catch(HttpResponseException e) {
-            e.printStackTrace()
+            log.error(e.getStackTrace())
             null
         }
     }

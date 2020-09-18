@@ -1,10 +1,9 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.DeletionService
-import de.laser.OrgSettings
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -34,7 +33,7 @@ class UserController extends AbstractDebugController {
                 ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
     })
     def _delete() {
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
 
         if (result.user) {
             List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
@@ -72,7 +71,7 @@ class UserController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def list() {
 
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
 
         /*
         as of ERMS-1557, this method can be called only with admin rights. All other contexts are deployed to their respective controllers.
@@ -113,7 +112,7 @@ class UserController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def edit() {
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
 
         if (! result.editable) {
             redirect action: 'list'
@@ -159,7 +158,7 @@ class UserController extends AbstractDebugController {
                 ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
     })
     def show() {
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         result
     }
 
@@ -169,7 +168,7 @@ class UserController extends AbstractDebugController {
                 ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
     })
     def newPassword() {
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
@@ -195,7 +194,7 @@ class UserController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def addAffiliation(){
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
@@ -215,7 +214,7 @@ class UserController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def create() {
-        def result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect controller: 'user', action: 'list'

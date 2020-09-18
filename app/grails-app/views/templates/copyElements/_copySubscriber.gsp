@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; de.laser.SurveyConfig; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService;com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="de.laser.Person; de.laser.SurveyConfig; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <g:set var="formService" bean="formService"/>
@@ -10,7 +10,7 @@
             allObjects_readRights : allObjects_readRights,
             allObjects_writeRights: allObjects_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription"
-            params="[workFlowPart: workFlowPart, sourceObjectId: GenericOIDService.getOID(sourceObject), targetObjectId: GenericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
+            params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">

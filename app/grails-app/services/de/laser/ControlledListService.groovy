@@ -8,6 +8,7 @@ import de.laser.finance.Order
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -41,7 +42,7 @@ class ControlledListService {
                 }
                 List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType in (:providerAgency)'+filterString+'order by oo.org.name asc',filter)
                 providers.each { p ->
-                    result.results.add([name:p[1],value:GenericOIDService.getOID(p[0])])
+                    result.results.add([name:p[1],value:genericOIDService.getOID(p[0])])
                 }
             }
         }
@@ -54,7 +55,7 @@ class ControlledListService {
             }
             List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
             providers.each { p ->
-                result.results.add([name:p.name,value:GenericOIDService.getOID(p)])
+                result.results.add([name:p.name,value:genericOIDService.getOID(p)])
             }
         }
         result
@@ -68,7 +69,7 @@ class ControlledListService {
     Map getSubscriptions(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
-        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
+        String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
@@ -92,8 +93,15 @@ class ControlledListService {
                 queryString += " and s.instanceOf != null "
                 break
         }
+        if(params.restrictLevel) {
+            if(org.hasPerm("ORG_CONSORTIUM") && !params.member) {
+                queryString += " and s.instanceOf = null "
+            }
+        }
         if(params.status) {
-            if (params.status instanceof List){
+            if (params.status instanceof List || params.status.contains(',')){
+                if (params.status.contains(','))
+                    params.status = params.status.split(',')
                 if (params.status.size() > 0) {
                     queryString += " and s.status in (:status) "
                     if (params.status instanceof List<RefdataValue>){
@@ -119,8 +127,70 @@ class ControlledListService {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
         }
+        if(params.propDef) {
+            PropertyDefinition filterPropDef = genericOIDService.resolveOID(params.propDef)
+            queryString += " and sp.type = :propDef "
+            filter.propDef = filterPropDef
+            if(params.propVal) {
+                Set<String> propValInput = []
+                Set filterPropVal = []
+                if(params.propVal.contains(',')) {
+                    propValInput.addAll(params.propVal.split(','))
+                }
+                else propValInput << params.propVal
+                boolean dateFlag = false, refFlag = false, urlFlag = false
+                switch(filterPropDef.getPropertyType()) {
+                    case 'intValue': queryString += " and sp.intValue in (:values)"
+                        break
+                    case 'decValue': queryString += " and sp.decValue in (:values)"
+                        break
+                    case 'stringValue': queryString += " and sp.stringValue in (:values)"
+                        break
+                    case 'dateValue': queryString += " and sp.dateValue in (:values)"
+                        dateFlag = true
+                        break
+                    case 'urlValue': queryString += " and sp.urlValue in (:values)"
+                        urlFlag = true
+                        break
+                    case 'refValue': queryString += " and sp.refValue in (:values)"
+                        refFlag = true
+                        break
+                }
+                propValInput.each { String val ->
+                    if(dateFlag) {
+                        filterPropVal << DateUtil.SDF_NoTime.parse(val)
+                    }
+                    else if(refFlag) {
+                        filterPropVal << RefdataValue.getByValueAndCategory(val,filterPropDef.refdataCategory)
+                    }
+                    else if(urlFlag) {
+                        filterPropVal << new URL(val)
+                    }
+                    else {
+                        filterPropVal << val
+                    }
+                }
+                filter.values = filterPropVal
+            }
+        }
+        Set<String> refdataFields = ['form','resource','kind']
+        refdataFields.each { String refdataField ->
+            if(params[refdataField]) {
+                if (params[refdataField].contains(',')) {
+                    List refList = []
+                    params[refdataField].split(',').each { String val ->
+                        refList << RefdataValue.get(val)
+                    }
+                    filter[refdataField] = refList
+                    queryString += " and s.${refdataField} in (:${refdataField}) "
+                } else {
+                    filter[refdataField] = params[refdataField]
+                    queryString += " and s.${refdataField} = :${refdataField} "
+                }
+            }
+        }
         println(queryString)
-        List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
+        List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, org.sortname asc",filter)
 
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
@@ -129,21 +199,21 @@ class ControlledListService {
                 case CalculatedType.TYPE_PARTICIPATION:
                     if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
                         if(org.id == s.getConsortia().id)
-                            result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
+                            result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
                     }
                     break
                 case CalculatedType.TYPE_CONSORTIAL:
                     if (s._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
                     break
                 case CalculatedType.TYPE_COLLECTIVE:
                     if (s._getCalculatedType() == CalculatedType.TYPE_COLLECTIVE)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
                     break
                 default:
                     if(!params.nameOnly)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:GenericOIDService.getOID(s)])
-                    else result.results.add([name:s.name,value:GenericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                    else result.results.add([name:s.name,value:genericOIDService.getOID(s)])
                     break
             }
         }
@@ -188,7 +258,7 @@ class ControlledListService {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.printTitleType()}) (${s.dropdownNamingConvention(org)})",value:GenericOIDService.getOID(res)])
+                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.printTitleType()}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
             }
         }
         issueEntitlements
@@ -218,7 +288,7 @@ class ControlledListService {
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.sub
-                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:GenericOIDService.getOID(res)])
+                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
             }
         }
         issueEntitlementGroup
@@ -262,7 +332,7 @@ class ControlledListService {
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
             log.debug("licenses found")
             result.each { res ->
-                licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:GenericOIDService.getOID(res)])
+                licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:genericOIDService.getOID(res)])
             }
         }
         licenses
@@ -311,7 +381,7 @@ class ControlledListService {
         subscriptions.each { Subscription row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:GenericOIDService.getOID(sp)])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp)])
             }
         }
         result
@@ -438,7 +508,7 @@ class ControlledListService {
         if(params.org == "true") {
             List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])
             allOrgs.each { DocContext it ->
-                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:GenericOIDService.getOID(it[0])])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:genericOIDService.getOID(it[0])])
             }
         }
         if(params.license == "true") {
@@ -447,7 +517,7 @@ class ControlledListService {
                 License license = (License) it[0]
                 String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
                 String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
-                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - (${licenseStartDate} - ${licenseEndDate})",value:GenericOIDService.getOID(license)])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - (${licenseStartDate} - ${licenseEndDate})",value:genericOIDService.getOID(license)])
             }
         }
         if(params.subscription == "true") {
@@ -476,13 +546,13 @@ class ControlledListService {
                 else dateString += ""
                 dateString += ")"
                 */
-                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${subscription.dropdownNamingConvention()}",value:GenericOIDService.getOID(it[0])])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
             }
         }
         if(params.package == "true") {
             List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and genfunc_filter_matcher(dc.pkg.name,:query) = true order by dc.pkg.name asc', [ctxOrg: org, query: params.query])
             allPackages.each { DocContext it ->
-                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: GenericOIDService.getOID(it[0])])
+                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: genericOIDService.getOID(it[0])])
             }
         }
         result

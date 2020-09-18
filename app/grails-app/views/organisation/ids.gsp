@@ -1,5 +1,5 @@
-<%@ page import="de.laser.CustomerIdentifier; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSettings" %>
-<%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSettings" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
 <!doctype html>

@@ -1,9 +1,33 @@
-package com.k_int.kbplus
+package de.laser
 
+
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PackageService
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.PendingChangeService
+import com.k_int.kbplus.PersonProperty
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
+import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.finance.BudgetCode
@@ -64,6 +88,7 @@ class MyInstitutionController extends AbstractDebugController {
     def financeService
     def surveyService
     def formService
+    def dashboardDueDatesService
     LinksGenerationService linksGenerationService
     ComparisonService comparisonService
 
@@ -85,18 +110,25 @@ class MyInstitutionController extends AbstractDebugController {
         redirect(action:'dashboard')
     }
 
-    /*may be upgraded to
-        @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-     */
+    @Secured(['ROLE_ADMIN'])
+    def reporting() {
+        Map<String, Object> result = setResultGenerics()
+        result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+        result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)
+        result.subForm = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)
+        result.subResourceType = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)
+        result.subKind = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
+        result
+    }
+
     /*
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
      */
     @Secured(['ROLE_ADMIN'])
-    def reporting() {
+    def reportingBase() {
         //log.debug(params.toMapString())
         Map<String, Object> result = setResultGenerics()
         result.formSubmit = params.formSubmit == 'true'
@@ -521,7 +553,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.licenseCount = totalLicenses.size()
         pu.setBenchmark('get subscriptions')
 
-        List<String> licenseOIDs = totalLicenses.collect { License l -> GenericOIDService.getOID(l) }
+        List<String> licenseOIDs = totalLicenses.collect { License l -> genericOIDService.getOID(l) }
 
         if (licenseOIDs && subscriptionOIDs) {
             result.allLinkedSubscriptions = Links.findAllBySourceInListAndDestinationInListAndLinkType(licenseOIDs, subscriptionOIDs, RDStore.LINKTYPE_LICENSE)
@@ -917,7 +949,7 @@ join sub.orgRelations or_sub where
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = Identifier.findAllBySubIsNotNull()
-        List allLicenses = Links.executeQuery("select li from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> GenericOIDService.getOID(sub) },linkType:RDStore.LINKTYPE_LICENSE])
+        List allLicenses = Links.executeQuery("select li from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> genericOIDService.getOID(sub) }, linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { OrgRole provider ->
             Set subProviders = providers.get(provider.sub)
@@ -1774,8 +1806,8 @@ join sub.orgRelations or_sub where
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
-        result.dueDates = DashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = DashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
@@ -2477,7 +2509,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
-        Map result = userService.setResultGenerics(params)
+        Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'userEdit', id: params.id
@@ -3315,7 +3347,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def manageProperties() {
-        def result = setResultGenerics()
+        Map<String,Object> result = setResultGenerics()
         if (!result) {
             response.sendError(401); return
         }
@@ -3524,7 +3556,7 @@ join sub.orgRelations or_sub where
             case Date.toString(): SimpleDateFormat sdf = DateUtil.SDF_NoTime
                 prop.dateValue = sdf.parse(filterPropValue)
                 break
-            case URL.toString(): prop.urlValue.startsWith('http://') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
+            case URL.toString(): prop.urlValue = filterPropValue.startsWith('http') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
                 break
             case RefdataValue.toString(): prop.refValue = RefdataValue.get(filterPropValue)
                 break
@@ -3771,7 +3803,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {
-        def result = setResultGenerics()
+        Map<String, Object> result = setResultGenerics()
 
         if(params.id)
         {

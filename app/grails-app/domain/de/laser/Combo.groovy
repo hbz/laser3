@@ -1,5 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 

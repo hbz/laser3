@@ -1,8 +1,29 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.BookInstance
+import com.k_int.kbplus.Doc
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.GlobalSourceSyncService
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IdentifierNamespace
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.JournalInstance
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
+import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
+import com.k_int.kbplus.TitleInstance
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
-import de.laser.*
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.CreationException
@@ -23,7 +44,6 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -46,9 +66,7 @@ class SubscriptionController
     def taskService
     def genericOIDService
     def exportService
-    GrailsApplication grailsApplication
     def pendingChangeService
-    def institutionsService
     ExecutorService executorService
     ExecutorWrapperService executorWrapperService
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -62,9 +80,7 @@ class SubscriptionController
     def linksGenerationService
     def financeService
     def orgTypeService
-    def subscriptionsQueryService
     def subscriptionService
-    def comparisonService
     def escapeService
     def deletionService
     def auditService
@@ -104,7 +120,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -389,7 +405,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
             result.parentId = result.subscription.instanceOf.id
         else if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
@@ -567,7 +583,7 @@ class SubscriptionController
     })*/
     @Secured(['ROLE_ADMIN'])
     def compare() {
-        def result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
         result
         /*
@@ -740,7 +756,7 @@ class SubscriptionController
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -993,9 +1009,9 @@ class SubscriptionController
                 //after having read off the header row, pop the first row
                 rows.remove(0)
                 //now, assemble the identifiers available to highlight
-                Map<String,IdentifierNamespace> namespaces = [zdb:IdentifierNamespace.findByNs('zdb'),
-                eissn:IdentifierNamespace.findByNs('eissn'),isbn:IdentifierNamespace.findByNs('isbn'),
-                issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn')]
+                Map<String, IdentifierNamespace> namespaces = [zdb  :IdentifierNamespace.findByNs('zdb'),
+                                                               eissn:IdentifierNamespace.findByNs('eissn'), isbn:IdentifierNamespace.findByNs('isbn'),
+                                                               issn :IdentifierNamespace.findByNs('issn'), pisbn:IdentifierNamespace.findByNs('pisbn')]
                 rows.eachWithIndex { row, int i ->
                     log.debug("now processing entitlement ${i}")
                     Map<String,Object> ieCandidate = [:]
@@ -1482,7 +1498,7 @@ class SubscriptionController
 
         if(params.prev && prevMemberSub) {
 
-            Links prevLink = new Links(source: GenericOIDService.getOID(memberSub), destination: GenericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            Links prevLink = new Links(source: genericOIDService.getOID(memberSub), destination: genericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
             if (!prevLink.save(flush: true)) {
                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 redirect(url: request.getHeader('referer'))
@@ -1493,7 +1509,7 @@ class SubscriptionController
 
         if(params.next && nextMemberSub) {
 
-            Links nextLink = new Links(source: GenericOIDService.getOID(nextMemberSub), destination: GenericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            Links nextLink = new Links(source: genericOIDService.getOID(nextMemberSub), destination: genericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
             if (!nextLink.save(flush: true)) {
                 log.error("Problem linking to next subscription: ${nextLink.errors}")
                 redirect(url: request.getHeader('referer'))
@@ -1506,7 +1522,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1657,7 +1673,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def surveys() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1678,7 +1694,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def surveysConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1696,7 +1712,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1708,7 +1724,7 @@ class SubscriptionController
 
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
+        result.parentLicenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.parentSub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }
 
         result.validLicenses = []
 
@@ -1802,7 +1818,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkLicenseMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1823,7 +1839,7 @@ class SubscriptionController
             def removeLic = []
             validSubChilds.each { subChild ->
                 if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                    Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                    Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
                         License license = genericOIDService.resolveOID(li.source)
                         if (subscriptionService.setOrgLicRole(subChild,license,true)) {
                             removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
@@ -1845,7 +1861,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkPackagesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1898,7 +1914,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkPackagesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2002,7 +2018,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesConsortia() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2057,7 +2073,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2111,7 +2127,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def subscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2174,7 +2190,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2281,7 +2297,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processSubscriptionPropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2412,7 +2428,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processDeletePropertiesMembers() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2493,7 +2509,7 @@ class SubscriptionController
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
@@ -2515,7 +2531,7 @@ class SubscriptionController
     def addMembers() {
         log.debug("addMembers ..")
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2535,7 +2551,7 @@ class SubscriptionController
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
         String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE])
+        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:genericOIDService.getOID(result.subscriptionInstance), linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -2595,7 +2611,7 @@ class SubscriptionController
                     }
                     if(params.generateSlavedLics == "all") {
                         String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-                        licensesToProcess.addAll(License.executeQuery(query, [subscription:GenericOIDService.getOID(result.subscriptionInstance),linkType:RDStore.LINKTYPE_LICENSE]))
+                        licensesToProcess.addAll(License.executeQuery(query, [subscription:genericOIDService.getOID(result.subscriptionInstance), linkType:RDStore.LINKTYPE_LICENSE]))
                     }
                     else if(params.generateSlavedLics == "partial") {
                         List<String> licenseKeys = params.list("generateSlavedLicsReference")
@@ -2723,7 +2739,7 @@ class SubscriptionController
     def pendingChanges() {
         log.debug("subscription id:${params.id}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2765,7 +2781,7 @@ class SubscriptionController
     private def previousAndExpected(params, screen) {
         log.debug("previousAndExpected ${params}");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -2810,7 +2826,7 @@ class SubscriptionController
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2948,7 +2964,7 @@ class SubscriptionController
     def processRemoveEntitlements() {
         log.debug("processRemoveEntitlements....");
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -2995,7 +3011,7 @@ class SubscriptionController
         log.debug("processRenewEntitlements ...")
         params.id = Long.parseLong(params.id)
         params.packageId = Long.parseLong(params.packageId)
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -3113,7 +3129,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3128,7 +3144,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3156,7 +3172,7 @@ class SubscriptionController
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3209,7 +3225,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def permissionInfo() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3300,7 +3316,7 @@ class SubscriptionController
             }
         }*/
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -3537,7 +3553,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def history() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3561,7 +3577,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3591,7 +3607,7 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3654,7 +3670,7 @@ class SubscriptionController
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('1')
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -3912,12 +3928,12 @@ class SubscriptionController
     })
     def processRenewSubscription() {
 
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result.editable) {
             response.sendError(401); return
         }
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription), RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.subscription), RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -3977,7 +3993,7 @@ class SubscriptionController
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: GenericOIDService.getOID(newSub), destination: GenericOIDService.getOID(result.subscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: genericOIDService.getOID(newSub), destination: genericOIDService.getOID(result.subscription), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 if (!prevLink.save(flush:true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
@@ -3988,7 +4004,7 @@ class SubscriptionController
 
                 redirect controller: 'subscription',
                             action: 'copyElementsIntoSubscription',
-                            params: [sourceObjectId: GenericOIDService.getOID(result.subscription), targetObjectId: GenericOIDService.getOID(newSub), isRenewSub: true]
+                            params: [sourceObjectId: genericOIDService.getOID(result.subscription), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true]
             }
         }
     }
@@ -3998,7 +4014,7 @@ class SubscriptionController
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def renewSubscription() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         result.institution = contextService.org
         if (!result.editable) {
             response.sendError(401); return
@@ -4280,7 +4296,7 @@ class SubscriptionController
                 log.error("Problem saving subscription ${targetObject.errors}");
             }else {
                 result.targetObject = targetObject
-                params.targetObjectId = GenericOIDService.getOID(targetObject)
+                params.targetObjectId = genericOIDService.getOID(targetObject)
 
                 //Copy References
                 result.sourceObject.orgRelations.each { OrgRole or ->
@@ -4333,7 +4349,7 @@ class SubscriptionController
     def processcopySubscription() {
 
         params.id = params.baseSubscription
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -4372,7 +4388,7 @@ class SubscriptionController
                 //Copy License
                 if (params.subscription.copyLicense) {
                     newSubscriptionInstance.refresh()
-                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
+                    Set<Links> baseSubscriptionLicenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(baseSubscription), RDStore.LINKTYPE_LICENSE)
                     baseSubscriptionLicenses.each { Links link ->
                         subscriptionService.setOrgLicRole(newSubscriptionInstance,genericOIDService.resolveOID(link.source),false)
                     }
@@ -4759,9 +4775,9 @@ class SubscriptionController
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
         result.contextOrg = contextService.getOrg()
-        result.licenses = Links.findAllByDestinationAndLinkType(GenericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect {Links li -> genericOIDService.resolveOID(li.source)}
+        result.licenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect { Links li -> genericOIDService.resolveOID(li.source)}
 
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(GenericOIDService.getOID(result.subscription))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.subscription))
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 

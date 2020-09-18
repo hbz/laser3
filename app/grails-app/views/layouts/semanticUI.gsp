@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSettings; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; com.k_int.kbplus.Setting; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
+<%@ page import="de.laser.SystemSetting; de.laser.UserSettings; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -729,7 +729,7 @@
 
         <%-- maintenance --%>
 
-        <g:if test="${Setting.findByName('MaintenanceMode')?.value == 'true'}">
+        <g:if test="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
                     <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>

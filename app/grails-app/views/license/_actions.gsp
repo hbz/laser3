@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.Org" %>
 <laser:serviceInjection />
 <g:set var="org" value="${contextService.org}"/>
 <g:set var="user" value="${contextService.user}" />
@@ -36,7 +36,7 @@
                 <g:if test="${isCopyLicenseEnabled}">
                     <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license.id]}" message="myinst.copyLicense" />
                     <g:if test="${(accessService.checkPerm("ORG_INST") && !license.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
-                        <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: GenericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
+                        <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
                     </g:if>
                 </g:if>
                 <g:else>
@@ -44,7 +44,8 @@
                 </g:else>
              </g:if>
             <g:if test="${actionName == 'show'}">
-                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')}">
+                <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
+                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(org.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>

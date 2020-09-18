@@ -1,6 +1,8 @@
 package com.k_int.kbplus.auth
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.traits.I10nTrait
+import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class Role implements I10nTrait {
@@ -27,13 +29,11 @@ class Role implements I10nTrait {
     }
 
     static def refdataFind(GrailsParameterMap params) {
-        List<Map<String, Object>> result = []
-        List<Role> ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
+        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
 
-        ql.each { id ->
-            result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
-        }
-
-        result
+        genericOIDService.getOIDMapList(
+                Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params),
+                'authority'
+        )
     }
 }

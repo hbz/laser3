@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.GenericOIDService; com.k_int.kbplus.Subscription;" %>
+<%@ page import="com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Subscription;" %>
 <laser:serviceInjection />
 
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}
@@ -20,7 +20,7 @@
             <tr>
                 <td>
                     <g:if test="${editable == true && subscription}">
-                        <g:link action="propertiesMembers" params="${[id:subscription.id,filterPropDef:GenericOIDService.getOID(propType)]}" >
+                        <g:link action="propertiesMembers" params="${[id:subscription.id,filterPropDef:genericOIDService.getOID(propType)]}" >
                             <g:if test="${propType.getI10n('expl') != null && !propType.getI10n('expl').contains(' °')}">
                                 ${propType.getI10n('name')}
                                 <g:if test="${propType.getI10n('expl')}">
@@ -70,7 +70,9 @@
                 </td>
                 <td class="x">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia2')}" data-position="top right"><i class="large icon cart arrow down blue"></i></span>
-                    (<span data-tooltip="${message(code:'property.notInherited.info.propertyCount')}"><i class="ui icon sticky note blue"></i></span> ${com.k_int.kbplus.SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: contextOrg, type: propType]).size() ?: 0} / <span data-tooltip="${message(code:'property.notInherited.info.membersCount')}"><i class="ui icon clipboard blue"></i></span> ${memberSubs.size() ?: 0})
+                    <g:if test="${memberSubs}">
+                        (<span data-tooltip="${message(code:'property.notInherited.info.propertyCount')}"><i class="ui icon sticky note blue"></i></span> ${com.k_int.kbplus.SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: contextOrg, type: propType]).size() ?: 0} / <span data-tooltip="${message(code:'property.notInherited.info.membersCount')}"><i class="ui icon clipboard blue"></i></span> ${memberSubs.size() ?: 0})
+                    </g:if>
                 </td>
             </tr>
         </g:each>

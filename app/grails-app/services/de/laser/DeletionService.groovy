@@ -23,6 +23,8 @@ import org.elasticsearch.client.RestHighLevelClient
 class DeletionService {
 
     def ESWrapperService
+    def genericOIDService
+    def subscriptionService
 
     static boolean DRY_RUN                  = true
 
@@ -37,13 +39,13 @@ class DeletionService {
     static String FLAG_SUBSTITUTE   = 'teal'
     static String FLAG_BLOCKER      = 'red'
 
-    static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
+    Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
         // gathering references
 
-        List links = Links.where { source == GenericOIDService.getOID(lic) || destination == GenericOIDService.getOID(lic) }.findAll()
+        List links = Links.where { source == genericOIDService.getOID(lic) || destination == genericOIDService.getOID(lic) }.findAll()
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -207,7 +209,7 @@ class DeletionService {
         result
     }
 
-    static Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
+    Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
@@ -216,7 +218,7 @@ class DeletionService {
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
-        List links = Links.where { source == GenericOIDService.getOID(sub) || destination == GenericOIDService.getOID(sub) }.findAll()
+        List links = Links.where { source == genericOIDService.getOID(sub) || destination == genericOIDService.getOID(sub) }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
@@ -468,13 +470,13 @@ class DeletionService {
         result
     }
 
-    static Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
+    Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
         // gathering references
 
-        List links = Links.where { source == GenericOIDService.getOID(org) || destination == GenericOIDService.getOID(org) }.findAll()
+        List links = Links.where { source == genericOIDService.getOID(org) || destination == genericOIDService.getOID(org) }.findAll()
 
         List ids            = new ArrayList(org.ids)
         List outgoingCombos = new ArrayList(org.outgoingCombos)
@@ -676,7 +678,7 @@ class DeletionService {
         result
     }
 
-    static Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
+    Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
@@ -793,7 +795,7 @@ class DeletionService {
         result
     }
 
-    static boolean deletePackage(Package pkg) {
+    boolean deletePackage(Package pkg) {
         println "processing package #${pkg.id}"
         Package.withTransaction { status ->
             try {
@@ -843,10 +845,10 @@ class DeletionService {
         }
     }
 
-    static boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+    boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         println "processing tipp #${tipp.id}"
         //rebasing subscriptions
-        if(SubscriptionService.rebaseSubscriptions(tipp,replacement)) {
+        if(subscriptionService.rebaseSubscriptions(tipp,replacement)) {
             TitleInstancePackagePlatform.withTransaction { status ->
                 try {
                     //deleting old TIPPs
@@ -874,7 +876,7 @@ class DeletionService {
      * @param tipp - the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
      * @return the success flag
      */
-    static boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
+    boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
         println "processing tipps ${tippsToDelete}"
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
@@ -893,7 +895,7 @@ class DeletionService {
         }
     }
 
-    static boolean deleteIssueEntitlement(IssueEntitlement ie) {
+    boolean deleteIssueEntitlement(IssueEntitlement ie) {
         println "processing issue entitlement ${ie}"
         IssueEntitlement.withTransaction { status ->
             try {
