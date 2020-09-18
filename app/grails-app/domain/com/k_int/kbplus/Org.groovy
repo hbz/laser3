@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.PermGrant
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.Combo
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding

@@ -25,5 +25,4 @@ class DatabaseInstance extends TitleInstance{
     String printTitleType() {
         RefdataValue.getByValueAndCategory('Database', RDConstants.TITLE_MEDIUM).getI10n('value')
     }
-
 }

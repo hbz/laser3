@@ -4,8 +4,6 @@ import com.k_int.kbplus.BookInstance
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.ExecutorWrapperService
-import com.k_int.kbplus.Fact
-import com.k_int.kbplus.GlobalRecordSource
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IdentifierNamespace

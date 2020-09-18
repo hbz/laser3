@@ -440,44 +440,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
 
-  /**
-   *  Tell the event notification service how this object is known to any registered notification
-   *  systems.
-   */
-  @Transient
-  def getNotificationEndpoints() {
-    [
-      //[ service:'zendesk.forum', remoteid:this.forumId ],
-      [ service:'announcements' ]
-    ]
-  }
-
   String toString() {
     name ? "${name}" : "Package ${id}"
   }
-
-  /*@Transient
-   String getURL() {
-    "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
-  }*/
-
-  // @Transient
-  // def onChange = { oldMap,newMap ->
-
-  //   log.debug("onChange")
-
-  //   def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-  //   controlledProperties.each { cp ->
-  //    if ( oldMap[cp] != newMap[cp] ) {
-  //      changeNotificationService.notifyChangeEvent([
-  //                                                   OID:"${this.class.name}:${this.id}",
-  //                                                   event:'TitleInstance.propertyChange',
-  //                                                   prop:cp, old:oldMap[cp], new:newMap[cp]
-  //                                                  ])
-  //    }
-  //   }
-  // }
 
     /*
  @Transient
@@ -688,8 +653,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   }
 
-    Identifier getIdentifierByType(idtype) {
-        def result = null
+    Identifier getIdentifierByType(String idtype) {
+        Identifier result
         ids.each { ident ->
             if ( ident.ns.ns.equalsIgnoreCase(idtype) ) {
                 result = ident

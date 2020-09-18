@@ -1,21 +1,20 @@
-package com.k_int.kbplus
+package de.laser
 
 import javax.persistence.Transient
- 
 
 class GlobalRecordSource {
 
-  String identifier
-  String name
-  String type
-  Date haveUpTo
-  String uri
-  String editUri
-  String listPrefix
-  String fullPrefix
-  String principal
-  String credentials
-  Long rectype
+    String identifier
+    String name
+    String type
+    Date haveUpTo
+    String uri
+    String editUri
+    String listPrefix
+    String fullPrefix
+    String principal
+    String credentials
+    Long rectype
     Boolean active = false
 
     Date dateCreated
@@ -23,7 +22,7 @@ class GlobalRecordSource {
 
     static transients = ['baseUrl', 'baseEditUrl', 'numberLocalPackages'] // mark read-only accessor methods
 
-  static mapping = {
+    static mapping = {
                    id column:'grs_id'
               version column:'grs_version'
            identifier column:'grs_identifier'
@@ -41,9 +40,9 @@ class GlobalRecordSource {
 
         dateCreated column: 'grs_date_created'
       lastUpdated   column: 'grs_last_updated'
-  }
+    }
 
-  static constraints = {
+    static constraints = {
      identifier(nullable:true, blank:false)
            name(nullable:true, blank:false, maxSize:2048)
        haveUpTo(nullable:true)
@@ -58,7 +57,7 @@ class GlobalRecordSource {
       // Nullable is true, because values are already in the database
       lastUpdated (nullable: true)
       dateCreated (nullable: true)
-  }
+    }
 
     @Transient
     String getBaseUrl() {
@@ -71,8 +70,8 @@ class GlobalRecordSource {
         editUri.replaceAll('oai.*','')
     }
 
-  @Transient
-  static void removeSource(source_id) {
-    GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = :id", [id: source_id])
-  }
+    @Transient
+    static void removeSource(source_id) {
+        GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = :id", [id: source_id])
+    }
 }
