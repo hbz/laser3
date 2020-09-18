@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue; de.laser.SurveyConfig" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;de.laser.RefdataValue; de.laser.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -98,7 +98,7 @@
                 </td>
                 <td>
                     ${PropertyDefinition.getLocalizedValue(property.type)}
-                    <g:if test="${property.type == 'class com.k_int.kbplus.RefdataValue'}">
+                    <g:if test="${property.type == RefdataValue.CLASS}">
                         <g:set var="refdataValues" value="${[]}"/>
                         <g:each in="${RefdataCategory.getAllRefdataValues(property.refdataCategory)}"
                                 var="refdataValue">
@@ -220,7 +220,7 @@ $('#cust_prop_modal_select').trigger('change');
 
 $('#cust_prop_modal_select').change(function() {
 var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-if( selectedText == "class com.k_int.kbplus.RefdataValue") {
+if( selectedText == "${RefdataValue.CLASS}") {
 $("#cust_prop_ref_data_name").show();
 
 var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )

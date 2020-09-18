@@ -1,8 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants

@@ -1,6 +1,6 @@
 package de.laser.helper
 
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 

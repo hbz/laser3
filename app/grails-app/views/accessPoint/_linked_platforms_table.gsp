@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 <table id="platformTable" class="ui celled la-table table compact">
   <thead>
@@ -16,7 +16,7 @@
       <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
       <td>
         <g:each in="${linkedPlatform.linkedSubs}" var="linkedSub">
-          <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != de.laser.helper.RDStore.SUBSCRIPTION_CURRENT) ? '('+ com.k_int.kbplus.RefdataValue.getByValueAndCategory(linkedSub.status.value, de.laser.helper.RDConstants.SUBSCRIPTION_STATUS).getI10n('value') +')': ''}</g:link><br/>
+          <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ RefdataValue.getByValueAndCategory(linkedSub.status.value, RDConstants.SUBSCRIPTION_STATUS).getI10n('value') +')': ''}</g:link><br/>
         </g:each>
       </td>
       <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">

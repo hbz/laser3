@@ -13,8 +13,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
@@ -2653,7 +2651,7 @@ class SurveyController {
             result.orgsWithoutResult.each { surveyResult ->
                 if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
 
-                    if (property.type == 'class com.k_int.kbplus.RefdataValue') {
+                    if (property.type == RefdataValue.CLASS) {
                         if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {

@@ -64,8 +64,8 @@ ${com.k_int.kbplus.SystemTicket.executeQuery('select st from SystemTicket st joi
 
 <hr />
 
-com.k_int.kbplus.RefdataValue.executeQuery('select st from RefdataValue rdv, SystemTicket st where st.status = rdv') <br />
-${com.k_int.kbplus.RefdataValue.executeQuery('select st from RefdataValue rdv, SystemTicket st where st.status = rdv')}
+de.laser.RefdataValue.executeQuery('select st from RefdataValue rdv, SystemTicket st where st.status = rdv') <br />
+${de.laser.RefdataValue.executeQuery('select st from RefdataValue rdv, SystemTicket st where st.status = rdv')}
 
 <hr />
 

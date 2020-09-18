@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import groovy.time.TimeCategory
 import org.apache.commons.logging.Log

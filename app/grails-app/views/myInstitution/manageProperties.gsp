@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -40,9 +40,9 @@
 
     <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
+    <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
         <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+        <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                 var="refdataValue">
             <g:set var="refdataValues"
                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
@@ -62,7 +62,7 @@
                 <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                    <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                             var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
@@ -77,7 +77,7 @@
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                              from="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                               name="filterPropValue" value=""
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
@@ -290,7 +290,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                    <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                             var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
@@ -307,7 +307,7 @@
                 <g:if test="${filterPropDef.type == RefdataValue.toString()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                              from="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                               name="filterPropValue" value=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
                 </g:if>

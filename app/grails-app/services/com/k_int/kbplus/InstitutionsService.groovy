@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig

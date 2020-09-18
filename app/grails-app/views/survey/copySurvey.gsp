@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Subscription;de.laser.SurveyConfig" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;de.laser.RefdataValue;com.k_int.kbplus.Subscription;de.laser.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -180,7 +180,7 @@
                                 <td>
 
                                     ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                                    <g:if test="${surveyProperty.surveyProperty.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                    <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
                                         <g:set var="refdataValues" value="${[]}"/>
                                         <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                                 var="refdataValue">

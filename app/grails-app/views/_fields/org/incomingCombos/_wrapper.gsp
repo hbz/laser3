@@ -18,7 +18,7 @@
                     optionValue="name"
                     class="input-medium"/>
           <g:select name="comboTypeTo"
-                    from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Combo Type')}"
+                    from="${de.laser.RefdataCategory.getAllRefdataValues('Combo Type')}"
                     optionKey="id"
                     optionValue="${{it.getI10n('value')}}"
                     class="input-medium"/>

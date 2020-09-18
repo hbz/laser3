@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.IssueEntitlementCoverage
 import de.laser.IssueEntitlementGroupItem

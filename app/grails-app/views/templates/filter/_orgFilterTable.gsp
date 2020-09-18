@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; com.k_int.kbplus.RefdataValue; de.laser.OrgSettings" %>
+<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSettings" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -132,7 +132,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
                     <g:set var="costItemElements"
-                           value="${com.k_int.kbplus.RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
+                           value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
 
                     <g:form action="surveyCostItems" method="post"
                             params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}">
@@ -391,7 +391,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
                 <td>
-                    <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', de.laser.helper.RDConstants.NUMBER_TYPE).getI10n('value'))?.sort {
+                    <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE).getI10n('value'))?.sort {
                         it.type?.getI10n("value")
                     }}" var="fte">
                         <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">

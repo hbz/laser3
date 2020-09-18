@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection />
 <semui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">

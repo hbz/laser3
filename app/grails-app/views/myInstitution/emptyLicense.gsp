@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants" %>
+<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -63,7 +63,7 @@
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
                     <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                        <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot: RDConstants.ORG_TYPE])}" var="opt">
+                        <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot: RDConstants.ORG_TYPE])}" var="opt">
                             <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                         </g:each>
                     </select>

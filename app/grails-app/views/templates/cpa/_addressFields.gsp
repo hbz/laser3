@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection />
 
         <g:if test="${addressInstance}">

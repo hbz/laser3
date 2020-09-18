@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.GlobalRecordSource
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
@@ -39,7 +41,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     GlobalRecordSource source
 
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
-    Map<String,RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:]
+    Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:]
 
     SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 

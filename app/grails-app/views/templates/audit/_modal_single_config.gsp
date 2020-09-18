@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.AuditConfig" %>
+<%@ page import="de.laser.RefdataValue; de.laser.AuditConfig" %>
 
 <laser:serviceInjection />
 

@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured

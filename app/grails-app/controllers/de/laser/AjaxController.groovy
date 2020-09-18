@@ -14,8 +14,6 @@ import com.k_int.kbplus.PersonProperty
 import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.PlatformProperty
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
@@ -2560,7 +2558,7 @@ class AjaxController {
 
     if ( value ) {
       switch ( value.class ) {
-        case com.k_int.kbplus.RefdataValue.class:
+        case RefdataValue.class:
 
           if ( value.icon != null ) {
             result="<span class=\"select-icon ${value.icon}\"></span>";

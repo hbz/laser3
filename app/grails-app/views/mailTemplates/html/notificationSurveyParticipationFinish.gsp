@@ -61,9 +61,9 @@ ${message(code: 'surveyInfo.name.label', locale: language)}: <b>${survey.name} <
                 </td>
                 <td>
                     ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                    <g:if test="${surveyResult.type.type == 'class com.k_int.kbplus.RefdataValue'}">
+                    <g:if test="${surveyResult.type.type == RefdataValue.CLASS}">
                         <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
+                        <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                 var="refdataValue">
                             <g:if test="${refdataValue.getI10n('value')}">
                                 <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>

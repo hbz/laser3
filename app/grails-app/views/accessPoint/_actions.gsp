@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;de.laser.Links;com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.Links;com.k_int.kbplus.Subscription" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 

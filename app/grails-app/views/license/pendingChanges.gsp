@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.License" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>

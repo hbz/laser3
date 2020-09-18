@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@page import="de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
 <!doctype html>
 <r:require module="chartist"/>
 <html>

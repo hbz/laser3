@@ -3,8 +3,8 @@ package de.laser
 import com.k_int.kbplus.Cluster
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation

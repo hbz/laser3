@@ -1,13 +1,10 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataValue
+
 import com.k_int.kbplus.SubscriptionPackage
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import org.springframework.context.MessageSource
-
-import javax.persistence.Transient
 
 class PendingChangeConfiguration {
 

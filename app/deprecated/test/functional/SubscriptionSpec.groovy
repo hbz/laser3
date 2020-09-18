@@ -1,3 +1,4 @@
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import geb.spock.GebReportingSpec
 import org.elasticsearch.common.joda.time.LocalDate

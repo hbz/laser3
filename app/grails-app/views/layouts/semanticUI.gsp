@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SystemSetting; de.laser.UserSettings; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.RefdataValue;de.laser.SystemMessage" %>
+<%@ page import="de.laser.RefdataValue; de.laser.SystemSetting; de.laser.UserSettings; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;de.laser.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />

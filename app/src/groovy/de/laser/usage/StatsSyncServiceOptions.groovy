@@ -2,6 +2,7 @@ package de.laser.usage
 
 import com.k_int.kbplus.*
 import de.laser.OrgSettings
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j
 

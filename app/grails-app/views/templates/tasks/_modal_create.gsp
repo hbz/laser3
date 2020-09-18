@@ -1,4 +1,4 @@
-<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.Task; de.laser.helper.RDStore;de.laser.helper.RDConstants; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.Task; de.laser.helper.RDStore;de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <semui:modal id="modalCreateTask" message="task.create.new">
 
@@ -136,7 +136,7 @@
                     <laser:select id="status" name="status.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
-                                  value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}"
+                                  value="${taskInstance?.status?.id ?: RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}"
                                   class="ui dropdown search many-to-one"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />

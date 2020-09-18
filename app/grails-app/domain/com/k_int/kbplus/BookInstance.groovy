@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
 import grails.util.Holders

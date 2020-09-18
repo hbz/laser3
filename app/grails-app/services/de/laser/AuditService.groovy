@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionProperty
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

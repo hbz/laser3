@@ -4,7 +4,7 @@ import com.k_int.kbplus.IssueEntitlement
 import de.laser.IssueEntitlementGroup
 import de.laser.SurveyOrg
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import de.laser.base.AbstractBase

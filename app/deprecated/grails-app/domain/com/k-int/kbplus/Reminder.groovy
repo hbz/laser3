@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 

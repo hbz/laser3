@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; com.k_int.kbplus.Org;de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">
@@ -48,7 +48,7 @@
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
+		${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
@@ -61,7 +61,7 @@
 --%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
+		${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="contactType" name="contactType"

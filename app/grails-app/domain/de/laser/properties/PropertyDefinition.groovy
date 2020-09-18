@@ -3,7 +3,7 @@ package de.laser.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import com.k_int.kbplus.Subscription
 import de.laser.ContextService
 import de.laser.I10nTranslation
@@ -112,7 +112,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static def validTypes2 = [
             'class java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number'],
             'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
-            'class com.k_int.kbplus.RefdataValue' : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
             'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
             'class java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
             'class java.net.URL'                  : ['de': 'Url', 'en': 'Url']
