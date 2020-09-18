@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.helper.RDConstants; de.laser.RefdataValue;de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder;" %>
 
 <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
 

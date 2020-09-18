@@ -1,7 +1,7 @@
 package de.laser.traits
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.abstract_domain.CustomProperty
 
@@ -91,7 +91,7 @@ trait AuditableTrait {
 
                         if ( ! isSubOrLic || (isSubOrLic && auditService.getAuditConfig(this, cp)) ) {
 
-                            if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
+                            if (clazz.equals("de.laser.RefdataValue")) {
 
                                 String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
                                 String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null

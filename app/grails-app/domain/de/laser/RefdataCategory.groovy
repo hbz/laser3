@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataValue
+
 import de.laser.base.AbstractI10n
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

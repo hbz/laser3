@@ -1,9 +1,7 @@
 package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.PendingChange
-import com.k_int.kbplus.RefdataValue
 import de.laser.SystemEvent
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.quartz.AbstractJob
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 <semui:modal id="personEditModal" text="${modalText ?: message(code: 'person.create_new.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${message(code: 'default.button.save.label')}">
     <g:form  id="create_person" class="ui form" url="${url}" method="POST">

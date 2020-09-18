@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;laser.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;laser.RefdataCategory;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 
 <semui:form>
 

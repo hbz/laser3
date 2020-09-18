@@ -256,7 +256,7 @@
                     <td>
 
                         ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                        <g:if test="${surveyProperty.surveyProperty.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        <g:if test="${surveyProperty.surveyProperty.type == 'class de.laser.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
@@ -381,7 +381,7 @@
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                        <g:if test="${surveyResult.type.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        <g:if test="${surveyResult.type.type == 'class de.laser.RefdataValue'}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
@@ -413,7 +413,7 @@
                                 <semui:linkIcon/>
                             </g:if>
                         </g:elseif>
-                        <g:elseif test="${surveyResult.type.type == com.k_int.kbplus.RefdataValue.toString()}">
+                        <g:elseif test="${surveyResult.type.type == de.laser.RefdataValue.toString()}">
 
                             <g:if test="${surveyResult.type.name in ["Participation"] && surveyResult.owner.id != contextOrg.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"

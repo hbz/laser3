@@ -7,7 +7,7 @@
 		<g:message code="doc.status.label" default="Status" />
 		
 	</label>
-	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${docInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="status" name="status.id" from="${de.laser.RefdataValue.list()}" optionKey="id" value="${docInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'type', 'error')} ">
@@ -15,7 +15,7 @@
 		<g:message code="doc.type.label" default="Type" />
 		
 	</label>
-	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${docInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="type" name="type.id" from="${de.laser.RefdataValue.list()}" optionKey="id" value="${docInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'content', 'error')} ">

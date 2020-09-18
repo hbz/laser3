@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataValue; de.laser.helper.RDConstants" %>
 <!doctype html>
 <r:require module="scaffolding" />
 <html>
@@ -128,9 +128,9 @@
                     </dt>
                     <dd>
                         <select name="doctype">
-                            <option value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('License', RDConstants.DOCUMENT_TYPE)}"><g:message code="license"/></option>
-                            <option value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('General', RDConstants.DOCUMENT_TYPE)}"><g:message code="template.addDocument.type.general" default="General"/></option>
-                            <option value="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Addendum', RDConstants.DOCUMENT_TYPE)}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
+                            <option value="${RefdataValue.getByValueAndCategory('License', RDConstants.DOCUMENT_TYPE)}"><g:message code="license"/></option>
+                            <option value="${RefdataValue.getByValueAndCategory('General', RDConstants.DOCUMENT_TYPE)}"><g:message code="template.addDocument.type.general" default="General"/></option>
+                            <option value="${RefdataValue.getByValueAndCategory('Addendum', RDConstants.DOCUMENT_TYPE)}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
                         </select>
                     </dd>
                 </dl>

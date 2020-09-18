@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue;de.laser.Links" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.RefdataValue;de.laser.Links" %>
 <!doctype html>
 <html>
   <head>

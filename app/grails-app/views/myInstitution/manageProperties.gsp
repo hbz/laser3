@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.interfaces.AuditableSupport; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -40,7 +40,7 @@
 
     <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
+    <g:if test="${filterPropDef?.type == 'class de.laser.RefdataValue'}">
         <g:set var="refdataValues" value="${[]}"/>
         <g:each in="${laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                 var="refdataValue">

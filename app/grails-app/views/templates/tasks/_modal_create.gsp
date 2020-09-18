@@ -136,7 +136,7 @@
                     <laser:select id="status" name="status.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
-                                  value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}"
+                                  value="${taskInstance?.status?.id ?: de.laser.RefdataValue.getByValueAndCategory("
                                   class="ui dropdown search many-to-one"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />

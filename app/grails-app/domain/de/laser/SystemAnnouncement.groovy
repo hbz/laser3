@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataValue
+
 import com.k_int.kbplus.auth.User
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore

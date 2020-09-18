@@ -1,8 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.RefdataCategory
+
 import de.laser.base.AbstractI10n
-import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil

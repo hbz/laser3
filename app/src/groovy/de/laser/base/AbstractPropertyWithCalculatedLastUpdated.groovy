@@ -1,6 +1,6 @@
 package de.laser.base
 
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log

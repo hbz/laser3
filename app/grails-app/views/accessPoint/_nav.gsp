@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 
 <g:set var="org" value="${com.k_int.kbplus.Org.get(orgId)}"/>

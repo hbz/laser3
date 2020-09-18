@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.RefdataValue
 import de.laser.base.AbstractBase
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper

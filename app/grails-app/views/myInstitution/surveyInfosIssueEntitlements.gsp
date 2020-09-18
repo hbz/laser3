@@ -1,4 +1,4 @@
-<%@ page import="laser.RefdataCategory;de.laser.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue;" %>
 <laser:serviceInjection/>
 
 <!doctype html>

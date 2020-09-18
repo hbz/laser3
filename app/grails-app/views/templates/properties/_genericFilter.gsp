@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">

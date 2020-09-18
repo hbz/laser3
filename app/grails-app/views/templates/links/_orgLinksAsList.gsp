@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person;com.k_int.kbplus.RefdataValue;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataValue; de.laser.Person; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <table class="ui three column table">
@@ -137,7 +137,7 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
-                                            (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            (${(de.laser.RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />

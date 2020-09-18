@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>

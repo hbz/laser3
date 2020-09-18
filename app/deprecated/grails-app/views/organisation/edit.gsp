@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; laser.RefdataCategory; com.k_int.kbplus.RefdataValue; de.laser.Combo"%>
+<%@ page import="com.k_int.kbplus.Org; laser.RefdataCategory; de.laser.RefdataValue; de.laser.Combo"%>
 
 <!doctype html>
 <html>

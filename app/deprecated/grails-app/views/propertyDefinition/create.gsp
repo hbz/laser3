@@ -1,6 +1,6 @@
 <!doctype html>
 <r:require module="scaffolding" />
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.RefdataValue; com.k_int.properties.PropertyDefinition" %>
 
 <html>
   <head>
@@ -98,13 +98,13 @@
       return false;
     }
 
-       if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
+       if( $( "#cust_prop_modal_select option:selected" ).val() == "class de.laser.RefdataValue") {
             $("#cust_prop_ref_data_name").show();
        }
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-        if( selectedText == "class com.k_int.kbplus.RefdataValue") {
+        if( selectedText == "class de.laser.RefdataValue") {
             $("#cust_prop_ref_data_name").show();
         }else{
             $("#cust_prop_ref_data_name").hide();

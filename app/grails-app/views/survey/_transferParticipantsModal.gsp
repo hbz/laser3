@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License" %>
+<%@ page import="de.laser.RefdataValue; com.k_int.kbplus.License" %>
 <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
 
 <semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
@@ -17,7 +17,7 @@
                     <g:each in="${properties}" var="prop" >
                         <div class="item">
                             <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
-                        <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof com.k_int.kbplus.RefdataValue}">
+                        <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof RefdataValue}">
                             ${parentSuccessorSubscription.getProperty(prop.referenceField).getI10n('value')}
                         </g:if>
                         <g:elseif test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof java.lang.Boolean}">

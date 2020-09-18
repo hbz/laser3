@@ -132,7 +132,7 @@ c3po = {
 
         $('#cust_prop_modal_select').change(function () {
             var selectedText = $("#cust_prop_modal_select option:selected").val();
-            if (selectedText == "class com.k_int.kbplus.RefdataValue") {
+            if (selectedText == "class de.laser.RefdataValue") {
                 $("#cust_prop_ref_data_name").show();
             } else {
                 $("#cust_prop_ref_data_name").hide();

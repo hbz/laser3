@@ -93,7 +93,7 @@
                                     </td>
                                     <td>
                                         ${PropertyDefinition.getLocalizedValue(pd?.type)}
-                                        <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                        <g:if test="${pd?.type == 'class de.laser.RefdataValue'}">
                                             <g:set var="refdataValues" value="${[]}"/>
                                             <g:each in="${de.laser.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
                                                 <g:if test="${refdataValue.getI10n('value')}">

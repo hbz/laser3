@@ -1,5 +1,5 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.TitleInstancePackagePlatform; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
-<%@ page import="com.k_int.kbplus.OrgRole;laser.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.TitleInstancePackagePlatform; com.k_int.kbplus.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.OrgRole;laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>

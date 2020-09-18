@@ -25,7 +25,7 @@
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(de.laser.RefdataCategory.getByDesc(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE), linkType)}"
+                      from="${de.laser.RefdataValue.findAllByOwnerAndGroup(de.laser.RefdataCategory.getByDesc(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE), linkType)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:if>

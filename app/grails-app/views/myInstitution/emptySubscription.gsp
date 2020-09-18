@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="de.laser.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Combo;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Combo;de.laser.RefdataValue" %>
 <!doctype html>
 <html>
     <head>

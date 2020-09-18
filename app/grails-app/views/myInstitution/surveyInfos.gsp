@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; laser.RefdataCategory;de.laser.properties.PropertyDefinition;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.SurveyConfig; laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -54,18 +54,18 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
         <div class="header">${surveyInfo.status?.getI10n('value')}!</div>
 
         <p>
-            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey started', RDConstants.SURVEY_STATUS)}">
+            <g:if test="${surveyInfo.status == de.laser.RefdataValue.getByValueAndCategory('Survey started', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyStarted"
                            args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.endDate) ?: '')]"/>
             </g:if>
-            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey completed', RDConstants.SURVEY_STATUS)}">
+            <g:if test="${surveyInfo.status == de.laser.RefdataValue.getByValueAndCategory('Survey completed', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyCompleted"
                            args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate)]"/>
             </g:if>
-            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('In Evaluation', RDConstants.SURVEY_STATUS)}">
+            <g:if test="${surveyInfo.status == de.laser.RefdataValue.getByValueAndCategory('In Evaluation', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.inEvaluation"/>
             </g:if>
-            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Completed', RDConstants.SURVEY_STATUS)}">
+            <g:if test="${surveyInfo.status == de.laser.RefdataValue.getByValueAndCategory('Completed', RDConstants.SURVEY_STATUS)}">
                 <g:message code="surveyInfo.status.surveyCompleted"/>
             </g:if>
         </p>
