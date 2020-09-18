@@ -5,10 +5,8 @@
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="create_person" class="ui form" url="${url}" method="POST">
 
-        <g:if test="${contextService.getOrg()}">
-            <input type="hidden" name="tenant.id" value="${contextService.getOrg().id}"/>
-            <input id="isPublic" name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
-        </g:if>
+        <input type="hidden" name="tenant.id" value="${contextService.getOrg().id}"/>
+        <input id="isPublic" name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
 
         <div class="field">
             <div class="two fields">

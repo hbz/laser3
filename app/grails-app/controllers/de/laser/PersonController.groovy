@@ -74,7 +74,7 @@ class PersonController extends AbstractDebugController {
                             log.debug("ignore adding PersonRole because of existing duplicate")
                         }
                         else if (personRole) {
-                            if (personRole.save(flush: true)) {
+                            if (personRole.save()) {
                                 log.debug("adding PersonRole ${personRole}")
                             }
                             else {
@@ -94,7 +94,7 @@ class PersonController extends AbstractDebugController {
                             log.debug("ignore adding PersonRole because of existing duplicate")
                         }
                         else if (personRole) {
-                            if (personRole.save(flush: true)) {
+                            if (personRole.save()) {
                                 log.debug("adding PersonRole ${personRole}")
                             }
                             else {
@@ -119,7 +119,7 @@ class PersonController extends AbstractDebugController {
                             }
 
                             Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: content)
-                            contact.save(flush: true)
+                            contact.save()
                         }
                     }
                 }
@@ -218,7 +218,7 @@ class PersonController extends AbstractDebugController {
 
 	        personInstance.properties = params
 
-	        if (!personInstance.save(flush: true)) {
+	        if (!personInstance.save()) {
                 log.info(personInstance.errors)
                 flash.error = message(code: 'default.not.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
                 redirect(url: request.getHeader('referer'))
@@ -235,7 +235,7 @@ class PersonController extends AbstractDebugController {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (personRole) {
-                    if (personRole.save(flush: true)) {
+                    if (personRole.save()) {
                         log.debug("adding PersonRole ${personRole}")
                     }
                     else {
@@ -263,7 +263,7 @@ class PersonController extends AbstractDebugController {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (personRole) {
-                    if (personRole.save(flush: true)) {
+                    if (personRole.save()) {
                         log.debug("adding PersonRole ${personRole}")
                     }
                     else {
@@ -303,7 +303,7 @@ class PersonController extends AbstractDebugController {
                     }
 
                     Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: content)
-                    contact.save(flush: true)
+                    contact.save()
                 }
             }
         }
@@ -612,7 +612,7 @@ class PersonController extends AbstractDebugController {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (result) {
-                    if (result.save(flush: true)) {
+                    if (result.save()) {
                         log.debug("adding PersonRole ${result}")
                     }
                     else {
