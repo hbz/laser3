@@ -40,6 +40,7 @@ class AjaxController {
     def formService
     CompareService compareService
     LinksGenerationService linksGenerationService
+    AddressbookService addressbookService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -2094,7 +2095,7 @@ class AjaxController {
     result.iTotalRecords = cq[0]
     result.iTotalDisplayRecords = cq[0]
     def currOrg = genericOIDService.resolveOID(params.oid)
-    List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.CONTACT_TYPE_PERSONAL, currOrg)
+    List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.PERSON_CONTACT_TYPE_PERSONAL, currOrg)
     LinkedHashMap personRoles = [:]
     PersonRole.findAll().collect { prs ->
       personRoles.put(prs.org,prs.prs)
@@ -2677,14 +2678,33 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def personEdit() {
         Map result = [:]
+        println(params)
         result.personInstance = Person.get(params.id)
         if (result.personInstance){
             result.modalId = 'personEditModal'
             result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
             result.modalMsgSave = message(code: 'default.button.save_changes')
-            result.url = [controller: 'person', action: 'edit']
+            result.showContacts = params.showContacts == "true" ? true : ''
+            result.addContacts = params.showContacts == "true" ? true : ''
+            result.showAddresses = params.showAddresses == "true" ? true : ''
+            result.addAddresses = params.showAddresses == "true" ? true : ''
+            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
+            result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
+            result.contextOrg = contextService.getOrg()
             render template: "/templates/cpa/personFormModal", model: result
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def contactFields() {
+
+        render template: "/templates/cpa/contactFields"
+    }
+
+    @Secured(['ROLE_USER'])
+    def addressFields() {
+
+        render template: "/templates/cpa/addressFields"
     }
 
     def adjustSubscriptionList(){

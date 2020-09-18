@@ -12,9 +12,6 @@
                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, prs),
                 personContext          : orgInstance,
                 tmplShowDeleteButton   : true,
-                tmplShowAddPersonRoles : true,
-                tmplShowAddContacts    : true,
-                tmplShowAddAddresses   : true,
                 tmplShowFunctions      : false,
                 tmplShowPositions      : false,
                 tmplShowResponsiblities: true,
@@ -22,7 +19,7 @@
                 controller             : 'organisation',
                 action                 : 'show',
                 id                     : orgInstance.id,
-                editable               : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                editable               : false
         ]}"/>
     </g:each>
 </g:if>
@@ -35,9 +32,6 @@
                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, prs),
                 personContext          : orgInstance,
                 tmplShowDeleteButton   : true,
-                tmplShowAddPersonRoles : true,
-                tmplShowAddContacts    : true,
-                tmplShowAddAddresses   : true,
                 tmplShowFunctions      : false,
                 tmplShowPositions      : false,
                 tmplShowResponsiblities: true,
@@ -45,7 +39,7 @@
                 controller             : 'organisation',
                 action                 : 'show',
                 id                     : orgInstance.id,
-                editable               : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                editable               : false
         ]}"/>
     </g:each>
 </g:if>
@@ -58,9 +52,6 @@
             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
             personContext          : orgInstance,
             tmplShowDeleteButton   : true,
-            tmplShowAddPersonRoles : true,
-            tmplShowAddContacts    : true,
-            tmplShowAddAddresses   : true,
             tmplShowFunctions      : false,
             tmplShowPositions      : false,
             tmplShowResponsiblities: true,
@@ -68,7 +59,7 @@
             controller             : 'organisation',
             action                 : 'show',
             id                     : orgInstance.id,
-            editable               : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+            editable               : false
     ]}"/>
 </g:each>
 
@@ -81,9 +72,6 @@
                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, prs),
                 personContext          : orgInstance,
                 tmplShowDeleteButton   : true,
-                tmplShowAddPersonRoles : true,
-                tmplShowAddContacts    : true,
-                tmplShowAddAddresses   : true,
                 tmplShowFunctions      : false,
                 tmplShowPositions      : false,
                 tmplShowResponsiblities: true,
@@ -91,7 +79,7 @@
                 controller             : 'organisation',
                 action                 : 'show',
                 id                     : orgInstance.id,
-                editable               : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                editable               : false
         ]}"/>
     </g:each>
 </g:if>

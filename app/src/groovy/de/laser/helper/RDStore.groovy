@@ -46,6 +46,9 @@ class RDStore {
     public static final CCT_FAX                    = getRefdataValue('Fax', RDConstants.CONTACT_CONTENT_TYPE)
     public static final CCT_URL                    = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
 
+    public static final CONTACT_TYPE_JOBRELATED    = getRefdataValue('Job-related', RDConstants.CONTACT_TYPE)
+    public static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal', RDConstants.CONTACT_TYPE)
+
     public static final CIEC_POSITIVE              = getRefdataValue('positive', RDConstants.COST_CONFIGURATION)
     public static final CIEC_NEGATIVE              = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
     public static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
@@ -56,8 +59,8 @@ class RDStore {
     public static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
 
-    public static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
-    public static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
+    public static final PERSON_CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact', RDConstants.PERSON_CONTACT_TYPE)
+    public static final PERSON_CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact', RDConstants.PERSON_CONTACT_TYPE)
 
     public static final COUNTRY_DE                 = getRefdataValue('DE', RDConstants.COUNTRY)
     public static final COUNTRY_AT                 = getRefdataValue('AT', RDConstants.COUNTRY)

@@ -40,6 +40,7 @@ class PersonController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
+        Org contextOrg = contextService.getOrg()
         List userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         
         switch (request.method) {
@@ -61,7 +62,67 @@ class PersonController extends AbstractDebugController {
                     return
                 }
                 // processing dynamic form data
-                addPersonRoles(personInstance)
+                //addPersonRoles(personInstance)
+
+                if(params.functionType) {
+                    params.list('functionType').each {
+                        PersonRole personRole
+                        RefdataValue functionType = RefdataValue.get(it)
+                        personRole = new PersonRole(prs: personInstance, functionType: functionType, org: contextOrg)
+
+                        if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, functionType: functionType)) {
+                            log.debug("ignore adding PersonRole because of existing duplicate")
+                        }
+                        else if (personRole) {
+                            if (personRole.save(flush: true)) {
+                                log.debug("adding PersonRole ${personRole}")
+                            }
+                            else {
+                                log.error("problem saving new PersonRole ${personRole}")
+                            }
+                        }
+                    }
+                }
+
+                if(params.positionType) {
+                    params.list('positionType').each {
+                        PersonRole personRole
+                        RefdataValue positionType = RefdataValue.get(it)
+                        personRole = new PersonRole(prs: personInstance, positionType: positionType, org: contextOrg)
+
+                        if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, positionType: positionType)) {
+                            log.debug("ignore adding PersonRole because of existing duplicate")
+                        }
+                        else if (personRole) {
+                            if (personRole.save(flush: true)) {
+                                log.debug("adding PersonRole ${personRole}")
+                            }
+                            else {
+                                log.error("problem saving new PersonRole ${personRole}")
+                            }
+                        }
+                    }
+
+                }
+
+                if(params.content) {
+                    params.list('content').eachWithIndex { content, i->
+                        if (content) {
+                            RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
+                            RefdataValue rdvTY = RDStore.CONTACT_TYPE_JOBRELATED
+
+                            if (RDStore.CCT_EMAIL == rdvCT) {
+                                if (!formService.validateEmailAddress(content)) {
+                                    flash.error = message(code: 'contact.create.email.error')
+                                    return
+                                }
+                            }
+
+                            Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: content)
+                            contact.save(flush: true)
+                        }
+                    }
+                }
 
                 ['contact1', 'contact2', 'contact3'].each { c ->
                     if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
@@ -137,67 +198,148 @@ class PersonController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
-        redirect controller: 'person', action: 'show', params: params
-        return // ----- deprecated
+        //redirect controller: 'person', action: 'show', params: params
+        //return // ----- deprecated
 
-        User userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
+        Org contextOrg = contextService.getOrg()
+
         Person personInstance = Person.get(params.id)
 
         if (! personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
-            //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
         }
         if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
-            redirect action: 'show', id: params.id
+            flash.error = message(code: 'default.notAutorized.message')
+            redirect(url: request.getHeader('referer'))
             return
         }
 
-		switch (request.method) {
-		case 'GET':
-            // processing dynamic form data
-            addPersonRoles(personInstance)
-            deletePersonRoles(personInstance)
-            
-            // current tenant must be present
-            if (personInstance.tenant){
-                userMemberships << personInstance.tenant 
-            }
-            
-	        [personInstance: personInstance, userMemberships: userMemberships]
-			break
-		case 'POST':
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (personInstance.version > version) {
-	                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'person.label')] as Object[],
-	                          "Another user has updated this Person while you were editing")
-	                render view: 'show', model: [personInstance: personInstance, userMemberships: userMemberships]
-	                return
-	            }
-	        }
-
 	        personInstance.properties = params
 
-	        if (! personInstance.save(flush: true)) {
-	            render view: 'show', model: [personInstance: personInstance, userMemberships: userMemberships]
+	        if (!personInstance.save(flush: true)) {
+                log.info(personInstance.errors)
+                flash.error = message(code: 'default.not.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
+                redirect(url: request.getHeader('referer'))
 	            return
 	        }
-            // processing dynamic form data
-            addPersonRoles(personInstance)
-            deletePersonRoles(personInstance)
-            
-            // current tenant must be present
-            if (personInstance.tenant){
-                userMemberships << personInstance.tenant 
+
+        if(params.functionType) {
+            params.list('functionType').each {
+                PersonRole personRole
+                RefdataValue functionType = RefdataValue.get(it)
+                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: contextOrg)
+
+                if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, functionType: functionType)) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else if (personRole) {
+                    if (personRole.save(flush: true)) {
+                        log.debug("adding PersonRole ${personRole}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${personRole}")
+                    }
+                }
             }
-            
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
-	        redirect action: 'show', id: personInstance.id
-			break
-		}
+
+            personInstance.getPersonRoleByOrg(contextOrg).each {psr ->
+                if(psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))){
+                    personInstance.removeFromRoleLinks(psr)
+                    psr.delete()
+                }
+            }
+
+        }
+
+        if(params.positionType) {
+            params.list('positionType').each {
+                PersonRole personRole
+                RefdataValue positionType = RefdataValue.get(it)
+                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: contextOrg)
+
+                if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, positionType: positionType)) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else if (personRole) {
+                    if (personRole.save(flush: true)) {
+                        log.debug("adding PersonRole ${personRole}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${personRole}")
+                    }
+                }
+            }
+
+            personInstance.getPersonRoleByOrg(contextOrg).each {psr ->
+                if(psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))){
+                    personInstance.removeFromRoleLinks(psr)
+                    psr.delete()
+                }
+            }
+
+        }
+
+        personInstance.contacts.each {contact ->
+            if(params."content${contact.id}"){
+
+                contact.content = params."content${contact.id}"
+                contact.save()
+            }
+        }
+
+        if(params.content) {
+            params.list('content').eachWithIndex { content, i->
+                if (content) {
+                    RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
+                    RefdataValue rdvTY = RDStore.CONTACT_TYPE_JOBRELATED
+
+                    if (RDStore.CCT_EMAIL == rdvCT) {
+                        if (!formService.validateEmailAddress(content)) {
+                            flash.error = message(code: 'contact.create.email.error')
+                            return
+                        }
+                    }
+
+                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: content)
+                    contact.save(flush: true)
+                }
+            }
+        }
+
+        if(params.type) {
+            params.list('type').eachWithIndex { content, i ->
+                println(params.region[i] != null )
+                println(i)
+                Address addressInstance = new Address(
+                        name: (i < params.list('name').size()) ? params.name[i] :"",
+                        additionFirst:  (i < params.list('additionFirst').size()) ? params.additionFirst[i] :"",
+                        additionSecond:  (i < params.list('additionSecond').size()) ? params.additionSecond[i] :"",
+                        street_1:  (i < params.list('street_1').size()) ? params.street_1[i] :"",
+                        street_2:  (i < params.list('street_2').size()) ? params.street_2[i] :"",
+                        zipcode:  (i < params.list('zipcode').size()) ? params.zipcode[i] :"",
+                        city:  (i < params.list('city').size()) ? params.city[i] :"",
+                        region:  (i < params.list('region').size()) ? params.region[i] :"",
+                        country:  (i < params.list('country').size()) ? params.country[i] :"",
+                        pob:  (i < params.list('postbox').size()) ? params.postbox[i] :"",
+                        pobZipcode:  (i < params.list('pobZipcode').size()) ? params.pobZipcode[i] :"",
+                        pobCity:  (i < params.list('pobCity').size()) ? params.pobCity[i] :"",
+                        type:  (i < params.list('type').size()) ? params.type[i] :"",
+                        prs: personInstance)
+                if (!addressInstance.save()) {
+                    flash.error = message(code: 'default.save.error.general.message')
+                    log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                    redirect(url: request.getHeader('referer'), params: params)
+                    return
+                }
+            }
+        }
+
+
+		flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
+        redirect(url: request.getHeader('referer'))
+
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

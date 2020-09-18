@@ -488,7 +488,7 @@
                                                         controller          : 'org',
                                                         action              : 'show',
                                                         id                  : orgInstance.id,
-                                                        editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                        editable            : false
                                                 ]}"/>
                                             </g:if>
                                         </g:each>
@@ -636,10 +636,6 @@
         function addresscreate_prs(prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
-        }
-        function editAddress(id) {
-            var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
-            private_address_modal(url)
         }
 
         function private_address_modal(url) {
