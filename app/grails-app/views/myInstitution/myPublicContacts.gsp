@@ -104,7 +104,8 @@
                                   multiple=""
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${params.position}"/>
+                                  value="${params.position}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
 
@@ -119,7 +120,11 @@
     </semui:filter>
 
     <g:render template="/templates/cpa/person_table"
-              model="${[persons: visiblePersons, restrictToOrg: null, showContacts: true]}"/>
+              model="${[persons: visiblePersons,
+                        restrictToOrg: null,
+                        showContacts: true,
+                        tmplConfigShow: ['linenumber', 'name', 'showContacts', 'functionPosition']
+              ]}"/>
 
     <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
@@ -163,7 +168,8 @@
                                   multiple=""
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${params.position}"/>
+                                  value="${params.position}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
 
@@ -178,7 +184,11 @@
     </semui:filter>
 
     <g:render template="/templates/cpa/person_table"
-              model="${[persons: visiblePersons, restrictToOrg: null, showAddresses: true]}"/>
+              model="${[persons: visiblePersons,
+                        restrictToOrg: null,
+                        showAddresses: true,
+                        tmplConfigShow: ['linenumber', 'name', 'showAddresses', 'functionPosition']
+              ]}"/>
 
     <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
