@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.Person; com.k_int.kbplus.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
