@@ -642,13 +642,20 @@ class AjaxController {
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
-                        result = result.sort { x, y -> x.text.compareTo y.text}
+                        result = result.sort { x, y -> x.text.compareTo y.text }
                     }
                     else if (propDef.type == Date.toString()) {
                         values.dateValue.findAll().unique().sort().reverse().each { v ->
                             String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
                             result.add([value: vt, text: vt])
                         }
+                    }
+                    else if (propDef.type == RefdataValue.toString()) {
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
+                            if(v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
                     }
                     else {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
@@ -781,11 +788,16 @@ class AjaxController {
          Map empty = [results: []]
          render empty as JSON
      }
-    }
+   }
+
+  @Secured(['ROLE_USER'])
+  def lookupPropertyDefinitionValues() {
+      render controlledListService.getPropertyDefinitionValues(params) as JSON
+  }
 
   @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
-    render controlledListService.getSubscriptions(params) as JSON
+      render controlledListService.getSubscriptions(params) as JSON
   }
 
   @Secured(['ROLE_USER'])

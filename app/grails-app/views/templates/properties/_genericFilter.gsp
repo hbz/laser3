@@ -105,7 +105,7 @@
                     });
                 } else {
                     $.ajax({
-                        url: '<g:createLink controller="ajax" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value') + '&domain=${actionName}&format=json',
+                        url: '<g:createLink controller="ajax" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value') + '&format=json',
                         success: function (data) {
                             var select = '';
                             for (var index = 0; index < data.length; index++) {
@@ -115,12 +115,7 @@
                                 select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
                             }
 
-                            //temp
-                            let multiple = '';
-                            <g:if test="${actionName == 'reporting'}">
-                                multiple += 'multiple';
-                            </g:if>
-                            select = ' <div   class="ui fluid '+multiple+' search selection dropdown la-filterProp">' +
+                            select = ' <div   class="ui fluid search selection dropdown la-filterProp">' +
                                 '   <input type="hidden" id="filterProp" name="filterProp">' +
                                 '   <i class="dropdown icon"></i>' +
                                 '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +

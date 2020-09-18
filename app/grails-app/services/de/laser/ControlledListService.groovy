@@ -8,6 +8,7 @@ import de.laser.finance.Order
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -68,7 +69,7 @@ class ControlledListService {
     Map getSubscriptions(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
-        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
+        String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
@@ -92,8 +93,15 @@ class ControlledListService {
                 queryString += " and s.instanceOf != null "
                 break
         }
+        if(params.restrictLevel) {
+            if(org.hasPerm("ORG_CONSORTIUM") && !params.member) {
+                queryString += " and s.instanceOf = null "
+            }
+        }
         if(params.status) {
-            if (params.status instanceof List){
+            if (params.status instanceof List || params.status.contains(',')){
+                if (params.status.contains(','))
+                    params.status = params.status.split(',')
                 if (params.status.size() > 0) {
                     queryString += " and s.status in (:status) "
                     if (params.status instanceof List<RefdataValue>){
@@ -119,8 +127,70 @@ class ControlledListService {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
         }
+        if(params.propDef) {
+            PropertyDefinition filterPropDef = genericOIDService.resolveOID(params.propDef)
+            queryString += " and sp.type = :propDef "
+            filter.propDef = filterPropDef
+            if(params.propVal) {
+                Set<String> propValInput = []
+                Set filterPropVal = []
+                if(params.propVal.contains(',')) {
+                    propValInput.addAll(params.propVal.split(','))
+                }
+                else propValInput << params.propVal
+                boolean dateFlag = false, refFlag = false, urlFlag = false
+                switch(filterPropDef.getPropertyType()) {
+                    case 'intValue': queryString += " and sp.intValue in (:values)"
+                        break
+                    case 'decValue': queryString += " and sp.decValue in (:values)"
+                        break
+                    case 'stringValue': queryString += " and sp.stringValue in (:values)"
+                        break
+                    case 'dateValue': queryString += " and sp.dateValue in (:values)"
+                        dateFlag = true
+                        break
+                    case 'urlValue': queryString += " and sp.urlValue in (:values)"
+                        urlFlag = true
+                        break
+                    case 'refValue': queryString += " and sp.refValue in (:values)"
+                        refFlag = true
+                        break
+                }
+                propValInput.each { String val ->
+                    if(dateFlag) {
+                        filterPropVal << DateUtil.SDF_NoTime.parse(val)
+                    }
+                    else if(refFlag) {
+                        filterPropVal << RefdataValue.getByValueAndCategory(val,filterPropDef.refdataCategory)
+                    }
+                    else if(urlFlag) {
+                        filterPropVal << new URL(val)
+                    }
+                    else {
+                        filterPropVal << val
+                    }
+                }
+                filter.values = filterPropVal
+            }
+        }
+        Set<String> refdataFields = ['form','resource','kind']
+        refdataFields.each { String refdataField ->
+            if(params[refdataField]) {
+                if (params[refdataField].contains(',')) {
+                    List refList = []
+                    params[refdataField].split(',').each { String val ->
+                        refList << RefdataValue.get(val)
+                    }
+                    filter[refdataField] = refList
+                    queryString += " and s.${refdataField} in (:${refdataField}) "
+                } else {
+                    filter[refdataField] = params[refdataField]
+                    queryString += " and s.${refdataField} = :${refdataField} "
+                }
+            }
+        }
         println(queryString)
-        List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
+        List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, org.sortname asc",filter)
 
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]

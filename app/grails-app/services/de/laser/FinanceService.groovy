@@ -1211,7 +1211,7 @@ class FinanceService {
             if (query && prop && configMap.filterProp) {
                 Set<String> filterPropValues = configMap.filterProp.split(',')
                 log.debug(filterPropValues.toString())
-                switch(filterPropDef.type) {
+                switch(filterPropDef.getPropertyType()) {
                     case 'intValue': query += " and ${prop}.intValue in (:values)"
                         break
                     case 'decValue': query += " and ${prop}.decValue in (:values)"

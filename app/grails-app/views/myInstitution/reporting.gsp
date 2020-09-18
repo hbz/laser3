@@ -1,4 +1,5 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition" %>
+<laser:serviceInjection/>
 <!doctype html>
 <r:require module="chartist"/>
 <html>
@@ -7,271 +8,219 @@
         <title>${message(code:'laser')} : ${message(code:'myinst.reporting')}</title>
     </head>
 
-    <p>
+    <body>
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
             <semui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </semui:breadcrumbs>
 
-        <g:if test="${params.subscription || params.package}">
-            <%
-                Map<String,Object> exportParams = [format:'xls']
-                if(params.subscription)
-                    exportParams.subscription = params.subscription
-                else if(params.package)
-                    exportParams.package = params.package
-                else if(params.organisation)
-                    exportParams.organisation = params.organisation
-            %>
-            <semui:controlButtons>
-                <semui:exportDropdown>
-                    <semui:exportDropdownItem>
-                        <g:link class="item" action="reporting" params="${exportParams}">${message(code: 'default.button.export.xls')}</g:link>
-                    </semui:exportDropdownItem>
-                </semui:exportDropdown>
-            </semui:controlButtons>
-        </g:if>
+        <semui:controlButtons>
+            <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="reporting" params="${exportParams}">${message(code: 'default.button.export.xls')}</g:link>
+                </semui:exportDropdownItem>
+            </semui:exportDropdown>
+        </semui:controlButtons>
 
         <p>
             <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="myinst.reporting"/></h1>
         </p>
 
-        <semui:filter>
-            <g:form name="startingPoint" class="ui form" action="reporting">
-                <div class="four fields">
-                    <div class="field">
-                        <label for="subscription">
-                            <g:message code="subscription"/>
-                        </label>
-                        <g:select name="subscription" from="${subscriptions}" value="${params.subscription}"
-                                  optionKey="${{it.id}}" optionValue="${{it.dropdownNamingConvention(institution)}}"
-                                  noSelection="['':message(code:'default.select.choose.label')]"
-                                  class="ui search selection dropdown"/>
+        <div class="ui grid">
+            <div class="four wide column" id="clickMe">
+                <div class="ui grid">
+                    <div class="row ui styled accordion">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Lizenz
+                        </div>
+                        <div class="content">
+                            <%-- TODO ask Ingrid for correct display! --%>
+                            <div class="ui checkbox">
+                                <input type="checkbox" class="subscriptionParam" id="subStatus">
+                                <label for="subStatus">
+                                    <g:message code="subscription.status.label"/>
+                                </label><%-- opens status list --%>
+                            </div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" class="subscriptionParam" id="subProp">
+                                <label for="subProp">
+                                    <g:message code="myinst.reporting.subProp"/>
+                                </label><%-- opens property definition list --%>
+                            </div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" class="subscriptionParam" id="subForm">
+                                <label for="subForm">
+                                    <g:message code="subscription.form.label"/>
+                                </label>
+                            </div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" class="subscriptionParam" id="subResourceType">
+                                <label for="subResourceType">
+                                    <g:message code="subscription.resource.label"/>
+                                </label>
+                            </div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" class="subscriptionParam" id="subKind">
+                                <label for="subKind">
+                                    <g:message code="subscription.kind.label"/>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="field">
-                        <label for="package">
-                            <g:message code="package"/>
-                        </label>
-                        <g:select name="package" from="${packages}" value="${params.package}"
-                                  optionKey="${{it.id}}" optionValue="${{it.name}}"
-                                  noSelection="['':message(code:'default.select.choose.label')]"
-                                  class="ui search selection dropdown"/>
-                    </div>
-                    <div class="field">
-                        <label for="subscriber">
-                            <g:message code="default.institution"/>
-                        </label>
-                        <g:select name="subscriber" from="${subscribers}" value="${params.subscriber}"
-                                  optionKey="${{it.id}}" optionValue="${{it.sortname ?: it.name}}"
-                                  noSelection="['':message(code:'default.select.choose.label')]"
-                                  class="ui search selection dropdown"/>
-                    </div>
-                    <div class="field">
-                        <label for="provider">
-                            <g:message code="default.provider.label"/>
-                        </label>
-                        <g:select name="provider" from="${providers}" value="${params.provider}"
-                                  optionKey="${{it.id}}" optionValue="${{it.name}}"
-                                  noSelection="['':message(code:'default.select.choose.label')]"
-                                  class="ui search selection dropdown"/>
-                    </div>
-                </div>
-                <div class="four fields">
-                    <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
-                    <div class="field la-field-right-aligned">
-                        <g:hiddenField name="formSubmit" value="true"/>
-                        <a href="${createLink(action:'reporting')}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.submit.label')}">
-                    </div>
-                </div>
-            </g:form>
-        </semui:filter>
-
-        <g:if test="${formSubmit}">
-        <%-- this is just for that we see something. Micha surely has concrete ideas which cause refactoring. --%>
-            <table class="ui celled la-table table">
-                <g:if test="${costItemsByElement}">
-                    <thead>
-                        <tr>
-                            <th colspan="4"><g:message code="myinst.reporting.costItems"/></th>
-                        </tr>
-                        <tr>
-                            <th><g:message code="financials.costItemElement"/></th>
-                            <g:each in="${linkedSubscriptionSet}" var="subscription">
-                                <th>${subscription.dropdownNamingConvention(institution)}</th>
+                    <div class="row ui styled accordion hidden" data-triggeredBy="subStatus">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            <g:message code="subscription.status.label"/>
+                        </div>
+                        <div class="content">
+                            <g:each in="${subStatus}" var="status">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="subLoadingParam" data-toArray="status" id="sub${status.value}" value="${status.id}"><label for="sub${status.value}">${status.getI10n("value")}</label>
+                                </div>
                             </g:each>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <g:each in="${costItemsByElement}" var="row">
-                            <tr>
-                                <td>${row.getKey().getI10n("value")}</td>
-                                <g:each in="${linkedSubscriptionSet}" var="subscription">
-                                    <td>
-                                        <g:each in="${row.getValue().findAll { subscription.id in [it.sub.id,it.sub.instanceOf?.id] }}" var="ci">
-                                            <ul>
-                                                <li>${ci.sub.dropdownNamingConvention(institution)}: <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencySymbol=""/> ${ci.billingCurrency ?: 'EUR'}</li>
-                                            </ul>
-                                        </g:each>
-                                    </td>
+                        </div>
+                    </div>
+                    <div class="row ui styled accordion hidden" data-triggeredBy="subProp">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            <g:message code="myinst.reporting.subProp"/>
+                        </div>
+                        <div class="content">
+                            <div class="accordion">
+                                <g:each in="${subProp}" var="propDef">
+                                    <div class="title propertyDefinition" id="sub${propDef.name}" data-value="${genericOIDService.getOID(propDef)}" data-objecttype="${PropertyDefinition.SUB_PROP}">
+                                        <i class="dropdown icon"></i>
+                                        ${propDef.getI10n("name")}
+                                    </div>
+                                    <div class="content" data-triggeredBy="sub${propDef.name}" data-propKey="${genericOIDService.getOID(propDef)}"></div>
                                 </g:each>
-                            </tr>
-                        </g:each>
-                    </tbody>
-                </g:if>
-                <g:elseif test="${costItemsByProvider}">
-                    <tbody>
-                        <g:if test="${costItemsByProvider.billingSums}">
-                            <g:each in="${costItemsByProvider.billingSums}" var="entry">
-                                <tr>
-                                    <td>
-                                        ${message(code:'financials.sum.billing')} ${entry.currency}<br>
-                                    </td>
-                                    <td class="la-exposed-bg">
-                                        <g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol="${entry.currency}"/>
-                                    </td>
-                                    <td>
-                                        ${message(code:'financials.sum.billingAfterTax')}
-                                    </td>
-                                    <td class="la-exposed-bg">
-                                        <g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/>
-                                    </td>
-                                </tr>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row ui styled accordion hidden" data-triggeredBy="subForm">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            <g:message code="subscription.form.label"/>
+                        </div>
+                        <div class="content">
+                            <g:each in="${subForm}" var="form">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="subLoadingParam" data-toArray="form" id="sub${form.value}" value="${form.id}"><label for="sub${form.value}">${form.getI10n("value")}</label>
+                                </div>
                             </g:each>
-                            <tr>
-                                <td>
-                                    ${message(code:'financials.sum.local')}<br>
-                                </td>
-                                <td class="la-exposed-bg">
-                                    <g:formatNumber number="${costItemsByProvider.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br>
-                                </td>
-                                <td>
-                                    ${message(code:'financials.sum.localAfterTax')}
-                                </td>
-                                <td class="la-exposed-bg">
-                                    <g:formatNumber number="${costItemsByProvider.localSums.localSumAfterTax}" type="currency" currencySymbol="" currencyCode="EUR"/>
-                                </td>
-                            </tr>
-                        </g:if>
-                    </tbody>
-                </g:elseif>
-            </table>
-            <p>
-                <h2>Meine Subskriptionen</h2><%-- a placeholder title and a gag for that finally, there is really a page like on the landing page screenshot --%>
-            </p>
-
-            <div class="ui top attached segment">
-                <div id="chartB"></div>
+                        </div>
+                    </div>
+                    <div class="row ui styled accordion hidden" data-triggeredBy="subResourceType">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            <g:message code="subscription.resource.label"/>
+                        </div>
+                        <div class="content">
+                            <g:each in="${subResourceType}" var="resource">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="subLoadingParam" data-toArray="resource" id="sub${resource.value}" value="${resource.id}"><label for="sub${resource.value}">${resource.getI10n("value")}</label>
+                                </div>
+                            </g:each>
+                        </div>
+                    </div>
+                    <div class="row ui styled accordion hidden" data-triggeredBy="subKind">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            <g:message code="subscription.kind.label"/>
+                        </div>
+                        <div class="content">
+                            <g:each in="${subKind}" var="kind">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="subLoadingParam" data-toArray="kind" id="sub${kind.value}" value="${kind.id}"><label for="sub${kind.value}">${kind.getI10n("value")}</label>
+                                </div>
+                            </g:each>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="twelve wide column">
+                <div class="ui grid" id="firstContent">
 
-            <div class="ui top attached segment">
-                <div id="chartA"></div>
+                </div>
             </div>
-
-            <div class="ui top attached segment">
-                <div id="chartC"></div>
-            </div>
-
-            <div class="ui top attached segment">
-                <div id="chartD"></div>
-            </div>
-
-        </g:if>
-        <semui:debugInfo>
-
-        </semui:debugInfo>
+        </div>
     </body>
     <r:script>
-        <g:if test="${params.formSubmit}">
-            $.ajax({
-                url: "<g:createLink action="loadChartData" />",
-                method: "POST",
-                data: {
-                <g:if test="${params.subscription}">subscription: ${params.subscription}</g:if>
-                <g:elseif test="${params.package}">package: ${params.package}</g:elseif>
-                <g:elseif test="${params.provider}">provider: ${params.provider}</g:elseif>
-                <g:elseif test="${params.subscriber}">subscriber: ${params.subscriber}</g:elseif>
-                }
-            }).done(function(data){
-                if(data.graphA) {
-                    console.log(data.graphA);
-                    new Chartist.Line('#chartA',data.graphA,{
-                        axisY: {
-                            scaleMinSpace: 15
-                        },
-                        plugins: [
-                            Chartist.plugins.legend()
-                        ]
-                    });
-                }
-                if(data.graphB) {
-                    console.log(data.graphB);
-                    new Chartist.Pie('#chartB',data.graphB,{
-                        donut:true,
-                        donutWidth: 60,
-                        donutSolid:true,
-                        startAngle: 270,
-                        showLabel: false,
-                        height: '300px',
-                        plugins: [
-                            Chartist.plugins.legend()
-                        ]
-                    });
-                }
-                if(data.graphC) {
-                    console.log(data.graphC);
-                    if(typeof(data.graphC.benchmark) !== 'undefined') {
-                        let benchmark = '<div><h5 class="ui red header">BenchMark</h5><table class="ui celled la-table compact table la-ignore-fixed"><thead><tr><th>Step</th><th>Comment</th><th>(Step_x+1 - Step_x) MS</th></tr></thead><tbody>';
-                        let sum = 0;
-                        for(let i = 0;i < data.graphC.benchmark.length;i++) {
-                        let bm = data.graphC.benchmark[i];
-                        benchmark += '<tr><td>'+(i+1)+'</td><td>'+bm[0]+'</td><td>';
-                        if (i < data.graphC.benchmark.length - 1) {
-                        benchmark += (data.graphC.benchmark[i+1][1] - bm[1])
-                        }
-                        else {
-                        benchmark += '--> ' + ( bm[1] - data.graphC.benchmark[0][1] ) + ' <--'
-                        }
-                        benchmark += '</td></tr>';
-                        }
-                        benchmark += '</tbody></table></div>';
-                        $('#debugInfo div.content').html(benchmark);
+        $(document).ready(function() {
+            let qParams = {status: [], propDef: "", propVal: [], form: [], resource: [], kind: []};
+            $("#clickMe").on('change','.subscriptionParam',function(){
+                let elem = $("[data-triggeredBy='"+$(this).attr("id")+"']");
+                elem.toggleClass("hidden");
+            });
+            $("#clickMe").on('change','.subLoadingParam',function(){
+                console.log($(this).parents("div.content")[0].getAttribute("data-propKey"));
+                if($(this).attr("data-propKey") !== $(this).parents("div.content")[0].getAttribute("data-propKey"))
+                    qParams.propDef = "";
+                qParams.status = [];
+                qParams.propVal = [];
+                qParams.form = [];
+                qParams.resource = [];
+                qParams.kind = [];
+                $(".subLoadingParam").each(function(k,v) {
+                    if(v.checked){
+                        qParams[v.getAttribute("data-toArray")].push(v.value);
                     }
-                    new Chartist.Bar('#chartC',data.graphC,{
-                        stackBars: true,
-                        plugins: [
-                            Chartist.plugins.legend()
-                        ],
-                        height: '500px'
-                    }).on('draw', function(data) {
-                        if(data.type === 'bar') {
-                            data.element.attr({
-                                style: 'stroke-width: 30px'
-                            });
-                        }
-                    });
-                }
-                if(data.graphD) {
-                    console.log(data.graphD);
-                    new Chartist.Pie('#chartD',data.graphD,{
-                        plugins: [
-                            Chartist.plugins.legend()
-                        ],
-                        height: '500px',
-                        donut: true,
-                        donutWidth: 60,
-                        startAngle: 270,
-                        total: 10,
-                        showLabel: false
-                    }).on('draw', function(data) {
-                        if(data.type === 'bar') {
-                            data.element.attr({
-                                style: 'stroke-width: 30px'
-                            });
-                        }
-                    });
+                });
+                if(qParams.status.length === 0)
+                    qParams.status.push(${RDStore.SUBSCRIPTION_CURRENT.id});
+                updateSubscriptions();
+            });
+            $("#clickMe").on('click','.propertyDefinition',function(e){
+                let propDefKey = $(this).attr('data-value');
+                qParams.propDef = propDefKey;
+                updateSubscriptions();
+                let elemKey = $(this).attr("id");
+                if($("[data-triggeredBy='"+elemKey+"']").is(':empty')) {
+                    let params = {oid: propDefKey, elemKey: elemKey, format: "json"};
+                    updatePropertyDefinitions(params);
                 }
             });
-        </g:if>
+
+            function updateSubscriptions() {
+                $.ajax({
+                    url: '<g:createLink controller="ajax" action="lookupSubscriptions"/>',
+                    data: {
+                        restrictLevel: "true",
+                        status: qParams.status.join(","),
+                        form: qParams.form.join(","),
+                        propDef: qParams.propDef,
+                        propVal: qParams.propVal.join(","),
+                        resource: qParams.resource.join(","),
+                        kind: qParams.kind.join(",")
+                    }
+                }).done(function(data){
+                    let subscriptionRows = [];
+                    for(let k = 0;k < data.results.length;k++) {
+                        let v = data.results[k]
+                        subscriptionRows.push('<div class="row" data-subscription="'+v.value+'">'+v.name+'</div>');
+                    }
+                    $("#firstContent").html(subscriptionRows.join(""));
+                }).fail(function(xhr,status,message){
+                    console.log("error occurred, consult logs!");
+                });
+            }
+
+            function updatePropertyDefinitions(params) {
+                $.ajax({
+                    url: '<g:createLink controller="ajax" action="getPropValues"/>',
+                    data: params
+                }).done(function(data){
+                    let elemContent = $("[data-triggeredBy='"+params.elemKey+"']");
+                    for(let k = 0;k < data.length; k++){
+                        let v = data[k];
+                        let input = '<div class="ui checkbox"><input type="checkbox" class="subLoadingParam" data-toArray="propVal" data-propKey="'+params.oid+'" id="subPropVal'+k+'" value="'+v.value+'"><label for="subPropVal'+k+'">'+v.text+'</label></div>';
+                        elemContent.append(input);
+                    }
+                }).fail(function(xhr,status,message){
+                    console.log("error occurred, consult logs!")
+                });
+            }
+        });
     </r:script>
 </html>
