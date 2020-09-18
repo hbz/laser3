@@ -4706,7 +4706,7 @@ class SurveyController {
 
         renewalData.add([[field: g.message(code: 'renewalWithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
-        renewalResult.orgsContinuetoSubscription.each { participantResult ->
+        renewalResult.orgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
             List row = []
 
             row.add([field: participantResult.participant.sortname ?: '', style: null])
@@ -4764,7 +4764,7 @@ class SurveyController {
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
             List row = []
 
-            sub.getAllSubscribers().each{ subscriberOrg ->
+            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
 
                 row.add([field: subscriberOrg.sortname ?: '', style: null])
                 row.add([field: subscriberOrg.name ?: '', style: null])
@@ -4800,7 +4800,7 @@ class SurveyController {
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
             List row = []
 
-            sub.getAllSubscribers().each{ subscriberOrg ->
+            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
 
                 row.add([field: subscriberOrg.sortname ?: '', style: null])
                 row.add([field: subscriberOrg.name ?: '', style: null])
@@ -4832,7 +4832,7 @@ class SurveyController {
         renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
 
-        renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
+        renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
             List row = []
 
             row.add([field: participantResult.participant.sortname ?: '', style: null])
@@ -4887,7 +4887,7 @@ class SurveyController {
         renewalData.add([[field: g.message(code: 'renewalWithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination.size() ?: 0})", style: 'negative']])
 
 
-        renewalResult.orgsWithTermination.each { participantResult ->
+        renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->
             List row = []
 
             row.add([field: participantResult.participant.sortname ?: '', style: null])
@@ -4929,7 +4929,7 @@ class SurveyController {
         renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size()})", style: 'negative']])
 
 
-        renewalResult.orgsWithoutResult.each { participantResult ->
+        renewalResult.orgsWithoutResult.sort{it.participant.sortname}.each { participantResult ->
             List row = []
 
             row.add([field: participantResult.participant.sortname ?: '', style: null])
