@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.SurveyOrg; de.laser.SurveyConfigProperties;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -256,7 +256,7 @@
                     <td>
 
                         ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                        <g:if test="${surveyProperty.surveyProperty.type == 'class de.laser.RefdataValue'}">
+                        <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
@@ -381,7 +381,7 @@
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                        <g:if test="${surveyResult.type.type == 'class de.laser.RefdataValue'}">
+                        <g:if test="${surveyResult.type.type == RefdataValue.CLASS}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">

@@ -112,7 +112,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static def validTypes2 = [
             'class java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number'],
             'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
-            'class de.laser.RefdataValue' : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
             'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
             'class java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
             'class java.net.URL'                  : ['de': 'Url', 'en': 'Url']

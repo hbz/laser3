@@ -1,4 +1,4 @@
-<%@ page import="de.laser.I10nTranslation; de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
@@ -93,9 +93,9 @@
                                     </td>
                                     <td>
                                         ${PropertyDefinition.getLocalizedValue(pd?.type)}
-                                        <g:if test="${pd?.type == 'class de.laser.RefdataValue'}">
+                                        <g:if test="${pd?.type == RefdataValue.CLASS}">
                                             <g:set var="refdataValues" value="${[]}"/>
-                                            <g:each in="${de.laser.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
+                                            <g:each in="${RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
                                                 <g:if test="${refdataValue.getI10n('value')}">
                                                     <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                                                 </g:if>

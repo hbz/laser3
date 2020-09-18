@@ -40,7 +40,7 @@
 
     <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.type == 'class de.laser.RefdataValue'}">
+    <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
         <g:set var="refdataValues" value="${[]}"/>
         <g:each in="${laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                 var="refdataValue">

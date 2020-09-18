@@ -12,6 +12,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
     def grailsApplication
 
+    final static String CLASS = RefdataValue.class // introduced for refactoring -> RefdataValue.class.name
+
     static Log static_logger = LogFactory.getLog(RefdataValue)
 
     String value

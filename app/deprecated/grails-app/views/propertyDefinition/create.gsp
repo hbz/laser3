@@ -98,13 +98,13 @@
       return false;
     }
 
-       if( $( "#cust_prop_modal_select option:selected" ).val() == "class de.laser.RefdataValue") {
+       if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.CLASS}") {
             $("#cust_prop_ref_data_name").show();
        }
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-        if( selectedText == "class de.laser.RefdataValue") {
+        if( selectedText == "${RefdataValue.CLASS}") {
             $("#cust_prop_ref_data_name").show();
         }else{
             $("#cust_prop_ref_data_name").hide();

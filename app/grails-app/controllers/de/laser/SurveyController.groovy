@@ -2651,7 +2651,7 @@ class SurveyController {
             result.orgsWithoutResult.each { surveyResult ->
                 if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
 
-                    if (property.type == 'class de.laser.RefdataValue') {
+                    if (property.type == RefdataValue.CLASS) {
                         if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {

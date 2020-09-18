@@ -30,7 +30,7 @@ class SurveyProperty implements I10nTrait {
     static def validTypes = [
             'class java.lang.Integer'            : ['de': 'Zahl', 'en': 'Number'],
             'class java.lang.String'             : ['de': 'Text', 'en': 'Text'],
-            'class de.laser.RefdataValue': ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class de.laser.RefdataValue'        : ['de': 'Referenzwert', 'en': 'Refdata'],
             'class java.math.BigDecimal'         : ['de': 'Dezimalzahl', 'en': 'Decimal'],
             'class java.util.Date'               : ['de': 'Datum', 'en': 'Date'],
             'class java.net.URL'                 : ['de': 'Url', 'en': 'Url']
@@ -117,7 +117,7 @@ class SurveyProperty implements I10nTrait {
 
         def propertyType = SurveyProperty.getLocalizedValue(this.type)
         List refdataValues = []
-        if(this.type == 'class de.laser.RefdataValue'){
+        if(this.type == RefdataValue.CLASS){
 
                 RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
                     refdataValues << it?.getI10n('value')

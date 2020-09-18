@@ -180,7 +180,7 @@
                                 <td>
 
                                     ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                                    <g:if test="${surveyProperty.surveyProperty.type == 'class de.laser.RefdataValue'}">
+                                    <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
                                         <g:set var="refdataValues" value="${[]}"/>
                                         <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                                 var="refdataValue">

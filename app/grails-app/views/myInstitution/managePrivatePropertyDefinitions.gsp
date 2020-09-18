@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.I10nTranslation" %>
 
 <!doctype html>
 <html>
@@ -92,7 +92,7 @@
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd.type)}
-                                            <g:if test="${pd.type == 'class de.laser.RefdataValue'}">
+                                            <g:if test="${pd.type == RefdataValue.CLASS}">
                                                 <g:set var="refdataValues" value="${[]}"/>
                                                 <g:each in="${RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
                                                         var="refdataValue">
@@ -268,7 +268,7 @@
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-        if( selectedText == "class de.laser.RefdataValue") {
+        if( selectedText == "${RefdataValue.CLASS}") {
             $("#cust_prop_ref_data_name").show();
 
             var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
