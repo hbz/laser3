@@ -8,4 +8,41 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-2") {
+		grailsChange {
+			change {
+				sql.execute("update due_date_object set ddo_oid = replace(ddo_oid, 'com.k_int.kbplus.SurveyInfo', 'de.laser.SurveyInfo') where ddo_oid is not null")
+				sql.execute("update due_date_object set ddo_oid = replace(ddo_oid, 'com.k_int.kbplus.Task', 'de.laser.Task') where ddo_oid is not null")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-3") {
+		grailsChange {
+			change {
+				sql.execute("update pending_change set pc_msg_doc = replace(pc_msg_doc, 'com.k_int.properties.', 'de.laser.properties.')")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-4") {
+		grailsChange {
+			change {
+				sql.execute("update pending_change set pc_oid = replace(pc_oid, 'de.laser.domain.', 'de.laser.')")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-5") {
+		grailsChange {
+			change {
+				sql.execute("update pending_change set pc_payload = replace(pc_payload, 'com.k_int.kbplus.CostItem', 'de.laser.finance.CostItem')")
+			}
+			rollback {}
+		}
+	}
 }
