@@ -17,10 +17,10 @@
     </semui:breadcrumbs>
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${personInstance?.contactType?.id == RDStore.CONTACT_TYPE_FUNCTIONAL.id}">
+        <g:if test="${personInstance?.contactType?.id == RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL.id}">
             ${personInstance.contactType.getI10n('value') + ': ' + personInstance?.last_name}
         </g:if>
-        <g:elseif test="${personInstance?.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}">
+        <g:elseif test="${personInstance?.contactType?.id == RDStore.PERSON_CONTACT_TYPE_PERSONAL.id}">
             ${personInstance.contactType.getI10n('value') + ': ' + personInstance}
         </g:elseif>
         <g:else>

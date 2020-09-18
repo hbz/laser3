@@ -62,7 +62,7 @@ if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId]
     <g:render template="/templates/subscription/copyDocsAndTasks"/>
 </g:if>
 <g:elseif test="${workFlowPart == SubscriptionController.WORKFLOW_PROPERTIES}">
-    <g:render template="/templates/subscription/copyPrivatePropertiesCompare"/>
+    <g:render template="/templates/subscription/copyPropertiesCompare"/>
 </g:elseif>
 <g:javascript src="copyPropertiesCompare.js"/>
 
