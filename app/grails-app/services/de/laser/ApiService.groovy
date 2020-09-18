@@ -306,10 +306,10 @@ class ApiService {
 
             inst.person?.children().each { p ->
 
-                def rdvContactType = RDStore.CONTACT_TYPE_PERSONAL
+                def rdvContactType = RDStore.PERSON_CONTACT_TYPE_PERSONAL
 
                 if( ! p.first_name.text() ) {
-                    rdvContactType = RDStore.CONTACT_TYPE_FUNCTIONAL
+                    rdvContactType = RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL
                 }
                 Person person = Person.lookup( // firstName, lastName, tenant, isPublic, contactType, org, functionType
                         p.first_name.text() ? normString("${p.first_name}") : null,

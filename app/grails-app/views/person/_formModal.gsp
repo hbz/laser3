@@ -33,7 +33,7 @@
                                   from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${personInstance?.contactType?.id ?: RDStore.CONTACT_TYPE_PERSONAL.id}"
+                                  value="${personInstance?.contactType?.id ?: RDStore.PERSON_CONTACT_TYPE_PERSONAL.id}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
@@ -307,7 +307,7 @@
                 }
              }
         });
-        var fc = "${RDStore.CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
+        var fc = "${RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
 
         $(document).ready( function(){
             changeForm( ($("#${modalId} #contactType option:selected").text() == fc), "${modalId}")
