@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      18.09.2020  rc1.5   1.5.9       Andreas Bug         Klausel zur Berücksichtigung des Lizenznamens bei Meine Verträge korrigiert 
+
 2869    18.09.2020  rc1.5   1.5.9       Moe     Bug         Übertragung von Merkmalen hakt
 
 --      18.09.2020  rc1.5   1.5.9       Moe     Feature     DashboardDueDates auch für Umfrage-Ersteller erstellen
