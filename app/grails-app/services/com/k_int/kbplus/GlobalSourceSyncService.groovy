@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.GlobalRecordSource
 import de.laser.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage

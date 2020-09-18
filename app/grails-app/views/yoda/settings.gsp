@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Setting" %>
+<%@ page import="de.laser.SystemSetting" %>
 <!doctype html>
 <html>
 <head>
@@ -17,7 +17,7 @@
     <h2 class="ui header">${message(code: 'menu.yoda.systemSettings')}</h2>
 
     <g:set var="mailConfigDisabled" value="${grailsApplication.config.grails.mail.disabled}" />
-    <g:set var="maintenanceModeEnabled" value="${Setting.findByName('MaintenanceMode')?.value == 'true'}" />
+    <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}" />
 
     <table class="ui celled la-table table">
         <thead>

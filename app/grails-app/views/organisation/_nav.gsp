@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.Combo" %>
+<%@page import="de.laser.helper.RDStore; de.laser.Combo" %>
 
 <laser:serviceInjection/>
 

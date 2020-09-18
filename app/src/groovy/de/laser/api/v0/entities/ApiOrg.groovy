@@ -103,10 +103,10 @@ class ApiOrg {
         // Ignored
 
         //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrg
-        //result.incomingCombos       = org.incomingCombos // com.k_int.kbplus.Combo
+        //result.incomingCombos       = org.incomingCombos // de.laser.Combo
         //result.links                = exportHelperService.resolveOrgLinks(org.links) // com.k_int.kbplus.OrgRole
         //result.membership           = org.membership?.value // RefdataValue
-        //result.outgoingCombos       = org.outgoingCombos // com.k_int.kbplus.Combo
+        //result.outgoingCombos       = org.outgoingCombos // de.laser.Combo
 
         ApiToolkit.cleanUp(result, true, true)
     }

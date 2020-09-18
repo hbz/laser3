@@ -777,7 +777,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def settings() {
         Map<String, Object> result = [:]
-        result.settings = Setting.executeQuery('select s from Setting s where s.name != \'MaintenanceMode\' order by s.name asc')
+        result.settings = SystemSetting.executeQuery('select s from SystemSetting s where s.name != \'MaintenanceMode\' order by s.name asc')
         result
     }
 
@@ -859,9 +859,9 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def toggleBoolSetting() {
         Map<String, Object> result = [:]
-        def s = Setting.findByName(params.setting)
+        def s = SystemSetting.findByName(params.setting)
         if (s) {
-            if (s.tp == Setting.CONTENT_TYPE_BOOLEAN) {
+            if (s.tp == SystemSetting.CONTENT_TYPE_BOOLEAN) {
                 if (s.value == 'true')
                     s.value = 'false'
                 else

@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ChangeNotificationService
-import com.k_int.kbplus.Fact
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
@@ -12,7 +11,6 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant
 import com.k_int.kbplus.TitleInstance
-import com.k_int.kbplus.GlobalRecordSource
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement

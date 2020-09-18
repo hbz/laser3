@@ -370,24 +370,4 @@ class Identifier implements CalculatedLastUpdated {
 
         result
     }
-
-    /*
-    @Transient
-    def afterInsert = {
-        if(this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
-            if(this.value == IdentifierNamespace.UNKNOWN) {
-                this.value = ''
-                this.save()
-            }
-        }
-
-        if(this.ns?.ns == IdentifierNamespace.ISIL)
-        {
-            if( (this.value != IdentifierNamespace.UNKNOWN) &&
-                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
-            {
-                this.value = 'DE-'+this.value.trim()
-            }
-        }
-    } */
 }

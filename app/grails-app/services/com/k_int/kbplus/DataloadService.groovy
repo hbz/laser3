@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.FTControl
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.SystemEvent
