@@ -18,17 +18,17 @@
         type: string
         description: Mapping RefdataCategory "Federal State"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
       country:
         type: string
         description: Mapping RefdataCategory "Country"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
       type:
         type: string
         description: Mapping RefdataCategory "AddressType"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
       pob:
         type: string
       pobZipcode:
@@ -50,14 +50,14 @@
         type: string
         description: Mapping RefdataCategory "ContactContentType"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
       content:
         type: string
       type:
         type: string
         description: Mapping RefdataCategory "ContactType"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]"
+          [${ RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]"
 --%>
 
   CostItem:
@@ -298,7 +298,7 @@
           #
           #  description: Mapping RefdataCategory "${RDConstants.ORG_TYPE}"
           #  enum:
-          #    [${ laser.RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
+          #    [${ RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
           scope:
             type: string
           sector:
@@ -306,7 +306,7 @@
             type: string
             description: Mapping RefdataCategory "OrgSector"
             enum:
-              [${ laser.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
           status:
             type: string
             description: Mapping RefdataCategory
@@ -317,7 +317,7 @@
             type: string
             description: Mapping RefdataCategory "OrgType"
             enum:
-              [${ laser.RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
 --%>
 #  OrganisationRole:
 #    properties:
@@ -503,12 +503,12 @@
         type: string
         description: Mapping RefdataCategory "Gender"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
       isPublic:
         type: string
         description: Mapping RefdataCategory "${RDConstants.Y_N}". If set *No*, it's an hidRefdataCategoryden entry to/from an addressbook (depending on the given organisation context)
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
       lastName:
         type: string
       middleName:
@@ -517,12 +517,12 @@
         type: string
         description: Mapping RefdataCategory "${RDConstants.PERSON_CONTACT_TYPE}"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE).collect{ it.value }.join(', ') }]
       roleType:
         type: string
         description: Mapping RefdataCategory "${RDConstants.PERSON_POSITION}"
         enum:
-          [${ laser.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_POSITION).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_POSITION).collect{ it.value }.join(', ') }]
       properties: # mapping attr privateProperties
         type: array
         items:

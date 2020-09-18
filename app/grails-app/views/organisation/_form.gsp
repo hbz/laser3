@@ -112,7 +112,7 @@
 	<label for="orgType">
 		<g:message code="org.orgType.label" default="Org Type" />
 	</label>
-	<laser:select id="orgType" name="orgType.id" from="${laser.RefdataCategory.getAllRefdataValues('OrgType')}"
+	<laser:select id="orgType" name="orgType.id" from="${de.laser.RefdataCategory.getAllRefdataValues('OrgType')}"
 			  optionKey="id" optionValue="value"  value="${orgInstance?.orgType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>--}%
 
@@ -121,7 +121,7 @@
 	<label for="status">
 		<g:message code="org.status.label" />
 	</label>
-	<g:select id="status" name="status.id" from="${laser.RefdataCategory.getAllRefdataValues()}"
+	<g:select id="status" name="status.id" from="${de.laser.RefdataCategory.getAllRefdataValues()}"
 			  optionKey="id" value="${orgInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div> --%>
 
@@ -130,7 +130,7 @@
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 	</label>
-	<g:select id="membership" name="membership.id" from="${laser.RefdataCategory.getAllRefdataValues()}"
+	<g:select id="membership" name="membership.id" from="${de.laser.RefdataCategory.getAllRefdataValues()}"
 			  optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div> --%>
 

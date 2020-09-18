@@ -60,7 +60,7 @@
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
         <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+        <g:each in="${de.laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                 var="refdataValue">
             <g:set var="refdataValues"
                    value="${refdataValues + refdataValue?.getI10n('value')}"/>

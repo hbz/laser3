@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.Person; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataValue; de.laser.Person; com.k_int.kbplus.PersonRole; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <table class="ui three column table">
@@ -100,7 +100,7 @@
                                             (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
-                                                <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                                <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                 <div class="ui mini icon buttons">
                                                     <g:link class="ui negative  button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                             data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
@@ -137,10 +137,10 @@
                                         </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
-                                            (${(de.laser.RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
-                                                <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                                <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                 <div class="ui mini icon buttons">
                                                     <g:link class="ui negative button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                             data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"

@@ -91,7 +91,7 @@ trait AuditableTrait {
 
                         if ( ! isSubOrLic || (isSubOrLic && auditService.getAuditConfig(this, cp)) ) {
 
-                            if (clazz.equals("de.laser.RefdataValue")) {
+                            if (clazz.equals( RefdataValue.class.name )) {
 
                                 String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
                                 String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null

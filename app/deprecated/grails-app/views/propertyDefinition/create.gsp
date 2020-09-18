@@ -1,6 +1,6 @@
 <!doctype html>
 <r:require module="scaffolding" />
-<%@ page import="de.laser.RefdataValue; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
 
 <html>
   <head>
@@ -121,7 +121,7 @@
                 return {
                     q: term, // search term
                     page_limit: 10,
-                    baseClass:'de.laser.RefdataCategory'
+                    baseClass:'${RefdataCategory.class.name}'
                 };
             },
             results: function (data, page) {

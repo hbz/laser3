@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDConstant; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
@@ -25,14 +26,14 @@
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${de.laser.RefdataValue.findAllByOwnerAndGroup(de.laser.RefdataCategory.getByDesc(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE), linkType)}"
+                      from="${RefdataValue.findAllByOwnerAndGroup(RefdataCategory.getByDesc(RDConstants.ORGANISATIONAL_ROLE), linkType)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:if>
             <g:else>
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${de.laser.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)}"
+                      from="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:else>

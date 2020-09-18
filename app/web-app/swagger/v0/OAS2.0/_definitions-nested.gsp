@@ -135,7 +135,7 @@
               Exclusive with responsibilityType |
               Mapping RefdataCategory "${RDConstants.PERSON_FUNCTION}"
             enum:
-              [${ laser.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_FUNCTION).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_FUNCTION).collect{ it.value }.join(', ') }]
 
   PersonRole(usedAsResponsibility):
     allOf:
@@ -160,7 +160,7 @@
               Exclusive with functionType |
               Mapping RefdataCategory "${RDConstants.PERSON_RESPONSIBILITY}"
             enum:
-              [${ laser.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_RESPONSIBILITY).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_RESPONSIBILITY).collect{ it.value }.join(', ') }]
           subscription:
             description: |
               Exclusive with cluster, license, organisation, package and title

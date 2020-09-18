@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Task;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.Task;de.laser.helper.RDConstants;de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">
@@ -48,7 +48,7 @@
 		<g:message code="task.status.label" />
 	</label>
 	<g:select id="status" name="status.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
-			  optionKey="id" required="" value="${taskInstance?.status?.id ?: de.laser.RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}" class="many-to-one"/>
+			  optionKey="id" required="" value="${taskInstance?.status?.id ?: RefdataValue.getByValueAndCategory("Open", RDConstants.TASK_STATUS).id}" class="many-to-one"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'creator', 'error')} required">
