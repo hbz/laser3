@@ -58,7 +58,7 @@ c3po = {
                     return {
                         q: term, // search term
                         page_limit: 10,
-                        baseClass: 'laser.RefdataCategory'
+                        baseClass: 'de.laser.RefdataCategory'
                     };
                 },
                 results: function (data, page) {

@@ -1,5 +1,5 @@
 <!-- _licPropGroupWrapper -->
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.RefdataValue; laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 
 <g:set var="propList" value="${propDefGroup.getCurrentProperties(ownObj)}" />

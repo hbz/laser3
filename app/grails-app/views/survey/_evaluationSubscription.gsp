@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;laser.RefdataCategory;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${surveyConfig}">

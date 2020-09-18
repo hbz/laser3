@@ -1,5 +1,5 @@
 <!-- _result.gsp -->
-<%@ page import="com.k_int.kbplus.OrgRole;laser.RefdataCategory;de.laser.RefdataValue;com.k_int.properties.PropertyDefinition;de.laser.FinanceController" %>
+<%@ page import="com.k_int.kbplus.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;com.k_int.properties.PropertyDefinition;de.laser.FinanceController" %>
 <laser:serviceInjection />
 
 <%

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; laser.RefdataCategory; com.k_int.kbplus.Subscription; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; com.k_int.kbplus.Subscription; de.laser.finance.CostItem" %>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
