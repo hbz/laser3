@@ -2449,7 +2449,7 @@ class SurveyController {
 
         def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
-        result.orgsLateCommers = []
+        //result.orgsLateCommers = []
         def orgsWithMultiYearTermOrgsID = []
         def orgsLateCommersOrgsID = []
         result.parentSubChilds.each { sub ->
@@ -4798,41 +4798,6 @@ class SurveyController {
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
-            List row = []
-
-            sub.getAllSubscribers().each{ subscriberOrg ->
-
-                row.add([field: subscriberOrg.sortname ?: '', style: null])
-                row.add([field: subscriberOrg.name ?: '', style: null])
-
-                row.add([field: '', style: null])
-
-                row.add([field: '', style: null])
-
-                def period = ""
-
-                period = sub.startDate ? sdf.format(sub.startDate) : ""
-                period = sub.endDate ? period + " - " +sdf.format(sub.endDate) : ""
-
-                row.add([field: period?: '', style: null])
-
-                if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
-                {
-                    row.add([field: '', style: null])
-                }
-            }
-
-
-            renewalData.add(row)
-        }
-
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers.size() ?: 0})", style: 'positive']])
-
-
-        renewalResult.orgsLateCommers.each { sub ->
             List row = []
 
             sub.getAllSubscribers().each{ subscriberOrg ->
