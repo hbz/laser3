@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.SubscriptionController; de.laser.CopyElementsService;de.laser.helper.RDStore;de.laser.PendingChangeConfiguration;" %>
+<%@ page import="de.laser.Person; com.k_int.kbplus.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.helper.RDStore;de.laser.PendingChangeConfiguration;" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
