@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      18.09.2020  rc1.5   1.5.9       Moe     Bug         Renewal Export: Sortierung + Späteinsteiger entfernen
+
 --      18.09.2020  rc1.5   1.5.9       Andreas Bug         Brücke in Sync gebaut zum Abfangen von Bestandstitel ohne SubscriptionPackage
 
 2867    16.09.2020  rc1.5   1.5.8       Andreas Bug         Prüfung des Vorhandenseins eines Konsortiums bei Lizenz-/Vertragsmerkmalen eingebaut 
