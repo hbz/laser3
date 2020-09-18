@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.Person; com.k_int.kbplus.PersonRole; de.laser.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -404,7 +404,7 @@
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${genericOIDService.getOID(.PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br/>

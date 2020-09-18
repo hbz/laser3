@@ -532,7 +532,7 @@ class SemanticUiTagLib {
 
         out << '<div class="ui modal ' + modalSize + '"' + id + '>'
         out << '<div class="header">' + title + '</div>'
-        out << '<div class="content">'
+        out << '<div class="content ' + attrs.contentClass + '">'
         out << body()
         out << '</div>'
         out << '<div class="actions">'

@@ -525,7 +525,7 @@ class OrganisationService {
                     first_name:'Franz',
                     last_name:'Eric',
                     gender: generalData.gender.get('Male'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ], addParams: [
@@ -542,7 +542,7 @@ class OrganisationService {
                     first_name: 'Vorname',
                     last_name: 'Name',
                     gender: generalData.gender.get('Third Gender'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -560,7 +560,7 @@ class OrganisationService {
             ]
             Map technik = [mainParams: [
                     last_name: 'Technik',
-                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1109,7 +1109,7 @@ class OrganisationService {
             log.info("creating private contacts ...")
             Map erwerbung = [mainParams:[
                     last_name: 'Erwerbung',
-                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1126,7 +1126,7 @@ class OrganisationService {
                     first_name: 'James',
                     last_name: 'Frank',
                     gender: generalData.gender.get('Male'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1146,7 +1146,7 @@ class OrganisationService {
                     first_name: 'Peter',
                     last_name: 'Klein',
                     gender: generalData.gender.get('Male'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1162,7 +1162,7 @@ class OrganisationService {
                     first_name: 'Mia',
                     last_name: 'Meyer',
                     gender: generalData.gender.get('Female'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1178,7 +1178,7 @@ class OrganisationService {
                     first_name: 'Peter',
                     last_name: 'Miller',
                     gender: generalData.gender.get('Male'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1192,7 +1192,7 @@ class OrganisationService {
             ]
             Map rechnungsadresse = [mainParams: [
                     last_name: 'Rechnungsadresse',
-                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1211,7 +1211,7 @@ class OrganisationService {
             ]
             Map technischerSupport = [mainParams: [
                     last_name: 'Technischer Support',
-                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1226,7 +1226,7 @@ class OrganisationService {
                     first_name:'franz',
                     last_name:'emil',
                     gender: generalData.gender.get('Third Gender'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1241,7 +1241,7 @@ class OrganisationService {
                     first_name: 'anna',
                     last_name: 'müller',
                     gender: generalData.gender.get('Female'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1255,7 +1255,7 @@ class OrganisationService {
             ]
             Map salesTeam = [mainParams: [
                     last_name: 'sales-team',
-                    contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL,
                     tenant: current,
                     isPublic: false
             ],
@@ -1270,7 +1270,7 @@ class OrganisationService {
                     first_name: 'sam',
                     last_name: 'smith',
                     gender: generalData.gender.get('Male'),
-                    contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                    contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                     tenant: current,
                     isPublic: false
             ], addParams: [
@@ -2011,7 +2011,7 @@ class OrganisationService {
                 first_name: 'Anton',
                 last_name: 'Gross',
                 gender: generalData.gender.get('Male'),
-                contactType: RDStore.CONTACT_TYPE_PERSONAL,
+                contactType: RDStore.PERSON_CONTACT_TYPE_PERSONAL,
                 tenant: current,
                 isPublic: false
         ],

@@ -210,4 +210,31 @@
     </g:if>
 </g:if>
 
+<g:javascript>
+        function addresscreate_prs(prsId, typeId, redirect, hideType) {
+            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
+            private_address_modal(url);
+        }
+
+        function private_address_modal(url) {
+            $.ajax({
+                url: url,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#addressFormModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#addressFormModal');
+                            r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                            // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+</g:javascript>
+
 							

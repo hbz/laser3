@@ -538,6 +538,24 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         )
     }
 
+    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
+
+        if (onlyPublic) {
+            Person.executeQuery(
+                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :functionType",
+                    [org: this, functionType: functionType]
+            )
+        }
+        else {
+            Org ctxOrg = contextService.getOrg()
+            Person.executeQuery(
+                    "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
+                            " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
+                    [org: this, functionType: functionType, ctx: ctxOrg]
+            )
+        }
+    }
+
     List<RefdataValue> getAllOrgTypes() {
         RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
     }

@@ -35,6 +35,10 @@
         ${message(code: 'org.prsLinks.label')}
     </a>
 
+    <a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
+        ${message(code: 'org.prsLinks.adresses.label')}
+    </a>
+
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
         ${message(code: 'org.addresses.label')}
     </a>
@@ -45,10 +49,10 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable && contextService.user.hasAffiliation('INST_EDITOR')}">
-                <semui:actionsDropdownItem data-semui="modal" href="#personFormModal"
+                <semui:actionsDropdownItem data-semui="modal" href="#personEditModal"
                                            message="person.create_new.contactPerson.label"/>
             </g:if><g:else>
-            <semui:actionsDropdownItemDisabled data-semui="modal" href="#personFormModal"
+            <semui:actionsDropdownItemDisabled data-semui="modal" href="#personEditModal"
                                                message="person.create_new.contactPerson.label"/>
         </g:else>
             <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
@@ -57,9 +61,12 @@
     </semui:controlButtons>
 
 
-    <g:render template="/person/formModal" model="['org'               : institution,
-                                                   'isPublic'          : RDStore.YN_YES,
-                                                   'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+    <g:render template="/templates/cpa/personFormModal" model="['org'   : institution,
+                                                                'isPublic'           : RDStore.YN_YES,
+                                                                'presetFunctionType' : RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
+                                                                'showContacts'       : true,
+                                                                'addContacts'       : true,
+                                                                'url'             :[controller: 'person', action: 'create']
     ]"/>
 
     <g:render template="/templates/copyFilteredEmailAddresses" model="[orgList: [institution], emailAddresses: emailAddresses]"/>
@@ -67,7 +74,7 @@
 
 
     <semui:filter>
-        <g:form action="${actionName}" controller="myInstitution" method="get" class="ui small form">
+        <g:form action="${actionName}" controller="myInstitution" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
                     <label for="prs">${message(code: 'person.filter.name')}</label>
@@ -121,6 +128,68 @@
                     total="${num_visiblePersons}"/>
 
 </div>
+
+%{--------------------}%
+<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}" data-tab="personAddresses">
+
+    <semui:filter>
+        <g:form action="${actionName}" controller="myInstitution" method="get" params="${params}" class="ui small form">
+            <div class="three fields">
+                <div class="field">
+                    <label for="prs">${message(code: 'person.filter.name')}</label>
+
+                    <div class="ui input">
+                        <input type="text" name="prs" value="${params.prs}"
+                               placeholder="${message(code: 'person.filter.name')}"/>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label><g:message code="person.function.label"/></label>
+                    <laser:select class="ui dropdown search"
+                                  name="function"
+                                  from="${rdvAllPersonFunctions}"
+                                  multiple=""
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${params.function}"/>
+                </div>
+
+                <div class="field">
+                    <label><g:message code="person.position.label"/></label>
+                    <laser:select class="ui dropdown search"
+                                  name="position"
+                                  from="${rdvAllPersonPositions}"
+                                  multiple=""
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${params.position}"/>
+                </div>
+            </div>
+
+            <div class="field la-field-right-aligned">
+                <label></label>
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label')}">
+            </div>
+        </g:form>
+    </semui:filter>
+
+    <g:render template="/templates/cpa/person_table"
+              model="${[persons: visiblePersons, restrictToOrg: null, showAddresses: true]}"/>
+
+    <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}"
+                    max="${max}"
+                    total="${num_visiblePersons}"/>
+
+</div>
+
+%{--------------------}%
+
 
 %{--------------------}%
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">

@@ -237,6 +237,11 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         result
     }
 
+    LinkedHashSet<PersonRole> getPersonRoleByOrg(Org org) {
+
+        return roleLinks.findAll {it.org?.id == org.id}
+    }
+
     /*
     @Transient
     def getCustomPropByName(name){

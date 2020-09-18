@@ -16,7 +16,7 @@
     <g:message code="default.show.label" args="[entityName]" class="active"/>
 </semui:breadcrumbs>
 
-<g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.CONTACT_TYPE_PERSONAL.id}" />
+<g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.PERSON_CONTACT_TYPE_PERSONAL.id}" />
 <br>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
     ${personInstance}
@@ -455,10 +455,6 @@
         function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
             var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
             private_address_modal(url);
-        }
-        function editAddress(id) {
-            var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
-            private_address_modal(url)
         }
 
         function private_address_modal(url) {

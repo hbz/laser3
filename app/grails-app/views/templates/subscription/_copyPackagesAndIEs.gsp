@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Subscription; de.laser.FormService;" %>
+<%@ page import="de.laser.PendingChangeConfiguration; com.k_int.kbplus.IssueEntitlement; de.laser.SubscriptionController; de.laser.helper.RDStore; de.laser.Person; com.k_int.kbplus.Subscription; de.laser.FormService;" %>
 <laser:serviceInjection />
 
 <g:set var="formService" bean="formService"/>
