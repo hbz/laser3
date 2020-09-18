@@ -729,7 +729,7 @@
 
         <%-- maintenance --%>
 
-        <g:if test="${Setting.findByName('MaintenanceMode')?.value == 'true'}">
+        <g:if test="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
                     <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>
