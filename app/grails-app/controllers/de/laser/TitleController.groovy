@@ -4,7 +4,6 @@ import com.k_int.kbplus.BookInstance
 import com.k_int.kbplus.DatabaseInstance
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.JournalInstance
-import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.TitleHistoryEvent
 import com.k_int.kbplus.TitleInstance

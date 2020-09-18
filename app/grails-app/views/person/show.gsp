@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -73,7 +73,7 @@
                         </dl>
 
                         <%--
-                        <dl><dt>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
+                        <dl><dt>${laser.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
                                                         config="${RDConstants.PERSON_POSITION}"/></dd></dl>--%>
                     </g:if>

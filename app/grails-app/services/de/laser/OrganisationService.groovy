@@ -13,7 +13,6 @@ import com.k_int.kbplus.OrgProperty
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PersonRole
-import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage

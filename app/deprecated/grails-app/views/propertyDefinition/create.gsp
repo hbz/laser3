@@ -121,7 +121,7 @@
                 return {
                     q: term, // search term
                     page_limit: 10,
-                    baseClass:'com.k_int.kbplus.RefdataCategory'
+                    baseClass:'laser.RefdataCategory'
                 };
             },
             results: function (data, page) {

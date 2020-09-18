@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.SurveyConfig; com.k_int.kbplus.RefdataCategory;de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.SurveyConfig; laser.RefdataCategory;de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>

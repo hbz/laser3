@@ -1,7 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.RefdataValue
 import de.laser.base.AbstractI10n
-import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap

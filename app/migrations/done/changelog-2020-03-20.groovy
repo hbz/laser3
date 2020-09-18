@@ -1,4 +1,4 @@
-import com.k_int.kbplus.RefdataCategory
+import de.laser.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 
 databaseChangeLog = {

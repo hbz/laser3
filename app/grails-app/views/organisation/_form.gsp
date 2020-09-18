@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.Org;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
 
 <% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">
@@ -79,7 +79,7 @@
 	<label for="sector">
 		<g:message code="org.sector.label" />
 	</label>
-	<laser:select id="sector" name="sector.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
+	<laser:select id="sector" name="sector.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -112,7 +112,7 @@
 	<label for="orgType">
 		<g:message code="org.orgType.label" default="Org Type" />
 	</label>
-	<laser:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
+	<laser:select id="orgType" name="orgType.id" from="${laser.RefdataCategory.getAllRefdataValues('OrgType')}"
 			  optionKey="id" optionValue="value"  value="${orgInstance?.orgType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>--}%
 
@@ -121,7 +121,7 @@
 	<label for="status">
 		<g:message code="org.status.label" />
 	</label>
-	<g:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues()}"
+	<g:select id="status" name="status.id" from="${laser.RefdataCategory.getAllRefdataValues()}"
 			  optionKey="id" value="${orgInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div> --%>
 
@@ -130,7 +130,7 @@
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 	</label>
-	<g:select id="membership" name="membership.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues()}"
+	<g:select id="membership" name="membership.id" from="${laser.RefdataCategory.getAllRefdataValues()}"
 			  optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div> --%>
 
@@ -138,7 +138,7 @@
 	<label for="country">
 		<g:message code="org.country.label" />
 	</label>
-	<laser:select id="country" name="country.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+	<laser:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -146,7 +146,7 @@
 	<label for="region">
 		<g:message code="org.region.label" />
 	</label>
-	<laser:select id="region" name="region.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
+	<laser:select id="region" name="region.id" from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.region?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -154,7 +154,7 @@
 	<label for="libraryNetwork">
 		<g:message code="org.libraryNetwork.label" />
 	</label>
-	<laser:select id="libraryNetwork" name="libraryNetwork.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
+	<laser:select id="libraryNetwork" name="libraryNetwork.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -162,7 +162,7 @@
 	<label for="funderType">
 		<g:message code="org.funderType.label" />
 	</label>
-	<laser:select id="funderType" name="funderType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.FUNDER_TYPE)}"
+	<laser:select id="funderType" name="funderType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.FUNDER_TYPE)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -170,7 +170,7 @@
 	<label for="libraryType">
 		<g:message code="org.libraryType.label" />
 	</label>
-	<laser:select id="libraryType" name="libraryType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
+	<laser:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 

@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.OrgRole;laser.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>

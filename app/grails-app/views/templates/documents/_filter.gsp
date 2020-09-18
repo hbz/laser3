@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@page import="de.laser.RefdataCategory; com.k_int.kbplus.RefdataValue; de.laser.helper.RDConstants" %>
 <%
     List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
                          RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),

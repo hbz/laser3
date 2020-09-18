@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataCategory
 import de.laser.base.AbstractI10n
 import de.laser.I10nTranslation
 import org.apache.commons.logging.Log
@@ -7,8 +8,6 @@ import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
-
-import javax.persistence.Transient
 
 class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 

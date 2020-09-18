@@ -1,5 +1,5 @@
 
-<%@ page import="de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 	<head>
@@ -34,7 +34,7 @@
 							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
 						</dd>
 
-                        <dt>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</dt>
+                        <dt>${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="${RDConstants.CONTACT_TYPE}" /></dd>
 
                         <g:if test="${contactInstance?.prs}">

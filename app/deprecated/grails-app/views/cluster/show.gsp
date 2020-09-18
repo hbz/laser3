@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Cluster" %>
+<%@ page import="de.laser.RefdataCategory; com.k_int.kbplus.Cluster" %>
 <!doctype html>
 <html>
 	<head>
@@ -39,7 +39,7 @@
 					</g:if>
 
 					<g:if test="${clusterInstance?.type}">
-						<dt>${com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.CLUSTER_TYPE).getI10n('desc')}</dt>
+						<dt>${RefdataCategory.getByDesc(de.laser.helper.RDConstants.CLUSTER_TYPE).getI10n('desc')}</dt>
 						<dd>${clusterInstance?.type}</dd>
 					</g:if>
 				

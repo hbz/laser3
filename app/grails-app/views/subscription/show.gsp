@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
 <%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License" %>
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
+<%@ page import="laser.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
@@ -395,7 +395,7 @@
                                                       <g:if test="${!(settingKey in excludes)}">
                                                           <g:if test="${editable}">
                                                               <laser:select class="ui dropdown"
-                                                                            name="${settingKey}!§!setting" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                            name="${settingKey}!§!setting" from="${de.laser.RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                                             optionKey="id" optionValue="value"
                                                                             value="${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
                                                               />

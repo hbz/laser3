@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.I10nTranslation" %>
 
 <!doctype html>
 <html>
@@ -94,7 +94,7 @@
                                             ${PropertyDefinition.getLocalizedValue(pd.type)}
                                             <g:if test="${pd.type == 'class com.k_int.kbplus.RefdataValue'}">
                                                 <g:set var="refdataValues" value="${[]}"/>
-                                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
+                                                <g:each in="${RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
                                                         var="refdataValue">
                                                     <g:if test="${refdataValue.getI10n('value')}">
                                                         <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>

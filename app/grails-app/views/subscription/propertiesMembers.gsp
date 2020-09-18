@@ -60,7 +60,7 @@
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
         <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+        <g:each in="${laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                 var="refdataValue">
             <g:set var="refdataValues"
                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
@@ -315,7 +315,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
                 <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                    <g:each in="${de.laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                             var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
@@ -332,7 +332,7 @@
                 <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                              from="${de.laser.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                               name="filterPropValue" value=""
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>

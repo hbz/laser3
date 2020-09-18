@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;laser.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:set var="surveyService" bean="surveyService"/>

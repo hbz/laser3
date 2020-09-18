@@ -1,5 +1,5 @@
 <%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;" %>
-<%@ page import="com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; de.laser.RefdataCategory" %>
 <!doctype html>
 
 <laser:serviceInjection/>

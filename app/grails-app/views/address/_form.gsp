@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Address;de.laser.Person;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Address;de.laser.Person;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataValue" %>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
 	<label for="type">

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Platform" %>
+<%@ page import="com.k_int.kbplus.Platform;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'name', 'error')} ">
 	<label for="name">
@@ -13,7 +13,7 @@
 		<g:message code="platform.serviceProvider" />
 		
 	</label>
-	<g:select name="serviceProvider" from="${com.k_int.kbplus.RefdataCategory.allRefdataValues(de.laser.helper.RDConstants.Y_N_O)}" multiple="multiple" optionKey="id" size="5" optionValue="${{it.getI10n('value')}}"/>
+	<g:select name="serviceProvider" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N_O)}" multiple="multiple" optionKey="id" size="5" optionValue="${{it.getI10n('value')}}"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'tipps', 'error')} ">

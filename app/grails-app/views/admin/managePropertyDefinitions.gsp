@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

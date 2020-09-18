@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.helper.RDStore; laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <r:require module="chartist"/>
