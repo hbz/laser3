@@ -45,4 +45,34 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-6") {
+		grailsChange {
+			change {
+				sql.execute("update property_definition set pd_type = replace(pd_type, 'com.k_int.kbplus.Refdata', 'de.laser.Refdata')")
+				sql.execute("update survey_property set surpro_type = replace(surpro_type, 'com.k_int.kbplus.Refdata', 'de.laser.Refdata')")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-7") {
+		grailsChange {
+			change {
+				sql.execute("update change_notification_queue_item set cnqi_change_document = replace(cnqi_change_document, 'com.k_int.kbplus.Refdata', 'de.laser.Refdata')")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1600414811405-8") {
+		grailsChange {
+			change {
+				sql.execute("update pending_change set pc_payload = replace(pc_payload, 'com.k_int.kbplus.Refdata', 'de.laser.Refdata')")
+				sql.execute("update pending_change set pc_msg_doc = replace(pc_msg_doc, 'com.k_int.kbplus.Refdata', 'de.laser.Refdata')")
+			}
+			rollback {}
+		}
+	}
+
 }

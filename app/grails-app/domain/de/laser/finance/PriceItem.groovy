@@ -1,7 +1,7 @@
 package de.laser.finance
 
 import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation

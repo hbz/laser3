@@ -5,7 +5,7 @@
   Time: 08:45
 --%>
 
-<%@ page import="com.k_int.kbplus.RefdataValue" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.RefdataValue" contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
         <meta name="layout" content="semanticUI">

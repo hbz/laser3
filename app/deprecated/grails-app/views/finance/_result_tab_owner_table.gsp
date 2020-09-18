@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.CostItemElementConfiguration;de.laser.RefdataValue;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <g:each in="${cost_items}" var="ci" status="jj">

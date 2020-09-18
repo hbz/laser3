@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
@@ -8,7 +9,6 @@ import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import javax.persistence.Transient
 import java.text.Normalizer
 import java.util.regex.Pattern
 

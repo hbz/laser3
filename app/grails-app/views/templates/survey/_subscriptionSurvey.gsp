@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -854,7 +854,7 @@
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                        <g:if test="${surveyProperty.surveyProperty.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
@@ -978,7 +978,7 @@
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                        <g:if test="${surveyResult.type.type == 'class com.k_int.kbplus.RefdataValue'}">
+                        <g:if test="${surveyResult.type.type == RefdataValue.CLASS}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.Cluster" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.helper.RDConstants; com.k_int.kbplus.Cluster" %>
 <!doctype html>
 <html>
 	<head>
@@ -21,7 +21,7 @@
 						
 							<g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
 						
-							<th class="header">${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CLUSTER_TYPE).getI10n('desc')}</th>
+							<th class="header">${RefdataCategory.getByDesc(RDConstants.CLUSTER_TYPE).getI10n('desc')}</th>
 						
 							<th></th>
 						</tr>

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.RefdataValue
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
@@ -230,7 +231,7 @@ class LicenseImportController extends AbstractDebugController {
 
     log.debug("replaceOplRecord: ${replaceOplRecord} createNewDocument: ${createNewDocument} createNewLicense: ${createNewLicense} upload.replace_opl: ${upload.replace_opl} license: ${upload.license!=null}")
     importResult.replace = replaceOplRecord
-    RefdataValue currentStatus = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
+      RefdataValue currentStatus = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
     RefdataValue templateType  = RefdataValue.getByValueAndCategory('Template', RDConstants.LICENSE_TYPE)
     // Create a new license
 

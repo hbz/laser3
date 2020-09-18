@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.GlobalRecordSource
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.SystemEvent
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.EhcacheWrapper

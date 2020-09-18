@@ -13,8 +13,6 @@ import com.k_int.kbplus.OrgProperty
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PersonRole
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
@@ -862,7 +860,7 @@ class OrganisationService {
             Map<String, Object> map1 = [
                     token       : "Quellensteuer-Befreiung",
                     category    : PropertyDefinition.SUB_PROP,
-                    type        : "class com.k_int.kbplus.RefdataValue",
+                    type        : RefdataValue.CLASS,
                     rdc         : RDConstants.Y_N_O,
                     tenant      : current.globalUID,
                     i10n        : [
@@ -876,7 +874,7 @@ class OrganisationService {
             Map<String, Object> map2 = [
                     token       : "BGA",
                     category    : PropertyDefinition.ORG_PROP,
-                    type        : "class com.k_int.kbplus.RefdataValue",
+                    type        : RefdataValue.CLASS,
                     rdc         : RDConstants.Y_N,
                     tenant      : current.globalUID,
                     i10n        : [
@@ -910,13 +908,13 @@ class OrganisationService {
                             tenant:current,
                             refdataCategory:RDConstants.Y_N_O,
                             descr:'Subscription Property',
-                            type:'class com.k_int.kbplus.RefdataValue',
+                            type:RefdataValue.CLASS,
                             expl:'Hat der Anbieter für dieses Produkt eine Befreiung der Quellensteuer erwirkt?'),
                     new PropertyDefinition(name:'BGA',
                             tenant:current,
                             refdataCategory:RDConstants.Y_N,
                             descr:'Organisation Property',
-                            type:'class com.k_int.kbplus.RefdataValue',
+                            type:RefdataValue.CLASS,
                             expl:'Betrieb gewerblicher Art'),
                     new PropertyDefinition(name:'EGP Nr.',
                             tenant:current,

@@ -1,8 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.Platform
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation

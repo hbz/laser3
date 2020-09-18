@@ -1,4 +1,4 @@
-<%@ page import="de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition;com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue"  %>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition; de.laser.RefdataValue"  %>
 <!doctype html>
 <html>
 <head>
@@ -45,10 +45,10 @@
                             <td>${pd.getI10n('expl', 'en')}</td>
                             <td>
                                 <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
-                                <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                <g:if test="${pd?.type == RefdataValue.CLASS}">
 
                                     <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
+                                    <g:each in="${RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
                                         <g:if test="${refdataValue.getI10n('value')}">
                                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                                         </g:if>

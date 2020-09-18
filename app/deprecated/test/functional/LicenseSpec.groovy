@@ -1,3 +1,4 @@
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import geb.spock.GebReportingSpec

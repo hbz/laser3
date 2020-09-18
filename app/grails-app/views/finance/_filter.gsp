@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.RefdataValue; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtil; java.text.SimpleDateFormat;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%

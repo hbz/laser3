@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory"%>
+<%@ page import="de.laser.RefdataCategory"%>
 
 <!doctype html>
 <%-- r:require module="annotations" / --%>

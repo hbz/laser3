@@ -1,6 +1,6 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.RefdataValue
+import de.laser.RefdataValue
 import de.laser.helper.Constants
 
 class ApiBox {

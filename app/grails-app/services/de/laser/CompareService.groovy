@@ -3,7 +3,6 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinitionGroup

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <semui:modal id="personEditModal" text="${modalText ?: message(code: 'person.create_new.label')}" contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataValue" %>
 <!doctype html>
 
 <html>
