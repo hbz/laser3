@@ -73,7 +73,7 @@
                         </dl>
 
                         <%--
-                        <dl><dt>${de.laser.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
+                        <dl><dt>${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
                                                         config="${RDConstants.PERSON_POSITION}"/></dd></dl>--%>
                     </g:if>

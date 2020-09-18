@@ -48,7 +48,7 @@
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
-		${de.laser.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
+		${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
