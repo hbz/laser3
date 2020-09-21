@@ -1546,7 +1546,7 @@ class SubscriptionController
             Map privateContacts = allContacts.privateContacts
             result.filteredSubChilds.each { row ->
                 Subscription subChild = (Subscription) row.sub
-                row.orgs.each { subscr ->
+                row.orgs.each { Org subscr ->
                     Map<String,Object> org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname
@@ -1562,8 +1562,8 @@ class SubscriptionController
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
-                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
+                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && ((it.tenant?.id == result.institution.id && it.isPublic) || it.tenant == null) }
+                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant?.id == result.institution.id }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))
@@ -4447,7 +4447,7 @@ class SubscriptionController
 
                             if (params.subscription.takeCustomProperties) {
                                 //customProperties
-                                baseSub.propertySet.findAll{ it.tenant == result.institution && it.isPublic }.each { SubscriptionProperty prop ->
+                                baseSub.propertySet.findAll{ it.tenant.id == result.institution.id && it.type.tenant == null }.each { SubscriptionProperty prop ->
                                     SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.instanceOf = null
@@ -4458,7 +4458,7 @@ class SubscriptionController
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
 
-                                baseSub.propertySet.findAll{ !it.isPublic && it.tenant.id == result.institution.id && it.type.tenant.id == result.institution.id }.each { SubscriptionProperty prop ->
+                                baseSub.propertySet.findAll{ it.tenant.id == result.institution.id && it.type.tenant?.id == result.institution.id }.each { SubscriptionProperty prop ->
                                     SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.save()
