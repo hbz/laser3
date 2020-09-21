@@ -77,12 +77,6 @@
         <div class="sixteen wide stretched column">
             <div class="ui top attached tabular menu">
 
-                <g:link class="item ${params.tab == 'surveyConfigsView' ? 'active' : ''}"
-                        controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'surveyConfigsView']">
-                    ${message(code: 'surveyEvaluation.label')}
-                </g:link>
-
                 <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
                         params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
@@ -105,23 +99,6 @@
                 </g:link>
 
             </div>
-
-            <g:if test="${params.tab == 'surveyConfigsView'}">
-                <div class="ui bottom attached tab segment active">
-
-                    <g:if test="${surveyConfig}">
-
-                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-                            <g:render template="evaluationSubscription" />
-                        </g:if>
-
-                        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-                            <g:render template="evaluationGeneralSurvey" />
-                        </g:if>
-
-                    </g:if>
-                </div>
-            </g:if>
 
             <g:if test="${params.tab == 'participantsView'}">
                 <div class="ui bottom attached tab segment active">

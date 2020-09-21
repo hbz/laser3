@@ -1112,8 +1112,7 @@ class SurveyController {
     def surveyEvaluation() {
         Map<String,Object> result = setResultGenericsAndCheckAccess()
 
-
-        params.tab = params.tab ?: 'surveyConfigsView'
+        params.tab = params.tab ?: 'participantsViewAllFinish'
 
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
