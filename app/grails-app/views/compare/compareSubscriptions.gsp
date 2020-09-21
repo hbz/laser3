@@ -77,13 +77,20 @@
     <br>
     <br>
 
-    <g:if test="${params.tab == 'compareProperties'}">
-        <g:render template="compareProperties"/>
-    </g:if>
 
-    <g:if test="${params.tab == 'compareElements'}">
-        <g:render template="compareElements"/>
-    </g:if>
+    <div style="overflow-y: scroll;">
+        <div class="ui padded grid">
+
+            <g:if test="${params.tab == 'compareProperties'}">
+                <g:render template="compareProperties"/>
+            </g:if>
+
+            <g:if test="${params.tab == 'compareElements'}">
+                <g:render template="compareElements"/>
+            </g:if>
+
+        </div>
+    </div>
 </g:if>
 
 <g:javascript>
