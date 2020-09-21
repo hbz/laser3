@@ -436,51 +436,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     return new Org(name:value)
   }
 
-  @Transient
-  static def oaiConfig = [
-    id:'orgs',
-    textDescription:'Org repository for KBPlus',
-    query:" from Org as o ",
-    pageSize:20
-  ]
-
-  /**
-   *  Render this title as OAI_dc
-   */
-  @Transient
-  def toOaiDcXml(builder, attr) {
-    builder.'dc'(attr) {
-      'dc:title' (name)
-    }
-  }
-
-  /**
-   *  Render this Title as KBPlusXML
-   */
-  @Transient
-  def toKBPlus(builder, attr) {
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    def pub = getPublisher()
-
-    try {
-      builder.'kbplus' (attr) {
-        builder.'org' (['id':(id)]) {
-          builder.'name' (name)
-        }
-        builder.'identifiers' () {
-          ids?.each { id_oc ->
-            builder.identifier([namespace:id_oc.ns.ns, value:id_oc.value])
-          }
-        }
-      }
-    }
-    catch ( Exception e ) {
-      log.error( e.toString() )
-    }
-
-  }
-
     String getDesignation() {
         String ret = ""
         Org hasDept = Combo.findByFromOrgAndType(this,RDStore.COMBO_TYPE_DEPARTMENT)?.toOrg
@@ -651,7 +606,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         check
     }
 
-    def dropdownNamingConvention() {
+    String dropdownNamingConvention() {
         return dropdownNamingConvention(contextService.org)
     }
 
@@ -674,5 +629,4 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
         result
     }
-
 }

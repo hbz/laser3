@@ -32,11 +32,9 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static Log static_logger = LogFactory.getLog(Package)
 
-  //String identifier
   String name
   String sortName
   String gokbId
-   //URL originEditUrl
   String vendorURL
   String cancellationAllowances
 
@@ -100,11 +98,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                       id column:'pkg_id'
                  version column:'pkg_version'
                globalUID column:'pkg_guid'
-            //identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
                   gokbId column:'pkg_gokb_id'
-         //originEditUrl column:'pkg_origin_edit_url'
              contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
@@ -148,7 +144,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
               packageScope (nullable:true)
                    forumId(nullable:true, blank:false)
                     gokbId(blank:false, unique: true, maxSize: 511)
-           //originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
@@ -190,8 +185,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   @Deprecated
   Org getConsortia() {
     Org result
-    orgs.each { or ->
-      if ( ( or?.roleType?.value=='Subscription Consortia' ) || ( or?.roleType?.value=='Package Consortia' ) )
+    orgs.each { OrgRole or ->
+      if ( or.roleType in [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_PACKAGE_CONSORTIA] )
         result = or.org
     }
     result
@@ -199,10 +194,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   Org getContentProvider() {
-    Org result = null
-
+    Org result
     orgs.each { OrgRole or ->
-      if ( or.roleType.id in [RDStore.OR_CONTENT_PROVIDER.id,RDStore.OR_PROVIDER.id] )
+      if ( or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER] )
         result = or.org
     }
     result
