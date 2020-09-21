@@ -1168,6 +1168,18 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
+    def surveyTransfer() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
+
+
+
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+    })
     def openParticipantsAgain() {
         Map<String,Object> result = setResultGenericsAndCheckAccess()
 

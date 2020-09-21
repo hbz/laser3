@@ -57,6 +57,21 @@
                 </g:each>
             </semui:menuDropdownItems>
 
+            <semui:menuDropdownItems actionName="surveyTransfer" message="surveyTransfer.label">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it?.getConfigNameShort() }}" var="surveyConfig">
+                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        <semui:menuDropdownItem controller="survey" action="renewalWithSurvey"
+                                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                                text="${surveyConfig.getConfigNameShort()}"/>
+                    </g:if>
+                    <g:else>
+                        <semui:menuDropdownItem controller="survey" action="surveyTransfer"
+                                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                                text="${surveyConfig.getConfigNameShort()}"/>
+                    </g:else>
+                </g:each>
+            </semui:menuDropdownItems>
+
         </g:if>
         <g:else>
 
@@ -80,6 +95,18 @@
                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                               message="surveyEvaluation.label"
                               class="${(actionName in evalutionsViews) ? "active" : ""}"/>
+
+            <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="renewalWithSurvey"
+                                  params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                  message="surveyInfo.renewal"/>
+            </g:if>
+            <g:else>
+                <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTransfer"
+                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                              message="surveyTransfer.label"/>
+            </g:else>
+
         </g:else>
 
     </g:if>

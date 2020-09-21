@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2873    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Verlängerungsübersicht überarbeiten
+
 1956    18.09.2020  hbz-dev             Moe     Feature     Überarbeitung Mein Adressbuch (Vollnutzer und Konsortien)
 
 2867    16.09.2020  rc1.5   1.5.8       Andreas Bug         Prüfung des Vorhandenseins eines Konsortiums bei Lizenz-/Vertragsmerkmalen eingebaut 
