@@ -33,7 +33,6 @@
 					<g:form class="ui form" action="edit" id="${addressInstance.id}" >
 						<g:hiddenField name="version" value="${addressInstance.version}" />
 						<fieldset>
-							<% // <f:all bean="addressInstance"/> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">
