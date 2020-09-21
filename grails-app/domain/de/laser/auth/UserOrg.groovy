@@ -26,6 +26,8 @@ class UserOrg implements Comparable {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['sortString'] // mark read-only accessor methods
+
     static mapping = {
         cache           true
         lastUpdated     column: 'uo_last_updated'

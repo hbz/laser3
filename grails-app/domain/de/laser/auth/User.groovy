@@ -1,11 +1,8 @@
 package de.laser.auth
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.UserSettings
+import de.laser.UserSettings
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.plugin.springsecurity.userdetails.GrailsUser
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.GrantedAuthority
 
 import javax.persistence.Transient
 
@@ -49,6 +46,12 @@ class User {
         email       blank: true, nullable: true
         shibbScope  blank: true, nullable: true
     }
+
+    static transients = [
+            'displayName', 'defaultPageSize', 'defaultPageSizeAsInteger',
+            'authorizedAffiliations', 'authorizedOrgs', 'authorizedOrgsIds',
+            'admin', 'yoda', 'lastInstAdmin'
+    ] // mark read-only accessor methods
 
     static mapping = {
         cache           true
