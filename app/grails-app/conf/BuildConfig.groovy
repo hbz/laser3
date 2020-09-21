@@ -128,7 +128,7 @@ grails.project.dependency.resolution = {
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
-        runtime ':fields:1.5.1'
+        runtime ':fields:1.5.1' // default wrapper used by scaffolding-plugin
 
         runtime ":database-migration:1.4.0"
 

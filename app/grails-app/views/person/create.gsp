@@ -21,7 +21,6 @@
 				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
-                            <% // <f:all bean="personInstance" /> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">

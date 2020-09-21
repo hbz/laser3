@@ -71,7 +71,7 @@
                     }
                 %>
                 <div class="ui divided middle aligned list la-flex-list ">
-                    <g:each in="${pRolesSorted.sort{it.functionType ? it.functionType.getI10n('value') : it.positionType.getI10n('value')}}" var="role">
+                    <g:each in="${pRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
                         <div class="ui item ">
                             <g:if test="${controllerName == 'myInstitution' && actionName == 'addressbook'}">
                                 <div class="la-flexbox">

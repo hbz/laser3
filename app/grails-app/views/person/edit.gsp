@@ -22,7 +22,6 @@
 					<g:form class="ui form" action="edit" id="${personInstance?.id}" >
 						<g:hiddenField name="version" value="${personInstance?.version}" />
 						<fieldset>
-							<% // <f:all bean="personInstance"/> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">
