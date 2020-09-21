@@ -44,7 +44,6 @@
 				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
-							<% // <f:all bean="addressInstance"/> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">

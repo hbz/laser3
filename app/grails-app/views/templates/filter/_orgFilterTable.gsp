@@ -624,6 +624,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <td class="center aligned x">
 
+                    <g:set var="oldCostItem" value="${0.0}"/>
+                    <g:set var="oldCostItemAfterTax" value="${0.0}"/>
                 <g:if test="${existSubforOrg}">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
