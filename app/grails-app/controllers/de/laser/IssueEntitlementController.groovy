@@ -40,21 +40,8 @@ class IssueEntitlementController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
-    switch (request.method) {
-    case 'GET':
-          [issueEntitlementInstance: new IssueEntitlement(params)]
-      break
-    case 'POST':
-            IssueEntitlement issueEntitlementInstance = new IssueEntitlement(params)
-          if (!issueEntitlementInstance.save(flush: true)) {
-              render view: 'create', model: [issueEntitlementInstance: issueEntitlementInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.created.message', args: [message(code: 'issueEntitlement.label'), issueEntitlementInstance.id])
-          redirect action: 'show', id: issueEntitlementInstance.id
-      break
-    }
+        redirect controller: 'issueEntitlement', action: 'show', params: params
+        return // ----- deprecated
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -149,47 +136,8 @@ class IssueEntitlementController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
-    switch (request.method) {
-    case 'GET':
-        IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
-          if (!issueEntitlementInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
-              redirect action: 'list'
-              return
-          }
-
-          [issueEntitlementInstance: issueEntitlementInstance]
-      break
-    case 'POST':
-        IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
-          if (!issueEntitlementInstance) {
-              flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
-              redirect action: 'list'
-              return
-          }
-
-          if (params.version) {
-              def version = params.version.toLong()
-              if (issueEntitlementInstance.version > version) {
-                  issueEntitlementInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'issueEntitlement.label')] as Object[],
-                            "Another user has updated this IssueEntitlement while you were editing")
-                  render view: 'edit', model: [issueEntitlementInstance: issueEntitlementInstance]
-                  return
-              }
-          }
-
-          issueEntitlementInstance.properties = params
-
-          if (!issueEntitlementInstance.save(flush: true)) {
-              render view: 'edit', model: [issueEntitlementInstance: issueEntitlementInstance]
-              return
-          }
-
-      flash.message = message(code: 'default.updated.message', args: [message(code: 'issueEntitlement.label'), issueEntitlementInstance.id])
-          redirect action: 'show', id: issueEntitlementInstance.id
-      break
-    }
+        redirect controller: 'issueEntitlement', action: 'show', params: params
+        return // ----- deprecated
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

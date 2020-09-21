@@ -39,22 +39,8 @@ class DocController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
-		params.org = contextService.org
-		switch (request.method) {
-			case 'GET':
-				[docInstance: new Doc(params)]
-				break
-			case 'POST':
-				Doc docInstance = new Doc(params)
-				if (!docInstance.save(flush: true)) {
-					render view: 'create', model: [docInstance: docInstance]
-					return
-				}
-
-				flash.message = message(code: 'default.created.message', args: [message(code: 'doc.label'), docInstance.id])
-				redirect action: 'show', id: docInstance.id
-			break
-		}
+		redirect controller: 'doc', action: 'show', params: params
+		return // ----- deprecated
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -73,49 +59,8 @@ class DocController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
-		switch (request.method) {
-		case 'GET':
-			Doc docInstance = Doc.get(params.id)
-	        if (!docInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-			docInstance.owner = contextService.org
-	        [docInstance: docInstance]
-			break
-		case 'POST':
-				Doc docInstance = Doc.get(params.id)
-	        if (!docInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (docInstance.version > version) {
-	                docInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'doc.label')] as Object[],
-	                          "Another user has updated this Doc while you were editing")
-	                render view: 'edit', model: [docInstance: docInstance]
-	                return
-	            }
-	        }
-
-	        docInstance.properties = params
-			if(!docInstance.owner)
-				docInstance.owner = contextService.org
-
-	        if (!docInstance.save(flush: true)) {
-	            render view: 'edit', model: [docInstance: docInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'doc.label'), docInstance.id])
-	        redirect action: 'show', id: docInstance.id
-			break
-		}
+		redirect controller: 'doc', action: 'show', params: params
+		return // ----- deprecated
     }
 
 	@Secured(['ROLE_USER'])
