@@ -5222,7 +5222,12 @@ class SubscriptionController
         Org contextOrg = contextService.org
         subsToCompare.each{ Subscription sub ->
             Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}.sort{it.type.getI10n('name')})
+            if(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
+                customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic)) }.sort { it.type.getI10n('name') })
+            }else{
+                customProperties = comparisonService.buildComparisonTree(customProperties, sub, sub.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic && !(it.instanceOf && AuditConfig.getConfig(it.instanceOf))))}.sort { it.type.getI10n('name') })
+            }
+
             result.customProperties = customProperties
             Map privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll{it.type.tenant?.id == contextOrg.id}.sort{it.type.getI10n('name')})
