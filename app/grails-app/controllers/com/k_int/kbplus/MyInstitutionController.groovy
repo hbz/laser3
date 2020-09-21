@@ -3719,7 +3719,7 @@ AND EXISTS (
         selectedObjects.each { ownerId ->
             def owner = resolveOwner(propDef,ownerId)
             Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
-                it.owner.id == owner.id && it.type.id == propDef.id && it.tenant.id == contextOrg.id && !AuditConfig.getConfig(it)
+                it.owner.id == owner.id && it.type.id == propDef.id && it.tenant?.id == contextOrg.id && !AuditConfig.getConfig(it)
             }
 
             existingProps.each { AbstractPropertyWithCalculatedLastUpdated prop ->
