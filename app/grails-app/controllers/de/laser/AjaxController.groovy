@@ -1299,7 +1299,7 @@ class AjaxController {
       def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
       def type = PropertyDefinition.get(params.propIdent.toLong())
       Org contextOrg = contextService.getOrg()
-      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant.id == contextOrg.id }
+      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
 
       if (existingProp == null || type.multipleOccurrence) {
         newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextOrg )
