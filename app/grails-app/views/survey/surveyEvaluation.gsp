@@ -100,23 +100,8 @@
 
             </div>
 
-            <g:if test="${params.tab == 'participantsView'}">
-                <div class="ui bottom attached tab segment active">
-                    <g:render template="evaluationParticipantsView"/>
-                </div>
-            </g:if>
 
-            <g:if test="${params.tab == 'participantsViewAllFinish'}">
-                <div class="ui bottom attached tab segment active">
-                    <g:render template="evaluationParticipantsView"/>
-                </div>
-            </g:if>
-
-            <g:if test="${params.tab == 'participantsViewAllNotFinish'}">
-                <div class="ui bottom attached tab segment active">
-                    <g:render template="evaluationParticipantsView"/>
-                </div>
-            </g:if>
+            <g:render template="evaluationParticipantsView"/>
 
         </div>
     </div>

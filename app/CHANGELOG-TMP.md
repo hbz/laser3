@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2874    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Übertrag Option für Teilnehmer in Lizenz ermöglichen
+
 2848    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Auswertungsreiter vereinheitlichen
 
 2873    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Verlängerungsübersicht überarbeiten
