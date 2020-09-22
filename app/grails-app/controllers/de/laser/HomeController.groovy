@@ -16,7 +16,7 @@ class HomeController {
         result.user = User.get(springSecurityService.principal.id)
         if (result.user) {
 
-            if (UserSettings.get(result.user, UserSettings.KEYS.DASHBOARD) == UserSettings.SETTING_NOT_FOUND) {
+            if (UserSetting.get(result.user, UserSetting.KEYS.DASHBOARD) == UserSetting.SETTING_NOT_FOUND) {
                 flash.message = message(code: 'profile.dash.not_set')
                 redirect(controller: 'profile', action: 'index')
                 return

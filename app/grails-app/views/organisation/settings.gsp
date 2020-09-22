@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.OrgSettings; com.k_int.kbplus.Org; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
@@ -83,7 +83,7 @@
                                         <td>
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
 
-                                            <g:if test="${OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
+                                            <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
                                                     <i class="question circle icon"></i>
                                                 </span>
@@ -91,9 +91,9 @@
                                         </td>
                                         <td>
 
-                                            <g:if test="${editable && os.key in OrgSettings.getEditableSettings()}">
+                                            <g:if test="${editable && os.key in OrgSetting.getEditableSettings()}">
 
-                                                <g:if test="${OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
+                                                <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                 </g:if>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
@@ -109,7 +109,7 @@
                                             </g:if>
                                             <g:else>
 
-                                                <g:if test="${OrgSettings.KEYS.GASCO_ENTRY == os.key}">
+                                                <g:if test="${OrgSetting.KEYS.GASCO_ENTRY == os.key}">
                                                     <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                                                         <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                     </g:if>

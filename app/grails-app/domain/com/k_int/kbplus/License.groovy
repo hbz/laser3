@@ -66,17 +66,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     @RefdataAnnotation(cat = RDConstants.Y_N_U)
     RefdataValue openEnded
-  //String licenseStatus
 
-    //long lastmod
     Date startDate
     Date endDate
 
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-  //static hasOne = [onixplLicense: OnixplLicense]
 
     static transients = ['referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'genericLabel', 'nonDeletedDerivedLicenses'] // mark read-only accessor methods
 
@@ -121,10 +117,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
               openEnded column:'lic_open_ended_rv_fk'
-        //licenseStatus column:'lic_license_status_str'
-              //lastmod column:'lic_lastmod'
               documents sort:'owner.id', order:'desc', batchSize: 10
-        //onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
@@ -150,9 +143,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf  (nullable:true)
-        //licenseStatus(nullable:true, blank:true)
-        //lastmod(nullable:true, blank:true)
-        //onixplLicense(nullable: true, blank: true)
         licenseCategory (nullable: true)
         startDate(nullable: true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
@@ -297,10 +287,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getDerivedLicensees() {
         List<Org> result = []
 
-        License.findAllByInstanceOf(this).each { l ->
+        License.findAllByInstanceOf(this).each { License l ->
             List<OrgRole> ors = OrgRole.findAllWhere( lic: l )
-            ors.each { or ->
-                if (or.roleType?.value in ['Licensee', 'Licensee_Consortial']) {
+            ors.each { OrgRole or ->
+                if (or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]) {
                     result << or.org
                 }
             }
@@ -325,8 +315,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     Org getLicensingConsortium() {
         Org result
-        orgRelations.each { or ->
-            if ( or.roleType.value == 'Licensing Consortium' )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_LICENSING_CONSORTIUM )
                 result = or.org
             }
         result
@@ -334,25 +324,25 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     Org getLicensor() {
         Org result
-        orgRelations.each { or ->
-            if ( or.roleType.value in ['Licensor'] )
-                result = or.org;
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_LICENSOR )
+                result = or.org
         }
         result
     }
 
     Org getLicensee() {
         Org result
-        orgRelations.each { or ->
-            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
-                result = or.org;
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] )
+                result = or.org
         }
         result
     }
     List<Org> getAllLicensee() {
         List<Org> result = []
-        orgRelations.each { or ->
-            if ( or.roleType.value in ['Licensee', 'Licensee_Consortial'] )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] )
                 result << or.org
         }
         result

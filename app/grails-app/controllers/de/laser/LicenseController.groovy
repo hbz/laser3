@@ -119,9 +119,6 @@ class LicenseController
 
         pu.setBenchmark('tasks')
 
-        // TODO: experimental asynchronous task
-        //def task_tasks = task {
-
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
             def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
@@ -140,12 +137,8 @@ class LicenseController
                 }
             }*/
             //result.visibleOrgRelations.sort { it.org.sortname }
-        //}
 
         pu.setBenchmark('properties')
-
-        // TODO: experimental asynchronous task
-        //def task_properties = task {
 
             // -- private properties
 
@@ -211,12 +204,9 @@ class LicenseController
                     }
                 }
             }
-        //}
 
         pu.setBenchmark('licensor filter')
 
-        // TODO: experimental asynchronous task
-        //def task_licensorFilter = task {
 
         //a new query builder service for selection lists has been introduced
         //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
@@ -229,13 +219,10 @@ class LicenseController
                 )*/
         result.existingLicensorIdList = []
         // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
-       // }
 
         List bm = pu.stopBenchmark()
         result.benchMark = bm
 
-        // TODO: experimental asynchronous task
-        //waitAll(task_tasks, task_properties)
         result
         /*withFormat {
         html result
@@ -920,7 +907,7 @@ class LicenseController
 
         if (baseLicense) {
 
-            def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
+            String lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
 
             License licenseInstance = new License(
                     reference: lic_name,

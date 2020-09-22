@@ -35,20 +35,18 @@ class AccessPointController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def addIpRange() {
-        def orgAccessPoint = OrgAccessPoint.get(params.id)
-        Org org = orgAccessPoint.org;
-        def orgId = org.id;
+        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         // need to check if contextOrg == orgAccessPoint.org for ORG_CONSORTIUM? The template has no editable elements
         // in that context (would need to fake a post request), similar for deleteIpRange method.
-        def validRanges = []
-        def invalidRanges = []
+        List<IpRange> validRanges = []
+        List<IpRange> invalidRanges = []
         // allow multiple ip ranges as input (must be separated by comma)
-        def ipCol = params.ip.replaceAll("\\s+", " ").split(",");
+        String[] ipCol = params.ip.replaceAll("\\s+", " ").split(",")
         for (range in ipCol) {
             try {
                 // check if given input string is a valid ip range
-                def ipRange = IpRange.parseIpRange(range)
-                def accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
+                IpRange ipRange = IpRange.parseIpRange(range)
+                List<AccessPointData> accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
 
                 // so far we know that the input string represents a valid ip range
                 // check if the input string is already saved
@@ -133,7 +131,7 @@ class AccessPointController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+        List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
         String qry = """
             Select p, sp, s from Platform p
             JOIN p.oapp as oapl
@@ -155,12 +153,12 @@ class AccessPointController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+        List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
-        def sort = params.sort ?: "LOWER(p.name)"
-        def order = params.order ?: "ASC"
-
+        String sort = params.sort ?: "LOWER(p.name)"
+        String order = params.order ?: "ASC"
         String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+
         List<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
         linkedPlatforms.each() {
             String qry2 = """
@@ -211,7 +209,7 @@ class AccessPointController extends AbstractDebugController {
     def create_ip() {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
-        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+        List<OrgAccessPoint> oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         params.accessMethod = RDStore.ACCESS_POINT_TYPE_IP.value
 
@@ -225,7 +223,7 @@ class AccessPointController extends AbstractDebugController {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPoint();
+            OrgAccessPoint accessPoint = new OrgAccessPoint()
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_IP
@@ -242,7 +240,7 @@ class AccessPointController extends AbstractDebugController {
     def create_oa() {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
-        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+        List<OrgAccessPoint> oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         params.accessMethod = RDStore.ACCESS_POINT_TYPE_OA.value
 
@@ -262,7 +260,7 @@ class AccessPointController extends AbstractDebugController {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPointOA();
+            OrgAccessPointOA accessPoint = new OrgAccessPointOA()
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_OA
@@ -280,7 +278,7 @@ class AccessPointController extends AbstractDebugController {
     def create_proxy() {
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
-        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+        List<OrgAccessPoint> oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
 
         params.accessMethod = RDStore.ACCESS_POINT_TYPE_PROXY.value
 
@@ -294,7 +292,7 @@ class AccessPointController extends AbstractDebugController {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPoint();
+            OrgAccessPoint accessPoint = new OrgAccessPoint()
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_PROXY
@@ -320,12 +318,12 @@ class AccessPointController extends AbstractDebugController {
             return
         }
 
-        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+        List<OrgAccessPoint> oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
         if (oap) {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPointVpn();
+            OrgAccessPointVpn accessPoint = new OrgAccessPointVpn()
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.accessMethod = RDStore.ACCESS_POINT_TYPE_VPN
@@ -357,12 +355,12 @@ class AccessPointController extends AbstractDebugController {
             return
         }
 
-        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+        List<OrgAccessPoint> oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
         if (oap) {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPointEzproxy()
+            OrgAccessPointEzproxy accessPoint = new OrgAccessPointEzproxy()
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.url = params.url
@@ -395,12 +393,12 @@ class AccessPointController extends AbstractDebugController {
             return
         }
 
-        def oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
+        List<OrgAccessPoint> oap = OrgAccessPoint.findAllByNameAndOrg(params.name, orgInstance)
         if (oap) {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(controller: "accessPoint", action: "create", params: params)
         } else {
-            def accessPoint = new OrgAccessPointShibboleth();
+            OrgAccessPointShibboleth accessPoint = new OrgAccessPointShibboleth()
             accessPoint.org = orgInstance
             accessPoint.name = params.name
             accessPoint.entityId = params.entityId
@@ -435,7 +433,7 @@ class AccessPointController extends AbstractDebugController {
                 redirect(url: request.getHeader("referer"))
                 return
             }
-            def orgId = org.id;
+            Long orgId = org.id
 
             try {
                 accessPoint.delete(flush: true)
@@ -455,8 +453,8 @@ class AccessPointController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit_ip() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        Org org = orgAccessPoint.org;
-        Long orgId = org.id;
+        Org org = orgAccessPoint.org
+        Long orgId = org.id
         boolean inContextOrg = (orgId == contextService.org.id)
 
         if (params.exportXLSX) {
@@ -477,17 +475,16 @@ class AccessPointController extends AbstractDebugController {
             Boolean autofocus = (params.autofocus) ? true : false
             Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
-            Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+            Map<String, Object> accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
 
             orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
 
+            List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
-            List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
-
-            def sort = params.sort ?: "LOWER(p.name)"
-            def order = params.order ?: "ASC"
-
+            String sort = params.sort ?: "LOWER(p.name)"
+            String order = params.order ?: "ASC"
             String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+
             ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
             linkedPlatforms.each() {
                 String qry2 = """
@@ -565,8 +562,8 @@ class AccessPointController extends AbstractDebugController {
 
     def private _edit() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        Org org = orgAccessPoint.org;
-        Long orgId = org.id;
+        Org org = orgAccessPoint.org
+        Long orgId = org.id
         boolean inContextOrg = (orgId == contextService.org.id)
 
         if (params.exportXLSX) {
@@ -587,17 +584,17 @@ class AccessPointController extends AbstractDebugController {
             Boolean autofocus = (params.autofocus) ? true : false
             Boolean activeChecksOnly = (params.checked == 'false') ? false : true
 
-            Map accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+            Map<String, Object> accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
 
 
             orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
 
-            List currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+            List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
 
-            def sort = params.sort ?: "LOWER(p.name)"
-            def order = params.order ?: "ASC"
-
+            String sort = params.sort ?: "LOWER(p.name)"
+            String order = params.order ?: "ASC"
             String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+
             ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
             linkedPlatforms.each() {
                 String qry2 = """
@@ -652,8 +649,7 @@ class AccessPointController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def deleteIpRange() {
-        def accessPointData = AccessPointData.get(params.id)
-        def accessPoint = accessPointData.orgAccessPoint;
+        AccessPointData accessPointData = AccessPointData.get(params.id)
         accessPointData.delete(flush: true)
 
         redirect(url: request.getHeader('referer'))
@@ -664,8 +660,8 @@ class AccessPointController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkPlatform() {
-        def accessPoint = OrgAccessPoint.get(params.accessPointId)
-        def oapl = new OrgAccessPointLink()
+        OrgAccessPoint accessPoint = OrgAccessPoint.get(params.accessPointId)
+        OrgAccessPointLink oapl = new OrgAccessPointLink()
         oapl.active = true
         oapl.oap = accessPoint
         if (params.platforms) {
@@ -691,7 +687,7 @@ class AccessPointController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def unlinkPlatform() {
-        def aoplInstance = OrgAccessPointLink.get(params.id)
+        OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.id)
         aoplInstance.active = false
         if (! aoplInstance.save(flush:true)) {
             log.debug("Error updateing AccessPoint for platform")

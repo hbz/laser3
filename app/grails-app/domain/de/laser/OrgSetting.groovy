@@ -5,22 +5,22 @@ import com.k_int.kbplus.auth.Role
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
-class OrgSettings {
+class OrgSetting {
 
     def genericOIDService
 
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
 
     static enum KEYS {
-        API_LEVEL       (String),
-        API_KEY         (String),
-        API_PASSWORD    (String),
-        CUSTOMER_TYPE   (Role),
-        GASCO_ENTRY                     (RefdataValue, RDConstants.Y_N),
-        OAMONITOR_SERVER_ACCESS         (RefdataValue, RDConstants.Y_N),
-        NATSTAT_SERVER_ACCESS           (RefdataValue, RDConstants.Y_N),
-        NATSTAT_SERVER_API_KEY          (String),
-        NATSTAT_SERVER_REQUESTOR_ID     (String)
+        API_LEVEL                   (String),
+        API_KEY                     (String),
+        API_PASSWORD                (String),
+        CUSTOMER_TYPE               (Role),
+        GASCO_ENTRY                 (RefdataValue, RDConstants.Y_N),
+        OAMONITOR_SERVER_ACCESS     (RefdataValue, RDConstants.Y_N),
+        NATSTAT_SERVER_ACCESS       (RefdataValue, RDConstants.Y_N),
+        NATSTAT_SERVER_API_KEY      (String),
+        NATSTAT_SERVER_REQUESTOR_ID (String)
 
         KEYS(type, rdc) {
             this.type = type
@@ -73,12 +73,12 @@ class OrgSettings {
     }
 
     // only these settings are editable by orgs themselves
-    static List<OrgSettings.KEYS> getEditableSettings() {
+    static List<OrgSetting.KEYS> getEditableSettings() {
         [
-                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
-                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+                OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
+                OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
+                OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
+                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
         ]
     }
 
@@ -88,17 +88,17 @@ class OrgSettings {
      */
     static def get(Org org, KEYS key) {
 
-        def oss = findWhere(org: org, key: key)
+        OrgSetting oss = findWhere(org: org, key: key)
         oss ?: SETTING_NOT_FOUND
     }
 
     /*
         adds new org depending setting (with value) for given key
      */
-    static OrgSettings add(Org org, KEYS key, def value) {
+    static OrgSetting add(Org org, KEYS key, def value) {
 
         withTransaction {
-            def oss = new OrgSettings(org: org, key: key)
+            def oss = new OrgSetting(org: org, key: key)
             oss.setValue(value)
             oss.save()
 
@@ -112,7 +112,7 @@ class OrgSettings {
     static void delete(Org org, KEYS key) {
 
         withTransaction {
-            def oss = OrgSettings.findWhere(org: org, key: key)
+            OrgSetting oss = findWhere(org: org, key: key)
             oss?.delete()
         }
     }
@@ -122,7 +122,7 @@ class OrgSettings {
      */
     def getValue() {
 
-        def result = null
+        def result
 
         switch (key.type) {
             case Integer:

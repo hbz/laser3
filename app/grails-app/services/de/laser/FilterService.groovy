@@ -95,9 +95,9 @@ class FilterService {
         }
 
         if (params.customerType?.length() > 0) {
-            query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]
-            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
+            queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
         // hack: applying filter on org subset
@@ -185,9 +185,9 @@ class FilterService {
         }
 
         if (params.customerType?.length() > 0) {
-            query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]
-            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
+            queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
         if (params.orgIdentifier?.length() > 0) {
@@ -815,9 +815,9 @@ class FilterService {
         }
 
         if (params.customerType?.length() > 0) {
-            base_qry += " and exists (select oss from OrgSettings as oss where oss.id = surResult.participant.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            base_qry += " and exists (select oss from OrgSetting as oss where oss.id = surResult.participant.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]
-            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
+            queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
         if (params.orgIdentifier?.length() > 0) {

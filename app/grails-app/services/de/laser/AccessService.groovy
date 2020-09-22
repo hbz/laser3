@@ -112,7 +112,7 @@ class AccessService {
 
         if (orgPerms) {
             Org ctx = contextOrg
-            def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
+            def oss = OrgSetting.get(ctx, OrgSetting.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
             //println(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params)
@@ -126,7 +126,7 @@ class AccessService {
                 fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
             }
 
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 orgPerms.each{ cd ->
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) fakeRole ?: oss.getValue())
                 }

@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; com.k_int.kbplus.IssueEntitlement; de.laser.IssueEntitlementGroup; com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; de.laser.UserSettings; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; com.k_int.kbplus.IssueEntitlement; de.laser.IssueEntitlementGroup; com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
@@ -638,7 +638,7 @@
                 //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
-                var userLang = "${contextService.user.getSettingsValue(UserSettings.KEYS.LANGUAGE,null)}";
+                var userLang = "${contextService.user.getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}";
                 //console.log(userLang);
                 if(typeof(input) === 'number') {
                     output = input.toFixed(2);

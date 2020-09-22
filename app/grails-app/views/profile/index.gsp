@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.UserSettings; de.laser.RefdataCategory; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; de.laser.UserSettings.KEYS" %>
+<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; de.laser.UserSetting.KEYS" %>
 <%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
@@ -171,7 +171,7 @@
                 </div>
 
                 <table class="ui celled la-table compact table">
-                    <g:set var="defaultRemindPeriod" value="${UserSettings.DEFAULT_REMINDER_PERIOD}" />
+                    <g:set var="defaultRemindPeriod" value="${UserSetting.DEFAULT_REMINDER_PERIOD}" />
                     <thead>
                         <tr>
                             <th></th>

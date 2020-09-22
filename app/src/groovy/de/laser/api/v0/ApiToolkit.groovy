@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.Org
-import de.laser.OrgSettings
+import de.laser.OrgSetting
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.RandomStringUtils
@@ -56,29 +56,29 @@ class ApiToolkit {
             return
         }
 
-        def oss = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+        def oss = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
             oss.strValue = apiLevel
             oss.save(flush:true)
         }
         else {
-            OrgSettings.add(org, OrgSettings.KEYS.API_LEVEL, apiLevel)
-            OrgSettings.add(org, OrgSettings.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
-            OrgSettings.add(org, OrgSettings.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_LEVEL, apiLevel)
+            OrgSetting.add(org, OrgSetting.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
         }
     }
 
     static void removeApiLevel(Org org) {
 
-        OrgSettings.delete(org, OrgSettings.KEYS.API_LEVEL)
-        OrgSettings.delete(org, OrgSettings.KEYS.API_KEY)
-        OrgSettings.delete(org, OrgSettings.KEYS.API_PASSWORD)
+        OrgSetting.delete(org, OrgSetting.KEYS.API_LEVEL)
+        OrgSetting.delete(org, OrgSetting.KEYS.API_KEY)
+        OrgSetting.delete(org, OrgSetting.KEYS.API_PASSWORD)
     }
 
     static boolean hasApiLevel(Org org, String apiLevel) {
-        def orgSetting = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+        def orgSetting = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
 
-        if (orgSetting != OrgSettings.SETTING_NOT_FOUND) {
+        if (orgSetting != OrgSetting.SETTING_NOT_FOUND) {
             return apiLevel == orgSetting.getValue()
         }
         return false

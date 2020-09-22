@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserRole;de.laser.UserSettings" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserRole;de.laser.UserSetting" %>
 <laser:serviceInjection/>
 
 <table class="ui sortable celled la-table compact table">
@@ -79,7 +79,7 @@
 
                         <g:if test="${!instAdmService.isUserLastInstAdminForOrg(us, orgInstance) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSetting.KEYS.DASHBOARD)?.name ])}"
                                     data-confirm-term-how="delete"
                                     controller="organisation"
                                     action="processAffiliation"

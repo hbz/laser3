@@ -17,17 +17,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     def deletionService
 
-    /*
-    Date startDate
-    String startVolume
-    String startIssue
-    Date endDate
-    String endVolume
-    String endIssue
-    String embargo
-    String coverageDepth
-    String coverageNote
-     */
   Date coreStatusStart
   Date coreStatusEnd
   Date accessStartDate
@@ -84,17 +73,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
       acceptStatus column:'ie_accept_status_rv_fk'
-      /*
-      startDate column:'ie_start_date',      index: 'ie_dates_idx'
-      startVolume column:'ie_start_volume'
-      startIssue column:'ie_start_issue'
-      endDate column:'ie_end_date',        index: 'ie_dates_idx'
-      endVolume column:'ie_end_volume'
-      endIssue column:'ie_end_issue'
-      embargo column:'ie_embargo'
-      coverageDepth column:'ie_coverage_depth'
-      coverageNote column:'ie_coverage_note',type: 'text'
-      */
 
     dateCreated column: 'ie_date_created'
     lastUpdated column: 'ie_last_updated'
@@ -113,17 +91,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     coreStatusStart(nullable:true)
     coreStatusEnd  (nullable:true)
     acceptStatus   (nullable:true)
-      /*
-      startDate     (nullable:true, blank:true)
-      startVolume   (nullable:true, blank:true)
-      startIssue    (nullable:true, blank:true)
-      endDate       (nullable:true, blank:true)
-      endVolume     (nullable:true, blank:true)
-      endIssue      (nullable:true, blank:true)
-      embargo       (nullable:true, blank:true)
-      coverageDepth (nullable:true, blank:true)
-      coverageNote  (nullable:true, blank:true)
-       */
 
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)

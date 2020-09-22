@@ -2445,8 +2445,8 @@ class SubscriptionController
 
         if (params.filterPropDef) {
 
-            def filterPropDef = params.filterPropDef
-            PropertyDefinition propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            String filterPropDef = params.filterPropDef
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
             int deletedProperties = 0
 
@@ -3253,7 +3253,7 @@ class SubscriptionController
     def possibleLicensesForSubscription() {
         List result = []
 
-        Subscription subscription = genericOIDService.resolveOID(params.oid)
+        Subscription subscription = (Subscription) genericOIDService.resolveOID(params.oid)
         Org subscriber = subscription.getSubscriber()
         Org consortia = subscription.getConsortia()
         Org collective = subscription.getCollective()
@@ -3420,7 +3420,7 @@ class SubscriptionController
         // TODO can we remove this block? Was it used for usage in renewal process?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
@@ -3613,7 +3613,7 @@ class SubscriptionController
         // Can we remove this block?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         // Get a unique list of invoices
@@ -3681,7 +3681,7 @@ class SubscriptionController
         //}
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         pu.setBenchmark('links')
@@ -3810,7 +3810,7 @@ class SubscriptionController
                     def supplier_id = suppliers[0]
                     def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
-                    result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+                    result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
 
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
@@ -4659,7 +4659,7 @@ class SubscriptionController
                     else
                         parentRoleType = RDStore.OR_SUBSCRIBER
                     entry.licenses.each { String licenseOID ->
-                        License license = genericOIDService.resolveOID(licenseOID)
+                        License license = (License) genericOIDService.resolveOID(licenseOID)
                         subscriptionService.setOrgLicRole(sub,license,false)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
@@ -4747,7 +4747,7 @@ class SubscriptionController
             case BigDecimal.toString(): BigDecimal decVal = new BigDecimal(value)
                 prop.setDecValue(decVal)
                 break
-            case RefdataValue.toString(): RefdataValue rdv = genericOIDService.resolveOID(value)
+            case RefdataValue.toString(): RefdataValue rdv = (RefdataValue) genericOIDService.resolveOID(value)
                 if(rdv)
                     prop.setRefValue(rdv)
                 break

@@ -1083,7 +1083,7 @@ class AdminController extends AbstractDebugController {
                                             }
                                         }
                                         settings {
-                                            List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                                            List<OrgSetting> os = OrgSetting.findAllByOrg(o)
                                             os.each { st ->
                                                 switch(st.key.type) {
                                                     case RefdataValue:
@@ -1239,7 +1239,7 @@ class AdminController extends AbstractDebugController {
                                             }
                                         }
                                         settings {
-                                            List<UserSettings> us = UserSettings.findAllByUser(u)
+                                            List<UserSetting> us = UserSetting.findAllByUser(u)
                                             us.each { st ->
                                                 switch(st.key.type) {
                                                     case Org: setting{
@@ -1374,7 +1374,7 @@ class AdminController extends AbstractDebugController {
         Map<String, Object> result = [:]
 
         if (params.cmd == 'changeApiLevel') {
-            Org target = genericOIDService.resolveOID(params.target)
+            Org target = (Org) genericOIDService.resolveOID(params.target)
 
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
                 ApiToolkit.setApiLevel(target, params.apiLevel)
@@ -1386,22 +1386,22 @@ class AdminController extends AbstractDebugController {
             target.save(flush:true)
         }
         else if (params.cmd == 'deleteCustomerType') {
-            Org target = genericOIDService.resolveOID(params.target)
-            def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            Org target = (Org) genericOIDService.resolveOID(params.target)
+            def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 oss.delete(flush:true)
             }
             target.lastUpdated = new Date()
             target.save(flush:true)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Org target = genericOIDService.resolveOID(params.target)
+            Org target = (Org) genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
-            def osObj = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+            def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-            if (osObj != OrgSettings.SETTING_NOT_FOUND) {
-                OrgSettings oss = (OrgSettings) osObj
+            if (osObj != OrgSetting.SETTING_NOT_FOUND) {
+                OrgSetting oss = (OrgSetting) osObj
                 // ERMS-1615
                 if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
                     log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
@@ -1453,30 +1453,30 @@ class AdminController extends AbstractDebugController {
 
             }
             else {
-                OrgSettings.add(target, OrgSettings.KEYS.CUSTOMER_TYPE, customerType)
+                OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)
             }
             target.lastUpdated = new Date()
             target.save(flush:true)
         }
         else if (params.cmd == 'changeGascoEntry') {
-            Org target = genericOIDService.resolveOID(params.target)
-            RefdataValue option = genericOIDService.resolveOID(params.gascoEntry)
+            Org target = (Org) genericOIDService.resolveOID(params.target)
+            RefdataValue option = (RefdataValue) genericOIDService.resolveOID(params.gascoEntry)
 
             if (target && option) {
-                def oss = OrgSettings.get(target, OrgSettings.KEYS.GASCO_ENTRY)
+                def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
 
-                if (oss != OrgSettings.SETTING_NOT_FOUND) {
+                if (oss != OrgSetting.SETTING_NOT_FOUND) {
                     oss.rdValue = option
                     oss.save(flush: true)
                 } else {
-                    OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
+                    OrgSetting.add(target, OrgSetting.KEYS.GASCO_ENTRY, option)
                 }
             }
             target.lastUpdated = new Date()
             target.save(flush:true)
         }
         else if (params.cmd == 'changeLegalInformation') {
-            Org target = genericOIDService.resolveOID(params.target)
+            Org target = (Org) genericOIDService.resolveOID(params.target)
 
             if (target) {
                 target.createdBy = Org.get(params.createdBy)
@@ -1491,7 +1491,7 @@ class AdminController extends AbstractDebugController {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
+                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
         )
         result
     }
@@ -1503,7 +1503,7 @@ class AdminController extends AbstractDebugController {
 
         switch (request.method) {
             case 'GET':
-                idnsInstance = genericOIDService.resolveOID(params.oid)
+                idnsInstance = (IdentifierNamespace) genericOIDService.resolveOID(params.oid)
 
                 if (params.cmd == 'deleteNamespace') {
                     if (idnsInstance && Identifier.countByNs(idnsInstance) == 0) {
@@ -1595,7 +1595,7 @@ SELECT * FROM (
     def managePropertyDefinitions() {
 
         if (params.cmd){
-            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
             switch(params.cmd) {
                 case 'toggleMandatory':
                     if(pd) {
@@ -1624,8 +1624,8 @@ SELECT * FROM (
                     break
                 case 'replacePropertyDefinition':
                     if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                        PropertyDefinition pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
-                        PropertyDefinition pdTo = genericOIDService.resolveOID(params.xcgPdTo)
+                        PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+                        PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
 
                         if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
 

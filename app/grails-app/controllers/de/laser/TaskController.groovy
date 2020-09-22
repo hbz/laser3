@@ -161,7 +161,7 @@ class TaskController extends AbstractDebugController {
 	        }
 
 	        if (params.version) {
-	            def version = params.version.toLong()
+	            Long version = params.long('version')
 	            if (taskInstance.version > version) {
 	                taskInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
 	                          [message(code: 'task.label')] as Object[],
