@@ -146,7 +146,7 @@
             <tr>
 
               <td>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="selectAll()"/></g:if>
               </td>
 
               <td colspan="7">

@@ -23,7 +23,7 @@
     <g:render template="nav" />
 
     <g:each in="${pendingChanges}" var="memberId, pcList">
-        <g:set var="member" value="${com.k_int.kbplus.License.get(memberId)}" />
+        <g:set var="member" value="${License.get(memberId)}" />
 
         <h4>${member.getReferenceConcatenated()}</h4>
 

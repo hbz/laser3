@@ -19,10 +19,6 @@
 
 <g:render template="nav"/>
 
-<%--<g:set var="counter" value="${offset + 1}"/>
-${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )--%>
-
-
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>

@@ -125,7 +125,7 @@
                         </div>
                         <input type="Submit" class="ui tiny button"
                                value="${message(code: 'accessPoint.button.add')}"
-                               onClick="this.form.submit()" class="ui button"/>
+                               onClick="this.form.submit()" />
                     </div>
                 </g:form>
             </div>
@@ -195,7 +195,7 @@
                     </div>
                     <input type="Submit" class="ui tiny button"
                            value="${message(code: 'accessPoint.button.add')}"
-                           onClick="this.form.submit()" class="ui button"/>
+                           onClick="this.form.submit()" />
                 </div>
             </g:form>
         </div>
@@ -211,9 +211,7 @@
 </div>
 
 <g:javascript>
-    $('.menu .item')
-            .tab()
-    ;
+    $('.menu .item').tab();
 </g:javascript>
 </body>
 </html>

@@ -140,9 +140,9 @@
                             </g:if>
                             <g:else>
                                 <div class="la-copyElements-flex-item">
-                                <span data-position="top left" class="ui circular label la-popup-tooltip la-delay"
-                                      data-content="${message(code: "default.compare.propertyValueNotSet")}"/>x</span>
-                                    </div>
+                                    <span data-position="top left" class="ui circular label la-popup-tooltip la-delay"
+                                      data-content="${message(code: "default.compare.propertyValueNotSet")}">x</span>
+                                </div>
                             </g:else>
 
                             <g:if test="${propValue.note}">
@@ -164,7 +164,7 @@
                                     <g:elseif test="${object instanceof Subscription}">
                                         <g:set var="consortium" value="${object.getConsortia()}"/>
                                         <g:set var="atSubscr"
-                                               value="${object._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
+                                               value="${object._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}"/>
                                     </g:elseif>
                                     <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
                                         <g:if test="${object.isSlaved}">

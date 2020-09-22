@@ -16,7 +16,7 @@
                           optionValue="name"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 <input type="Submit" class="ui tiny button" value="${message(code: 'accessPoint.button.linkPlatform')}"
-                       onClick="this.form.submit()" class="ui button"/>
+                       onClick="this.form.submit()" />
             </g:if>
             <g:hiddenField name="accessPointId" value="${accessPoint.id}"/>
             <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>

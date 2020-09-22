@@ -7,6 +7,7 @@
 		<title>${message(code:'laser')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
 	</head>
 
+    <body>
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>

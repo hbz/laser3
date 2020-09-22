@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.License" %>
-<%@ page import="de.laser.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -25,7 +24,7 @@
     <g:render template="nav" />
 
     <g:each in="${pendingChanges}" var="memberId, pcList">
-        <g:set var="member" value="${com.k_int.kbplus.Subscription.get(memberId)}" />
+        <g:set var="member" value="${Subscription.get(memberId)}" />
 
         <h4>${member.getNameConcatenated()}</h4>
 

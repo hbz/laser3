@@ -83,7 +83,7 @@
 
                     <td>
                         <%
-                            def customerType = de.laser.OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
+                            def customerType = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
                             if (customerType != OrgSetting.SETTING_NOT_FOUND) {
                                 println customerType.getRoleValue()?.getI10n('authority')
                                 customerType = customerType.getRoleValue().id
