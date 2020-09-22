@@ -7,10 +7,10 @@
 		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
+    <body>
         <semui:debugInfo>
             <g:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
         </semui:debugInfo>
-
 
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />

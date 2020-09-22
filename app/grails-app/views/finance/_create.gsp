@@ -3,7 +3,7 @@
 
 <semui:form>
     <form class="ui form" id="createCost">
-        <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"></g:hiddenField>
+        <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}" />
 
         <div class="ui grid">
 
@@ -124,7 +124,7 @@
                             name="newSubscription" class="input-xlarge select2" placeholder="New Subscription" id="newSubscription"
                             value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>
                     <g:if test="${inSubMode}">
-                        <g:hiddenField data-subfilter="" name="newSubscription" value="${fixedSubscription?.class.getName()}:${fixedSubscription?.id}"></g:hiddenField>
+                        <g:hiddenField data-subfilter="" name="newSubscription" value="${fixedSubscription?.class.getName()}:${fixedSubscription?.id}" />
                     </g:if>
                 </div><!-- .field -->
 

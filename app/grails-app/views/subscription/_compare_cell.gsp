@@ -1,7 +1,9 @@
  <table class="ui celled la-table table">
 	<thead>
+	<tr>
 		<th>${message(code:'subscription.details.coverageStartDate')}</th>
 		<th>${message(code:'subscription.details.coverageStartDate')}</th>
+	</tr>
 	</thead>
 	<tbody>
 		<tr>

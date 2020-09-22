@@ -19,12 +19,6 @@
 
 <p>${message(code:'sys.properties')}</p>
 
-<%--<div id="custom_props_div_1">
-    <g:render template="/templates/properties/custom" model="${[
-            prop_desc: PropertyDefinition.SYS_CONF,
-            ownobj: adminObj,
-            custom_props_div: "custom_props_div_1" ]}"/>
-</div>--%>
 <r:script>
     $(document).ready(function(){
         c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");

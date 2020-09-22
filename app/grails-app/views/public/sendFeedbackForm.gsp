@@ -20,3 +20,4 @@
 <p>Vielen Dank, dass Sie sich Zeit genommen haben, uns von Ihren Problemen in Bezug auf die Barrierefreiheit von LAS:eR zu berichten. Sie helfen uns damit sehr, unser Angebot zu optimieren .</p>
 
 </body>
+</html>

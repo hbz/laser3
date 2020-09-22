@@ -1,7 +1,9 @@
  <table class="ui celled la-table table">
 	<thead>
+	<tr>
 		<th style="border:1px solid #dddddd;">${message(code:'tipp.coverage_start')}</th>
 		<th style="border:1px solid #dddddd;">${message(code:'tipp.coverage_end')}</th>
+	</tr>
 	</thead>
 	<tbody>
 		<tr>

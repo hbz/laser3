@@ -17,9 +17,6 @@
             </g:if>
         </semui:breadcrumbs>
         <br>
-        <%--<semui:controlButtons>
-            <g:render template="actions" model="${[ org:orgInstance, user:user ]}"/>
-        </semui:controlButtons>--%>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 

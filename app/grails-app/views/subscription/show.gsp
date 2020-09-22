@@ -44,11 +44,6 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-%{--        <g:if test="${params.asAt}">
-            <h1 class="ui icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
-        </g:if>--}%
-
-
         <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
         </h1>
@@ -93,12 +88,7 @@
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
                                 </g:if>
                             </dl>
-                            <% /*
-                            <dl>
-                                <dt>${message(code:'subscription.manualRenewalDate.label', default:'Manual Renewal Date')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="manualRenewalDate" type="date"/></dd>
-                            </dl>
-                            */ %>
+
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
@@ -483,21 +473,6 @@
                                       ]}" />
 
                         </div><!-- la-js-hide-this-card -->
-
-                    <% /*
-               <dl>
-                    <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
-                        <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:visibleOrgRelations,editmode:editable]}" />
-                    </dd>
-               </dl>
-               */ %>
-
-                    <% /*g:if test="${params.mode=='advanced'}">
-                 <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
-                      <semui:xEditableRefData owner="${subscriptionInstance}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}" />
-                     </dd>
-               </dl>
-               </g:if */ %>
 
                     </div>
                 </div>

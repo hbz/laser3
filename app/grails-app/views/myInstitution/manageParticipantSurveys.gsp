@@ -273,14 +273,6 @@
         </table>
     </semui:form>
 </div>
-</div>
-
-%{--<g:if test="${countSurveys}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${countSurveys."${params.tab}"}"/>
-</g:if>--}%
 
 </body>
 </html>

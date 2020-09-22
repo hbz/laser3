@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.finance.CostItem; com.k_int.kbplus.Subscription; com.k_int.kbplus.Org; com.k_int.kbplus.Platform" %>
 <!doctype html>
 
 <html>
@@ -116,16 +116,16 @@
                                     </div>
                                 </td>
                                 <td>
-                                        <g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}">
-                                            <g:link controller="organisation" action="show" id="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link>
+                                        <g:if test="${Org.findByGokbId(hit.providerUuid)}">
+                                            <g:link controller="organisation" action="show" id="${Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${hit.providerName}
                                         </g:else>
                                 </td>
                                 <td>
-                                        <g:if test="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid)}">
-                                            <g:link controller="platform" action="show" id="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link>
+                                        <g:if test="${Platform.findByGokbId(hit.platformUuid)}">
+                                            <g:link controller="platform" action="show" id="${Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${hit.platformName}
