@@ -13,7 +13,7 @@
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+            <g:if test="${ownobj instanceof License}">
                 <col style="width: 359px;">
             </g:if>
             <col style="width: 148px;">
@@ -23,7 +23,7 @@
             <tr>
                 <th class="la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -78,7 +78,7 @@
                                 <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}"/>
                             </g:elseif>
                         </td>
-                        <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                        <g:if test="${ownobj instanceof License}">
                             <td>
                                 <semui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}"/>
                             </td>
@@ -288,7 +288,7 @@
         <tfoot>
             <tr>
             <g:if test="${orphanedProperties}">
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${ownobj instanceof License}">
                     <td colspan="5">
                 </g:if>
                 <g:else>
