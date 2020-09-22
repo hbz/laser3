@@ -3420,7 +3420,7 @@ class SubscriptionController
         // TODO can we remove this block? Was it used for usage in renewal process?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
@@ -3613,7 +3613,7 @@ class SubscriptionController
         // Can we remove this block?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         // Get a unique list of invoices
@@ -3681,7 +3681,7 @@ class SubscriptionController
         //}
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+            result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         pu.setBenchmark('links')
@@ -3810,7 +3810,7 @@ class SubscriptionController
                     def supplier_id = suppliers[0]
                     def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     result.natStatSupplierId = platform?.stringValue ?: null
-                    result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+                    result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
 
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)

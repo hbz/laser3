@@ -89,22 +89,22 @@ class OrganisationController extends AbstractDebugController {
         organisationService.initMandatorySettings(org)
 
         // collecting visible settings by customer type, role and/or combo
-        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
+        List<OrgSetting> allSettings = OrgSetting.findAllByOrg(org)
 
-        List<OrgSettings.KEYS> ownerSet = [
-                OrgSettings.KEYS.API_LEVEL,
-                OrgSettings.KEYS.API_KEY,
-                OrgSettings.KEYS.API_PASSWORD,
-                OrgSettings.KEYS.CUSTOMER_TYPE,
-                OrgSettings.KEYS.GASCO_ENTRY
+        List<OrgSetting.KEYS> ownerSet = [
+                OrgSetting.KEYS.API_LEVEL,
+                OrgSetting.KEYS.API_KEY,
+                OrgSetting.KEYS.API_PASSWORD,
+                OrgSetting.KEYS.CUSTOMER_TYPE,
+                OrgSetting.KEYS.GASCO_ENTRY
         ]
-        List<OrgSettings.KEYS> accessSet = [
-                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
+        List<OrgSetting.KEYS> accessSet = [
+                OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
+                OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
         ]
-        List<OrgSettings.KEYS> credentialsSet = [
-                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
-                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+        List<OrgSetting.KEYS> credentialsSet = [
+                OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
+                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
         ]
 
         result.settings = []
@@ -123,10 +123,10 @@ class OrganisationController extends AbstractDebugController {
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }
             else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
             else if (['FAKE'].contains(org.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
         }
 
@@ -758,22 +758,22 @@ class OrganisationController extends AbstractDebugController {
             organisationService.initMandatorySettings(org)
 
             // collecting visible settings by customer type, role and/or combo
-            List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
+            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(org)
 
-            List<OrgSettings.KEYS> ownerSet = [
-                    OrgSettings.KEYS.API_LEVEL,
-                    OrgSettings.KEYS.API_KEY,
-                    OrgSettings.KEYS.API_PASSWORD,
-                    OrgSettings.KEYS.CUSTOMER_TYPE,
-                    OrgSettings.KEYS.GASCO_ENTRY
+            List<OrgSetting.KEYS> ownerSet = [
+                    OrgSetting.KEYS.API_LEVEL,
+                    OrgSetting.KEYS.API_KEY,
+                    OrgSetting.KEYS.API_PASSWORD,
+                    OrgSetting.KEYS.CUSTOMER_TYPE,
+                    OrgSetting.KEYS.GASCO_ENTRY
             ]
-            List<OrgSettings.KEYS> accessSet = [
-                    OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                    OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
+            List<OrgSetting.KEYS> accessSet = [
+                    OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
+                    OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
             ]
-            List<OrgSettings.KEYS> credentialsSet = [
-                    OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
-                    OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+            List<OrgSetting.KEYS> credentialsSet = [
+                    OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
+                    OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
             ]
 
             result.settings = []
@@ -792,10 +792,10 @@ class OrganisationController extends AbstractDebugController {
                     result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
                     result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
                 } else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
-                    result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                    result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
                     result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
                 } else if (['FAKE'].contains(org.getCustomerType())) {
-                    result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                    result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
                 }
             } else if (isComboRelated) {
                 log.debug('settings for combo related org: consortia or collective')

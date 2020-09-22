@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSettings" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <!doctype html>
 <html>
 <head>

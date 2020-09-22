@@ -80,7 +80,7 @@ class StatsSyncService {
             "and po.roleType.value='Content Provider' "+
             "and exists (select cp from pf.customProperties as cp where cp.type.name = 'NatStat Supplier ID')" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
-            "and exists (select 1 from OrgSettings as os where os.org=orgrel.org and os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
+            "and exists (select 1 from OrgSetting as os where os.org=orgrel.org and os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
         if (queryParams['supplier'] != null){
             hql += "and pf.id =:supplier "
         }

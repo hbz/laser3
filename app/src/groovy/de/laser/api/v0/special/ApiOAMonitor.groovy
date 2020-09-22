@@ -3,7 +3,7 @@ package de.laser.api.v0.special
 import com.k_int.kbplus.*
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
-import de.laser.OrgSettings
+import de.laser.OrgSetting
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
@@ -20,8 +20,8 @@ class ApiOAMonitor {
      */
     static boolean calculateAccess(Org org) {
 
-        def resultSetting = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
-        if (resultSetting != OrgSettings.SETTING_NOT_FOUND && resultSetting.getValue()?.value == 'Yes') {
+        def resultSetting = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
+        if (resultSetting != OrgSetting.SETTING_NOT_FOUND && resultSetting.getValue()?.value == 'Yes') {
             return true
         }
         else {
@@ -63,10 +63,10 @@ class ApiOAMonitor {
      */
     static private List<Org> getAccessibleOrgs() {
 
-        List<Org> orgs = OrgSettings.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+        List<Org> orgs = OrgSetting.executeQuery(
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
-                key    : OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                key    : OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
                 rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
                 deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
         ])

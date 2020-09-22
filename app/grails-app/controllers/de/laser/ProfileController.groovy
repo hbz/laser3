@@ -4,7 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.UserSettings.KEYS
+import de.laser.UserSetting.KEYS
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -173,7 +173,7 @@ class ProfileController {
 
         if (params.defaultDash) {
             Org org = genericOIDService.resolveOID(params.defaultDash)
-            UserSettings us = user.getSetting(KEYS.DASHBOARD, null)
+            UserSetting us = user.getSetting(KEYS.DASHBOARD, null)
 
             if (org?.id != us.getValue()?.id) {
                 us.setValue(org)
@@ -191,18 +191,18 @@ class ProfileController {
     flash.message = ""
     flash.error = ""
 
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),         params.remindPeriodForLicensePrivateProp,       'profile.updateProfile.updated.remindPeriodForLicensePrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForLicenseCustomProp,        'profile.updateProfile.updated.remindPeriodForLicenseCustomProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),              params.remindPeriodForOrgCustomProp,            'profile.updateProfile.updated.remindPeriodForOrgCustomProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),             params.remindPeriodForOrgPrivateProp,           'profile.updateProfile.updated.remindPeriodForOrgPrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForPersonPrivateProp,        'profile.updateProfile.updated.remindPeriodForPersonPrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSubscriptionsCustomProp,  'profile.updateProfile.updated.remindPeriodForSubscriptionsCustomProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, UserSettings.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionsPrivateProp, 'profile.updateProfile.updated.remindPeriodForSubscriptionsPrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSettings.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, UserSettings.DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_TASKS, UserSettings.DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, UserSettings.DEFAULT_REMINDER_PERIOD),params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSettings.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSurveysMandatoryEndDate, 'profile.updateProfile.updated.remindPeriodForSurveyMandatoryEndDate')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),         params.remindPeriodForLicensePrivateProp,       'profile.updateProfile.updated.remindPeriodForLicensePrivateProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForLicenseCustomProp,        'profile.updateProfile.updated.remindPeriodForLicenseCustomProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),              params.remindPeriodForOrgCustomProp,            'profile.updateProfile.updated.remindPeriodForOrgCustomProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),             params.remindPeriodForOrgPrivateProp,           'profile.updateProfile.updated.remindPeriodForOrgPrivateProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForPersonPrivateProp,        'profile.updateProfile.updated.remindPeriodForPersonPrivateProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSubscriptionsCustomProp,  'profile.updateProfile.updated.remindPeriodForSubscriptionsCustomProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionsPrivateProp, 'profile.updateProfile.updated.remindPeriodForSubscriptionsPrivateProp')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSetting.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_TASKS, UserSetting.DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
+    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSurveysMandatoryEndDate, 'profile.updateProfile.updated.remindPeriodForSurveyMandatoryEndDate')
 
     //Error: Emailreminder without Emailaddress
     if ( (! user.email) && params.isRemindByEmail) {
@@ -286,7 +286,7 @@ class ProfileController {
         redirect(action: "index")
     }
 
-    private void changeValue(UserSettings userSetting, def newValue, String messageSuccessfull) {
+    private void changeValue(UserSetting userSetting, def newValue, String messageSuccessfull) {
         def oldValue = userSetting.value
         if (    KEYS.REMIND_PERIOD_FOR_TASKS == userSetting.key ||
                 KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD == userSetting.key ||

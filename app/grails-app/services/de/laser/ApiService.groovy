@@ -526,16 +526,16 @@ class ApiService {
                             //new IdentifierOccurrence(org: org, identifier: id).save()
                         }
                         orgData.settings.setting.each { st ->
-                            log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
+                            log.debug("name: ${OrgSetting.KEYS.valueOf(st.name.text())}")
                             //log.debug("value: ${st.value.text()}")
                             if (st.rdValue.size()) {
-                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
+                                OrgSetting.add(org, OrgSetting.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
                             }
                             else if (st.roleValue.size()) {
-                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))
+                                OrgSetting.add(org, OrgSetting.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))
                             }
                             else {
-                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), st.value.text())
+                                OrgSetting.add(org, OrgSetting.KEYS.valueOf(st.name.text()), st.value.text())
                             }
                         }
                     } else if (org.hasErrors()) {
@@ -676,21 +676,21 @@ class ApiService {
 						//}
                     }
                     orgData.settings.setting.each { st ->
-                        log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
+                        log.debug("name: ${OrgSetting.KEYS.valueOf(st.name.text())}")
                         //log.debug("value: ${st.value.text()}")
-                        if (st.rdValue.size() && !OrgSettings.findByOrgAndKeyAndRdValue(org, OrgSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))) {
-                            OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
+                        if (st.rdValue.size() && !OrgSetting.findByOrgAndKeyAndRdValue(org, OrgSetting.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))) {
+                            OrgSetting.add(org, OrgSetting.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
                         }
-                        else if (st.roleValue.size() && !OrgSettings.findByOrgAndKeyAndRoleValue(org, OrgSettings.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))) {
-                            if(OrgSettings.KEYS.valueOf(st.name.text()) == OrgSettings.KEYS.CUSTOMER_TYPE) {
-                                OrgSettings oss = OrgSettings.findByOrgAndKey(org, OrgSettings.KEYS.CUSTOMER_TYPE)
+                        else if (st.roleValue.size() && !OrgSetting.findByOrgAndKeyAndRoleValue(org, OrgSetting.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))) {
+                            if(OrgSetting.KEYS.valueOf(st.name.text()) == OrgSetting.KEYS.CUSTOMER_TYPE) {
+                                OrgSetting oss = OrgSetting.findByOrgAndKey(org, OrgSetting.KEYS.CUSTOMER_TYPE)
                                 oss.setValue(Role.findByAuthority(st.roleValue.text()))
                             }
                             else
-                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))
+                                OrgSetting.add(org, OrgSetting.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))
                         }
-                        else if(st.value.size() && !OrgSettings.findByOrgAndKeyAndStrValue(org, OrgSettings.KEYS.valueOf(st.name.text()), st.value.text())){
-                            OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), st.value.text())
+                        else if(st.value.size() && !OrgSetting.findByOrgAndKeyAndStrValue(org, OrgSetting.KEYS.valueOf(st.name.text()), st.value.text())){
+                            OrgSetting.add(org, OrgSetting.KEYS.valueOf(st.name.text()), st.value.text())
                         }
                     }
                 }
@@ -733,17 +733,17 @@ class ApiService {
                             new UserRole(user: user, role: Role.findByAuthority(uRole.text())).save(flush: true) //null pointer exception occuring, make further tests
                         }
                         userData.settings.setting.each { st ->
-                            log.debug("name: ${UserSettings.KEYS.valueOf(st.name.text())}")
+                            log.debug("name: ${UserSetting.KEYS.valueOf(st.name.text())}")
                             //log.debug("value: ${st.value.text()}")
                             if (st.rdValue.size()) {
-                                UserSettings.add(user, UserSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
+                                UserSetting.add(user, UserSetting.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
                             } else if (st.org.size()) {
                                 Org org = Org.findByGlobalUID(st.org.text())
                                 if (org) {
-                                    UserSettings.add(user, UserSettings.KEYS.valueOf(st.name.text()), org)
+                                    UserSetting.add(user, UserSetting.KEYS.valueOf(st.name.text()), org)
                                 }
                             } else {
-                                UserSettings.add(user, UserSettings.KEYS.valueOf(st.name.text()), st.value.text())
+                                UserSetting.add(user, UserSetting.KEYS.valueOf(st.name.text()), st.value.text())
                             }
                         }
                         User.executeUpdate('update User u set u.password = :password where u.username = :username', [password: userData.password.text(), username: userData.username.text()])

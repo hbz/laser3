@@ -62,7 +62,7 @@ class SubscriptionService {
         def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
         pu.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSettings os_ct, OrgSettings os_gs where 
+                """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
                         order by lower(o.name)""",
@@ -131,7 +131,7 @@ class SubscriptionService {
         pu.setBenchmark('get properties')
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
-        if (OrgSettings.get(contextOrg, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
+        if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }

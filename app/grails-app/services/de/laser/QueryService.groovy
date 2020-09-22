@@ -8,15 +8,15 @@ import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.CalculatedType
 import grails.transaction.Transactional
 
-import de.laser.UserSettings.KEYS
+import de.laser.UserSetting.KEYS
 
 @Transactional
 class QueryService {
     def subscriptionsQueryService
     def taskService
 
-    private java.sql.Date computeInfoDate(User user, UserSettings.KEYS userSettingsKey){
-        int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, UserSettings.DEFAULT_REMINDER_PERIOD)?.getValue() ?: 1
+    private java.sql.Date computeInfoDate(User user, UserSetting.KEYS userSettingKey){
+        int daysToBeInformedBeforeToday = user.getSetting(userSettingKey, UserSetting.DEFAULT_REMINDER_PERIOD)?.getValue() ?: 1
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
         infoDate
     }

@@ -1083,7 +1083,7 @@ class AdminController extends AbstractDebugController {
                                             }
                                         }
                                         settings {
-                                            List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                                            List<OrgSetting> os = OrgSetting.findAllByOrg(o)
                                             os.each { st ->
                                                 switch(st.key.type) {
                                                     case RefdataValue:
@@ -1239,7 +1239,7 @@ class AdminController extends AbstractDebugController {
                                             }
                                         }
                                         settings {
-                                            List<UserSettings> us = UserSettings.findAllByUser(u)
+                                            List<UserSetting> us = UserSetting.findAllByUser(u)
                                             us.each { st ->
                                                 switch(st.key.type) {
                                                     case Org: setting{
@@ -1387,8 +1387,8 @@ class AdminController extends AbstractDebugController {
         }
         else if (params.cmd == 'deleteCustomerType') {
             Org target = genericOIDService.resolveOID(params.target)
-            def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 oss.delete(flush:true)
             }
             target.lastUpdated = new Date()
@@ -1398,10 +1398,10 @@ class AdminController extends AbstractDebugController {
             Org target = genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
-            def osObj = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+            def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-            if (osObj != OrgSettings.SETTING_NOT_FOUND) {
-                OrgSettings oss = (OrgSettings) osObj
+            if (osObj != OrgSetting.SETTING_NOT_FOUND) {
+                OrgSetting oss = (OrgSetting) osObj
                 // ERMS-1615
                 if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
                     log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
@@ -1453,7 +1453,7 @@ class AdminController extends AbstractDebugController {
 
             }
             else {
-                OrgSettings.add(target, OrgSettings.KEYS.CUSTOMER_TYPE, customerType)
+                OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)
             }
             target.lastUpdated = new Date()
             target.save(flush:true)
@@ -1463,13 +1463,13 @@ class AdminController extends AbstractDebugController {
             RefdataValue option = genericOIDService.resolveOID(params.gascoEntry)
 
             if (target && option) {
-                def oss = OrgSettings.get(target, OrgSettings.KEYS.GASCO_ENTRY)
+                def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
 
-                if (oss != OrgSettings.SETTING_NOT_FOUND) {
+                if (oss != OrgSetting.SETTING_NOT_FOUND) {
                     oss.rdValue = option
                     oss.save(flush: true)
                 } else {
-                    OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
+                    OrgSetting.add(target, OrgSetting.KEYS.GASCO_ENTRY, option)
                 }
             }
             target.lastUpdated = new Date()
@@ -1491,7 +1491,7 @@ class AdminController extends AbstractDebugController {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
+                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
         )
         result
     }

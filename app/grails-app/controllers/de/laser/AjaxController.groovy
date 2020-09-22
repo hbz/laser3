@@ -171,7 +171,7 @@ class AjaxController {
         if (contextService.getUser()) {
             SessionCacheWrapper cache = contextService.getSessionCache()
 
-            if (params.key == UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()) {
+            if (params.key == UserSetting.KEYS.SHOW_EXTENDED_FILTER.toString()) {
 
                 if (params.uri) {
                     cache.put("${params.key}/${params.uri}", params.value)
@@ -273,7 +273,7 @@ class AjaxController {
                     def value = genericOIDService.resolveOID(params.value)
 
                     if ( target && value ) {
-                        if (target instanceof UserSettings) {
+                        if (target instanceof UserSetting) {
                             target.setValue(value)
                         }
                         else {
@@ -319,10 +319,10 @@ class AjaxController {
                             session.userPereferences = null
                         }
 
-                        if (target instanceof UserSettings) {
+                        if (target instanceof UserSetting) {
                             if (target.key.toString() == 'LANGUAGE') {
                                 Locale newLocale = new Locale(value.value, value.value.toUpperCase())
-                                log.debug("UserSettings: LANGUAGE changed to: " + newLocale)
+                                log.debug("UserSetting: LANGUAGE changed to: " + newLocale)
 
                                 LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
                                 localeResolver.setLocale(request, response, newLocale)
@@ -2139,7 +2139,7 @@ class AjaxController {
         def show = params.showEditMode
 
         if (show) {
-            def setting = user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
+            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
 
             if (show == 'true') {
                 setting.setValue(RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))

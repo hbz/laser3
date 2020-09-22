@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSettings" %>
+<%@ page import="de.laser.UserSetting" %>
 <g:set var="uri" value="${controllerName}/${actionName}" />
 
 <r:script>
@@ -11,7 +11,7 @@
         $.ajax({
             url: '<g:createLink controller="ajax" action="updateSessionCache"/>',
             data: {
-                key:    "${UserSettings.KEYS.SHOW_EXTENDED_FILTER}",
+                key:    "${UserSetting.KEYS.SHOW_EXTENDED_FILTER}",
                 value: !($(this).hasClass('blue')),
                 uri:    "${uri}"
             }

@@ -363,7 +363,7 @@ class SemanticUiTagLib {
         def mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
             User user = User.get(springSecurityService.principal.id)
-            mode = (user.getSettingsValue(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
+            mode = (user.getSettingsValue(UserSetting.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
 
             // CAUTION: inject default mode
             attrs.params.mode = mode
@@ -433,7 +433,7 @@ class SemanticUiTagLib {
             else {
 				// overwrite due session
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                def cacheEntry = sessionCache.get("${UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
+                def cacheEntry = sessionCache.get("${UserSetting.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
 
                 if (cacheEntry) {
                     if (cacheEntry.toLowerCase() == 'true') {
@@ -445,7 +445,7 @@ class SemanticUiTagLib {
 				// default profile setting
                 else {
                     User currentUser = contextService.getUser()
-                    String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
+                    String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
 
                     if (settingValue.toLowerCase() == 'yes') {
                         extended = true

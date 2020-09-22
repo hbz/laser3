@@ -568,7 +568,7 @@ class MyInstitutionController extends AbstractDebugController {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         pu.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
         pu.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
@@ -1777,7 +1777,7 @@ join sub.orgRelations or_sub where
             break
         }
 
-        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        def periodInDays = contextService.getUser().getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
         // changes
 
