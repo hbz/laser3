@@ -105,7 +105,7 @@ class ProfileController {
          // TODO : isLastAdminForOrg
 
         if (params.process) {
-            User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+            User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
             result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
 
@@ -172,7 +172,7 @@ class ProfileController {
         user.save(flush: true)
 
         if (params.defaultDash) {
-            Org org = genericOIDService.resolveOID(params.defaultDash)
+            Org org = (Org) genericOIDService.resolveOID(params.defaultDash)
             UserSetting us = user.getSetting(KEYS.DASHBOARD, null)
 
             if (org?.id != us.getValue()?.id) {

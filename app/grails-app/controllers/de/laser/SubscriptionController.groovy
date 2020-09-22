@@ -2445,8 +2445,8 @@ class SubscriptionController
 
         if (params.filterPropDef) {
 
-            def filterPropDef = params.filterPropDef
-            PropertyDefinition propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+            String filterPropDef = params.filterPropDef
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
 
             int deletedProperties = 0
 
@@ -3253,7 +3253,7 @@ class SubscriptionController
     def possibleLicensesForSubscription() {
         List result = []
 
-        Subscription subscription = genericOIDService.resolveOID(params.oid)
+        Subscription subscription = (Subscription) genericOIDService.resolveOID(params.oid)
         Org subscriber = subscription.getSubscriber()
         Org consortia = subscription.getConsortia()
         Org collective = subscription.getCollective()
@@ -4659,7 +4659,7 @@ class SubscriptionController
                     else
                         parentRoleType = RDStore.OR_SUBSCRIBER
                     entry.licenses.each { String licenseOID ->
-                        License license = genericOIDService.resolveOID(licenseOID)
+                        License license = (License) genericOIDService.resolveOID(licenseOID)
                         subscriptionService.setOrgLicRole(sub,license,false)
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
@@ -4747,7 +4747,7 @@ class SubscriptionController
             case BigDecimal.toString(): BigDecimal decVal = new BigDecimal(value)
                 prop.setDecValue(decVal)
                 break
-            case RefdataValue.toString(): RefdataValue rdv = genericOIDService.resolveOID(value)
+            case RefdataValue.toString(): RefdataValue rdv = (RefdataValue) genericOIDService.resolveOID(value)
                 if(rdv)
                     prop.setRefValue(rdv)
                 break

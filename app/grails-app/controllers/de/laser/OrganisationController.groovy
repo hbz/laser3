@@ -844,7 +844,7 @@ class OrganisationController extends AbstractDebugController {
     })
     def deleteCustomerIdentifier() {
         log.debug("OrganisationController::deleteIdentifier ${params}");
-        CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+        CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
         Org owner = GrailsHibernateUtil.unwrapIfProxy(ci).owner
         if (ci && owner.id == contextService.org.id) {
             ci.delete(flush:true)

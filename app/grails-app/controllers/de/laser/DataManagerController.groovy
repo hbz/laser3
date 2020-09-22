@@ -48,11 +48,10 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def changeLog() {
 
-    Map<String, Object> result = [:]
-    log.debug("changeLog ${params}");
-    SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
-
-        def exporting = params.format == 'csv' ? true : false
+        log.debug("changeLog ${params}")
+        Map<String, Object> result = [:]
+        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
+        boolean exporting = params.format == 'csv'
 
     if ( exporting ) {
       result.max = 10000
@@ -510,7 +509,7 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def createMailTemplate() {
 
-        def mailTemplate = new MailTemplate(params)
+        MailTemplate mailTemplate = new MailTemplate(params)
 
         if(mailTemplate.save(flush: true))
         {
@@ -526,7 +525,7 @@ class DataManagerController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def editMailTemplate() {
 
-        MailTemplate mailTemplate = genericOIDService.resolveOID(params.target)
+        MailTemplate mailTemplate = (MailTemplate) genericOIDService.resolveOID(params.target)
 
         if(mailTemplate) {
             mailTemplate.name = params.name

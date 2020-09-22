@@ -68,7 +68,7 @@ class AjaxController {
               [
                 param:'sSearch',
                 clos:{ value ->
-                    def result = '%'
+                    String result = '%'
                     if ( value && ( value.length() > 0 ) )
                         result = "%${value.trim().toLowerCase()}%"
                     result
@@ -107,7 +107,7 @@ class AjaxController {
                     [
                             param:'sSearch',
                             clos:{ value ->
-                                def result = '%'
+                                String result = '%'
                                 if ( value && ( value.length() > 0 ) )
                                     result = "%${value.trim().toLowerCase()}%"
                                 result
@@ -125,7 +125,7 @@ class AjaxController {
                     [
                             param:'sSearch',
                             clos:{ value ->
-                                def result = '%'
+                                String result = '%'
                                 if ( value && ( value.length() > 0 ) )
                                     result = "%${value.trim().toLowerCase()}%"
                                 result
@@ -252,7 +252,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def genericSetRel() {
-        def result = ''
+        String result = ''
 
         try {
             String[] target_components = params.pk.split(":")
@@ -837,7 +837,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def getLicensePropertiesForSubscription() {
-        License loadFor = genericOIDService.resolveOID(params.loadFor)
+        License loadFor = (License) genericOIDService.resolveOID(params.loadFor)
         if(loadFor) {
             Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
@@ -900,7 +900,7 @@ class AjaxController {
           result.ie = false
       }
       else if(params.subscription) {
-          Subscription sub = genericOIDService.resolveOID(params.subscription)
+          Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
           if(!sub) {
               result.sub = false
               result.subPkg = false
@@ -912,13 +912,13 @@ class AjaxController {
                   result.ie = false
               }
               else if(params.package && !params.package.contains('null')) {
-                  SubscriptionPackage subPkg = genericOIDService.resolveOID(params.package)
+                  SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
                   if(!subPkg || subPkg.subscription != sub) {
                       result.subPkg = false
                       result.ie = false
                   }
                   else {
-                      IssueEntitlement ie = genericOIDService.resolveOID(params.issueEntitlement)
+                      IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
                       if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
                           result.ie = false
                       }
@@ -1893,7 +1893,7 @@ class AjaxController {
         }
 
         if (params.owner) {
-            DashboardDueDate dueDate = genericOIDService.resolveOID(params.owner)
+            DashboardDueDate dueDate = (DashboardDueDate) genericOIDService.resolveOID(params.owner)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
@@ -1946,7 +1946,7 @@ class AjaxController {
 
 
         if (params.owner) {
-            DueDateObject dueDateObject = genericOIDService.resolveOID(params.owner)
+            DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
                 Object obj = genericOIDService.resolveOID(dueDateObject.oid)
                 if (obj instanceof Task && isDone){

@@ -51,7 +51,7 @@ class UserController extends AbstractDebugController {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
                 result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
             }
