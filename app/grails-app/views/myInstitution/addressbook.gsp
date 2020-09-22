@@ -152,7 +152,7 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
         restrictToOrg : null,
         showContacts  : true,
         showAddresses : true,
-        tmplConfigShow: ['linenumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
+        tmplConfigShow: ['lineNumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
 ]}"/>
 
 <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
