@@ -9,6 +9,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
+import de.laser.system.SystemEvent
 import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders

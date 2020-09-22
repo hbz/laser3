@@ -107,4 +107,35 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "kloberd (modified)", id: "1600754308495-12") {
+		grailsChange {
+			change {
+				sql.execute("ALTER TABLE activity_profiler RENAME TO system_activity_profiler")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1600754308495-13") {
+		grailsChange {
+			change {
+				sql.execute("ALTER SEQUENCE activity_profiler_ap_id_seq RENAME TO system_activity_profiler_ap_id_seq")
+				sql.execute("ALTER TABLE system_activity_profiler ALTER COLUMN ap_id SET DEFAULT nextval('public.system_activity_profiler_ap_id_seq'::regclass)")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "kloberd (modified)", id: "1600754308495-14") {
+		grailsChange {
+			change {
+				sql.execute("ALTER TABLE system_activity_profiler RENAME COLUMN ap_id TO sap_id")
+				sql.execute("ALTER TABLE system_activity_profiler RENAME COLUMN ap_version TO sap_version")
+				sql.execute("ALTER TABLE system_activity_profiler RENAME COLUMN ap_date_created TO sap_date_created")
+				sql.execute("ALTER TABLE system_activity_profiler RENAME COLUMN ap_user_count TO sap_user_count")
+			}
+			rollback {}
+		}
+	}
 }

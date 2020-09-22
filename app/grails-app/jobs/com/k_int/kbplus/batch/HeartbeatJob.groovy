@@ -1,6 +1,6 @@
 package com.k_int.kbplus.batch
 
-import de.laser.ActivityProfiler
+import de.laser.system.SystemActivityProfiler
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -43,7 +43,7 @@ class HeartbeatJob extends AbstractJob {
 
         log.debug("Heartbeat Job")
         grailsApplication.config.quartzHeartbeat = new Date()
-        ActivityProfiler.update()
+        SystemActivityProfiler.update()
 
         jobIsRunning = false
     }

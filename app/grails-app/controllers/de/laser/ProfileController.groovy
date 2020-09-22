@@ -7,6 +7,7 @@ import com.k_int.kbplus.auth.UserOrg
 import de.laser.UserSetting.KEYS
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.system.SystemTicket
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
