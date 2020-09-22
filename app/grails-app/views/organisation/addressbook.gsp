@@ -43,7 +43,7 @@
 			<g:render template="/templates/cpa/person_table" model="${[
                     persons: visiblePersons,
                     restrictToOrg: orgInstance,
-                    tmplConfigShow: ['linenumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
+                    tmplConfigShow: ['lineNumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
             ]}" />
 		</g:if>
 

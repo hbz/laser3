@@ -123,7 +123,7 @@
               model="${[persons: visiblePersons,
                         restrictToOrg: null,
                         showContacts: true,
-                        tmplConfigShow: ['linenumber', 'name', 'showContacts', 'functionPosition']
+                        tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'functionPosition']
               ]}"/>
 
     <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
@@ -187,7 +187,7 @@
               model="${[persons: visiblePersons,
                         restrictToOrg: null,
                         showAddresses: true,
-                        tmplConfigShow: ['linenumber', 'name', 'showAddresses', 'functionPosition']
+                        tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'functionPosition']
               ]}"/>
 
     <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
