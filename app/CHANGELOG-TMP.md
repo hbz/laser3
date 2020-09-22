@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2879    22.09.2020  rc1.5   1.5.10      Andreas Bug         Datenleck bei Verträgen behoben
+
 2878    21.09.2020  rc1.5   1.5.10      Andreas Bug         Export von Teilnehmer einer Lizenz hakte, Überprüfungen angepasst
 
 --      18.09.2020  rc1.5   1.5.9       Moe     Bug         Bug bei Berechnung der Prozent für Kosten in der Umfrage

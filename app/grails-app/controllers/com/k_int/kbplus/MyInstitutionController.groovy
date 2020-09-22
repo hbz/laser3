@@ -383,9 +383,9 @@ class MyInstitutionController extends AbstractDebugController {
 
         Set<String> subscriptionOIDs
         if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
-            Set<String> subscrQueryFilter = []
-            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
-            Map<String,Object> subscrQueryParams = [:]
+            Set<String> subscrQueryFilter = ["oo.org = :context"]
+            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s join s.orgRelations oo "
+            Map<String,Object> subscrQueryParams = [context:result.institution]
 
             if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
                 subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
