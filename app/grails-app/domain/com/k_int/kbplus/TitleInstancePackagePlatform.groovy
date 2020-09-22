@@ -26,24 +26,12 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     //static auditable = true
     static controlledProperties = ['status', 'platform','accessStartDate','accessEndDate','coverages']
 
-    /*
-    Date startDate
-    String startVolume
-    String startIssue
-    Date endDate
-    String endVolume
-    String endIssue
-    String embargo
-    String coverageDepth
-    String coverageNote
-     */
     Date accessStartDate
     Date accessEndDate
     Date coreStatusStart
     Date coreStatusEnd
     String rectype="so"
     String gokbId
-    //URL originEditUrl
 
     @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
@@ -68,14 +56,9 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     Date dateCreated
     Date lastUpdated
 
-  //TitleInstancePackagePlatform derivedFrom
-  //TitleInstancePackagePlatform masterTipp
-
-  static mappedBy = [ids: 'tipp'/*, additionalPlatforms: 'tipp'*/]
+  static mappedBy = [ids: 'tipp']
   static hasMany = [ids: Identifier,
-                    //additionalPlatforms: PlatformTIPP,
                     coverages: TIPPCoverage]
-
 
   static belongsTo = [
     pkg:Package,
@@ -97,7 +80,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
              title column:'tipp_ti_fk',     index: 'tipp_idx'
             gokbId column:'tipp_gokb_id'
-     //originEditUrl column:'tipp_origin_edit_url'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
@@ -105,20 +87,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
            payment column:'tipp_payment_rv_fk'
             option column:'tipp_option_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
-       //derivedFrom column:'tipp_derived_from'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
       coreStatusStart column:'tipp_core_status_start_date'
       coreStatusEnd column:'tipp_core_status_end_date'
-      /*startDate column:'tipp_start_date',    index: 'tipp_dates_idx'
-      startVolume column:'tipp_start_volume'
-      startIssue column:'tipp_start_issue'
-      endDate column:'tipp_end_date',      index: 'tipp_dates_idx'
-      endVolume column:'tipp_end_volume'
-      endIssue column:'tipp_end_issue'
-      embargo column:'tipp_embargo'
-      coverageDepth column:'tipp_coverage_depth'
-      coverageNote column:'tipp_coverage_note', type: 'text'*/
 
       ids                   batchSize: 10
     //additionalPlatforms   batchSize: 10
@@ -131,7 +103,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         gokbId (blank:false, unique: true, maxSize:511)
-        //originEditUrl(nullable:true, blank:false)
         status      (nullable:true)
         delayedOA   (nullable:true)
         hybridOA    (nullable:true)
@@ -139,22 +110,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         payment     (nullable:true)
         option      (nullable:true)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
-        //derivedFrom(nullable:true, blank:true)
         accessStartDate (nullable:true)
         accessEndDate (nullable:true)
         coreStatusStart (nullable:true)
         coreStatusEnd (nullable:true)
-        /*
-        startDate(nullable:true, blank:true)
-        startVolume(nullable:true, blank:true)
-        startIssue(nullable:true, blank:true)
-        endDate(nullable:true, blank:true)
-        endVolume(nullable:true, blank:true)
-        endIssue(nullable:true, blank:true)
-        embargo(nullable:true, blank:true)
-        coverageDepth(nullable:true, blank:true)
-        coverageNote(nullable:true, blank:true)
-         */
 
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
@@ -185,18 +144,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       pkg.save(failOnError:true)
     }
   }
-
-    /*
-  String getHostPlatform() {
-    String result = null;
-    additionalPlatforms.each { p ->
-      if ( p.rel == 'host' ) {
-        result = p.titleUrl
-      }
-    }
-    result
-  }
-    */
 
   String getIdentifierValue(idtype) {
       String result

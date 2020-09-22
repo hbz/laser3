@@ -1,7 +1,7 @@
 package com.k_int.kbplus.auth
 
 import com.k_int.kbplus.Org
-import de.laser.UserSettings
+import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
 import javax.persistence.Transient
 
@@ -71,34 +71,34 @@ class User {
     }
 
     /*
-        gets UserSettings
+        gets UserSetting
         creating new one (with value) if not existing
      */
-    def getSetting(UserSettings.KEYS key, def defaultValue) {
-        def us = UserSettings.get(this, key)
-        (us == UserSettings.SETTING_NOT_FOUND) ? UserSettings.add(this, key, defaultValue) : us
+    def getSetting(UserSetting.KEYS key, def defaultValue) {
+        def us = UserSetting.get(this, key)
+        (us == UserSetting.SETTING_NOT_FOUND) ? UserSetting.add(this, key, defaultValue) : us
     }
 
     /*
-        gets VALUE of UserSettings
-        creating new UserSettings (with value) if not existing
+        gets VALUE of UserSetting
+        creating new UserSetting (with value) if not existing
      */
-    def getSettingsValue(UserSettings.KEYS key, def defaultValue) {
+    def getSettingsValue(UserSetting.KEYS key, def defaultValue) {
         def setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 
     /*
-        gets VALUE of UserSettings
-        creating new UserSettings if not existing
+        gets VALUE of UserSetting
+        creating new UserSetting if not existing
      */
-    def getSettingsValue(UserSettings.KEYS key) {
+    def getSettingsValue(UserSetting.KEYS key) {
         getSettingsValue(key, null)
     }
 
     long getDefaultPageSize() {
         // create if no setting found
-        def setting = getSetting(UserSettings.KEYS.PAGE_SIZE, 10)
+        def setting = getSetting(UserSetting.KEYS.PAGE_SIZE, 10)
         // if setting exists, but null value
         long value = setting.getValue() ?: 10
         return value

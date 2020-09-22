@@ -225,7 +225,7 @@
     </dl>
 </semui:form>--}%
 
-    <g:if test="${issueEntitlementInstance.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
+    <g:if test="${issueEntitlementInstance.tipp.title instanceof JournalInstance}">
         <div class="ui card">
             <div class="content">
                 <h3 class="ui header"><strong><g:message
@@ -367,7 +367,7 @@
     </g:if>
 
 
-    <g:if test="${issueEntitlementInstance.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
+    <g:if test="${issueEntitlementInstance.tipp.title instanceof JournalInstance}">
         <br/>
 
         <div class="ui card">

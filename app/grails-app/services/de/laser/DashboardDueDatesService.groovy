@@ -7,6 +7,7 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
+import de.laser.system.SystemEvent
 import grails.plugin.mail.MailService
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -145,7 +146,7 @@ class DashboardDueDatesService {
 
             List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
-                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
+                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
                 if (userWantsEmailReminder) {
                     List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
                     orgs.each { org ->
@@ -166,7 +167,7 @@ class DashboardDueDatesService {
 
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         String emailReceiver = user.getEmail()
-        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
         String currentServer = ServerUtils.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, language) + " (" + org.name + ")")
@@ -175,10 +176,10 @@ class DashboardDueDatesService {
         } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
             log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
         } else {
-            boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+            boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
             String ccAddress = null
             if (isRemindCCbyEmail){
-                ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
+                ccAddress = user.getSetting(UserSetting.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
             }
             if (isRemindCCbyEmail && ccAddress) {
                 mailService.sendMail {

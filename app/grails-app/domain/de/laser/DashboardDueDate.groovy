@@ -74,7 +74,7 @@ class DashboardDueDate {
         }
     }
     static isManualCancellationDate(obj, user){
-        int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSettings.DEFAULT_REMINDER_PERIOD).value ?: 1
+        int reminderPeriodForManualCancellationDate = user.getSetting(UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSetting.DEFAULT_REMINDER_PERIOD).value ?: 1
         return (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate))
     }
     private DashboardDueDate(attribute_value_de, attribute_value_en, attribute_name, date, object, responsibleUser, responsibleOrg, isDone, isHidden){

@@ -7,9 +7,11 @@
     <p> Items requiring action are marked with red circle. When these items are addressed, 'Confirm Delete' button will be enabled.</p>
     <table class="ui celled la-table table">
       <thead>
+      <tr>
         <th>Item</th>
         <th>Details</th>
         <th>Action</th>
+      </tr>
       </thead>
       <tbody>
       <g:set var="actions_needed" value="false"/>
@@ -56,7 +58,7 @@
       <button type="submit" disabled="disabled" class="ui negative button">Confirm Delete</button>
     </g:if>
     <g:else>
-      <button type="submit"class="ui negative button">Confirm Delete</button>
+      <button type="submit" class="ui negative button">Confirm Delete</button>
     </g:else>
     </g:form>
   </div>

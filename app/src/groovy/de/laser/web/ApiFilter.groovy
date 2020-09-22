@@ -1,7 +1,7 @@
 package de.laser.web
 
 import com.k_int.kbplus.Org
-import de.laser.OrgSettings
+import de.laser.OrgSetting
 import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -64,12 +64,12 @@ class ApiFilter extends GenericFilterBean {
 
                             // checking digest
 
-                            Org apiOrg = OrgSettings.executeQuery(
-                                    'SELECT os.org FROM OrgSettings os WHERE os.key = :key AND os.strValue = :value',
-                                    [key: OrgSettings.KEYS.API_KEY, value: key]
+                            Org apiOrg = OrgSetting.executeQuery(
+                                    'SELECT os.org FROM OrgSetting os WHERE os.key = :key AND os.strValue = :value',
+                                    [key: OrgSetting.KEYS.API_KEY, value: key]
                             )?.get(0)
 
-                            String apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
+                            String apiSecret = OrgSetting.get(apiOrg, OrgSetting.KEYS.API_PASSWORD)?.getValue()
 
                             checksum = hmac(
                                         method +    // http-method

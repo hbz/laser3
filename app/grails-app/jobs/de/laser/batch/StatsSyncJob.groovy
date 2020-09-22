@@ -1,6 +1,6 @@
 package de.laser.batch
 
-import de.laser.SystemEvent
+import de.laser.system.SystemEvent
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication

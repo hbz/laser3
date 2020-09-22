@@ -242,12 +242,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         return roleLinks.findAll {it.org?.id == org.id}
     }
 
-    /*
-    @Transient
-    def getCustomPropByName(name){
-      return privateProperties.find{it.type.name == name}
-    }*/
-
     @Override
     def afterDelete() {
         super.afterDeleteHandler()

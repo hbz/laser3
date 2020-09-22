@@ -1,7 +1,7 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
-import de.laser.OrgSettings
+import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.api.v0.*
 import de.laser.helper.Constants
@@ -31,10 +31,10 @@ class ApiStatistic {
      */
     static private List<Org> getAccessibleOrgs() {
 
-        List<Org> orgs = OrgSettings.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+        List<Org> orgs = OrgSetting.executeQuery(
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
-                            key    : OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
+                            key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
                             rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
                             deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
                     ])

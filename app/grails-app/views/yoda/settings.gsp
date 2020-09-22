@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SystemSetting" %>
+<%@ page import="de.laser.system.SystemSetting" %>
 <!doctype html>
 <html>
 <head>

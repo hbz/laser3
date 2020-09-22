@@ -31,16 +31,11 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
   String keyTitle
   String sortTitle
   String gokbId
-  //URL originEditUrl
-
   String seriesName
   String subjectReference
 
   @RefdataAnnotation(cat = RDConstants.TITLE_STATUS)
   RefdataValue status
-
-  //@RefdataAnnotation(cat = 'Title Type')
-  //RefdataValue type
 
   @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
   RefdataValue medium
@@ -76,9 +71,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
       seriesName  column:'ti_series_name', type:'text'
       subjectReference column:'ti_subject_reference', type:'text'
            gokbId column:'ti_gokb_id', index:'ti_gokb_id_idx'
-    //originEditUrl column:'ti_origin_edit_url'
            status column:'ti_status_rv_fk'
-      // type column:'ti_type_rv_fk' -> existing values should be moved to medium
            medium column:'ti_medium_rv_fk'
             //tipps sort:'startDate', order: 'asc', batchSize: 10
       lastUpdatedCascading column: 'ti_last_updated_cascading'
@@ -93,7 +86,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     static constraints = {
         globalUID(blank:false, unique:true, maxSize:255)
         status(nullable:true)
-        //type(nullable:true, blank:false)
         medium(nullable:true)
         title(nullable:true, blank:false,maxSize:2048)
         normTitle(nullable:true, blank:false,maxSize:2048)
@@ -102,7 +94,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
         gokbId (blank:false, unique: true, maxSize:511)
         seriesName(nullable:true, blank:false)
         subjectReference(nullable:true, blank:false)
-        //originEditUrl(nullable:true, blank:false)
         lastUpdatedCascading (nullable: true)
     }
 

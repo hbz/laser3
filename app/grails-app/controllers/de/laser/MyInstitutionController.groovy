@@ -34,6 +34,7 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
+import de.laser.system.SystemAnnouncement
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -437,9 +438,9 @@ class MyInstitutionController extends AbstractDebugController {
 
         Set<String> subscriptionOIDs
         if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
-            Set<String> subscrQueryFilter = []
-            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s"
-            Map<String,Object> subscrQueryParams = [:]
+            Set<String> subscrQueryFilter = ["oo.org = :context"]
+            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s join s.orgRelations oo "
+            Map<String,Object> subscrQueryParams = [context:result.institution]
 
             if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
                 subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
@@ -568,7 +569,7 @@ class MyInstitutionController extends AbstractDebugController {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         pu.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSettings os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
         pu.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
@@ -1369,7 +1370,7 @@ join sub.orgRelations or_sub where
             if(params["linkType_${configMap.link.id}"]) {
                 String linkTypeString = params["linkType_${configMap.link.id}"].split("§")[0]
                 int perspectiveIndex = Integer.parseInt(params["linkType_${configMap.link.id}"].split("§")[1])
-                RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+                RefdataValue linkType = (RefdataValue) genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
                 if(perspectiveIndex == 0) {
                     configMap.source = params.context
@@ -1777,7 +1778,7 @@ join sub.orgRelations or_sub where
             break
         }
 
-        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        def periodInDays = contextService.getUser().getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
         // changes
 
@@ -3267,7 +3268,7 @@ join sub.orgRelations or_sub where
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
             case 'delete':
-                PropertyDefinitionGroup pdg = genericOIDService.resolveOID(params.oid)
+                PropertyDefinitionGroup pdg = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
                 try {
                     pdg.delete(flush:true)
                     flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
@@ -3283,7 +3284,7 @@ join sub.orgRelations or_sub where
                     String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
                     if (params.oid) {
-                        propDefGroup = genericOIDService.resolveOID(params.oid)
+                        propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
                         propDefGroup.name = params.name ?: propDefGroup.name
                         propDefGroup.description = params.description
                         propDefGroup.ownerType = ownerType
@@ -3463,7 +3464,7 @@ join sub.orgRelations or_sub where
     def processManageProperties() {
         Map<String, Object> result = setResultGenerics()
         log.debug( params.toMapString() )
-        PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+        PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
         List withAudit = params.list("withAudit")
         String propertyType = pd.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
         if(params.newObjects) {
@@ -3517,7 +3518,7 @@ join sub.orgRelations or_sub where
         selectedObjects.each { ownerId ->
             def owner = resolveOwner(propDef,ownerId)
             Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
-                it.owner.id == owner.id && it.type.id == propDef.id && it.tenant.id == contextOrg.id && !AuditConfig.getConfig(it)
+                it.owner.id == owner.id && it.type.id == propDef.id && it.tenant?.id == contextOrg.id && !AuditConfig.getConfig(it)
             }
 
             existingProps.each { AbstractPropertyWithCalculatedLastUpdated prop ->
@@ -3582,12 +3583,12 @@ join sub.orgRelations or_sub where
                 flash."${rl[0]}" = rl[1]
                 break
             case 'toggleMandatory':
-                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
                 pd.mandatory = !pd.mandatory
                 pd.save(flush:true)
                 break
             case 'toggleMultipleOccurrence':
-                PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+                PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
                 pd.multipleOccurrence = !pd.multipleOccurrence
                 pd.save(flush:true)
                 break
@@ -3633,7 +3634,7 @@ join sub.orgRelations or_sub where
         Map<String,Object> result = setResultGenerics()
 
         if(params.pd) {
-            PropertyDefinition pd = genericOIDService.resolveOID(params.pd)
+            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
             if (pd) {
                 switch(params.cmd) {
                     case 'toggleMandatory': pd.mandatory = !pd.mandatory
@@ -3688,7 +3689,7 @@ join sub.orgRelations or_sub where
     @Secured(['ROLE_USER'])
     def switchContext() {
         User user = User.get(springSecurityService.principal.id)
-        Org org  = genericOIDService.resolveOID(params.oid)
+        Org org = (Org) genericOIDService.resolveOID(params.oid)
 
         if (user && org && org.id in user.getAuthorizedOrgsIds()) {
             log.debug('switched context to: ' + org)

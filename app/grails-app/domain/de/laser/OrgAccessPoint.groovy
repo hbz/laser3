@@ -143,8 +143,8 @@ class OrgAccessPoint extends AbstractBase {
         active
     }
 
-    Map getAccessPointIpRanges() {
-        Map accessPointIpRanges = [:]
+    Map<String, Object> getAccessPointIpRanges() {
+        Map<String, Object> accessPointIpRanges = [:]
 
         accessPointIpRanges.ipv4Ranges = []
         accessPointIpRanges.ipv6Ranges = []

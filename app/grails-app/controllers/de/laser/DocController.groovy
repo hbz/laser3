@@ -115,7 +115,7 @@ class DocController extends AbstractDebugController {
 				}
 
 				if (params.version) {
-					def version = params.version.toLong()
+					Long version = params.long('version')
 					if (docInstance.version > version) {
 						docInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
 								[message(code: 'default.note.label')] as Object[],

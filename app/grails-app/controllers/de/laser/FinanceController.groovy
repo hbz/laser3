@@ -918,7 +918,7 @@ class FinanceController extends AbstractDebugController {
               def tax_key = null
               if(!params.newTaxRate.contains("null")) {
                   String[] newTaxRate = params.newTaxRate.split("§")
-                  RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                  RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                   int taxRate = Integer.parseInt(newTaxRate[1])
                   switch(taxType.id) {
                       case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
@@ -1465,7 +1465,7 @@ class FinanceController extends AbstractDebugController {
             def tax_key = null
             if (!params.newTaxRate2.contains("null")) {
                 String[] newTaxRate = params.newTaxRate2.split("§")
-                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
                     case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:

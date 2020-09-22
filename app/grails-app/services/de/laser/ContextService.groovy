@@ -37,7 +37,7 @@ class ContextService {
 
             def context = session.getAttribute('contextOrg')
             if (! context) {
-                context = getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
+                context = getUser()?.getSettingsValue(UserSetting.KEYS.DASHBOARD)
 
                 if (context) {
                     session.setAttribute('contextOrg', context)

@@ -73,11 +73,11 @@ class ApiController {
             org = contextService.getOrg()
         }
 
-        def apiKey = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)
-        def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
+        def apiKey = OrgSetting.get(org, OrgSetting.KEYS.API_KEY)
+        def apiPass = OrgSetting.get(org, OrgSetting.KEYS.API_PASSWORD)
 
-        result.apiKey       = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
-        result.apiPassword  = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
+        result.apiKey       = (apiKey != OrgSetting.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
+        result.apiPassword  = (apiPass != OrgSetting.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
         result.apiContext   = org?.globalUID ?: ''
 
         result
@@ -181,9 +181,9 @@ class ApiController {
 
         if (apiOrg) {
             // checking role permission
-            def apiLevel = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_LEVEL)
+            def apiLevel = OrgSetting.get(apiOrg, OrgSetting.KEYS.API_LEVEL)
 
-            if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+            if (apiLevel != OrgSetting.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
                     hasAccess = (apiLevel.getValue() in ApiToolkit.getReadingApiLevels())
                 }

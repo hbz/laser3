@@ -31,13 +31,6 @@
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
-%{--<g:if test="${surveyInfo.startDate || surveyInfo.endDate}">
-(<g:formatDate formatName="default.date.format.notime"
-               date="${surveyInfo.startDate}"/>
--
-<g:formatDate formatName="default.date.format.notime"
-              date="${surveyInfo.endDate}"/>)
-</g:if>--}%
 </h1>
 
 <br>
@@ -45,33 +38,6 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 <semui:messages data="${flash}"/>
 
 <br>
-
-<%--
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    <div class="content">
-        <div class="header">${surveyInfo.status?.getI10n('value')}!</div>
-
-        <p>
-            <g:if test="${surveyInfo.status == RefdataValue.getByValueAndCategory('Survey started', RDConstants.SURVEY_STATUS)}">
-                <g:message code="surveyInfo.status.surveyStarted"
-                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.endDate) ?: '')]"/>
-            </g:if>
-            <g:if test="${surveyInfo.status == RefdataValue.getByValueAndCategory('Survey completed', RDConstants.SURVEY_STATUS)}">
-                <g:message code="surveyInfo.status.surveyCompleted"
-                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate)]"/>
-            </g:if>
-            <g:if test="${surveyInfo.status == RefdataValue.getByValueAndCategory('In Evaluation', RDConstants.SURVEY_STATUS)}">
-                <g:message code="surveyInfo.status.inEvaluation"/>
-            </g:if>
-            <g:if test="${surveyInfo.status == RefdataValue.getByValueAndCategory('Completed', RDConstants.SURVEY_STATUS)}">
-                <g:message code="surveyInfo.status.surveyCompleted"/>
-            </g:if>
-        </p>
-    </div>
-</div>
---%>
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">

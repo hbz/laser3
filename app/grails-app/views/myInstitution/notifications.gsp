@@ -24,9 +24,11 @@
 
             <table class="ui celled la-table table">
                 <thead>
+                <tr>
                     <th></th>
                     <th></th>
                     <th></th>
+                </tr>
                 </thead>
                 <g:each in="${changes}" var="changeSet">
                     <g:set var="change" value="${changeSet[0]}" />

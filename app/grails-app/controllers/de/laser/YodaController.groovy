@@ -9,6 +9,9 @@ import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
+import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemProfiler
+import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.Action
@@ -300,13 +303,13 @@ class YodaController {
 
         // gathering data
 
-        List<Timestamp> dayDates = ActivityProfiler.executeQuery(
-                "select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
+        List<Timestamp> dayDates = SystemActivityProfiler.executeQuery(
+                "select date_trunc('day', dateCreated) as day from SystemActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
         )
         dayDates.unique().take(30).each { it ->
-            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = ActivityProfiler.executeQuery(
+            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = SystemActivityProfiler.executeQuery(
                     "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
-                            "  from ActivityProfiler where date_trunc('day', dateCreated) = :day " +
+                            "  from SystemActivityProfiler where date_trunc('day', dateCreated) = :day " +
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 
@@ -744,20 +747,20 @@ class YodaController {
 
         opList.each { OrgProperty op ->
             if (op.type.name == 'API Key') {
-                def oss = OrgSettings.get(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)
+                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY)
 
-                if (oss == OrgSettings.SETTING_NOT_FOUND) {
-                    OrgSettings.add(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
+                if (oss == OrgSetting.SETTING_NOT_FOUND) {
+                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
                 }
                 else {
                     oss.setValue(op)
                 }
             }
             else if (op.type.name == 'RequestorID') {
-                def oss = OrgSettings.get(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
 
-                if (oss == OrgSettings.SETTING_NOT_FOUND) {
-                    OrgSettings.add(op.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
+                if (oss == OrgSetting.SETTING_NOT_FOUND) {
+                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
                 }
                 else {
                     oss.setValue(op)
@@ -786,14 +789,14 @@ class YodaController {
         Map<String, Object> result = [:]
 
         result.subRoles = Subscription.executeQuery(
-            'select sub, role from Subscription sub join sub.orgRelations role, OrgSettings os ' +
+            'select sub, role from Subscription sub join sub.orgRelations role, OrgSetting os ' +
             '  where os.org = role.org ' +
             '  and role.roleType.value like \'Subscriber\' ' +
             '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' '
         )
 
         result.subConsRoles = Subscription.executeQuery(
-                'select sub, role from Subscription sub join sub.orgRelations role, OrgSettings os ' +
+                'select sub, role from Subscription sub join sub.orgRelations role, OrgSetting os ' +
                         '  where os.org = role.org ' +
                         '  and role.roleType.value like \'Subscriber_Consortial\' ' +
                         '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' ' +
@@ -1064,10 +1067,10 @@ class YodaController {
 
         int consCount = 0
         consOrgs.each{ o ->
-            def oss = OrgSettings.get(o, OrgSettings.KEYS.CUSTOMER_TYPE)
-            if (oss == OrgSettings.SETTING_NOT_FOUND) {
+            def oss = OrgSetting.get(o, OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss == OrgSetting.SETTING_NOT_FOUND) {
                 log.debug ('Setting customer type for org: ' + o.id)
-                OrgSettings.add(o, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM', 'org'))
+                OrgSetting.add(o, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM', 'org'))
                 consCount++
             }
         }
@@ -1279,7 +1282,7 @@ class YodaController {
                                         }
                                     }
                                     settings {
-                                        List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                                        List<OrgSetting> os = OrgSetting.findAllByOrg(o)
                                         os.each { st ->
                                             switch(st.key.type) {
                                                 case RefdataValue:
@@ -1451,7 +1454,7 @@ class YodaController {
                                     }
                                 }
                                 settings {
-                                    List<UserSettings> us = UserSettings.findAllByUser(u)
+                                    List<UserSetting> us = UserSetting.findAllByUser(u)
                                     us.each { st ->
                                         switch(st.key.type) {
                                             case Org: setting{
@@ -1617,10 +1620,10 @@ class YodaController {
                     user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
                 }
                 result.users = users
-                flash.message = 'Das Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
+                flash.message = 'Das Ersetzen des Usersetting DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
             } catch (Exception ex) {
                 status.setRollbackOnly()
-                flash.error = 'Es ist ein Fehler aufgetreten beim Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD: ' + ex.message
+                flash.error = 'Es ist ein Fehler aufgetreten beim Ersetzen des Usersetting DASHBOARD_REMINDER_PERIOD: ' + ex.message
                 flash.error += '<br /><br /><b>Es wurde ein Rollback durchgeführt!</b>'
             }
         }

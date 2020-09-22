@@ -1,5 +1,6 @@
-package de.laser
+package de.laser.system
 
+import de.laser.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 
 class SystemMessage {

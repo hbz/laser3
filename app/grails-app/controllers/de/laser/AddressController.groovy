@@ -102,7 +102,7 @@ class AddressController extends AbstractDebugController {
             return
         }
         if (params.version) {
-            def version = params.version.toLong()
+            Long version = params.long('version')
             if (addressInstance.version > version) {
                 addressInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
                           [message(code: 'address.label')] as Object[],

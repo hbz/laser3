@@ -97,13 +97,6 @@
     </tbody>
 </table>
 
-<%--
-<semui:paginate action="currentPlatforms" controller="myInstitution" params="${params}"
-                next="${message(code:'default.paginate.next')}"
-                prev="${message(code:'default.paginate.prev')}"
-                max="${max}" total="${platformInstanceTotal}" />
---%>
-
 <semui:debugInfo>
     <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>

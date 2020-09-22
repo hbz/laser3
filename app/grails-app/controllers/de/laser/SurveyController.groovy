@@ -362,8 +362,8 @@ class SurveyController {
         result.allLinkedLicenses = [:]
         Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
         allLinkedLicenses.each { Links li ->
-            Subscription s = genericOIDService.resolveOID(li.destination)
-            License l = genericOIDService.resolveOID(li.source)
+            Subscription s = (Subscription) genericOIDService.resolveOID(li.destination)
+            License l = (License) genericOIDService.resolveOID(li.source)
             Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
             if(!linkedLicenses)
                 linkedLicenses = []
@@ -443,8 +443,8 @@ class SurveyController {
         result.allLinkedLicenses = [:]
         Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
         allLinkedLicenses.each { Links li ->
-            Subscription s = genericOIDService.resolveOID(li.destination)
-            License l = genericOIDService.resolveOID(li.source)
+            Subscription s = (Subscription) genericOIDService.resolveOID(li.destination)
+            License l = (License) genericOIDService.resolveOID(li.source)
             Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
             if(!linkedLicenses)
                 linkedLicenses = []
@@ -946,7 +946,7 @@ class SurveyController {
             def tax_key = null
             if (!params.newTaxRate2.contains("null")) {
                 String[] newTaxRate = params.newTaxRate2.split("§")
-                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
                     case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
@@ -3137,7 +3137,7 @@ class SurveyController {
             def tax_key = null
             if (!params.newTaxRate.contains("null")) {
                 String[] newTaxRate = params.newTaxRate.split("§")
-                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
                     case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:

@@ -417,8 +417,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     List<Org> getAllSubscribers() {
         List<Org> result = []
-        orgRelations.each { or ->
-            if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden', 'Subscriber_Collective'] )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE] )
                 result.add(or.org)
             }
         result
@@ -426,8 +426,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Org getProvider() {
         Org result
-        orgRelations.each { or ->
-            if ( or.roleType.value=='Content Provider' )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_CONTENT_PROVIDER )
                 result = or.org
             }
         result
@@ -435,8 +435,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Org getConsortia() {
         Org result
-        orgRelations.each { or ->
-            if ( or.roleType.value=='Subscription Consortia' )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA )
                 result = or.org
             }
         result
@@ -444,9 +444,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Org getCollective() {
         Org result
-        result = orgRelations.find { OrgRole or ->
-            or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id
-        }?.org
+        orgRelations.each {OrgRole or ->
+            if ( or.roleType == RDStore.OR_SUBSCRIPTION_COLLECTIVE ) {
+                result = or.org
+            }
+        }
         result
     }
 

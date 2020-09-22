@@ -14,7 +14,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.Address
 import de.laser.Contact
 import de.laser.OrgAccessPoint
-import de.laser.OrgSettings
+import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.Person
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -28,9 +28,6 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-
-import javax.persistence.Transient
-import java.text.SimpleDateFormat
 
 @Log4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
@@ -275,11 +272,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean setDefaultCustomerType() {
-        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+        def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-        if (oss == OrgSettings.SETTING_NOT_FOUND) {
+        if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
             return true
         }
 
@@ -289,9 +286,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String getCustomerType() {
         String result
 
-        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+        def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
             result = oss.roleValue?.authority
         }
         result
@@ -299,37 +296,37 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String getCustomerTypeI10n() {
         String result
 
-        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+        def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
             result = oss.roleValue?.getI10n('authority')
         }
         result
     }
 
     /*
-	    gets OrgSettings
+	    gets OrgSetting
 	    creating new one (with value) if not existing
      */
-    def getSetting(OrgSettings.KEYS key, def defaultValue) {
-        def os = OrgSettings.get(this, key)
-        (os == OrgSettings.SETTING_NOT_FOUND) ? OrgSettings.add(this, key, defaultValue) : os
+    def getSetting(OrgSetting.KEYS key, def defaultValue) {
+        def os = OrgSetting.get(this, key)
+        (os == OrgSetting.SETTING_NOT_FOUND) ? OrgSetting.add(this, key, defaultValue) : os
     }
 
     /*
-        gets VALUE of OrgSettings
-        creating new OrgSettings (with value) if not existing
+        gets VALUE of OrgSetting
+        creating new OrgSetting (with value) if not existing
      */
-    def getSettingsValue(OrgSettings.KEYS key, def defaultValue) {
+    def getSettingsValue(OrgSetting.KEYS key, def defaultValue) {
         def setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 
     /*
-        gets VALUE of OrgSettings
-        creating new OrgSettings if not existing
+        gets VALUE of OrgSetting
+        creating new OrgSetting if not existing
      */
-    def getSettingsValue(OrgSettings.KEYS key) {
+    def getSettingsValue(OrgSetting.KEYS key) {
         getSettingsValue(key, null)
     }
 
@@ -434,51 +431,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     // called from AjaxController.resolveOID2()
   static Org refdataCreate(value) {
     return new Org(name:value)
-  }
-
-  @Transient
-  static def oaiConfig = [
-    id:'orgs',
-    textDescription:'Org repository for KBPlus',
-    query:" from Org as o ",
-    pageSize:20
-  ]
-
-  /**
-   *  Render this title as OAI_dc
-   */
-  @Transient
-  def toOaiDcXml(builder, attr) {
-    builder.'dc'(attr) {
-      'dc:title' (name)
-    }
-  }
-
-  /**
-   *  Render this Title as KBPlusXML
-   */
-  @Transient
-  def toKBPlus(builder, attr) {
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    def pub = getPublisher()
-
-    try {
-      builder.'kbplus' (attr) {
-        builder.'org' (['id':(id)]) {
-          builder.'name' (name)
-        }
-        builder.'identifiers' () {
-          ids?.each { id_oc ->
-            builder.identifier([namespace:id_oc.ns.ns, value:id_oc.value])
-          }
-        }
-      }
-    }
-    catch ( Exception e ) {
-      log.error( e.toString() )
-    }
-
   }
 
     String getDesignation() {
@@ -638,8 +590,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         boolean check = false
 
         if (perms) {
-            def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 perms.split(',').each { perm ->
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
                 }
@@ -651,7 +603,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         check
     }
 
-    def dropdownNamingConvention() {
+    String dropdownNamingConvention() {
         return dropdownNamingConvention(contextService.org)
     }
 
@@ -674,5 +626,4 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
         result
     }
-
 }

@@ -130,8 +130,7 @@
                             </g:else>
                         </div>
                         <input type="submit" class="ui tiny button"
-                               value="${message(code: 'accessPoint.button.add')}"
-                               class="ui button"/>
+                               value="${message(code: 'accessPoint.button.add')}" />
                     </div>
                 </g:form>
             </div>
@@ -200,8 +199,7 @@
                         </g:else>
                     </div>
                     <input type="submit" class="ui tiny button"
-                           value="${message(code: 'accessPoint.button.add')}"
-                           class="ui button"/>
+                           value="${message(code: 'accessPoint.button.add')}" />
                 </div>
             </g:form>
         </div>
@@ -217,9 +215,7 @@
 </div>
 
 <g:javascript>
-    $('.menu .item')
-            .tab()
-    ;
+    $('.menu .item').tab();
 </g:javascript>
 </body>
 </html>

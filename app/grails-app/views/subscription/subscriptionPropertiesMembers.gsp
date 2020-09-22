@@ -109,7 +109,7 @@
                     </tr>
                     </thead>
                     <tbody>
-
+                    <tr>
                     <td>${parentSub.name}</td>
 
                     <td>
@@ -583,7 +583,7 @@
                     </tr>
                     </thead>
                     <tbody>
-
+                    <tr>
                     <td>${parentSub.name}</td>
 
                     <td>

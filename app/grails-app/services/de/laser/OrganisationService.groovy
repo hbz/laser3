@@ -60,19 +60,19 @@ class OrganisationService {
     void initMandatorySettings(Org org) {
         log.debug("initMandatorySettings for org ${org.id}") //org.id call crashes when called from sync
 
-        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
+        if (OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
                     RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
             )
         }
-        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,'')
+        if (OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,'')
         }
-        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, '')
+        if (OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID, '')
         }
-        if (OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+        if (OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
                     RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
             )
         }
@@ -2574,11 +2574,11 @@ class OrganisationService {
         if(!hbz) {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
-                OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
+                OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
                 grailsApplication.config.systemUsers.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
-                    admin.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
+                    admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)
                 }
             }
             else if(hbz.hasErrors()) {
@@ -2609,7 +2609,7 @@ class OrganisationService {
                     if(!org.hasErrors()) {
                         //other ones are covered by Org.setDefaultCustomerType()
                         if (customerType in ['singlenutzer', 'kollektivnutzer', 'konsortium']) {
-                            OrgSettings.add(org, OrgSettings.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
+                            OrgSetting.add(org, OrgSetting.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
                             if (customerType == 'konsortium') {
                                 Combo c = new Combo(fromOrg: Org.findByName(orgs.konsorte.name), toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
                                 c.save()

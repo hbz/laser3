@@ -26,6 +26,7 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -68,7 +69,7 @@ class AjaxController {
               [
                 param:'sSearch',
                 clos:{ value ->
-                    def result = '%'
+                    String result = '%'
                     if ( value && ( value.length() > 0 ) )
                         result = "%${value.trim().toLowerCase()}%"
                     result
@@ -107,7 +108,7 @@ class AjaxController {
                     [
                             param:'sSearch',
                             clos:{ value ->
-                                def result = '%'
+                                String result = '%'
                                 if ( value && ( value.length() > 0 ) )
                                     result = "%${value.trim().toLowerCase()}%"
                                 result
@@ -125,7 +126,7 @@ class AjaxController {
                     [
                             param:'sSearch',
                             clos:{ value ->
-                                def result = '%'
+                                String result = '%'
                                 if ( value && ( value.length() > 0 ) )
                                     result = "%${value.trim().toLowerCase()}%"
                                 result
@@ -171,7 +172,7 @@ class AjaxController {
         if (contextService.getUser()) {
             SessionCacheWrapper cache = contextService.getSessionCache()
 
-            if (params.key == UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()) {
+            if (params.key == UserSetting.KEYS.SHOW_EXTENDED_FILTER.toString()) {
 
                 if (params.uri) {
                     cache.put("${params.key}/${params.uri}", params.value)
@@ -252,7 +253,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def genericSetRel() {
-        def result = ''
+        String result = ''
 
         try {
             String[] target_components = params.pk.split(":")
@@ -273,7 +274,7 @@ class AjaxController {
                     def value = genericOIDService.resolveOID(params.value)
 
                     if ( target && value ) {
-                        if (target instanceof UserSettings) {
+                        if (target instanceof UserSetting) {
                             target.setValue(value)
                         }
                         else {
@@ -319,10 +320,10 @@ class AjaxController {
                             session.userPereferences = null
                         }
 
-                        if (target instanceof UserSettings) {
+                        if (target instanceof UserSetting) {
                             if (target.key.toString() == 'LANGUAGE') {
                                 Locale newLocale = new Locale(value.value, value.value.toUpperCase())
-                                log.debug("UserSettings: LANGUAGE changed to: " + newLocale)
+                                log.debug("UserSetting: LANGUAGE changed to: " + newLocale)
 
                                 LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
                                 localeResolver.setLocale(request, response, newLocale)
@@ -837,7 +838,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def getLicensePropertiesForSubscription() {
-        License loadFor = genericOIDService.resolveOID(params.loadFor)
+        License loadFor = (License) genericOIDService.resolveOID(params.loadFor)
         if(loadFor) {
             Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
@@ -900,7 +901,7 @@ class AjaxController {
           result.ie = false
       }
       else if(params.subscription) {
-          Subscription sub = genericOIDService.resolveOID(params.subscription)
+          Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
           if(!sub) {
               result.sub = false
               result.subPkg = false
@@ -912,13 +913,13 @@ class AjaxController {
                   result.ie = false
               }
               else if(params.package && !params.package.contains('null')) {
-                  SubscriptionPackage subPkg = genericOIDService.resolveOID(params.package)
+                  SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
                   if(!subPkg || subPkg.subscription != sub) {
                       result.subPkg = false
                       result.ie = false
                   }
                   else {
-                      IssueEntitlement ie = genericOIDService.resolveOID(params.issueEntitlement)
+                      IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
                       if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
                           result.ie = false
                       }
@@ -1298,7 +1299,7 @@ class AjaxController {
       def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
       def type = PropertyDefinition.get(params.propIdent.toLong())
       Org contextOrg = contextService.getOrg()
-      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant.id == contextOrg.id }
+      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
 
       if (existingProp == null || type.multipleOccurrence) {
         newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type, contextOrg )
@@ -1893,7 +1894,7 @@ class AjaxController {
         }
 
         if (params.owner) {
-            DashboardDueDate dueDate = genericOIDService.resolveOID(params.owner)
+            DashboardDueDate dueDate = (DashboardDueDate) genericOIDService.resolveOID(params.owner)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save(flush: true)
@@ -1946,7 +1947,7 @@ class AjaxController {
 
 
         if (params.owner) {
-            DueDateObject dueDateObject = genericOIDService.resolveOID(params.owner)
+            DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
                 Object obj = genericOIDService.resolveOID(dueDateObject.oid)
                 if (obj instanceof Task && isDone){
@@ -2139,7 +2140,7 @@ class AjaxController {
         def show = params.showEditMode
 
         if (show) {
-            def setting = user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
+            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
 
             if (show == 'true') {
                 setting.setValue(RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
