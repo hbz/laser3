@@ -7,6 +7,7 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
+import de.laser.system.SystemEvent
 import grails.plugin.mail.MailService
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication

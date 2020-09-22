@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SystemEvent;" %>
+<%@ page import="de.laser.system.SystemEvent;" %>
 <!doctype html>
 <html>
 <head>

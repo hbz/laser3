@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import de.laser.GlobalRecordSource
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.SystemEvent
+import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration

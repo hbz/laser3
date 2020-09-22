@@ -1,18 +1,18 @@
-package de.laser
+package de.laser.system
 
-
+import de.laser.YodaService
 import grails.util.Holders
 
-class ActivityProfiler {
+class SystemActivityProfiler {
 
     Integer userCount
     Date dateCreated
 
     static mapping = {
-        id          column:'ap_id'
-        version     column:'ap_version'
-        userCount   column:'ap_user_count'
-        dateCreated column:'ap_date_created'
+        id          column:'sap_id'
+        version     column:'sap_version'
+        userCount   column:'sap_user_count'
+        dateCreated column:'sap_date_created'
     }
 
     static constraints = { }
@@ -23,7 +23,7 @@ class ActivityProfiler {
         withTransaction {
             int userCount = yodaService.getNumberOfActiveUsers()
             if (userCount > 0) {
-                new ActivityProfiler(userCount: yodaService.getNumberOfActiveUsers()).save()
+                new SystemActivityProfiler(userCount: yodaService.getNumberOfActiveUsers()).save()
             }
         }
     }

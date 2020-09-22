@@ -4,7 +4,7 @@ import de.laser.FTControl
 import de.laser.RefdataValue
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
-import de.laser.SystemEvent
+import de.laser.system.SystemEvent
 import de.laser.Task
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated

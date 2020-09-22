@@ -9,6 +9,9 @@ import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
+import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemProfiler
+import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.Action
@@ -300,13 +303,13 @@ class YodaController {
 
         // gathering data
 
-        List<Timestamp> dayDates = ActivityProfiler.executeQuery(
-                "select date_trunc('day', dateCreated) as day from ActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
+        List<Timestamp> dayDates = SystemActivityProfiler.executeQuery(
+                "select date_trunc('day', dateCreated) as day from SystemActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
         )
         dayDates.unique().take(30).each { it ->
-            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = ActivityProfiler.executeQuery(
+            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = SystemActivityProfiler.executeQuery(
                     "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
-                            "  from ActivityProfiler where date_trunc('day', dateCreated) = :day " +
+                            "  from SystemActivityProfiler where date_trunc('day', dateCreated) = :day " +
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 

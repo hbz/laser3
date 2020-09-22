@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.DocContext
-import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
@@ -13,6 +12,7 @@ import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.interfaces.CalculatedType
+import de.laser.system.SystemEvent
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.hibernate.Session

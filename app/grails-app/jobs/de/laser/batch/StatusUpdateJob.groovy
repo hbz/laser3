@@ -1,7 +1,7 @@
 package de.laser.batch
 
 
-import de.laser.SystemEvent
+import de.laser.system.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class StatusUpdateJob extends AbstractJob {
