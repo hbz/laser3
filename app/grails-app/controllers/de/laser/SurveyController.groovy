@@ -198,7 +198,7 @@ class SurveyController {
             return
         }else {
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
-            result.countSurveyConfigs = getSurveyConfigCounts()
+            result.countSurveyConfigs = surveyService.getSurveyConfigCounts()
 
             result.filterSet = params.filterSet ? true : false
 
@@ -718,7 +718,7 @@ class SurveyController {
             result << preCon
 
             result.properties = []
-            List allProperties = getSurveyProperties(contextOrg)
+            List allProperties = surveyService.getSurveyProperties(contextOrg)
             result.properties = allProperties
             /*allProperties.each {
 
@@ -847,8 +847,8 @@ class SurveyController {
 
         Map<String,Object> surveyOrgs = result.surveyConfig.getSurveyOrgsIDs()
 
-        result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
-        result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
         params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : 'selectedSubParticipants')
 
@@ -903,8 +903,8 @@ class SurveyController {
 
         Map<String,Object> surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
-        result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
-        result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
         result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
@@ -1851,7 +1851,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.properties = getSurveyProperties(result.institution)
+        result.properties = surveyService.getSurveyProperties(result.institution)
 
         result.language = LocaleContextHolder.getLocale().toString()
 
@@ -1879,7 +1879,7 @@ class SurveyController {
                 if (params.surveyConfigID) {
                     SurveyConfig surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
 
-                    if (addSurPropToSurvey(surveyConfig, property)) {
+                    if (surveyService.addSurPropToSurvey(surveyConfig, property)) {
 
                         //flash.message = g.message(code: "surveyConfigs.property.add.successfully")
 
@@ -4184,26 +4184,6 @@ class SurveyController {
             }
     }
 
-    private List getSurveyProperties(Org contextOrg) {
-        List props = []
-
-        //private Property
-        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, contextOrg).each { it ->
-            props << it
-
-        }
-
-        //global Property
-        PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
-            props << it
-
-        }
-
-        props.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
-
-        return props
-    }
-
     private def addSubMembers(SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -4276,38 +4256,6 @@ class SurveyController {
             }
 
         }
-    }
-
-    private static List getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
-
-        if (!(orgIDs?.size() > 0)) {
-            return []
-        }
-        String tmpQuery = query
-        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
-
-        Map tmpQueryParams = queryParams
-        tmpQueryParams.put("orgIDs", orgIDs)
-        //println(tmpQueryParams)
-        //println(tmpQuery)
-
-        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
-    }
-
-    private ArrayList<Long> getOrgIdsForFilter() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
-        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
-        tmpParams.remove("max")
-        tmpParams.remove("offset")
-        if (accessService.checkPerm("ORG_CONSORTIUM"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
-
-        if (tmpParams.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
-        }
-        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
     private def exportRenewalResult(Map renewalResult) {
@@ -4605,27 +4553,6 @@ class SurveyController {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    private  Map<String,Object> getSurveyConfigCounts() {
-        Map<String, Object> result = [:]
-
-        Org contextOrg = contextService.getOrg()
-
-        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
-
-        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
-
-        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
-
-        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
-
-
-        return result
-    }
-
     private Map<String,Object> setResultGenericsAndCheckAccess() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -4787,20 +4714,6 @@ class SurveyController {
             }
         }
         parsed_date
-    }
-
-    boolean addSurPropToSurvey(SurveyConfig surveyConfig, PropertyDefinition surveyProperty) {
-
-        if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
-            SurveyConfigProperties propertytoSub = new SurveyConfigProperties(surveyConfig: surveyConfig, surveyProperty: surveyProperty)
-            if(propertytoSub.save(flush: true)){
-                return true
-            }else {
-                return false
-            }
-        }else {
-            return false
-        }
     }
     
     boolean copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){

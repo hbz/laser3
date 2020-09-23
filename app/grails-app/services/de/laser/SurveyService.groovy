@@ -896,4 +896,76 @@ class SurveyService {
             }
         }
     }
+
+    List getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
+
+        if (!(orgIDs?.size() > 0)) {
+            return []
+        }
+        String tmpQuery = query
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+
+        Map tmpQueryParams = queryParams
+        tmpQueryParams.put("orgIDs", orgIDs)
+        //println(tmpQueryParams)
+        //println(tmpQuery)
+
+        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
+    }
+
+    Map<String,Object> getSurveyConfigCounts() {
+        Map<String, Object> result = [:]
+
+        Org contextOrg = contextService.getOrg()
+
+        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
+
+        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
+
+        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
+
+        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
+
+
+        return result
+    }
+
+    List getSurveyProperties(Org contextOrg) {
+        List props = []
+
+        //private Property
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, contextOrg).each { it ->
+            props << it
+
+        }
+
+        //global Property
+        PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
+            props << it
+
+        }
+
+        props.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
+
+        return props
+    }
+
+    boolean addSurPropToSurvey(SurveyConfig surveyConfig, PropertyDefinition surveyProperty) {
+
+        if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
+            SurveyConfigProperties propertytoSub = new SurveyConfigProperties(surveyConfig: surveyConfig, surveyProperty: surveyProperty)
+            if(propertytoSub.save(flush: true)){
+                return true
+            }else {
+                return false
+            }
+        }else {
+            return false
+        }
+    }
+
 }
