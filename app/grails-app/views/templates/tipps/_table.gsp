@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Platform" %>
 
 <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
     <thead>
@@ -26,73 +26,87 @@
         <tr>
             <td>${counter++}</td>
             <td>
-                <semui:listIcon type="${tipp.title?.type?.value}"/>
+                <semui:listIcon type="${tipp.title.medium?.value}"/>
                 <strong><g:link controller="title" action="show"
                                 id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
                 <g:if test="${tipp.hostPlatformURL}">
-                    <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                    <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-                       data-content="${tipp?.platform.name}"
-                       href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-                       target="_blank"><i class="cloud icon"></i></a>
+                    <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
                 <br>
                 <div class="la-icon-list">
-                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance }">
+                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
                         <div class="item">
                             <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                             <div class="content">
-                                ${tipp?.title?.volume}
+                                ${tipp.title.volume}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                         <div class="item">
                             <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
                             <div class="content">
-                                ${tipp?.title?.getEbookFirstAutorOrFirstEditor()}
+                                ${tipp.title.getEbookFirstAutorOrFirstEditor()}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
                         <div class="item">
                             <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
                             <div class="content">
-                                ${tipp?.title?.editionStatement}
+                                ${tipp.title.editionStatement}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
                         <div class="item">
-                            <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+                            <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                             <div class="content">
-                                ${tipp?.title?.summaryOfContent}
+                                ${tipp.title.summaryOfContent}
+                            </div>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${tipp.title.seriesName}">
+                        <div class="item">
+                            <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
+                            <div class="content">
+                                ${tipp.title.seriesName}
+                            </div>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${tipp.title.subjectReference}">
+                        <div class="item">
+                            <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
+                            <div class="content">
+                                ${tipp.title.subjectReference}
                             </div>
                         </div>
                     </g:if>
 
                 </div>
 
-                <g:each in="${tipp?.title?.ids?.sort { it?.ns?.ns }}" var="id">
-                    <span class="ui small teal image label">
+                <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
+                    <span class="ui small blue image label">
                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                     </span>
                 </g:each>
 
                 <div class="la-icon-list">
 
-                    <g:if test="${tipp.availabilityStatus?.getI10n('value')}">
+                    %{--<g:if test="${tipp.availabilityStatus?.getI10n('value')}">
                         <div class="item">
                             <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
                             <div class="content">
                                 ${tipp.availabilityStatus?.getI10n('value')}
                             </div>
                         </div>
-                    </g:if>
+                    </g:if>--}%
 
                     <g:if test="${tipp.status.getI10n("value")}">
                         <div class="item">
@@ -139,10 +153,10 @@
                             <i class="book icon"></i>
                         </g:link>
                     </g:if>
-                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                         <g:if test="${tipp?.gokbId}">
-                            <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                data-content="${message(code: 'gokb')}"
                                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
                                target="_blank"><i class="la-gokb  icon"></i>
@@ -154,20 +168,20 @@
             </td>
 
             <td class="la-tableCard">
-                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance}">
                     <div class="ui card">
                         <div class="content">
                             <!-- von -->
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp?.title?.dateFirstInPrint}"/>
+                                          date="${tipp.title.dateFirstInPrint}"/>
                             <semui:dateDevider/>
                             <!-- bis -->
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp?.title?.dateFirstOnline}"/>
+                                          date="${tipp.title.dateFirstOnline}"/>
                         </div>
                     </div>
                 </g:if>
@@ -209,10 +223,10 @@
             </td>
             <td>
                 <!-- von -->
-                ${tipp.accessStartDate}
+                <g:formatDate date="${tipp.accessStartDate}" format="${message(code:'default.date.format.notime')}"/>
                 <semui:dateDevider/>
                 <!-- bis -->
-                ${tipp.accessEndDate}
+                <g:formatDate date="${tipp.accessEndDate}" format="${message(code:'default.date.format.notime')}"/>
             </td>
         </tr>
 

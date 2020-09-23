@@ -54,9 +54,11 @@
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- START First Button --%>
-                            <g:if test="${!docctx.sharedFrom}">
-                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button"
-                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"notes"]'>
+                            <g:if test="${!docctx.isShared}">
+                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
+                                        data-confirm-term-how="delete"
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>
@@ -70,7 +72,6 @@
                                                       params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
                                                       data-content="${message(code:'property.share.tooltip.on')}"
                                                       data-done=""
-                                                      data-always="bb8.init('#container-notes')"
                                                       data-update="container-notes"
                                                       role="button"
                                     >
@@ -86,7 +87,6 @@
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share"
                                                       data-done=""
-                                                      data-always="bb8.init('#container-notes')"
                                                       data-update="container-notes"
                                                       role="button"
                                     >
@@ -137,7 +137,7 @@
     <script>
         function noteedit(id) {
             $.ajax({
-                url: '<g:createLink controller="ajax" action="NoteEdit"/>?id='+id,
+                url: '<g:createLink controller="ajax" action="editNote"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#modalEditNote").remove();

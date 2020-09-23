@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
@@ -124,7 +124,7 @@ String period
         </div>
 
         <div class="field">
-            <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+            <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                 <div class="ui checkbox">
                     <input type="checkbox" name="showMembersObjects" tabindex="0" ${params.showMembersObjects ? 'checked' : ''}>
                     <label><g:message code="search.advancedSearch.showMembersObjects"/></label>
@@ -157,24 +157,6 @@ String period
                             <label for="radioMyObjects">${message(code: 'menu.my')}</label>
                         </div>
                     </div>
-
-                    %{--<div class="field">
-                        <div class="ui radio checkbox">
-                            <input id="radioSpecObject" type="radio" value="specObjects" name="searchObjects" tabindex="0" class="hidden"
-                                   <g:if test="${params.searchObjects == 'specObjects'}">checked=""</g:if>
-                            >
-                            <label for="radioSpecObject">${message(code: 'menu.my')}
-
-                            <g:select class="ui dropdown" name="status"
-                                      from="${ com.k_int.kbplus.FTControl.findAll() }"
-                                      optionKey="id"
-                                      optionValue="${{message(code: 'search.object.'+it.domainClassName.replace('com.k_int.kbplus.','').toLowerCase())}}"
-                                      value="${params.searchObject}"
-                                      noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-
-                            </label>
-                        </div>
-                    </div>--}%
                 </div>
 
             </div>
@@ -293,7 +275,7 @@ String period
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${(hit.getSourceAsMap().sector == 'Publisher') ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+hit.getSourceAsMap().rectype.toLowerCase())}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="organisation" action="show"
@@ -319,7 +301,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -338,7 +320,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -357,7 +339,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -376,7 +358,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -395,7 +377,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="package" action="show"
@@ -419,7 +401,7 @@ String period
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="platform" action="show"
@@ -443,7 +425,7 @@ String period
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="subscription" action="show"
@@ -478,12 +460,12 @@ String period
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="subscription" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <article class="la-readmore">
                                         <g:each in="${hit.getSourceAsMap().members}" var="member">
@@ -493,7 +475,7 @@ String period
                                         </article>
                                     </g:if>
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                                    <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                     <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
                                 </td>
@@ -502,7 +484,7 @@ String period
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon la-search-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="license" action="show"
@@ -537,12 +519,12 @@ String period
                                     <br>
                                     <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="license" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
                                         <g:link controller="subscription" action="members" id="${hit.getSourceAsMap().dbId}"> ${hit.getSourceAsMap().members.size()}</g:link>
                                         <article class="la-readmore">
@@ -552,7 +534,7 @@ String period
                                         </article>
                                     </g:if>
                                     <br>
-                                    <g:if test="${!(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY'])}">
+                                    <g:if test="${!(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                         <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
                                 </td>
@@ -593,7 +575,7 @@ String period
                                     <br>
                                     <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
                                     <br>
-                                    <g:if test="${contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                                    <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <b>${message(code: 'surveyParticipants.label')}</b>: ${hit.getSourceAsMap().membersCount}
                                     </g:if>
                                 </td>
@@ -607,8 +589,8 @@ String period
                                         <i class="circular icon inverted blue chart pie"></i>
                                     </span>
 
-                                    <g:link controller="myInstitution" action="surveyInfos"
-                                            id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
+                                    <g:link controller="myInstitution" action="currentSurveys"
+                                            params="${[name: '"'+hit.getSourceAsMap().name+'"']}">${hit.getSourceAsMap().name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
@@ -759,7 +741,7 @@ String period
 
                                 </td>
                             </g:if>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionCustomProperty'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
@@ -786,7 +768,34 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
+                            <%--<g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
+                                        <i class="circular icon inverted red sticky note"></i>
+                                    </span>
+
+                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
+
+                                    <div class="ui grid">
+                                        <div class="right aligned wide column">
+                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                      data-content="${message(code: 'search.myObject')}">
+                                                    <i class="shield alternate red large icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
+                                    <br>
+                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                </td>
+                            </g:if>--%>
+                            <g:if test="${hit.getSourceAsMap().rectype == 'LicenseProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
@@ -813,33 +822,7 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'LicenseCustomProperty'}">
-                                <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted red sticky note"></i>
-                                    </span>
-
-                                    <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
-
-                                    <div class="ui grid">
-                                        <div class="right aligned wide column">
-                                            <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
-                                                </span>
-                                            </g:if>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
-                                <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
-                                </td>
-                            </g:if>
+                            <%--
                             <g:if test="${hit.getSourceAsMap().rectype == 'LicensePrivateProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -867,6 +850,7 @@ String period
                                     <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
+                            --%>
                         </tr>
                     </g:each>
                 </table>

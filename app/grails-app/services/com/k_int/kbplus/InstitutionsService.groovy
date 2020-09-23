@@ -1,86 +1,82 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PropertyDefinition
+import de.laser.RefdataValue
+import de.laser.properties.PropertyDefinition
+import de.laser.AccessService
 import de.laser.AuditConfig
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.ConfigUtils
 
+import grails.transaction.Transactional
+import java.nio.file.Files
+import java.nio.file.Path
+
+@Transactional
 class InstitutionsService {
 
     def contextService
+    AccessService accessService
 
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
     static final CUSTOM_PROPERTIES_ONLY_INHERITED   = 'CUSTOM_PROPERTIES_ONLY_INHERITED'
 
-    def copyLicense(License base, params, Object option) {
+    License copyLicense(License base, params, Object option) {
 
         if (! base) {
             return null
         }
 
-        def org = params.consortium ?: contextService.getOrg()
+        Org org = params.consortium ?: contextService.getOrg()
 
-        def lic_name = params.lic_name ?: "Kopie von ${base.reference}"
-        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
-        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
+        String lic_name = params.lic_name ?: "Kopie von ${base.reference}"
 
-        boolean slavedBool = false // ERMS-1562
-        if (params.isSlaved) {
-            if (params.isSlaved in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
-                slavedBool = true
-            }
-        }
-
-        def licenseInstance = new License(
+        License licenseInstance = new License(
                 reference: lic_name,
-                status: license_status,
-                type: license_type,
+                status: base.status,
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
-                onixplLicense: base.onixplLicense,
-                startDate: base.startDate,
-                endDate: base.endDate,
-
                 instanceOf: base,
-                isSlaved: slavedBool
+                openEnded: base.openEnded,
+                isSlaved: true //is default as of June 25th with ticket ERMS-2635
         )
-        if (params.copyStartEnd) {
-            licenseInstance.startDate = base.startDate
-            licenseInstance.endDate = base.endDate
+
+        Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(License.class.name,base.id)
+
+        inheritedAttributes.each { AuditConfig attr ->
+            licenseInstance[attr.referenceField] = base[attr.referenceField]
         }
 
-
-        if (! licenseInstance.save(flush: true)) {
-            log.error("Problem saving license ${licenseInstance.errors}");
+        if (! licenseInstance.save()) {
+            log.error("Problem saving license ${licenseInstance.errors}")
             return licenseInstance
         } else {
-            log.debug("Save ok");
+            log.debug("Save ok")
 
             if (option == InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED) {
 
-                LicenseCustomProperty.findAllByOwner(base).each { lcp ->
-                    AuditConfig ac = AuditConfig.getConfig(lcp)
+                LicenseProperty.findAllByOwner(base).each { LicenseProperty lp ->
+                    AuditConfig ac = AuditConfig.getConfig(lp)
 
                     if (ac) {
                         // multi occurrence props; add one additional with backref
-                        if (lcp.type.multipleOccurrence) {
-                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
-                            additionalProp = lcp.copyInto(additionalProp)
-                            additionalProp.instanceOf = lcp
-                            additionalProp.save(flush: true)
+                        if (lp.type.multipleOccurrence) {
+                            LicenseProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lp.type, lp.tenant)
+                            additionalProp = lp.copyInto(additionalProp)
+                            additionalProp.instanceOf = lp
+                            additionalProp.save()
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
-                            newProp = lcp.copyInto(newProp)
-                            newProp.instanceOf = lcp
-                            newProp.save(flush: true)
+                            LicenseProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lp.type, lp.tenant)
+                            newProp = lp.copyInto(newProp)
+                            newProp.instanceOf = lp
+                            newProp.save()
                         }
                     }
                 }
 
-                // documents
-                base.documents?.each { dctx ->
+                // documents (test if documents is really never null)
+                base.documents.each { DocContext dctx ->
 
                     if (dctx.isShared) {
                         DocContext ndc = new DocContext(
@@ -97,18 +93,17 @@ class InstitutionsService {
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
-                for (prop in base.customProperties) {
-                    def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                for (prop in base.propertySet) {
+                    LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance)
                     copiedProp = prop.copyInto(copiedProp)
                     copiedProp.instanceOf = null
-                    copiedProp.save(flush: true)
+                    copiedProp.save()
                     //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                 }
 
                 // clone documents
                 base.documents?.each { dctx ->
                     Doc clonedContents = new Doc(
-                            blobContent: dctx.owner.blobContent,
                             status: dctx.owner.status,
                             type: dctx.owner.type,
                             content: dctx.owner.content,
@@ -122,6 +117,12 @@ class InstitutionsService {
                             migrated: dctx.owner.migrated
                     ).save()
 
+                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+
+                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                    Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                    Files.copy(source, target)
+
                     DocContext ndc = new DocContext(
                             owner: clonedContents,
                             license: licenseInstance,
@@ -132,119 +133,19 @@ class InstitutionsService {
                 }
             }
 
-            def licensee_role = RDStore.OR_LICENSEE
-            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
+            RefdataValue licensee_role = RDStore.OR_LICENSEE
+            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-            log.debug("adding org link to new license");
+            log.debug("adding org link to new license")
 
-            def rdvConsortiumOrgRole = RDStore.OT_CONSORTIUM.id.toString()
-
-            if (params.asOrgType) {
-                if (rdvConsortiumOrgRole in params.asOrgType) {
-                    new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save(flush: true)
-                } else {
-                    new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save(flush: true)
-                }
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
             }
-            else if (base.licensor) {
-                // legacy
-                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
-                new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role).save(flush: true)
+            else {
+                new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save()
             }
-
-            return licenseInstance
-        }
-    }
-
-    @Deprecated
-    def copyLicense(params) {
-        def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
-        Org org = contextService.getOrg()
-
-        RefdataValue license_type = RefdataValue.getByValueAndCategory('Actual', RDConstants.LICENSE_TYPE)
-        RefdataValue license_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
-        def lic_name = params.lic_name ?: "Kopie von ${baseLicense?.reference}"
-
-        boolean slavedBool = false // ERMS-1562
-        if (params.isSlaved) {
-            if (params.isSlaved.toString() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
-                slavedBool = true
-            }
-        }
-
-        def licenseInstance = new License(reference: lic_name,
-                status: license_status,
-                type: license_type,
-                noticePeriod: baseLicense?.noticePeriod,
-                licenseUrl: baseLicense?.licenseUrl,
-                onixplLicense: baseLicense?.onixplLicense,
-                startDate: baseLicense?.startDate,
-                endDate: baseLicense?.endDate,
-
-                instanceOf: baseLicense,
-                isSlaved: slavedBool
-        )
-        if (params.copyStartEnd) {
-            licenseInstance.startDate = baseLicense?.startDate
-            licenseInstance.endDate = baseLicense?.endDate
-        }
-        for (prop in baseLicense?.customProperties) {
-            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-            copiedProp = prop.copyInto(copiedProp)
-            copiedProp.instanceOf = null
-            copiedProp.save(flush: true)
-            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-        }
-        // the url will set the shortcode of the organisation that this license should be linked with.
-        if (!licenseInstance.save(flush: true)) {
-            log.error("Problem saving license ${licenseInstance.errors}");
-            return licenseInstance
-        } else {
-            log.debug("Save ok");
-
-            def licensee_role = RDStore.OR_LICENSEE
-            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
-            log.debug("adding org link to new license");
-
-            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)?.id.toString()
-
-            if (params.asOrgType && rdvConsortiumOrgRole in params.asOrgType) {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
-            } else {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
-            }
-
-            if (baseLicense?.licensor) {
-                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', RDConstants.ORGANISATIONAL_ROLE)
-                org.links.add(new OrgRole(lic: licenseInstance, org: baseLicense.licensor, roleType: licensor_role));
-            }
-
-            if (org.save(flush: true)) {
-            } else {
-                log.error("Problem saving org links to license ${org.errors}");
-            }
-
-            // Clone documents
-            baseLicense?.documents?.each { dctx ->
-                Doc clonedContents = new Doc(blobContent: dctx.owner.blobContent,
-                        status: dctx.owner.status,
-                        type: dctx.owner.type,
-                        content: dctx.owner.content,
-                        uuid: dctx.owner.uuid,
-                        contentType: dctx.owner.contentType,
-                        title: dctx.owner.title,
-                        creator: dctx.owner.creator,
-                        filename: dctx.owner.filename,
-                        mimeType: dctx.owner.mimeType,
-                        user: dctx.owner.user,
-                        migrated: dctx.owner.migrated).save()
-
-                DocContext ndc = new DocContext(owner: clonedContents,
-                        license: licenseInstance,
-                        domain: dctx.domain,
-                        status: dctx.status,
-                        doctype: dctx.doctype).save()
+            OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
+                new OrgRole(lic: licenseInstance, org: licRole.org, roleType: RDStore.OR_LICENSOR, isShared: true).save()
             }
 
             return licenseInstance

@@ -1,10 +1,6 @@
 package de.laser.api.v0
+//import com.k_int.kbplus.OnixplLicense
 
-
-import com.k_int.kbplus.License
-import com.k_int.kbplus.OnixplLicense
-import com.k_int.kbplus.Org
-import de.laser.api.v0.entities.ApiDoc
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
@@ -12,23 +8,36 @@ import groovy.util.logging.Log4j
 class ApiReader {
 
     static SUPPORTED_FORMATS = [
-            'costItem':             [Constants.MIME_APPLICATION_JSON],
-            'document':             [],
-            'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
-            'license':              [Constants.MIME_APPLICATION_JSON],
-            'onixpl':               [Constants.MIME_APPLICATION_XML],
-            'oaMonitor':            [Constants.MIME_APPLICATION_JSON],
-            'oaMonitorList':        [Constants.MIME_APPLICATION_JSON],
-            'organisation':         [Constants.MIME_APPLICATION_JSON],
-            'package':              [Constants.MIME_APPLICATION_JSON],
-            'propertyList':         [Constants.MIME_APPLICATION_JSON],
-            'refdataList':          [Constants.MIME_APPLICATION_JSON],
-            'statistic':            [Constants.MIME_APPLICATION_JSON],
-            'statisticList':        [Constants.MIME_APPLICATION_JSON],
-            'subscription':         [Constants.MIME_APPLICATION_JSON]
+            'costItem':                 [Constants.MIME_APPLICATION_JSON],
+            'costItemList':             [Constants.MIME_APPLICATION_JSON],
+            'document':                 [Constants.MIME_ALL],
+            'issueEntitlements':        [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
+            'license':                  [Constants.MIME_APPLICATION_JSON],
+            'licenseList':              [Constants.MIME_APPLICATION_JSON],
+            'onixpl':                   [Constants.MIME_APPLICATION_XML],
+            'oamonitor/organisations/list': [Constants.MIME_APPLICATION_JSON],
+            'oamonitor/organisations':      [Constants.MIME_APPLICATION_JSON],
+            'oamonitor/subscriptions':      [Constants.MIME_APPLICATION_JSON],
+            'orgAccessPoint':             [Constants.MIME_APPLICATION_JSON],
+            'organisation':             [Constants.MIME_APPLICATION_JSON],
+            'package':                  [Constants.MIME_APPLICATION_JSON],
+            'platform':                 [Constants.MIME_APPLICATION_JSON],
+            'platformList':             [Constants.MIME_APPLICATION_JSON],
+            'propertyList':             [Constants.MIME_APPLICATION_JSON],
+            'refdataList':              [Constants.MIME_APPLICATION_JSON],
+            'statistic/packages/list':      [Constants.MIME_APPLICATION_JSON],
+            'statistic/packages':           [Constants.MIME_APPLICATION_JSON],
+            'subscription':             [Constants.MIME_APPLICATION_JSON],
+            'subscriptionList':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'propertyList', 'statisticList']
+    static SIMPLE_QUERIES = [
+            'oamonitor/organisations/list',
+            'refdataList',
+            'platformList',
+            'propertyList',
+            'statistic/packages/list'
+    ]
 
 
     // ##### CONSTANTS #####
@@ -54,8 +63,8 @@ class ApiReader {
 
     final static IGNORE_SUBSCRIPTION_AND_PACKAGE = "IGNORE_SUBSCRIPTION_AND_PACKAGE"
 
-    final static IGNORE_CUSTOM_PROPERTIES   = "IGNORE_CUSTOM_PROPERTIES"
-    final static IGNORE_PRIVATE_PROPERTIES  = "IGNORE_PRIVATE_PROPERTIES"
+    final static IGNORE_CUSTOM_PROPERTIES        = "IGNORE_CUSTOM_PROPERTIES"
+    final static IGNORE_PRIVATE_PROPERTIES       = "IGNORE_PRIVATE_PROPERTIES"
 
 
     /**
@@ -66,6 +75,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return Map | Constants.HTTP_FORBIDDEN
      */
+    /*
     static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
         Map<String, Object> result = [:]
         boolean hasAccess = false
@@ -75,7 +85,7 @@ class ApiReader {
         }
 
         if (opl.getLicenses().contains(lic)) {
-            lic.orgLinks.each { orgRole ->
+            lic.orgRelations.each { orgRole ->
                 // TODO check orgRole.roleType
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
@@ -85,7 +95,7 @@ class ApiReader {
 
         if (hasAccess) {
             //result.id       = opl.id
-            result.lastmod  = opl.lastmod
+            result.lastmod  = ApiToolkit.formatInternalDate(opl.lastmod)
             result.title    = opl.title
 
             // References
@@ -96,5 +106,5 @@ class ApiReader {
         }
 
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }
+    }*/
 }

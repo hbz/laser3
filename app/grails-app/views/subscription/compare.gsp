@@ -190,7 +190,7 @@
 							<g:set var="highlight" value="${entry.value[2]}"/>
 							<tr>
 								
-								<td><semui:listIcon type="${currentTitle?.type?.value}"/>
+								<td><semui:listIcon type="${currentTitle.medium?.value}"/>
 								<strong><g:link action="show" controller="title" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
@@ -231,12 +231,14 @@
 </g:each>
 
 		<r:script>
+$(document).ready(function(){
 			$("div.dropdown").dropdown({
 				apiSettings: {
-				    url: '<g:link controller="ajax" action="lookupSubscriptions"/>?query={query}',
+				    url: "${createLink([controller: "ajax", action: "lookupSubscriptions"])}",
 				    cache: false
 				},
 				clearable: true
+			});
 			});
 		</r:script>
 	</body>

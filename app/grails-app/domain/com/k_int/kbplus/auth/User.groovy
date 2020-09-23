@@ -1,9 +1,8 @@
 package com.k_int.kbplus.auth
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.UserSettings
+import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
-
 import javax.persistence.Transient
 
 class User {
@@ -12,6 +11,7 @@ class User {
     def contextService
     def yodaService
     def userService
+    def instAdmService
     def grailsApplication
 
   String username
@@ -27,19 +27,25 @@ class User {
   boolean accountLocked = false
   boolean passwordExpired = false
 
-  SortedSet affiliations
-  SortedSet roles
+  SortedSet<UserOrg> affiliations
+  SortedSet<UserRole> roles
 
-  static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole ]
+  static hasMany = [ affiliations: UserOrg, roles: UserRole ]
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
 
   static constraints = {
-    username blank: false, unique: true
-    password blank: false
-    display blank: true, nullable: true
-    email blank: true, nullable: true
-    shibbScope blank: true, nullable: true
+    username    blank: false, unique: true
+    password    blank: false
+    display     blank: true, nullable: true
+    email       blank: true, nullable: true
+    shibbScope  blank: true, nullable: true
   }
+
+    static transients = [
+            'displayName', 'defaultPageSize', 'defaultPageSizeAsInteger',
+            'authorizedAffiliations', 'authorizedOrgs', 'authorizedOrgsIds',
+            'admin', 'yoda', 'lastInstAdmin'
+    ] // mark read-only accessor methods
 
   static mapping = {
       cache   true
@@ -65,65 +71,60 @@ class User {
     }
 
     /*
-        gets UserSettings
+        gets UserSetting
         creating new one (with value) if not existing
      */
-    def getSetting(UserSettings.KEYS key, def defaultValue) {
-        def us = UserSettings.get(this, key)
-        (us == UserSettings.SETTING_NOT_FOUND) ? UserSettings.add(this, key, defaultValue) : us
+    def getSetting(UserSetting.KEYS key, def defaultValue) {
+        def us = UserSetting.get(this, key)
+        (us == UserSetting.SETTING_NOT_FOUND) ? UserSetting.add(this, key, defaultValue) : us
     }
 
     /*
-        gets VALUE of UserSettings
-        creating new UserSettings (with value) if not existing
+        gets VALUE of UserSetting
+        creating new UserSetting (with value) if not existing
      */
-    def getSettingsValue(UserSettings.KEYS key, def defaultValue) {
+    def getSettingsValue(UserSetting.KEYS key, def defaultValue) {
         def setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 
     /*
-        gets VALUE of UserSettings
-        creating new UserSettings if not existing
+        gets VALUE of UserSetting
+        creating new UserSetting if not existing
      */
-    def getSettingsValue(UserSettings.KEYS key) {
+    def getSettingsValue(UserSetting.KEYS key) {
         getSettingsValue(key, null)
     }
 
-    // refactoring -- tmp changes
-
-    def getDefaultPageSizeTMP() {
+    long getDefaultPageSize() {
         // create if no setting found
-        def setting = getSetting(UserSettings.KEYS.PAGE_SIZE, 10)
+        def setting = getSetting(UserSetting.KEYS.PAGE_SIZE, 10)
         // if setting exists, but null value
-        setting.getValue() ?: 10
+        long value = setting.getValue() ?: 10
+        return value
     }
 
-    // refactoring -- tmp changes
+    int getDefaultPageSizeAsInteger() {
+        long value = getDefaultPageSize()
+        return value.intValue()
+    }
 
   @Transient
   String getDisplayName() {
-    String result
-    if ( display ) {
-      result = display
-    }
-    else {
-      result = username
-    }
-    result
+      display ? display : username
   }
 
   protected void encodePassword() {
     password = springSecurityService.encodePassword(password)
   }
 
-  @Transient def getAuthorizedAffiliations() {
-    affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
-  }
+    @Transient Set<UserOrg> getAuthorizedAffiliations() {
+        affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
+    }
 
     @Transient List<Org> getAuthorizedOrgs() {
-        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
-        Org.executeQuery(qry, [this]);
+        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status = :approved ) order by o.name"
+        Org.executeQuery(qry, [user: this, approved: UserOrg.STATUS_APPROVED])
     }
     @Transient def getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }
@@ -143,22 +144,22 @@ class User {
         SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
     }
 
-    boolean hasAffiliation(userRoleName) {
+    boolean hasAffiliation(String userRoleName) {
         hasAffiliationAND(userRoleName, 'ROLE_USER')
     }
 
-    boolean hasAffiliationAND(userRoleName, globalRoleName) {
+    boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
         affiliationCheck(userRoleName, globalRoleName, 'AND', contextService.getOrg())
     }
-    boolean hasAffiliationOR(userRoleName, globalRoleName) {
+    boolean hasAffiliationOR(String userRoleName, String globalRoleName) {
         affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
-    boolean hasAffiliationForForeignOrg(userRoleName, orgToCheck) {
+    boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
         affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
-    private boolean affiliationCheck(String userRoleName, String globalRoleName, mode, orgToCheck) {
+    private boolean affiliationCheck(String userRoleName, String globalRoleName, String mode, Org orgToCheck) {
         boolean result = false
         List<String> rolesToCheck = [userRoleName]
 
@@ -203,6 +204,17 @@ class User {
             }
         }
         result
+    }
+
+    boolean isLastInstAdmin() {
+        boolean lia = false
+
+        affiliations.each { aff ->
+            if (instAdmService.isUserLastInstAdminForOrg(this, aff.org)) {
+                lia = true
+            }
+        }
+        lia
     }
 
     static String generateRandomPassword() {

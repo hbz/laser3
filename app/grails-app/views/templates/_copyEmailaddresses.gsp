@@ -1,47 +1,56 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
-<%@ page import="static de.laser.helper.RDStore.*;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
-
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
 
-    <div>
-    <label><g:message code="person.function.label" /></label>&nbsp
-        <laser:select class="ui dropdown search"
-                      name="prsFunctionMultiSelect"
-                      multiple=""
-                      from="${rdvAllPersonFunctions}"
-                      optionKey="id"
-                      optionValue="value"
-                      value="${PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+    <div class="ui la-filter segment la-clear-before">
+        <div class="field">
+            <div>
+                <label><g:message code="person.function.label" /></label>
+            </div>
+            <div>
+                <laser:select class="ui dropdown search"
+                              name="prsFunctionMultiSelect"
+                              multiple=""
+                              from="${rdvAllPersonFunctions}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+            </div>
+        </div>
+        <div class="field">
+            <div>
+                <label><g:message code="person.position.label" /></label>
+            </div>
+            <div>
+                <laser:select class="ui dropdown search"
+                              name="prsPositionMultiSelect"
+                              multiple=""
+                              from="${rdvAllPersonPositions}"
+                              optionKey="id"
+                              optionValue="value"
+                              />
+            </div>
+        </div>
+        <br />
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" id="publicContacts" checked/>
+                <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
+            </div>
+        <div class="ui checkbox">
+            <input type="checkbox" id="privateContacts" checked/>
+            <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
+        </div>
     </div>
-    <br>
-    <div>
-        <label><g:message code="person.position.label" /></label>&nbsp
-        <laser:select class="ui dropdown search"
-                      name="prsPositionMultiSelect"
-                      multiple=""
-                      from="${rdvAllPersonPositions}"
-                      optionKey="id"
-                      optionValue="value"
-                      />
     </div>
     <br />
-    <div class="ui checkbox">
-        <input type="checkbox" id="publicContacts" checked/>
-        <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
-    </div>
-    <div class="ui checkbox">
-        <input type="checkbox" id="privateContacts" checked/>
-        <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
-    </div>
 
-    <br><br>
     <div class="ui form">
         <div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
@@ -56,6 +65,7 @@
     </div>
 
     <g:javascript>
+            var jsonOrgIdList
         // modals
         $("*[data-semui='modal']").click(function() {
 
@@ -63,10 +73,16 @@
             if (! href) {
                 href = $(this).attr('href')
             }
+
+             if($(this).attr('data-orgIdList')){
+                jsonOrgIdList = $(this).attr('data-orgIdList').split(',');
+            }else {
+                jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
+            }
             $(href + '.ui.modal').modal({
                 onVisible: function() {
                     updateTextArea();
-                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                    // $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
                 autofocus: false,
@@ -79,7 +95,6 @@
             }).modal('show')
         });
 
-        var jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set)orgList.collect{it.id})%>;
 
         $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
         $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
@@ -106,7 +121,7 @@
                 url: '<g:createLink controller="ajax" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + jsonOrgIdList + '&format=json',
                 success: function (data) {
-                    $("#emailAddressesTextArea").val(data);
+                    $("#emailAddressesTextArea").val(data.join('; '));
                 }
             });
 

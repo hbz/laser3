@@ -7,7 +7,6 @@ import javax.persistence.Transient
 @Log4j
 class AuditConfig {
 
-    @Transient
     def grailsApplication
 
     final static COMPLETE_OBJECT = 'COMPLETE_OBJECT'
@@ -31,11 +30,10 @@ class AuditConfig {
     }
 
     static constraints = {
-        referenceId     (nullable:false, blank:false)
-        referenceClass  (nullable:false, blank:false, maxSize:255)
-        referenceField  (nullable:false, blank:false, maxSize:255)
-        lastUpdated     (nullable: true, blank: false)
-        dateCreated     (nullable: true, blank: false)
+        referenceClass  (blank:false, maxSize:255)
+        referenceField  (blank:false, maxSize:255)
+        lastUpdated     (nullable: true)
+        dateCreated     (nullable: true)
     }
 
     static addConfig(Object obj) {
@@ -49,12 +47,16 @@ class AuditConfig {
     }
 
     static void addConfig(Object obj, String field) {
-        if (obj) {
-            new AuditConfig(
-                    referenceId: obj.getId(),
-                    referenceClass: obj.getClass().name,
-                    referenceField: field
-            ).save(flush: true)
+        withTransaction {
+            if (obj) {
+                AuditConfig config = new AuditConfig(
+                        referenceId: obj.getId(),
+                        referenceClass: obj.getClass().name,
+                        referenceField: field
+                )
+                if (! config.save())
+                    log.error(config.errors.toString())
+            }
         }
     }
 
@@ -85,21 +87,25 @@ class AuditConfig {
     }
 
     static void removeConfig(Object obj, String field) {
-        if (obj) {
-            AuditConfig.findAllWhere(
-                    referenceId: obj.getId(),
-                    referenceClass: obj.getClass().name,
-                    referenceField: field
-            ).each { it.delete(flush: true) }
+        withTransaction {
+            if (obj) {
+                AuditConfig.findAllWhere(
+                        referenceId: obj.getId(),
+                        referenceClass: obj.getClass().name,
+                        referenceField: field
+                ).each { it.delete() }
+            }
         }
     }
 
     static void removeAllConfigs(Object obj) {
-        if (obj) {
-            AuditConfig.findAllWhere(
-                    referenceId: obj.getId(),
-                    referenceClass: obj.getClass().name
-            ).each { it.delete(flush: true) }
+        withTransaction {
+            if (obj) {
+                AuditConfig.findAllWhere(
+                        referenceId: obj.getId(),
+                        referenceClass: obj.getClass().name
+                ).each { it.delete() }
+            }
         }
     }
 }

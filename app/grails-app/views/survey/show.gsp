@@ -1,3 +1,4 @@
+<%@ page import="de.laser.SurveyOrg; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -13,13 +14,24 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="survey" action="show"
+                    params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
+        </semui:exportDropdownItem>
+        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="survey" action="show"
+                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
+        </semui:exportDropdownItem>
+        </g:if>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
+<semui:xEditable owner="${surveyInfo}" field="name" overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 </h1>
 
 
@@ -32,7 +44,7 @@
 <semui:messages data="${flash}"/>
 
 
-<div id="collapseableSubDetails" class="ui stackable grid">
+<div class="ui stackable grid">
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">
@@ -41,12 +53,24 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.startDate.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyInfo}" field="startDate" type="date"/></dd>
+                            <dd>
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                    <semui:xEditable owner="${surveyInfo}" field="startDate" type="date"/>
+                                </g:if><g:else>
+                                    <semui:xEditable owner="${surveyInfo}" field="startDate" type="date" overwriteEditable="false"/>
+                                </g:else>
+                            </dd>
 
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.endDate.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyInfo}" field="endDate" type="date"/></dd>
+                            <dd>
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_SURVEY_STARTED.id]}">
+                                    <semui:xEditable owner="${surveyInfo}" field="endDate" type="date"/>
+                                </g:if><g:else>
+                                    <semui:xEditable owner="${surveyInfo}" field="endDate" type="date" overwriteEditable="false"/>
+                                </g:else>
+                            </dd>
 
                         </dl>
 
@@ -71,7 +95,9 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.type.label')}</dt>
                             <dd>
-                                ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
+                                <div class="ui label left pointing survey-${surveyInfo.type.value}">
+                                    ${surveyInfo.type.getI10n('value')}
+                                </div>
                             </dd>
 
                         </dl>
@@ -97,21 +123,19 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${surveyInfo?.type == de.laser.helper.RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+            <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
                     <div class="ui card">
 
                         <div class="content">
-                            <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}"
-                                 data-total="100">
+                            <div class="ui indicating progress" id="finishProcess" data-percent="${finishProcess}">
                                 <div class="bar">
-                                    <div class="progress">${finishProcess}</div>
                                 </div>
 
                                 <div class="label"
@@ -127,19 +151,17 @@
             </g:if>
             <g:else>
                 <g:set var="finish"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
+                       value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
                     <div class="ui card">
 
                         <div class="content">
-                            <div class="ui indicating progress" id="finishProcess2" data-value="${finishProcess}"
-                                 data-total="100">
+                            <div class="ui indicating progress" id="finishProcess2" data-percent="${finishProcess}">
                                 <div class="bar">
-                                    <div class="progress">${finishProcess}</div>
                                 </div>
 
                                 <div class="label"
@@ -157,8 +179,7 @@
 
             <br>
             <g:if test="${surveyConfig}">
-
-                <g:if test="${surveyConfig.type == "Subscription"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
@@ -168,7 +189,16 @@
                                                                 properties: properties]"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.type == "GeneralSurvey"}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+
+                    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
+                                                                                      subscriptionInstance: surveyConfig.subscription,
+                                                                                      tasks: tasks,
+                                                                                      visibleOrgRelations: visibleOrgRelations,
+                                                                                      properties: properties]"/>
+                </g:if>
+
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                     <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
                                                                     costItemSums: costItemSums,
@@ -183,6 +213,22 @@
                 <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
             </g:else>
         </div>
+
+        <br>
+        <br>
+
+        <g:form action="surveyConfigFinish" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
+                    <label><g:message code="surveyConfig.configFinish.label"/></label>
+                </div>
+            </div>
+
+        </g:form>
 
     </div><!-- .twelve -->
 

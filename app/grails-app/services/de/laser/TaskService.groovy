@@ -2,8 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
@@ -18,17 +21,17 @@ class TaskService {
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
-    def getTasksByCreator(User user, Map queryMap, flag) {
-        def tasks = []
+    List<Task> getTasksByCreator(User user, Map queryMap, flag) {
+        List<Task> tasks = []
         if (user) {
-            def query
+            String query
             if (flag == WITHOUT_TENANT_ONLY) {
                 query = select_with_join + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
             } else {
                 query = select_with_join + 'where t.creator = :user'
             }
 
-            def params = [user : user]
+            Map<String, Object> params = [user : user]
             if (queryMap){
                 query += queryMap.query
                 query = addDefaultOrder("t", query)
@@ -38,43 +41,43 @@ class TaskService {
         }
         tasks
     }
-    def getTasksByCreatorAndObject(User user, License obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, License obj,  Object params) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, Org obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, Org obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, Package obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, Package obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj, params) : []
     }
-    def getTasksByCreatorAndObject(User user, License obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, License obj ) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, Org obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Org obj ) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, Package obj ) {
+    List<Task> getTasksByCreatorAndObject(User user, Package obj ) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, Subscription obj) {
+    List<Task> getTasksByCreatorAndObject(User user, Subscription obj) {
         (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj) : []
     }
-    def getTasksByCreatorAndObject(User user, SurveyConfig obj) {
+    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
     }
 
-    List chopOffForPageSize(List taskInstanceList, User user, int offset){
+    List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
         //chop everything off beyond the user's pagination limit
         int taskInstanceCount = taskInstanceList?.size() ?: 0
-        if (taskInstanceCount > user.getDefaultPageSizeTMP()) {
+        if (taskInstanceCount > user.getDefaultPageSize()) {
             try {
-                taskInstanceList = taskInstanceList.subList(offset, offset + Math.toIntExact(user.getDefaultPageSizeTMP()))
+                taskInstanceList = taskInstanceList.subList(offset, offset + user.getDefaultPageSizeAsInteger())
             }
             catch (IndexOutOfBoundsException e) {
                 taskInstanceList = taskInstanceList.subList(offset, taskInstanceCount)
@@ -82,36 +85,38 @@ class TaskService {
         }
         taskInstanceList
     }
-    def getTasksByResponsible(User user, Map queryMap) {
-        def tasks = []
+    List<Task> getTasksByResponsible(User user, Map queryMap) {
+        List<Task> tasks = []
         if (user) {
-            def query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
+            String query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
             query = addDefaultOrder("t", query)
-            def params = [user : user] << queryMap.queryParams
+
+            Map params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
     }
 
-    def getTasksByResponsible(Org org, Map queryMap) {
-        def tasks = []
+    List<Task> getTasksByResponsible(Org org, Map queryMap) {
+        List<Task> tasks = []
         if (org) {
-            def query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
+            String query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
             query = addDefaultOrder("t", query)
-            def params = [org : org] << queryMap.queryParams
+
+            Map params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
     }
 
-    def getTasksByResponsibles(User user, Org org, Map queryMap) {
-        def tasks = []
+    List<Task> getTasksByResponsibles(User user, Org org, Map queryMap) {
+        List<Task> tasks = []
 
         if (user && org) {
-            def query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
+            String query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
             query = addDefaultOrder("t", query)
 
-            def params = [user : user, org: org] << queryMap.queryParams
+            Map<String, Object>  params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         } else if (user) {
             tasks = getTasksByResponsible(user, queryMap)
@@ -121,18 +126,16 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsibleAndObject(User user, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
-        tasks
+    List<Task> getTasksByResponsibleAndObject(User user, Object obj) {
+        getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
     }
 
-    def getTasksByResponsibleAndObject(Org org, Object obj) {
-        def tasks = getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
-        tasks
+    List<Task> getTasksByResponsibleAndObject(Org org, Object obj) {
+        getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
     }
 
     List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
-        def tasks = []
+        List<Task> tasks = []
         String tableName = ''
         if (user && org && obj) {
             switch (obj.getClass().getSimpleName()) {
@@ -152,14 +155,14 @@ class TaskService {
                     tableName = 'surveyConfig'
                     break
             }
-            tasks = Task.executeQuery("""select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate""",
-                [user: user, org: org, obj: obj])
+            String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"
+            tasks = Task.executeQuery( query, [user: user, org: org, obj: obj] )
         }
         tasks
     }
 
-    def getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
-        def tasks = []
+    List<Task> getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
+        List<Task> tasks = []
         params = addDefaultOrder(null, params)
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
@@ -183,8 +186,8 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
-        def tasks = []
+    List<Task> getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
+        List<Task> tasks = []
         params = addDefaultOrder(null, params)
         if (org && obj) {
             switch (obj.getClass().getSimpleName()) {
@@ -208,10 +211,10 @@ class TaskService {
         tasks
     }
 
-    def getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
-        def tasks = []
-        def a = getTasksByResponsibleAndObject(user, obj, params)
-        def b = getTasksByResponsibleAndObject(org, obj, params)
+    List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
+        List<Task> tasks = []
+        List<Task> a = getTasksByResponsibleAndObject(user, obj, params)
+        List<Task> b = getTasksByResponsibleAndObject(org, obj, params)
 
         tasks = a.plus(b).unique()
         tasks
@@ -238,8 +241,8 @@ class TaskService {
 
     private List<User> getUserDropdown(Org contextOrg) {
         List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
-                [contextOrg]) : []
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
+                [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
 
         validResponsibleUsers
     }
@@ -248,20 +251,21 @@ class TaskService {
         List validOrgs = []
         List<Map> validOrgsDropdown = []
         if (contextOrg) {
-            boolean isInstitution = (RDStore.OT_INSTITUTION == contextOrg.getCustomerType())
-            boolean isConsortium  = (RDStore.OT_CONSORTIUM == contextOrg.getCustomerType())
-            def params       = [:]
+            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE'])
+            boolean isConsortium  = (contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+
+            GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
             def fsq          = filterService.getOrgQuery(params)
-            validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
+            //validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
-            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname, c.id from Org o, Combo c join org o on c.fromOrg = o.org_id where c.toOrg = :toOrg and c.type = :type order by '+params.sort
+            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
             if (isConsortium){
-                validOrgs << Combo.executeQuery(comboQuery,
+                validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_CONSORTIUM])
             } else if (isInstitution){
-                validOrgs << Combo.executeQuery(comboQuery,
+                validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_DEPARTMENT])
             }
@@ -282,12 +286,12 @@ class TaskService {
         List validSubscriptionsMitInstanceOf = []
         List validSubscriptionsOhneInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean binKonsortium = contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']
+        boolean binKonsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
 
         if (contextOrg) {
             if (binKonsortium) {
 
-                def qry_params_for_sub = [
+                Map<String, Object> qry_params_for_sub = [
                         'roleTypes' : [
                                 RDStore.OR_SUBSCRIBER,
                                 RDStore.OR_SUBSCRIBER_CONS,
@@ -296,7 +300,6 @@ class TaskService {
                         ],
                         'activeInst': contextOrg
                 ]
-                String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
 
                 validSubscriptionsOhneInstanceOf = Subscription.executeQuery("""
 select s.id, s.name, s.startDate, s.endDate, i10.valueDe from Subscription s, I10nTranslation i10 
@@ -365,17 +368,19 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
     }
 
     private List<Map> getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
-        List validLicensesOhneInstanceOf = []
-        List validLicensesMitInstanceOf = []
+        List<License> validLicensesOhneInstanceOf = []
+        List<License> validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
 
         if (contextOrg) {
-            String licensesQueryMitInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType, licinstanceof.type from License lic left join lic.orgLinks o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
+            String licensesQueryMitInstanceOf =
+                    'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate, licinstanceof.type from License lic left join lic.orgRelations o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
 
-            String licensesQueryOhneInstanceOf = 'SELECT lic.id, lic.reference, lic.status, lic.startDate, lic.endDate, o.roleType from License lic left join lic.orgLinks o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
+            String licensesQueryOhneInstanceOf =
+                    'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
-                def qry_params_for_lic = [
+            if(accessService.checkPerm("ORG_CONSORTIUM")){
+                Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
@@ -387,8 +392,9 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                     validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
                 }
 
-            } else if (accessService.checkPerm("ORG_INST")) {
-                def qry_params_for_lic = [
+            }
+            else if (accessService.checkPerm("ORG_INST")) {
+                Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
@@ -401,7 +407,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
                     validLicensesMitInstanceOf = License.executeQuery(licensesQueryMitInstanceOf, qry_params_for_lic)
                 }
 
-            } else {
+            }
+            else {
                 validLicensesOhneInstanceOf = []
                 validLicensesMitInstanceOf = []
             }
@@ -413,8 +420,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             def optionKey = it[0]
             String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
             boolean isLicensingConsortium = 'Licensing Consortium' == it[5]?.value
-            boolean hasTemplate2 = (it[6] != null) && (it[6] == RDStore.LICENSE_TYPE_TEMPLATE)
-            if (isLicensingConsortium && ! hasTemplate2) {
+
+            if (isLicensingConsortium) {
                 optionValue += member
             }
             return [optionKey: optionKey, optionValue: optionValue]
@@ -434,8 +441,8 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
     Map<String, Object> getPreconditionsWithoutTargets(Org contextOrg) {
         Map<String, Object> result = [:]
         def validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)",
-                [contextOrg]) : []
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
+                [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleUsers = validResponsibleUsers
         result

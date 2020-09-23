@@ -1,5 +1,5 @@
-<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; com.k_int.kbplus.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>
@@ -88,3 +88,4 @@ Link zum Kontaktformular:
             </p>
 
 </body>
+</html>

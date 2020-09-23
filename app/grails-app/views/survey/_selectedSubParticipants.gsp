@@ -1,22 +1,35 @@
-
+<%@ page import="de.laser.SurveyConfig;" %>
 <br>
-%{--<g:if test="${surveyConfig?.type == 'Subscription'}">
+%{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
     <h3 class="ui icon header"><semui:headerIcon/>
-    <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-        ${surveyConfig?.subscription?.name}
+    <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+        ${surveyConfig.subscription?.name}
     </g:link>
     </h3>
 </g:if>
 <g:else>
-<h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
+<h3 class="ui left aligned">${surveyConfig.getConfigNameShort()}</h3>
 </g:else>--}%
+
+<div class="four wide column">
+
+        <g:link action="addSubMembersToSurvey" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]"
+                class="ui icon button right floated">
+            <g:message code="surveyParticipants.addSubMembersToSurvey"/>
+        </g:link>
+    <br>
+    <br>
+
+
+</div>
+
 
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                          tmplConfigShow      : [['name', 'libraryType'], ['region', 'libraryNetwork', 'property']],
                           tmplConfigFormFilter: true,
                           useNewLayouter      : true
                   ]"/>
@@ -33,11 +46,13 @@
            value="${selectedSubParticipants?.findAll{ it?.hasAccessOrg() }?.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
-        <g:link data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal2"
-                class="ui icon button right floated trigger-modal">
+    <g:if test="${surveyParticipantsHasAccess}">
+
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-        </g:link>
+        </a>
+
+    </g:if>
     </div>
     <br>
     <br>
@@ -57,11 +72,11 @@
            value="${selectedSubParticipants.findAll{ !it?.hasAccessOrg() }.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
-        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal3"
-                class="ui icon button right floated trigger-modal">
+    <g:if test="${surveyParticipantsHasNotAccess}">
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-        </g:link>
+        </a>
+    </g:if>
     </div>
 
     <br>

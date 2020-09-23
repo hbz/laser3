@@ -1,21 +1,23 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
-import de.laser.helper.RefdataAnnotation
 
+import de.laser.helper.AppUtils
+import de.laser.helper.RefdataAnnotation
+import grails.transaction.Transactional
+
+@Transactional
 class RefdataService {
 
-    def grailsApplication
-    def genericOIDService
-
     List getUsageDetails() {
-        def detailsMap = [:]
-        def usedRdvList = []
+        def detailsMap      = [:]
+        def usedRdvList     = []
+        def allDcs          = [:]
 
-        def allDcs = [:]
+        List classes = AppUtils.getAllDomainClasses().findAll {
+            ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
+        }
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        classes.each { dc ->
             def dcFields = []
             def cls = dc.clazz
 
@@ -23,7 +25,7 @@ class RefdataService {
             while (cls != Object.class) {
                 dcFields.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                 )
                 cls = cls.getSuperclass()
             }
@@ -36,7 +38,7 @@ class RefdataService {
             def dfMap = [:]
 
             dcFields.each { df ->
-                def rdvs = RefdataValue.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
+                Set<RefdataValue> rdvs = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + " FROM " + dcName )
 
                 dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
@@ -60,7 +62,7 @@ class RefdataService {
         def count = 0
         def fortytwo = [:]
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        AppUtils.getAllDomainClasses().each { dc ->
             def dcFields = []
             def cls = dc.clazz
 
@@ -68,7 +70,7 @@ class RefdataService {
             while (cls != Object.class) {
                 dcFields.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                 )
                 cls = cls.getSuperclass()
             }
@@ -78,7 +80,7 @@ class RefdataService {
         fortytwo.each { dcName, dcFields ->
 
             dcFields.each { df ->
-                def hql = "select dummy from ${dcName} as dummy where dummy.${df.name} = :xfrom"
+                String hql = "select dummy from ${dcName} as dummy where dummy.${df.name} = :xfrom"
                 def result = RefdataValue.executeQuery(hql, [xfrom: rdvFrom])
 
                 //log.debug(hql + " @ " + rdvFrom.id + " -> " + result)
@@ -98,7 +100,7 @@ class RefdataService {
     Map<String, Object> integrityCheck() {
         Map checkResult = [:]
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+        AppUtils.getAllDomainClasses().each { dc ->
             def cls = dc.clazz
 
             // find all rdv_fk from superclasses
@@ -106,14 +108,13 @@ class RefdataService {
                 List tmp = []
                 tmp.addAll( cls.getDeclaredFields()
                         .findAll { it -> !it.synthetic }
-                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .findAll { it -> it.type.name == RefdataValue.class.name }
                         .collect { it ->
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
                             if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
-                                List fieldCats = RefdataValue.executeQuery(
-                                        "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc",
-                                )
+                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc"
+                                List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]
 
                                 fieldCats.each { it2 ->
@@ -139,7 +140,7 @@ class RefdataService {
             }
         }
 
-        log.debug(checkResult)
+        log.debug(checkResult.toMapString())
 
         checkResult.sort()
     }

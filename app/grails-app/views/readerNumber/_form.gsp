@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ReaderNumber" %>
+<%@ page import="de.laser.ReaderNumber" %>
 
 
 
@@ -7,7 +7,7 @@
 		<g:message code="readerNumber.referenceGroup.label" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" required="" value="${numbersInstance?.type?.id}" class="many-to-one"/>
+	<g:select id="type" name="type.id" from="${de.laser.RefdataValue.list()}" optionKey="id" required="" value="${numbersInstance?.type?.id}" class="many-to-one"/>
 
 </div>
 

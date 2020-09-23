@@ -1,13 +1,13 @@
+<%@ page import="de.laser.system.SystemMessage" %>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="public"/>
     <title>${message(code: 'laser')}</title>
     <script>
-        var gspLocale = "${message(code:'default.locale.label')}";
-        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+        <g:render template="/templates/javascript/laser.js" />
+        <g:render template="/templates/javascript/dict.js" />
     </script>
-
 </head>
 
 <body>
@@ -35,9 +35,9 @@
         <div class="ui inverted stackable menu la-top-menu">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
-                <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
+                <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
-
+                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
                         ${message(code: 'landingpage.login')}
@@ -68,40 +68,31 @@
         </div>
 
         <!-- NEWS -->
-        <div class="ui segment la-eye-catcher">
-            <div class="ui container">
-                <div class="ui labeled button" tabindex="0" >
-                    <div class="ui blue button la-eye-catcher-header">
-                        <h1>NEWS</h1>
+        <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_STARTPAGE_NEWS)}" />
+
+        <g:if test="${systemMessages}">
+            <div class="ui segment la-eye-catcher">
+                <div class="ui container">
+                    <div class="ui labeled button" tabindex="0" >
+                        <div class="ui blue button la-eye-catcher-header">
+                            <h1>NEWS</h1>
+                        </div>
+
+                        <div class="ui basic blue left pointing label la-eye-catcher-txt">
+
+                        <g:each in="${systemMessages}" var="news" status="i">
+                            <div <g:if test="${i>0}">style="padding-top:1.6em"</g:if>>
+                                <% println news.getLocalizedContent() %>
+                            </div>
+                        </g:each>
+
+                        </div>
                     </div>
-
-                    <span class="ui basic blue left pointing label la-eye-catcher-txt">
-
-                        <strong><g:message code="landingpage.news.header"/></strong>
-                        <br />
-                        <br />
-
-                        <g:message code="landingpage.news.p1" />
-
-                        <br />
-                        <br />
-
-                        <g:message code="landingpage.news.p2" />
-
-                        <br />
-                        <br />
-
-                        <g:message code="landingpage.news.p3" />
-
-                        <br />
-                    </span>
                 </div>
-
             </div>
+        </g:if>
 
-        </div>
-
-        <!-- segment -->
+%{--        <!-- segment -->
         <div class="ui segment">
             <div class="ui container">
                 <div class="ui stackable grid">
@@ -149,17 +140,17 @@
                         </p>
                     </div>
                 </div>
-
-                <div class="ui center aligned segment">
-                    <a href="mailto:laser@hbz-nrw.de" class="ui huge blue button">
-                        ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
-                    </a>
-                    <g:link controller="home" action="index" class="ui huge blue button">
-                        ${message(code: 'landingpage.login')}
-                        <i class="right arrow icon"></i>
-                    </g:link>
-                </div>
             </div>
+        </div>--}%
+
+        <div class="ui center aligned segment">
+            <a href="mailto:laser@hbz-nrw.de" class="ui huge blue button">
+                ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
+            </a>
+            <g:link controller="home" action="index" class="ui huge blue button">
+                ${message(code: 'landingpage.login')}
+                <i class="right arrow icon"></i>
+            </g:link>
         </div>
 
         <g:render template="templates/footer" />
@@ -194,3 +185,4 @@
     </script>
 
 </body>
+</html>

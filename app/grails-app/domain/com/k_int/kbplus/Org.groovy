@@ -4,10 +4,20 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Perm
 import com.k_int.kbplus.auth.PermGrant
 import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.Combo
+import de.laser.RefdataValue
+import de.laser.finance.CostItem
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.Address
+import de.laser.Contact
+import de.laser.OrgAccessPoint
+import de.laser.OrgSetting
+import de.laser.OrgSubjectGroup
+import de.laser.Person
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -15,28 +25,22 @@ import de.laser.interfaces.DeleteFlag
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
-import javax.persistence.Transient
-import java.text.SimpleDateFormat
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 @Log4j
-class Org
-        extends AbstractBaseDomain
+class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
-    @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
-    @Transient
     def contextService
     def organisationService
-    @Transient
     def accessService
-	@Transient
 	def propertyService
-    @Transient
     def deletionService
+
+    static Log static_logger = LogFactory.getLog(Org)
 
     String name
     String shortname
@@ -50,16 +54,18 @@ class Org
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
 
-    String impId
     String gokbId
     String comment
     String ipRange
     String scope
-    Date dateCreated
-    Date lastUpdated
+
     Org createdBy
     Org legallyObligedBy
     String categoryId
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
     @RefdataAnnotation(cat = RDConstants.ORG_SECTOR)
     RefdataValue sector
@@ -75,9 +81,6 @@ class Org
 
     @RefdataAnnotation(cat = '?')
     RefdataValue region
-
-    @RefdataAnnotation(cat = RDConstants.FEDERAL_STATE)
-    RefdataValue federalState
 
     @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK)
     RefdataValue libraryNetwork
@@ -96,6 +99,8 @@ class Org
 
     Set ids = []
 
+    static transients = ['deleted', 'customerType', 'customerTypeI10n', 'designation', 'empty', 'consortiaMember', 'department'] // mark read-only accessor methods
+
     static mappedBy = [
         ids:                'org',
         outgoingCombos:     'fromOrg',
@@ -105,8 +110,8 @@ class Org
         contacts:           'org',
         addresses:          'org',
         affiliations:       'org',
-        customProperties:   'owner',
-        privateProperties:  'owner',
+        propertySet:        'owner',
+        //privateProperties:  'owner',
         documents:          'org',
         hasCreated:         'createdBy',
         hasLegallyObliged:  'legallyObligedBy'
@@ -122,13 +127,14 @@ class Org
         contacts:           Contact,
         addresses:          Address,
         affiliations:       UserOrg,
-        customProperties:   OrgCustomProperty,
-        privateProperties:  OrgPrivateProperty,
+        propertySet:        OrgProperty,
+        //privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
         hasCreated:         Org,
-        hasLegallyObliged:  Org
+        hasLegallyObliged:  Org,
+        accessPoints:   OrgAccessPoint
     ]
 
     static mapping = {
@@ -137,7 +143,6 @@ class Org
                 id          column:'org_id'
            version          column:'org_version'
          globalUID          column:'org_guid'
-             impId          column:'org_imp_id',    index:'org_imp_id_idx'
               name          column:'org_name',      index:'org_name_idx'
          shortname          column:'org_shortname', index:'org_shortname_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
@@ -157,7 +162,6 @@ class Org
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
-      federalState          column:'org_federal_state_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
         funderType          column:'org_funder_type_rv_fk'
      funderHskType          column:'org_funder_hsk_type_rv_fk'
@@ -169,6 +173,7 @@ class Org
         createdBy           column:'org_created_by_fk'
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
+       lastUpdatedCascading column:'org_last_updated_cascading'
 
         orgType             joinTable: [
                 name:   'org_type',
@@ -182,8 +187,8 @@ class Org
         links               batchSize: 10
         prsLinks            batchSize: 10
         affiliations        batchSize: 10
-        customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        propertySet    batchSize: 10
+        //privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           batchSize: 10
         hasCreated          batchSize: 10
@@ -192,61 +197,42 @@ class Org
 
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-                name(nullable:true, blank:false, maxSize:255)
+                name(blank:false, maxSize:255)
            shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-        subjectGroup(nullable:true, blank: true)
+        subjectGroup(nullable:true)
      //originEditUrl(nullable:true, blank:false)
-               impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
-              sector(nullable:true, blank:true)
+              sector(nullable:true)
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
-              status(nullable:true, blank:true)
-          membership(nullable:true, blank:true, maxSize:128)
-             country(nullable:true, blank:true)
-              region(nullable:true, blank:true)
+              status(nullable:true)
+          membership(nullable:true)
+             country(nullable:true)
+              region(nullable:true)
 //        , validator: {RefdataValue val, Org obj, errors ->
 //                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
 //                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
 //                      return false
 //                  }
 //              })
-        federalState(nullable:true, blank:true)
-      libraryNetwork(nullable:true, blank:true)
-          funderType(nullable:true, blank:true)
-       funderHskType(nullable:true, blank:true)
-         libraryType(nullable:true, blank:true)
+      libraryNetwork(nullable:true)
+          funderType(nullable:true)
+       funderHskType(nullable:true)
+         libraryType(nullable:true)
         importSource(nullable:true, blank:true)
-      lastImportDate(nullable:true, blank:true)
-           createdBy(nullable:true, blank:true)
-    legallyObligedBy(nullable:true, blank:true)
-      costConfigurationPreset(nullable:true, blank:false)
-             orgType(nullable:true, blank:true)
+      lastImportDate(nullable:true)
+           createdBy(nullable:true)
+    legallyObligedBy(nullable:true)
+      costConfigurationPreset(nullable:true)
+             orgType(nullable:true)
              gokbId (nullable:true, blank:true)
-    }
-
-    /*
-    // ERMS-1497
-    List<Combo> getIncomingCombos() {
-        Combo.executeQuery('SELECT c FROM Combo c WHERE c.toOrg = :org AND c.status = :active',
-                [org: this, active: COMBO_STATUS_ACTIVE])
-    }
-
-    // ERMS-1497
-    List<Combo> getOutgoingCombos() {
-        Combo.executeQuery('SELECT c FROM Combo c WHERE c.fromOrg = :org AND c.status = :active',
-                [org: this, active: COMBO_STATUS_ACTIVE])
-    }
-    */
-
-    def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        lastUpdatedCascading (nullable: true)
     }
 
     @Override
@@ -259,10 +245,6 @@ class Org
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
         }
-        
-        if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
-        }
 
         //ugliest HOTFIX ever #2
         if(!Thread.currentThread().name.contains("Sync")) {
@@ -271,15 +253,30 @@ class Org
             }
         }
 
-        super.beforeInsert()
+        super.beforeInsertHandler()
+    }
+
+    @Override
+    def afterDelete() {
+        super.afterDeleteHandler()
+
+        deletionService.deleteDocumentFromIndex(this.globalUID)
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     boolean setDefaultCustomerType() {
-        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+        def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-        if (oss == OrgSettings.SETTING_NOT_FOUND) {
+        if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
             return true
         }
 
@@ -289,9 +286,9 @@ class Org
     String getCustomerType() {
         String result
 
-        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+        def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
             result = oss.roleValue?.authority
         }
         result
@@ -299,37 +296,37 @@ class Org
     String getCustomerTypeI10n() {
         String result
 
-        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+        def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
             result = oss.roleValue?.getI10n('authority')
         }
         result
     }
 
     /*
-	    gets OrgSettings
+	    gets OrgSetting
 	    creating new one (with value) if not existing
      */
-    def getSetting(OrgSettings.KEYS key, def defaultValue) {
-        def os = OrgSettings.get(this, key)
-        (os == OrgSettings.SETTING_NOT_FOUND) ? OrgSettings.add(this, key, defaultValue) : os
+    def getSetting(OrgSetting.KEYS key, def defaultValue) {
+        def os = OrgSetting.get(this, key)
+        (os == OrgSetting.SETTING_NOT_FOUND) ? OrgSetting.add(this, key, defaultValue) : os
     }
 
     /*
-        gets VALUE of OrgSettings
-        creating new OrgSettings (with value) if not existing
+        gets VALUE of OrgSetting
+        creating new OrgSetting (with value) if not existing
      */
-    def getSettingsValue(OrgSettings.KEYS key, def defaultValue) {
+    def getSettingsValue(OrgSetting.KEYS key, def defaultValue) {
         def setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 
     /*
-        gets VALUE of OrgSettings
-        creating new OrgSettings if not existing
+        gets VALUE of OrgSetting
+        creating new OrgSetting if not existing
      */
-    def getSettingsValue(OrgSettings.KEYS key) {
+    def getSettingsValue(OrgSetting.KEYS key) {
         getSettingsValue(key, null)
     }
 
@@ -338,7 +335,12 @@ class Org
         if ( !shortcode ) {
             shortcode = generateShortcode(name);
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
+    }
+
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
     static String generateShortcodeFunction(name) {
@@ -363,39 +365,28 @@ class Org
         result
     }
 
-    static def lookupByIdentifierString(idstr) {
-        LogFactory.getLog(this).debug("lookupByIdentifierString(${idstr})")
-
-        def result = null
-        def qr = Identifier.lookupObjectsByIdentifierString(new Org(), idstr)
-
-        if (qr && (qr.size() == 1)) {
-            //result = qr.get(0);
-            result = GrailsHibernateUtil.unwrapIfProxy( qr.get(0) ) // fix: unwrap proxy
-        }
-        result
-    }
-
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        Map<String, Object> result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
+        Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name, [sort:'name', order:'asc'])
         groups.each{ it ->
 
             PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
             if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                 if (binding) {
-                    result.local << [it, binding]
+                    result.local << [it, binding] // TODO: remove
+                    result.sorted << ['local', it, binding]
                 } else {
-                    result.global << it
+                    result.global << it // TODO: remove
+                    result.sorted << ['global', it, null]
                 }
             }
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, [])
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
     }
@@ -410,6 +401,19 @@ class Org
         result
     }
 
+    List<User> getAllValidInstAdmins() {
+        List<User> admins = User.executeQuery(
+                "select u from User u join u.affiliations uo where " +
+                        "uo.org = :org and uo.formalRole = :role and uo.status = :approved and u.enabled = true",
+                [
+                        org: this,
+                        role: Role.findByAuthority('INST_ADM'),
+                        approved: UserOrg.STATUS_APPROVED
+                ]
+        )
+        admins
+    }
+
     List<Identifier> getIdentifiersByType(String idtype) {
 
         Identifier.executeQuery(
@@ -418,201 +422,15 @@ class Org
         )
     }
 
-  static def refdataFind(params) {
-    def result = [];
-    List<Org> ql = Org.findAllByNameIlike("%${params.q}%",params)
+    static def refdataFind(GrailsParameterMap params) {
+        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
 
-    if ( ql ) {
-      ql.each { id ->
-        result.add([id:"${id.class.name}:${id.id}",text:"${id.name}"])
-      }
+        genericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }
-
-    result
-  }
 
     // called from AjaxController.resolveOID2()
   static Org refdataCreate(value) {
     return new Org(name:value)
-  }
-
-  static def lookup(name, identifiers, def uuid = null) {
-
-      def result = []
-
-      if (uuid?.size() > 0) {
-        def oldUuid_match = Org.findByImpId(uuid)
-
-        def newUuid_match = Org.findByGokbId(uuid)
-
-        if(newUuid_match) {
-          result << newUuid_match
-        }else {
-            if(oldUuid_match) {
-                result << oldUuid_match
-            }
-        }
-      }
-
-      if(!result) {
-        // SUPPORT MULTIPLE IDENTIFIERS
-        if (identifiers instanceof ArrayList) {
-            identifiers.each { it ->
-                it.each { k, v ->
-                    if (v != null) {
-                        def o = Org.executeQuery("select o from Org as o join o.ids as ident where ident.ns.ns = ? and ident.value = ?", [k, v])
-
-                        if (o.size() > 0) result << o[0]
-                    }
-                }
-            }
-        }
-        // DEFAULT LOGIC
-        else {
-            // See if we can uniquely match on any of the identifiers
-            identifiers.each { k, v ->
-                if (v != null) {
-                    def o = Org.executeQuery("select o from Org as o join o.ids as ident where ident.ns.ns = ? and ident.value = ?", [k, v])
-
-                    if (o.size() > 0) result << o[0]
-                }
-            }
-        }
-      }
-
-      // No match by identifier, try and match by name
-      if (! result) {
-          // log.debug("Match by name ${name}");
-          def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
-
-          if (o.size() > 0) result << o[0]
-      }
-
-      result.isEmpty() ? null : result.get(0)
-    }
-
-    static def lookupOrCreate(name, sector, consortium, identifiers, iprange, def imp_uuid = null) {
-        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null, imp_uuid)
-    }
-
-    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp, def imp_uuid = null) {
-
-        if(imp_uuid?.size() == 0) {
-          imp_uuid = null
-        }
-
-        println "before org lookup"
-        def result = Org.lookup(name, identifiers, imp_uuid)
-
-        if ( result == null ) {
-          println "Create new entry for ${name}";
-          if (sector instanceof String){
-            sector = RefdataValue.getByValueAndCategory(sector,RDConstants.ORG_SECTOR)
-          }
-
-          if (orgRoleTyp instanceof String) {
-             orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, RDConstants.ORG_TYPE)
-          }
-            println "creating new org"
-          result = new Org(
-                           name:name,
-                           sector:sector,
-                           ipRange:iprange,
-                           impId: null,
-                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null).save()
-          if(orgRoleTyp) {
-              result.addToOrgType(orgRoleTyp).save()
-          }
-
-            // SUPPORT MULTIPLE IDENTIFIERS
-            if (identifiers instanceof ArrayList) {
-                identifiers.each{ it ->
-                    it.each { k, v ->
-                        // TODO [ticket=1789]
-                        if(k.toLowerCase() != 'originediturl') {
-                            //def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
-                            Identifier ident = Identifier.construct([value: v, reference: result, namespace: k])
-                        }
-                        else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
-                    }
-                }
-            }
-            // DEFAULT LOGIC
-            else {
-                identifiers.each { k, v ->
-                    // TODO [ticket=1789]
-                    if(k.toLowerCase() != 'originediturl') {
-                        //def io = new IdentifierOccurrence(org: result, identifier: Identifier.lookupOrCreateCanonicalIdentifier(k, v)).save()
-                        Identifier ident = Identifier.construct([value: v, reference: result, namespace: k])
-                    }
-                    else println "org identifier ${v} is deprecated namespace originEditUrl .. ignoring"
-                }
-            }
-
-          if ( ( consortium != null ) && ( consortium.length() > 0 ) ) {
-            def db_consortium = Org.lookupOrCreate(consortium, null, null, [:], null)
-            def consLink = new Combo(fromOrg:result,
-                                     toOrg:db_consortium,
-                                     status:null,
-                                     type: RDStore.COMBO_TYPE_CONSORTIUM
-            ).save()
-          }
-        } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && result && imp_uuid && imp_uuid != result.gokbId){
-          result.gokbId = imp_uuid
-          result.impId = imp_uuid
-          result.save()
-        }
-        else {
-            result.name = name
-            result.save()
-        }
-        println "org lookup end"
-        result
-    }
-
-  @Transient
-  static def oaiConfig = [
-    id:'orgs',
-    textDescription:'Org repository for KBPlus',
-    query:" from Org as o ",
-    pageSize:20
-  ]
-
-  /**
-   *  Render this title as OAI_dc
-   */
-  @Transient
-  def toOaiDcXml(builder, attr) {
-    builder.'dc'(attr) {
-      'dc:title' (name)
-    }
-  }
-
-  /**
-   *  Render this Title as KBPlusXML
-   */
-  @Transient
-  def toKBPlus(builder, attr) {
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    def pub = getPublisher()
-
-    try {
-      builder.'kbplus' (attr) {
-        builder.'org' (['id':(id)]) {
-          builder.'name' (name)
-        }
-        builder.'identifiers' () {
-          ids?.each { id_oc ->
-            builder.identifier([namespace:id_oc.ns.ns, value:id_oc.value])
-          }
-        }
-      }
-    }
-    catch ( Exception e ) {
-      log.error(e);
-    }
-
   }
 
     String getDesignation() {
@@ -672,18 +490,30 @@ class Org
         )
     }
 
-    def getallOrgType()
-    {
-        def result = []
-        getallOrgTypeIds()?.each { it ->
-                result << RefdataValue.get(it)
+    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
+
+        if (onlyPublic) {
+            Person.executeQuery(
+                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :functionType",
+                    [org: this, functionType: functionType]
+            )
         }
-        result
+        else {
+            Org ctxOrg = contextService.getOrg()
+            Person.executeQuery(
+                    "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
+                            " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
+                    [org: this, functionType: functionType, ctx: ctxOrg]
+            )
+        }
     }
 
-    List getallOrgTypeIds()
-    {
-        orgType.findAll{it}.collect{it.id}
+    List<RefdataValue> getAllOrgTypes() {
+        RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
+    }
+
+    List getAllOrgTypeIds() {
+        RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
     }
 
     boolean isInComboOfType(RefdataValue comboType) {
@@ -699,7 +529,19 @@ class Org
     boolean isDepartment() {
         isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
+    void createCoreIdentifiersIfNotExist(){
+        if(!Combo.findByFromOrgAndType(this, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
 
+            boolean isChanged = false
+            IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
+                if ( ! ids.find {it.ns?.ns == coreNs}){
+                    addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
+                    isChanged = true
+                }
+            }
+            if (isChanged) refresh()
+        }
+    }
     // Only for ISIL, EZB, WIBID
     void addOnlySpecialIdentifiers(String ns, String value) {
         boolean found = false
@@ -714,7 +556,7 @@ class Org
             ns = ns?.trim()
             //def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
             // TODO [ticket=1789]
-            Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns])
+            Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns, nsType: Org.class.name])
             //def id = new Identifier(ns:namespace, value:value).save()
             //new IdentifierOccurrence(identifier: id, org: this).save()
             log.debug("Create new identifier: ${ident.getId()} ns:${ns} value:${value}")
@@ -748,8 +590,8 @@ class Org
         boolean check = false
 
         if (perms) {
-            def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 perms.split(',').each { perm ->
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
                 }
@@ -761,9 +603,13 @@ class Org
         check
     }
 
+    String dropdownNamingConvention() {
+        return dropdownNamingConvention(contextService.org)
+    }
+
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
-        if (RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()){
+        if (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE']){
             if (name) {
                 result += name
             }
@@ -780,5 +626,4 @@ class Org
         }
         result
     }
-
 }

@@ -1,11 +1,14 @@
 package de.laser.api.v0
 
-
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgSettings
+import de.laser.OrgSetting
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.RandomStringUtils
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
+
+import java.text.SimpleDateFormat
 
 @Log4j
 class ApiToolkit {
@@ -13,13 +16,38 @@ class ApiToolkit {
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
     static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
     static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
+    static final API_LEVEL_OAMONITOR    = 'API_LEVEL_OAMONITOR'
+    static final API_LEVEL_NATSTAT      = 'API_LEVEL_NATSTAT'
     static final API_LEVEL_INVOICETOOL  = 'API_LEVEL_INVOICETOOL'
 
     static final NO_ACCESS_DUE_NO_APPROVAL  = 'NO_APPROVAL'
     static final NO_ACCESS_DUE_NOT_PUBLIC   = 'NOT_PUBLIC'
 
+    static final DATE_TIME_PATTERN      = "yyyy-MM-dd'T'HH:mm:ss"
+
     static List getAllApiLevels() {
-        [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER, API_LEVEL_INVOICETOOL]
+        [
+            API_LEVEL_READ,
+            API_LEVEL_WRITE,
+            API_LEVEL_DATAMANAGER,
+            API_LEVEL_OAMONITOR,
+            API_LEVEL_NATSTAT,
+            API_LEVEL_INVOICETOOL
+        ]
+    }
+    static List getReadingApiLevels() {
+        [
+            API_LEVEL_READ,
+            API_LEVEL_DATAMANAGER,
+            API_LEVEL_OAMONITOR,
+            API_LEVEL_NATSTAT,
+            API_LEVEL_INVOICETOOL
+        ]
+    }
+    static List getWritingApiLevels() {
+        [
+            API_LEVEL_WRITE
+        ]
     }
 
     static void setApiLevel(Org org, String apiLevel) {
@@ -28,41 +56,45 @@ class ApiToolkit {
             return
         }
 
-        def oss = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+        def oss = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
             oss.strValue = apiLevel
             oss.save(flush:true)
         }
         else {
-            OrgSettings.add(org, OrgSettings.KEYS.API_LEVEL, apiLevel)
-            OrgSettings.add(org, OrgSettings.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
-            OrgSettings.add(org, OrgSettings.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_LEVEL, apiLevel)
+            OrgSetting.add(org, OrgSetting.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
         }
     }
 
     static void removeApiLevel(Org org) {
 
-        OrgSettings.delete(org, OrgSettings.KEYS.API_LEVEL)
-        OrgSettings.delete(org, OrgSettings.KEYS.API_KEY)
-        OrgSettings.delete(org, OrgSettings.KEYS.API_PASSWORD)
+        OrgSetting.delete(org, OrgSetting.KEYS.API_LEVEL)
+        OrgSetting.delete(org, OrgSetting.KEYS.API_KEY)
+        OrgSetting.delete(org, OrgSetting.KEYS.API_PASSWORD)
     }
 
-    static boolean isDataManager(Org org) {
-        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+    static boolean hasApiLevel(Org org, String apiLevel) {
+        def orgSetting = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
 
-        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-            return ApiToolkit.API_LEVEL_DATAMANAGER == apiLevel.getValue()
+        if (orgSetting != OrgSetting.SETTING_NOT_FOUND) {
+            return apiLevel == orgSetting.getValue()
         }
         return false
     }
 
-    static boolean isInvoiceTool(Org org) {
-        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+    static boolean isDebugMode() {
+        RequestAttributes reqAttr = RequestContextHolder.currentRequestAttributes()
+        reqAttr.getAttribute('debugMode', RequestAttributes.SCOPE_REQUEST)
+    }
 
-        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-            return ApiToolkit.API_LEVEL_INVOICETOOL == apiLevel.getValue()
+    static Collection<Object> cleanUpDebugInfo(Collection<Object> list) {
+        if (! isDebugMode()) {
+            list.removeAll(Constants.HTTP_FORBIDDEN)
         }
-        return false
+
+        list
     }
 
     static Map<String, Object> cleanUp(Map map, boolean removeNullValues, boolean removeEmptyLists) {
@@ -96,13 +128,13 @@ class ApiToolkit {
         list
     }
 
-    static Object checkPreconditionFailed(result) {
-
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
+    static String formatInternalDate(Date date) {
+        if (! date) {
+            return null
         }
 
-        result
+        SimpleDateFormat sdf = new SimpleDateFormat(ApiToolkit.DATE_TIME_PATTERN) // DateUtil.getSDF_NoZ()
+        sdf.format(date)
     }
 
     static Object parseTimeLimitedQuery(String query, String value) {

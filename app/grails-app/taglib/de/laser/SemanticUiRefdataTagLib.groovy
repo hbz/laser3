@@ -1,8 +1,4 @@
 package de.laser
-
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.kbplus.RefdataValue
-
 // Semantic UI
 
 class SemanticUiRefdataTagLib {

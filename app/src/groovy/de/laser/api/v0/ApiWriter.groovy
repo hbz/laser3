@@ -1,6 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.Person
+import de.laser.RefdataValue
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j
@@ -28,7 +30,7 @@ class ApiWriter {
                         licenseUrl:         data.licenseUrl,
                         // removed - licensorRef:        data.licensorRef,
                         // removed - licenseeRef:        data.licenseeRef,
-                        licenseType:        data.licenseType,
+                        //licenseType:        data.licenseType,
                         licenseStatus:      data.licenseStatus,
                         noticePeriod:       data.noticePeriod,
                         reference:          data.reference,
@@ -48,16 +50,16 @@ class ApiWriter {
 
                 // References
                 def properties            = ApiWriterHelper.getProperties(data.properties, license, context)
-                license.customProperties  = properties['custom']
-                license.privateProperties = properties['private']
+                license.propertySet  = properties['custom']
+                //license.privateProperties = properties['private']
 
                 // not supported: license.documents
                 // not supported: license.onixplLicense
 
-                // TO CHECK: save license before saving orgLinks
+                // TO CHECK: save license before saving orgRelations
                 license.save()
 
-                license.orgLinks = ApiWriterHelper.getOrgLinks(data.organisations, license, context)
+                license.orgRelations = ApiWriterHelper.getOrgRelations(data.organisations, license, context)
 
                 // TODO: set subscription.owner = license
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
@@ -67,7 +69,7 @@ class ApiWriter {
             }
             catch (Exception e) {
                 log.error("Error while importing LICENSE via API; rollback forced")
-                log.error(e)
+                log.error( e.toString() )
                 status.setRollbackOnly()
                 result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
@@ -105,7 +107,7 @@ class ApiWriter {
                 org.ids       = ApiWriterHelper.getIdentifiers(data.identifiers, org) // implicit creation of identifier and namespace
 
                 def properties        = ApiWriterHelper.getProperties(data.properties, org, context)
-                org.customProperties  = properties['custom']
+                org.propertySet  = properties['custom']
                 org.privateProperties = properties['private']
 
                 // MUST: save org before saving persons and prsLinks
@@ -123,7 +125,7 @@ class ApiWriter {
             }
             catch (Exception e) {
                 log.error("Error while importing ORG via API; rollback forced")
-                log.error(e)
+                log.error( e.toString() )
                 status.setRollbackOnly()
                 result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]
             }
@@ -161,13 +163,13 @@ class ApiWriter {
 
                 // References
                 def properties       = ApiWriterHelper.getProperties(data.properties, sub, context)
-                sub.customProperties = properties['custom']
+                sub.propertySet = properties['custom']
                 sub.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, sub) // implicit creation of identifier and namespace
 
                 // TO CHECK: save subscriptions before saving orgRelations
                 sub.save()
 
-                sub.orgRelations     = ApiWriterHelper.getOrgLinks(data.organisations, sub, context)
+                sub.orgRelations     = ApiWriterHelper.getOrgRelations(data.organisations, sub, context)
 
                 // not supported: documents
                 // not supported: derivedSubscriptions
@@ -180,7 +182,7 @@ class ApiWriter {
             }
             catch (Exception e) {
                 log.error("Error while importing SUBSCRIPTION via API; rollback forced")
-                log.error(e)
+                log.error( e.toString() )
 
                 status.setRollbackOnly()
                 result = ['result': Constants.HTTP_INTERNAL_SERVER_ERROR, 'debug': e]

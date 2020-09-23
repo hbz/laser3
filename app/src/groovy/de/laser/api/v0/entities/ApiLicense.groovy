@@ -4,10 +4,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiStubReader
-import de.laser.api.v0.ApiToolkit
+import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -18,32 +15,30 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiLicense {
 
     /**
-     * @return License | BAD_REQUEST | PRECONDITION_FAILED
+     * @return ApiBox(obj: License | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND )
      */
-    static findLicenseBy(String query, String value) {
-        def result
+    static ApiBox findLicenseBy(String query, String value) {
+        ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = License.findAllWhere(id: Long.parseLong(value))
+                result.obj = License.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = License.findAllWhere(globalUID: value)
+                result.obj = License.findAllWhere(globalUID: value)
                 break
-//            case 'impId':
-//                result = License.findAllWhere(impId: value)
-//                break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(new License(), value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+                result.status = Constants.HTTP_BAD_REQUEST
+                return result
                 break
         }
-        result = ApiToolkit.checkPreconditionFailed(result)
+        result.validatePrecondition_1()
 
-        //if (result instanceof License && result.status == RDStore.LICENSE_DELETED) {
-        //    result = Constants.OBJECT_STATUS_DELETED
+        //if (result.obj instanceof License) {
+        //    result.validateDeletedStatus_2('status', RDStore.LICENSE_DELETED)
         //}
         result
     }
@@ -93,16 +88,20 @@ class ApiLicense {
         Collection<Object> result = []
 
         List<License> available = License.executeQuery(
-                'SELECT lic FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
+                'SELECT DISTINCT(lic) FROM License lic JOIN lic.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
                 [
                         owner: owner,
                         roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
                 ]
         )
 
+        println "${available.size()} available licenses found .."
+
         available.each { lic ->
             result.add(ApiStubReader.requestLicenseStub(lic, context))
         }
+
+        ApiToolkit.cleanUpDebugInfo(result)
 
         return (result ? new JSON(result) : null)
     }
@@ -117,28 +116,22 @@ class ApiLicense {
 
         result.globalUID        = lic.globalUID
         // removed - result.contact          = lic.contact
-        result.dateCreated      = lic.dateCreated
-        result.endDate          = lic.endDate
-        //result.impId            = lic.impId
-        // result.lastmod          = lic.lastmod // legacy ?
-        result.lastUpdated      = lic.lastUpdated
-        // result.licenseUrl       = lic.licenseUrl
-        // removed - result.licensorRef      = lic.licensorRef
-        // removed - result.licenseeRef      = lic.licenseeRef
-        result.licenseType      = lic.licenseType
-        //result.noticePeriod     = lic.noticePeriod
+        result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
+        result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
+        //result.licenseType      = lic.licenseType
         result.reference        = lic.reference
-        result.startDate        = lic.startDate
-        result.normReference= lic.sortableReference
+        result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
+        result.normReference    = lic.sortableReference
 
         // erms-888
-        result.calculatedType   = lic.getCalculatedType()
+        result.calculatedType   = lic._getCalculatedType()
 
         // RefdataValues
 
-        // result.licenseCategory  = lic.licenseCategory?.value // legacy
+        result.licenseCategory  = lic.licenseCategory?.value
         result.status           = lic.status?.value
-        // result.type             = lic.type?.value
+        result.type             = lic.type?.value
 
         // References
 
@@ -146,11 +139,11 @@ class ApiLicense {
         result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
         result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
-        result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = ApiStubReader.getStubCollection(lic.subscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+                result.subscriptions = ApiStubReader.getStubCollection(lic.getSubscriptions(), ApiReader.SUBSCRIPTION_STUB, context)
             }
             if (ignoreRelation != ApiReader.IGNORE_LICENSE) {
                 def allOrgRoles = []
@@ -167,7 +160,7 @@ class ApiLicense {
                     )
                 }
                 else {
-                    allOrgRoles.addAll(lic.orgLinks)
+                    allOrgRoles.addAll(lic.orgRelations)
 
                     // add derived licenses org roles
                     if (lic.derivedLicenses) {
@@ -188,7 +181,7 @@ class ApiLicense {
 
         // Ignored
 
-        //result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
+        //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole

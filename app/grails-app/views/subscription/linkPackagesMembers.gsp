@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -45,11 +45,11 @@
             <g:each in="${parentPackages}" var="subPkg">
                 <div class="item">
                     <g:link controller="package" action="show"
-                            id="${subPkg?.pkg?.id}">${subPkg?.pkg?.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
+                            id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                     <div class="right floated content">
                         <button class="ui negative button la-selectable-button"
-                                onclick="unlinkPackage(${subPkg?.pkg.id}, ${subPkg?.subscription.id})">
+                                onclick="unlinkPackage(${subPkg.pkg.id}, ${subPkg.subscription.id})">
                             <i class="unlink icon"></i>
                         </button>
                     </div>
@@ -84,7 +84,7 @@
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
                     params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
-            <div class="or"></div>
+            <div class="or" data-text="${message(code:'default.or')}"></div>
             <g:link class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}"
@@ -118,7 +118,7 @@
                     data-confirm-term-how="ok" type="submit" name="withIE"
                     value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
-            <div class="or"></div>
+            <div class="or" data-text="${message(code:'default.or')}"></div>
             <button class="ui button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                     data-confirm-term-how="ok" type="submit" name="withIE"
@@ -129,8 +129,9 @@
 </div>--}%
 
 
-    <g:form action="processLinkPackagesConsortia" method="post" class="ui form">
+    <g:form action="processLinkPackagesMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <div class="ui segment">
 
             <div class="field required">
@@ -157,7 +158,7 @@
                         <button class="ui button" type="submit" name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscription.linkPackagesMembers.linkwithoutIE')}</button>
 
-                        <div class="or"></div>
+                        <div class="or" data-text="${message(code:'default.or')}"></div>
                         <button class="ui button" type="submit" name="processOption"
                                 value="linkwithIE">${message(code: 'subscription.linkPackagesMembers.linkwithIE', args: args.superOrgType)}</button>
 
@@ -166,13 +167,15 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative"
-                                type="submit" name="processOption"
+                        <button class="ui button negative js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" type="submit" name="processOption"
                                 value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
 
-                        <div class="or"></div>
-                        <button class="ui button negative "
-                                type="submit" name="processOption"
+                        <div class="or" data-text="${message(code:'default.or')}"></div>
+                        <button class="ui button negative js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                                data-confirm-term-how="ok" type="submit" name="processOption"
                                 value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
                     </div>
 
@@ -225,6 +228,13 @@
                                           class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                         <i class="thumbtack blue icon"></i>
+                                    </span>
+                                </g:if>
+
+                                <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                          data-content="${subscr.getCustomerTypeI10n()}">
+                                        <i class="chess rook grey icon"></i>
                                     </span>
                                 </g:if>
 
@@ -332,7 +342,7 @@
 
 <div id="magicArea"></div>
 
-<r:script language="JavaScript">
+<r:script>
         $('#membersListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;com.k_int.kbplus.auth.Role" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.*;com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -42,7 +42,7 @@
                                       optionKey="id"
                                       optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                                       value="${params.org ?: orgInstance?.id}"
-                                      class="ui fluid search dropdown"/>
+                                      class="ui fluid search dropdown la-not-clearable"/>
                         </div>
                         <div class="field">
                             <label for="userRole">${message(code:'user.role')}</label>
@@ -57,6 +57,8 @@
 
                     <div class="field">
                         <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
+                        <input type="button" class="ui button js-click-control" onclick="window.history.back();" value="${message(code:'default.button.cancel.label')}" />
+                    </div>
                     </div>
 
                 </fieldset>

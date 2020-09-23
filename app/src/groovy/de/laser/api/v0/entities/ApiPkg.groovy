@@ -3,10 +3,7 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiToolkit
-import de.laser.api.v0.ApiUnsecuredMapReader
+import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -17,50 +14,46 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiPkg {
 
     /**
-     * @return Package | BAD_REQUEST | PRECONDITION_FAILED | OBJECT_STATUS_DELETED
+     * @return ApiBox(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      */
-    static findPackageBy(String query, String value) {
-        def result
+    static ApiBox findPackageBy(String query, String value) {
+		ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'id':
-                result = Package.findAllWhere(id: Long.parseLong(value))
+				result.obj = Package.findAllWhere(id: Long.parseLong(value))
                 break
             case 'globalUID':
-                result = Package.findAllWhere(globalUID: value)
+				result.obj = Package.findAllWhere(globalUID: value)
                 break
-//            case 'impId':
-//                result = Package.findAllWhere(impId: value)
-//                break
             case 'gokbId':
-                result = Package.findAllWhere(gokbId: value)
+				result.obj = Package.findAllWhere(gokbId: value)
                 break
             case 'ns:identifier':
-                result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
+				result.obj = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break
             default:
-                return Constants.HTTP_BAD_REQUEST
+				result.status = Constants.HTTP_BAD_REQUEST
+                return result
                 break
         }
-        result = ApiToolkit.checkPreconditionFailed(result)
+		result.validatePrecondition_1()
 
-		if (result instanceof Package && result.packageStatus == RDStore.PACKAGE_STATUS_DELETED) {
-			result = Constants.OBJECT_STATUS_DELETED
+		if (result.obj instanceof Package) {
+			result.validateDeletedStatus_2('packageStatus', RDStore.PACKAGE_STATUS_DELETED)
 		}
 		result
     }
 
     /**
-     * @return JSON | FORBIDDEN
+     * @return JSON
      */
-    static requestPackage(Package pkg, Org context) {
+    static getPackage(Package pkg, Org context) {
         Map<String, Object> result = [:]
 
-		// TODO check hasAccess
-		boolean hasAccess = true
         result = getPackageMap(pkg, context)
 
-        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+        return result ? new JSON(result) : null
     }
 
 	/**
@@ -73,26 +66,22 @@ class ApiPkg {
 
 		result.globalUID        	= pkg.globalUID
 		result.gokbId           	= pkg.gokbId
-		//result.impId            	= pkg.impId
 		result.name             	= pkg.name
 		result.sortName         	= pkg.sortName
 
 		result.autoAccept       	= pkg.autoAccept ? 'Yes' : 'No'
 		result.cancellationAllowances = pkg.cancellationAllowances
-		result.dateCreated      	= pkg.dateCreated
-		result.endDate          	= pkg.endDate
-		//result.forumId          	= pkg.forumId
-		//result.identifier       = pkg.identifier - TODO refactoring legacy
-
-		result.lastUpdated      	= pkg.lastUpdated
+		result.dateCreated      	= ApiToolkit.formatInternalDate(pkg.dateCreated)
+		result.endDate          	= ApiToolkit.formatInternalDate(pkg.endDate)
+		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
 		result.vendorURL        	= pkg.vendorURL
-		result.startDate        	= pkg.startDate
-		result.listVerifiedDate      = pkg.listVerifiedDate
+		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
+		result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)
 
 		// RefdataValues
 
 		result.packageListStatus 	= pkg.packageListStatus?.value
-		result.packageType      	= pkg.packageType?.value
+		result.contentType      	= pkg.contentType?.value
 		result.packageScope     	= pkg.packageScope?.value
 		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
@@ -105,7 +94,7 @@ class ApiPkg {
 		//result.documents        = ApiCollectionReader.retrieveDocumentCollection(pkg.documents) // com.k_int.kbplus.DocContext
 		result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
 		//result.license          = ApiStubReader.requestLicenseStub(pkg.license, context) // com.k_int.kbplus.License
-		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
+		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform, context) // com.k_int.kbplus.Platform
 		result.organisations    = ApiCollectionReader.getOrgLinkCollection(pkg.orgs, ApiReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
 		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform

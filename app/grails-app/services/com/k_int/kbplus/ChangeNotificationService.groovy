@@ -1,19 +1,27 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.AuditConfig
+import de.laser.ContextService
+import de.laser.PendingChangeConfiguration
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
+import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 import java.sql.Timestamp
+import java.util.concurrent.ExecutorService
 
+@Transactional
 class ChangeNotificationService extends AbstractLockableService {
 
-    def executorService
+    ExecutorService executorService
     def genericOIDService
     def sessionFactory
-    //def cacheService
+    ContextService contextService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
@@ -30,7 +38,7 @@ class ChangeNotificationService extends AbstractLockableService {
       // log.debug("Pending change saved ok");
     }
     else {
-      log.error(new_queue_item.errors);
+      log.error(new_queue_item.errors.toString());
     }
 
   }
@@ -41,9 +49,9 @@ class ChangeNotificationService extends AbstractLockableService {
   boolean aggregateAndNotifyChanges() {
       if(!running) {
           running = true
-          def future = executorService.submit({
+          executorService.execute({
               internalAggregateAndNotifyChanges();
-          } as java.util.concurrent.Callable)
+          })
 
           return true
       }
@@ -88,11 +96,11 @@ class ChangeNotificationService extends AbstractLockableService {
 
             if ( contextObject == null ) {
               log.warn("Pending changes for a now deleted item.. nuke them!");
-              ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid:poidc])
+              ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid: poidc])
             }
 
             List<ChangeNotificationQueueItem> pendingChanges = ChangeNotificationQueueItem.executeQuery(
-                    "select c from ChangeNotificationQueueItem as c where c.oid = ? order by c.ts asc", [poidc]
+                    "select c from ChangeNotificationQueueItem as c where c.oid = :oid order by c.ts asc", [oid: poidc]
             )
             StringWriter sw = new StringWriter();
 
@@ -193,7 +201,7 @@ class ChangeNotificationService extends AbstractLockableService {
         // If we got this far, all is OK, delete any pending changes
         //pc_delete_list.each { pc ->
           // log.debug("Deleting reported change ${pc.id}");
-          //pc.delete()
+          //pc.delete(flush:true)
         //}
         cleanUpGorm()
       } // queueItems.each{}
@@ -213,20 +221,19 @@ class ChangeNotificationService extends AbstractLockableService {
         //cache.put(changeDocument.OID,changeDocument)
 
         // TODO [ticket=1807] should not be done in extra thread but collected and saved afterwards
-        def submit = executorService.submit({
+        executorService.execute({
             Thread.currentThread().setName("PendingChangeSubmission")
             try {
                 log.debug("inside executor task submission .. ${changeDocument.OID}")
                 def contextObject = genericOIDService.resolveOID(changeDocument.OID)
 
                 log.debug("Context object: ${contextObject}")
-                contextObject?.notifyDependencies_trait(changeDocument)
+                contextObject?.notifyDependencies(changeDocument)
             }
             catch (Exception e) {
                 log.error("Problem with event transmission for ${changeDocument.OID}" ,e)
             }
-        } as java.util.concurrent.Callable)
-
+        })
     }
 
     def cleanUpGorm() {
@@ -248,10 +255,15 @@ class ChangeNotificationService extends AbstractLockableService {
     }
 
     //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
+    @Deprecated
+    /**
+     * This method registers pending changes and is going to be kept because of backwards compatibility.
+     * Is going to be replaced by PendingChangeFactory ({@link PendingChange}.construct())
+     */
     PendingChange registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, def msgParams, String legacyDesc) {
         log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
 
-        def desc = legacyDesc?.toString() // freeze string before altering referenced values
+        String desc = legacyDesc?.toString() // freeze string before altering referenced values
 
         // WTF !?
 
@@ -314,6 +326,78 @@ class ChangeNotificationService extends AbstractLockableService {
                 log.error("Problem saving pending change: ${new_pending_change.errors}")
             }
             return null
+        }
+    }
+
+    def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
+        /*
+            decision tree:
+            is there a configuration map directly for the subscription?
+                case one: if so: process as defined there
+            - if not: is there a configuration map for the parent subscription?
+                case two: if so: process as defined there
+            - if neither: check if consortial subscription
+                if so: case three - auto reject (because it is matter of survey)
+                if not: case four - treat as prompt
+         */
+        Org contextOrg
+        //consider collective later!
+        if(subscriptionPackage) {
+            if(subscriptionPackage.subscription.instanceOf)
+                contextOrg = subscriptionPackage.subscription.getConsortia()
+            else contextOrg = subscriptionPackage.subscription.getSubscriber()
+            RefdataValue settingValue
+            PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken}
+            if(msgToken in [PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED] || args.prop in ['hostPlatformURL']) {
+                if(directConf) {
+                    if(directConf.withNotification)
+                        PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
+                }
+                else {
+                    SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
+                    if(parentSP) {
+                        PendingChangeConfiguration parentConf = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken }
+                        if(parentConf && parentConf.withNotification)
+                            PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
+                    }
+                }
+            }
+            else {
+                if(directConf) {
+                    //case one
+                    settingValue = directConf.settingValue
+                }
+                else if(AuditConfig.getConfig(subscriptionPackage.subscription.instanceOf,msgToken)) {
+                    //case two
+                    SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
+                    settingValue = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken }.settingValue
+                }
+                if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
+                    //case four, then fallback or explicitly set as such
+                    PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
+                }
+                if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
+                    //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
+                    PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
+                    pc.accept()
+                }
+                /*
+                    else we have case three - a child subscription with no inherited settings ->
+                    according to Micha as of March 16th, 2020, this means de facto that the holding manipulation should take place in a survey and
+                    with that, the behavior can only be auto reject because the members need their current holding data as measurement for survey evaluation
+                */
+            }
+        }
+        else {
+            if(msgToken == PendingChangeConfiguration.TITLE_DELETED) {
+                IssueEntitlement ie = genericOIDService.resolveOID(args.oid)
+                if(ie.subscription.instanceOf)
+                    contextOrg = ie.subscription.getConsortia()
+                else contextOrg = ie.subscription.getSubscriber()
+                //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
+                PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
+                pc.accept()
+            }
         }
     }
 

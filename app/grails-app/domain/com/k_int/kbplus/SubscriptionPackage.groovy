@@ -1,8 +1,14 @@
 package com.k_int.kbplus
 
+import de.laser.OrgAccessPoint
+import de.laser.OrgAccessPointLink
+import de.laser.PendingChangeConfiguration
+import de.laser.helper.RDStore
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+
 import javax.persistence.Transient
 
-class SubscriptionPackage {
+class SubscriptionPackage implements Comparable {
 
   Subscription subscription
   Package pkg
@@ -10,6 +16,8 @@ class SubscriptionPackage {
 
   Date dateCreated
   Date lastUpdated
+
+  static transients = ['issueEntitlementsofPackage', 'IEandPackageSize', 'currentTippsofPkg', 'packageName'] // mark read-only accessor methods
 
   static mapping = {
                 id column:'sp_id'
@@ -22,9 +30,9 @@ class SubscriptionPackage {
     lastUpdated column: 'sp_last_updated'
   }
 
-
   static hasMany = [
-    oapls: OrgAccessPointLink
+    oapls: OrgAccessPointLink,
+    pendingChangeConfig: PendingChangeConfiguration
   ]
 
   static belongsTo = [
@@ -33,30 +41,35 @@ class SubscriptionPackage {
   ]
 
   static mappedBy = [
-    oapls: 'subPkg'
+    oapls: 'subPkg',
+    pendingChangeConfig: 'subscriptionPackage'
   ]
 
   static constraints = {
-    subscription(nullable:true, blank:false)
-    pkg(nullable:true, blank:false)
-    finishDate(nullable:true, blank:false)
+    subscription(nullable:true)
+    pkg         (nullable:true)
+    finishDate  (nullable:true)
 
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
     //oapls   batchSize: 10
   }
 
-  @Transient
-  static def refdataFind(params) {
+  @Override
+  int compareTo(Object o) {
+    return this.pkg.name.compareTo(o.pkg.name)
+  }
 
-    def result = [];
-    def hqlParams = []
+  @Transient
+  static def refdataFind(GrailsParameterMap params) {
+    List<Map<String, Object>> result = []
+    Map<String, Object> hqlParams = [:]
     String hqlString = "select sp from SubscriptionPackage as sp"
 
     if ( params.subFilter ) {
-      hqlString += ' where sp.subscription.id = ?'
-      hqlParams.add(params.long('subFilter'))
+      hqlString += ' where sp.subscription.id = :sid'
+      hqlParams.put('sid', params.long('subFilter'))
     }
 
     List<SubscriptionPackage> results = SubscriptionPackage.executeQuery(hqlString,hqlParams)
@@ -73,15 +86,12 @@ class SubscriptionPackage {
 
     def result = []
 
-    this.subscription.issueEntitlements.findAll{it.status?.value == 'Current'}.each { iE ->
-
+    this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id) && (it.acceptStatus?.id == RDStore.IE_ACCEPT_STATUS_FIXED.id)}.each { iE ->
       if(TitleInstancePackagePlatform.findByIdAndPkg(iE.tipp?.id, pkg))
       {
         result << iE
       }
-
     }
-
     result
   }
 
@@ -120,4 +130,8 @@ class SubscriptionPackage {
     }
   }
 
+  //used by /subscription/show.gsp
+  PendingChangeConfiguration getPendingChangeConfig(String config) {
+    PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
+  }
 }

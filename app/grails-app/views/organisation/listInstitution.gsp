@@ -34,12 +34,12 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="listInstitution" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier'], ['federalState', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier'], ['region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
@@ -51,7 +51,7 @@
                       consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'legalInformation',
+                              'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'legalInformation',
                               (editable ? 'consortiaToggle' : '')
                       ]
               ]"/>

@@ -1,6 +1,6 @@
 package de.laser.helper
 
-import com.k_int.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -87,5 +87,18 @@ class SwissKnife {
 
     static String toSnakeCase(String text) {
         text.replaceAll( /([A-Z])/, /_$1/ ).toLowerCase().replaceAll( /^_/, '' )
+    }
+
+    static Map deepClone(Map map) {
+        Map cloned = [:]
+        map.each { k,v ->
+            if (v instanceof Map) {
+                cloned[k] = deepClone(v)
+            }
+            else {
+                cloned[k] = v
+            }
+        }
+        return cloned
     }
 }

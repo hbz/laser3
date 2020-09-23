@@ -54,7 +54,7 @@
                         <g:if test="${tmplUserEdit}">
                             <td class="x">
                             <g:if test="${(editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
-                                <g:if test="${!instAdmService.isLastAdminForOrg(aff.org, userInstance) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                                <g:if test="${!instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
                                             class="ui icon negative button">
                                         <i class="trash alternate icon"></i>

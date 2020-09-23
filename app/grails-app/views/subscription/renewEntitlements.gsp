@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -18,10 +18,6 @@
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/> <g:message code="subscription.details.renewEntitlements.label" /></h1>
 
 <g:render template="nav"/>
-
-<%--<g:set var="counter" value="${offset + 1}"/>
-${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )--%>
-
 
 
 <g:if test="${flash}">
@@ -80,7 +76,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 }
                 else if(corresp.find(".bulkcheck:checked")) {
                     var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                    if (~delIdx) tippsToDelete.slice(delIdx,1);
+                    if (~delIdx) tippsToDelete.splice(delIdx,1);
                     $("tr[data-index='"+index+"'").removeClass("negative").addClass("positive");
                     corresp.find(".bulkcheck:checked").prop("checked", false);
                     tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
@@ -89,7 +85,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             else {
                 $("tr[data-index='"+index+"'").removeClass("positive");
                 var delIdx = tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToAdd.slice(delIdx,1);
+                if (~delIdx) tippsToAdd.splice(delIdx,1);
             }
         });
 
@@ -98,7 +94,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             var corresp = $("#source tr[data-index='"+index+"']");
             if(this.checked) {
                 var delIdx = tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToAdd.slice(delIdx,1);
+                if (~delIdx) tippsToAdd.splice(delIdx,1);
                 $("tr[data-index='"+index+"'").removeClass("positive").addClass("negative");
                 corresp.find(".bulkcheck:checked").prop("checked", false);
                 tippsToDelete.push($(this).parents("tr").attr("data-gokbId"));
@@ -106,7 +102,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             else {
                 $("tr[data-index='"+index+"'").removeClass("negative");
                 var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToDelete.slice(delIdx,1);
+                if (~delIdx) tippsToDelete.splice(delIdx,1);
             }
         });
 

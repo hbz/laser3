@@ -1,12 +1,12 @@
 package de.laser
 
-import com.k_int.kbplus.Combo
+
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgSettings
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.*
 import de.laser.helper.RDConstants
+import grails.transaction.Transactional
 
+@Transactional
 class AccessService {
 
     static final CHECK_VIEW = 'CHECK_VIEW'
@@ -16,7 +16,6 @@ class AccessService {
     static final ORG_INST = 'ORG_INST'
     static final ORG_BASIC_MEMBER = 'ORG_BASIC_MEMBER'
     static final ORG_CONSORTIUM = 'ORG_CONSORTIUM'
-    static final ORG_CONSORTIUM_SURVEY = 'ORG_CONSORTIUM_SURVEY'
     static final ORG_INST_COLLECTIVE = 'ORG_INST_COLLECTIVE'
 
     def grailsApplication
@@ -113,7 +112,7 @@ class AccessService {
 
         if (orgPerms) {
             Org ctx = contextOrg
-            def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
+            def oss = OrgSetting.get(ctx, OrgSetting.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
             //println(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params)
@@ -123,11 +122,11 @@ class AccessService {
                 isOrgBasicMemberView = org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
-            if(isOrgBasicMemberView && (oss.getValue() in Role.findAllByAuthorityInList(['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']))){
+            if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM'))){
                 fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
             }
 
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 orgPerms.each{ cd ->
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) fakeRole ?: oss.getValue())
                 }
@@ -157,7 +156,7 @@ class AccessService {
         if (orgTypes) {
             orgTypes.each { ot ->
                 RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), RDConstants.ORG_TYPE)
-                check2 = check2 || contextService.getOrg()?.getallOrgTypeIds()?.contains(type?.id)
+                check2 = check2 || contextService.getOrg().getAllOrgTypeIds()?.contains(type?.id)
             }
         } else {
             check2 = true
@@ -218,7 +217,7 @@ class AccessService {
         rolesToCheck << role
 
         // NEW CONSTRAINT:
-        if (org.id != contextService.getOrg()?.id) {
+        if (org.id != contextService.getOrg().id) {
             return result
         }
 

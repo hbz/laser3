@@ -1,12 +1,11 @@
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="de.laser.Address" %>
 
 <!doctype html>
-<r:require module="scaffolding" />
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
 		<div>
@@ -45,7 +44,6 @@
 				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
-							<% // <f:all bean="addressInstance"/> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">

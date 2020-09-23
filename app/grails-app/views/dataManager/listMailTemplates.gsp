@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.MailTemplate;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.MailTemplate; de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
 <!doctype html>
 <html>
 <head>
@@ -59,7 +59,7 @@
 
                     <td>
                         <button type="button" class="ui icon button la-popup-tooltip la-delay"
-                                data-mailTemplateTarget="${de.laser.domain.MailTemplate.class.name}:${template.id}"
+                                data-mailTemplateTarget="${de.laser.MailTemplate.class.name}:${template.id}"
                                 data-mailTemplateName="${template.name}"
                                 data-mailTemplateSubject="${template.subject}"
                                 data-mailTemplateText="${template.text}"
@@ -110,7 +110,7 @@
             <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
             <g:select id="mailTemplateLanguageEdit"
                       name="language"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
+                      from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
                       class="ui dropdown search many-to-one"
@@ -121,7 +121,7 @@
             <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
+                      from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
                       class="ui dropdown search many-to-one"
@@ -168,7 +168,7 @@
         <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
         <g:select id="mailTemplateLanguage"
                   name="language"
-                  from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
+                  from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                   optionKey="id"
                   optionValue="${{it.getI10n('value')}}"
                   class="ui dropdown search many-to-one"
@@ -179,7 +179,7 @@
             <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
             <g:select id="mailTemplateType"
                       name="type"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
+                      from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
                       class="ui dropdown search many-to-one"

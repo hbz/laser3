@@ -1,48 +1,55 @@
 package com.k_int.kbplus
 
-
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import de.laser.helper.AppUtils
+import grails.transaction.Transactional
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+@Transactional
 class GenericOIDService {
 
-  GrailsApplication grailsApplication
+  String getOID(def object) {
+    (object && DomainClassArtefactHandler.isDomainClass(object.class)) ? "${object.class.name}:${object.id}" : null
+  }
 
-  def resolveOID(oid) {
+  Object resolveOID(def oid) {
+    def result
 
-    def result = null;
+    if (oid) {
+      String[] parts = oid.toString().split(':')
 
-    if ( oid != null ) {
-      def oid_components = oid.toString().split(':');
-  
-      GrailsClass domain_class
-  
-      if ( oid_components[0].startsWith("com.k_int") ) {
-        domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
+      GrailsClass dc = AppUtils.getDomainClass(parts[0])
+      if (! dc) {
+        dc = AppUtils.getDomainClassGeneric(parts[0])
       }
-      else if ( oid_components[0].startsWith("de.laser") ) {
-        domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
+      if (dc)  {
+        result = dc.getClazz().get(parts[1])
       }
       else {
-        domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
-      }
-  
-      if ( domain_class ) {
-        result = domain_class.getClazz().get(oid_components[1])
-        // log.debug("oid ${oid} resolved to ${result}")
-      }
-      else {
-        log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
+        log.error("failed to resolveOID() for: ${oid}")
       }
     }
     GrailsHibernateUtil.unwrapIfProxy(result)
   }
 
-  String getOID(def object) {
-    if (object) {
-      return "${object.class.name}:${object.id}"
+  List<Map<String, Object>> getOIDMapList(List<Object> objList, String property) {
+    List<Map<String, Object>> result = []
+
+    if (!objList.isEmpty()) {
+      Object tmp = objList.get(0)
+      if (! DomainClassArtefactHandler.isDomainClass(tmp.class)) {
+        log.warn("WARNING: GenericOIDService.getOIDMapList() -> ${tmp.class.name} is not a domain class")
+      }
+      else if (! tmp.metaClass.hasProperty(property)) {
+        log.warn("WARNING: GenericOIDService.getOIDMapList() -> ${tmp.class.name} has no property '${property}'")
+      }
+      else {
+        objList.each { obj ->
+          result.add([id: "${obj.class.name}:${obj.id}", text: "${obj.getProperty(property)}"])
+        }
+      }
     }
-    null
+    result
   }
 }

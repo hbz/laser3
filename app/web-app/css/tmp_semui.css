@@ -4,7 +4,6 @@
     padding-bottom: 3em;
 }
 
-
 /* myInstitutions/../dashboard */
 .ui.main .home-page {
     margin-bottom: 1em;
@@ -14,13 +13,6 @@
 }
 
 /* hyperlinks */
-/*
-.ui.main a {
-    border-bottom: 1px solid transparent;
-}
-.ui.main a:hover {
-    /*border-bottom: 1px solid #4183c4;
-}*/
 .ui.main a[class~=button],.ui.main a[class~=button]:hover {
     border-bottom: none;
 }
@@ -34,8 +26,6 @@
 .ui.form select:focus:invalid:focus,
 .ui.form input.calc.invalidCostCalc {
     border-color: #e9322d;
-    -webkit-box-shadow: 0 0 6px #f8b9b7;
-    -moz-box-shadow: 0 0 6px #f8b9b7;
     box-shadow: 0 0 6px #f8b9b7;
 }
 /* form validation */
@@ -62,7 +52,6 @@
     top: 15%;
     z-index: 9999;
 }
-
 
 .ui.button > i.icon {
     margin-right: 0 !important;
@@ -112,16 +101,6 @@
     margin: 0;
 }
 
-/*
-TODO: remove and set in semantic css: la-table-small
- */
-
-.ui.table.la-table-small tr td {
-    padding-top: 0.6em;
-    padding-bottom: 0.6em;
-}
-
-
 /* semantic ui - upgrade to 2.3 - start */
 
 .ui.modal {
@@ -132,7 +111,6 @@ TODO: remove and set in semantic css: la-table-small
 
 body.yoda_appSecurity .secInfoWrapper span {
     font-weight: bolder;
-    color: white;
     padding: 0px 5px;
     color: #FF00FF;
 }
@@ -173,8 +151,7 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_STATISTICS_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR
-{
+body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR {
     color: #8B4513;
 }
 
@@ -202,7 +179,7 @@ body.myInstitution_dashboard .ui.tab .item span {
     line-height: 30px;
 }
 
-    /* mainSearch */
+/* mainSearch */
 
 #mainSearch {
 }
@@ -259,7 +236,6 @@ aside.metaboxContent + .metaboxContent-spacer {
     float: left;
 }
 
-
 /* hotfix - visible elements with class hidden */
 
 .hidden {
@@ -279,9 +255,11 @@ aside.metaboxContent + .metaboxContent-spacer {
     width: 100%;
     bottom: 0;
     text-shadow: 1px 1px 2px rgba(0,0,0, 0.5);
+    font-size: 1.1em;
 }
 #maintenance > .segment {
-    padding: 2em 0 3em;
+    padding: 3em 0;
+    font-size: 1.1em;
 }
 
 /* fix: bouncing top nav bar */
@@ -306,20 +284,22 @@ h1 .icon.h1-icon-overwrite {
 
 /* table-td-colors @ admin->systemEvents */
 
+.ui.la-table.table tr td[class^=table-td] { vertical-align: top; }
 .ui.la-table.table tr td.table-td-info    { }
+.ui.la-table.table tr td.table-td-ok      { background-color: rgba(0,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-warning { background-color: rgba(255,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
 
 .ui.label.survey-renewal {
-    background-color: greenyellow;
+    background-color: greenyellow  !important;
 }
 
 .ui.label.survey-interest {
-    background-color: deepskyblue;
+    background-color: deepskyblue  !important;
 }
 
 .ui.label.survey-selection {
-    background-color: #ffdf00;
+    background-color: #ffdf00  !important;
 }
 
 /* debug info */
@@ -341,12 +321,4 @@ h1 .icon.h1-icon-overwrite {
     bottom: 3px;
     right: 1px;
 }
-
-
-
-
-
-
-
-
 

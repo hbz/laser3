@@ -21,7 +21,7 @@
 
     <br/>
 
-    <table class="ui table la-table-small">
+    <table class="ui table compact">
         <tbody>
         <g:each in="${candidates}" var="cat, ppp">
             <tr>

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
@@ -10,7 +11,6 @@ import java.text.SimpleDateFormat
 
 class OrgRole implements ShareableTrait {
 
-    @Transient
     def shareService
 
     static belongsTo = [
@@ -24,7 +24,6 @@ class OrgRole implements ShareableTrait {
     Package       pkg
     Subscription  sub
     License       lic
-    Cluster       cluster
     TitleInstance title
     Date          startDate
     Date          endDate
@@ -39,6 +38,8 @@ class OrgRole implements ShareableTrait {
     @Transient
     ownerStatus
 
+    static transients = ['owner'] // mark read-only accessor methods
+
   static mapping = {
           id column:'or_id'
      version column:'or_version'
@@ -47,7 +48,6 @@ class OrgRole implements ShareableTrait {
          pkg column:'or_pkg_fk',        index:'or_pkg_idx'
          sub column:'or_sub_fk',        index:'or_sub_idx'
          lic column:'or_lic_fk',        index:'or_lic_idx'
-     cluster column:'or_cluster_fk'
        title column:'or_title_fk'
    startDate column:'or_start_date'
      endDate column:'or_end_date'
@@ -60,31 +60,28 @@ class OrgRole implements ShareableTrait {
   }
 
   static constraints = {
-    roleType    (nullable:true, blank:false)
-    pkg         (nullable:true, blank:false)
-    sub         (nullable:true, blank:false)
-    lic         (nullable:true, blank:false)
-    cluster     (nullable:true, blank:false)
-    title       (nullable:true, blank:false)
-    startDate   (nullable:true, blank:false)
-    endDate     (nullable:true, blank:false)
-    isShared    (nullable:false, blank:false)
-    sharedFrom  (nullable:true, blank:true)
+    roleType    (nullable:true)
+    pkg         (nullable:true)
+    sub         (nullable:true)
+    lic         (nullable:true)
+    title       (nullable:true)
+    startDate   (nullable:true)
+    endDate     (nullable:true)
+    sharedFrom  (nullable:true)
 
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
   }
 
     /**
      * Generic setter
      */
-    def setReference(def owner) {
+    void setReference(def owner) {
         org     = owner instanceof Org ? owner : org
         pkg     = owner instanceof Package ? owner : pkg
         lic     = owner instanceof License ? owner : lic
         sub     = owner instanceof Subscription ? owner : sub
-        cluster = owner instanceof Cluster ? owner : cluster
         title   = owner instanceof TitleInstance ? owner : title
     }
 
@@ -118,61 +115,6 @@ class OrgRole implements ShareableTrait {
             return title.getStatus()
         }
     }
-
-    static def assertOrgTitleLink(porg, ptitle, prole, pstart, pend) {
-    // def link = OrgRole.findByTitleAndOrgAndRoleType(ptitle, porg, prole) ?: new OrgRole(title:ptitle, org:porg, roleType:prole).save();
-
-    if ( porg && ptitle && prole ) {
-
-      def link = OrgRole.find{ title==ptitle && org==porg && roleType==prole }
-      if ( ! link ) {
-
-        link = new OrgRole(title:ptitle, org:porg, roleType:prole)
-
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
-        if(pstart){
-          if(pstart instanceof Date){
-
-          }else{
-            pstart = sdf.parse(pstart)
-          }
-          link.startDate = pstart
-        }
-        if(pend){
-          if(pend instanceof Date){
-
-          }else{
-            pend = sdf.parse(pend)
-          }
-          link.endDate = pend
-        }
-
-        if ( !porg.links )
-          porg.links = [link]
-        else
-          porg.links.add(link)
-  
-        porg.save(flush:true, failOnError:true);
-      }
-    }
-  }
-
-  static def assertOrgPackageLink(porg, ppkg, prole) {
-
-    if ( porg && ppkg && prole ) {
-      def link = OrgRole.find{ org==porg && pkg==ppkg && roleType==prole }
-      if ( ! link ) {
-        link = new OrgRole(pkg:ppkg, org:porg, roleType:prole)
-        if ( !porg.links )
-          porg.links = [link]
-        else
-          porg.links.add(link)
-
-        porg.save();
-      }
-    }
-  }
 
     void afterUpdate(PostUpdateEvent event) {
         log.debug('afterUpdate')

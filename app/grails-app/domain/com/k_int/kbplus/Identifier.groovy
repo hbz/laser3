@@ -1,23 +1,28 @@
 package com.k_int.kbplus
 
-
 import de.laser.helper.FactoryResult
+import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 
-class Identifier {
+class Identifier implements CalculatedLastUpdated {
+
+    def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(Identifier)
 
     IdentifierNamespace ns
     String value
-    IdentifierGroup ig
     String note = ""
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
+
+    static transients = ['URL'] // mark read-only accessor methods
 
     static belongsTo = [
             lic:    License,
@@ -25,8 +30,7 @@ class Identifier {
             pkg:    Package,
             sub:    Subscription,
             ti:     TitleInstance,
-            tipp:   TitleInstancePackagePlatform,
-            cre:    Creator
+            tipp:   TitleInstancePackagePlatform
     ]
 
 	static constraints = {
@@ -36,8 +40,6 @@ class Identifier {
 			return pattern.matcher(val).matches()
 		  }
 		}
-
-    	ig      (nullable:true, blank:false)
         note    (nullable: true, blank: true)
 
 	  	lic     (nullable:true)
@@ -46,18 +48,17 @@ class Identifier {
 	  	sub     (nullable:true)
 	  	ti      (nullable:true)
 	  	tipp    (nullable:true)
-	  	cre     (nullable:true)
 
 		// Nullable is true, because values are already in the database
-      	lastUpdated (nullable: true, blank: false)
-      	dateCreated (nullable: true, blank: false)
+        dateCreated (nullable: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
   	}
 
     static mapping = {
        id   column:'id_id'
     value   column:'id_value', index:'id_value_idx'
        ns   column:'id_ns_fk', index:'id_value_idx'
-       ig   column:'id_ig_fk', index:'id_ig_idx'
        note column:'id_note',  type: 'text'
 
        lic  column:'id_lic_fk'
@@ -66,10 +67,10 @@ class Identifier {
        sub  column:'id_sub_fk'
        ti   column:'id_ti_fk',      index:'id_title_idx'
        tipp column:'id_tipp_fk',    index:'id_tipp_idx'
-       cre  column:'id_cre_fk'
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
+        lastUpdatedCascading column: 'id_last_updated_cascading'
     }
 
     static Identifier construct(Map<String, Object> map) {
@@ -82,16 +83,25 @@ class Identifier {
         String value        = map.get('value')
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
+        String nsType       = map.get('nsType')
 
         IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
 			ns = namespace
 		}
         else {
-			ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            if (nsType){
+                ns = IdentifierNamespace.findByNsIlikeAndNsType(namespace?.trim(), nsType)
+            } else {
+			    ns = IdentifierNamespace.findByNsIlike(namespace?.trim())
+            }
 
 			if(! ns) {
-				ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+                if (nsType){
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false, nsType: nsType)
+                } else {
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
+                }
 				ns.save(flush:true)
 			}
 		}
@@ -145,11 +155,29 @@ class Identifier {
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
         ti   = owner instanceof TitleInstance ? owner : ti
-        cre  = owner instanceof Creator ? owner : cre
+    }
+
+    Object getReference() {
+        int refCount = 0
+        def ref
+
+        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'ti', 'tipp']
+        fks.each { fk ->
+            if (this."${fk}") {
+                refCount++
+                ref = this."${fk}"
+            }
+        }
+        if (refCount == 1) {
+            return ref
+        }
+
+        static_logger.debug("WARNING: identifier #${this.id}, refCount: ${refCount}")
+        return null
     }
 
     static String getAttributeName(def object) {
-        def name
+        String name
 
         name = object instanceof License ?  'lic' : name
         name = object instanceof Org ?      'org' : name
@@ -157,13 +185,63 @@ class Identifier {
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
         name = object instanceof TitleInstance ?                'ti' :   name
-        name = object instanceof Creator ?                      'cre' :  name
 
         name
     }
 
-  def beforeUpdate() {
-    value = value?.trim()
+    String getURL() {
+        if (ns.urlPrefix && value) {
+            if (ns.urlPrefix.endsWith('=')) {
+                return "${ns.urlPrefix}${value}"
+            }
+            else if (ns.urlPrefix.endsWith('/')) {
+                return "${ns.urlPrefix}${value}"
+            }
+            else {
+                return "${ns.urlPrefix}/${value}"
+            }
+        }
+        null
+    }
+
+    def afterInsert() {
+        static_logger.debug("afterInsert")
+
+        // -- moved from def afterInsert = { .. }
+        if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
+            if (this.value == IdentifierNamespace.UNKNOWN) {
+                this.value = ''
+                this.save()
+            }
+        }
+
+        if (this.ns?.ns == IdentifierNamespace.ISIL) {
+            if( (this.value != IdentifierNamespace.UNKNOWN) &&
+                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
+            {
+                this.value = 'DE-'+this.value.trim()
+            }
+        }
+        // -- moved from def afterInsert = { .. }
+
+        cascadingUpdateService.update(this, dateCreated)
+    }
+    def afterUpdate() {
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
+    }
+    def afterDelete() {
+        static_logger.debug("afterDelete")
+        cascadingUpdateService.update(this, new Date())
+    }
+
+    Date _getCalculatedLastUpdated() {
+        (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
+    }
+
+    def beforeUpdate() {
+        static_logger.debug("beforeUpdate")
+        value = value?.trim()
       // TODO [ticket=1789]
       //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
       //if(forOrg) {
@@ -179,7 +257,7 @@ class Identifier {
               }
           }
       }
-  }
+    }
 
     @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
@@ -209,49 +287,48 @@ class Identifier {
                   result
               else {
                   static_logger.log("error saving identifier")
-                  static_logger.log(result.getErrors())
+                  static_logger.log(result.errors.toString())
               }
           }
           else {
               static_logger.log("error saving namespace")
-              static_logger.log(namespace.getErrors())
+              static_logger.log(namespace.errors.toString())
           }
       }
   }
 
-  static def refdataFind(params) {
-    def result = [];
-    def ql = null;
-    if ( params.q.contains(':') ) {
-      def qp=params.q.split(':');
-      // println("Search by namspace identifier: ${qp}");
-        IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0]);
-      if ( namespace && qp.size() == 2) {
-        ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
-      }
-    }
-    else {
-      ql = Identifier.findAllByValueIlike("${params.q}%",params)
+    static def refdataFind(GrailsParameterMap params) {
+        List<Map<String, Object>> result = []
+        List<Identifier> ql = []
+        if (params.q.contains(':')) {
+            String[] qp = params.q.split(':')
+            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0])
+
+            if (namespace && qp.size() == 2) {
+                ql = Identifier.findAllByNsAndValueIlike(namespace, "${qp[1]}%")
+            }
+        }
+        else {
+            ql = Identifier.findAllByValueIlike("${params.q}%", params)
+        }
+
+        ql.each { id ->
+            result.add([id: "${id.class.name}:${id.id}", text: "${id.ns.ns}:${id.value}"])
+        }
+        result
     }
 
-    if ( ql ) {
-      ql.each { id ->
-        result.add([id:"${id.class.name}:${id.id}",text:"${id.ns.ns}:${id.value}"])
-      }
-    }
-
-    result
-  }
     // called from AjaxController.lookup2
     static def refdataFind2(params) {
-        def result = []
+        List<Map<String, Object>> result = []
         if (params.q.contains(':')) {
-            def qp = params.q.split(':');
-            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0]);
+            String[] qp = params.q.split(':')
+            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0])
+
             if (namespace && qp.size() == 2) {
-                def ql = Identifier.findAllByNsAndValueIlike(namespace,"${qp[1]}%")
+                List<Identifier> ql = Identifier.findAllByNsAndValueIlike(namespace, "${qp[1]}%")
                 ql.each { id ->
-                    result.add([id:"${id.class.name}:${id.id}", text:"${id.value}"])
+                    result.add([id: "${id.class.name}:${id.id}", text: "${id.value}"])
                 }
             }
         }
@@ -269,51 +346,28 @@ class Identifier {
         return null;
     }
 
-    static def lookupObjectsByIdentifierString(def object, String identifierString) {
-        def result = null
+    static List lookupObjectsByIdentifierString(def object, String identifierString) {
+        List result = []
 
-        def objType = object.getClass().getSimpleName()
-        LogFactory.getLog(this).debug("lookupByIdentifierString(${objType}, ${identifierString})")
+        String objType = object.getClass().getSimpleName()
+        LogFactory.getLog(this).debug("lookupObjectsByIdentifierString(${objType}, ${identifierString})")
 
         if (objType) {
 
-            def idstrParts = identifierString.split(':');
+            String[] idstrParts = identifierString.split(':');
             switch (idstrParts.size()) {
                 case 1:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ?', [idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val', [val: idstrParts[0]])
                     break
                 case 2:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = ? and ident.ns.ns = ?', [idstrParts[1], idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val and ident.ns.ns = :ns', [val: idstrParts[1], ns: idstrParts[0]])
                     break
                 default:
                     break
             }
-            LogFactory.getLog(this).debug("components: ${idstrParts} : ${result}");
+            LogFactory.getLog(this).debug("components: ${idstrParts} : ${result}")
         }
 
         result
-    }
-
-    @Transient
-    def afterInsert = {
-        if(this.ns?.ns in ['wibid','ezb']) {
-            if(this.value == 'Unknown') {
-                this.value = ''
-                this.save()
-            }
-        }
-
-        if(this.ns?.ns == 'ISIL')
-        {
-            if(this.value == 'Unknown')
-            {
-                this.value = ''
-                this.save()
-            }
-            else if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')
-            {
-                this.value = 'DE-'+this.value.trim()
-            }
-        }
     }
 }

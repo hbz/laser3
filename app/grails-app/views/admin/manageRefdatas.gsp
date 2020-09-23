@@ -1,4 +1,4 @@
-<%@ page import="de.laser.domain.I10nTranslation; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
@@ -7,10 +7,10 @@
 		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
+    <body>
         <semui:debugInfo>
             <g:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
         </semui:debugInfo>
-
 
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
@@ -41,7 +41,7 @@
                 </div>
                 <div class="content">
 
-                    <table class="ui celled la-table la-table-small table">
+                    <table class="ui celled la-table compact table">
                         <thead>
                         <tr>
                             <th>Kategorie (Schlüssel)</th>
@@ -126,7 +126,7 @@
 
                                         <g:if test="${! rdv.isHardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
-                                                    params="${[cmd: 'deleteRefdataValue', rdv: 'com.k_int.kbplus.RefdataValue:' + rdv.id]}" class="ui icon negative button">
+                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>

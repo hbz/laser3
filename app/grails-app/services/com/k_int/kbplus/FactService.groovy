@@ -1,9 +1,18 @@
 package com.k_int.kbplus
 
-import de.laser.domain.StatsTripleCursor
+import de.laser.Fact
+import de.laser.RefdataValue
+import de.laser.finance.CostItem
+import de.laser.properties.PropertyDefinition
+import de.laser.OrgSetting
+import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
+import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
+import java.time.YearMonth
+
+@Transactional
 class FactService {
 
   def sessionFactory
@@ -30,18 +39,15 @@ class FactService {
 
   static transactional = false
 
-    def registerFact(fact) {
+    boolean registerFact(fact) {
       // log.debug("Enter registerFact");
       boolean result = false
 
-      if ( ( fact.type == null ) ||
-           ( fact.type == '' ) ) 
+      if ( fact.type == null || fact.type == '' ) {
         return result
+      }
 
       try {
-          // ERMS-2016: def fact_type_refdata_value = RefdataCategory.lookupOrCreate('FactType',fact.type)
-          // if value exists --> RefdataValue.getByValueAndCategory()
-
           RefdataValue fact_type_refdata_value = RefdataValue.construct([
                   token   : fact.type,
                   rdc     : RDConstants.FACT_TYPE,
@@ -51,7 +57,7 @@ class FactService {
 
           // Are we updating an existing fact?
           if ( fact.uid != null ) {
-            def current_fact = Fact.findByFactUid(fact.uid)
+            Fact current_fact = Fact.findByFactUid(fact.uid)
 
             if ( current_fact == null ) {
               // log.debug("Create new fact..");
@@ -85,7 +91,7 @@ class FactService {
       finally {
         // log.debug("Leave registerFact");
       }
-      return result
+      result
     }
 
   def getTotalCostPerUse(subscription, type, existingMetrics) {
@@ -94,7 +100,7 @@ class FactService {
       return null
     }
     // temp solution
-    if (type.value == 'EBook'){
+    if (type.value == 'Book'){
       log.debug('CostPerUse not supported for EBooks')
       return null
     }
@@ -304,6 +310,7 @@ class FactService {
 
       result.x_axis_labels = x_axis_labels
       result.y_axis_labels = y_axis_labels
+      result.missingMonths = getMissingMonths(supplier_id, org_id, subscription)
     }
 
     result
@@ -321,7 +328,7 @@ class FactService {
 
   private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     def params = [:]
-    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType.value, f.factMetric.value' +
+    String hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType.value, f.factMetric.value' +
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
         if (restrictToSubscriptionPeriod) {
@@ -433,6 +440,86 @@ class FactService {
       result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
       result.x_axis_labels = x_axis_labels
       result.y_axis_labels = y_axis_labels
+      result.missingMonths = getMissingMonths(supplier_id, org_id)
+    }
+    result
+  }
+
+  Map<String,List> getMissingMonths(supplier_id, org_id, Subscription subscription = null) {
+    Org customerOrg = Org.get(org_id)
+    return getUsageRanges(supplier_id, customerOrg, subscription)
+  }
+
+  private Map<String,List> getUsageRanges(supplier_id, Org org, Subscription subscription) {
+    String customer = org.getIdentifierByType('wibid')?.value
+    String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+    List factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplierId).factType.unique()
+
+    String titleRangesHql = "select stc from StatsTripleCursor as stc where " +
+        "stc.factType=:factType and stc.supplierId=:supplierId and stc.customerId=:customerId " +
+        "order by stc.titleId, stc.factType, stc.availFrom"
+    Map<String,List> missingMonthsPerFactType = [:]
+    factTypes.each { ft ->
+      List rangeList = []
+      List ranges = StatsTripleCursor.executeQuery(titleRangesHql, [
+          supplierId : supplierId,
+          customerId : customer,
+          factType : ft
+      ])
+      List months = []
+      ranges.each(){
+        getMonthsOfDateRange(it.availFrom, it.availTo).each { m ->
+          if (! months.contains(m))
+            months.add(m)
+        }
+      }
+      Date min = ranges*.availFrom.min()
+      if (subscription?.startDate){
+        if (min < subscription.startDate){
+          min = subscription.startDate
+          months.removeAll { it ->
+            it < YearMonth.parse(subscription.startDate.toString().substring(0,7))
+          }
+        }
+      }
+      Date max = ranges*.availTo.max()
+      if (subscription?.endDate){
+        if (max > subscription.endDate){
+          max = subscription.endDate
+          months.removeAll { it ->
+            it > YearMonth.parse(subscription.endDate.toString().substring(0,7))
+          }
+        }
+      }
+      List completeList = getMonthsOfDateRange(min, max)
+      missingMonthsPerFactType[ft.value] = ((completeList - months) + (months - completeList))
+    }
+    return missingMonthsPerFactType
+  }
+
+  Map getLastUsagePeriodForReportType(supplierId, customerId){
+    String hqlQuery = "select stc.factType.value, max(stc.availTo) as availTo from StatsTripleCursor stc where " +
+        "stc.supplierId=:supplierId and stc.customerId=:customerId " +
+        "group by stc.factType.value"
+    Map<String,String> result = [:]
+    List lastReportPeriods = StatsTripleCursor.executeQuery(hqlQuery, [
+        supplierId : supplierId,
+        customerId : customerId
+    ])
+    lastReportPeriods.each { it ->
+      result[it[0]] = it[1].toString().substring(0,7)
+    }
+    result
+  }
+
+  List getMonthsOfDateRange(Date begin, Date end){
+    List result = []
+    YearMonth from = YearMonth.parse(begin.toString().substring(0,7))
+    YearMonth to = YearMonth.parse(end.toString().substring(0,7))
+    while (from<=to)
+    {
+      result.add(from)
+      from = from.plusMonths(1)
     }
     result
   }
@@ -498,10 +585,10 @@ class FactService {
 
   List<Org> institutionsWithRequestorIDAndAPIKey()
   {
-    String hql = "select os.org from OrgSettings as os" +
-        " where os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
-        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org) order by os.org.name"
-    return OrgSettings.executeQuery(hql)
+    String hql = "select os.org from OrgSetting as os" +
+        " where os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
+        " and exists (select 1 from OrgSetting as inneros where inneros.key = '${OrgSetting.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org) order by os.org.name"
+    return OrgSetting.executeQuery(hql)
   }
 
   List<Platform> platformsWithNatstatId()

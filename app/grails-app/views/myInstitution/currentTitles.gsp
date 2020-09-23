@@ -19,19 +19,28 @@
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [format: 'csv']}">
-                    ${message(code: 'default.button.exports.csv')}
+                    <g:message code="default.button.exports.csv"/>
                 </g:link>
             </g:if>
             <g:else>
                 <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
-    <%--<semui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </semui:exportDropdownItem>
-    <semui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </semui:exportDropdownItem>--%>
+        <semui:exportDropdownItem>
+            <g:if test="${filterSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                        params="${params + [exportXLSX: true]}">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" action="currentTitles" params="${params+[exportXLSX: true]}">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </g:else>
+        </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -46,6 +55,12 @@
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
+    <%--<semui:exportDropdownItem>
+        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
+    </semui:exportDropdownItem>
+    <semui:exportDropdownItem>
+        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
+    </semui:exportDropdownItem>--%>
     </semui:exportDropdown>
 </semui:controlButtons>
 
@@ -55,7 +70,7 @@
 <semui:totalNumber total="${num_ti_rows}"/>
 </h1>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 
@@ -131,10 +146,18 @@
                 </select>
             </div>
 
-            <div class="field">
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="hidden" name="filterSet" value="true"/>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label')}"/>
+            </div>
+
+            <%--<div class="field">
                 <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
                 <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%>
+                    <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>
                             value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
                     <g:each in="${otherplatforms}" var="op">
 
@@ -148,28 +171,20 @@
                         </option>
                     </g:each>
                 </select>
-            </div>
+            </div>--%>
         </div>
 
-        <div class="two fields">
+        <%--<div class="two fields">
 
-            <div class="field">
-                <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
+        <%-- class="field">
+            <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
 
-                <div class="ui checkbox">
-                    <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
-                           value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
-                </div>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="hidden" name="filterSet" value="true"/>
-                <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
+            <div class="ui checkbox">
+                <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
+                       value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
             </div>
         </div>
+        </div>--%>
 
     </g:form>
 </semui:filter>
@@ -220,20 +235,20 @@
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <semui:listIcon type="${ti?.type?.value}"/>
+                                <semui:listIcon type="${ti.printTitleType()}"/>
                                 <strong><g:link controller="title" action="show"
                                                 id="${ti?.id}">${ti?.title}</g:link></strong>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti?.volume}">
-                                    (${message(code: 'title.volume.label')} ${ti?.volume})
+                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.volume}">
+                                    (${message(code: 'title.volume.label')} ${ti.volume})
                                 </g:if>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti?.firstAuthor || ti?.firstEditor)}">
+                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti.firstAuthor || ti.firstEditor)}">
                                     <br><b>${ti?.getEbookFirstAutorOrFirstEditor()}</b>
                                 </g:if>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
-                                    <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ti?.editionStatement}
+                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.editionStatement}">
+                                    <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ti.editionStatement}
                                     </div>
                                     <br/>
                                 </g:if>
@@ -242,15 +257,15 @@
                                 <g:each in="${ti?.tipps?.unique { a, b -> a?.platform?.id <=> b?.platform?.id }.sort { it?.platform?.name }}" var="tipp">
 
                                         <g:if test="${tipp?.hostPlatformURL}">
-                                            <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                            <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                                href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
                                                target="_blank"><i class="share square icon"></i></a>
                                         </g:if>
                                 </g:each>
 
-                                <g:each in="${ti?.ids?.sort { it?.ns?.ns }}" var="id">
-                                    <span class="ui small teal image label">
+                                <g:each in="${ti?.ids?.sort { it.ns.ns }}" var="id">
+                                    <span class="ui small blue image label">
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
@@ -277,7 +292,7 @@
                                                         class="pencil alternate icon"></i></g:link>
                                             </g:if>
                                             <g:if test="${platform?.primaryUrl}">
-                                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                                    href="${platform?.primaryUrl?.contains('http') ? platform?.primaryUrl : 'http://' + platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>
@@ -310,16 +325,16 @@
                                         </div>
 
                                         <div class="eight wide centered column">
-                                            <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                                            <g:if test="${ie.tipp.title instanceof com.k_int.kbplus.BookInstance}">
 
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie?.tipp?.title?.dateFirstInPrint}"/>
+                                                              date="${ie.tipp.title.dateFirstInPrint}"/>
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie?.tipp?.title?.dateFirstOnline}"/>
+                                                              date="${ie.tipp.title.dateFirstOnline}"/>
 
 
                                             </g:if>

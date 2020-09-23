@@ -1,11 +1,10 @@
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="de.laser.Contact" %>
 <!doctype html>
-<r:require module="scaffolding" />
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'contact.label')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
 		<div>
@@ -33,8 +32,7 @@
 			
 			<div class="span9">
 
-
-					<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+				<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
 
 				<semui:messages data="${flash}" />
 
@@ -43,7 +41,6 @@
 				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
-							<% // <f:all bean="contactInstance"/> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">

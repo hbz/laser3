@@ -1,5 +1,5 @@
 <%@ page
-import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
+import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Org; de.laser.Person; com.k_int.kbplus.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory"
 %>
 
 <!doctype html>
@@ -28,19 +28,12 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
 
         <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
-        <g:if test="${editable}">
-            <input class="ui left floated  button la-clear-before"
-                   value="${message(code: 'person.create_new.contactPerson.label')}"
-                   data-semui="modal"
-                   data-href="#personFormModal" />
-        </g:if>
-
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': false,
                                                        'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         ]"/>
 
-            <g:render template="../templates/filter/javascript" />
+            <g:render template="/templates/filter/javascript" />
             <semui:filter showFilterButton="true">
                 <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
                     <div class="four fields">
@@ -58,7 +51,7 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
                                        placeholder="${message(code: 'person.filter.org')}" />
                             </div>
                         </div>
-                        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                        <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
                     </div>
 
                     <div class="field la-field-right-aligned">

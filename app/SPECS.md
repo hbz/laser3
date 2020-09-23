@@ -65,6 +65,6 @@ Attributes, that are obtained from other objects if not set.
 
 Non-persistent Attributes, that are calculated realtime.
 
-    ObjA.getCalculatedAttribute() {
+    ObjA._getCalculatedAttribute() {
         attributeC * attributeD * 0.19
     }

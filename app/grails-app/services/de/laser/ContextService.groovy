@@ -1,26 +1,22 @@
 package de.laser
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.transaction.Transactional
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsHttpSession
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 @CompileStatic
+@Transactional
 class ContextService {
 
     SpringSecurityService springSecurityService
     CacheService cacheService
-
-    static final SERVER_LOCAL = 'SERVER_LOCAL'
-    static final SERVER_DEV   = 'SERVER_DEV'
-    static final SERVER_QA    = 'SERVER_QA'
-    static final SERVER_PROD  = 'SERVER_PROD'
 
     static final USER_SCOPE  = 'USER_SCOPE'
     static final ORG_SCOPE   = 'ORG_SCOPE'
@@ -39,7 +35,15 @@ class ContextService {
         try {
             GrailsHttpSession session  = WebUtils.retrieveGrailsWebRequest().getSession()
 
-            def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
+            def context = session.getAttribute('contextOrg')
+            if (! context) {
+                context = getUser()?.getSettingsValue(UserSetting.KEYS.DASHBOARD)
+
+                if (context) {
+                    session.setAttribute('contextOrg', context)
+                }
+            }
+
             if (context) {
                 return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
             }

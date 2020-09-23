@@ -1,15 +1,19 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.transaction.Transactional
 
 @Transactional
 class ComparisonService {
+
+  GenericOIDService genericOIDService
 
   /**
    * Builds into the grouped properties return map the given group key and binding for the given object.
@@ -22,7 +26,7 @@ class ComparisonService {
    */
   Map getGroupedPropertyTrees(Map groupedProperties, PropertyDefinitionGroup groupKey, PropertyDefinitionGroupBinding groupBinding, cmpObject) {
     //get the current properties within each group for each object
-    ArrayList<AbstractProperty> licenseProps = groupKey.getCurrentProperties(cmpObject)
+    ArrayList<AbstractPropertyWithCalculatedLastUpdated> licenseProps = groupKey.getCurrentProperties(cmpObject)
     LinkedHashMap group = (LinkedHashMap) groupedProperties.get(groupKey)
     if(licenseProps.size() > 0) {
       if(group) {
@@ -57,7 +61,7 @@ class ComparisonService {
    * @param result - the map being filled or updated
    * @return the updated map
    */
-    Map buildComparisonTree(Map result,cmpObject,Collection<AbstractProperty> props) {
+    Map buildComparisonTree(Map result,cmpObject,Collection<AbstractPropertyWithCalculatedLastUpdated> props) {
       props.each { prop ->
 
         //property level - check if the group contains already a mapping for the current property
@@ -79,6 +83,33 @@ class ComparisonService {
       result
     }
 
+  Map comparePropertiesWithAudit(Collection<AbstractPropertyWithCalculatedLastUpdated> props, boolean compareValue, boolean compareNote) {
+
+    Map result = [:]
+
+    props.sort{it.type.getI10n('name')}.each { prop ->
+
+      //Vererbung
+      if(AuditConfig.getConfig(prop)) {
+
+        List propertyList = result.get(prop.type.class.name+":"+prop.type.id)
+        if (propertyList == null) {
+          propertyList = [prop]
+        } else {
+          propertyList.add(prop)
+        }
+        result.put(prop.type.class.name+":"+prop.type.id, propertyList)
+        if (propertyList.size() == 2){
+          if((compareValue && propertyList[0].getValue() != propertyList[1].getValue()) || (compareNote && propertyList[0].note != propertyList[1].note) ) {
+          }else{
+            result.remove(prop.type.class.name+":"+prop.type.id)
+          }
+        }
+      }
+    }
+    result
+  }
+
   /**
    * Builds from a given {@link List} a {@link Map} of {@link TitleInstancePackagePlatform}s to compare the {@link Subscription}s of each {@link IssueEntitlement}
    *
@@ -97,4 +128,35 @@ class ComparisonService {
       }
       result
     }
+
+  /**
+   * COPY from ComparisonService with small changes
+   * Builds into the grouped properties return map the given group key and binding for the given object.
+   *
+   * @param groupedProperties - the return map groupedProperties. Please check if it is really necessary to reassign again and again the whole map.
+   * @param groupKey
+   * @param groupBinding
+   * @param cmpObject
+   * @return
+   */
+  Map getGroupedPropertyTreesSortedAndAllowed(Map groupedProperties, PropertyDefinitionGroup groupKey, PropertyDefinitionGroupBinding groupBinding, cmpObject, Org contextOrg) {
+    //get the current properties within each group for each object
+    ArrayList<AbstractPropertyWithCalculatedLastUpdated> properties = groupKey.getCurrentProperties(cmpObject)
+    LinkedHashMap group = (LinkedHashMap) groupedProperties.get(groupKey)
+    if(properties.size() > 0) {
+      List allowedProperties = properties.findAll {prop -> (prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}
+      if(group) {
+        group.groupTree = buildComparisonTree(group.groupTree, cmpObject, allowedProperties)
+        group.binding.put(cmpObject, groupBinding)
+      }
+      else if(!group) {
+        TreeMap groupTree = new TreeMap()
+        LinkedHashMap binding = new LinkedHashMap()
+        binding.put(cmpObject,groupBinding)
+        group = [groupTree: buildComparisonTree(groupTree, cmpObject, allowedProperties), binding:binding]
+      }
+      group.groupTree = group.groupTree.sort {genericOIDService.resolveOID(it.key).getI10n('name')}
+    }
+    group
+  }
 }

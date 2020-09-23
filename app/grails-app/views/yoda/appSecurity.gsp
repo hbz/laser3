@@ -49,7 +49,6 @@
             <span class="ROLE_YODA">ORG_INST_COLLECTIVE</span> &rArr;
             <span class="IS_AUTHENTICATED_FULLY">ORG_INST</span> &rArr;
             <span class="ROLE_USER">ORG_BASIC_MEMBER</span> |
-            <span class="ROLE_ADMIN">ORG_CONSORTIUM_SURVEY</span> &rArr;
             <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span> |
             <span class="ROLE_API">FAKE</span>
         </div>
@@ -113,17 +112,6 @@
         </div>
 
     </div>
-    <%--
-    <div class="four wide column">
-        <div class="ui sticky">
-            <aside>
-                <g:each in="${controller}" var="c">
-                    <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceFirst('de.laser.','').replaceAll('Controller', '  ')}</a> |
-                </g:each>
-            </aside>
-        </div>
-    </div>
-    --%>
 </div>
 
 </body>

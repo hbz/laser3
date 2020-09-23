@@ -2,51 +2,52 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.RefdataValue
+import de.laser.finance.CostItem
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.IssueEntitlementGroup
+import de.laser.Links
+import de.laser.OrgAccessPoint
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
-class Subscription
-        extends AbstractBaseDomain
-        implements TemplateSupport, Permissions, ShareSupport,
-                AuditableTrait {
+class Subscription extends AbstractBaseWithCalculatedLastUpdated
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport {
 
-    // AuditableTrait
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    def grailsApplication
+    def contextService
+    def messageSource
+    def pendingChangeService
+    def changeNotificationService
+    def springSecurityService
+    def accessService
+    def propertyService
+    def deletionService
+    def subscriptionService
+    def auditService
+    def genericOIDService
+
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
-    @Transient
-    def grailsApplication
-    @Transient
-    def contextService
-    @Transient
-    def messageSource
-    @Transient
-    def pendingChangeService
-    @Transient
-    def changeNotificationService
-    @Transient
-    def springSecurityService
-    @Transient
-    def accessService
-    @Transient
-    def propertyService
-    @Transient
-    def deletionService
+    static Log static_logger = LogFactory.getLog(Subscription)
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -71,39 +72,42 @@ class Subscription
 
   String name
   String identifier
-  String impId
   Date startDate
   Date endDate
   Date manualRenewalDate
   Date manualCancellationDate
   String cancellationAllowances
 
+  //Only for Consortia: ERMS-2098
+  String comment
+
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
   boolean administrative = false
 
-  String noticePeriod
-  Date dateCreated
-  Date lastUpdated
+    String noticePeriod
 
-  License owner
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
+
   SortedSet issueEntitlements
-
-  static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
+  SortedSet packages
 
   static hasMany = [
-                     ids: Identifier,
-                     packages : SubscriptionPackage,
-                     issueEntitlements: IssueEntitlement,
-                     documents: DocContext,
-                     orgRelations: OrgRole,
-                     prsLinks: PersonRole,
-                     derivedSubscriptions: Subscription,
-                     pendingChanges: PendingChange,
-                     customProperties: SubscriptionCustomProperty,
-                     privateProperties: SubscriptionPrivateProperty,
-                     costItems: CostItem,
+          ids                 : Identifier,
+          packages            : SubscriptionPackage,
+          issueEntitlements   : IssueEntitlement,
+          documents           : DocContext,
+          orgRelations        : OrgRole,
+          prsLinks            : PersonRole,
+          derivedSubscriptions: Subscription,
+          pendingChanges      : PendingChange,
+          propertySet         : SubscriptionProperty,
+          //privateProperties: SubscriptionPrivateProperty,
+          costItems           : CostItem,
+          ieGroups            : IssueEntitlementGroup
   ]
 
   static mappedBy = [
@@ -116,9 +120,16 @@ class Subscription
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
-                      customProperties: 'owner',
-                      privateProperties: 'owner',
+                      propertySet: 'owner',
+                      //privateProperties: 'owner',
                       ]
+
+    static transients = [
+            'nameConcatenated', 'isSlavedAsString', 'provider', 'collective', 'multiYearSubscription',
+            'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate', 'holdingTypes',
+            'commaSeperatedPackagesIsilList', 'allocationTerm',
+            'subscriber', 'providers', 'agencies', 'consortia'
+    ] // mark read-only accessor methods
 
     static mapping = {
         sort name: 'asc'
@@ -128,12 +139,12 @@ class Subscription
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk'
-        owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
+        //owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
+        comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
-        impId       column:'sub_imp_id', index:'sub_imp_id_idx'
         startDate   column:'sub_start_date',        index: 'sub_dates_idx'
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
         manualRenewalDate       column:'sub_manual_renewal_date'
@@ -144,6 +155,8 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
+        lastUpdatedCascading column: 'sub_last_updated_cascading'
+
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
@@ -155,58 +168,77 @@ class Subscription
         orgRelations        batchSize: 10
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
-        customProperties    batchSize: 10
-        privateProperties   batchSize: 10
+        propertySet    batchSize: 10
+        //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:false, blank:false)
-        type(nullable:true, blank:false)
-        kind(nullable:true, blank:false)
-        owner(nullable:true, blank:false)
-        form        (nullable:true, blank:false)
-        resource    (nullable:true, blank:false)
-        impId(nullable:true, blank:false)
-        startDate(nullable:true, blank:false, validator: { val, obj ->
+        type        (nullable:true)
+        kind        (nullable:true)
+        //owner(nullable:true, blank:false)
+        form        (nullable:true)
+        resource    (nullable:true)
+        startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
             }
         })
-        endDate(nullable:true, blank:false, validator: { val, obj ->
+        endDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        manualRenewalDate(nullable:true, blank:false)
-        manualCancellationDate(nullable:true, blank:false)
-        instanceOf(nullable:true, blank:false)
-        administrative(nullable:false, blank:false)
-        previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved    (nullable:false, blank:false)
+        manualRenewalDate       (nullable:true)
+        manualCancellationDate  (nullable:true)
+        instanceOf              (nullable:true)
+        comment(nullable: true, blank: true)
+        previousSubscription    (nullable:true) //-> see Links, deleted as ERMS-800
         noticePeriod(nullable:true, blank:true)
-        isPublicForApi (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
-        lastUpdated(nullable: true, blank: true)
-        isMultiYear(nullable: true, blank: false)
-        hasPerpetualAccess(nullable: false, blank: false)
+        lastUpdated(nullable: true)
+        lastUpdatedCascading (nullable: true)
+        isMultiYear(nullable: true)
     }
 
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
+    }
+
+    @Override
     def afterDelete() {
+        super.afterDeleteHandler()
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
-
-    // TODO: implement
     @Override
-    boolean isTemplate() {
-        return false
+    def afterInsert() {
+        super.afterInsertHandler()
     }
-
-    // TODO: implement
     @Override
-    boolean hasTemplate() {
-        return false
+    def afterUpdate() {
+        super.afterUpdateHandler()
+    }
+    @Override
+    def beforeInsert() {
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
     @Override
@@ -222,7 +254,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE]
+        _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
     }
 
     @Override
@@ -258,7 +290,7 @@ class Subscription
                         }
                         if (existingOrgRoles) {
                             log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ tmp -> tmp.delete() }
+                            existingOrgRoles.each{ tmp -> tmp.delete(flush:true) }
                         }
                     }
                     sharedObject.addShareForTarget_trait(sub)
@@ -302,67 +334,30 @@ class Subscription
     }
 
     @Override
-    String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
+    String _getCalculatedType() {
+        String result = TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
-        }
-        else if(getCollective() && getConsortia() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
+        if (getCollective() && getConsortia() && instanceOf) {
+            result = TYPE_PARTICIPATION_AS_COLLECTIVE
         }
         else if(getCollective() && !getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = TYPE_COLLECTIVE
         }
         else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
-                log.debug(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
+                result = TYPE_ADMINISTRATIVE
             }
-            else result = CALCULATED_TYPE_CONSORTIAL
+            else result = TYPE_CONSORTIAL
         }
         else if((getCollective() || getConsortia()) && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
+            result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
         else if(getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
+            result = TYPE_LOCAL
         }
         result
     }
-
-    /*
-    @Override
-    String getCalculatedType() {
-        def result = CALCULATED_TYPE_UNKOWN
-
-        if (isTemplate()) {
-            result = CALCULATED_TYPE_TEMPLATE
-        }
-        else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
-        }
-        else if(getCollective() && instanceOf) {
-            result = CALCULATED_TYPE_PARTICIPATION
-        }
-        else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
-            if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
-            else
-                result = CALCULATED_TYPE_CONSORTIAL
-        }
-        else if(getConsortia() && instanceOf) {
-            if(administrative)
-                result = CALCULATED_TYPE_ADMINISTRATIVE
-            else
-                result = CALCULATED_TYPE_PARTICIPATION
-        }
-        else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
-            result = CALCULATED_TYPE_LOCAL
-        }
-        result
-    }
-    */
 
     List<Org> getProviders() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
@@ -393,26 +388,28 @@ class Subscription
         isSlaved ? "Yes" : "No"
     }
 
+    Set<License> getLicenses() {
+        Set<License> result = []
+        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.source)
+        }
+        result
+    }
+
   Org getSubscriber() {
     Org result
     Org cons
-    Org coll
     
     orgRelations.each { or ->
-      if ( or?.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+      if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id] )
         result = or.org
         
-      if ( or?.roleType?.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
+      if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
         cons = or.org
-      else if(or?.roleType?.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
-        coll = or.org
     }
     
     if ( !result && cons ) {
       result = cons
-    }
-    else if(!result && coll) {
-        result = coll
     }
     
     result
@@ -420,8 +417,8 @@ class Subscription
 
     List<Org> getAllSubscribers() {
         List<Org> result = []
-        orgRelations.each { or ->
-            if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden', 'Subscriber_Collective'] )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE] )
                 result.add(or.org)
             }
         result
@@ -429,8 +426,8 @@ class Subscription
 
     Org getProvider() {
         Org result
-        orgRelations.each { or ->
-            if ( or?.roleType?.value=='Content Provider' )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_CONTENT_PROVIDER )
                 result = or.org
             }
         result
@@ -438,8 +435,8 @@ class Subscription
 
     Org getConsortia() {
         Org result
-        orgRelations.each { or ->
-            if ( or?.roleType?.value=='Subscription Consortia' )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA )
                 result = or.org
             }
         result
@@ -447,79 +444,53 @@ class Subscription
 
     Org getCollective() {
         Org result
-        result = orgRelations.find { OrgRole or ->
-            or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id
-        }?.org
+        orgRelations.each {OrgRole or ->
+            if ( or.roleType == RDStore.OR_SUBSCRIPTION_COLLECTIVE ) {
+                result = or.org
+            }
+        }
         result
     }
 
     List<Org> getDerivedSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
-        OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
+        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
-    Subscription getCalculatedPrevious() {
+    Subscription _getCalculatedPrevious() {
         Links match = Links.findWhere(
-                source: this.id,
-                objectType: Subscription.class.name,
+                source: genericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? Subscription.get(match?.destination) : null
+        return match ? (Subscription) genericOIDService.resolveOID(match.destination) : null
     }
 
-    Subscription getCalculatedSuccessor() {
+    Subscription _getCalculatedSuccessor() {
         Links match = Links.findWhere(
-                destination: this.id,
-                objectType: Subscription.class.name,
+                destination: genericOIDService.getOID(this),
                 linkType: RDStore.LINKTYPE_FOLLOWS
         )
-        return match ? Subscription.get(match?.source) : null
+        return match ? (Subscription) genericOIDService.resolveOID(match.source) : null
     }
 
-    boolean isMultiYearSubscription()
-    {
-        if(this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366)) {
-            return true
-        }
-        else {
-            return false
-        }
+    boolean isMultiYearSubscription() {
+        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
     }
 
-    boolean isCurrentMultiYearSubscription()
-    {
+    boolean isCurrentMultiYearSubscription() {
         Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        if(this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366)) {
-            return true
-        }
-        else {
-            return false
-        }
+        return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
 
-    boolean isCurrentMultiYearSubscriptionNew()
-    {
+    boolean isCurrentMultiYearSubscriptionNew() {
         Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        if(this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366)) {
-            return true
-        }
-        else {
-            return false
-        }
+        return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
 
-    boolean islateCommer()
-    {
-        Date currentDate = new Date(System.currentTimeMillis())
-        //println(this.endDate.minus(currentDate))
-        if(this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
-        {
-            return true
-        }else {
-            return false
-        }
+    boolean islateCommer() {
+        return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
     }
 
     boolean isEditableBy(user) {
@@ -544,42 +515,28 @@ class Subscription
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
-            OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_COLLECTIVE
-            )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {
-                return cons || subscrCons || coll || subscrColl || subscr
+                return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || coll || subscr
+                    return cons || subscr
             }
         }
 
         return false
     }
 
-  @Override
-  def beforeInsert() {
-    if (impId == null) {
-      impId = java.util.UUID.randomUUID().toString();
-    }
-    super.beforeInsert()
-  }
-
     @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
         List<Subscription> derived_subscriptions = getNonDeletedDerivedSubscriptions()
@@ -590,8 +547,8 @@ class Subscription
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             String description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String definedType = 'text'
 
-            def definedType = 'text'
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
                 definedType = 'rdv'
             }
@@ -612,7 +569,7 @@ class Subscription
                     ds,
                     ds.getSubscriber(),
                     [
-                            changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
+                            changeTarget:"${Subscription.class.name}:${ds.id}",
                             changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                             changeDoc:changeDocument
                     ],
@@ -628,8 +585,7 @@ class Subscription
 
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
-            def user = null
-            pendingChangeService.performAccept(spc, user)
+            pendingChangeService.performAccept(spc)
         }
     }
 
@@ -638,35 +594,55 @@ class Subscription
         Subscription.where { instanceOf == this }.findAll()
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
-        groups.each{ it ->
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name, [sort:'name', order:'asc'])
+        groups.each{ PropertyDefinitionGroup it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
+            if (this.instanceOf) {
+                Long subId
+                if(this.getConsortia().id == contextOrg.id)
+                    subId = this.instanceOf.id
+                else subId = this.id
+                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: subId,ctxOrg:contextOrg])
+                PropertyDefinitionGroupBinding binding = null
+                if(bindings)
+                    binding = bindings.get(0)
 
                 // global groups
                 if (it.tenant == null) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
-                // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg?.id) {
+                // consortium @ member or single user; getting group by tenant (and instanceOf.binding)
+                if (it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        if(contextOrg.id == this.getConsortia().id) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                        else {
+                            result.local << [it, binding]
+                            result.sorted << ['local', it, binding]
+                        }
+                    } else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // subscriber consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
+                else if (it.tenant?.id == this.getConsortia()?.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     }
                 }
             }
@@ -674,18 +650,20 @@ class Subscription
             else {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.local << [it, binding]
+                        result.local << [it, binding] // TODO: remove
+                        result.sorted << ['local', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
             }
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
     }
@@ -705,22 +683,15 @@ class Subscription
     }
   }
 
-  // XML.registerObjectMarshaller Facility, { facility, xml ->
-  //    xml.attribute 'id', facility.id
-  //               xml.build {
-  //      name(facility.name)
-  //    }
-  //  }
-
   Date getRenewalDate() {
-    manualRenewalDate ? manualRenewalDate : null
+    manualRenewalDate
   }
   /**
   * OPTIONS: startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser,inst_shortcode
   **/
   @Transient
-  static def refdataFind(params) {
-    def result = [];
+  static def refdataFind(GrailsParameterMap params) {
+      List<Map<String, Object>> result = []
 
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
@@ -774,32 +745,20 @@ class Subscription
     result
   }
 
-  def setInstitution(inst) {
+  def setInstitution(Org inst) {
       log.debug("Set institution ${inst}")
 
-    def subrole = RDStore.OR_SUBSCRIBER
-    def or = new OrgRole(org:inst, roleType:subrole, sub:this)
-    if ( this.orgRelations == null)
-      this.orgRelations = []
-    this.orgRelations.add(or)
+      OrgRole or = new OrgRole(org:inst, roleType:RDStore.OR_SUBSCRIBER, sub:this)
+      if (this.orgRelations == null) {
+        this.orgRelations = []
+      }
+     this.orgRelations.add(or)
   }
 
-/*-- not used
-  def addNamespacedIdentifier(ns,value) {
-      log.debug("Add Namespaced identifier ${ns}:${value}")
-
-    def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value);
-    if ( this.ids == null)
-      this.ids = []
-    this.ids.add(new IdentifierOccurrence(sub:this,identifier:canonical_id))
-
-  }
---*/
-
-  def getCommaSeperatedPackagesIsilList() {
-      def result = []
+  String getCommaSeperatedPackagesIsilList() {
+      List<String> result = []
       packages.each { it ->
-          def identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
+          String identifierValue = it.pkg.getIdentifierByType('isil')?.value ?: null
           if (identifierValue) {
               result += identifierValue
           }
@@ -807,10 +766,10 @@ class Subscription
       result.join(',')
   }
 
-  def hasPlatformWithUsageSupplierId() {
+  boolean hasPlatformWithUsageSupplierId() {
       boolean hasUsageSupplier = false
       packages.each { it ->
-          def hql="select count(distinct sp) from SubscriptionPackage sp "+
+          String hql="select count(distinct sp) from SubscriptionPackage sp "+
               "join sp.subscription.orgRelations as or "+
               "join sp.pkg.tipps as tipps "+
               "where sp.id=:sp_id "
@@ -824,7 +783,7 @@ class Subscription
   }
 
   def deduplicatedAccessPointsForOrgAndPlatform(org, platform) {
-      def hql = """
+      String hql = """
 select distinct oap from OrgAccessPoint oap 
     join oap.oapp as oapl
     join oapl.subPkg as subPkg
@@ -839,15 +798,15 @@ select distinct oap from OrgAccessPoint oap
   }
 
   def getHoldingTypes() {
-      def types = issueEntitlements?.tipp?.title?.type?.unique()
+      def types = issueEntitlements?.tipp?.title?.medium?.unique()
       types
   }
 
-  def dropdownNamingConvention() {
-      return dropdownNamingConvention(contextService.org)
+  String dropdownNamingConvention() {
+      dropdownNamingConvention(contextService.org)
   }
 
-  def dropdownNamingConvention(contextOrg){
+  String dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
@@ -870,9 +829,6 @@ select distinct oap from OrgAccessPoint oap
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
-           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
-               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id)?.sortname
-           }
            else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
@@ -886,31 +842,27 @@ select distinct oap from OrgAccessPoint oap
        }
   }
 
-    def dropdownNamingConventionWithoutOrg() {
-        return dropdownNamingConventionWithoutOrg(contextService.org)
+    String dropdownNamingConventionWithoutOrg() {
+        dropdownNamingConventionWithoutOrg(contextService.org)
     }
 
-    def dropdownNamingConventionWithoutOrg(Org contextOrg){
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+    String dropdownNamingConventionWithoutOrg(Org contextOrg){
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
         period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
-
         period = period ? '('+period+')' : ''
 
         String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
-
         return name + ' - ' + statusString + ' ' +period
-
     }
 
-    def getDerivedSubscriptionBySubscribers(Org org) {
-        def result
+    Subscription getDerivedSubscriptionBySubscribers(Org org) {
+        Subscription result
 
         Subscription.findAllByInstanceOf(this).each { s ->
-            def ors = OrgRole.findAllWhere( sub: s )
+            List<OrgRole> ors = OrgRole.findAllWhere( sub: s )
             ors.each { or ->
                 if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] && or.org.id == org.id) {
                     result = or.sub
@@ -931,6 +883,14 @@ select distinct oap from OrgAccessPoint oap
             result.startDate = startDate
             result.endDate = endDate
         }
+
+        result
+    }
+
+    Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
+        Collection<OrgAccessPoint> result = []
+
+        result = this.getSubscriber().accessPoints
 
         result
     }

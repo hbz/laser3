@@ -20,22 +20,24 @@ class ContentItem {
   }
 
   static constraints = {
-        key(nullable:false, blank:false)
-     locale(nullable:false, blank:true)
-    content(nullable:false, blank:false)
+        key (blank:false)
+     locale (blank:true)
+    content (blank:false)
 
     // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true, blank: false)
-    dateCreated (nullable: true, blank: false)
+    lastUpdated (nullable: true)
+    dateCreated (nullable: true)
   }
 
   static ContentItem lookupOrCreate(String key, String locale, String content) {
-    ContentItem result = ContentItem.findByKeyAndLocale(key, locale)
-    if ( result == null ) {
-      result = new ContentItem(key:key, locale:locale, content:content)
-      result.locale = locale
-      result.save()
+    withTransaction {
+      ContentItem result = ContentItem.findByKeyAndLocale(key, locale)
+      if (result == null) {
+        result = new ContentItem(key: key, locale: locale, content: content)
+        result.locale = locale
+        result.save()
+      }
+      result
     }
-    result
   }
 }

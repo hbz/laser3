@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
+<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;com.k_int.kbplus.Org;de.laser.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:serviceInjection/>
 
 <g:set var="surveyService" bean="surveyService"/>
@@ -17,7 +17,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
         <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" message="surveyInfo.renewalOverView"/>
     </g:if>
@@ -282,7 +283,7 @@ ${surveyInfo?.name}
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElement(participant.newSub, institution, costElement)}">
+                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>
@@ -317,7 +318,7 @@ ${surveyInfo?.name}
                     </td>
                     <td>
                         <g:if test="${participant.oldSub}">
-                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElement(participant.oldSub, institution, costElement)}"
+                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSub">
 
                                 ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
@@ -373,7 +374,7 @@ ${surveyInfo?.name}
 
                     <td>
                         <g:if test="${participant.newSub}">
-                            <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwnerAndCostItemElement(participant.newSub, institution, costElement)}"
+                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSuccessorSub">
 
                                 ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br>

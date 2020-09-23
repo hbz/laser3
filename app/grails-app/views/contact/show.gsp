@@ -1,11 +1,11 @@
 
-<%@ page import="com.k_int.kbplus.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'contact.label')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
         <semui:breadcrumbs>
@@ -34,7 +34,7 @@
 							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
 						</dd>
 
-                        <dt>${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</dt>
+                        <dt>${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="${RDConstants.CONTACT_TYPE}" /></dd>
 
                         <g:if test="${contactInstance?.prs}">
@@ -59,23 +59,6 @@
 					</dl>
 
 				</div>
-
-				<g:if test="${false && editable}">
-					<g:form>
-						<g:hiddenField name="id" value="${contactInstance?.id}" />
-						<div class="ui form-actions">
-							<g:link class="ui button" action="edit" id="${contactInstance?.id}">
-								<i class="write icon"></i>
-								<g:message code="default.button.edit.label" />
-							</g:link>
-							<button class="ui negative button" type="submit" name="_action_delete">
-								<i class="trash alternate icon"></i>
-								<g:message code="default.button.delete.label" />
-							</button>
-						</div>
-					</g:form>
-				</g:if>
-
 			</div><!-- .twelve -->
 
             <aside class="four wide column">

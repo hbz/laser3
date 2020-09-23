@@ -2,6 +2,9 @@ package de.uni_freiburg.ub;
 
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class Ipv6Address extends IpAddress {
 
 	protected static final short MAX_CIDR_SUFFIX = 128;
@@ -14,8 +17,16 @@ public class Ipv6Address extends IpAddress {
 		this.lowBits = lowBits;
 	}
 
-	public static IpAddress parseIpAddress(String s) {
+	public static String normalize(String s) throws UnknownHostException {
+		return InetAddress.getByName(s).getHostAddress();
+	}
 
+	public static IpAddress parseIpAddress(String s) {
+		try {
+			s = normalize(s);
+		} catch (UnknownHostException e) {
+			throw new NumberFormatException();
+		}
 		String[] blocks = s.split(":");
 
 		long high = 0L;

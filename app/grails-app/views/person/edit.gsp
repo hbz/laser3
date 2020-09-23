@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.Person; de.laser.properties.PropertyDefinition" %>
 <!doctype html>
 <html>
 	<head>
@@ -22,7 +22,6 @@
 					<g:form class="ui form" action="edit" id="${personInstance?.id}" >
 						<g:hiddenField name="version" value="${personInstance?.version}" />
 						<fieldset>
-							<% // <f:all bean="personInstance"/> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">

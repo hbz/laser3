@@ -3,7 +3,7 @@
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
         <div class="fields">
             <div class="field">
-                <g:select class="ui dropdown" name="institutions"
+                <%-- <g:select class="ui dropdown" name="institutions"
                           from="${institution}"
                           optionKey="id"
                           optionValue="name"
@@ -12,6 +12,18 @@
                                   action: 'dynamicApLink',
                                   params: '{platform_id:'+platformInstance.id+', institution_id:this.value}',
                                   update: [success: 'dynamicUpdate', failure: 'failure'],
+                          )}"/>
+                --%>
+                <g:select class="ui dropdown" name="institutions"
+                          from="${institution}"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${selectedInstitution} "
+                          onchange="${laser.remoteJsOnChangeHandler(
+                                  action:   'dynamicApLink',
+                                  data:     '{platform_id:' + platformInstance.id + ', institution_id:this.value}',
+                                  update:   '#dynamicUpdate',
+                                  updateOnFailure: '#failure'
                           )}"/>
             </div>
             <div class="field">

@@ -2,6 +2,10 @@
 c3po = {
     loadJsAfterAjax: function () {
         r2d2.go();
+        bb8.go();
+        tooltip.go();
+        a11yMenu.go();
+        a11yIcon.go();
     },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
@@ -54,7 +58,7 @@ c3po = {
                     return {
                         q: term, // search term
                         page_limit: 10,
-                        baseClass: 'com.k_int.kbplus.RefdataCategory'
+                        baseClass: 'de.laser.RefdataCategory'
                     };
                 },
                 results: function (data, page) {
@@ -70,10 +74,10 @@ c3po = {
         var desc = $(cssId + " .customPropSelect").attr('data-desc')
         var oid = $(cssId + " .customPropSelect").attr('data-oid')
 
-        var baseClass = 'com.k_int.properties.PropertyDefinition'
+        var baseClass = 'de.laser.properties.PropertyDefinition'
 
         if (grouped == c3po.PROP_SEARCH_GROUPED) {
-            baseClass = 'com.k_int.properties.PropertyDefinitionGroup'
+            baseClass = 'de.laser.properties.PropertyDefinitionGroup'
         }
 
         $(cssId + " .customPropSelect").select2({
@@ -128,7 +132,7 @@ c3po = {
 
         $('#cust_prop_modal_select').change(function () {
             var selectedText = $("#cust_prop_modal_select option:selected").val();
-            if (selectedText == "class com.k_int.kbplus.RefdataValue") {
+            if (selectedText == "class de.laser.RefdataValue") {
                 $("#cust_prop_ref_data_name").show();
             } else {
                 $("#cust_prop_ref_data_name").hide();

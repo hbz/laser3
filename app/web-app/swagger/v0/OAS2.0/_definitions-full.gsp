@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
 
   ### full ###
 
@@ -18,17 +18,17 @@
         type: string
         description: Mapping RefdataCategory "Federal State"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
       country:
         type: string
         description: Mapping RefdataCategory "Country"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
       type:
         type: string
         description: Mapping RefdataCategory "AddressType"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
       pob:
         type: string
       pobZipcode:
@@ -42,23 +42,6 @@
       additionSecond:
         type: string
 --%>
-<%--
-  Cluster:
-    allOf:
-      - $ref: "#/definitions/ClusterStub"
-      - type: object
-        properties:
-          definition:
-            type: string
-          organisations: # mapping attr orgs
-            type: array
-            items:
-              $ref: "#/definitions/OrganisationStub" # resolved OrgRole
-          persons: # mapping attr prsLinks
-            type: array
-            items:
-              $ref: "#/definitions/Person" # resolved PersonRole
---%>
   <%--
   Contact:
     type: object
@@ -67,14 +50,14 @@
         type: string
         description: Mapping RefdataCategory "ContactContentType"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
       content:
         type: string
       type:
         type: string
         description: Mapping RefdataCategory "ContactType"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]"
+          [${ RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]"
 --%>
 
   CostItem:
@@ -200,32 +183,32 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
     #      lastmod:
     #        type: string
     #        format: date
           lastUpdated:
             type: string
             format: date
-    #      licenseCategory:
-    #        type: string
-    #        description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
-    #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY).collect{ it.value }.join(', ') }]
+          licenseCategory:
+            type: string
+            description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
+            enum:
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY).collect{ it.value }.join(', ') }]
     #      licenseUrl:
     #        type: string
     #      licensorRef:
     #        type: string
     #      licenseeRef:
     #        type: string
-          licenseStatus:
-            type: string
-          licenseType:
-            type: string
+    #      licenseStatus:
+    #        type: string
+    #      licenseType:
+    #        type: string
     #      noticePeriod:
     #        type: string
-          onixplLicense:
-            $ref: "#/definitions/OnixplLicense"
+    #      onixplLicense:
+    #        $ref: "#/definitions/OnixplLicense"
           organisations: # mapping attr orgRelations
             type: array
             items:
@@ -245,11 +228,11 @@
           startDate:
             type: string
             format: date
-          status:
-            type: string
-            description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
-            enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
+    #     status:
+    #       type: string
+    #       description: Mapping RefdataCategory "${RDConstants.LICENSE_STATUS}"
+    #       enum:
+    #          [${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS).collect{ it.value }.join(', ') }]
           subscriptions:
             type: array
             items:
@@ -258,7 +241,7 @@
     #        type: string
     #        description: Mapping RefdataCategory "${RDConstants.LICENSE_TYPE}"
     #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_TYPE).collect{ it.value }.join(', ') }]
+    #          [${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_TYPE).collect{ it.value }.join(', ') }]
 
   OnixplLicense:
     type: object
@@ -297,6 +280,9 @@
             type: integer
           fteStaff:
             type: integer
+          impId:
+            type: string
+            example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
           persons: # mapping attr prsLinks
             type: array
             items:
@@ -312,7 +298,7 @@
           #
           #  description: Mapping RefdataCategory "${RDConstants.ORG_TYPE}"
           #  enum:
-          #    [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
+          #    [${ RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).collect{ it.value }.join(', ') }]
           scope:
             type: string
           sector:
@@ -320,7 +306,7 @@
             type: string
             description: Mapping RefdataCategory "OrgSector"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
           status:
             type: string
             description: Mapping RefdataCategory
@@ -331,16 +317,12 @@
             type: string
             description: Mapping RefdataCategory "OrgType"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
 --%>
 #  OrganisationRole:
 #    properties:
 #      id:
 #        type: integer
-#      cluster:
-#        $ref: "#/definitions/ClusterStub"
-#        description: |
-#          Exclusive with license, organisation, package, subscription and title
 #      endDate:
 #        type: string
 #        format: date
@@ -521,12 +503,12 @@
         type: string
         description: Mapping RefdataCategory "Gender"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
       isPublic:
         type: string
         description: Mapping RefdataCategory "${RDConstants.Y_N}". If set *No*, it's an hidRefdataCategoryden entry to/from an addressbook (depending on the given organisation context)
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
       lastName:
         type: string
       middleName:
@@ -535,12 +517,12 @@
         type: string
         description: Mapping RefdataCategory "${RDConstants.PERSON_CONTACT_TYPE}"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE).collect{ it.value }.join(', ') }]
       roleType:
         type: string
         description: Mapping RefdataCategory "${RDConstants.PERSON_POSITION}"
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.PERSON_POSITION).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.PERSON_POSITION).collect{ it.value }.join(', ') }]
       properties: # mapping attr privateProperties
         type: array
         items:
@@ -572,7 +554,7 @@
         type: string
         description: Mapping RefdataCategory "${RDConstants.Y_N}". If set *No*, it's an hidden entry to/from the given organisation context
         enum:
-          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+          [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
       value: # mapping attr stringValue, intValue, decValue, refValue, urlValue, dateValue
         type: string
 
@@ -601,14 +583,14 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_FORM}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect{ it.value }.join(', ') }]
           instanceOf:
             $ref: "#/definitions/SubscriptionStub"
     #      isPublic:
     #        type: string
     #        description: Mapping RefdataCategory "${RDConstants.Y_N}"
     #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+    #          [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
     #      issueEntitlements:
     #        type: array
     #        items:
@@ -617,11 +599,11 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.Y_N).collect{ it.value }.join(', ') }]
           lastUpdated:
             type: string
             format: date
-          license: # mapping attr owner
+          license: # mapping attr owner //TODO moved to Links where subscription is destination, license is source and both are stored with OID!
             $ref: "#/definitions/LicenseStub"
           manualCancellationDate:
             type: string
@@ -653,7 +635,7 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_RESOURCE}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).collect{ it.value }.join(', ') }]
           startDate:
             type: string
             format: date
@@ -661,12 +643,12 @@
             type: string
             description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collect{ it.value }.join(', ') }]
           type:
             type: string
             description: Mapping RefdataCategory "${RDConstants.SUBSCRIPTION_TYPE}"
             enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).collect{ it.value }.join(', ') }]
+              [${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).collect{ it.value }.join(', ') }]
 
   Title:
     allOf:

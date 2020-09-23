@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.ApiSource; de.laser.helper.RDConstants; com.k_int.kbplus.Platform" %>
 <!doctype html>
 <html>
 <head>
@@ -31,8 +31,6 @@
     <g:else>${platformInstance.name}</g:else>
 </h1>
 
-<g:render template="nav"/>
-
 <semui:messages data="${flash}"/>
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="sixteen wide column">
@@ -48,7 +46,7 @@
                   <dt>GOKb ID</dt>
                   <dd>
                     ${platformInstance?.gokbId}
-                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                       <g:if test="${platformInstance?.gokbId}">
                         <a target="_blank"
@@ -76,7 +74,7 @@
                   <dd>
                     <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
                     <g:if test="${platformInstance?.primaryUrl}">
-                      <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                      <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                          data-content="${message(code: 'tipp.tooltip.callUrl')}"
                          href="${platformInstance?.primaryUrl?.contains('http') ? platformInstance?.primaryUrl : 'http://' + platformInstance?.primaryUrl}"
                          target="_blank"><i class="share square icon"></i></a>

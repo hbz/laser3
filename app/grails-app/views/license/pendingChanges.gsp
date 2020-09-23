@@ -1,12 +1,12 @@
 <%@ page import="com.k_int.kbplus.License" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
 <html>
 <head>
   <meta name="layout" content="semanticUI"/>
-  <title>${message(code:'laser')} : TN-Änderungen</title>
+  <title>${message(code:'laser')} : ${message(code:'pendingChange.plural')}</title>
 </head>
 <body>
 
@@ -17,14 +17,13 @@
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
     <g:render template="nav" />
 
     <g:each in="${pendingChanges}" var="memberId, pcList">
-        <g:set var="member" value="${com.k_int.kbplus.License.get(memberId)}" />
+        <g:set var="member" value="${License.get(memberId)}" />
 
         <h4>${member.getReferenceConcatenated()}</h4>
 

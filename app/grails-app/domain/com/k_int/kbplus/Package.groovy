@@ -1,49 +1,47 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.PriceItem
+import de.laser.RefdataValue
+import de.laser.finance.CostItem
+import de.laser.IssueEntitlementCoverage
+import de.laser.OrgAccessPointLink
+import de.laser.PendingChangeConfiguration
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import grails.converters.JSON
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.Session
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class Package
-        extends AbstractBaseDomain
-        /*implements ShareSupport*/ {
+class Package extends AbstractBaseWithCalculatedLastUpdated {
+        //implements ShareSupport {
 
-    // TODO AuditTrail
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
-    // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
+    def grailsApplication
+    def deletionService
+    def accessService
 
-  static Log static_logger = LogFactory.getLog(Package)
+    static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
+    static Log static_logger = LogFactory.getLog(Package)
 
-  @Transient
-  def grailsApplication
-  @Transient
-  def deletionService
-
-  String identifier
   String name
   String sortName
-  String impId
   String gokbId
-   //URL originEditUrl
   String vendorURL
   String cancellationAllowances
 
   Date listVerifiedDate
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_TYPE)
-    RefdataValue packageType
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_CONTENT_TYPE)
+    RefdataValue contentType
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
@@ -68,12 +66,14 @@ class Package
     Platform nominalPlatform
     Date startDate
     Date endDate
-    Date dateCreated
-    Date lastUpdated
     License license
     String forumId
     Set pendingChanges
     Boolean autoAccept = false
+
+    Date dateCreated
+    Date lastUpdated
+    Date lastUpdatedCascading
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     orgs:      OrgRole,
@@ -98,13 +98,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                       id column:'pkg_id'
                  version column:'pkg_version'
                globalUID column:'pkg_guid'
-              identifier column:'pkg_identifier'
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
-                   impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
-                  gokbId column:'pkg_gokb_id', type:'text'
-         //originEditUrl column:'pkg_origin_edit_url'
-             packageType column:'pkg_type_rv_fk'
+                  gokbId column:'pkg_gokb_id'
+             contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
                breakable column:'pkg_breakable_rv_fk'
@@ -123,6 +120,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
             listVerifiedDate column: 'pkg_list_verified_date'
+        lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
             orgs            batchSize: 10
             prsLinks        batchSize: 10
@@ -133,30 +131,39 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   static constraints = {
                  globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-               packageType(nullable:true, blank:false)
-             packageStatus(nullable:true, blank:false)
-           nominalPlatform(nullable:true, blank:false)
-         packageListStatus(nullable:true, blank:false)
-                 breakable(nullable:true, blank:false)
-                consistent(nullable:true, blank:false)
-                     fixed(nullable:true, blank:false)
-                 startDate(nullable:true, blank:false)
-                   endDate(nullable:true, blank:false)
-                   license(nullable:true, blank:false)
-                  isPublic(nullable:false, blank:false)
-              packageScope(nullable:true, blank:false)
+               contentType (nullable:true)
+             packageStatus (nullable:true)
+           nominalPlatform (nullable:true)
+         packageListStatus (nullable:true)
+                 breakable (nullable:true)
+                consistent (nullable:true)
+                     fixed (nullable:true)
+                 startDate (nullable:true)
+                   endDate (nullable:true)
+                   license (nullable:true)
+              packageScope (nullable:true)
                    forumId(nullable:true, blank:false)
-                     impId(nullable:true, blank:false)
-                    gokbId(nullable:true, blank:false)
-           //originEditUrl(nullable:true, blank:false)
+                    gokbId(blank:false, unique: true, maxSize: 511)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
-      listVerifiedDate(nullable:true, blank:false)
+      listVerifiedDate     (nullable:true)
+      lastUpdatedCascading (nullable:true)
   }
 
+    @Override
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        super.afterDeleteHandler()
+
+        //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
+    }
+    @Override
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
@@ -175,99 +182,27 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         false // NO SHARES
     }
 
+  @Deprecated
   Org getConsortia() {
     Org result
-    orgs.each { or ->
-      if ( ( or?.roleType?.value=='Subscription Consortia' ) || ( or?.roleType?.value=='Package Consortia' ) )
+    orgs.each { OrgRole or ->
+      if ( or.roleType in [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_PACKAGE_CONSORTIA] )
         result = or.org
     }
-    result
-  }
-
-  /**
-   * Materialise this package into a subscription of the given type (taken or offered)
-   * @param subtype One of 'Subscription Offered' or 'Subscription Taken'
-   */
-  @Transient
-  def createSubscription(subtype,
-                         subname,
-                         subidentifier,
-                         startdate,
-                         enddate,
-                         consortium_org) {
-    createSubscription(subtype,subname,subidentifier,startdate,enddate,consortium_org,true)
-  }
- @Transient
-  def createSubscription(subtype,
-                         subname,
-                         subidentifier,
-                         startdate,
-                         enddate,
-                         consortium_org,
-                         add_entitlements) {
-    createSubscription(subtype, subname,subidentifier,startdate,
-                  enddate,consortium_org,add_entitlements,false)
-  }
-  @Transient
-  def createSubscription(subtype,
-                         subname,
-                         subidentifier,
-                         startdate,
-                         enddate,
-                         consortium_org,
-                         add_entitlements,slaved) {
-    createSubscription(subtype, subname,subidentifier,startdate,
-                  enddate,consortium_org,"Package Consortia",add_entitlements,false)
-  }
-
-  @Transient
-  def createSubscription(subtype,
-                         subname,
-                         subidentifier,
-                         startdate,
-                         enddate,
-                         consortium_org,org_role,
-                         add_entitlements,slaved) {
-    // Create the header
-    log.debug("Package: createSubscription called")
-      Subscription result = new Subscription( name:subname,
-                                   status:RefdataValue.getByValueAndCategory('Current', RDConstants.SUBSCRIPTION_STATUS),
-                                   identifier:subidentifier,
-                                   impId:java.util.UUID.randomUUID().toString(),
-                                   startDate:startdate,
-                                   endDate:enddate,
-                                   type: RefdataValue.getByValue(subtype),
-                                   isSlaved: (slaved == "Yes" || slaved == true))
-
-    if ( result.save(flush:true) ) {
-      if ( consortium_org ) {
-          RefdataValue sc_role = RefdataValue.getByValueAndCategory(org_role, RDConstants.ORGANISATIONAL_ROLE)
-          OrgRole or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
-        log.debug("Create Org role ${or}")
-      }
-      addToSubscription(result, add_entitlements)
-
-    }
-    else {
-      result.errors.each { err ->
-        log.error("Problem creating new sub: ${err}");
-      }
-    }
-
     result
   }
 
   @Transient
   Org getContentProvider() {
     Org result
-
-    orgs.each { or ->
-      if ( or?.roleType?.value=='Content Provider' )
+    orgs.each { OrgRole or ->
+      if ( or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER] )
         result = or.org
     }
     result
   }
 
+  @Deprecated
   @Transient
   void updateNominalPlatform() {
       Map<String, Object> platforms = [:]
@@ -298,24 +233,23 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Step 1 - Make sure this package is not already attached to the sub
     // Step 2 - Connect
     List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-            "from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
+            "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: this])
 
     if (!dupe){
-        SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
+        SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save()
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
-        def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
-        TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
-          if(tipp.status?.value == "Current"){
+        TitleInstancePackagePlatform.findAllByPkg(this).each { TitleInstancePackagePlatform tipp ->
               IssueEntitlement new_ie = new IssueEntitlement(
-                                              status: live_issue_entitlement,
+                                              status: tipp.status,
                                               subscription: subscription,
                                               tipp: tipp,
                                               accessStartDate:tipp.accessStartDate,
                                               accessEndDate:tipp.accessEndDate,
                                               acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
               if(new_ie.save()) {
+                  log.debug("${new_ie} saved")
                   tipp.coverages.each { covStmt ->
                       IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
                               startDate:covStmt.startDate,
@@ -331,8 +265,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                       )
                       ieCoverage.save()
                   }
-              }
-          }
+            }
         }
       }
 
@@ -345,7 +278,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         // copy from: addToSubscription(subscription, createEntitlements) { .. }
 
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-                "from SubscriptionPackage where subscription = ? and pkg = ?", [target, this])
+                "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: this])
 
         if (! dupe){
 
@@ -389,54 +322,63 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     @Transient
-    boolean unlinkFromSubscription(subscription, deleteEntitlements) {
+    boolean unlinkFromSubscription(Subscription subscription, deleteEntitlements) {
         SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(this, subscription)
 
         //Not Exist CostItem with Package
-        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:this,sub:subscription])) {
-            def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-            def queryParams = [sub: subscription, pkg_id: this.id]
+        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:this, sub:subscription])) {
 
             if (deleteEntitlements) {
-                //delete matches
-                IssueEntitlement.withTransaction { status ->
-                    removePackagePendingChanges([subscription.id], deleteEntitlements)
-                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
-
-                    if (deleteIdList) {
-                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
-                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
-                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                List<Long> subList = [subscription.id]
+                if(subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_CONSORTIUM")) {
+                    Subscription.findAllByInstanceOf(subscription).each { Subscription childSub ->
+                        subList.add(childSub.id)
                     }
-
-                    if (subPkg) {
-                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
-                        CostItem.findAllBySubPkg(subPkg).each { costItem ->
-                            costItem.subPkg = null
-                            if (!costItem.sub) {
-                                costItem.sub = subPkg.subscription
-                            }
-                            costItem.save(flush: true)
+                }
+                String query = "from IssueEntitlement ie, Package pkg where ie.subscription.id in (:sub) and pkg.id = :pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                Map<String,Object> queryParams = [sub: subList, pkg_id: this.id]
+                //delete matches
+                IssueEntitlement.withSession { Session session ->
+                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                    removePackagePendingChanges(subList,true)
+                    if (deleteIdList) {
+                        deleteIdList.collate(32766).each { List chunk ->
+                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.status = :delStatus where ie.id in (:delList)", [delList: chunk,delStatus:RDStore.TIPP_STATUS_DELETED])
                         }
                     }
 
-                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
+                    SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id in (:subList)',[subList:subList,pkg:this]).each { delPkg ->
+                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :subPkg", [subPkg:delPkg])
+                        CostItem.findAllBySubPkg(delPkg).each { costItem ->
+                            costItem.subPkg = null
+                            if (!costItem.sub) {
+                                costItem.sub = delPkg.subscription
+                            }
+                            costItem.save()
+                        }
+                        PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:delPkg])
+                    }
+
+                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, subList:subList])
+                    //log.debug("before flush")
+                    session.flush()
                     return true
                 }
             } else {
 
                 if (subPkg) {
-                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :sp", [sp: subPkg])
                     CostItem.findAllBySubPkg(subPkg).each { costItem ->
                         costItem.subPkg = null
                         if (!costItem.sub) {
                             costItem.sub = subPkg.subscription
                         }
-                        costItem.save(flush: true)
+                        costItem.save()
                     }
+                    PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
                 }
 
-                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [this, subscription])
+                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription = :sub ", [pkg: this, sub:subscription])
                 return true
             }
         }else{
@@ -445,106 +387,87 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
     private def removePackagePendingChanges(List subIds, confirmed) {
+        //log.debug("begin remove pending changes")
+        String tipp_class = TitleInstancePackagePlatform.class.getName()
+        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery(
+                "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId", [pkgId: this.id]
+        )
+        List pendingChanges = subIds ? PendingChange.executeQuery(
+                "select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds)" , [subIds: subIds]
+        ) : []
 
-        def tipp_class = TitleInstancePackagePlatform.class.getName()
-        def tipp_id_query = "from TitleInstancePackagePlatform tipp where tipp.pkg.id = ?"
-        def change_doc_query = "from PendingChange pc where pc.subscription.id in (:subIds) "
-        def tipp_ids = TitleInstancePackagePlatform.executeQuery("select tipp.id ${tipp_id_query}", [this.id])
-        def pendingChanges = PendingChange.executeQuery("select pc.id, pc.payload ${change_doc_query}", [subIds: subIds])
-
-        def pc_to_delete = []
+        List pc_to_delete = []
         pendingChanges.each { pc ->
-            def payload = JSON.parse(pc[1])
-            if (payload.tippID) {
-                pc_to_delete += pc[0]
-            }else if (payload.tippId) {
-                pc_to_delete += pc[0]
-            } else if (payload.changeDoc) {
-                def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
-                    pc_to_delete += pc[0]
+            //log.debug("begin pending changes")
+            if(pc[1]){
+                def payload = JSON.parse(pc[1])
+                if (payload.tippID) {
+                    pc_to_delete << pc[0]
+                }else if (payload.tippId) {
+                    pc_to_delete << pc[0]
+                } else if (payload.changeDoc) {
+                    def (oid_class, ident) = payload.changeDoc.OID.split(":")
+                    if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
+                        pc_to_delete << pc[0]
+                    }
+                } else {
+                    log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
                 }
-            } else {
-                log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
+            }
+            else {
+                pc_to_delete << pc[0]
             }
         }
         if (confirmed && pc_to_delete) {
-            log.debug("Deleting Pending Changes: ${pc_to_delete}")
-            def del_pc_query = "delete from PendingChange where id in (:del_list) "
-            PendingChange.executeUpdate(del_pc_query, [del_list: pc_to_delete])
+            String del_pc_query = "delete from PendingChange where id in (:del_list) "
+            if(pc_to_delete.size() > 32766) { //cf. https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
+                pc_to_delete.collate(32766).each { subList ->
+                    log.debug("Deleting Pending Change Slice: ${subList}")
+                    executeUpdate(del_pc_query,[del_list:subList])
+                }
+            }
+            else {
+                log.debug("Deleting Pending Changes: ${pc_to_delete}")
+                executeUpdate(del_pc_query, [del_list: pc_to_delete])
+            }
         } else {
             return pc_to_delete.size()
         }
     }
 
-  /**
-   *  Tell the event notification service how this object is known to any registered notification
-   *  systems.
-   */
-  @Transient
-  def getNotificationEndpoints() {
-    [
-      //[ service:'zendesk.forum', remoteid:this.forumId ],
-      [ service:'announcements' ]
-    ]
-  }
-
   String toString() {
     name ? "${name}" : "Package ${id}"
   }
 
-  @Transient
-  String getURL() {
-    "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
+    /*
+ @Transient
+  def onSave = {
+    log.debug("onSave")
+    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+
+    changeNotificationService.fireEvent([
+                                                 OID:"${Package.class.name}:${id}",
+                                                 event:'Package.created'
+                                                ])
+
   }
-
-    def onChange = { oldMap, newMap ->
-        log.debug("OVERWRITE onChange")
-    }
-
-  // @Transient
-  // def onChange = { oldMap,newMap ->
-
-  //   log.debug("onChange")
-
-  //   def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-  //   controlledProperties.each { cp ->
-  //    if ( oldMap[cp] != newMap[cp] ) {
-  //      changeNotificationService.notifyChangeEvent([
-  //                                                   OID:"${this.class.name}:${this.id}",
-  //                                                   event:'TitleInstance.propertyChange',
-  //                                                   prop:cp, old:oldMap[cp], new:newMap[cp]
-  //                                                  ])
-  //    }
-  //   }
-  // }
-
-    @Transient
-    def onSave = {
-        log.debug("onSave")
-        def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-        changeNotificationService.fireEvent([
-            OID:"com.k_int.kbplus.Package:${id}",
-            event:'Package.created'
-        ])
-    }
-
+    */
   /**
   * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
-  **/
+  */
+    /*
   @Transient
-  def notifyDependencies_trait(changeDocument) {
+  def notifyDependencies(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     if ( changeDocument.event=='Package.created' ) {
-      changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);
+      changeNotificationService.broadcastEvent("${SystemObject.class.name}:1", changeDocument);
     }
   }
+     */
 
   @Transient
-  static def refdataFind(params) {
-    def result = [];
+  static def refdataFind(GrailsParameterMap params) {
+    List<Map<String, Object>> result = []
 
     String hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
     def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]
@@ -583,7 +506,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-
+  @Deprecated
   @Transient
   def toComparablePackage() {
     Map<String, Object> result = [:]
@@ -592,7 +515,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     println "processing metadata"
     result.packageName = this.name
     result.packageId = this.identifier
-    result.impId = this.impId
     result.gokbId = this.gokbId
 
     result.tipps = []
@@ -612,7 +534,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       def newtip = [
                      title: [
                        name:tip.title.title,
-                       impId:tip.title.impId,
                        identifiers:[],
                        titleType: tip.title.class.name ?: null
                      ],
@@ -664,23 +585,26 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
+    @Override
     def beforeInsert() {
         if ( name != null ) {
             sortName = generateSortName(name)
         }
 
-        if (impId == null) {
-          impId = java.util.UUID.randomUUID().toString();
-        }
-
-        super.beforeInsert()
+        super.beforeInsertHandler()
     }
 
+    @Override
     def beforeUpdate() {
         if ( name != null ) {
             sortName = generateSortName(name)
         }
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
+    }
+
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
   def checkAndAddMissingIdentifier(ns,value) {
@@ -724,8 +648,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   }
 
-    Identifier getIdentifierByType(idtype) {
-        def result = null
+    Identifier getIdentifierByType(String idtype) {
+        Identifier result
         ids.each { ident ->
             if ( ident.ns.ns.equalsIgnoreCase(idtype) ) {
                 result = ident

@@ -59,7 +59,7 @@
         </g:each>
       </div>
 
-    <r:script language="JavaScript">
+    <r:script>
         $('.ann-content').readmore({
             speed: 250,
             collapsedHeight: 21,

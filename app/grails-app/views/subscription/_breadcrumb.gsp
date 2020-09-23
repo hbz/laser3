@@ -1,7 +1,7 @@
 <laser:serviceInjection />
 
 <semui:breadcrumbs>
-    <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" /> --%>
+    <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" /> --%>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
     <g:if test="${subscriptionInstance}">

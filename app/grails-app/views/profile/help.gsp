@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="de.laser.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
 <head>

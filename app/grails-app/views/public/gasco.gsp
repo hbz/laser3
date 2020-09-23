@@ -1,5 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; de.laser.RefdataValue; de.laser.helper.RDConstants;" %>
 
 <!doctype html>
 <html>
@@ -29,7 +28,12 @@
                             <legend>${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                             <div class="inline fields la-filter-inline">
 
-                                <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+                                <%
+                                    List subkinds = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
+                                    subkinds -= RDStore.SUBSCRIPTION_KIND_LOCAL
+                                %>
+
+                                <g:each in="${subkinds}" var="subKind">
 
                                         <g:if test="${subKind.value == 'National Licence'}">
                                             <div class="inline field js-nationallicence">
@@ -64,7 +68,7 @@
                             <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
 
                             <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                                optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                                optionKey="${{ Org.class.name + ':' + it.id }}"
                                 optionValue="${{ it.getName() }}"
                                 name="consortia"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
@@ -138,9 +142,9 @@
         <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP)}" />
         <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP)}" />
             <g:each in="${subscriptions}" var="sub" status="i">
-                <g:set var="gasco_infolink" value="${sub.customProperties.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
-                <g:set var="gasco_anzeigename" value="${sub.customProperties.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />
-                <g:set var="gasco_verhandlername" value="${sub.customProperties.find{ it.type == GASCO_VERHANDLERNAME}?.stringValue}" />
+                <g:set var="gasco_infolink" value="${sub.propertySet.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
+                <g:set var="gasco_anzeigename" value="${sub.propertySet.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />
+                <g:set var="gasco_verhandlername" value="${sub.propertySet.find{ it.type == GASCO_VERHANDLERNAME}?.stringValue}" />
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
@@ -149,7 +153,7 @@
 
                         <g:if test="${gasco_infolink}">
                             <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
-                                <a href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
+                                <a class="la-break-all" href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
                             </span>
                         </g:if>
                         <g:else>
@@ -165,7 +169,7 @@
                         </g:each>
                     </td>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, OR_PROVIDER)}" var="role">
+                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)}" var="role">
                             ${role.org?.name}<br>
                         </g:each>
                     </td>
@@ -173,7 +177,7 @@
                     %{--<td>--}%
                         %{--${sub.type?.getI10n('value')}--}%
                     %{--</td>--}%
-                    <td class="la-break-all">
+                    <td>
 
                     ${gasco_verhandlername ?: sub.getConsortia()?.name}
                     <br>
@@ -191,9 +195,9 @@
                                                 RDStore.CCT_URL
                                         )}" var="prsContact">
                                             <div class="description">
-                                                <i class="icon globe"></i>
-                                                <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
-                                                    <a href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
+                                                <i class="icon globe la-list-icon"></i>
+                                                <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                    <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                 </span>
 
                                             </div>
@@ -202,10 +206,10 @@
                                                 person,
                                                 RDStore.CCT_EMAIL
                                         )}" var="prsContact">
-                                            <div class="description">
-                                                <i class="ui icon envelope outline"></i>
+                                            <div class="description js-copyTriggerParent">
+                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
                                                 <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
-                                                    <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                    <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
                                         </g:each>
@@ -234,3 +238,4 @@
     </r:style>
 </sec:ifAnyGranted>
 </body>
+</html>

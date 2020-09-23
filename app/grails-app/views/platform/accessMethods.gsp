@@ -1,10 +1,10 @@
-<%@ page import="com.k_int.kbplus.Platform;de.laser.helper.RDConstants" %>
+<%@ page import="com.k_int.kbplus.Platform;de.laser.PlatformAccessMethod;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'platform.label')}" />
-        <title><g:message code="default.show.label" args="[entityName]" /></title>
+        <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
     </head>
     <body>
 
@@ -29,25 +29,6 @@
         <semui:messages data="${flash}" />
         
         <g:render template="nav" contextPath="." />
-        
-       %{-- <semui:filter>
-            <g:form action="accessMethods" role="form" class="ui form" method="get" params="${params}">
-              <div class="fields">
-                <div class="field">
-                  <label for="filter" class="control-label">${message(code: 'accessMethod.show')}</label>
-                  <g:select id="filter"
-                            name="filter" 
-                            from="${[
-                                        [key:'all',value:"${message(code: 'accessMethod.all')}"],
-                                        [key:'valid',value:"${message(code:'accessMethod.valid')}"],
-                                        [key:'invalid',value:"${message(code: 'accessMethod.invalid')}"]
-                                   ]}" 
-                            optionKey="key" optionValue="value" value="${params.filter}" 
-                            onchange="this.form.submit()"/>
-                </div>
-              </div>
-            </g:form>
-        </semui:filter>--}%
 
         <g:form class="form" url="[controller: 'accessMethod', action: 'create']" method="POST">
             <table  class="ui celled la-table table">
@@ -85,7 +66,7 @@
                         <td>
                             <laser:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
-                                          from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
+                                          from="${PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                           optionKey="id"
                                           optionValue="value"
                             />
@@ -111,12 +92,5 @@
             </table>
         </g:form>
 
-
-
-         %{--<input class="ui button"--}%
-                       %{--value="${message(code: 'accessMethod.add.label', args: [message(code: 'accessMethod.add.label', default: 'Adresse')])}"--}%
-                       %{--data-semui="modal"--}%
-                       %{--href="#accessMethodFormModal" />--}%
-                %{--<g:render template="/accessMethod/formModal" model="['platfId': platformInstance?.id, 'redirect': '.']"/>--}%
     </body>
 </html>

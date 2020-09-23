@@ -15,13 +15,30 @@
         <g:if test="${actionName == 'show'}">
             <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
         </g:if>
+        <g:if test="${actionName == 'ids'}">
+            <g:if test="${editable_identifier}">
+                <a class="item" onclick="IdContoller.createIdentifier(${orgInstance.id});">${message(code: 'identifier.create.new')}</a>
+            </g:if>
+            <g:else>
+                <semui:subNavItem message="identifier.create.new" disabled="disabled" />
+            </g:else>
+            <g:if test="${hasAccessToCustomeridentifier}">
+                <g:if test="${editable_customeridentifier}">
+                    <a class="item" onclick="IdContoller.createCustomerIdentifier(${orgInstance.id});">${message(code: 'org.customerIdentifier.create.new')}</a>
+                </g:if>
+                <g:else>
+                    <semui:subNavItem message="org.customerIdentifier.create.new" disabled="disabled" />
+                </g:else>
+            </g:if>
+        </g:if>
         <g:if test="${actionName == 'users'}">
             <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
         </g:if>
 
         <g:if test="${actionName == 'readerNumber'}">
-            <semui:actionsDropdownItem data-semui="modal"
-                                       href="#create_number" message="readerNumber.create.label" />
+            <semui:actionsDropdownItem data-semui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
+            <semui:actionsDropdownItem data-semui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
+            <semui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
         </g:if>
 
         <g:if test="${actionName == 'addressbook'}">
@@ -30,7 +47,11 @@
         </g:if>
 
         <g:if test="${actionName == 'accessPoints'}">
-            <semui:actionsDropdownItem controller="accessPoint" action="create" message="accessPoint.create"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ip']" message="accessPoint.create_ip"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'proxy']" message="accessPoint.create_proxy"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ezproxy']" message="accessPoint.create_ezproxy"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'oa']" message="accessPoint.create_openAthens"/>
+            <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'shibboleth']" message="accessPoint.create_shibboleth"/>
         </g:if>
 
 

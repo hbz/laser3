@@ -8,7 +8,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <title>Datenbereinigung: Issue Entitlements ohne Subscription Package</title>
+        <title>${message(code:'laser')} : >Datenbereinigung: Issue Entitlements ohne Subscription Package</title>
     </head>
 
     <body>

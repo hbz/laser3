@@ -1,5 +1,4 @@
 <!doctype html>
-<r:require module="scaffolding" />
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
@@ -38,9 +37,11 @@
 
 				  <table class="ui celled la-table table">
 			      <thead>
+                  <tr>
 			        <th></th>
 			        <th>(${params.sourceTIPP}) ${sourceTIPPObj.title.title}</th>
 			        <th>(${params.targetTIPP}) ${targetTIPPObj.title.title}</th>
+                  </tr>
 			      </thead>
 			      <tbody>
 			      <tr>

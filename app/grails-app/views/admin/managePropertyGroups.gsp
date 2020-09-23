@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition;com.k_int.kbplus.*"%>
+<%@ page import="de.laser.properties.PropertyDefinition;com.k_int.kbplus.*;de.laser.*"%>
 
 <!doctype html>
 <html>
@@ -29,7 +29,7 @@
             </div>
         </g:if>
 
-    <table class="ui celled sortable table la-table la-table-small">
+    <table class="ui celled sortable table la-table compact">
         <thead>
             <tr>
                 <th>Name</th>

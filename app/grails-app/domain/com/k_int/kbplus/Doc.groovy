@@ -1,26 +1,22 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.RefdataValue
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import org.hibernate.Session
-
-import javax.persistence.Transient
-import java.sql.Blob
 
 class Doc {
 
-    @Transient
     def grailsApplication
+    def sessionFactory
 
     static final CONTENT_TYPE_STRING              = 0
-    static final CONTENT_TYPE_DOCSTORE            = 1
+    @Deprecated
     static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
-    static final CONTENT_TYPE_BLOB                = 3
+    static final CONTENT_TYPE_FILE                = 3
 
-  static transients = [ 'blobSize', 'blobData', 'sessionFactory' ]
-  private static final MAX_SIZE = 1073741824 // 4GB 
-  def sessionFactory
+  static transients = [ 'sessionFactory' ]
 
     @RefdataAnnotation(cat = 'Document Status')
     RefdataValue status
@@ -33,8 +29,7 @@ class Doc {
   User creator
   String mimeType
   Integer contentType = CONTENT_TYPE_STRING
-  String content 
-  Blob blobContent 
+  String content
   String uuid 
   Date dateCreated
   Date lastUpdated
@@ -53,43 +48,25 @@ class Doc {
            creator column:'doc_creator'
           filename column:'doc_filename'
            content column:'doc_content', type:'text'
-       blobContent column:'doc_blob_content'
           mimeType column:'doc_mime_type'
               user column:'doc_user_fk'
              owner column:'doc_owner_fk'
   }
 
   static constraints = {
-    status    (nullable:true, blank:false)
-    type      (nullable:true, blank:false)
+    status    (nullable:true)
+    type      (nullable:true)
     content   (nullable:true, blank:false)
-    blobContent(nullable:true, blank:false, maxSize:MAX_SIZE)
     uuid      (nullable:true, blank:false)
-    contentType(nullable:true, blank:false)
+    contentType(nullable:true)
     title     (nullable:true, blank:false)
-    creator   (nullable:true, blank:true)
+    creator   (nullable:true)
     filename  (nullable:true, blank:false)
     mimeType  (nullable:true, blank:false)
-    user      (nullable:true, blank:false)
-    owner     (nullable:true, blank:false)
+    user      (nullable:true)
+    owner     (nullable:true)
     migrated  (nullable:true, blank:false, maxSize:1)
   }
-
-    @Deprecated
-  def setBlobData(InputStream is, long length) {
-    Session hib_ses = sessionFactory.getCurrentSession()
-    blobContent = hib_ses.getLobHelper().createBlob(is, length)
-  }
-
-    @Deprecated
-    InputStream getBlobData() {
-        blobContent?.binaryStream
-    }
-
-    @Deprecated
-    Long getBlobSize() {
-        blobContent?.length() ?: 0
-    }
 
     def render(def response, def filename) {
         // erms-790
@@ -97,14 +74,12 @@ class Doc {
         def contentLength
 
         try {
-            def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
-            def file = new File("${fPath}/${uuid}")
+            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+            File file = new File("${fPath}/${uuid}")
             output = file.getBytes()
             contentLength = output.length
         } catch(Exception e) {
-            // fallback
-            output = getBlobData()
-            contentLength = getBlobSize()
+            log.error(e)
         }
 
         response.setContentType(mimeType)
@@ -113,24 +88,12 @@ class Doc {
 
         response.outputStream << output
     }
-    
-  static Doc fromUpload(def file) {
-    if(!file) return new Doc()
-        
-    String filename = file.originalFilename
-    def slashIndex = Math.max(filename.lastIndexOf("/"),filename.lastIndexOf("\\"))
-    if(slashIndex > -1) filename = filename.substring(slashIndex + 1)
-
-      Doc doc = new Doc(filename: filename)
-    doc.setBlobData(file.inputStream, file.size)
-    return doc
-  }
 
     // erms-790
     def beforeInsert = {
-        if (contentType in [CONTENT_TYPE_BLOB, CONTENT_TYPE_DOCSTORE]) {
-            log.info('generating new uuid')
+        if (contentType == CONTENT_TYPE_FILE) {
             uuid = java.util.UUID.randomUUID().toString()
+            log.info('generating new uuid: '+ uuid)
         }
     }
 }

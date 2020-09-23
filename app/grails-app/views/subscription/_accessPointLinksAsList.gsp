@@ -1,17 +1,41 @@
-<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Subscription; com.k_int.kbplus.SubscriptionPackage; com.k_int.kbplus.IssueEntitlement; de.laser.Person;de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 
 <table class="ui three column table">
-  <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+  <tr>
+    <th scope="row" rowspan="0"
+        class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th></tr>
+  <g:each in="${subscriptionInstance.packages}" var="sp">
+    <%
+      Map<String,Object> packageMetadata = [:]
+      String link
+      ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
+        packageMetadata = GOKbService.geElasticsearchFindings(api.baseUrl+api.fixToken, "&uuid=${sp.pkg.gokbId}", "Package", null, 1)
+        link = api.editUrl+"/resource/show/"
+        if(packageMetadata.warning)
+          packageMetadata = packageMetadata.warning
+        else if(packageMetadata.info)
+          packageMetadata = packageMetadata.info
+      }
+    %>
     <g:set var="cssId" value="oapLinksModal-${sp.id}"/>
     <tr>
-      <th scope="row"
-          class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
       <td>
-        <g:link controller="package" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+        <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
 
-        <g:if test="${sp.pkg?.contentProvider}">
-          (${sp.pkg?.contentProvider?.name})
+        <g:if test="${sp.pkg.contentProvider}">
+          (${sp.pkg.contentProvider.name})
+        </g:if>
+        <g:if test="${packageMetadata.records.size() > 0 && link}">
+          <p>
+            <em><g:message code="subscription.packages.curatoryGroups"/>
+              <ul>
+                <g:each in="${packageMetadata.records.get(0).curatoryGroups}" var="curatoryGroup">
+                  <li><a href="${link}">${curatoryGroup}</a></li>
+                </g:each>
+              </ul>
+            </em>
+          </p>
         </g:if>
       </td>
       <td class="right aligned">
@@ -20,9 +44,9 @@
           <g:link controller="subscription"
                     action="unlinkPackage"
                     extaContentFlag="false"
-                    params="${[subscription: sp?.subscription?.id, package: sp?.pkg?.id, confirmed: 'Y']}"
-                    data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp?.subscription?.id, package: sp?.pkg?.id])}"
-                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp?.pkg?.name])}"
+                    params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y']}"
+                    data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp.subscription.id, package: sp.pkg.id])}"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                     data-confirm-term-how="delete"
                     class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                     role="button">
@@ -80,6 +104,7 @@
                 <div class="content">
                   <g:if test="${platform}">
                     <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                    <semui:linkIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
                     <g:if test="${platform.usesPlatformAccessPoints(contextOrg, sp)}">
                       <span data-position="top right"
                             class="la-popup-tooltip la-delay"

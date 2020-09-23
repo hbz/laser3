@@ -1,9 +1,9 @@
-<r:require module="chartist" />
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
+    <r:require module="chartist" />
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 <br>
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h2>
 
-    <table class="ui celled la-table la-table-small table">
+    <table class="ui celled la-table compact table">
         <thead>
             <tr class="center aligned">
                 <th>Zeitraum</th>
@@ -32,6 +32,10 @@
 
                         <script>
                             $(document).ready(function(){
+
+                                <g:if test="${index == 0}">
+                                    setTimeout( function(){ console.log(".."); window.dispatchEvent(new Event('resize')) }, 99);
+                                </g:if>
 
                                 var chartData = {
                                     labels: [
@@ -52,7 +56,17 @@
                                     axisY: {
                                         onlyInteger: true
                                     }
-                                }, {});
+                                }).on('draw', function(data) {
+                                    if(data.type === 'bar') {
+                                        data.element.attr({
+                                            <g:if test="${index == 0}">
+                                                style: 'stroke-width: 26px'
+                                            </g:if><g:else>
+                                                style: 'stroke-width: 20px'
+                                            </g:else>
+                                        });
+                                    }
+                                });
                             })
                         </script>
                     </td>
@@ -61,7 +75,10 @@
         </tbody>
     </table>
     <style>
-        #ct-chart-0 .ct-series-b .ct-bar { stroke: forestgreen; }
+        #ct-chart-0 .ct-series-b .ct-bar { stroke: darkorange; }
+
+        .ct-series-a .ct-bar { stroke: #98b500; }
+        .ct-series-b .ct-bar { stroke: #bad722; }
     </style>
 </body>
 </html>

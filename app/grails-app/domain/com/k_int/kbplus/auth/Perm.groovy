@@ -10,7 +10,7 @@ class Perm {
     }
 
     static constraints = {
-        code blank: false, unique: true, nullable: false
+        code blank: false, unique: true
     }
 
     static hasMany = [

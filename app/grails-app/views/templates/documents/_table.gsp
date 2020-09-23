@@ -1,13 +1,13 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.interfaces.TemplateSupport" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
 
     if(instance instanceof Subscription) {
         if(contextService.org.id in [instance.getConsortia()?.id,instance.getCollective()?.id] && instance.instanceOf) {
-            if(contextService.org.id == instance.getConsortia()?.id && instance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(contextService.org.id == instance.getConsortia()?.id && instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                 parentAtChild = true
-            else if(instance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION)
+            else if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }
@@ -46,7 +46,7 @@
                     documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
                 }
             %>
-            <g:each in="${documentSet.sort{it?.owner?.title}}" var="docctx">
+            <g:each in="${documentSet.sort{it?.owner?.title?.toLowerCase()}}" var="docctx">
                 <%
                     boolean visible = false
                     boolean inOwnerOrg = false
@@ -80,8 +80,9 @@
                         visible = true
                     }
                     else {
-                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild)
+                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.org.id) {
                             visible = true
+                        }
                     }
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
@@ -154,7 +155,7 @@
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
+                                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>

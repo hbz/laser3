@@ -1,10 +1,10 @@
 package de.laser.api.v0.catalogue
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataCategory
-import com.k_int.properties.PropertyDefinition
+import de.laser.RefdataCategory
+import de.laser.properties.PropertyDefinition
 import de.laser.CacheService
-import de.laser.api.v0.ApiToolkit
+import de.laser.api.v0.*
 import de.laser.helper.EhcacheWrapper
 import grails.converters.JSON
 import groovy.util.logging.Log4j

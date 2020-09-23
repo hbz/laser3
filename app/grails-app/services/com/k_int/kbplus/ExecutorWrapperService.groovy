@@ -1,10 +1,14 @@
 package com.k_int.kbplus
 
-import java.util.concurrent.ConcurrentHashMap
+import grails.transaction.Transactional
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
+
+@Transactional
 class ExecutorWrapperService {
 
-	def executorService
+	ExecutorService executorService
 	def genericOIDService
 	ConcurrentHashMap<Object,java.util.concurrent.FutureTask> activeFuture = [:]
 
@@ -27,7 +31,7 @@ class ExecutorWrapperService {
 		}
 	}
 
-	def hasRunningProcess(owner){
+	boolean hasRunningProcess(owner){
 		owner = "${owner.class.name}:${owner.id}"
 		// There is no process running for this owner
 		if(activeFuture.get(owner) == null){

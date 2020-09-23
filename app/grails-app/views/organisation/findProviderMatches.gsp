@@ -8,7 +8,7 @@
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"  />
+		<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 	<br>
@@ -28,6 +28,7 @@
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
 				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button">
+				<g:link controller="organisation" action="listProvider" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</semui:searchSegment>
 
@@ -50,8 +51,8 @@
 									<td>${providerInstance.name} <g:link controller="organisation" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
 									<td><ul>
 											<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
-											<g:if test="${providerInstance.impId}">
-												<li><g:message code="org.impId.label" />: <g:fieldValue bean="${providerInstance}" field="impId"/></li>
+											<g:if test="${providerInstance.gokbId}">
+												<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${providerInstance}" field="gokbId"/></li>
 											</g:if>
 											<g:each in="${providerInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 									</ul></td>

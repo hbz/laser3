@@ -1,7 +1,9 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.OrgAccessPoint
 import de.laser.api.v0.entities.ApiLicense
+import de.laser.api.v0.entities.ApiOrgAccessPoint
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
@@ -57,16 +59,43 @@ class ApiStubReader {
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
+    // ################### STUBS ###################
+
+    /**
+     * @return MAP | Constants.HTTP_FORBIDDEN
+     */
+    static requestOrgAccessPointStub(OrgAccessPoint orgAccessPoint, Org context) {
+        Map<String, Object> result = [:]
+
+        if (! orgAccessPoint) {
+            return null
+        }
+        boolean hasAccess = ApiOrgAccessPoint.calculateAccess(orgAccessPoint, context)
+
+        if (hasAccess) {
+            result = ApiUnsecuredMapReader.getOrgAccessPointStubMap(orgAccessPoint)
+        }
+
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
+    }
+
     /**
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestSubscriptionStub(Subscription sub, Org context) {
+        requestSubscriptionStub(sub, context, false)
+    }
+
+    /**
+     * @return MAP | Constants.HTTP_FORBIDDEN
+     */
+    static requestSubscriptionStub(Subscription sub, Org context, boolean isInvoiceTool){
         Map<String, Object> result = [:]
 
         if (! sub) {
             return null
         }
-        boolean hasAccess = ApiSubscription.calculateAccess(sub, context)
+        boolean hasAccess = isInvoiceTool || ApiSubscription.calculateAccess(sub, context)
 
         if (hasAccess) {
             result = ApiUnsecuredMapReader.getSubscriptionStubMap(sub)

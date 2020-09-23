@@ -1,32 +1,35 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import de.laser.domain.StatsTripleCursor
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import grails.transaction.Transactional
 import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
-import groovyx.net.http.HttpResponseDecorator
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
+import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ExecutorService
 
+@Transactional
 class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 1
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
-    def executorService
+    ExecutorService executorService
     def sessionFactory
     def factService
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
     Map<String,List> availableReportCache = [:]
@@ -77,7 +80,7 @@ class StatsSyncService {
             "and po.roleType.value='Content Provider' "+
             "and exists (select cp from pf.customProperties as cp where cp.type.name = 'NatStat Supplier ID')" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
-            "and exists (select 1 from OrgSettings as os where os.org=orgrel.org and os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
+            "and exists (select 1 from OrgSetting as os where os.org=orgrel.org and os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
         if (queryParams['supplier'] != null){
             hql += "and pf.id =:supplier "
         }
@@ -99,13 +102,13 @@ class StatsSyncService {
 
     void doSync() {
         initSync()
-        executorService.submit({ internalDoSync() } as java.util.concurrent.Callable)
+        executorService.execute({ internalDoSync() })
     }
 
     void internalDoSync() {
         try {
             log.debug("create thread pool")
-            String statsApi = grailsApplication.config.statsApiUrl ?: ''
+            String statsApi = ConfigUtils.getStatsApiUrl() ?: ''
             if (statsApi == '') {
                 log.error("Stats API URL not set in config")
                 errors.add("Stats API URL not set in config")
@@ -155,7 +158,7 @@ class StatsSyncService {
             return availableReportCache[queryParamsHash]
         }
         try {
-            URIBuilder uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+            URIBuilder uri = new URIBuilder(ConfigUtils.getStatsApiUrl())
             String baseUrl = uri.getScheme() + "://" + uri.getHost()
             String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
             String path = basePath + 'Sushiservice/reports'
@@ -589,7 +592,7 @@ class StatsSyncService {
         if (statsTitles.size() > 1) {
             log.warn('Found more than one item for the given Identifier')
             log.warn('Titles delivered by API: ')
-            log.warn(statsTitles)
+            log.warn( statsTitles.toString() )
         }
     }
 

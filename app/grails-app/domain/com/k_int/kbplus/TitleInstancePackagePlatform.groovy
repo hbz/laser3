@@ -1,11 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
-import de.laser.domain.AbstractBaseDomain
-import de.laser.domain.IssueEntitlementCoverage
-import de.laser.domain.TIPPCoverage
+import de.laser.RefdataValue
+import de.laser.base.AbstractBase
+import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import groovy.time.TimeCategory
 import org.apache.commons.logging.Log
@@ -15,44 +13,25 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
-class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements AuditableTrait*/ {
-  @Transient
+class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
+
   def grailsLinkGenerator
-
-  @Transient
   def grailsApplication
-  
-  @Transient
   def messageSource
-
-  @Transient
   def changeNotificationService
 
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
 
     // AuditableTrait
-    static auditable = true
+    //static auditable = true
     static controlledProperties = ['status', 'platform','accessStartDate','accessEndDate','coverages']
 
-    /*
-    Date startDate
-    String startVolume
-    String startIssue
-    Date endDate
-    String endVolume
-    String endIssue
-    String embargo
-    String coverageDepth
-    String coverageNote
-     */
     Date accessStartDate
     Date accessEndDate
     Date coreStatusStart
     Date coreStatusEnd
     String rectype="so"
-    String impId
     String gokbId
-    //URL originEditUrl
 
     @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
@@ -77,21 +56,20 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     Date dateCreated
     Date lastUpdated
 
-  //TitleInstancePackagePlatform derivedFrom
-  //TitleInstancePackagePlatform masterTipp
-
-  static mappedBy = [ids: 'tipp', additionalPlatforms: 'tipp']
+  static mappedBy = [ids: 'tipp']
   static hasMany = [ids: Identifier,
-                    additionalPlatforms: PlatformTIPP,
                     coverages: TIPPCoverage]
-
 
   static belongsTo = [
     pkg:Package,
     platform:Platform,
-    title:TitleInstance,
-    sub:Subscription
+    title:TitleInstance
   ]
+
+    static transients = [
+            'derivedAccessStartDate', 'derivedAccessEndDate',
+            'availabilityStatus', 'availabilityStatusAsString', 'availabilityStatusExplanation'
+    ] // mark read-only accessor methods
 
   static mapping = {
                 id column:'tipp_id'
@@ -101,9 +79,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
              title column:'tipp_ti_fk',     index: 'tipp_idx'
-             impId column:'tipp_imp_id',        index: 'tipp_imp_id_idx'
-            gokbId column:'tipp_gokb_id',       type:'text'
-     //originEditUrl column:'tipp_origin_edit_url'
+            gokbId column:'tipp_gokb_id'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
@@ -111,24 +87,13 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
            payment column:'tipp_payment_rv_fk'
             option column:'tipp_option_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
-               sub column:'tipp_sub_fk'
-       //derivedFrom column:'tipp_derived_from'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
       coreStatusStart column:'tipp_core_status_start_date'
       coreStatusEnd column:'tipp_core_status_end_date'
-      /*startDate column:'tipp_start_date',    index: 'tipp_dates_idx'
-      startVolume column:'tipp_start_volume'
-      startIssue column:'tipp_start_issue'
-      endDate column:'tipp_end_date',      index: 'tipp_dates_idx'
-      endVolume column:'tipp_end_volume'
-      endIssue column:'tipp_end_issue'
-      embargo column:'tipp_embargo'
-      coverageDepth column:'tipp_coverage_depth'
-      coverageNote column:'tipp_coverage_note', type: 'text'*/
 
       ids                   batchSize: 10
-      additionalPlatforms   batchSize: 10
+    //additionalPlatforms   batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
 
       dateCreated column: 'tipp_date_created'
@@ -137,50 +102,37 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        impId(nullable:true, blank:true)
-        gokbId (nullable:true, blank:false)
-        //originEditUrl(nullable:true, blank:false)
-        status(nullable:true, blank:false)
-        delayedOA(nullable:true, blank:false)
-        hybridOA(nullable:true, blank:false)
-        statusReason(nullable:true, blank:false)
-        payment(nullable:true, blank:false)
-        option(nullable:true, blank:false)
-        sub(nullable:true, blank:false)
+        gokbId (blank:false, unique: true, maxSize:511)
+        status      (nullable:true)
+        delayedOA   (nullable:true)
+        hybridOA    (nullable:true)
+        statusReason(nullable:true)
+        payment     (nullable:true)
+        option      (nullable:true)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
-        //derivedFrom(nullable:true, blank:true)
-        accessStartDate(nullable:true, blank:true)
-        accessEndDate(nullable:true, blank:true)
-        coreStatusStart(nullable:true, blank:true)
-        coreStatusEnd(nullable:true, blank:true)
-        /*
-        startDate(nullable:true, blank:true)
-        startVolume(nullable:true, blank:true)
-        startIssue(nullable:true, blank:true)
-        endDate(nullable:true, blank:true)
-        endVolume(nullable:true, blank:true)
-        endIssue(nullable:true, blank:true)
-        embargo(nullable:true, blank:true)
-        coverageDepth(nullable:true, blank:true)
-        coverageNote(nullable:true, blank:true)
-         */
+        accessStartDate (nullable:true)
+        accessEndDate (nullable:true)
+        coreStatusStart (nullable:true)
+        coreStatusEnd (nullable:true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     @Override
     def beforeUpdate(){
         touchPkgLastUpdated()
-
-        super.beforeUpdate()
+        super.beforeUpdateHandler()
     }
     @Override
     def beforeInsert() {
         touchPkgLastUpdated()
-
-        super.beforeInsert()
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
   @Transient
@@ -193,16 +145,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
   }
 
-  String getHostPlatform() {
-      String result
-    additionalPlatforms.each { p ->
-      if ( p.rel == 'host' ) {
-        result = p.titleUrl
-      }
-    }
-    result
-  }
-
   String getIdentifierValue(idtype) {
       String result
     ids?.each { ident ->
@@ -213,6 +155,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
   }
 
   @Transient
+  /*
   def onChange = { oldMap,newMap ->
 
     log.debug("onChange Tipp")
@@ -227,9 +170,11 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     log.debug("onChange completed")
   }
+    */
 
+  /*
   void raisePendingChange(oldMap,newMap,cp) {
-      def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
+      GrailsClass domain_class = AppUtils.getDomainClassGeneric( 'TitleInstancePackagePlatform' )
       def prop_info = domain_class.getPersistentProperty(cp)
 
       def oldLabel = stringify(oldMap[cp])
@@ -252,6 +197,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
               newLabel:newLabel
       ])
   }
+    */
 
     private String stringify(obj) {
       String result
@@ -267,10 +213,12 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
         result
     }
 
+    /*
   @Transient
   def onSave = {
 
     log.debug("onSave")
+
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
     changeNotificationService.fireEvent([
@@ -281,6 +229,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                                                  linkedPackage:pkg.name,
                                                  linkedPlatform:platform.name
                                                 ])
+
   }
 
   @Transient
@@ -298,16 +247,18 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                                                  linkedPlatform:platform.name
                                                 ])
   }
+    */
 
+    /*
   @Transient
-  def notifyDependencies_trait(changeDocument) {
-    log.debug("notifyDependencies_trait(${changeDocument})")
-    changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument)
+  def notifyDependencies(changeDocument) {
+    log.debug("notifyDependencies(${changeDocument})")
+    changeNotificationService.broadcastEvent("${Package.class.name}:${pkg.id}", changeDocument)
     changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
     Locale locale = LocaleContextHolder.getLocale()
 
     RefdataValue deleted_tipp_status = RDStore.TIPP_STATUS_DELETED
-    String deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
+    String deleted_tipp_status_oid = "${RefdataValue.class.name}:${deleted_tipp_status.id}".toString()
     // Tipp Property Change Event.. notify any dependent IEs
     List<IssueEntitlement> dep_ies = IssueEntitlement.findAllByTipp(this)
 
@@ -363,7 +314,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                                                                 "(${changeDocument.new}). "+description,
                                                         sub?.getSubscriber(),
                                                         [
-                                                          changeTarget:"com.k_int.kbplus.IssueEntitlement:${dep_ie.id}",
+                                                          changeTarget:"${IssueEntitlement.class.name}:${dep_ie.id}",
                                                           changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                                           changeDoc:changeDocument
                                                         ])
@@ -385,7 +336,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
                     "Eine neue Verknüpfung (TIPP) für den Titel <a href='${titleLink}'>${this.title.title}</a> mit der Plattform <a href='${pkgLink}'>${this.platform.name}</a>",
                     sub.subscriber,
                     [
-                            newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
+                            newObjectClass: "${TitleInstancePackagePlatform.class.name}",
                             changeType    : PendingChangeService.EVENT_TIPP_ADD,
                             changeDoc     : changeDocument
                     ])
@@ -440,6 +391,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
     }
     //If the change is in a controller property, store it up and note it against subs
   }
+    */
 
   Date getDerivedAccessStartDate() {
     accessStartDate ? accessStartDate : pkg?.startDate
@@ -524,17 +476,4 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain /*implements Audit
       if( noChange ) return 0;      
       return 1;
   }  
-
-  static def expunge(tipp_id) {
-    try {
-      static_logger.debug("  -> TIPPs");
-      def deleted_ie = RDStore.TIPP_STATUS_DELETED
-      IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
-      TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = ?',[tipp_id])
     }
-    catch ( Exception e ) {
-      static_logger.error("Problem expunging title",e);
-    }
-  }
-
-}

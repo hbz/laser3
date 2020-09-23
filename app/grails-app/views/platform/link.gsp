@@ -5,7 +5,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'platform.label')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
 </head>
 <body>
 
@@ -29,7 +29,7 @@
 </h1>
 
 <semui:messages data="${flash}" />
-<g:render template="nav" />
+<%--<g:render template="nav" />--%>
 <div id="dynamicUpdate">
   <g:render template="apLinkContent" model="result" />
 </div>

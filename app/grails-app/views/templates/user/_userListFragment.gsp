@@ -1,7 +1,7 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserRole;com.k_int.kbplus.UserSettings" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserRole;de.laser.UserSetting" %>
 <laser:serviceInjection/>
 
-<table class="ui sortable celled la-table la-table-small table">
+<table class="ui sortable celled la-table compact table">
     <thead>
     <tr>
         <%--<g:sortableColumn property="u.username" params="${params}" title="${message(code: 'user.name.label')}" />
@@ -39,7 +39,7 @@
                 <td>${us.email}</td>
                 <td>
                     <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
-                        <g:set var="uoId" value="${affi.id}"/>
+                        <g:set var="uoId" value="${affi.id}"/><%-- ERMS-2370 fix this for count>1 --%>
                         <g:if test="${showAllAffiliations}">
                             ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                         </g:if>
@@ -75,9 +75,11 @@
                 <td class="x">
                     <g:if test="${editable && (instAdmService.isUserEditableForInstAdm(us, editor) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <g:link controller="${controllerName}" action="${editLink}" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                        <g:if test="${!instAdmService.isLastAdminForOrg(orgInstance, us) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                        <g:if test="${showAffiliationDeleteLink}">
+
+                        <g:if test="${!instAdmService.isUserLastInstAdminForOrg(us, orgInstance) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName,us.getSettingsValue(UserSetting.KEYS.DASHBOARD)?.name ])}"
                                     data-confirm-term-how="delete"
                                     controller="organisation"
                                     action="processAffiliation"
@@ -94,6 +96,7 @@
                             </span>
                         </g:else>
 
+                        </g:if>
                     </g:if>
                 </td>
             </tr>

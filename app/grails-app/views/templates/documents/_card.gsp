@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*;de.laser.helper.RDStore;" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
@@ -53,7 +53,8 @@
                     break
             }
         }
-        else visible = true
+        else if(it.owner.owner?.id == contextService.org.id || it.sharedFrom)
+            visible = true
         if ((it.sharedFrom || inTargetOrg) && visible) {
             sharedItems << it
         }
@@ -64,10 +65,10 @@
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
-<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM") && !parentAtChild}">
+<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
     <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
-            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
+            <g:if test="${(( docctx.owner?.contentType==Doc.CONTENT_TYPE_FILE ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="eight wide column la-column-right-lessPadding">
@@ -84,7 +85,7 @@
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
-                            <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                            <g:if test="${docctx.owner.owner?.id == contextService.org.id && accessService.checkMinUserOrgRole(user,docctx.owner?.owner,"INST_EDITOR")}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
@@ -94,7 +95,7 @@
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"show"]'>
+                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>
@@ -118,7 +119,7 @@
                                 </div>
                             </g:else>
                             <%-- START Third Button --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
+                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
@@ -126,7 +127,6 @@
                                                       params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                                       data-content="${message(code:'property.share.tooltip.on')}"
                                                       data-done=""
-                                                      data-always="bb8.init('#container-documents')"
                                                       data-update="container-documents"
                                                       role="button"
                                     >
@@ -141,9 +141,7 @@
                                                       data-content="${message(code:'property.share.tooltip.off')}"
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share"
-
                                                       data-done=""
-                                                      data-always="bb8.init('#container-documents')"
                                                       data-update="container-documents"
                                                       role="button"
                                     >
@@ -161,7 +159,7 @@
 <g:if test="${sharedItems}">
     <semui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">
-            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
+            <g:if test="${((docctx.owner?.contentType==Doc.CONTENT_TYPE_FILE) && (docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
 
                     <div class="ui grid summary">

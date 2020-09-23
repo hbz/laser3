@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; de.laser.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>
@@ -19,13 +19,7 @@
 
 <p>${message(code:'sys.properties')}</p>
 
-<%--<div id="custom_props_div_1">
-    <g:render template="/templates/properties/custom" model="${[
-            prop_desc: PropertyDefinition.SYS_CONF,
-            ownobj: adminObj,
-            custom_props_div: "custom_props_div_1" ]}"/>
-</div>--%>
-<r:script language="JavaScript">
+<r:script>
     $(document).ready(function(){
         c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
     });
@@ -44,7 +38,7 @@
                 <g:textArea readonly="" rows="2" style="width:95%" name="key" value="=== C O N C E A L E D ==="/>
             </g:if>
             <g:else>
-                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}"/>
+                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}" escapeHtml="false" />
             </g:else>
 
         </div>

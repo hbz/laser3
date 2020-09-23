@@ -1,5 +1,5 @@
 <!-- _result_tab_subscr.gsp -->
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*" %>
 
 <laser:serviceInjection />
 
@@ -93,12 +93,12 @@
                     <td>
                         <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
-                    <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_USER")}">
+                    <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
 
                                             <i class="la-copySend icon"></i>
 
@@ -109,7 +109,7 @@
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
 
                                             <i class="la-copySend icon"></i>
 
@@ -168,7 +168,7 @@
             <td colspan="8">
                 <div class="ui fluid accordion">
                     <div class="title">
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon" ></i>
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
@@ -187,13 +187,13 @@
 </table>
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
-        <semui:paginate mapping="subfinance" params="${params+[view:'subscr']}"
+        <semui:paginate mapping="subfinance" params="${params+[showView:'subscr']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
-        <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'subscr']}"
+        <semui:paginate action="finance" controller="myInstitution" params="${params+[showView:'subscr']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>

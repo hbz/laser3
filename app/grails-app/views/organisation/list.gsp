@@ -1,4 +1,4 @@
- <%@ page import="com.k_int.kbplus.*" %>
+ <%@ page import="com.k_int.kbplus.*; de.laser.*" %>
  <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -55,12 +55,13 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="../templates/filter/javascript" />
+        <g:render template="/templates/filter/javascript" />
         <semui:filter showFilterButton="true">
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier', 'type'], ['federalState', 'libraryNetwork', 'sector', 'libraryType']],
+                                  tmplConfigShow: [['name', 'identifier', 'type'], ['region', 'libraryNetwork',
+                                                                                    'sector', 'libraryType']],
                                   tmplConfigFormFilter: true,
                                   useNewLayouter: true
                           ]"/>
@@ -70,7 +71,8 @@
         <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType']
+                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'region',
+                                       'libraryNetwork', 'libraryType']
               ]"/>
 
         <semui:paginate total="${orgListTotal}" params="${params}" />

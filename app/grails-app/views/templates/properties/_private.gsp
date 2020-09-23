@@ -2,8 +2,9 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
+
 
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} --%>
 <g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />
@@ -12,8 +13,9 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui la-table-small la-table-inCard table">
-    <g:if test="${ownobj.privateProperties}">
+<table class="ui compact la-table-inCard table">
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id && cp.isPublic == false }}"/>
+    <g:if test="${privateProperties}">
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
@@ -36,8 +38,8 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
-            <g:if test="${prop.type?.tenant?.id == tenant?.id}">
+        <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+            <g:if test="${prop.type.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -104,7 +106,7 @@
                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                               data-confirm-term-how="delete"
                                               data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                              data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}')"
+                                              data-always="c3po.loadJsAfterAjax()"
                                               data-update="${custom_props_div}"
                                               role="button"
                             >
@@ -120,20 +122,20 @@
     <g:if test="${overwriteEditable}">
         <tfoot>
             <tr>
-                <g:if test="${ownobj.privateProperties}">
+                <g:if test="${privateProperties}">
                     <td colspan="4">
                 </g:if>
                 <g:else>
                     <td>
                 </g:else>
-                        <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
+                        <laser:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
                                       name="cust_prop_add_value_private"
                                       class="ui form"
-                                      update="${custom_props_div}"
-                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                      onComplete="c3po.loadJsAfterAjax()"
+                                      data-update="${custom_props_div}"
+                                      data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                      data-always="c3po.loadJsAfterAjax()"
                         >
-                        <g:if test="${!(actionName in ['surveyConfigsInfo', 'surveyInfosIssueEntitlements'])}">
+                        <g:if test="${!(actionName.contains('survey') || controllerName.contains('survey'))}">
                             <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
@@ -142,7 +144,7 @@
 
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                         </g:if>
-                    </g:formRemote>
+                    </laser:remoteForm>
 
                     </td>
         </tr>

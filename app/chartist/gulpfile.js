@@ -8,5 +8,5 @@ gulp.task('build', function () {
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('./dist/css'))
         .pipe(postcss())
-        .pipe(gulp.dest('../web-app/chartist/css'));
+        .pipe(gulp.dest('../web-app/vendor/chartist/css'));
 });

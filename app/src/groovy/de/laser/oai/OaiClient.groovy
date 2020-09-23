@@ -1,13 +1,11 @@
 package de.laser.oai
 
-
-import groovyx.net.http.HTTPBuilder
-
 import java.text.SimpleDateFormat
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 
-import static groovyx.net.http.ContentType.XML
-import static groovyx.net.http.Method.GET
-
+@Deprecated
 public class OaiClient {
 
   String host
@@ -30,7 +28,7 @@ public class OaiClient {
     while ( more ) {
       println("com.k_int.goai.OaiClient::getChangesSince - Make http request..");
 
-      http.request( GET, XML ) {
+      http.request( Method.GET, ContentType.XML ) {
         // Use the default path specified in the host string
         // uri.path =
         if ( resumption ) {

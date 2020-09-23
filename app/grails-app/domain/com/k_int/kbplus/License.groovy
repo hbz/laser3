@@ -1,53 +1,47 @@
 package com.k_int.kbplus
 
-import com.k_int.ClassUtils
 import com.k_int.kbplus.auth.Role
-import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.domain.AbstractBaseDomain
+import de.laser.RefdataValue
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.Links
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.AuditableSupport
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
-import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
-class License
-        extends AbstractBaseDomain
-        implements TemplateSupport, Permissions, ShareSupport, Comparable<License>,
-                AuditableTrait {
+class License extends AbstractBaseWithCalculatedLastUpdated
+        implements AuditableSupport, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
-    @Transient
     def grailsApplication
-    @Transient
     def contextService
-    @Transient
     def accessService
-    @Transient
     def genericOIDService
-    @Transient
     def messageSource
-    @Transient
     def pendingChangeService
-    @Transient
     def changeNotificationService
-    @Transient
     def propertyService
-    @Transient
     def deletionService
+    def auditService
 
-    // AuditableTrait
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type', 'isPublicForApi' ]
+    static Log static_logger = LogFactory.getLog(License)
+
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
 
     License instanceOf
 
@@ -69,43 +63,43 @@ class License
 
     String noticePeriod
     String licenseUrl
-    String licenseType
-    //String licenseStatus
-    String impId
 
-    long lastmod
+    @RefdataAnnotation(cat = RDConstants.Y_N_U)
+    RefdataValue openEnded
+
     Date startDate
     Date endDate
 
     Date dateCreated
     Date lastUpdated
+    Date lastUpdatedCascading
 
-  static hasOne = [onixplLicense: OnixplLicense]
+    static transients = ['referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'genericLabel', 'nonDeletedDerivedLicenses'] // mark read-only accessor methods
 
   static hasMany = [
-          ids: Identifier,
-          pkgs:         Package,
-          subscriptions:Subscription,
-          documents:    DocContext,
-          orgLinks:     OrgRole,
-          prsLinks:     PersonRole,
+          ids            : Identifier,
+          pkgs           :         Package,
+          //subscriptions:Subscription,
+          documents      :    DocContext,
+          orgRelations       :     OrgRole,
+          prsLinks       :     PersonRole,
           derivedLicenses:    License,
-          pendingChanges:     PendingChange,
-          customProperties:   LicenseCustomProperty,
-          privateProperties:  LicensePrivateProperty
+          pendingChanges :     PendingChange,
+          propertySet    :   LicenseProperty,
+          //privateProperties:  LicensePrivateProperty
   ]
 
   static mappedBy = [
           ids:           'lic',
           pkgs:          'license',
-          subscriptions: 'owner',
+          //subscriptions: 'owner',
           documents:     'license',
-          orgLinks:      'lic',
+          orgRelations:      'lic',
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
           pendingChanges:  'license',
-          customProperties:  'owner',
-          privateProperties: 'owner'
+          propertySet:  'owner',
+          //privateProperties: 'owner'
   ]
 
   static mapping = {
@@ -122,68 +116,92 @@ class License
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
-            licenseType column:'lic_license_type_str'
-          //licenseStatus column:'lic_license_status_str'
-                lastmod column:'lic_lastmod'
+              openEnded column:'lic_open_ended_rv_fk'
               documents sort:'owner.id', order:'desc', batchSize: 10
-          onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
-       customProperties sort:'type', order:'desc', batchSize: 10
-      privateProperties sort:'type', order:'desc', batchSize: 10
+      lastUpdatedCascading column: 'lic_last_updated_cascading'
+
+       propertySet sort:'type', order:'desc', batchSize: 10
+    //privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 
               ids               batchSize: 10
               pkgs              batchSize: 10
-              subscriptions     batchSize: 10
-              orgLinks          batchSize: 10
+              //subscriptions     sort:'name',order:'asc', batchSize: 10
+              orgRelations          batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
   }
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:false, blank:false)
-        type(nullable:true, blank:false)
-        impId(nullable:true, blank:false)
-        reference(nullable:false, blank:false)
+        type        (nullable:true)
+        reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublicForApi (nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
-        instanceOf(nullable:true, blank:false)
-        isSlaved    (nullable:false, blank:false)
-        licenseType(nullable:true, blank:true)
-        //licenseStatus(nullable:true, blank:true)
-        lastmod(nullable:true, blank:true)
-        onixplLicense(nullable: true, blank: true)
-        licenseCategory(nullable: true, blank: true)
-        startDate(nullable: true, blank: false, validator: { val, obj ->
+        instanceOf  (nullable:true)
+        licenseCategory (nullable: true)
+        startDate(nullable: true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
             }
         })
-        endDate(nullable: true, blank: false, validator: { val, obj ->
+        endDate(nullable: true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
             }
         })
-        lastUpdated(nullable: true, blank: true)
+        lastUpdated (nullable: true)
+        lastUpdatedCascading (nullable: true)
     }
 
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges' ]
+    }
+
+    @Override
     def afterDelete() {
+        super.afterDeleteHandler()
+
         deletionService.deleteDocumentFromIndex(this.globalUID)
     }
-
     @Override
-    boolean isTemplate() {
-        return (type != null) && (type == RDStore.LICENSE_TYPE_TEMPLATE)
+    def afterInsert() {
+        super.afterInsertHandler()
+    }
+    @Override
+    def afterUpdate() {
+        super.afterUpdateHandler()
     }
 
     @Override
-    boolean hasTemplate() {
-        return instanceOf ? instanceOf.isTemplate() : false
+    def beforeInsert() {
+        if ( reference != null && !sortableReference) {
+            sortableReference = generateSortableReference(reference)
+        }
+        super.beforeInsertHandler()
+    }
+    @Override
+    def beforeUpdate() {
+        if ( reference != null && !sortableReference) {
+            sortableReference = generateSortableReference(reference)
+        }
+        Map<String, Object> changes = super.beforeUpdateHandler()
+        log.debug ("beforeUpdate() " + changes.toMapString())
+
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+    }
+    @Override
+    def beforeDelete() {
+        super.beforeDeleteHandler()
     }
 
     @Override
@@ -198,7 +216,7 @@ class License
     }
 
     boolean showUIShareButton() {
-        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        _getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
     void updateShare(ShareableTrait sharedObject) {
@@ -235,7 +253,7 @@ class License
                 }
             }
         }
-        orgLinks.each{ sharedObject ->
+        orgRelations.each{ sharedObject ->
             targets.each{ sub ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + sub)
@@ -250,21 +268,18 @@ class License
     }
 
     @Override
-    String getCalculatedType() {
-        String result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+    String _getCalculatedType() {
+        String result = CalculatedType.TYPE_UNKOWN
 
-        if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        if (getLicensingConsortium() && ! instanceOf) {
+            result = CalculatedType.TYPE_CONSORTIAL
         }
-        else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
-        }
-        else if(getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf && ! hasTemplate()) {
+        else if (getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf) {
             // current and deleted member licenses
-            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+            result = CalculatedType.TYPE_PARTICIPATION
         }
-        else if(! getLicensingConsortium() && getAllLicensee() && ! isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        else if (! getLicensingConsortium()) {
+            result = CalculatedType.TYPE_LOCAL
         }
         result
     }
@@ -272,10 +287,10 @@ class License
     List<Org> getDerivedLicensees() {
         List<Org> result = []
 
-        License.findAllByInstanceOf(this).each { l ->
+        License.findAllByInstanceOf(this).each { License l ->
             List<OrgRole> ors = OrgRole.findAllWhere( lic: l )
-            ors.each { or ->
-                if (or.roleType?.value in ['Licensee', 'Licensee_Consortial']) {
+            ors.each { OrgRole or ->
+                if (or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]) {
                     result << or.org
                 }
             }
@@ -284,9 +299,9 @@ class License
     }
 
     // used for views and dropdowns
-    def getReferenceConcatenated() {
-        def cons = getLicensingConsortium()
-        def subscr = getAllLicensee()
+    String getReferenceConcatenated() {
+        Org cons = getLicensingConsortium()
+        List<Org> subscr = getAllLicensee()
         if (subscr) {
             "${reference} (" + subscr.join(', ') + ")"
         }
@@ -300,8 +315,8 @@ class License
 
     Org getLicensingConsortium() {
         Org result
-        orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensing Consortium'] )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_LICENSING_CONSORTIUM )
                 result = or.org
             }
         result
@@ -309,62 +324,57 @@ class License
 
     Org getLicensor() {
         Org result
-        orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensor'] )
-                result = or.org;
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType == RDStore.OR_LICENSOR )
+                result = or.org
         }
         result
     }
 
     Org getLicensee() {
         Org result
-        orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
-                result = or.org;
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] )
+                result = or.org
         }
         result
     }
     List<Org> getAllLicensee() {
         List<Org> result = []
-        orgLinks.each { or ->
-            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+        orgRelations.each { OrgRole or ->
+            if ( or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] )
                 result << or.org
         }
         result
   }
 
-  @Transient
-  def getLicenseType() {
-    return type?.value
-  }
-
-    DocContext getNote(domain) {
+    DocContext getNote(String domain) {
         DocContext.findByLicenseAndDomain(this, domain)
     }
 
-  void setNote(domain, note_content) {
-      DocContext note = DocContext.findByLicenseAndDomain(this, domain)
-    if ( note ) {
-      log.debug("update existing note...");
-      if ( note_content == '' ) {
-        log.debug("Delete note doc ctx...");
-        note.delete();
-        note.owner.delete(flush:true);
+  void setNote(String domain, String note_content) {
+      withTransaction {
+          DocContext note = DocContext.findByLicenseAndDomain(this, domain)
+          if (note) {
+              log.debug("update existing note...");
+              if (note_content == '') {
+                  log.debug("Delete note doc ctx...");
+                  note.delete()
+                  note.owner.delete()
+              } else {
+                  note.owner.content = note_content
+                  note.owner.save()
+              }
+          } else {
+              log.debug("Create new note...");
+              if ((note_content) && (note_content.trim().length() > 0)) {
+                  Doc doc = new Doc(content: note_content, lastUpdated: new Date(), dateCreated: new Date())
+                  DocContext newctx = new DocContext(license: this, owner: doc, domain: domain)
+                  doc.save()
+                  newctx.save()
+              }
+          }
       }
-      else {
-        note.owner.content = note_content
-        note.owner.save(flush:true);
-      }
-    }
-    else {
-      log.debug("Create new note...");
-      if ( ( note_content ) && ( note_content.trim().length() > 0 ) ) {
-          Doc doc = new Doc(content:note_content, lastUpdated:new Date(), dateCreated: new Date())
-          DocContext newctx = new DocContext(license: this, owner: doc, domain:domain)
-        doc.save();
-        newctx.save(flush:true);
-      }
-    }
   }
 
     String getGenericLabel() {
@@ -387,7 +397,7 @@ class License
             return true
         }
 
-        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg()?.id)) {
+        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
 
             OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
@@ -413,7 +423,8 @@ class License
 
   @Override
   boolean equals (Object o) {
-    def obj = ClassUtils.deproxy(o)
+    //def obj = ClassUtils.deproxy(o)
+    def obj = GrailsHibernateUtil.unwrapIfProxy(o)
     if (obj != null) {
       if ( obj instanceof License ) {
         return obj.id == id
@@ -434,8 +445,8 @@ class License
 
 
     @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log.debug("notifyDependencies_trait(${changeDocument})")
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
         // Find any licenses derived from this license
@@ -470,7 +481,7 @@ class License
                         dl,
                         dl.getLicensee(),
                               [
-                                changeTarget:"com.k_int.kbplus.License:${dl.id}",
+                                changeTarget:"${License.class.name}:${dl.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                               ],
@@ -486,8 +497,7 @@ class License
 
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
-            def user = null
-            pendingChangeService.performAccept(spc, user)
+            pendingChangeService.performAccept(spc)
         }
     }
 
@@ -495,35 +505,56 @@ class License
         License.where{ instanceOf == this }
     }
 
-    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        Map<String, Object> result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
+    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
+        Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name, [sort:'name', order:'asc'])
         groups.each{ it ->
 
             // cons_members
-            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
+            if (this.instanceOf) {
+                Long licId
+                if(this.getLicensingConsortium().id == contextOrg.id)
+                    licId = this.instanceOf.id
+                else licId = this.id
+                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: licId,ctxOrg:contextOrg])
+                PropertyDefinitionGroupBinding binding = null
+                if(bindings)
+                    binding = bindings.get(0)
 
                 // global groups
                 if (it.tenant == null) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg?.id) {
+                if (it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        if(contextOrg.id == this.getLicensingConsortium().id) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                        else {
+                            result.local << [it, binding] // TODO: remove
+                            result.sorted << ['local', it, binding]
+                        }
+                    }
+                    else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
                 // licensee consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.instanceOf.getLicensingConsortium()?.id) {
+                else if (it.tenant?.id == this.getLicensingConsortium().id) {
                     if (binding) {
-                        result.member << [it, binding]
+                        result.member << [it, binding] // TODO: remove
+                        result.sorted << ['member', it, binding]
                     }
                 }
             }
@@ -531,42 +562,22 @@ class License
             else {
                 PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
                     if (binding) {
-                        result.local << [it, binding]
+                        result.local << [it, binding] // TODO: remove
+                        result.sorted << ['local', it, binding]
                     } else {
-                        result.global << it
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
                     }
                 }
             }
         }
 
         // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
 
         result
-    }
-
-    @Override
-    def beforeInsert() {
-         if ( reference != null && !sortableReference) {
-            sortableReference = generateSortableReference(reference)
-        }
-        if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
-        }
-        super.beforeInsert()
-    }
-
-    @Override
-    def beforeUpdate() {
-        if ( reference != null && !sortableReference) {
-            sortableReference = generateSortableReference(reference)
-        }
-        if (impId == null) {
-            impId = java.util.UUID.randomUUID().toString();
-        }
-        super.beforeUpdate()
     }
 
 
@@ -584,231 +595,6 @@ class License
     result
   }
 
-  /*
-    Following getter methods were introduced to avoid making too many changes when custom properties 
-    were introduced.
-  */
-  @Transient
-  def getConcurrentUserCount(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Concurrent Users")
-  }
-  
-  @Transient
-  def setConcurrentUserCount(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Concurrent Users",newVal)
-  }
-
-  @Transient
-  def getConcurrentUsers(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Concurrent Access")
-  }  
-    @Transient
-  def setConcurrentUsers(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Concurrent Access",newVal)
-  }
-  
-  @Transient
-  def getRemoteAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Remote Access")
-  }
-  
-  @Transient
-  def setRemoteAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Remote Access",newVal)
-  }
-  
-  @Transient
-  def getWalkinAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Walk In Access")
-  }
-  
-  @Transient
-  def setWalkinAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Walk In Access",newVal)
-  }
-  
-  @Transient
-  def getMultisiteAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Multi Site Access")
-  }
-  
-  @Transient
-  def setMultisiteAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Multi Site Access",newVal)
-  }
-  
-  @Transient
-  def getPartnersAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Partners Access")
-  }
-  
-  @Transient
-  def setPartnersAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Partners Access",newVal)
-  }
- 
-  @Transient
-  def getAlumniAccess(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Alumni Access")
-  }
- 
-  @Transient
-  def setAlumniAccess(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Alumni Access",newVal)
-  }
-  @Transient
-  def getIll(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("ILL - InterLibraryLoans")
-  }
-
-  @Transient
-  def setIll(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("ILL - InterLibraryLoans",newVal)
-  }
-  @Transient
-  def getCoursepack(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Include In Coursepacks")
-  }
-
-  @Transient
-  def setCoursepack(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Include In Coursepacks",newVal)
-  }
-  
-  @Transient
-  def getVle(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Include in VLE")
-  }
-  
-  @Transient
-  def setVle(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Include in VLE",newVal)
-  }
-
-  @Transient
-  def getEnterprise(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Enterprise Access")
-  }
-  @Transient
-  def setEnterprise(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Enterprise Access",newVal)
-
-  }
-
-  @Transient
-  def getPca(){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    return getCustomPropByName("Post Cancellation Access Entitlement")
-  }
-
-  @Transient
-  def setPca(newVal){
-    log.error("called cust prop with deprecated method.Call should be replaced")
-    setReferencePropertyAsCustProp("Post Cancellation Access Entitlement",newVal)
-  }
-
-  @Transient
-  def setReferencePropertyAsCustProp(custPropName, newVal) {
-    def custProp = getCustomPropByName(custPropName)
-    if(custProp == null){
-      def type = PropertyDefinition.findWhere(name: custPropName, tenant: null)
-      custProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, this, type)
-    }
-
-    if ( newVal != null ) {
-      custProp.refValue = genericOIDService.resolveOID(newVal)
-    }
-    else {
-      custProp.refValue = null;
-    }
-
-    custProp.save()
-   
-  }
-
-  
-  @Transient
-  def getCustomPropByName(name){
-    return customProperties.find{it.type.name == name}    
-  }
-
-  static def refdataFind(params) {
-
-      String INSTITUTIONAL_LICENSES_QUERY = """
- FROM License AS l WHERE
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) )
-AND lower(l.reference) LIKE (:ref)
-"""
-      def result = []
-      def ql
-
-        // TODO: ugly select2 fallback
-      def roleTypes = []
-      if (params.'roleTypes[]') {
-          params.'roleTypes[]'.each{ x -> roleTypes << x.toLong() }
-      } else {
-          roleTypes << params.roleType?.toLong()
-      }
-
-      ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",
-        [orgId: params.inst?.toLong(), orgRoles: roleTypes, ref: "${params.q.toLowerCase()}"])
-
-
-      if ( ql ) {
-          ql.each { lic ->
-              def type = lic.type?.value ?"(${lic.type.value})":""
-              result.add([id:"${lic.reference}||${lic.id}",text:"${lic.reference}${type}"])
-          }
-      }
-      result
-  }
-
-    def getBaseCopy() {
-
-        def copy = new License(
-                //globalUID: globalUID,
-                status: status, // fk
-                type: type, // fk
-                reference: reference,
-                sortableReference: sortableReference,
-                licenseCategory: licenseCategory, // fk
-                noticePeriod: noticePeriod,
-                licenseUrl: licenseUrl,
-                licenseType: licenseType,
-                licenseStatus: licenseStatus,
-                //impId: impId,
-                //lastmod: lastmod,
-                startDate: startDate,
-                endDate: endDate,
-                dateCreated: dateCreated,
-                lastUpdated: lastUpdated,
-                onixplLicense: onixplLicense // fk
-        )
-
-        copy
-    }
     String dropdownNamingConvention() {
         String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
 
@@ -819,10 +605,18 @@ AND lower(l.reference) LIKE (:ref)
 
         String result = ''
         result += reference + " - " + statusString + " " + period
-        if (TemplateSupport.CALCULATED_TYPE_PARTICIPATION == getCalculatedType()) {
+        if (CalculatedType.TYPE_PARTICIPATION == _getCalculatedType()) {
             result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 
         return result
+    }
+
+    Set<Subscription> getSubscriptions() {
+        Set<Subscription> result = []
+        Links.findAllBySourceAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.destination)
+        }
+        result
     }
 }

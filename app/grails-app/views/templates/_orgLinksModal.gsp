@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
@@ -8,7 +9,7 @@
         <h3>DEPRECATED</h3>
 
         <div class="field">
-            <table id="org_role_tab" class="ui celled la-table la-table-small table">
+            <table id="org_role_tab" class="ui celled la-table compact table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>
@@ -25,14 +26,14 @@
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.getByDesc(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE), linkType)}"
+                      from="${RefdataValue.findAllByOwnerAndGroup(RefdataCategory.getByDesc(RDConstants.ORGANISATIONAL_ROLE), linkType)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:if>
             <g:else>
                 <g:select name="orm_orgRole"
                       noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.ORGANISATIONAL_ROLE)}"
+                      from="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"/>
             </g:else>

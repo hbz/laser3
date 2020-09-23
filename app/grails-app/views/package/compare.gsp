@@ -1,5 +1,5 @@
+<%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
-<r:require module="scaffolding" />
 <html>
   <head>
     <meta name="layout" content="semanticUI">
@@ -208,7 +208,7 @@
 		<tr>
 			
 			<td>
-				<semui:listIcon type="${currentTitle[0]?.type?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
+				<semui:listIcon type="${currentTitle[0].medium?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
@@ -258,7 +258,7 @@
 		 pkgBName:pkgInsts.get(1).name ]"/>
 </g:each>
 
-<r:script language="JavaScript">
+<r:script>
     function applySelect2(filter) {
       var pkgA = {id:'${pkgInsts?.get(0)?.id}',text:"${pkgInsts?.get(0)?.name}"};
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};
@@ -282,7 +282,7 @@
                 	endDate: $("#end"+filter).val(),
                     q: term , // search term
                     page_limit: 10,
-                    baseClass:'com.k_int.kbplus.Package'
+                    baseClass:'${Package.class.name}'
                 };
             },
             

@@ -5,9 +5,13 @@ access.method.ip,Access Method IP,Access Method IP
 access.point.type,Access Point Type,Access Point Type
 address.type,Art der Adresse,Address Type
 authority,Autorität,Authority
-category.a.f,Kategorie A - F,Category A-F
-cluster.role,Cluster Role,Cluster Role
-cluster.type,Cluster Type,Cluster Type
+category.a.f,Preiskategorie Beck,Price category Beck
+category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
+category.euromonitor,Preiskategorie Euromonitor,Price category Euromonitor
+category.igi,Preiskategorie IGI InfoSci Journals,Price category IGI InfoSci Journals
+category.juris,Preiskategorie juris,Price category juris
+category.unwto,Preiskategorie UNWTO,Price category UNWTO
+category.world.bank,Preiskategorie World Bank,Price category World Bank
 combo.status,Combo Status,Combo Status
 combo.type,Combo Type,Combo Type
 concurrent.access,SimUser,Concurrent Access
@@ -21,15 +25,15 @@ cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
 cost.item.type,Typ,Type
 country,Land,Country
-creator.type,Creator Type,Creator Type
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
+dbs.subject.group, DBS Fächergruppe, DBS Subject Group
 existence,Vorliegen,Existence
+external.internal,Extern und intern,External and internal
 fact.metric,FactMetric,FactMetric
 fact.type,FactType,FactType
-federal.state,Bundesland,Federal State
 filter.fake.values,filter.fake.values,filter.fake.values
 funder.type,Trägerschaft,Funder Type
 funder.hsk.type,Trägerschaft,Funder Type HSK
@@ -55,21 +59,22 @@ license.arc.hosting.solution,Hostingrecht Lösung,Hosting Solution
 license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
 license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
 license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
-license.category,Lizenzkategorie,LicenseCategory
+license.category,Vertragskategorie,LicenseCategory
 license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
 license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
 license.oa.license.to.publish,Publikationslizenz,License to Publish
 license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
 license.oa.repository,Repositorium,Repository
-license.oa.type,Open-Acces Typ,Open Acces Type
-license.remote.access,Lincense.RemoteAccess,Lincense.RemoteAccess
+license.oa.type,Open Access Typ,Open Access Type
+license.remote.access,License.RemoteAccess,License.RemoteAccess
 license.remote.access2,Remote-Zugriff,Remote Access
 license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
 license.statistics.format,Statistik Auslieferungsformat,Statistics Format
 license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
-license.status,Lizenzstatus,License Status
+license.status,Vertragsstatus,License Status
+license.structure,Vertragskonstruktion,License Structure
 license.type,Lizenztyp,License Type
 link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
@@ -86,7 +91,9 @@ package.list.status,Package.ListStatus,Package.ListStatus
 package.scope,Package.Scope,Package.Scope
 package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
+package.content.type,Package Content Type,Package Content Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
+pending.change.configuration.setting,Änderungseinstellung,Pending Change Configuration Setting
 permissions,Berechtigungen,Permissions
 person.contact.type,Kontaktart,Person: Contact Type
 person.function,Funktion,Person Function
@@ -102,7 +109,7 @@ reminder.unit,ReminderUnit,ReminderUnit
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
-subjectGroup,Fächergruppe,Subject Group
+subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status

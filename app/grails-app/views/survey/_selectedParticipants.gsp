@@ -1,10 +1,10 @@
 <br>
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                          tmplConfigShow      : [['name', 'libraryType'], ['region', 'libraryNetwork', 'property']],
                           tmplConfigFormFilter: true,
                           useNewLayouter      : true
                   ]"/>
@@ -20,11 +20,11 @@
            value="${selectedParticipants?.findAll{ it?.hasAccessOrg() }?.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
-        <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id)?.join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal4"
-                class="ui icon button right floated trigger-modal">
+    <g:if test="${surveyParticipantsHasAccess}">
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-        </g:link>
+        </a>
+    </g:if>
     </div>
     <br>
     <br>
@@ -42,11 +42,11 @@
            value="${selectedParticipants.findAll{ !it?.hasAccessOrg() }.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
-        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id)?.join(',')}"
-                data-targetId="copyEmailaddresses_ajaxModal5"
-                class="ui icon button right floated trigger-modal">
+    <g:if test="${surveyParticipantsHasNotAccess}">
+        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-        </g:link>
+        </a>
+    </g:if>
     </div>
 
     <br>

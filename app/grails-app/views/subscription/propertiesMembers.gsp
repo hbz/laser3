@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.AuditConfig" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -39,7 +39,7 @@
 <semui:filter>
     <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
-        <g:render template="../templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
         <div class="field la-field-right-aligned">
             <a href="${request.forwardURI}"
@@ -58,9 +58,9 @@
 
     <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
+    <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
         <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+        <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                 var="refdataValue">
             <g:set var="refdataValues"
                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
@@ -128,11 +128,11 @@
             <td>${parentSub.name}</td>
 
             <td>
-                <g:formatDate formatName="default.date.format.notime" date="${parentSub?.startDate}"/>
+                <g:formatDate formatName="default.date.format.notime" date="${parentSub.startDate}"/>
                 <semui:auditButton auditable="[parentSub, 'startDate']"/>
             </td>
             <td>
-                <g:formatDate formatName="default.date.format.notime" date="${parentSub?.endDate}"/>
+                <g:formatDate formatName="default.date.format.notime" date="${parentSub.endDate}"/>
                 <semui:auditButton auditable="[parentSub, 'endDate']"/>
             </td>
             <td>
@@ -147,13 +147,13 @@
                         <div class="item">
 
                             <div class="right floated content">
-                                <semui:totalNumber total="${parentSub.customProperties?.size()}"/>
+                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.tenant.id == institution.id && it.type == filterPropDef }.size()}"/>
                             </div>
 
                             <g:set var="customProperty"
-                                   value="${parentSub.customProperties.find { it.type == filterPropDef }}"/>
+                                   value="${parentSub.propertySet.find { it.tenant.id == institution.id && it.type == filterPropDef }}"/>
                             <g:if test="${customProperty}">
-                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
+                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                 <div class="content">
 
@@ -215,11 +215,11 @@
                         <div class="item">
 
                             <div class="right floated content">
-                                <semui:totalNumber total="${parentSub.privateProperties?.size()}"/>
+                                <semui:totalNumber total="${parentSub.propertySet.findAll{ it.type == filterPropDef }.size()}"/>
                             </div>
 
                             <g:set var="privateProperty"
-                                   value="${parentSub.privateProperties.find { it.type == filterPropDef }}"/>
+                                   value="${parentSub.propertySet.find { it.type == filterPropDef }}"/>
                             <g:if test="${privateProperty}">
                                 <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
@@ -313,12 +313,13 @@
 
 
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-                <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                    <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                             var="refdataValue">
-                        <g:set var="refdataValues"
-                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                        <g:if test="${refdataValue.getI10n('value')}">
+                            <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                        </g:if>
                     </g:each>
 
                     (${refdataValues.join('/')})
@@ -328,10 +329,10 @@
 
             <div class="field required">
                 <label for="filterPropValue">${message(code: 'subscription.property.value')}</label>
-                <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
+                              from="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
                               name="filterPropValue" value=""
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
@@ -370,21 +371,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${filteredSubChilds}" status="i" var="zeile">
-                    <g:set var="sub" value="${zeile.sub}"/>
+                <g:each in="${filteredSubChilds}" status="i" var="sub">
+                    <g:set var="subscr" value="${sub.getSubscriber()}"/>
                     <tr>
                         <td>
                             <g:checkBox name="selectedMembers" value="${sub.id}" checked="false"/>
                         </td>
                         <td>${i + 1}</td>
-                        <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
-                        <g:each in="${filteredSubscribers}" var="subscr">
-                            <td>
-                                ${subscr.sortname}
-                            </td>
-                            <td>
-                                <g:link controller="organisation" action="show"
-                                        id="${subscr.id}">${subscr}</g:link>
+                        <td>
+                            ${subscr.sortname ?: subscr.name}
+                        </td>
+                        <td>
+                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                                 <g:if test="${sub.isSlaved}">
                                     <span data-position="top right"
@@ -394,12 +392,13 @@
                                     </span>
                                 </g:if>
 
+                                <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                          data-content="${subscr.getCustomerTypeI10n()}">
+                                        <i class="chess rook grey icon"></i>
+                                    </span>
+                                </g:if>
                             </td>
-                        </g:each>
-                        <g:if test="${!sub.getAllSubscribers()}">
-                            <td></td>
-                            <td></td>
-                        </g:if>
 
                         <td>
                             <semui:xEditable owner="${sub}" field="startDate" type="date"
@@ -430,11 +429,11 @@
                                     <div class="item">
 
                                         <div class="right floated content">
-                                            <semui:totalNumber total="${sub.customProperties?.size()}"/>
+                                            <semui:totalNumber total="${sub.propertySet.findAll{it.type.tenant == null && it.tenant == institution}.size()}"/>
                                         </div>
 
                                         <g:set var="customProperty"
-                                               value="${sub.customProperties.find { it.type == filterPropDef }}"/>
+                                               value="${sub.propertySet.find { it.type.tenant == null && it.tenant == institution && it.type == filterPropDef }}"/>
                                         <g:if test="${customProperty}">
                                             <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
@@ -495,10 +494,10 @@
                                     <div class="item">
 
                                         <g:set var="privateProperty"
-                                               value="${sub.privateProperties.find { it.type == filterPropDef }}"/>
+                                               value="${sub.propertySet.findAll { it.type == filterPropDef }}"/>
 
                                         <div class="right floated content">
-                                            <semui:totalNumber total="${sub.privateProperties?.size()}"/>
+                                            <semui:totalNumber total="${sub.propertySet.findAll{ it.type == filterPropDef }.size()}"/>
                                         </div>
 
                                         <g:if test="${privateProperty}">
@@ -589,7 +588,7 @@
 
 <div id="magicArea"></div>
 
-<r:script language="JavaScript">
+<r:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)

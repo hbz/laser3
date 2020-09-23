@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue; de.laser.AuditConfig; com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -109,7 +109,7 @@
                     </tr>
                     </thead>
                     <tbody>
-
+                    <tr>
                     <td>${parentSub.name}</td>
 
                     <td>
@@ -160,6 +160,7 @@
             <div class="ui segment">
                 <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form">
                     <g:hiddenField name="id" value="${params.id}"/>
+                    <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
                     <h4>${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>
 
@@ -175,7 +176,7 @@
                             <%
                                 def fakeList = []
                                 fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                                fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
+                                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                             %>
                             <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                                           noSelection="${['': '']}"
@@ -186,6 +187,14 @@
                             <label>${message(code: 'subscription.kind.label')}</label>
                             <laser:select name="kind"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
+                        <div class="field">
+                            <label>${message(code: 'subscription.form.label')}</label>
+                            <laser:select name="form"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                           optionKey="id" optionValue="value" noSelection="${['': '']}"
                                           value="${['': '']}"/>
                         </div>
@@ -271,6 +280,12 @@
                                                   class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                                 <i class="thumbtack blue icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                  data-content="${subscr.getCustomerTypeI10n()}">
+                                                <i class="chess rook grey icon"></i>
                                             </span>
                                         </g:if>
 
@@ -403,6 +418,13 @@
                                                     </span>
                                                 </g:if>
 
+                                                <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                                          data-content="${subscr.getCustomerTypeI10n()}">
+                                                        <i class="chess rook grey icon"></i>
+                                                    </span>
+                                                </g:if>
+
                                             </td>
                                         </g:each>
                                         <g:if test="${!sub.getAllSubscribers()}">
@@ -414,7 +436,7 @@
                                                 <div class="content">
                                                     <g:render template="/templates/links/orgLinksAsList"
                                                               model="${[roleLinks    : sub.orgRelations?.findAll {
-                                                                  !(it.org?.id == contextService.getOrg()?.id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])
+                                                                  !(it.org?.id == contextService.getOrg().id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])
                                                               }.sort { it?.org?.sortname },
                                                                         roleObject   : sub,
                                                                         roleRespValue: 'Specific subscription editor',
@@ -446,7 +468,7 @@
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <g:render template="/templates/documents/table"
-                          model="${[instance: parentSub, context: 'documents', redirect: 'documents', owntp: 'subscription']}"/>
+                          model="${[instance: parentSub, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
             </div>
 
             <div class="ui segment">
@@ -478,7 +500,7 @@
                             </g:if>
                             <td>
                                 <g:render template="/templates/documents/table"
-                                          model="${[instance: sub, context: 'documents', redirect: 'documents', owntp: 'subscription']}"/>
+                                          model="${[instance: sub, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
 
                             </td>
                             <td class="x">
@@ -498,7 +520,7 @@
             <div class="ui segment ">
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
-                <g:render template="/templates/notes/table" model="${[instance: parentSub, redirect: 'notes']}"/>
+                <g:render template="/templates/notes/table" model="${[instance: parentSub, redirect: 'subscriptionPropertiesMembers']}"/>
             </div>
 
             <div class="ui segment">
@@ -530,7 +552,7 @@
                             </g:if>
                             <td>
                                 <g:render template="/templates/notes/table"
-                                          model="${[instance: sub, redirect: 'notes']}"/>
+                                          model="${[instance: sub, redirect: 'subscriptionPropertiesMembers']}"/>
 
                             </td>
                             <td class="x">
@@ -561,7 +583,7 @@
                     </tr>
                     </thead>
                     <tbody>
-
+                    <tr>
                     <td>${parentSub.name}</td>
 
                     <td>
@@ -621,6 +643,13 @@
                                               class="la-popup-tooltip la-delay"
                                               data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                             <i class="thumbtack blue icon"></i>
+                                        </span>
+                                    </g:if>
+
+                                    <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                              data-content="${subscr.getCustomerTypeI10n()}">
+                                            <i class="chess rook grey icon"></i>
                                         </span>
                                     </g:if>
 

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue;de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 <g:set var="subscriptionService" bean="subscriptionService"/>
 
@@ -14,6 +14,15 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+    <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
+    </g:if>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -35,14 +44,21 @@
     <div class="sixteen wide stretched column">
         <div class="ui top attached tabular menu">
 
-            <a class="item active" data-tab="participantsViewAllFinish">
+
+            <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
+                <a class="item active" data-tab="surveyConfigsView">
+                ${message(code: 'surveyEvaluation.label')}
+                </a>
+            </g:if>
+
+            <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
                 ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                <div class="ui floating circular label">${participantsFinish?.size() ?: 0}</div>
+                <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
             </a>
 
             <a class="item" data-tab="participantsViewAllNotFinish">
                 ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                <div class="ui floating circular label">${participantsNotFinish?.size() ?: 0}</div>
+                <div class="ui floating circular label">${participantsNotFinish.size() ?: 0}</div>
             </a>
 
             <a class="item" data-tab="participantsView">
@@ -52,13 +68,25 @@
 
         </div>
 
+        <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
+            <div class="ui bottom attached tab segment active" data-tab="surveyConfigsView">
 
-        <div class="ui bottom attached tab segment active" data-tab="participantsViewAllFinish">
+                <g:if test="${surveyConfig}">
+
+                    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+                        <g:render template="evaluationSubscription" />
+                    </g:if>
+
+                </g:if>
+            </div>
+        </g:if>
+
+        <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
 
                 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
-                        total="${participantsFinish?.size()}"/></h2>
-                <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_IN_EVALUATION?.id}">
-                                <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig?.id}"
+                        total="${participantsFinish.size()}"/></h2>
+                <g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
+                                <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig.id}"
                                         class="ui icon button right floated">
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
                                 </g:link>
@@ -70,16 +98,16 @@
                     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${participantsFinish?.findAll { it?.hasAccessOrg() }?.sort {
+                           value="${participantsFinish.findAll { it?.hasAccessOrg() }?.sort {
                                it?.sortname
                            }}"/>
 
                     <div class="four wide column">
-                        <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id).join(',')}"
-                                data-targetId="copyEmailaddresses_ajaxModal2"
-                                class="ui icon button right floated trigger-modal">
+                    <g:if test="${surveyParticipantsHasAccess}">
+                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                        </g:link>
+                        </a>
+                    </g:if>
                     </div>
 
                     <br>
@@ -137,8 +165,8 @@
                                 </td>
                                 <td>
 
-                                    <g:link action="showEntitlementsRenew"
-                                            id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                    <g:link action="surveyTitlesSubscriber"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
                                     </g:link>
@@ -156,11 +184,11 @@
                     <g:set var="surveyParticipantsHasNotAccess" value="${participantsFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                     <div class="four wide column">
-                        <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
-                                data-targetId="copyEmailaddresses_ajaxModal3"
-                                class="ui icon button right floated trigger-modal">
+                    <g:if test="${surveyParticipantsHasNotAccess}">
+                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                        </g:link>
+                        </a>
+                    </g:if>
                     </div>
 
                     <br>
@@ -214,8 +242,8 @@
                                 </td>
                                 <td>
 
-                                    <g:link action="showEntitlementsRenew"
-                                            id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                    <g:link action="surveyTitlesSubscriber"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                             class="ui icon button"><i
                                             class="write icon"></i>
                                     </g:link>
@@ -247,11 +275,11 @@
                        }}"/>
 
                 <div class="four wide column">
-                    <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal4"
-                            class="ui icon button right floated trigger-modal">
+                <g:if test="${surveyParticipantsHasAccess}">
+                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                         <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                    </g:link>
+                    </a>
+                </g:if>
                 </div>
 
                 <br>
@@ -308,8 +336,8 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                <g:link action="surveyTitlesSubscriber"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -327,11 +355,11 @@
                 <g:set var="surveyParticipantsHasNotAccess" value="${participantsNotFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                 <div class="four wide column">
-                    <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal5"
-                            class="ui icon button right floated trigger-modal">
+                <g:if test="${surveyParticipantsHasNotAccess}">
+                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                         <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                    </g:link>
+                    </a>
+                </g:if>
                 </div>
 
                 <br>
@@ -385,8 +413,8 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                <g:link action="surveyTitlesSubscriber"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -418,11 +446,11 @@
                        }}"/>
 
                 <div class="four wide column">
-                    <g:link data-orgIdList="${(surveyParticipantsHasAccess?.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal6"
-                            class="ui icon button right floated trigger-modal">
+                <g:if test="${surveyParticipantsHasAccess}">
+                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                         <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                    </g:link>
+                    </a>
+                </g:if>
                 </div>
 
                 <br>
@@ -479,8 +507,8 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                <g:link action="surveyTitlesSubscriber"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>
@@ -498,11 +526,11 @@
                 <g:set var="surveyParticipantsHasNotAccess" value="${participants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                 <div class="four wide column">
-                    <g:link data-orgIdList="${(surveyParticipantsHasNotAccess?.id).join(',')}"
-                            data-targetId="copyEmailaddresses_ajaxModal7"
-                            class="ui icon button right floated trigger-modal">
+                <g:if test="${surveyParticipantsHasNotAccess}">
+                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                         <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                    </g:link>
+                    </a>
+                </g:if>
                 </div>
 
                 <br>
@@ -556,8 +584,8 @@
                             </td>
                             <td>
 
-                                <g:link action="showEntitlementsRenew"
-                                        id="${surveyConfig?.id}" params="[participant: participant?.id]"
+                                <g:link action="surveyTitlesSubscriber"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
                                         class="ui icon button"><i
                                         class="write icon"></i>
                                 </g:link>

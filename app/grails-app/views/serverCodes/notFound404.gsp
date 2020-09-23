@@ -22,7 +22,7 @@
 
                 <p>
                     <button class="ui button"
-                            onclick="javascript:window.history.back()">${message(code: 'default.button.back')}</button>
+                            onclick="window.history.back()">${message(code: 'default.button.back')}</button>
                 </p>
             </div>
         </g:if>

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address;de.laser.helper.RDConstants;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Address;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataValue" %>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
 	<label for="type">
@@ -6,7 +6,7 @@
 
 	</label>
 	<laser:select class="ui dropdown" id="type" name="type.id"
-				  from="${com.k_int.kbplus.Address.getAllRefdataValues()}"
+				  from="${Address.getAllRefdataValues()}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.type?.id}"
@@ -18,7 +18,7 @@
         <g:message code="address.prs.label" />
 
     </label>
-    <g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+    <g:select id="prs" name="prs.id" from="${Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
@@ -65,11 +65,12 @@
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
-	<label for="state">
-		<g:message code="address.state.label" />
+	<label for="region">
+		<g:message code="address.region.label" />
 	</label>
-	<laser:select class="ui dropdown" id="state" name="state.id"
-				  from="${RefdataCategory.getAllRefdataValues(RDConstants.FEDERAL_STATE)}"
+	<laser:select class="ui dropdown" id="region" name="region.id"
+				  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
+                                                               RDConstants.REGIONS_CH])}"
 				  optionKey="id"
 				  optionValue="value"
 				  value="${addressInstance?.state?.id}"

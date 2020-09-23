@@ -2,7 +2,6 @@ package com.k_int.kbplus.auth
 
 import com.k_int.kbplus.Org
 import org.apache.commons.lang.builder.HashCodeBuilder
-
 import javax.persistence.Transient
 
 class UserOrg implements Comparable {
@@ -25,6 +24,8 @@ class UserOrg implements Comparable {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['sortString'] // mark read-only accessor methods
+
     static mapping = {
         cache true
         lastUpdated     column: 'uo_last_updated'
@@ -32,11 +33,11 @@ class UserOrg implements Comparable {
     }
 
     static constraints = {
-        dateActioned    (nullable: true)
-        dateRequested   (nullable: true)
-        formalRole      (nullable: true)
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        dateActioned    nullable: true
+        dateRequested   nullable: true
+        formalRole      nullable: true
+        lastUpdated     nullable: true
+        dateCreated     nullable: true
     }
 
     @Transient

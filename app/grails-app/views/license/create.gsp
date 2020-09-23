@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title><g:message code="default.edit.label" args="[entityName ?: message(code:'license.label')]" /></title>
+    <title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName ?: message(code:'license.label')]" /></title>
   </head>
   <body>
 
@@ -13,6 +13,7 @@
 
         <p>${message(code:'license.create.note')}</p>
 
+    <%--
         <semui:simpleForm action="processNewTemplateLicense" method="get">
             <div class="field">
                 <label>${message(code:'license.create.ref')}</label>
@@ -22,6 +23,7 @@
                 <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label')}"/>
             </div>
         </semui:simpleForm>
+    --%>
 
   </body>
 </html>

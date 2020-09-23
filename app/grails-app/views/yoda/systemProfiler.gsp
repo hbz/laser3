@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Org" %>
 <!doctype html>
 <html>
 <head>
@@ -13,6 +14,18 @@
 <br>
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemProfiler')}</h2>
 
+    <div class="ui la-float-right">
+        <g:select name="archive" id="archive" class="ui dropdown"
+                  from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
+        <script>
+            $('#archive').on('change', function() {
+                var selection = $(this).val()
+                var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
+                window.location.href = link
+            })
+        </script>
+    </div>
+
     <div class="ui secondary pointing tabular menu">
         <a data-tab="first" class="item active">Global</a>
         <a data-tab="second" class="item">Kontextbezogen</a>
@@ -20,9 +33,7 @@
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
 
-        <br />
-
-        <table class="ui celled la-table la-table-small table" id="globalTable">
+        <table class="ui celled la-table compact table" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -77,14 +88,13 @@
     </div>
     <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-        <br />
         <g:select id="filterTable" name="filterTable" class="ui dropdown search"
-                  from="${contextStats.collect{com.k_int.kbplus.Org.get(it[3])}.unique()}"
+                  from="${contextStats.collect{Org.get(it[3])}.unique()}"
                   optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"
                   noSelection="['':'Alle anzeigen']"
         />
 
-        <table class="ui celled la-table la-table-small table" id="contextTable">
+        <table class="ui celled la-table compact table" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -98,7 +108,7 @@
             <g:each in="${contextStats}" var="bench">
                 <tr data-uri="${bench[0]}" data-context="${bench[3]}">
                     <td data-uri="${bench[0]}">${bench[0]}</td>
-                    <td data-context="${bench[3]}">${com.k_int.kbplus.Org.get(bench[3]).getDesignation()}</td>
+                    <td data-context="${bench[3]}">${Org.get(bench[3]).getDesignation()}</td>
                     <td>${bench[4]}</td>
                     <td>${((double) bench[1] / 1000).round(2)}</td>
                     <td>${((double) bench[2] / 1000).round(2)}</td>

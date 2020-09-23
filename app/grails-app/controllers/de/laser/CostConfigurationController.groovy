@@ -2,8 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import de.laser.finance.CostItem
+import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
 class CostConfigurationController {
@@ -79,7 +82,7 @@ class CostConfigurationController {
                 log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
             }
         }
-        else ciec.save()
+        else ciec.save(flush:true)
         redirect action: 'index'
     }
 
@@ -91,7 +94,7 @@ class CostConfigurationController {
         if(params.ciec) {
             CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
             if(ciec)
-                ciec.delete()
+                ciec.delete(flush:true)
         }
         else {
             flash.error = message(code: 'costConfiguration.delete.noCiec')
@@ -106,7 +109,7 @@ class CostConfigurationController {
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
         Org org = contextService.org
-        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfiguration(org,cie,null).collect {it.id}
+        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfigurationAndCostItemStatusNotEqual(org,cie,null, RDStore.COST_ITEM_DELETED).collect {it.id}
         def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {
             CostItem.executeUpdate('UPDATE CostItem ci SET ci.costItemElementConfiguration = :ciec WHERE ci.id IN (:cci)',[ciec:ciec.elementSign,cci:concernedCostItems])

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; com.k_int.kbplus.Org;de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">
@@ -39,7 +39,7 @@
 
     </label>
     <laser:select class="ui dropdown" id="gender" name="gender"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.GENDER)}"
+                  from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.gender?.id}"
@@ -48,11 +48,11 @@
 <%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
+		${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="roleType" name="roleType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
+                  from="${Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.roleType?.id}"
@@ -61,11 +61,11 @@
 --%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
+		${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
     </label>
     <laser:select class="ui dropdown" id="contactType" name="contactType"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
+                  from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.contactType?.id}"
@@ -107,7 +107,7 @@
             ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>
     </g:if>
-    <% /* <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/> */ %>
+    <% /* <g:render template="/templates/cpa/addressFormModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
@@ -115,7 +115,7 @@
         <g:message code="person.isPublic.label" />
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
-                  from="${com.k_int.kbplus.Person.getAllRefdataValues(RDConstants.Y_N)}"
+                  from="${Person.getAllRefdataValues(RDConstants.Y_N)}"
                   optionKey="id"
                   optionValue="value"
                   value="${personInstance?.isPublic?.id}" /><%-- todo: ERMS-1562 --%>

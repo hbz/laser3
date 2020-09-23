@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.ApiSource; de.laser.SurveyOrg; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -8,8 +8,8 @@
 
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb message="issueEntitlementsSurvey.label"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
@@ -29,7 +29,7 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-<g:message code="issueEntitlementsSurvey.label"/>: ${surveyConfig?.surveyInfo?.name}
+<g:message code="issueEntitlementsSurvey.label"/>: ${surveyConfig?.surveyInfo.name}
 </h1>
 
 
@@ -37,7 +37,7 @@
     <semui:messages data="${flash}"/>
 </g:if>
 
-<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 
@@ -91,69 +91,83 @@
                     <td class="titleCell">
                         <semui:ieAcceptStatusIcon status="${ie?.acceptStatus}"/>
 
-                        <semui:listIcon type="${tipp.title?.type?.value}"/>
+                        <semui:listIcon type="${tipp.title?.class.name}"/>
                         <strong><g:link controller="title" action="show"
                                         id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
                         <g:if test="${tipp.hostPlatformURL}">
-                            <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                            <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-                               data-content="${tipp?.platform.name}"
-                               href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-                               target="_blank"><i class="cloud icon"></i></a>
+                            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
                         <br>
 
                         <div class="la-icon-list">
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance }">
+                            <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
                                 <div class="item">
                                     <i class="grey icon la-books la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.volume')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.volume}
+                                        ${tipp.title.volume}
                                     </div>
                                 </div>
                             </g:if>
 
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+                            <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                                 <div class="item">
                                     <i class="grey icon user circle la-popup-tooltip la-delay"
                                        data-content="${message(code: 'author.slash.editor')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.getEbookFirstAutorOrFirstEditor()}
+                                        ${tipp.title.getEbookFirstAutorOrFirstEditor()}
                                     </div>
                                 </div>
                             </g:if>
 
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                            <g:if test="${tipp.title instanceof BookInstance && tipp.title.editionStatement}">
                                 <div class="item">
                                     <i class="grey icon copy la-popup-tooltip la-delay"
                                        data-content="${message(code: 'title.editionStatement.label')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.editionStatement}
+                                        ${tipp.title.editionStatement}
                                     </div>
                                 </div>
                             </g:if>
 
-                            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                            <g:if test="${tipp.title instanceof BookInstance && tipp.title.summaryOfContent}">
                                 <div class="item">
-                                    <i class="grey icon list la-popup-tooltip la-delay"
+                                    <i class="grey icon desktop la-popup-tooltip la-delay"
                                        data-content="${message(code: 'title.summaryOfContent.label')}"></i>
 
                                     <div class="content">
-                                        ${tipp?.title?.summaryOfContent}
+                                        ${tipp.title.summaryOfContent}
+                                    </div>
+                                </div>
+                            </g:if>
+
+                            <g:if test="${tipp.title.seriesName}">
+                                <div class="item">
+                                    <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
+                                    <div class="content">
+                                        ${tipp.title.seriesName}
+                                    </div>
+                                </div>
+                            </g:if>
+
+                            <g:if test="${tipp.title.subjectReference}">
+                                <div class="item">
+                                    <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
+                                    <div class="content">
+                                        ${tipp.title.subjectReference}
                                     </div>
                                 </div>
                             </g:if>
 
                         </div>
 
-                        <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
-                            <span class="ui small teal image label">
-                                ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                        <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
+                            <span class="ui small blue image label">
+                                ${id.ns.ns}: <div class="detail">${id.value}</div>
                             </span>
                         </g:each>
 
@@ -218,10 +232,10 @@
                                     <i class="book icon"></i>
                                 </g:link>
                             </g:if>
-                            <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                     var="gokbAPI">
                                 <g:if test="${tipp?.gokbId}">
-                                    <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'gokb')}"
                                        href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
                                        target="_blank"><i class="la-gokb  icon"></i>
@@ -232,15 +246,15 @@
                         </div>
                     </td>
                     <td>
-                        <g:if test="${tipp?.title instanceof BookInstance}">
+                        <g:if test="${tipp.title instanceof BookInstance}">
                         <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp?.title?.dateFirstInPrint}"/>
+                                          date="${tipp.title.dateFirstInPrint}"/>
                             <br>
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp?.title?.dateFirstOnline}"/>
+                                          date="${tipp.title.dateFirstOnline}"/>
                         </g:if>
                         <g:else>
                         <%-- TODO: FOR JOURNALS --%>

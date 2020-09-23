@@ -23,7 +23,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="${title}" class="active"/>
+    <semui:crumb text="${title}" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -55,9 +55,6 @@
             </semui:exportDropdownItem>
         </g:else>
     </semui:exportDropdown>
-    <%
-        editable = (editable && accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
-    %>
     <g:if test="${editable}">
         <g:render template="actions"/>
     </g:if>
@@ -72,7 +69,7 @@
         List configShowFilter = []
         List configShowTable = []
         if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
-            configShowFilter = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+            configShowFilter = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property']]
             configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
         }
         else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
@@ -118,7 +115,7 @@
     </g:else>
 </g:else>
 
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
+    <g:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
     <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${membersCount}" />
 
     <semui:debugInfo>

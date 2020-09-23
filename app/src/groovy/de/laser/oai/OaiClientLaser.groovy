@@ -3,6 +3,7 @@ package de.laser.oai
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
 
+@Deprecated
 class OaiClientLaser {
 
     def getRecord(url, object, id)

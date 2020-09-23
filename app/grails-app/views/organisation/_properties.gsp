@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -20,63 +20,54 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${orgInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${orgInstance._getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
-<g:each in="${allPropDefGroups.global}" var="propDefGroup">
-    <%-- check visibility --%>
-    <g:if test="${propDefGroup.isVisible}">
+    <g:each in="${allPropDefGroups.sorted}" var="entry">
+        <%
+            String cat                             = entry[0]
+            PropertyDefinitionGroup pdg            = entry[1]
+            PropertyDefinitionGroupBinding binding = entry[2]
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefGroup,
-                propDefGroupBinding: null,
-                prop_desc: PropertyDefinition.ORG_PROP,
-                ownobj: orgInstance,
-                custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(orgInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefGroup.name, numberOfProperties.size()])}"
-            %>
+            boolean isVisible = false
+
+            if (cat == 'global') {
+                isVisible = pdg.isVisible
+            }
+            else if (cat == 'local') {
+                isVisible = binding.isVisible
+            }
+        %>
+
+        <g:if test="${isVisible}">
+
+            <g:render template="/templates/properties/groupWrapper" model="${[
+                    propDefGroup: pdg,
+                    propDefGroupBinding: binding,
+                    prop_desc: PropertyDefinition.ORG_PROP,
+                    ownobj: orgInstance,
+                    custom_props_div: "grouped_custom_props_div_${pdg.id}"
+            ]}"/>
         </g:if>
-    </g:else>
-</g:each>
+        <g:else>
+            <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(orgInstance)}" />
 
-<g:each in="${allPropDefGroups.local}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
+            <g:if test="${numberOfProperties.size() > 0}">
+                <%
+                    hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
+                %>
+            </g:if>
+        </g:else>
+    </g:each>
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefInfo[0],
-                propDefGroupBinding: propDefInfo[1],
-                prop_desc: PropertyDefinition.ORG_PROP,
-                ownobj: orgInstance,
-                custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
-        ]}"/>
+    <g:if test="${hiddenPropertiesMessages.size() > 0}">
+        <div class="content">
+            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+        </div>
     </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(orgInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
-
-<g:if test="${hiddenPropertiesMessages.size() > 0}">
-    <div class="content">
-        <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
-    </div>
-</g:if>
 
 <%-- orphaned properties --%>
-
-<g:if test="${true}"><%-- todo: restrict? --%>
 
     <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
     <div class="content">
@@ -99,13 +90,11 @@
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
         });
     </r:script>
-
-</g:if>
 
 </div><!-- .card -->
 
@@ -126,7 +115,7 @@
                             tenant: authOrg
                     ]}"/>
 
-                    <r:script language="JavaScript">
+                    <r:script>
                             $(document).ready(function(){
                                 c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                             });

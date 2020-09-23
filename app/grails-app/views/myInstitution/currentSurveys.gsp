@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyResult; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.SurveyResult; de.laser.SurveyConfig; com.k_int.kbplus.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem;" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -15,14 +15,29 @@
 <semui:breadcrumbs>
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
+
+<semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="currentSurveys"
+                    params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="currentSurveys"
+                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
+</semui:controlButtons>
+
+
 <br>
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label')}
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution.name} - ${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<g:render template="../templates/filter/javascript" />
+<g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
@@ -39,19 +54,66 @@
 
 
             <div class="field fieldcontain">
-                <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                                  placeholder="filter.placeholder" value="${params.startDate}"/>
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
             </div>
 
-
             <div class="field fieldcontain">
-                <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                                  placeholder="filter.placeholder" value="${params.endDate}"/>
+                <label>${message(code: 'default.valid_onYear.label')}</label>
+                <g:select name="validOnYear"
+                          from="${surveyYears}"
+                          class="ui fluid search selection dropdown"
+                          value="${params.validOnYear}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+
             </div>
 
         </div>
 
-        <div class="four fields">
+        <div class="three fields">
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.owner.label')}</label>
+                <g:select class="ui dropdown" name="owner"
+                              from="${allConsortia}"
+                              optionKey="id"
+                              optionValue="name"
+                              value="${params.owner}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'menu.my.providers')}</label>
+                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${providers.sort { it.name }}" var="provider">
+                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${provider.id}" ">
+                        ${provider.name}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'menu.my.subscriptions')}</label>
+                <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${subscriptions.sort { it }}" var="sub">
+                        <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
+                        value="${sub}" ">
+                        ${sub}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="two fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -64,13 +126,36 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'surveyInfo.owner.label')}</label>
-                <g:select class="ui dropdown" name="owner"
-                              from="${com.k_int.kbplus.SurveyInfo.getAll()?.owner.unique { a, b -> a.id <=> b.id }}"
-                              optionKey="id"
-                              optionValue="name"
-                              value="${params.owner}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label>${message(code: 'surveyInfo.options')}</label>
+
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
+                            <input id="checkMandatory" name="mandatory" type="checkbox"
+                                   <g:if test="${params.mandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <input id="checkNoMandatory" name="noMandatory" type="checkbox"
+                                   <g:if test="${params.noMandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubSurveyUseForTransfer">${message(code: 'surveyConfig.subSurveyUseForTransfer.label')}</label>
+                            <input id="checkSubSurveyUseForTransfer" name="checkSubSurveyUseForTransfer" type="checkbox"
+                                   <g:if test="${params.checkSubSurveyUseForTransfer}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -93,16 +178,19 @@
 
     <semui:tabs actionName="${actionName}">
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'new']}" text="neu" tab="new"
+                        params="${[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
                         counts="${countSurveys?.new}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'processed']}" text="bearbeitet" tab="processed"
+                        params="${[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
                         counts="${countSurveys?.processed}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
+                        params="${[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                         counts="${countSurveys?.finish}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui red" countsClass="red"
-                        params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen" tab="notFinish"
+                        params="${[id: params.id, tab: 'termination']}" text="${message(code: "surveys.tabs.termination")}" tab="termination"
+                        counts="${countSurveys?.termination}"/>
+        <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui orange" countsClass="orange"
+                        params="${[id: params.id, tab: 'notFinish']}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
                         counts="${countSurveys?.notFinish}"/>
 
     </semui:tabs>
@@ -121,7 +209,7 @@
                               title="${message(code: 'default.endDate.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
-            <th><g:message code="surveyInfo.isMandatory.label"/></th>
+
             <th><g:message code="surveyInfo.finished"/></th>
 
 
@@ -136,7 +224,7 @@
         <g:each in="${surveyResults}" var="surveyResult" status="i">
 
             <g:set var="surveyConfig"
-                   value="${com.k_int.kbplus.SurveyConfig.get(surveyResult.key)}"/>
+                   value="${SurveyConfig.get(surveyResult.key)}"/>
 
             <g:set var="surveyInfo"
                    value="${surveyConfig.surveyInfo}"/>
@@ -147,42 +235,50 @@
                 </td>
                 <td>
                     <div class="la-flexbox">
-                        <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
+                        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>
 
-                            <g:if test="${surveyInfo?.isSubscriptionSurvey}">
-                                <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
-                                         class="ui ">
-                                    ${surveyConfig?.getSurveyName()}
+
+                        <g:if test="${surveyConfig.pickAndChoose}">
+                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
+                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui">
+                                    ${surveyConfig.getSurveyName()}
                                 </g:link>
-                            </g:if>
-                            <g:else>
-                                ${surveyConfig?.getSurveyName()}
-                            </g:else>
+                        </g:if>
+                        <g:else>
+                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
+                                        class="ui">
+                                    ${surveyConfig.getSurveyName()}
+                                </g:link>
+                        </g:else>
                     </div>
                 </td>
                 <td>
-                    ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
-                </td>
-                <td>
-                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo?.endDate}"/>
-                </td>
+                    <div class="ui label survey-${surveyInfo.type.value}">
+                        ${surveyInfo.type.getI10n('value')}
+                    </div>
 
-                <td class="center aligned">
-
-                    ${surveyInfo?.owner}
-
-                </td>
-
-                <td class="center aligned">
                     <g:if test="${surveyInfo.isMandatory}">
-                        <i class='check big green icon'></i>
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
+                            <i class="yellow icon exclamation triangle"></i>
+                        </span>
                     </g:if>
                 </td>
+                <td>
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
+                </td>
+
+                <td class="center aligned">
+
+                    ${surveyInfo.owner}
+
+                </td>
+
 
                 <td class="center aligned">
 
@@ -198,11 +294,11 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:if test="${surveyConfig?.pickAndChoose}">
+                        <g:if test="${surveyConfig.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig?.id}"
-                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
+                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
+                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>
                             </span>
@@ -210,7 +306,7 @@
                         <g:else>
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
+                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
                                         class="ui icon button">
                                     <i class="write icon"></i>
                                 </g:link>

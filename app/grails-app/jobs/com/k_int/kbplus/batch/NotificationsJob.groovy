@@ -1,11 +1,13 @@
 package com.k_int.kbplus.batch
 
+import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class NotificationsJob extends AbstractJob {
 
     def changeNotificationService
-    def grailsApplication
+    GrailsApplication grailsApplication
 
     /* ----> DISABLED
     
@@ -35,14 +37,14 @@ class NotificationsJob extends AbstractJob {
         try {
             log.debug("NotificationsJob")
 
-            if (grailsApplication.config.notificationsJobActive == true) {
+            if (ConfigUtils.getNotificationsJobActive()) {
                 if (! changeNotificationService.aggregateAndNotifyChanges()) {
                     log.warn( 'Failed. Maybe ignored due blocked changeNotificationService')
                 }
             }
         }
         catch (Exception e) {
-            log.error(e)
+            log.error( e.toString() )
         }
 
         jobIsRunning = false

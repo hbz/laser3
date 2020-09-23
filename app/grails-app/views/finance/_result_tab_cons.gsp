@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore; de.laser.finance.CostItemElementConfiguration;com.k_int.kbplus.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -13,7 +13,7 @@
         jsonSource << [
                 "name": "${or.org.sortname}",
                 "type": "${or.org.orgType}",
-                "federal": "${or.org.federalState}",
+                "federal": "${or.org.region}",
                 "cost": "${ci.costInLocalCurrency}"
         ]
     }
@@ -24,21 +24,28 @@
     println jb.toPrettyString()
 --%>
 <%
-    int colspan1 = 5
-    int colspan2 = 7
-    int wideColspan2 = 13
+    int colspan1 = 6
+    int colspan2 = 9
+    int wideColspan2 = 15
     if(fixedSubscription) {
-        colspan1 = 4
-        colspan2 = 6
-        wideColspan2 = 12
+        colspan1 = 5
+        colspan2 = 8
+        wideColspan2 = 13
     }
 %>
 <table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
+            <g:if test="${tmplShowCheckbox}">
+                <th>
+                    <g:if test="${data.costItems}">
+                        <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
+                    </g:if>
+                </th>
+            </g:if>
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
-                <g:sortableColumn property="orgRoles.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
+                <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[consSort: true]"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
@@ -121,6 +128,11 @@
                     }
                 %>
                 <tr id="bulkdelete-b${ci.id}">
+                    <g:if test="${tmplShowCheckbox}">
+                        <td>
+                                        <g:checkBox name="selectedCostItems" value="${ci.id}" checked="false"/>
+                        </td>
+                    </g:if>
                     <td>
                         <%
                             int offset = consOffset ? consOffset : 0
@@ -140,7 +152,7 @@
                            <g:if test="${memberRoles.contains(or.roleType.id)}">
                                <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
 
-                               <g:if test="${or.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_COLLECTIVE.id] && ci.isVisibleForSubscriber}">
+                               <g:if test="${ci.isVisibleForSubscriber}">
                                    <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                        <i class="ui icon eye orange"></i>
                                    </span>
@@ -195,26 +207,26 @@
                     <td class="x">
                         <g:if test="${editable}">
                             <g:if test="${fixedSubscription}">
-                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"cons"]' class="ui icon button trigger-modal">
+                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"cons"]' class="ui icon button trigger-modal">
+                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:if>
                             <g:else>
-                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"cons"]' class="ui icon button trigger-modal">
+                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"cons"]' class="ui icon button trigger-modal">
+                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:else>
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'cons']" class="ui icon negative button js-open-confirm-modal"
+                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons']" class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
                                     data-confirm-term-how="delete">
                                 <i class="trash alternate icon"></i>
@@ -258,7 +270,7 @@
                 <td colspan="${colspan2}">
 
                 </td>
-                <td colspan="2">
+                <td>
                     ${message(code:'financials.sum.local')}<br>
                     ${message(code:'financials.sum.localAfterTax')}
                 </td>
@@ -301,16 +313,28 @@
 </table>
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
-        <semui:paginate mapping="subfinance" params="${params+[view:'cons']}"
+        <semui:paginate mapping="subfinance" params="${params+[showView:showView]}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
-                        max="${max}" offset="${consOffset ? consOffset : 0}" total="${data.count}"/>
+                        max="${max}" offset="${offset}" total="${data.count}"/>
     </g:if>
     <g:else>
-        <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'cons']}"
+        <semui:paginate action="finance" controller="myInstitution" params="${params+[showView:showView]}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
-                        max="${max}" offset="${consOffset ? consOffset : 0}" total="${data.count}"/>
+                        max="${max}" offset="${offset}" total="${data.count}"/>
     </g:else>
 </g:if>
 <!-- _result_tab_cons.gsp -->
+
+<g:if test="${tmplShowCheckbox}">
+    <script language="JavaScript">
+        $('#costItemListToggler').click(function () {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedCostItems]").prop('checked', true)
+            } else {
+                $("tr[class!=disabled] input[name=selectedCostItems]").prop('checked', false)
+            }
+        })
+    </script>
+</g:if>

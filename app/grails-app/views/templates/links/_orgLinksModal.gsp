@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Org" %>
 <g:if test="${editmode}">
-    <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button" class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}"  isEditModal="isEditModal">
@@ -11,7 +11,7 @@
         <input type="hidden" name="recip_prop" value="${recip_prop}" />
 
         <div class="field">
-            <table id="org_role_tab_${tmplModalID}" class="ui celled la-table la-table-small table">
+            <table id="org_role_tab_${tmplModalID}" class="ui celled la-table compact table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>

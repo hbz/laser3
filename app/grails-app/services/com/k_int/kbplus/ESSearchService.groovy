@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DateUtil
+import grails.transaction.Transactional
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
@@ -10,6 +12,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.FieldSortBuilder
 import org.elasticsearch.search.sort.SortOrder
 
+@Transactional
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
   def reversemap = ['rectype':'rectype',
@@ -24,7 +27,6 @@ class ESSearchService{
                     'name':'name']
 
   def ESWrapperService
-  def grailsApplication
 
   def search(params){
     search(params,reversemap)
@@ -38,7 +40,7 @@ class ESSearchService{
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()
-   Map esSettings =  ESWrapperService.getESSettings()
+   Map<String, String> esSettings =  ESWrapperService.getESSettings()
 
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype) {
@@ -46,7 +48,7 @@ class ESSearchService{
         params.max = Math.min(params.max ? params.int('max') : 15, 10000)
         params.offset = params.offset ? params.int('offset') : 0
 
-        def query_str = buildQuery(params,field_map)
+        String query_str = buildQuery(params,field_map)
         if (params.tempFQ) //add filtered query
         {
             query_str = query_str + " AND ( " + params.tempFQ + " ) "
@@ -147,7 +149,7 @@ class ESSearchService{
     result
   }
 
-  def buildQuery(params,field_map) {
+  String buildQuery(params,field_map) {
     //log.debug("BuildQuery... with params ${params}. ReverseMap: ${field_map}");
 
     StringWriter sw = new StringWriter()
@@ -171,6 +173,11 @@ class ESSearchService{
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }else{
+
+          if(DateUtil.isDate(params.q)){
+            params.q = DateUtil.parseDateGeneric(params.q).format("yyyy-MM-dd").toString()
+          }
+
           params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
@@ -189,11 +196,11 @@ class ESSearchService{
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
           sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) " +
-                  "AND ( NOT rectype:\"ParticipantSurvey\" ) AND ( NOT rectype:\"Survey\" ) " +
+                  "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
                   "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
                   "AND ( NOT rectype:\"IssueEntitlement\" )" +
-                  "AND ( NOT rectype:\"SubscriptionCustomProperty\" ) AND ( NOT rectype:\"SubscriptionPrivateProperty\" ) " +
-                  "AND ( NOT rectype:\"LicenseCustomProperty\" ) AND ( NOT rectype:\"LicensePrivateProperty\" )" +
+                  "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                  "AND ( NOT rectype:\"LicenseProperty\" )" +
                   ") ")
 
           params[mapping.key].each { p ->
@@ -266,44 +273,10 @@ class ESSearchService{
       sw.write(  " AND ( NOT status:\"Deleted\" )")
     }
 
-    def result = sw.toString();
-    result;
-  }
-
-  /*def getClient(index) {
-    def esclient = null
-    def es_cluster_name = null
-    def es_index_name = null
-    def es_host = null
-    def es_url = ''
-
-    if(index == 'esgokb') {
-      es_cluster_name = grailsApplication.config.aggr_es_gokb_cluster ?: (ElasticsearchSource.findByIdentifier('gokb')?.cluster ?: "elasticsearch")
-      es_index_name = grailsApplication.config.aggr_es_gokb_index ?: (ElasticsearchSource.findByIdentifier('gokb')?.index ?: "gokb")
-      es_host = grailsApplication.config.aggr_es_gokb_hostname ?: (ElasticsearchSource.findByIdentifier('gokb')?.host ?: "localhost")
-      es_url = grailsApplication.config.aggr_es_gokb_url ?: (ElasticsearchSource.findByIdentifier('gokb')?.url ?: "")
-    }else
-    {
-      es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: 'elasticsearch'
-      es_index_name   = grailsApplication.config.aggr_es_index    ?: 'kbplus'
-      es_host         = grailsApplication.config.aggr_es_hostname ?: 'localhost'
+    if(params.showAllTitles) {
+      sw.write(  " AND ((rectype: \"EBookInstance\") OR (rectype: \"JournalInstance\") OR (rectype: \"BookInstance\") OR (rectype: \"TitleInstance\") OR (rectype: \"DatabaseInstance\")) ")
     }
-    log.debug("es_cluster = ${es_cluster_name}");
-    log.debug("es_index_name = ${es_index_name}");
-    log.debug("es_host = ${es_host}");
-    log.debug("es_url = ${es_url}");
 
-    Settings settings = Settings.builder()
-            .put("client.transport.sniff", true)
-            .put("cluster.name", es_cluster_name)
-            .put("network.host", es_host)
-            .put("es_url", es_url)
-            .build();
-
-    esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
-    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));
-
-    return [esclient, es_index_name]
-  }*/
-
+    sw.toString()
+  }
 }

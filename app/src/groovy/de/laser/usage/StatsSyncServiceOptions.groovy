@@ -1,6 +1,8 @@
 package de.laser.usage
 
 import com.k_int.kbplus.*
+import de.laser.OrgSetting
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import groovy.util.logging.Log4j
 
@@ -69,8 +71,7 @@ class StatsSyncServiceOptions {
         reportName = matcher[0][1]
         reportVersion = matcher[0][2]
         setReportType()
-        // ERMS-2016: factType = RefdataCategory.lookupOrCreate('FactType', report.toString())
-        // if value exists --> RefdataValue.getByValueAndCategory()
+
         factType = RefdataValue.construct([
                 token   : report.toString(),
                 rdc     : RDConstants.FACT_TYPE,
@@ -80,11 +81,11 @@ class StatsSyncServiceOptions {
     }
 
     LinkedHashMap getQueryParams(Org org_inst, Platform supplier_inst) {
-        PlatformCustomProperty platform = PlatformCustomProperty.executeQuery(
-            "select pcp from PlatformCustomProperty pcp where pcp.owner = :supplier and pcp.type.name = 'NatStat Supplier ID'",[supplier:supplier_inst]).get(0)
+        PlatformProperty platform = PlatformProperty.executeQuery(
+            "select pcp from PlatformProperty pcp where pcp.owner = :supplier and pcp.type.name = 'NatStat Supplier ID'",[supplier:supplier_inst]).get(0)
         String customer = org_inst.getIdentifierByType('wibid').value
-        String apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
-        String requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()
+        String apiKey = OrgSetting.get(org_inst, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
+        String requestor = OrgSetting.get(org_inst, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()
         [platform:platform.stringValue, customer:customer, apiKey: apiKey, requestor:requestor]
     }
 

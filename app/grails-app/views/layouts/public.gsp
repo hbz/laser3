@@ -13,8 +13,13 @@
     <meta name="author" content="">
 
     <meta name="viewport" content="initial-scale = 1.0">
-    <r:require modules="semanticUI"/>
 
+    <script>
+      <g:render template="/templates/javascript/laser.js" />
+      <g:render template="/templates/javascript/dict.js" />
+    </script>
+
+    <r:require module="semanticUI" />
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -22,7 +27,7 @@
     <![endif]-->
 
     <g:layoutHead/>
-    <r:layoutResources/>
+    <r:layoutResources/> <%-- grails-3-fix : remove --%>
 
     <tmpl:/layouts/favicon />
 

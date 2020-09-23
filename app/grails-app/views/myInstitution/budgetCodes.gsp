@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItemGroup"%>
+<%@ page import="de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
 <!doctype html>
 <html>
@@ -26,7 +26,7 @@
             </div>
         </g:if>
 
-    <table class="ui celled sortable table la-table la-table-small">
+    <table class="ui celled sortable table la-table compact">
         <thead>
             <tr>
                 <th>${message(code: 'financials.budgetCode')}</th>
@@ -72,7 +72,7 @@
                     <g:if test="${editable}">
                         <td class="x">
                         <%--
-                        disabled open finance view, TODO: ask Daniel for eventual reactivation
+                        disabled open finance view, TODO [ticket=2214]
                         <g:if test="${CostItemGroup.findAllByBudgetCode(bcode)}">
                             <g:link controller="myInstitution" action="finance"  class="ui icon button"
                                     params="[filterCIBudgetCode: bcode.value]">
@@ -83,7 +83,7 @@
                             <g:if test="${!CostItemGroup.findAllByBudgetCode(bcode)}">
                                 <g:link controller="myInstitution"
                                         action="budgetCodes"
-                                        params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}"
+                                        params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
                                         data-confirm-term-how="delete"
                                         class="ui icon negative button js-open-confirm-modal">

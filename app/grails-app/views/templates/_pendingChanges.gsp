@@ -29,7 +29,7 @@
         </g:if>
 
 
-        <table class="ui celled la-table la-table-small table">
+        <table class="ui celled la-table compact table">
           <thead>
             <tr>
                 <th>${pendingChanges.size()? "1-"+pendingChanges.size() : 0}</th>

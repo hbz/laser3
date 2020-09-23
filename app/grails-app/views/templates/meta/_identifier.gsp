@@ -1,6 +1,10 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore; com.k_int.kbplus.Package; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.IssueEntitlement; de.laser.helper.RDStore; com.k_int.kbplus.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription; com.k_int.kbplus.IssueEntitlement" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
+
+<g:set var="objIsOrgAndInst" value="${object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)}" />
+
 <aside class="ui segment metaboxContent accordion">
     <div class="title">
         <i class="dropdown icon la-dropdown-accordion"></i><g:message code="default.identifiers.show"/>
@@ -11,10 +15,11 @@
             <dl>
                 <dt><g:message code="org.globalUID.label"/></dt>
                 <dd><g:fieldValue bean="${object}" field="globalUID"/></dd>
-                <dt><g:message code="org.impId.label"/></dt>
-                <dd><g:fieldValue bean="${object}" field="impId"/></dd>
 
-                <g:if test="${!(object instanceof com.k_int.kbplus.License) && !(object instanceof com.k_int.kbplus.Subscription)}">
+                <g:if test="${! objIsOrgAndInst}"><%-- hidden if org.institution--%>
+
+                    <g:if test="${!(object instanceof License) && !(object instanceof Subscription) && !(object instanceof IssueEntitlement)}">
+
                     <dt><g:message code="org.gokbId.label" default="GOKB UUID"/></dt>
                     <dd>
                         <g:set var="editableGOKBID" value=""/>
@@ -24,16 +29,16 @@
                         <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_YODA,ROLE_ORG_EDITOR'>
                             <g:set var="editableGOKBID" value="${true}"/>
                         </sec:ifAnyGranted>
-                        <g:if test="${object instanceof com.k_int.kbplus.Org && object?.gokbId == null && editableGOKBID}">
+                        <g:if test="${object instanceof Org && object.gokbId == null && editableGOKBID}">
                             <semui:xEditable owner="${object}" field="gokbId"/>
                         </g:if>
                         <g:else>
                             <g:fieldValue bean="${object}" field="gokbId"/>
                         </g:else>
 
-                        <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                        <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                 var="gokbAPI">
-                            <g:if test="${object?.gokbId}">
+                            <g:if test="${object.gokbId}">
                                 <g:if test="${object instanceof Package}">
                                     <a target="_blank"
                                        href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/' + object?.gokbId : '#'}"><i
@@ -47,58 +52,76 @@
                             </g:if>
                         </g:each>
                     </dd>
-                </g:if>
 
+                    </g:if>
+                </g:if><%-- hidden if org.institution--%>
 
+                <g:if test="${object.hasProperty('ids')}">
                 <dt>
                     <g:message code="org.ids.label"/>
                 </dt>
                 <dd>
-                    <table class="ui celled la-table la-table-small table la-ignore-fixed">
+                    <table class="ui celled la-table compact table la-ignore-fixed">
                         <thead>
                         <tr>
-                            <th>${message(code: 'default.authority.label')}</th>
+                            <th>${message(code: 'identifier.namespace.label')}</th>
                             <th>${message(code: 'default.identifier.label')}</th>
-                            <th>${message(code: 'default.actions.label')}</th>
+                            <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+                                <th>${message(code: 'default.actions.label')}</th>
+                            </g:if><%-- hidden if org[type=institution] --%>
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${object.ids?.sort { it?.ns?.ns }}" var="ident">
+                        <g:each in="${object.ids?.sort { a, b ->
+                            String aVal = a.ns.getI10n('name') ?: a.ns.ns
+                            String bVal = b.ns.getI10n('name') ?: b.ns.ns
+                            aVal.compareToIgnoreCase bVal
+                        }}" var="ident">
                             <tr>
                                 <td>
-                                    ${ident.ns.ns}
+                                    ${ident.ns.getI10n('name') ?: ident.ns.ns}
+
+                                    <g:if test="${ident.ns.getI10n('description')}">
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
                                 </td>
                                 <td>
                                     ${ident.value}
                                 </td>
-                                <td>
-                                    <g:if test="${editable}">
-                                        <%-- TODO [ticket=1612] new identifier handling
-                                        <g:link controller="ajax" action="deleteThrough"
-                                                params='${[contextOid: "${object.class.name}:${object.id}", contextProperty: "ids", targetOid: "${ident.class.name}:${ident.id}"]}'>
-                                            ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
-                                        --%>
-                                        <g:link controller="ajax" action="deleteIdentifier"
-                                                params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
-                                            ${message(code: 'default.delete.label', args: ["${message(code: 'identifier.label')}"])}</g:link>
-                                    </g:if>
-                                </td>
+                                <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+                                    <td>
+                                        <g:if test="${editable}">
+                                            <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
+                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
+                                                <i class="icon trash alternate"></i>
+                                            </g:link>
+                                        </g:if>
+                                    </td>
+                                </g:if><%-- hidden if org[type=institution] --%>
                             </tr>
                         </g:each>
                         </tbody>
                     </table>
                 </dd>
+                </g:if>
 
-                <%
+                <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+
+                    <%
                     List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == object.class.name || nsType == null)}
                             .list(sort: 'ns')
-                            .sort { a,b -> a.ns.compareToIgnoreCase b.ns }
+                            .sort { a, b ->
+                                String aVal = a.getI10n('name') ?: a.ns
+                                String bVal = b.getI10n('name') ?: b.ns
+                                aVal.compareToIgnoreCase bVal
+                            }
                             .collect{ it }
-                %>
-                <g:if test="${editable && nsList}">
-                    <dt class="la-js-hideMe">
-                        Identifikfator hinzufügen
-                    </dt>
+                    %>
+                    <g:if test="${editable && nsList}">
+
+                    <dt class="la-js-hideMe"></dt>
 
                     <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">
@@ -119,65 +142,26 @@
 
                             <div class="fields two">
                                 <div class="field">
-                                    <label for="namespace">Namensraum</label>
+                                    <label for="namespace">${message(code:'identifier.namespace.label')}</label>
                                     <g:select name="namespace" id="namespace" class="ui search dropdown"
-                                              from="${nsList}" optionKey="${{'com.k_int.kbplus.IdentifierNamespace:' + it.id}}" optionValue="ns" />
+                                              from="${nsList}"
+                                              optionKey="${{ IdentifierNamespace.class.name + ':' + it.id }}"
+                                              optionValue="${{ it.getI10n('name') ?: it.ns }}" />
                                 </div>
                                 <div class="field">
-                                    <label for="value">Identifikator</label>
+                                    <label for="value">${message(code:'default.identifier.label')}</label>
                                     <input name="value" id="value" type="text" class="ui" />
                                 </div>
                                 <div class="field">
                                     <label>&nbsp;</label>
-                                    <button type="submit" class="ui button">Hinzufügen</button>
+                                    <button type="submit" class="ui button">${message(code:'default.button.add.label')}</button>
                                 </div>
                             </div>
                         </g:form>
                     </dd>
-                <%-- TODO [ticket=1612] new identifier handling
-                    <dd class="la-js-hideMe">
-                        <g:if test="${object.class.simpleName == 'License'}">
-                            <semui:formAddIdentifier owner="${object}"
-                                                     buttonText="${message(code: 'license.edit.identifier.select.add')}"
-                                                     uniqueCheck="yes"
-                                                     uniqueWarningText="${message(code: 'license.edit.duplicate.warn.list')}">
-                                ${message(code: 'identifier.select.text', args: ['gasco-lic:0815'])}
-                            </semui:formAddIdentifier>
-                        </g:if>
+                    </g:if>
 
-                        <g:if test="${object.class.simpleName == 'Org'}">
-                            <semui:formAddIdentifier owner="${object}">
-                                ${message(code: 'identifier.select.text', args: ['isil:DE-18'])}
-                            </semui:formAddIdentifier>
-                        </g:if>
-
-                        <g:if test="${object.class.simpleName == 'Package'}">
-                            <semui:formAddIdentifier owner="${object}"/>
-                        </g:if>
-
-                        <g:if test="${object.class.simpleName == 'Subscription'}">
-                            <semui:formAddIdentifier owner="${object}" uniqueCheck="yes"
-                                                     uniqueWarningText="${message(code: 'subscription.details.details.duplicate.warn')}">
-                                ${message(code: 'identifier.select.text', args: ['JC:66454'])}
-                            </semui:formAddIdentifier>
-                        </g:if>
-
-                        <g:if test="${object.class.simpleName == 'TitleInstancePackagePlatform'}">
-                            <semui:formAddIdentifier owner="${object}"/>
-                        </g:if>
-
-                        <g:if test="${object.class.simpleName in ['BookInstance', 'DatabaseInstance', 'JournalInstance', 'TitleInstance']}">
-                            <semui:formAddIdentifier owner="${object}"
-                                                     buttonText="${message(code: 'title.edit.identifier.select.add')}"
-                                                     uniqueCheck="yes"
-                                                     uniqueWarningText="${message(code: 'title.edit.duplicate.warn.list')}">
-                                ${message(code: 'identifier.select.text', args: ['eISSN:2190-9180'])}
-                            </semui:formAddIdentifier>
-                        </g:if>
-                    </dd>
-                --%>
-
-                </g:if>
+                </g:if><%-- hidden if org[type=institution] --%>
 
             </dl>
         </div>

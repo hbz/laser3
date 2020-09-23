@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig" %>
+<%@ page import="de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.SurveyConfig; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -11,11 +11,11 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
-                     params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}"/>
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig?.getConfigNameShort()}"/>
     </g:if>
     <semui:crumb message="surveyConfigDocs.label" class="active"/>
 </semui:breadcrumbs>
@@ -27,7 +27,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
 </h1>
 
 <g:render template="nav"/>
@@ -69,7 +69,7 @@
                     id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
                 <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-                ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+                ${SurveyConfig.getLocalizedValue(config?.type)}
 
 
                 <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
@@ -133,7 +133,7 @@
                                             class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${redirect}"]'>
+                                            params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>

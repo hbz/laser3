@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.Links; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -53,7 +53,7 @@
         <g:link class="ui button negative js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
                 data-confirm-term-how="ok" action="processUnLinkLicenseMembers" id="${params.id}"
-                params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</g:link>
+                params="[unlinkAll:true]">${message(code: 'subscription.linkLicenseMembers.deleteAllLicenses.button')}</g:link>
 
     </div>
 
@@ -62,7 +62,7 @@
     <div class="ui segment">
     <g:form action="processLinkLicenseMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
-
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="field required">
             <h4>${message(code: 'subscription.linkLicenseMembers.info', args: args.memberType)}</h4>
@@ -90,7 +90,9 @@
 
             <div class="eight wide field" style="text-align: right;">
                 <div class="ui buttons">
-                    <button class="ui button negative"
+                    <button class="ui button negative js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
+                            data-confirm-term-how="ok" action="processUnLinkLicenseMembers"
                             type="submit" name="processOption"
                             value="unlinkLicense">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</button>
                 </div>
@@ -145,6 +147,13 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${subscr.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
+                            </g:if>
+
                         </td>
                     </g:each>
                     <g:if test="${!sub.getAllSubscribers()}">
@@ -156,10 +165,9 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
-                        <g:if test="${sub?.owner?.id}">
-                            <g:link controller="license" action="show"
-                                    id="${sub.owner.id}">${sub.owner.reference}</g:link>
-                        </g:if>
+                        <g:each in="${Links.findAllByDestinationAndLinkType(genericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE).collect{ Links li -> genericOIDService.resolveOID(li.source) }}" var="license">
+                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                        </g:each>
                     </td>
                     <td>
                         <g:if test="${sub.isMultiYear}">
@@ -171,8 +179,11 @@
                     </td>
 
                     <td class="x">
-                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i
-                                class="write icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
+                                data-tooltip="${message(code:'subscription.details.viewMember.label')}"
+                                data-position="left center"
+                        >
+                            <i class="write icon"></i></g:link>
                     </td>
                 </tr>
             </g:each>
@@ -184,7 +195,7 @@
     <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
-<r:script language="JavaScript">
+<r:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)

@@ -11,7 +11,7 @@
 
             <g:select from="${availableSubjectGroups}"
                       class="ui dropdown fluid"
-                        id="subjectGroupSelection"
+                      id="subjectGroupSelection"
                       optionKey="id"
                       optionValue="${{ it?.getI10n('value') }}"
                       name="subjectGroup"

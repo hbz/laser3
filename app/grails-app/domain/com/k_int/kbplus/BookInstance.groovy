@@ -1,10 +1,12 @@
 package com.k_int.kbplus
 
+import de.laser.RefdataValue
+import de.laser.exceptions.CreationException
+import de.laser.helper.RDConstants
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
 class BookInstance extends TitleInstance {
-
 
     Date dateFirstInPrint
     Date dateFirstOnline
@@ -18,6 +20,7 @@ class BookInstance extends TitleInstance {
     String  editionStatement
     String editionDifferentiator
 
+    static transients = ['ebookFirstAutorOrFirstEditor'] // mark read-only accessor methods
 
     static mapping = {
         includes TitleInstance.mapping
@@ -35,16 +38,30 @@ class BookInstance extends TitleInstance {
 
     static constraints = {
 
-        dateFirstInPrint(nullable:true, blank:false);
-        dateFirstOnline(nullable:true, blank:false);
+        dateFirstInPrint(nullable:true);
+        dateFirstOnline(nullable:true);
         summaryOfContent(nullable:true, blank:false);
         volume(nullable:true, blank:false);
         firstAuthor (nullable:true, blank:false);
         firstEditor (nullable:true, blank:false);
         editionDifferentiator (nullable:true, blank:false);
-        editionNumber (nullable:true, blank:false);
+        editionNumber       (nullable:true)
         editionStatement (nullable:true, blank:false);
 
+    }
+
+    static BookInstance construct(Map<String,Object> params) throws CreationException {
+        withTransaction {
+            BookInstance bi = new BookInstance(params)
+            bi.setGlobalUID()
+            if(!bi.save())
+                throw new CreationException(bi.errors)
+            bi
+        }
+    }
+
+    String printTitleType() {
+        RefdataValue.getByValueAndCategory('Book', RDConstants.TITLE_MEDIUM).getI10n('value')
     }
 
     String getEbookFirstAutorOrFirstEditor(){
@@ -52,17 +69,13 @@ class BookInstance extends TitleInstance {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
 
-        if(firstEditor && firstAuthor)
-        {
+        if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }
-        else if(firstAuthor)
-        {
+        else if(firstAuthor) {
             return firstAuthor
         }
-
-        else if(firstEditor)
-        {
+        else if(firstEditor) {
             return firstEditor + ' ' + label
         }
     }

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="de.laser.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -18,7 +18,6 @@
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="profile" action="errorOverview" message="profile.errorOverview.label" />
-    <semui:subNavItem controller="profile" action="errorReport" message="profile.errorReport.label" />
 </semui:subNav>
 
 <div class="ui grid">

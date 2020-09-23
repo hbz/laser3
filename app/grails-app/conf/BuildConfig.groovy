@@ -5,8 +5,6 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 
-grails.plugin.location.'file-viewer' = "localRepository/file-viewer/hbz-file-viewer-0.3"
-
 grails.project.dependency.resolver = "maven"
 
 grails.project.dependency.resolution = {
@@ -33,19 +31,9 @@ grails.project.dependency.resolution = {
         mavenCentral()
         mavenLocal()
 
-        // uncomment these to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
-
         mavenRepo "https://oss.sonatype.org/content/repositories/releases"
-        mavenRepo "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/"
-        mavenRepo "http://jasperreports.sourceforge.net/maven2/com/lowagie/itext/2.1.7.js2/"
         // Added because I'm strugging to get cglib - CGLib is causing problems - not sure what
         mavenRepo "http://central.maven.org/maven2/"
-
-        //mavenRepo "https://mvnrepository.com/artifact/com.agorapulse/gru" // gru
 
         // For shibboleth native-sp
         // mavenRepo "http://projects.k-int.com/nexus-webapp-1.4.0/content/repositories/releases"
@@ -56,8 +44,6 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         compile "net.sf.ehcache:ehcache:2.7.0" // hibernate 3
-        //compile "net.sf.ehcache:ehcache:2.9.0"                     // to hibernate 4
-        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"     // to hibernate 4
 
         runtime 'javax.servlet:jstl:1.1.2'
         runtime 'taglibs:standard:1.1.2'
@@ -82,10 +68,9 @@ grails.project.dependency.resolution = {
         runtime 'org.elasticsearch.client:transport:jar:5.6.16'*/
         runtime 'org.apache.logging.log4j:log4j-core:jar:2.11.1'
 
-        compile 'joda-time:joda-time:2.9.9'
+        // compile 'joda-time:joda-time:2.9.9' ; removed 2020-06-26
 
         runtime 'gov.loc:bagit:4.0'
-        //runtime 'org.apache.poi:poi:3.8'
         runtime 'org.apache.poi:poi-ooxml:jar:3.9'
         runtime 'net.sf.opencsv:opencsv:2.0'
         runtime 'com.github.albfernandez:juniversalchardet:2.3.0'
@@ -109,10 +94,7 @@ grails.project.dependency.resolution = {
         }
          */
 
-        // compile 'cglib:cglib:2.2.2'
-        // compile "com.lowagie:itext:2.1.7" NO USAGE YET ..
-
-        compile 'org.codehaus.groovy:groovy-ant:2.5.0'
+        // compile 'org.codehaus.groovy:groovy-ant:2.5.0' ; removed 2020-06-26
 
         compile 'org.apache.commons:commons-lang3:3.7'
 
@@ -141,21 +123,16 @@ grails.project.dependency.resolution = {
 
         build (':tomcat:8.0.50')
 
-        runtime ':hibernate:3.6.10.19' // hibernate 3
-        //runtime ':hibernate4:4.3.10' // to hibernate 4
+        runtime ':hibernate:3.6.10.19'
 
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
-        runtime ':fields:1.5.1'
-
-        //compile ":file-viewer:0.3" //security issue
+        runtime ':fields:1.5.1' // default wrapper used by scaffolding-plugin
 
         runtime ":database-migration:1.4.0"
 
         compile ':cache:1.1.8'
-
-        //compile "org.grails.plugins:hibernate-filter:0.4.0" // to hibernate 4
 
         compile ':mail:1.0.7', {
            excludes 'spring-test'
@@ -169,9 +146,9 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
         runtime ":jquery:1.11.1"
-        runtime ":audit-logging:1.0.3" // 1.0.3
+        runtime ":audit-logging:1.0.3"
         runtime ":executor:0.3"
-        runtime ":markdown:1.1.1"
+        // runtime ":markdown:1.1.1" ; removed 2020-06-26
         runtime ":quartz:1.0.2"
         compile ":jsonp:0.2"
 

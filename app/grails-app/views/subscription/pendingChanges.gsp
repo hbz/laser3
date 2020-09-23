@@ -1,12 +1,11 @@
-<%@ page import="com.k_int.kbplus.License" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
 <html>
 <head>
   <meta name="layout" content="semanticUI"/>
-  <title>${message(code:'laser')} : TN-Änderungen</title>
+  <title>${message(code:'laser')} : ${message(code:'pendingChange.plural')}</title>
 </head>
 <body>
 
@@ -25,7 +24,7 @@
     <g:render template="nav" />
 
     <g:each in="${pendingChanges}" var="memberId, pcList">
-        <g:set var="member" value="${com.k_int.kbplus.Subscription.get(memberId)}" />
+        <g:set var="member" value="${Subscription.get(memberId)}" />
 
         <h4>${member.getNameConcatenated()}</h4>
 

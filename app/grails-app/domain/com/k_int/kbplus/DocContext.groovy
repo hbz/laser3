@@ -1,18 +1,16 @@
 package com.k_int.kbplus
 
+import de.laser.Links
+import de.laser.RefdataValue
+import de.laser.SurveyConfig
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
 
-import javax.persistence.Transient
-
 class DocContext implements ShareableTrait {
 
-    @Transient
     def deletionService
-
-    @Transient
     def shareService
 
     static belongsTo = [
@@ -68,24 +66,22 @@ class DocContext implements ShareableTrait {
   }
 
   static constraints = {
-    doctype(nullable:true, blank:false)
-    license(nullable:true, blank:false)
-    subscription(nullable:true, blank:false)
-    pkg(nullable:true, blank:false)
-    org(nullable: true,blank: false)
-    link(nullable:true, blank:false)
-    domain(nullable:true, blank:false)
-    status(nullable:true, blank:false)
-        globannounce    (nullable:false, blank:false)
-      sharedFrom(nullable:true, blank:true)
-        isShared        (nullable:false, blank:false)
-      shareConf(nullable: true,blank: false)
-      targetOrg(nullable: true, blank: false)
-      surveyConfig (nullable: true,blank: false)
+    doctype     (nullable:true)
+    license     (nullable:true)
+    subscription(nullable:true)
+    pkg         (nullable:true)
+    org         (nullable:true)
+    link        (nullable:true)
+    domain      (nullable:true, blank:false)
+    status      (nullable:true)
+      sharedFrom    (nullable: true)
+      shareConf     (nullable: true)
+      targetOrg     (nullable: true)
+      surveyConfig  (nullable: true)
 
       // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true, blank: false)
-      dateCreated (nullable: true, blank: false)
+      lastUpdated (nullable: true)
+      dateCreated (nullable: true)
   }
     def afterDelete() {
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)

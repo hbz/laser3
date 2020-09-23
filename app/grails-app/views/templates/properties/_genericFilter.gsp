@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
@@ -20,8 +20,8 @@
                     iconWhich = "shield alternate"
                     optionKey="${{
                         it.refdataCategory ?
-                                "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.getByDesc(it.refdataCategory)?.id}"
-                                : "com.k_int.properties.PropertyDefinition:${it.id}"
+                                "${PropertyDefinition.class.name}:${it.id}\" data-rdc=\"${RefdataCategory.class.name}:${RefdataCategory.getByDesc(it.refdataCategory)?.id}"
+                                : "${PropertyDefinition.class.name}:${it.id}"
                     }}"
                     optionValue="${{ it.getI10n('name') }}"
                     noSelection="${message(code: 'default.select.choose.label')}"/>
@@ -77,7 +77,7 @@
                                 select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
                             }
 
-                            select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
+                            select = ' <div class="ui fluid multiple search selection dropdown la-filterProp">' +
                                 '   <input type="hidden" id="filterProp" name="filterProp">' +
                                 '   <i class="dropdown icon"></i>' +
                                 '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
@@ -94,6 +94,8 @@
                                 duration: 150,
                                 transition: 'fade',
                                 clearable: true,
+                                forceSelection: false,
+                                selectOnKeydown: false,
                                 onChange: function (value, text, $selectedItem) {
                                     value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
                                 }
@@ -103,7 +105,7 @@
                     });
                 } else {
                     $.ajax({
-                        url: '<g:createLink controller="ajax" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value') + '&domain=${actionName}&format=json',
+                        url: '<g:createLink controller="ajax" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value') + '&format=json',
                         success: function (data) {
                             var select = '';
                             for (var index = 0; index < data.length; index++) {
@@ -130,6 +132,8 @@
                                 duration: 150,
                                 transition: 'fade',
                                 clearable: true,
+                                forceSelection: false,
+                                selectOnKeydown: false,
                                 onChange: function (value, text, $selectedItem) {
                                     value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
                                 }
@@ -155,6 +159,8 @@
                 $(document).ready(function() {
                     $(".la-filterPropDef").dropdown({
                         clearable: true,
+                        forceSelection: false,
+                        selectOnKeydown: false,
                         onChange: function (value, text, $selectedItem) {
                             if ((typeof $selectedItem != 'undefined')){
                                 var selOpt = $selectedItem;

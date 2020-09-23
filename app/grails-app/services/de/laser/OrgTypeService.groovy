@@ -5,7 +5,9 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
 import de.laser.helper.RDStore
+import grails.transaction.Transactional
 
+@Transactional
 class OrgTypeService {
 
     def contextService
@@ -15,7 +17,7 @@ class OrgTypeService {
      */
     List<Org> getOrgsForTypeAgency() {
         List<Org> result = Org.executeQuery(
-                "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.shortname), o.name"
         )
         result.unique()
     }
@@ -25,7 +27,7 @@ class OrgTypeService {
      */
     List<Org> getOrgsForTypeProvider() {
         List<Org> result = Org.executeQuery(
-                "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.shortname), o.name"
         )
         result.unique()
     }
@@ -35,7 +37,7 @@ class OrgTypeService {
      */
     List<Org> getOrgsForTypeLicensor() {
         List<Org> result = Org.executeQuery(
-                "select o from Org o join o.orgType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by lower(o.sortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by o.name, lower(o.sortname)"
         )
         result.unique()
     }
@@ -45,7 +47,7 @@ class OrgTypeService {
      */
     List<License> getCurrentLicenses(Org context) {
         return License.executeQuery( """
-            select l from License as l join l.orgLinks as ogr where
+            select l from License as l join l.orgRelations as ogr where
                 ( l = ogr.lic and ogr.org = :licOrg ) and
                 ( ogr.roleType = (:roleLic) or ogr.roleType = (:roleLicCons) or ogr.roleType = (:roleLicConsortia) )
         """, [licOrg: context,

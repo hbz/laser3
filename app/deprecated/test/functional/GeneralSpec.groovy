@@ -41,7 +41,7 @@ class GeneralSpec extends BaseSpec {
 		go "/laser/org/create"
 		waitFor{$("form")}
 		$("form").name = Data.Org_name
-		$("form").impId = Data.Org_impId
+		//$("form").impId = Data.Org_impId
 		$("form").sector = "Higher Education"
 		report "google home page"
 		$("#SubmitButton").click()

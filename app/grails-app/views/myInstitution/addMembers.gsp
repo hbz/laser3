@@ -1,3 +1,4 @@
+<%@page import="de.laser.FormService" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -15,7 +16,7 @@
         <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </semui:breadcrumbs>
 
-    <semui:controlButtons>
+    <%--<semui:controlButtons>
         <semui:exportDropdown>
             <g:if test="${filterSet}">
                 <semui:exportDropdownItem>
@@ -45,9 +46,9 @@
             </g:else>
         </semui:exportDropdown>
         <g:render template="actions" />
-    </semui:controlButtons>
+    </semui:controlButtons>--%>
     
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
+    <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
 
     <semui:messages data="${flash}" />
 
@@ -55,7 +56,7 @@
         <g:form action="addMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow: [['name'], ['region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
@@ -67,12 +68,12 @@
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: availableOrgs,
-                          tmplDisableOrgIds: memberIds,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType']
                   ]"/>
 
         <br/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
     </g:form>
     </g:if>

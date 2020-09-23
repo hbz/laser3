@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import de.laser.Person
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
@@ -21,7 +24,6 @@ class PersonRole implements Comparable<PersonRole>{
     RefdataValue    responsibilityType  // exclusive other types
 
     License         lic
-    Cluster         cluster
     Package         pkg
     Subscription    sub   
     TitleInstance   title
@@ -35,6 +37,8 @@ class PersonRole implements Comparable<PersonRole>{
         prs:        Person,
         org:        Org
     ]
+
+    static transients = ['reference'] // mark read-only accessor methods
     
     static mapping = {
         id          column:'pr_id'
@@ -45,7 +49,6 @@ class PersonRole implements Comparable<PersonRole>{
         prs         column:'pr_prs_fk',     index: 'pr_prs_org_idx'
         lic         column:'pr_lic_fk'
         org         column:'pr_org_fk',     index: 'pr_prs_org_idx'
-        cluster     column:'pr_cluster_fk'
         pkg         column:'pr_pkg_fk'
         sub         column:'pr_sub_fk'
         title       column:'pr_title_fk'
@@ -60,10 +63,8 @@ class PersonRole implements Comparable<PersonRole>{
         positionType        (nullable:true)
         functionType        (nullable:true)
         responsibilityType  (nullable:true)
-        prs         (nullable:false)
         lic         (nullable:true)
         org         (nullable:true)
-        cluster     (nullable:true)
         pkg         (nullable:true)
         sub         (nullable:true)
         title       (nullable:true)
@@ -71,60 +72,31 @@ class PersonRole implements Comparable<PersonRole>{
         end_date    (nullable:true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
     }
 
     /**
      * Generic setter
      */
-    def setReference(def owner) {
+    void setReference(def owner) {
         org     = owner instanceof Org ? owner : org
-
         lic     = owner instanceof License ? owner : lic
-        cluster = owner instanceof Cluster ? owner : cluster
         pkg     = owner instanceof Package ? owner : pkg
         sub     = owner instanceof Subscription ? owner : sub
         title   = owner instanceof TitleInstance ? owner : title
     }
 
-    def getReference() {
-
+    String getReference() {
         if (lic)        return 'lic:' + lic.id
-        if (cluster)    return 'cluster:' + cluster.id
         if (pkg)        return 'pkg:' + pkg.id
         if (sub)        return 'sub:' + sub.id
         if (title)      return 'title:' + title.id
     }
 
     static List<RefdataValue> getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category).sort {it.getI10n("value")}
+        RefdataCategory.getAllRefdataValues(category)//.sort {it.getI10n("value")}
     }
-
-    /*
-    static def lookup(prs, lic, org, cluster, pkg, sub, title, start_date, end_date, functionType) {
-
-        def personRole
-        def p = PersonRole.findAllWhere(
-                prs:        prs,
-                lic:        lic,
-                org:        org,
-                cluster:    cluster,
-                pkg:        pkg,
-                sub:        sub,
-                title:      title,
-                start_date: start_date,
-                end_date:   end_date,
-                functionType:   functionType
-        ).sort({id: 'asc'})
-
-        if ( p.size() > 0 ) {
-            personRole = p[0]
-        }
-
-        personRole
-    }
-    */
 
     static PersonRole getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
 

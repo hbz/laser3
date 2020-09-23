@@ -1,12 +1,11 @@
 package de.laser
 
-import com.k_int.kbplus.Fact
+
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
@@ -25,7 +24,7 @@ class UsageController extends AbstractDebugController {
     def index() {
         def result = initResult()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
@@ -140,7 +139,7 @@ class UsageController extends AbstractDebugController {
         result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
         result.cursorCount = factService.getSupplierCursorCount()
 
-        if (statsSyncService.getErrors()) {
+        if (statsSyncService.errors) {
             flash.error = statsSyncService.errors.join('</br>')
         }
         statsSyncService.errors = []
@@ -165,7 +164,7 @@ class UsageController extends AbstractDebugController {
         def result = initResult()
         statsSyncService.addFilters(params)
         statsSyncService.doSync()
-        if (statsSyncService.getErrors()) {
+        if (statsSyncService.errors) {
             flash.error = statsSyncService.errors.join('</br>')
         }
         redirect(view: "index", model: result)
@@ -193,7 +192,7 @@ class UsageController extends AbstractDebugController {
 
         if (params.supplier != 'null'){
             platform = Platform.get(params.supplier)
-            def cp = platform.customProperties.find(){
+            def cp = platform.propertySet.find(){
                 it.type.name = "NatStat Supplier ID"
             }
             supplier = cp.stringValue

@@ -1,9 +1,6 @@
 package com.k_int.kbplus.auth
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
 import org.apache.commons.lang.builder.HashCodeBuilder
-
 import javax.persistence.Transient
 
 class UserRole implements Serializable, Comparable {
@@ -14,6 +11,8 @@ class UserRole implements Serializable, Comparable {
     Date dateCreated
     Date lastUpdated
 
+    static transients = ['sortString'] // mark read-only accessor methods
+
     static mapping = {
         id composite: ['role', 'user']
         version false
@@ -22,8 +21,8 @@ class UserRole implements Serializable, Comparable {
     }
 
     static constraints = {
-        lastUpdated (nullable: true, blank: false)
-        dateCreated (nullable: true, blank: false)
+        lastUpdated     nullable: true
+        dateCreated     nullable: true
     }
 
     boolean equals(other) {
@@ -75,6 +74,11 @@ class UserRole implements Serializable, Comparable {
     @Transient
     String getSortString() {
         return user?.display + ' ' + role?.authority
+    }
+
+    @Override
+    String toString() {
+        return '(' + user?.id + ',' + role?.id + ')'
     }
 
     @Transient

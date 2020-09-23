@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
     <semui:crumb message="surveyParticipants.label" class="active"/>
 </semui:breadcrumbs>
@@ -24,7 +24,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
 </h1>
 
 <g:render template="nav"/>
@@ -36,47 +36,49 @@
 <br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig?.type == 'Subscription'}">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
         <i class="icon clipboard outline la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-            ${surveyConfig?.subscription?.name}
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
         </g:link>
     </g:if>
     <g:else>
-        ${surveyConfig?.getConfigNameShort()}
+        ${surveyConfig.getConfigNameShort()}
     </g:else>
     : ${message(code: 'surveyParticipants.label')}
 </h2>
 
 <br>
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfig}">
     <div class="ui grid">
         <div class="sixteen wide stretched column">
             <div class="ui top attached tabular menu">
 
-                <g:if test="${surveyConfig?.type == 'Subscription'}">
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
-                            id="${surveyConfig?.surveyInfo?.id}"
-                            params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants']">
                         ${message(code: 'surveyParticipants.selectedSubParticipants')}
                         <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
                     </g:link>
                 </g:if>
 
-                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                        controller="survey" action="surveyParticipants"
-                        id="${surveyConfig?.surveyInfo?.id}"
-                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
-                    ${surveyConfig?.type == 'Subscription' ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.label')}
-                    <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
+                <g:if test="${surveyConfig.type != 'IssueEntitlementsSurvey'}">
+                    <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
+                            controller="survey" action="surveyParticipants"
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
+                        ${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.selectedParticipants2')}
+                        <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
+                </g:if>
 
-                <g:if test="${editable}">
+                <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
                     <g:link class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
-                            id="${surveyConfig?.surveyInfo?.id}"
-                            params="[surveyConfigID: surveyConfig?.id, tab: 'consortiaMembers']">
+                            id="${surveyConfig.surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
                         ${message(code: 'surveyParticipants.consortiaMembers')}
                         <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div>
                     </g:link>

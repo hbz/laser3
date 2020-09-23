@@ -1,8 +1,11 @@
 package com.k_int.kbplus.auth
 
-import de.laser.domain.AbstractI10nTranslatable
+import com.k_int.kbplus.GenericOIDService
+import de.laser.traits.I10nTrait
+import grails.util.Holders
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
-class Role extends AbstractI10nTranslatable {
+class Role implements I10nTrait {
 
     String authority
     String roleType
@@ -21,21 +24,16 @@ class Role extends AbstractI10nTranslatable {
     ]
 
     static constraints = {
-        authority blank: false, unique: true
-        roleType blank: false, nullable: true
+        authority   blank: false, unique: true
+        roleType    blank: false, nullable: true
     }
 
-    static def refdataFind(params) {
-        def result = [];
-        def ql = null;
-        ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
+    static def refdataFind(GrailsParameterMap params) {
+        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
 
-        if (ql) {
-            ql.each { id ->
-                result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
-            }
-        }
-
-        result
+        genericOIDService.getOIDMapList(
+                Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params),
+                'authority'
+        )
     }
 }

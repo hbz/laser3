@@ -1,11 +1,11 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*;de.laser.helper.RDStore;" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 
 <%
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
 
-    ownobj.documents.sort{it.owner?.title}.each{ it ->
+    ownobj.documents?.sort{it.owner?.title}.each{ it ->
         if (it.sharedFrom) {
             sharedItems << it
         }
@@ -13,16 +13,19 @@
             baseItems << it
         }
     }
-    boolean editable2 = accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY", "INST_EDITOR")
+    boolean editable2 = accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
 
-    baseItems = baseItems + ownobj?.subscription?.documents?.findAll {it.doctype == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Usage Statistics", de.laser.helper.RDConstants.DOCUMENT_TYPE)}.sort{it.owner?.title}
 
+    if(ownobj.subscription) {
+        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == RefdataValue.getByValueAndCategory("Usage Statistics", RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
+
+    }
 %>
 
 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM")}">
-    <semui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${controllerName == 'survey' ? false : (editable || editable2)}">
+    <semui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
         <g:each in="${baseItems}" var="docctx">
-           <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
+           <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="twelve wide column">
@@ -49,34 +52,33 @@
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                     <g:if test="${docctx?.isShared}">
 
-                                        <g:remoteLink class="ui mini icon button green js-no-wait-wheel la-popup-tooltip la-delay"
+                                        <laser:remoteLink class="ui mini icon button green js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
                                                       onComplete=""
-                                                      update="container-documents"
+                                                      data-update="container-documents"
                                                       data-position="top right"
                                                       data-content="${message(code: 'property.share.tooltip.on')}">
                                             <i class="la-share icon"></i>
-                                        </g:remoteLink>
+                                        </laser:remoteLink>
 
                                     </g:if>
                                     <g:else>
                                         <button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
                                             <i class="la-share slash icon"></i>
                                         </button>
-                                        <g:remoteLink class="js-gost la-popup-tooltip la-delay"
+                                        <laser:remoteLink class="js-gost la-popup-tooltip la-delay"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
                                                       onComplete=""
-                                                      update="container-documents"
+                                                      data-update="container-documents"
                                                       data-position="top right"
                                                       data-content="${message(code: 'property.share.tooltip.off')}"
-
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share">
-                                        </g:remoteLink>
+                                        </laser:remoteLink>
                                     </g:else>
                                 </g:if>
                             </g:if>

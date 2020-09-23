@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
+<%@ page import="de.laser.Person" %>
 <!doctype html>
 <html>
 	<head>
@@ -21,7 +21,6 @@
 				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
-                            <% // <f:all bean="personInstance" /> %>
 							<g:render template="form"/>
 							
 							<div class="ui form-actions">

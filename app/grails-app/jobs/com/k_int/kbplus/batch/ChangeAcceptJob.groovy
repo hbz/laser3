@@ -1,17 +1,15 @@
 package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.PendingChange
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.auth.User
-import de.laser.SystemEvent
-import de.laser.helper.RDConstants
+import de.laser.system.SystemEvent
+import de.laser.helper.RDStore
 import de.laser.quartz.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {
 
   def pendingChangeService
 
-  static triggers = {
+  /*static triggers = {
    // Delay 20 seconds, run every 10 mins.
    // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
    // Example - every 10 mins 0 0/10 * * * ? 
@@ -25,7 +23,7 @@ class ChangeAcceptJob extends AbstractJob {
    //                  | | `- Hour, 0-23
    //                  | `- Minute, 0-59
    //                  `- Second, 0-59
- }
+ }*/
     static List<String> configFlags = []
 
     boolean isAvailable() {
@@ -46,29 +44,25 @@ class ChangeAcceptJob extends AbstractJob {
         SystemEvent.createEvent('CAJ_JOB_START')
 
         try {
-            RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", RDConstants.PENDING_CHANGE_STATUS)
-            //def pending_change_pending_status = RefdataCategory.lookupOrCreate(RDConstants.PENDING_CHANGE_STATUS, "Pending")
-            User user = User.findByDisplay("Admin")
-
             // Get all changes associated with slaved subscriptions
-            String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
-            def subPendingChanges = PendingChange.executeQuery(subQueryStr, [ pending_change_pending_status ]);
+            String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = :status ) order by pc.ts desc"
+            def subPendingChanges = PendingChange.executeQuery(subQueryStr, [ status: RDStore.PENDING_CHANGE_PENDING ])
             log.debug(subPendingChanges.size() +" pending changes have been found for slaved subscriptions")
 
             //refactoring: replace link table with instanceOf
             //def licQueryStr = "select pc.id from PendingChange as pc join pc.license.incomingLinks lnk where lnk.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
-            String licQueryStr = "select pc.id from PendingChange as pc where license.isSlaved = true and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
-            def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ pending_change_pending_status ]);
+            String licQueryStr = "select pc.id from PendingChange as pc where license.isSlaved = true and ( pc.status is null or pc.status = :status ) order by pc.ts desc"
+            def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ status: RDStore.PENDING_CHANGE_PENDING ])
             log.debug( licPendingChanges.size() +" pending changes have been found for slaved licenses")
 
-            if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges, user)) {
+            if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges)) {
                 log.warn( 'Failed. Maybe ignored due blocked pendingChangeService')
             }
 
             log.debug("****Change Accept Job Complete*****")
         }
         catch (Exception e) {
-            log.error(e)
+            log.error( e.toString() )
         }
 
         SystemEvent.createEvent('CAJ_JOB_COMPLETE')

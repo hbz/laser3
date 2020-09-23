@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Combo;de.laser.RefdataValue" %>
 <!doctype html>
 <html>
     <head>
@@ -22,9 +22,6 @@
 
         <semui:form>
             <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
-                <input type="hidden" name="newEmptySubId" value="${defaultSubIdentifier}"/>
-
-                <p>${message(code:'myinst.emptySubscription.notice')}</p>
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>
@@ -39,18 +36,13 @@
 
                 <div class="field required">
                     <label>${message(code:'default.status.label')}</label>
-                    <%
-                        def fakeList = []
-                        fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-                    %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                    <laser:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
                                   value="${['':'']}"
                                   class="ui select dropdown"/>
                 </div>
 
-                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                <g:if test="${(institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)}">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
@@ -60,6 +52,9 @@
                         <laser:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
+                <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
+                </g:elseif>
                 <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
@@ -71,6 +66,7 @@
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
                 </g:if>--%>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
+                <input type="button" class="ui button js-click-control" onclick="window.history.back();" value="${message(code:'default.button.cancel.label')}" />
             </g:form>
         </semui:form>
 
@@ -106,14 +102,14 @@
             <g:else>
                 <div class="cons-options">
                     <semui:filter>
-                        <g:formRemote name="x" url="[action:'ajaxEmptySubscription']" update="orgListTable" class="ui form">
+                        <laser:remoteForm name="x" url="[controller:'myInstitution', action:'ajaxEmptySubscription']" data-update="orgListTable" class="ui form">
                             <g:render template="/templates/filter/orgFilter"
                                       model="[
                                               tmplConfigShow: [['name']],
                                               tmplConfigFormFilter: true,
                                               useNewLayouter: true
                                       ]" />
-                        </g:formRemote>
+                        </laser:remoteForm>
                     </semui:filter>
 
                     <div id="orgListTable">
@@ -131,7 +127,7 @@
                 </div><!-- .cons-options -->
             </g:else>
 
-            <r:script language="JavaScript">
+            <r:script>
                 $('#submitterFallback').click(function(e){
                     e.preventDefault();
                     $('#dynHiddenValues').empty();
@@ -155,7 +151,7 @@
 
         </g:if>
      --%>
-        <r:script language="JavaScript">
+        <r:script>
             function formatDate(input) {
                 if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
                     var inArr = input.split(/[\.\/-]/g);

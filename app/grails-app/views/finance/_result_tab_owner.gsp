@@ -1,5 +1,5 @@
 <!-- _result_tab_owner.gsp -->
-<%@page import="de.laser.helper.RDStore;com.k_int.kbplus.CostItem"%>
+<%@page import="de.laser.helper.RDStore;de.laser.finance.CostItem"%>
 <laser:serviceInjection />
 <%
     int colspan = 2
@@ -149,28 +149,28 @@
                     <td class="x">
                         <g:if test="${editable}">
                             <g:if test="${fixedSubcription}">
-                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:if>
                             <g:else>
-                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:else>
                         </g:if>
                         <g:if test="${editable}">
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'own']" class="ui icon negative button js-open-confirm-modal"
+                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'own']" class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem",args: [ci.costTitle])}"
                                         data-confirm-term-how="delete">
                                 <i class="trash alternate icon"></i>
@@ -235,7 +235,7 @@
             <td colspan="${wideColspan}">
                 <div class="ui fluid accordion">
                     <div class="title">
-                        <i class="dropdown icon"></i>
+                        <i aria-hidden="true" class="dropdown icon" ></i>
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
@@ -253,14 +253,14 @@
     </tfoot>
 </table>
 <g:if test="${data.costItems}">
-    <g:if test="${fixedSubcription}">
-        <semui:paginate mapping="subfinance" params="${params+[view:'own']}"
+    <g:if test="${fixedSubscription}">
+        <semui:paginate mapping="subfinance" params="${params+[showView:'own']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
-        <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'own']}"
+        <semui:paginate action="finance" controller="myInstitution" params="${params+[showView:'own']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>

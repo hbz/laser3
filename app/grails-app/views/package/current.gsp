@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
     <head>
@@ -16,11 +16,53 @@
         <semui:controlButtons>
             <semui:exportDropdown>
                 <semui:exportDropdownItem>
+                    <g:if test="${filterSet}">
+                        <g:link class="item js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-term-how="ok" controller="package" action="current"
+                                params="${params + [format: 'csv']}">
+                            <g:message code="default.button.exports.csv"/>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link class="item" action="current" params="${params + [format: 'csv']}">CSV Export</g:link>
+                    </g:else>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:if test="${filterSet}">
+                        <g:link class="item js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-term-how="ok" controller="package" action="current"
+                                params="${params + [exportXLSX: true]}">
+                            <g:message code="default.button.exports.xls"/>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link class="item" action="current" params="${params+[exportXLSX: true]}">
+                            <g:message code="default.button.exports.xls"/>
+                        </g:link>
+                    </g:else>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:if test="${filterSet}">
+                        <g:link class="item js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-term-how="ok" controller="package" action="current"
+                                params="${params + [exportKBart: true]}">
+                            KBART Export
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link class="item" action="current"
+                                params="${params + [exportKBart: true]}">KBART Export</g:link>
+                    </g:else>
+                </semui:exportDropdownItem>
+                <%--<semui:exportDropdownItem>
                     <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
                 </semui:exportDropdownItem>
                 <semui:exportDropdownItem>
                     <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
-                </semui:exportDropdownItem>
+                </semui:exportDropdownItem>--%>
             </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
@@ -72,19 +114,19 @@
 
                           <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
                           <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-                          <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
+                          <input type="hidden" name="__newObjectClass" value="${TitleInstancePackagePlatform.class.name}"/>
                           <input type="hidden" name="__recip" value="pkg"/>
 
                           <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
-                          <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+                          <input type="hidden" name="status" value="${RefdataValue.class.name}:29"/>
                           <div class="two fluid fields">
                               <div class="field">
                                   <label for="title">${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                                  <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" id="title" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
+                                  <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" id="title" name="title" baseClass="${TitleInstance.class.name}"/>
                               </div>
                               <div class="field">
                                   <label for="platform">${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                                  <g:simpleReferenceTypedown class="input-large" style="width:350px;" id="platform" name="platform" baseClass="com.k_int.kbplus.Platform"/>
+                                  <g:simpleReferenceTypedown class="input-large" style="width:350px;" id="platform" name="platform" baseClass="${Platform.class.name}"/>
                               </div>
                           </div>
                           <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
@@ -104,7 +146,7 @@
             <tr>
 
               <td>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="selectAll()"/></g:if>
               </td>
 
               <td colspan="7">
@@ -164,7 +206,7 @@
               contextPath="../templates" 
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />--%>
 
-    <r:script language="JavaScript">
+    <r:script>
       $(function(){
         $.fn.editable.defaults.mode = 'inline';
         $('.xEditableValue').editable();

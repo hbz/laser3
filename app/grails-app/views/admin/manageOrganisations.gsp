@@ -1,4 +1,4 @@
-<%@ page import="groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; de.laser.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -22,7 +22,8 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type'], ['federalState', 'libraryNetwork', 'sector', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier', 'type'], ['region', 'libraryNetwork', 'sector',
+                                                                                'libraryType']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
@@ -82,8 +83,8 @@
 
                     <td>
                         <%
-                            def customerType = OrgSettings.get(org, OrgSettings.KEYS.CUSTOMER_TYPE)
-                            if (customerType != OrgSettings.SETTING_NOT_FOUND) {
+                            def customerType = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
+                            if (customerType != OrgSetting.SETTING_NOT_FOUND) {
                                 println customerType.getRoleValue()?.getI10n('authority')
                                 customerType = customerType.getRoleValue().id
                             }
@@ -91,8 +92,8 @@
                                 customerType = null
                             }
 
-                            def gascoEntry = OrgSettings.get(org, OrgSettings.KEYS.GASCO_ENTRY)
-                            if (gascoEntry != OrgSettings.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
+                            def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
+                            if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
                                 println '<i class="icon green globe"></i>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
@@ -103,8 +104,8 @@
 
                     <td>
                         <%
-                            def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
-                            if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+                            def apiLevel = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
+                            if (apiLevel != OrgSetting.SETTING_NOT_FOUND) {
                                 println '<div>' + apiLevel.getValue() + '</div>'
                                 apiLevel = apiLevel.getValue()
                             }
@@ -112,13 +113,13 @@
                                 apiLevel = 'Kein Zugriff'
                             }
 
-                            def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS)
-                            if (accessStatistics != OrgSettings.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
+                            def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
+                            if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
                                 println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
                             }
 
-                            def accessOA = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
-                            if (accessOA!= OrgSettings.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
+                            def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
+                            if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
                                 println '<div><i class="ui icon lock open"></i> OAMontior</div>'
                             }
                         %>
@@ -163,7 +164,7 @@
                     </td>
 
                     <td class="x">
-                        <g:if test="${org.hasPerm('org_consortium')}">
+                        <g:if test="${org.hasPerm('ORG_CONSORTIUM')}">
                             <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                     data-gascoTarget="${Org.class.name}:${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
@@ -221,8 +222,8 @@
             <div class="field">
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
                 <laser:select id="gascoEntry" name="gascoEntry"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.Y_N)}"
-                              optionKey="${{'com.k_int.kbplus.RefdataValue:' + it.id}}"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="${{ RefdataValue.class.name + ':' + it.id }}"
                               optionValue="value"
                               class="ui dropdown"
                 />

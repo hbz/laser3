@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.auth.Role" %>
+<%@ page import="com.k_int.kbplus.auth.UserRole;com.k_int.kbplus.Org;com.k_int.kbplus.auth.Role" %>
 <!doctype html>
 <html>
   <head>
@@ -124,7 +124,7 @@
 
             <g:if test="${availableComboConsOrgs}">
                 <div class="ui segment form">
-                    <g:set var="orgLabel" value="Konsorten" />
+                    <g:set var="orgLabel" value="Teilnehmer" />
 
                     <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
                 </div>
@@ -135,7 +135,7 @@
     <sec:ifAnyGranted roles="ROLE_ADMIN">
       <h4 class="ui dividing header">${message(code:'user.role.plural')}</h4>
 
-          <table class="ui celled la-table la-table-small table">
+          <table class="ui celled la-table compact table">
             <thead>
               <tr>
                 <th>${message(code:'user.role')}</th>
@@ -163,34 +163,19 @@
                   <td colspan="2">
                       <g:form class="ui form" controller="ajax" action="addToCollection">
                           <input type="hidden" name="__context" value="${user.class.name}:${user.id}"/>
-                          <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
+                          <input type="hidden" name="__newObjectClass" value="${UserRole.class.name}"/>
                           <input type="hidden" name="__recip" value="user"/>
                           <input type="hidden" name="role" id="userRoleSelect"/>
                           <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
                       </g:form>
 
-            <%-- TODO [ticket=1612] new identifier handling
-                                  <g:form controller="ajax" action="addIdentifier" class="ui form">
-                                      <input name="owner" type="hidden" value="${user.class.name}:${user.id}" />
+                  </td>
+              </tr>
+              </tfoot>
+            </g:if>
+          </table>
 
-                                      <div class="fields">
-                                          <div class="field">
-                                              <g:select name="role" id="role" class="ui search dropdown"
-                                                        from="${Role.findAllByRoleType('global')}" optionKey="${{'com.k_int.kbplus.auth.UserRole:' + it.id}}" optionValue="authority" />
-                                          </div>
-                                          <div class="field">
-                                              <button type="submit" class="ui button">Rolle hinzufügen</button>
-                                          </div>
-                                      </div>
-                                  </g:form>
-            --%>
-                              </td>
-                          </tr>
-                          </tfoot>
-                        </g:if>
-                      </table>
-
-                  <r:script language="JavaScript">
+                  <r:script>
 
                     $(function(){
                       $.fn.editable.defaults.mode = 'inline';
@@ -209,7 +194,7 @@
                               return {
                                   q: term, // search term
                                   page_limit: 10,
-                                  baseClass:'com.k_int.kbplus.auth.Role'
+                                  baseClass: '${Role.class.name}'
                               };
                           },
                           results: function (data, page) {

@@ -1,8 +1,6 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory"%>
+<%@ page import="de.laser.RefdataCategory;de.laser.helper.RDConstants"%>
 
 <!doctype html>
-<%-- r:require module="annotations" / --%>
-%{--<% long start = System.currentTimeMillis() %>--}%
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
@@ -19,7 +17,7 @@
         <g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
         </g:if>
-        <g:render template="../templates/filter/javascript" />
+        <g:render template="/templates/filter/javascript" />
         <semui:filter showFilterButton="true">
             <form class="ui form">
                 <div class="four fields">
@@ -41,7 +39,7 @@
                         <laser:select class="ui fluid dropdown"
                                   name="taskStatus"
                                   value="${params.taskStatus}"
-                                  from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.TASK_STATUS)}"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   noSelection="${['' : message(code:'accessMethod.all')]}"
                                   optionKey="id"
                                   optionValue="value" />
@@ -63,10 +61,6 @@
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
         <g:render template="/templates/tasks/js_taskedit"/>
-
-%{--<% long ende = java.lang.System.currentTimeMillis()--}%
- %{--long dauer = ende - start %>--}%
-    %{--************************* Dauer: ${dauer} *************************--}%
 
   </body>
 </html>

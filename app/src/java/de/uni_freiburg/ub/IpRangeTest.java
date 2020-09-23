@@ -76,7 +76,7 @@ public class IpRangeTest {
 	@Test
 	public void testParseIpRange() throws Exception {
 
-		assertTrue(EqualsBuilder.reflectionEquals(IpAddress.parseIpAddress("2001:4860:4860:::::88ff"),
+		assertTrue(EqualsBuilder.reflectionEquals(IpAddress.parseIpAddress("2001:4860:4860::88ff"),
 				IpRange.parseIpRange("2001:4860:4860:0:0:0:0:88ff/128").getUpperLimit()));
 
 		assertTrue(EqualsBuilder.reflectionEquals(IpAddress.parseIpAddress("2001:4860:4860:0:0:0:0:88ff"),

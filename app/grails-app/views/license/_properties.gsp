@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -11,92 +11,96 @@
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: license,
+            editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
             availPropDefGroups: availPropDefGroups
     ]}" />
+
 </semui:modal>
+
+<g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+    <div class="ui card la-dl-no-table ">
+        <div class="content">
+            <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
+            <div id="member_props_div">
+                <g:render template="/templates/properties/members" model="${[
+                        prop_desc: PropertyDefinition.LIC_PROP,
+                        ownobj: license,
+                        custom_props_div: "member_props_div"]}"/>
+
+                <%--<r:script>
+                    $(document).ready(function(){
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                    });
+                </r:script>--%>
+            </div>
+        </div>
+    </div>
+</g:if>
 
 <div class="ui card la-dl-no-table la-js-hideable">
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${license._getCalculatedPropDefGroups(institution)}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
-<g:each in="${allPropDefGroups.global}" var="propDefGroup">
-    <%-- check visibility --%>
-    <g:if test="${propDefGroup.isVisible}">
+    <g:each in="${allPropDefGroups.sorted}" var="entry">
+        <%
+            String cat                             = entry[0]
+            PropertyDefinitionGroup pdg            = entry[1]
+            PropertyDefinitionGroupBinding binding = entry[2]
+            List numberOfConsortiaProperties       = []
+            if(license.getLicensingConsortium() && institution.id != license.getLicensingConsortium().id)
+                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(license,license.getLicensingConsortium()))
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefGroup,
-                propDefGroupBinding: null,
-                prop_desc: PropertyDefinition.LIC_PROP,
-                ownobj: license,
-                custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(license)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefGroup.name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
+            boolean isVisible = false
 
-<g:each in="${allPropDefGroups.local}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
+            if (cat == 'global') {
+                isVisible = pdg.isVisible || numberOfConsortiaProperties.size() > 0
+            }
+            else if (cat == 'local') {
+                isVisible = binding.isVisible
+            }
+            else if (cat == 'member') {
+                isVisible = (binding.isVisible || numberOfConsortiaProperties.size() > 0) && binding.isVisibleForConsortiaMembers
+            }
+        %>
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefInfo[0],
-                propDefGroupBinding: propDefInfo[1],
-                prop_desc: PropertyDefinition.LIC_PROP,
-                ownobj: license,
-                custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(license)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
-
-<g:each in="${allPropDefGroups.member}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
-        <%-- check member visibility --%>
-        <g:if test="${propDefInfo[1]?.isVisibleForConsortiaMembers}">
+        <g:if test="${isVisible}">
 
             <g:render template="/templates/properties/groupWrapper" model="${[
-                    propDefGroup: propDefInfo[0],
-                    propDefGroupBinding: propDefInfo[1],
+                    propDefGroup: pdg,
+                    propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
-                    custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
+                    custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
+            <g:if test="${!binding?.isVisible && !pdg.isVisible}">
+                <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(license).size()-numberOfConsortiaProperties.size()}" />
+                <g:if test="${numberOfProperties > 0}">
+                    <%
+                        hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties])}"
+                    %>
+                </g:if>
+            </g:if>
         </g:if>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(license)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
+        <g:else>
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license,institution)}" />
 
-<g:if test="${hiddenPropertiesMessages.size() > 0}">
-    <div class="content">
-        <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
-    </div>
-</g:if>
+            <g:if test="${numberOfProperties.size() > 0}">
+                <%
+                    hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
+                %>
+            </g:if>
+        </g:else>
+    </g:each>
+
+    <g:if test="${hiddenPropertiesMessages.size() > 0}">
+        <div class="content">
+            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+        </div>
+    </g:if>
 
 <%-- orphaned properties --%>
 
@@ -116,12 +120,13 @@
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
+                    editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${license.class.simpleName}:${license.id}"]'/>", "#custom_props_div_props");
         });
@@ -133,7 +138,7 @@
 
 
 <g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == contextOrg?.name}">
+    <g:if test="${authOrg.name == institution.name}">
         <div class="ui card la-dl-no-table la-js-hideable">
             <div class="content">
                 <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
@@ -145,7 +150,7 @@
                             custom_props_div: "custom_props_div_${authOrg.id}",
                             tenant: authOrg]}"/>
 
-                    <r:script language="JavaScript">
+                    <r:script>
                             $(document).ready(function(){
                                 c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                             });

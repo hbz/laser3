@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg;com.k_int.kbplus.auth.Role" %>
+<%@ page import="de.laser.UserSetting; com.k_int.kbplus.Org; com.k_int.kbplus.auth.UserOrg; com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -25,7 +25,7 @@
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
-    <g:render template="../templates/filter/javascript" />
+    <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form controller="organisation" action="users" params="${[id: orgInstance.id]}" method="get" class="ui form">
 
@@ -160,7 +160,7 @@
                         </g:if>
 
                         <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [uo.user.displayName,uo.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name ])}"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [uo.user.displayName,uo.user.getSettingsValue(UserSetting.KEYS.DASHBOARD)?.name ])}"
                                 data-confirm-term-how="delete"
                                 controller="organisation"
                                 action="processAffiliation"

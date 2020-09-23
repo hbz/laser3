@@ -2,11 +2,7 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiStubReader
-import de.laser.api.v0.ApiToolkit
-import de.laser.domain.IssueEntitlementCoverage
+import de.laser.api.v0.*
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -73,29 +69,29 @@ class ApiIssueEntitlement {
             return null
         }
 
-        result.globalUID        = ie?.globalUID
-        result.accessStartDate  = ie?.accessStartDate
-        result.accessEndDate    = ie?.accessEndDate
-        result.ieReason         = ie?.ieReason
-        result.coreStatusStart  = ie?.coreStatusStart
-        result.coreStatusEnd    = ie?.coreStatusEnd
-        result.lastUpdated      = ie?.lastUpdated
+        result.globalUID        = ie.globalUID
+        result.accessStartDate  = ApiToolkit.formatInternalDate(ie.accessStartDate)
+        result.accessEndDate    = ApiToolkit.formatInternalDate(ie.accessEndDate)
+        result.ieReason         = ie.ieReason
+        result.coreStatusStart  = ApiToolkit.formatInternalDate(ie.coreStatusStart)
+        result.coreStatusEnd    = ApiToolkit.formatInternalDate(ie.coreStatusEnd)
+        result.lastUpdated      = ApiToolkit.formatInternalDate(ie.lastUpdated)
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.coverages        = getIssueEntitlementCoverageCollection(ie.coverages, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiCollectionReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
-                    result.tipp = ApiCollectionReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
+                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
                     // com.k_int.kbplus.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
@@ -106,46 +102,5 @@ class ApiIssueEntitlement {
         }
 
         ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> getIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage, def ignoreRelation, Org context) {
-        Map<String, Object> result = [:]
-        if (! coverage) {
-            return null
-        }
-
-        result.startDate        = coverage?.startDate
-        result.startVolume      = coverage?.startVolume
-        result.startIssue       = coverage?.startIssue
-        result.endDate          = coverage?.endDate
-        result.endVolume        = coverage?.endVolume
-        result.endIssue         = coverage?.endIssue
-        result.embargo          = coverage?.embargo
-        result.coverageDepth    = coverage?.coverageDepth
-        result.coverageNote     = coverage?.coverageNote
-        result.lastUpdated      = coverage?.lastUpdated
-
-        ApiToolkit.cleanUp(result, true, true)
-    }
-
-    /**
-     * Access rights due wrapping object
-     *
-     * @param list
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
-     */
-    static Collection<Object> getIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list, def ignoreRelation, Org context) {
-        def result = []
-
-        list?.each { it -> // com.k_int.kbplus.IssueEntitlementCoverage
-            result << getIssueEntitlementCoverageMap(it, ignoreRelation, context)
-        }
-
-        result
     }
 }

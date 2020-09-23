@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.ConfigUtils
+import grails.transaction.Transactional
 import org.apache.http.HttpHost
 import org.codehaus.groovy.grails.web.json.parser.JSONParser
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
@@ -11,29 +13,29 @@ import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.cluster.health.ClusterIndexHealth
 import org.elasticsearch.rest.RestStatus
 
-
+@Transactional
 class ESWrapperService {
 
-    final static ES_INDEX   = 'kbplus'
-    final static ES_HOST    = 'localhost'
-    final static ES_CLUSTER = 'elasticsearch'
+    final static String ES_INDEX   = 'kbplus'
+    final static String ES_HOST    = 'localhost'
+    final static String ES_CLUSTER = 'elasticsearch'
 
     static transactional = false
-    def grailsApplication
+
     RestHighLevelClient esclient
 
-    def es_cluster_name
-    def es_index_name
-    def es_host
+    String es_cluster_name
+    String es_index_name
+    String es_host
 
 
     @javax.annotation.PostConstruct
     def init() {
         log.debug("ESWrapperService::init");
 
-        es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: ESWrapperService.ES_CLUSTER
-        es_index_name   = grailsApplication.config.aggr_es_index    ?: ESWrapperService.ES_INDEX
-        es_host         = grailsApplication.config.aggr_es_hostname ?: ESWrapperService.ES_HOST
+        es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: ESWrapperService.ES_CLUSTER
+        es_index_name   = ConfigUtils.getAggrEsIndex()    ?: ESWrapperService.ES_INDEX
+        es_host         = ConfigUtils.getAggrEsHostname() ?: ESWrapperService.ES_HOST
 
         log.debug("es_cluster = ${es_cluster_name}")
         log.debug("es_index_name = ${es_index_name}")
@@ -51,39 +53,36 @@ class ESWrapperService {
         log.debug("ES Init completed");
     }
 
-    def getClient() {
+    RestHighLevelClient getClient() {
         esclient = new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost(es_host, 9200, "http"),
                         new HttpHost(es_host, 9201, "http")));
 
-        return esclient
+        esclient
     }
 
-    def closeClient() {
-        return esclient.close()
+    void closeClient() {
+        esclient.close()
     }
 
-    Map getESSettings(){
-        Map result = [:]
+    Map<String, String> getESSettings(){
+        Map<String, String> result = [:]
 
         result.clusterName = es_cluster_name
         result.host = es_host
         result.indexName = es_index_name
 
-        return result
-
+        result
     }
 
-    def getESMapping(){
-
+    Object getESMapping(){
         JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("elasticsearch/es_mapping.json"))
 
-        return jsonParser.parse()
-
+        jsonParser.parse()
     }
 
-    def clusterHealth(){
+    void clusterHealth(){
 
         RestHighLevelClient esclient = this.getClient()
 
@@ -113,7 +112,5 @@ class ESWrapperService {
 
         esclient.close()
         println("Close")
-
     }
-
 }

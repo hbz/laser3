@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SubscriptionCustomProperty; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; com.k_int.kbplus.SubscriptionProperty; com.k_int.kbplus.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -11,93 +11,95 @@
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: subscriptionInstance,
+            editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
             availPropDefGroups: availPropDefGroups
     ]}" />
 
 </semui:modal>
 
+<g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
+    <div class="ui card la-dl-no-table ">
+        <div class="content">
+            <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+            <div id="member_props_div">
+                <g:render template="/templates/properties/members" model="${[
+                        prop_desc: PropertyDefinition.SUB_PROP,
+                        ownobj: subscriptionInstance,
+                        custom_props_div: "member_props_div"]}"/>
+
+                <%--<r:script>
+                    $(document).ready(function(){
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                    });
+                </r:script>--%>
+            </div>
+        </div>
+    </div>
+</g:if>
+
 <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscriptionInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${subscriptionInstance._getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
-<g:each in="${allPropDefGroups.global}" var="propDefGroup">
-    <%-- check visibility --%>
-    <g:if test="${propDefGroup.isVisible}">
+    <g:each in="${allPropDefGroups.sorted}" var="entry">
+        <%
+            String cat                             = entry[0]
+            PropertyDefinitionGroup pdg            = entry[1]
+            PropertyDefinitionGroupBinding binding = entry[2]
+            List numberOfConsortiaProperties       = []
+            if(subscriptionInstance.getConsortia() && contextService.getOrg().id != subscriptionInstance.getConsortia().id)
+                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscriptionInstance,subscriptionInstance.getConsortia()))
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefGroup,
-                propDefGroupBinding: null,
-                prop_desc: PropertyDefinition.SUB_PROP,
-                ownobj: subscriptionInstance,
-                custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(subscriptionInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-           <%
-               hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefGroup.name, numberOfProperties.size()])}"
-           %>
-        </g:if>
-    </g:else>
-</g:each>
+            boolean isVisible = false
 
-<g:each in="${allPropDefGroups.local}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
+            if (cat == 'global') {
+                isVisible = pdg.isVisible || numberOfConsortiaProperties.size() > 0
+            }
+            else if (cat == 'local') {
+                isVisible = binding.isVisible
+            }
+            else if (cat == 'member') {
+                isVisible = (binding.isVisible || numberOfConsortiaProperties.size() > 0) && binding.isVisibleForConsortiaMembers
+            }
+        %>
 
-        <g:render template="/templates/properties/groupWrapper" model="${[
-                propDefGroup: propDefInfo[0],
-                propDefGroupBinding: propDefInfo[1],
-                prop_desc: PropertyDefinition.SUB_PROP,
-                ownobj: subscriptionInstance,
-                custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
-        ]}"/>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(subscriptionInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
-
-<g:each in="${allPropDefGroups.member}" var="propDefInfo">
-    <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible}">
-        <%-- check member visibility --%>
-        <g:if test="${propDefInfo[1]?.isVisibleForConsortiaMembers}">
+        <g:if test="${isVisible}">
 
             <g:render template="/templates/properties/groupWrapper" model="${[
-                    propDefGroup: propDefInfo[0],
-                    propDefGroupBinding: propDefInfo[1],
+                    propDefGroup: pdg,
+                    propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
-                    custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
+                    custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
+            <g:if test="${!binding?.isVisible && !pdg.isVisible}">
+                <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(subscriptionInstance).size()-numberOfConsortiaProperties.size()}" />
+                <g:if test="${numberOfProperties > 0}">
+                    <%
+                        hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems.withInheritance', args: [pdg.name, numberOfProperties])}"
+                    %>
+                </g:if>
+            </g:if>
         </g:if>
-    </g:if>
-    <g:else>
-        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(subscriptionInstance)}" />
-        <g:if test="${numberOfProperties.size() > 0}">
-            <%
-                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
-            %>
-        </g:if>
-    </g:else>
-</g:each>
+        <g:else>
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscriptionInstance,contextService.getOrg())}" />
+            <g:if test="${numberOfProperties.size() > 0}">
+                <%
+                    hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
+                %>
+            </g:if>
+        </g:else>
+    </g:each>
 
-<g:if test="${hiddenPropertiesMessages.size() > 0}">
-    <div class="content">
-        <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
-    </div>
-</g:if>
+    <g:if test="${hiddenPropertiesMessages.size() > 0}">
+        <div class="content">
+            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+        </div>
+    </g:if>
 
 <%-- orphaned properties --%>
 
@@ -111,18 +113,19 @@
                 ${message(code:'subscription.properties')}
             </g:else>
         </h5>
-
+         <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
         <div id="custom_props_div_props">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscriptionInstance,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
+                    editable: (controllerName == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
     $(document).ready(function(){
         c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${subscriptionInstance.class.simpleName}:${subscriptionInstance.id}"]'/>", "#custom_props_div_props");
     });
@@ -132,30 +135,24 @@
 
 <%-- private properties --%>
 
-<g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == contextOrg?.name && accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')}">
-        <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
-        <div class="ui card la-dl-no-table ">
-            <div class="content">
+<!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
+<div class="ui card la-dl-no-table ">
+    <div class="content">
+        <h5 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h5>
+        <div id="custom_props_div_${contextOrg.id}">
+            <g:render template="/templates/properties/private" model="${[
+                    prop_desc: PropertyDefinition.SUB_PROP,
+                    ownobj: subscriptionInstance,
+                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                    tenant: contextOrg]}"/>
 
-                <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
-
-                <div id="custom_props_div_${authOrg.id}">
-                    <g:render template="/templates/properties/private" model="${[
-                            prop_desc: PropertyDefinition.SUB_PROP,
-                            ownobj: subscriptionInstance,
-                            custom_props_div: "custom_props_div_${authOrg.id}",
-                            tenant: authOrg]}"/>
-
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                        });
-                    </r:script>
-                </div>
-            </div>
+            <r:script>
+                    $(document).ready(function(){
+                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+                    });
+            </r:script>
         </div>
-    </g:if>
-</g:each>
+    </div>
+</div>
 
 <!-- _properties -->

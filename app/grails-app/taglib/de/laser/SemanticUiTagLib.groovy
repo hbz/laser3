@@ -1,18 +1,15 @@
 package de.laser
 
-import com.k_int.kbplus.ApiSource
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SurveyOrg
-import com.k_int.kbplus.SurveyResult
-import com.k_int.kbplus.UserSettings
+import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import de.laser.helper.DateUtil
-import de.laser.helper.RDConstants
-import de.laser.helper.SessionCacheWrapper
-import de.laser.helper.SwissKnife
+import de.laser.helper.*
+import org.codehaus.groovy.grails.support.encoding.CodecLookup
+import org.codehaus.groovy.grails.support.encoding.Encoder
+import org.codehaus.groovy.grails.web.pages.GroovyPage
+import org.codehaus.groovy.grails.web.pages.TagLibraryLookup
+import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
-
 
 // Semantic UI
 
@@ -24,6 +21,10 @@ class SemanticUiTagLib {
     def systemService
     def contextService
     def GOKbService
+    def genericOIDService
+    CodecLookup codecLookup
+    TagLibraryLookup gspTagLibraryLookup
+    LinksGenerationService linksGenerationService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -216,32 +217,6 @@ class SemanticUiTagLib {
         }
     }
 
-    def headerIcon = { attrs, body ->
-
-        out << '<i aria-hidden="true" class="circular icon la-object"></i> '
-    }
-
-    def headerTitleIcon = { attrs, body ->
-
-        switch (attrs.type) {
-            case 'Journal':
-                out << '<i aria-hidden="true" class="circular icon la-object-journal"></i> '
-                break
-            case 'Database':
-                out << '<i aria-hidden="true" class="circular icon la-object-database"></i> '
-                break
-            case 'EBook':
-                out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
-                break
-            case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
-                break
-            default:
-                out << '<i aria-hidden="true" class="circular icon la-object"></i> '
-                break
-        }
-    }
-
     def auditButton = { attrs, body ->
 
         if (attrs.auditable) {
@@ -252,7 +227,7 @@ class SemanticUiTagLib {
                 if (obj?.getClass().controlledProperties?.contains(objAttr)) {
 
                     // inherited (to)
-                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+                    if (obj.instanceOf) {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
@@ -321,7 +296,7 @@ class SemanticUiTagLib {
                 if (obj?.getClass().controlledProperties?.contains(objAttr)) {
 
                     // inherited (to)
-                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+                    if (obj.instanceOf) {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
@@ -368,111 +343,6 @@ class SemanticUiTagLib {
         }
     }
 
-    def listIcon = { attrs, body ->
-        def hideTooltip = attrs.hideTooltip ? false : true
-
-        switch (attrs.type) {
-            case 'Journal':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon newspaper outline la-list-icon"></i>'
-                out << '</div>'
-                break
-            case 'Database':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon database la-list-icon"></i>'
-                out << '</div>'
-                break
-            case 'EBook':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon tablet alternate la-list-icon"></i>'
-                out << '</div>'
-                break
-            default:
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out <<  ' data-content="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon book la-list-icon"></i>'
-                out << '</div>'
-                break
-        }
-    }
-
-    def ieAcceptStatusIcon = { attrs, body ->
-        def hideTooltip = attrs.hideTooltip ? false : true
-
-        switch (attrs.status) {
-            case 'Fixed':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon certificate green"></i>'
-                out << '</div>'
-                break
-            case 'Under Negotiation':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon hourglass end yellow"></i>'
-                out << '</div>'
-                break
-            case 'Under Consideration':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon hourglass start red"></i>'
-                out << '</div>'
-                break
-            default:
-                out << ''
-                break
-        }
-    }
-
-    def contactIcon = { attrs, body ->
-
-        switch (attrs.type) {
-            case 'E-Mail':
-            case 'Mail': // Deprecated
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon"></i>'
-                out << '</span>'
-                break
-            case 'Fax':
-                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon tty la-list-icon"></i>'
-                out << '</span>'
-                break
-            case 'Phone':
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon phone la-list-icon"></i>'
-                out << '</span>'
-                break
-            case 'Url':
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon globe la-list-icon"></i>'
-                out << '</span>'
-                break
-            default:
-                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon address book la-list-icon"></i>'
-                out << '</span>'
-                break
-        }
-    }
-
     def editableLabel = { attrs, body ->
 
         if (attrs.editable) {
@@ -493,7 +363,7 @@ class SemanticUiTagLib {
         def mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
             User user = User.get(springSecurityService.principal.id)
-            mode = (user.getSettingsValue(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
+            mode = (user.getSettingsValue(UserSetting.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
 
             // CAUTION: inject default mode
             attrs.params.mode = mode
@@ -563,7 +433,7 @@ class SemanticUiTagLib {
             else {
 				// overwrite due session
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                def cacheEntry = sessionCache.get("${UserSettings.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
+                def cacheEntry = sessionCache.get("${UserSetting.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
 
                 if (cacheEntry) {
                     if (cacheEntry.toLowerCase() == 'true') {
@@ -575,7 +445,7 @@ class SemanticUiTagLib {
 				// default profile setting
                 else {
                     User currentUser = contextService.getUser()
-                    String settingValue = currentUser.getSettingsValue(UserSettings.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
+                    String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
 
                     if (settingValue.toLowerCase() == 'yes') {
                         extended = true
@@ -662,7 +532,7 @@ class SemanticUiTagLib {
 
         out << '<div class="ui modal ' + modalSize + '"' + id + '>'
         out << '<div class="header">' + title + '</div>'
-        out << '<div class="content">'
+        out << '<div class="content ' + attrs.contentClass + '">'
         out << body()
         out << '</div>'
         out << '<div class="actions">'
@@ -702,7 +572,7 @@ class SemanticUiTagLib {
         String msgCancel = "Abbrechen"
 
 
-        out << '<div class="ui tiny modal">'
+        out << '<div id="js-modal" class="ui tiny modal" role="alertdialog" aria-modal="true" tabindex="-1" aria-label="Bestätigungs-Modal" aria-hidden="true">'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
@@ -711,7 +581,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         out << '<div class="actions">'
-        out << '<div class="ui deny button">' + msgCancel + '</div>'
+        out << '<button class="ui deny button">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate icon"></i>'
         out << '</button>'
@@ -727,7 +597,7 @@ class SemanticUiTagLib {
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
-        def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
+        def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         def value = ''
@@ -827,9 +697,9 @@ class SemanticUiTagLib {
                         prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<strong>${p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<strong>${p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
                 out << "</div>" +
@@ -872,9 +742,9 @@ class SemanticUiTagLib {
                         nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
                     }
                     if (attrs.mapping) {
-                        out << g.link("<strong>${n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("<strong>${n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
                 out << "</div>" +
@@ -940,6 +810,110 @@ class SemanticUiTagLib {
         out << '<i aria-hidden="true" class="icon"></i>'
 
         out << '</div>'
+
+        if(actionName != 'show'){
+            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << object.type.getI10n('value')
+            out << "</div>"
+
+/*            if(object.isMandatory) {
+                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<i class='yellow small icon exclamation triangle'></i>"
+                out << "</span>"
+            }*/
+
+        }
+    }
+
+    def surveyStatusWithRings = { attrs, body ->
+        def object = attrs.object
+        SurveyConfig surveyConfig = attrs.surveyConfig
+
+
+        def statusType = object.status?.owner?.desc
+        def color
+        def tooltip
+        def startDate
+        def endDate
+        def dash
+        def prev
+        def next
+
+        if(surveyConfig.subSurveyUseForTransfer){
+            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(surveyConfig.subscription))
+            prev = links.prevLink ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(links.prevLink[0], true) ?: null) : null
+            next = links.nextLink ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(links.nextLink[0], true) ?: null) : null
+        }
+
+        if (object.status) {
+            tooltip = object.status.getI10n('value')
+            switch (object.status) {
+                case RefdataValue.getByValueAndCategory('Survey started', statusType): color = 'la-status-active'
+                    break
+                case RefdataValue.getByValueAndCategory('Survey completed', statusType): color = 'la-status-inactive'
+                    break
+                case RefdataValue.getByValueAndCategory('Ready', statusType): color = 'la-status-else'
+                    break
+                case RefdataValue.getByValueAndCategory('In Evaluation', statusType): color = 'la-status-else'
+                    break
+                case RefdataValue.getByValueAndCategory('Completed', statusType): color = 'la-status-else'
+                    break
+                case RefdataValue.getByValueAndCategory('In Processing', statusType): color = 'la-status-else'
+                    break
+
+                default: color = 'la-status-else'
+                    break
+            }
+        } else {
+            tooltip = message(code: 'subscription.details.statusNotSet')
+        }
+        out << "<div class='ui large label la-annual-rings'>"
+        if (object.startDate) {
+            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+        }
+        if (object.endDate) {
+            dash = '–'
+            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+        }
+
+        if (prev) {
+            out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: prev.surveyInfo.id, params: [surveyConfigID: prev.id])
+        } else {
+            out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        }
+
+        out << '<i aria-hidden="true" class="icon"></i>'
+        out << "<span class='la-annual-rings-text'>"
+        out << startDate
+        out << dash
+        out << endDate
+        out << "</span>"
+
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << '       &nbsp;'
+        out << '</a>'
+        out << '<i aria-hidden="true" class="icon"></i>'
+
+        if (next) {
+            out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: next.surveyInfo.id, params: [surveyConfigID: next.id])
+        } else {
+            out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
+        }
+
+        out << '</div>'
+
+        if(actionName != 'show'){
+            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << object.type.getI10n('value')
+            out << "</div>"
+
+/*            if(object.isMandatory) {
+                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<i class='yellow small icon exclamation triangle'></i>"
+                out << "</span>"
+            }*/
+
+        }
     }
 
     def totalNumber = { attrs, body ->
@@ -1010,13 +984,7 @@ class SemanticUiTagLib {
         out << "        ${message(code:'default.to')}"
         out << "</span>"
     }
-    def linkIcon = { attrs, body ->
-        out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
-        out << '&nbsp;<a href="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i aria-hidden="true" class="share square icon"></i>'
-        out << '</a>'
-        out << '</span>'
-    }
+
     public SemanticUiTagLib() {}
 
     def tabs = { attrs, body ->
@@ -1075,9 +1043,18 @@ class SemanticUiTagLib {
         def participant = attrs.participant
         def surveyOwnerView = attrs.surveyOwnerView
 
-        if (surveyConfig?.pickAndChoose) {
+        if (surveyConfig.pickAndChoose) {
             def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
-            if (finishDate) {
+            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
+
+            boolean finish = false
+
+            if (surveyResults) {
+                finish = (finishDate && surveyResults.finishDate.contains(null)) || (finishDate ? true : false)
+            }else {
+                finish = finishDate ? true : false
+            }
+            if (finish) {
                 if (surveyOwnerView) {
                     out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                     out << "data-content='${message(code: "surveyResult.finish.info.consortia")}'>"
@@ -1103,7 +1080,7 @@ class SemanticUiTagLib {
 
             if (surveyResults) {
 
-                if (surveyResults?.finishDate?.contains(null)) {
+                if (surveyResults.finishDate.contains(null)) {
                     if (surveyOwnerView) {
                         out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                         out << "data-content='${message(code: "surveyResult.noFinish.info.consortia")}'>"
@@ -1129,7 +1106,7 @@ class SemanticUiTagLib {
 
 
                 /*if (surveyResults?.find {
-                    it.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id
+                    it.type?.id == RDStore.SURVEY_PROPERTY_PARTICIPATION?.id
                 }?.getResult() == RDStore.YN_NO.getI10n('value')) {
                     out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
                     out << " data-content='${message(code: 'surveyResult.particiption.terminated')}'>"
@@ -1145,7 +1122,7 @@ class SemanticUiTagLib {
         def surveyConfig = attrs.surveyConfig
         def participant = attrs.participant
 
-        if (surveyConfig?.pickAndChoose) {
+        if (surveyConfig.pickAndChoose) {
             def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
             if (finishDate) {
                 out << g.formatDate(format: message(code: "default.date.format.notime"), date: finishDate)
@@ -1153,8 +1130,8 @@ class SemanticUiTagLib {
         } else {
             def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
 
-            if (!surveyResults?.finishDate?.contains(null)) {
-                out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults?.finishDate[0])
+            if (!surveyResults.finishDate.contains(null)) {
+                out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults.finishDate[0])
             }
         }
     }
@@ -1172,6 +1149,116 @@ class SemanticUiTagLib {
             }
         }
 
+    }
+
+    Closure sortableColumn = { attrs, body ->
+        def writer = out
+        if (!attrs.property) {
+            throwTagError("Tag [sortableColumn] is missing required attribute [property]")
+        }
+
+        if (!attrs.title && !attrs.titleKey) {
+            throwTagError("Tag [sortableColumn] is missing required attribute [title] or [titleKey]")
+        }
+
+        def property = attrs.remove("property")
+        def action = attrs.action ? attrs.remove("action") : (actionName ?: "list")
+        def namespace = attrs.namespace ? attrs.remove("namespace") : ""
+
+        def defaultOrder = attrs.remove("defaultOrder")
+        if (defaultOrder != "desc") defaultOrder = "asc"
+
+        // current sorting property and order
+        def sort = params.sort
+        def order = params.order
+
+        // add sorting property and params to link params
+        Map linkParams = [:]
+        if (params.id) linkParams.put("id", params.id)
+        def paramsAttr = attrs.remove("params")
+        if (paramsAttr instanceof Map) linkParams.putAll(paramsAttr)
+        linkParams.sort = property
+
+        // propagate "max" and "offset" standard params
+        if (params.max) linkParams.max = params.max
+        if (params.offset) linkParams.offset = params.offset
+
+        // determine and add sorting order for this column to link params
+        attrs['class'] = (attrs['class'] ? "${attrs['class']} sortable" : "sortable")
+        if (property == sort) {
+            attrs['class'] = (attrs['class'] as String) + " sorted " + order
+            if (order == "asc") {
+                linkParams.order = "desc"
+            }
+            else {
+                linkParams.order = "asc"
+            }
+        }
+        else {
+            linkParams.order = defaultOrder
+        }
+
+        // determine column title
+        String title = attrs.remove("title") as String
+        String titleKey = attrs.remove("titleKey") as String
+        Object mapping = attrs.remove('mapping')
+        if (titleKey) {
+            if (!title) title = titleKey
+            def messageSource = grailsAttributes.messageSource
+            def locale = RequestContextUtils.getLocale(request)
+            title = messageSource.getMessage(titleKey, null, title, locale)
+        }
+
+        writer << "<th "
+        // process remaining attributes
+        Encoder htmlEncoder = codecLookup.lookupEncoder('HTML')
+        attrs.each { k, v ->
+            writer << k
+            writer << "=\""
+            writer << htmlEncoder.encode(v)
+            writer << "\" "
+        }
+        writer << '>'
+        Map linkAttrs = [:]
+        linkAttrs.params = linkParams
+        if (mapping) {
+            linkAttrs.mapping = mapping
+        }
+
+        linkAttrs.action = action
+        linkAttrs.namespace = namespace
+
+        writer << callLink((Map)linkAttrs) {
+            title
+        }
+
+        if(body)
+        {
+            writer << body()
+        }
+
+        writer << '</th>'
+    }
+
+    private callLink(Map attrs, Object body) {
+        GroovyPage.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, webRequest)
+        //TagOutput.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, OutputContextLookupHelper.lookupOutputContext()) // grails-3-fix
+    }
+
+    def showPropertyValue = { attrs, body ->
+        def property = attrs.property
+
+        if(property instanceof Date) {
+            out << g.formatDate(date: property, format: message(code: 'default.date.format.notime'))
+        }
+        else if(property instanceof RefdataValue) {
+            out << property?.getI10n('value')
+        }
+        else if(property instanceof Boolean) {
+            out << (property ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+        }else {
+            out << (property ?: '')
+        }
     }
 
 }

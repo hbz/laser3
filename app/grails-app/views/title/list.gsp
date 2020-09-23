@@ -1,3 +1,4 @@
+<%@ page import="de.laser.RefdataValue;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
   <head>
@@ -11,7 +12,7 @@
     </semui:breadcrumbs>
     <br>
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
-      <semui:totalNumber total="${resultsTotal}"/>
+      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : resultsTotal}"/>
     </h1>
 
     <g:render template="/templates/filter/javascript" />
@@ -72,13 +73,13 @@
                             <strong><g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${hit.getSourceAsMap().typTitle ? com.k_int.kbplus.RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, de.laser.helper.RDConstants.TITLE_TYPE).getI10n('value') : ''}
+                            ${hit.getSourceAsMap().typTitle ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, RDConstants.TITLE_MEDIUM)?.getI10n('value') : hit.getSourceAsMap().typTitle}
                           </td>
                           <td>
                             ${hit.getSourceAsMap().publisher?:''}
                           </td>
                           <td>
-                            <g:each in="${hit.getSourceAsMap().identifiers.sort{it.type}}" var="id">
+                            <g:each in="${hit.getSourceAsMap().identifiers?.sort{it.type}}" var="id">
                               <div style="white-space:nowrap"><span>${id.type}:</span> <span>${id.value}</span></div>
                             </g:each>
                           </td>

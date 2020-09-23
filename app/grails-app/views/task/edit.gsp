@@ -1,10 +1,10 @@
-<%@ page import="com.k_int.kbplus.Task" %>
+<%@ page import="de.laser.Task" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'task.label')}" />
-		<title><g:message code="default.edit.label" args="[entityName]" /></title>
+		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
 

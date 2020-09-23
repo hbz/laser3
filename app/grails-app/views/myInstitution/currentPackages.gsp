@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Package; de.laser.RefdataValue;" %>
 <!doctype html>
 <html>
 <head>
@@ -34,18 +34,10 @@
             </div>
             <!-- 1-2 -->
 
-            <!-- TMP -->
-            <%
-                def fakeList = []
-                fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
-                //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
-                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
-            %>
-
             <div class="field fieldcontain">
                 <label>${message(code: 'myinst.currentPackages.filter.subStatus.label')}</label>
                 <laser:select class="ui dropdown" name="status"
-                              from="${ fakeList }"
+                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
@@ -89,7 +81,7 @@
             </td>
 
             <td>
-                <g:each in="${pkg.orgs.findAll{it.roleType == de.laser.helper.RDStore.OR_CONTENT_PROVIDER}.sort{it.name}}" var="role">
+                <g:each in="${pkg.orgs.findAll{it.roleType == RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
                     <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link><br />
                 </g:each>
             </td>

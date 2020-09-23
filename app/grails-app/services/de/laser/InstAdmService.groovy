@@ -2,15 +2,18 @@ package de.laser
 
 
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
+import de.laser.helper.ServerUtils
+import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Transactional
 class InstAdmService {
 
     GrailsApplication grailsApplication
@@ -51,13 +54,19 @@ class InstAdmService {
         else result = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_ADM")
         result
     }
-    boolean isLastAdminForOrg(Org orgToCheck, User usertoCheck){
-        Role role = Role.findByAuthority("INST_ADM")
-        UserOrg userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(orgToCheck, role, UserOrg.STATUS_APPROVED)
-        if(userOrgs && userOrgs.size() == 1 && userOrgs[0].user == usertoCheck)
-        {
+
+    boolean isUserLastInstAdminForOrg(User user, Org org){
+
+        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(
+                org,
+                Role.findByAuthority("INST_ADM"),
+                UserOrg.STATUS_APPROVED
+        )
+
+        if (userOrgs.size() == 1 && userOrgs[0].user == user) {
             return  true
-        }else {
+        }
+        else {
             return false
         }
     }
@@ -114,7 +123,7 @@ class InstAdmService {
 
     void sendMail(User user, String subj, String view, Map model) {
 
-        if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_LOCAL) {
+        if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_LOCAL) {
             println "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
             return
         }
@@ -125,9 +134,9 @@ class InstAdmService {
 
             mailService.sendMail {
                 to      user.email
-                from    grailsApplication.config.notifications.email.from
-                replyTo grailsApplication.config.notifications.email.replyTo
-                subject grailsApplication.config.laserSystemId + ' - ' + subj
+                from    ConfigUtils.getNotificationsEmailFrom()
+                replyTo ConfigUtils.getNotificationsEmailReplyTo()
+                subject ConfigUtils.getLaserSystemId() + ' - ' + subj
                 body    view: view, model: model
             }
         }

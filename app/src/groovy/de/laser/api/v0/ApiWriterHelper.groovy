@@ -1,7 +1,11 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.properties.PropertyDefinition
+import de.laser.RefdataValue
+import de.laser.properties.PropertyDefinition
+import de.laser.Address
+import de.laser.Contact
+import de.laser.Person
 import de.laser.api.v0.entities.ApiOrg
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
@@ -34,7 +38,7 @@ class ApiWriterHelper {
                     pob: it.pob,
                     zipcode: it.zipcode,
                     city: it.city,
-                    state: it.state,
+                    region: it.region,
                     country: it.country
             )
 
@@ -97,7 +101,7 @@ class ApiWriterHelper {
             person.contacts  = getContacts(it.contacts, null, person)
 
             def properties = getProperties(it.properties, person, contextOrg)
-            person.privateProperties = properties['private']
+            person.propertySet = properties['private']
 
             // PersonRoles
             it.roles?.each { it2 ->
@@ -134,7 +138,7 @@ class ApiWriterHelper {
     }
 
     @Deprecated
-    static getOrgLinks(def data, def owner, Org context) {
+    static getOrgRelations(def data, def owner, Org context) {
         def result = []
 
         data?.each { it ->   // com.k_int.kbplus.OrgRole
@@ -195,27 +199,29 @@ class ApiWriterHelper {
             def property
 
             // Private Property
-            if (! it.isPublic) {
+            if (it.tenant == contextOrg) {
                 if (owner instanceof Org) {
-                    property = new OrgPrivateProperty(
+                    property = new OrgProperty(
                             owner:  owner,
                             tenant: contextOrg,
-                            note:   it.note
+                            note:   it.note,
+                            isPublic: it.isPublic
                     )
                 }
                 else if (owner instanceof Person) {
-                    property = new PersonPrivateProperty(
+                    property = new PersonProperty(
                             owner:  owner,
                             tenant: contextOrg,
                             note:   it.note
                     )
                 }
                 else if (owner instanceof License) {
-                    property = new LicensePrivateProperty(
+                    property = new LicenseProperty(
                             owner:     owner,
                             tenant:    contextOrg,
                             paragraph: it.paragraph,
-                            note:      it.note
+                            note:      it.note,
+                            isPublic: it.isPublic
                     )
                 }
 
@@ -232,18 +238,22 @@ class ApiWriterHelper {
 
             }
             // Custom Property
-            else {
+            else if(!it.tenant) {
                 if (owner instanceof Org) {
-                    property = new OrgCustomProperty(
+                    property = new OrgProperty(
                             owner: owner,
-                            note:  it.note
+                            note:  it.note,
+                            tenant: it.tenant,
+                            isPublic: it.isPublic
                     )
                 }
                 else if (owner instanceof License) {
-                    property = new LicenseCustomProperty(
+                    property = new LicenseProperty(
                             owner:     owner,
                             note:      it.note,
-                            paragraph: it.paragraph
+                            paragraph: it.paragraph,
+                            tenant: it.tenant,
+                            isPublic: it.isPublic
                     )
                 }
 

@@ -1,11 +1,14 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*; com.k_int.kbplus.RefdataCategory"%>
+<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; de.laser.FormService"%>
+<laser:serviceInjection />
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
 
     <g:form class="ui form" url="${formUrl}" method="POST">
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="hidden" name="cmd" value="processing"/>
+
         <g:if test="${pdGroup}">
-            <input type="hidden" name="oid" value="${pdGroup.class.name}:${pdGroup.id}"/>
+            <input type="hidden" name="oid" value="${genericOIDService.getOID(pdGroup)}"/>
         </g:if>
 
         <div class="ui two column grid">
@@ -57,7 +60,7 @@
                     <div class="scrollWrapper">
 
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                            <table class="ui table la-table-small hidden scrollContent" data-propDefTable="${pdDescr}">
+                            <table class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
                                 <g:set var="clt" value="${de.laser.helper.SortUtil.getCollator()}" />
                                 <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> clt.compare(a?.getI10n('name'), b?.getI10n('name'))}}" var="pd">
@@ -112,8 +115,7 @@
     </g:form>
 </semui:modal>
 
-<script>
-    var ajaxPostFunc = function() {
+<%--<script>
 
         var prop_descr_selector_controller = {
             init: function () {
@@ -132,6 +134,5 @@
             }
         }
         prop_descr_selector_controller.init()
-        setTimeout( function(){ $(window).trigger('resize')}, 500)
-    }
-</script>
+        setTimeout( function(){ $(window).trigger('resize')}, 500);
+</script>--%>

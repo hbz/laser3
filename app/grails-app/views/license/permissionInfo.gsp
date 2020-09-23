@@ -10,7 +10,6 @@
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
     <br>
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
@@ -24,12 +23,13 @@
             <th>${message(code:'subscription.details.permissionInfo.roles_and_perm')}</th>
           </tr>
         </thead>
-        <g:each in="${license.orgLinks}" var="ol">
+        <g:each in="${license.orgRelations}" var="ol">
           <tr>
             <td>${ol.org.name}</td>
             <td>
-              ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}<br/>
-              ${message(code:'subscription.details.permissionInfo.role.info')}<br/>
+              ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}
+              <br/>
+              <%--${message(code:'subscription.details.permissionInfo.role.info')}<br/>
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                   <li>${message(code:"default.perm.${sp.perm.code}", default:"${sp.perm.code}")}
@@ -41,7 +41,7 @@
                       </g:else>
                   </li>
                 </g:each>
-              </ul>
+              </ul>--%>
             </td>
           </tr>
         </g:each>

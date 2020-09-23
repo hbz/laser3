@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Contact;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Contact;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
 
 
 
@@ -8,7 +8,7 @@
 		
 	</label>
 	<laser:select class="ui dropdown" id="contentType" name="contentType.id"
-		from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
+		from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
     	optionKey="id"
     	optionValue="value"
     	value="${contactInstance?.contentType?.id}"
@@ -27,11 +27,11 @@
 
 <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
 	<label for="type">
-		${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
+		${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
 		
 	</label>
 	<laser:select class="ui dropdown" id="type" name="type.id"
-		from="${com.k_int.kbplus.Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
+		from="${Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
     	optionKey="id"
     	optionValue="value"
     	value="${contactInstance?.type?.id}"
@@ -43,7 +43,7 @@
 		<g:message code="contact.prs.label" />
 		
 	</label>
-	<g:select id="prs" name="prs.id" from="${com.k_int.kbplus.Person.list()}" optionKey="id" value="${contactInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="prs" name="prs.id" from="${Person.list()}" optionKey="id" value="${contactInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 

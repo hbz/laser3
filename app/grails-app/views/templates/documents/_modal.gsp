@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.helper.RDConstants"%>
+<%@page import="com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDStore; de.laser.helper.RDConstants"%>
 <laser:serviceInjection/>
 <%
     String modalText
@@ -9,20 +9,20 @@
     if(docctx && doc) {
         modalText = message(code:'template.documents.edit')
         submitButtonLabel = message(code:'default.button.edit.label')
-        formUrl = createLink(controller:'docWidget',action:'editDocument')
+        formUrl = createLink(controller:'docstore', action:'editDocument')
         modalId = "modalEditDocument_${docctx.id}"
     }
     else if(owntp == 'surveyConfig') {
         modalText = message(code:'surveyConfigDocs.createSurveyDoc')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
+        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
         modalId = "modalCreateDocument"
         docForAll = false
     }
     else {
         modalText = message(code:'template.documents.add')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
+        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
         modalId = "modalCreateDocument"
     }
 %>
@@ -80,8 +80,7 @@
                     <%
                         List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
                                              RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
-                        ]
+                                             RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)]
                         List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
                     %>
                     <g:select from="${documentTypes}"
@@ -132,7 +131,7 @@
                             if(docctx) {
                                 value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
                             }
-                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = '${RDConstants.SHARE_CONFIGURATION}' and rdv.isHardData = true order by rdv.order asc")
+                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = '" + RDConstants.SHARE_CONFIGURATION + "' and rdv.isHardData = true order by rdv.order asc")
                             List availableConfigs = []
                             if(!accessService.checkPerm("ORG_CONSORTIUM")){
                                 availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM

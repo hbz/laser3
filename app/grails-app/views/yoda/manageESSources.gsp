@@ -32,13 +32,30 @@
           <g:each in="${sources}" var="source">
             <tr>
               <td>${source.identifier}</td>
-              <td>${source.name}</td>
-              <td>${source.active}</td>
-              <td>${source.port}</td>
-              <td>${source.index}</td>
-              <td>${source.cluster}</td>
-              <td>${source.laser_es}</td>
-              <td>${source.gokb_es}</td>
+              <td>
+                  <semui:xEditable owner="${source}" field="name"/>
+              </td>
+              <td>
+                  <semui:xEditable owner="${source}" field="host"/>
+              </td>
+              <td>
+                  <semui:xEditableBoolean owner="${source}" field="active" />
+              </td>
+              <td>
+                  <semui:xEditable owner="${source}" field="port"/>
+              </td>
+              <td>
+                  <semui:xEditable owner="${source}" field="index"/>
+              </td>
+              <td>
+                    <semui:xEditable owner="${source}" field="cluster"/>
+              </td>
+              <td>
+                  <semui:xEditableBoolean owner="${source}" field="laser_es" />
+              </td>
+              <td>
+                  <semui:xEditableBoolean owner="${source}" field="gokb_es" />
+              </td>
             </tr>
           </g:each>
         </tbody>

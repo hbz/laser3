@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 <!-- _groupWrapper -->
 
@@ -21,18 +21,20 @@
         </h5>
 
         <div id="grouped_custom_props_div_${propDefGroup.id}">
-
+             <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
             <g:render template="/templates/properties/group" model="${[
                     propDefGroup: propDefGroup,
+                    propDefGroupBinding: propDefGroupBinding,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
+                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>
     </div>
 <%--</div><!--.card-->--%>
 
-<r:script language="JavaScript">
+<r:script>
         $(document).ready(function(){
             c3po.initGroupedProperties("<g:createLink controller='ajax' action='lookup'/>", "#${custom_props_div}");
         });

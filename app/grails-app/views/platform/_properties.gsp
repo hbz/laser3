@@ -1,8 +1,8 @@
-<%@ page import="com.k_int.kbplus.Platform; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Platform; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
-<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Platform.class.name)}" />
+<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextOrg, Platform.class.name)}" />
 
 <%-- modal --%>
 
@@ -13,15 +13,14 @@
         ownobj: platform,
         availPropDefGroups: availPropDefGroups
     ]}" />
+
 </semui:modal>
 
 <div class="ui card la-dl-no-table la-js-hideable">
-<g:set var="allPropDefGroups" value="${platform.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
+    <g:set var="allPropDefGroups" value="${platform._getCalculatedPropDefGroups(contextOrg)}" />
 
 <%-- orphaned properties --%>
-
-<g:if test="${true}"><%-- todo: restrict? --%>
 
     <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
     <div class="content">
@@ -44,12 +43,11 @@
     </div>
     <%--</div>--%>
 
-    <r:script language="JavaScript">
+    <r:script>
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
         });
     </r:script>
 
-</g:if>
 </div><!-- .card -->
 <!-- _properties -->

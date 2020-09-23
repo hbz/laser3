@@ -1,10 +1,9 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
-import de.laser.api.v0.ApiCollectionReader
-import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiToolkit
-import de.laser.api.v0.ApiUnsecuredMapReader
+import de.laser.OrgSetting
+import de.laser.RefdataValue
+import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -32,10 +31,10 @@ class ApiStatistic {
      */
     static private List<Org> getAccessibleOrgs() {
 
-        List<Org> orgs = OrgSettings.executeQuery(
-                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+        List<Org> orgs = OrgSetting.executeQuery(
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
-                            key    : OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
+                            key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
                             rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
                             deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
                     ])
@@ -77,7 +76,7 @@ class ApiStatistic {
             result << ApiUnsecuredMapReader.getPackageStubMap(p)
         }
 
-        return new JSON(result)
+        return result ? new JSON(result) : null
     }
 
     /**
@@ -94,10 +93,10 @@ class ApiStatistic {
         if (hasAccess) {
 
             result.globalUID        = pkg.globalUID
-            result.startDate        = pkg.startDate
-            result.endDate          = pkg.endDate
-            result.lastUpdated      = pkg.lastUpdated
-            result.packageType      = pkg.packageType?.value
+            result.startDate        = ApiToolkit.formatInternalDate(pkg.startDate)
+            result.endDate          = ApiToolkit.formatInternalDate(pkg.endDate)
+            result.lastUpdated      = ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
+            result.packageType      = pkg.contentType?.value
             result.packageStatus    = pkg.packageStatus?.value
             result.name             = pkg.name
             result.variantNames     = ['TODO-TODO-TODO'] // todo
@@ -135,12 +134,15 @@ class ApiStatistic {
         ApiToolkit.cleanUp(result, true, true)
     }
 
-    static private getPkgLicense(License lic) {
+    static private Map<String, Object> getPkgLicense(License lic) {
         if (! lic) {
             return null
         }
         else if (! lic.isPublicForApi) {
-            return ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC]
+            if (ApiToolkit.isDebugMode()) {
+                return ["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC]
+            }
+            return null
         }
         def result = ApiUnsecuredMapReader.getLicenseStubMap(lic)
 
@@ -187,10 +189,13 @@ class ApiStatistic {
         subscriptionPackages.each { subPkg ->
 
             if (! subPkg.subscription.isPublicForApi) {
-                result.add(["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
+                if (ApiToolkit.isDebugMode()) {
+                    result.add(["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NOT_PUBLIC])
+                }
             }
             else {
                 Map<String, Object> sub = ApiUnsecuredMapReader.getSubscriptionStubMap(subPkg.subscription)
+                sub.kind = subPkg.subscription.kind?.value // TODO : implement sub.kind in stub ??
 
                 List<Org> orgList = []
 
@@ -227,8 +232,10 @@ class ApiStatistic {
                     result.add(sub)
                 }
                 else {
-                    // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
-                    result.add( ["NO_ACCESS" : ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL] )
+                    if (ApiToolkit.isDebugMode()) {
+                        // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+                        result.add(["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL])
+                    }
                 }
             }
         }

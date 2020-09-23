@@ -3,7 +3,7 @@
   <head>
     <meta name="layout" content="semanticUI"/>
     <title>${message(code:'laser')} Admin::Package Delete</title>
-    <r:require module='annotations' />
+      <%-- r:require module="annotations" / --%>
   </head>
 
     <body>

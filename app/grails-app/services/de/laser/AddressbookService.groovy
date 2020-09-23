@@ -1,13 +1,14 @@
 package de.laser
 
-import com.k_int.kbplus.Address
-import com.k_int.kbplus.Contact
+
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.Person
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.syntax.Numbers
 
+@Transactional
 class AddressbookService {
 
     def springSecurityService
@@ -16,7 +17,7 @@ class AddressbookService {
     def propertyService
 
     List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
-        def orgList = []
+        List orgList = []
         orgRoles.each { or ->
             orgList << or.org
         }
@@ -24,17 +25,14 @@ class AddressbookService {
     }
 
     List<Person> getAllVisiblePersons(User user, Org org) {
-        def orgList = [org]
+        List orgList = [org]
         getAllVisiblePersons(user, orgList)
     }
 
-    List<Person> getAllVisiblePersons(User user, List orgs) {
-        def membershipOrgIds = []
-        user.authorizedOrgs?.each{ ao ->
-            membershipOrgIds << ao.id
-        }
+    List<Person> getAllVisiblePersons(User user, List<Org> orgs) {
+        List membershipOrgIds = [contextService.org.id]
 
-        def visiblePersons = []
+        List visiblePersons = []
         orgs.each { org ->
             org.prsLinks.each { pl ->
                 if (pl.prs && ! pl.prs.isPublic) {
@@ -50,7 +48,7 @@ class AddressbookService {
     }
 
     List<Person> getPrivatePersonsByTenant(Org tenant) {
-        def result = []
+        List result = []
 
         Person.findAllByTenant(tenant)?.each{ prs ->
             if (! prs.isPublic) {
@@ -63,11 +61,11 @@ class AddressbookService {
     }
 
     boolean isAddressEditable(Address address, User user) {
-        def org = address.getPrs()?.tenant ?: address.org
+        Org org = address.getPrs()?.tenant ?: address.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
     boolean isContactEditable(Contact contact, User user) {
-        def org = contact.getPrs()?.tenant ?: contact.org
+        Org org = contact.getPrs()?.tenant ?: contact.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
     boolean isPersonEditable(Person person, User user) {
@@ -80,11 +78,11 @@ class AddressbookService {
         //true // TODO: Rechte nochmal überprüfen
     }
 
-    List getVisiblePersons(String fromSite,params) {
-        def qParts = [
+    List getVisiblePersons(String fromSite, GrailsParameterMap params) {
+        List qParts = [
                 'p.isPublic = :public'
         ]
-        def qParams = [:]
+        Map qParams = [:]
         switch(fromSite) {
             case "addressbook":
                 qParams.public = false
@@ -109,15 +107,32 @@ class AddressbookService {
             qParams << [name: "${params.org}"]
         }
 
-        def query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
+        if (params.function){
+            qParts << "pr.functionType.id in (:selectedFunctions) "
+            qParams << [selectedFunctions: params.list('function').collect{Long.parseLong(it)}]
+
+        }
+
+        if (params.position){
+            qParts << "pr.positionType.id in (:selectedPositions) "
+            qParams << [selectedPositions: params.list('position').collect{Long.parseLong(it)}]
+
+        }
+
+        String query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
             query = psq.query
             qParams = psq.queryParams
         }
 
-        List result = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams)
+        String order = "ASC"
+        if (params?.order != null && params?.order != 'null'){
+            order = params.order
+        }
+        query = query + " ORDER BY p.last_name ${order}, p.first_name ${order}"
+        List result = Person.executeQuery(query, qParams)
         result
     }
 

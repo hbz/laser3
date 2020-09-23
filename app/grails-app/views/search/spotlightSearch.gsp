@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SurveyConfig; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
 <%
     def result = []
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -85,9 +85,12 @@
             ]
         }
         else if (hit.getSourceAsMap().rectype == 'SurveyOrg') {
+
+            SurveyConfig surveyConfig =  SurveyConfig.get(hit.getSourceAsMap().dbId)
+
             result << [
                     "title": "${hit.getSourceAsMap().name}",
-                    "url":   g.createLink(controller:"myInstitution", action:"surveyInfos", id:"${hit.getSourceAsMap().dbId}"),
+                    "url":   g.createLink(controller:"myInstitution", action: (surveyConfig.pickAndChoose ? "surveyInfosIssueEntitlements" : "surveyInfos"), id:"${surveyConfig.surveyInfo.id}", params:[surveyConfigID: "${surveyConfig.id}"]),
                     "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
                     "description": ""
             ]
@@ -122,7 +125,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
-        else if (hit.getSourceAsMap().rectype == 'SubscriptionCustomProperty') {
+        else if (hit.getSourceAsMap().rectype == 'SubscriptionProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
@@ -130,6 +133,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
+        /*
         else if (hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
@@ -138,7 +142,8 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
-        else if (hit.getSourceAsMap().rectype == 'LicenseCustomProperty') {
+        */
+        else if (hit.getSourceAsMap().rectype == 'LicenseProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
                     "url":   g.createLink(controller:"${hit.getSourceAsMap().objectClassName}", action:"show", id:"${hit.getSourceAsMap().objectId}"),
@@ -146,6 +151,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
+        /*
         else if (hit.getSourceAsMap().rectype == 'LicensePrivateProperty') {
             result << [
                     "title": "${hit.getSourceAsMap().name}",
@@ -154,7 +160,7 @@
                     "description": "${message(code: 'search.object.' + hit.getSourceAsMap().objectClassName)}: ${hit.getSourceAsMap().objectName}"
             ]
         }
-
+        */
     }
 %>
 {

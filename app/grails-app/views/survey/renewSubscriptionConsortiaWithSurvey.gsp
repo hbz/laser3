@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AuditConfig;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 <head>
@@ -13,7 +13,8 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
     <semui:crumb message="surveyInfo.renewal" class="active"/>
 </semui:breadcrumbs>
@@ -32,7 +33,7 @@
 </g:if>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo?.name}
+${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
@@ -42,11 +43,11 @@ ${surveyInfo?.name}
 <g:set var="index" value="${0}"/>
 
 
-<g:form action="processRenewalwithSurvey" method="post" enctype="multipart/form-data" params="${params}">
+<g:form action="processRenewalWithSurvey" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
         <hr/>
-        ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution?.name])}<br/>
+
         <table class="ui celled la-table table">
             <tbody>
             <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
@@ -54,7 +55,7 @@ ${surveyInfo?.name}
             <tr>
                 <th>${message(code: 'myinst.renewalUpload.props')}</th>
                 <th>${message(code: 'default.value.label')}</th>
-                <th>${message(code: 'subscription.details.copyElementsIntoSubscription.audit')}</th>
+                <th>${message(code: 'copyElementsIntoObject.audit')}</th>
             </tr>
             <tr>
                 <th>${message(code: 'myinst.emptySubscription.name')}</th>
@@ -91,8 +92,8 @@ ${surveyInfo?.name}
             <tr>
                 <th>${message(code: 'default.status.label')}</th>
                 <td>
-                <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
-                <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                <g:set var="rdcSubStatus" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
+                <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
@@ -106,30 +107,13 @@ ${surveyInfo?.name}
                 </td>
             </tr>
             <tr>
-                <th>${message(code: 'default.type.label')}</th>
-                <td>
-                    <g:set var="rdcSubType" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_TYPE)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)}" class="ui dropdown"
-                              optionKey="id"
-                              optionValue="${{ it.getI10n('value') }}"
-                              name="subType"
-                              value="${permissionInfo?.sub_type}"
-                              />
-                </td>
-                <td class="center aligned">
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="type" ${AuditConfig.getConfig(subscription, 'type') ? 'checked': ''} />
-                    </div>
-                </td>
-            </tr>
-            <tr>
                 <th>${message(code: 'subscription.kind.label')}</th>
                 <td>
-                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subKind"
-                              value="${permissionInfo?.sub_form}"
+                              value="${permissionInfo?.sub_kind}"
                     />
                 </td>
                 <td class="center aligned">
@@ -141,8 +125,8 @@ ${surveyInfo?.name}
             <tr>
                 <th>${message(code: 'subscription.form.label')}</th>
                 <td>
-                    <g:set var="rdcSubForm" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_FORM)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" class="ui dropdown"
+                    <g:set var="rdcSubForm" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_FORM)}"/>
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subForm"
@@ -158,17 +142,48 @@ ${surveyInfo?.name}
             <tr>
                 <th>${message(code: 'subscription.resource.label')}</th>
                 <td>
-                    <g:set var="rdcSubResource" value="${com.k_int.kbplus.RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_RESOURCE)}"/>
-                    <g:select from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subResource"
                               value="${permissionInfo?.sub_resource}"
-                              />
+                    />
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'resource') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.isPublicForApi.label')}</th>
+                <td>
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subIsPublicForApi"
+                              value="${permissionInfo?.sub_isPublicForApi}"
+                    />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="isPublicForApi" ${AuditConfig.getConfig(subscription, 'isPublicForApi') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                <td>
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subHasPerpetualAccess"
+                              value="${permissionInfo?.sub_hasPerpetualAccess}"
+                    />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="hasPerpetualAccess" ${AuditConfig.getConfig(subscription, 'hasPerpetualAccess') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
