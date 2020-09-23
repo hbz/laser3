@@ -172,6 +172,19 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('subjectGroup')}">
+                <div class="field">
+                    <label for="subjectGroup">${message(code: 'org.subjectGroup.label')}</label>
+                    <select id="subjectGroup" name="subjectGroup" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="subjectGroups" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBJECT_GROUP])}" scope="request"/>
+                        <g:each in="${subjectGroups}" var="rdv">
+                            <option <%=(params.list('subjectGroup').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
 
         </g:each>
     <g:if test="${numberOfFields > 1}">
