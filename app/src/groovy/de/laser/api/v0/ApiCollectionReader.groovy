@@ -195,7 +195,7 @@ class ApiCollectionReader {
 
     static Collection<Object> getDocumentCollection(Collection<DocContext> list) {
         Collection<Object> result = []
-        list.each { it -> // com.k_int.kbplus.DocContext
+        list.each { it -> // de.laser.DocContext
             result << ApiDoc.getDocumentMap(it.owner)
         }
         result
