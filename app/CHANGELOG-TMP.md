@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2884    23.09.2020  hbz-dev             Moe     Feature     Umfrage: Eingabe von Bemerkung für URLs
+
 2879    22.09.2020  rc1.5   1.5.10      Andreas Bug         Datenleck bei Verträgen behoben
 
 2874    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Übertrag Option für Teilnehmer in Lizenz ermöglichen
