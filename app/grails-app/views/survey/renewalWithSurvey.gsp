@@ -85,7 +85,7 @@ ${surveyInfo.name}
         <g:message code="renewalWithSurvey.parentSubscription"/>:
         <g:if test="${parentSubscription}">
             <g:link controller="subscription" action="show"
-                    id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
+                    id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
         </g:if>
 
         <br>
@@ -93,10 +93,10 @@ ${surveyInfo.name}
         <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
         <g:if test="${parentSuccessorSubscription}">
             <g:link controller="subscription" action="show"
-                    id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
+                    id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
 
             <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
-                <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription?.id}"
+                <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                         params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
                         class="ui button ">
                     <g:message code="renewalWithSurvey.newSub.change"/>
@@ -106,7 +106,7 @@ ${surveyInfo.name}
         </g:if>
         <g:else>
             <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription?.id]"
+                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
                     class="ui button ">
                 <g:message code="renewalWithSurvey.newSub"/>
             </g:link>
@@ -243,7 +243,7 @@ ${surveyInfo.name}
                         </td>
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
-                                ${subscriberOrg?.sortname}
+                                ${subscriberOrg.sortname}
                                 <br>
 
                                 <g:link controller="organisation" action="show"
@@ -254,13 +254,13 @@ ${surveyInfo.name}
                             <td>${sub.status.getI10n('value')}</td>
                             <td>
                                 <g:if test="${sub}">
-                                    <g:link controller="subscription" action="show" id="${sub?.id}"
+                                    <g:link controller="subscription" action="show" id="${sub.id}"
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
-                                <g:if test="${sub?._getCalculatedSuccessor()}">
+                                <g:if test="${sub._getCalculatedSuccessor()}">
                                     <br>
                                     <g:link controller="subscription" action="show"
-                                            id="${sub?._getCalculatedSuccessor()?.id}"
+                                            id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
@@ -296,7 +296,7 @@ ${surveyInfo.name}
                         </td>
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
-                                ${subscriberOrg?.sortname}
+                                ${subscriberOrg.sortname}
                                 <br>
                                 <g:link controller="organisation" action="show"
                                         id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
@@ -306,13 +306,13 @@ ${surveyInfo.name}
                             <td>${sub.status.getI10n('value')}</td>
                             <td>
                                 <g:if test="${sub}">
-                                    <g:link controller="subscription" action="show" id="${sub?.id}"
+                                    <g:link controller="subscription" action="show" id="${sub.id}"
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
-                                <g:if test="${sub?._getCalculatedSuccessor()}">
+                                <g:if test="${sub._getCalculatedSuccessor()}">
                                     <br>
                                     <g:link controller="subscription" action="show"
-                                            id="${sub?._getCalculatedSuccessor()?.id}"
+                                            id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
