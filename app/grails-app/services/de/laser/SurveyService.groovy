@@ -142,7 +142,7 @@ class SurveyService {
     }
 
     private boolean save(obj, flash) {
-        if (obj.save(flush: true)) {
+        if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
         } else {
@@ -958,7 +958,7 @@ class SurveyService {
 
         if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
             SurveyConfigProperties propertytoSub = new SurveyConfigProperties(surveyConfig: surveyConfig, surveyProperty: surveyProperty)
-            if(propertytoSub.save(flush: true)){
+            if(propertytoSub.save()){
                 return true
             }else {
                 return false

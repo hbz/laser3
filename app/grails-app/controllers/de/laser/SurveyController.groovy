@@ -267,7 +267,7 @@ class SurveyController {
                 isMandatory: params.mandatory ?: false
         )
 
-        if (!(surveyInfo.save(flush: true))) {
+        if (!(surveyInfo.save())) {
             flash.error = g.message(code: "createGeneralSurvey.create.fail")
             redirect(action: 'createGeneralSurvey', params: params)
             return
@@ -280,8 +280,8 @@ class SurveyController {
                     configOrder: 1
             )
 
-            if(!(surveyConfig.save(flush: true))){
-                surveyInfo.delete(flush: true)
+            if(!(surveyConfig.save())){
+                surveyInfo.delete()
                 flash.error = g.message(code: "createGeneralSurvey.create.fail")
                 redirect(action: 'createGeneralSurvey', params: params)
                 return
@@ -548,7 +548,7 @@ class SurveyController {
                 isMandatory: subSurveyUseForTransfer ? true : (params.mandatory ?: false)
         )
 
-        if (!(surveyInfo.save(flush: true))) {
+        if (!(surveyInfo.save())) {
             flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
             redirect(action: 'addSubtoSubscriptionSurvey', params: params)
             return
@@ -564,7 +564,7 @@ class SurveyController {
 
             )
 
-            surveyConfig.save(flush: true)
+            surveyConfig.save()
 
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
@@ -572,14 +572,14 @@ class SurveyController {
                             surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
                             surveyConfig: surveyConfig)
 
-                    if (configProperty.save(flush: true)) {
+                    if (configProperty.save()) {
                         addSubMembers(surveyConfig)
                     }
                 } else {
                     addSubMembers(surveyConfig)
                 }
         } else {
-            surveyInfo.delete(flush: true)
+            surveyInfo.delete()
             flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
             redirect(action: 'addSubtoSubscriptionSurvey', params: params)
             return
@@ -629,7 +629,7 @@ class SurveyController {
                 isMandatory: params.mandatory ? true : false
         )
 
-        if (!(surveyInfo.save(flush: true))) {
+        if (!(surveyInfo.save())) {
             flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
             redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
             return
@@ -648,12 +648,12 @@ class SurveyController {
 
             )
 
-            surveyConfig.save(flush: true)
+            surveyConfig.save()
 
             addSubMembers(surveyConfig)
 
         } else {
-            surveyInfo.delete(flush: true)
+            surveyInfo.delete()
             flash.error = g.message(code: "createIssueEntitlementsSurvey.create.fail")
             redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
             return
@@ -1022,7 +1022,7 @@ class SurveyController {
         }
 
         result.surveyConfig.configFinish = params.configFinish ?: false
-        if (result.surveyConfig.save(flush: true)) {
+        if (result.surveyConfig.save()) {
             //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
@@ -1044,7 +1044,7 @@ class SurveyController {
 
         result.surveyConfig.costItemsFinish = params.costItemsFinish ?: false
 
-        if (result.surveyConfig.save(flush: true)) {
+        if (result.surveyConfig.save()) {
             //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
@@ -1093,7 +1093,7 @@ class SurveyController {
 
         result.surveyConfig.transferWorkflow = transferWorkflow ?  (new JSON(transferWorkflow)).toString() : null
 
-        if (result.surveyConfig.save(flush: true)) {
+        if (result.surveyConfig.save()) {
             //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
@@ -1264,13 +1264,13 @@ class SurveyController {
                                 def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type, scp.tenant)
                                 additionalProp = scp.copyInto(additionalProp)
                                 additionalProp.instanceOf = scp
-                                additionalProp.save(flush: true)
+                                additionalProp.save()
                             } else {
                                 // no match found, creating new prop with backref
                                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type, scp.tenant)
                                 newProp = scp.copyInto(newProp)
                                 newProp.instanceOf = scp
-                                newProp.save(flush: true)
+                                newProp.save()
                             }
                         }
                     }
@@ -1360,18 +1360,18 @@ class SurveyController {
 
                         ies.each { ie ->
                             ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-                            ie.save(flush: true)
+                            ie.save()
                         }
 
                         surveyOrg.finishDate = null
-                        surveyOrg.save(flush: true)
+                        surveyOrg.save()
                     }
 
                     List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(org, result.surveyConfig)
 
                     surveyResults.each {
                         it.finishDate = null
-                        it.save(flush: true)
+                        it.save()
                     }
                     countOpenParticipants++
                 }
@@ -1591,11 +1591,11 @@ class SurveyController {
 
         ies.each { ie ->
             ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-            ie.save(flush: true)
+            ie.save()
         }
 
         surveyOrg.finishDate = null
-        surveyOrg.save(flush: true)
+        surveyOrg.save()
 
         //flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
 
@@ -1667,7 +1667,7 @@ class SurveyController {
 
         ies.each { ie ->
             ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            ie.save(flush: true)
+            ie.save()
 
             if(issueEntitlementGroup){
                 //println(issueEntitlementGroup)
@@ -1675,7 +1675,7 @@ class SurveyController {
                         ie: ie,
                         ieGroup: issueEntitlementGroup)
 
-                if (!issueEntitlementGroupItem.save(flush: true)) {
+                if (!issueEntitlementGroupItem.save()) {
                     log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
                 }
             }
@@ -1723,14 +1723,14 @@ class SurveyController {
 
             ies.each { ie ->
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                ie.save(flush: true)
+                ie.save()
 
                 if(issueEntitlementGroup){
                     IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                             ie: ie,
                             ieGroup: issueEntitlementGroup)
 
-                    if (!issueEntitlementGroupItem.save(flush: true)) {
+                    if (!issueEntitlementGroupItem.save()) {
                         log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
                     }
                 }
@@ -1917,7 +1917,7 @@ class SurveyController {
 
         if (result.editable) {
             try {
-                surveyConfigProp.delete(flush: true)
+                surveyConfigProp.delete()
                 //flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyProperty.label"), ''])
             }
             catch (DataIntegrityViolationException e) {
@@ -2058,7 +2058,7 @@ class SurveyController {
                             org: org
                     )
 
-                    if (!surveyOrg.save(flush: true)) {
+                    if (!surveyOrg.save()) {
                         log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
                     } else {
                         if(surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]){
@@ -2073,7 +2073,7 @@ class SurveyController {
                                         surveyConfig: surveyConfig
                                 )
 
-                                if (surveyResult.save(flush: true)) {
+                                if (surveyResult.save()) {
                                     log.debug( surveyResult.toString() )
                                 } else {
                                     log.error("Not create surveyResult: "+ surveyResult)
@@ -2087,7 +2087,7 @@ class SurveyController {
                     }
                 }
             }
-            surveyConfig.save(flush: true)
+            surveyConfig.save()
 
         }
 
@@ -2126,7 +2126,7 @@ class SurveyController {
                                     surveyConfig: config
                             )
 
-                            if (surveyResult.save(flush: true)) {
+                            if (surveyResult.save()) {
                                 log.debug(surveyResult.toString())
                             } else {
                                 log.error("Not create surveyResult: " + surveyResult)
@@ -2137,7 +2137,7 @@ class SurveyController {
             }
 
             result.surveyInfo.status = RDStore.SURVEY_READY
-            result.surveyInfo.save(flush: true)
+            result.surveyInfo.save()
             flash.message = g.message(code: "openSurvey.successfully")
         }
 
@@ -2157,7 +2157,7 @@ class SurveyController {
         if (result.editable) {
 
             result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
-            result.surveyInfo.save(flush: true)
+            result.surveyInfo.save()
             flash.message = g.message(code: "endSurvey.successfully")
         }
 
@@ -2181,7 +2181,7 @@ class SurveyController {
         if (result.editable) {
 
             result.surveyInfo.status = RDStore.SURVEY_IN_PROCESSING
-            result.surveyInfo.save(flush: true)
+            result.surveyInfo.save()
         }
 
         redirect(uri: request.getHeader('referer'))
@@ -2220,7 +2220,7 @@ class SurveyController {
                                     surveyConfig: config
                             )
 
-                            if (surveyResult.save(flush: true)) {
+                            if (surveyResult.save()) {
                                 log.debug(surveyResult.toString())
                             } else {
                                 log.debug(surveyResult.toString())
@@ -2232,7 +2232,7 @@ class SurveyController {
 
             result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
             result.surveyInfo.startDate = currentDate
-            result.surveyInfo.save(flush: true)
+            result.surveyInfo.save()
             flash.message = g.message(code: "openSurveyNow.successfully")
 
             surveyService.emailsToSurveyUsers([result.surveyInfo.id])
@@ -2267,7 +2267,7 @@ class SurveyController {
 
             result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
             result.surveyInfo.endDate = endDate
-            result.surveyInfo.save(flush: true)
+            result.surveyInfo.save()
         }
 
         redirect action: 'show', id: params.id
@@ -2292,14 +2292,14 @@ class SurveyController {
                 SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, Org.get(Long.parseLong(soId)))
 
                 CostItem.findAllBySurveyOrg(surveyOrg).each {
-                    it.delete(flush: true)
+                    it.delete()
                 }
 
                 SurveyResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
-                    it.delete(flush: true)
+                    it.delete()
                 }
 
-                if (surveyOrg.delete(flush: true)) {
+                if (surveyOrg.delete()) {
                     //flash.message = g.message(code: "surveyParticipants.delete.successfully")
                 }
             }
@@ -2349,34 +2349,34 @@ class SurveyController {
                     SurveyConfig.findAllBySurveyInfo(surveyInfo).each { config ->
 
                         DocContext.findAllBySurveyConfig(config).each {
-                            it.delete(flush: true)
+                            it.delete()
                         }
 
                         SurveyConfigProperties.findAllBySurveyConfig(config).each {
-                            it.delete(flush: true)
+                            it.delete()
                         }
 
                         SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
                             CostItem.findAllBySurveyOrg(surveyOrg).each {
-                                it.delete(flush: true)
+                                it.delete()
                             }
 
-                            surveyOrg.delete(flush: true)
+                            surveyOrg.delete()
                         }
 
                         SurveyResult.findAllBySurveyConfig(config) {
-                            it.delete(flush: true)
+                            it.delete()
                         }
 
                         Task.findAllBySurveyConfig(config) {
-                            it.delete(flush: true)
+                            it.delete()
                         }
                     }
 
                     SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
 
-                    surveyInfo.delete(flush: true)
+                    surveyInfo.delete()
                 }
 
                 flash.message = message(code: 'surveyInfo.delete.successfully')
@@ -2465,7 +2465,7 @@ class SurveyController {
 
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
 
-        if (result.surveyInfo.save(flush: true)) {
+        if (result.surveyInfo.save()) {
             //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
@@ -2488,7 +2488,7 @@ class SurveyController {
         result.surveyInfo.status = RDStore.SURVEY_COMPLETED
 
 
-        if (result.surveyInfo.save(flush: true)) {
+        if (result.surveyInfo.save()) {
             //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
@@ -2510,7 +2510,7 @@ class SurveyController {
         }
 
         result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
-        if (result.surveyInfo.save(flush: true)) {
+        if (result.surveyInfo.save()) {
             //flash.message = g.message(code: 'survey.change.successfull')
         } else {
             flash.error = g.message(code: 'survey.change.fail')
@@ -2532,7 +2532,7 @@ class SurveyController {
 
         result.surveyConfig.comment = params.comment
 
-        if (!result.surveyConfig.save(flush: true)) {
+        if (!result.surveyConfig.save()) {
             flash.error = g.message(code: 'default.save.error.general.message')
         }
 
@@ -3108,7 +3108,7 @@ class SurveyController {
                     isPublicForApi: sub_isPublicForApi
             )
 
-            if (!newSub.save(flush: true)) {
+            if (!newSub.save()) {
                 log.error("Problem saving subscription ${newSub.errors}");
                 return newSub
             } else {
@@ -3379,7 +3379,7 @@ class SurveyController {
                             message(code: 'finance.addNew.error', args: [it.properties.field])
                         }
                     } else {
-                        if (newCostItem.save(flush: true)) {
+                        if (newCostItem.save()) {
                             /* def newBcObjs = []
 
                          params.list('newBudgetCodes').each { newbc ->
@@ -3387,7 +3387,7 @@ class SurveyController {
                              if (bc) {
                                  newBcObjs << bc
                                  if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
-                                     new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                                     new CostItemGroup(costItem: newCostItem, budgetCode: bc).save()
                                  }
                              }
                          }
@@ -4148,14 +4148,14 @@ class SurveyController {
                                     def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type, scp.tenant)
                                     additionalProp = scp.copyInto(additionalProp)
                                     additionalProp.instanceOf = scp
-                                    additionalProp.save(flush: true)
+                                    additionalProp.save()
                                 }
                                 else {
                                     // no match found, creating new prop with backref
                                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type, scp.tenant)
                                     newProp = scp.copyInto(newProp)
                                     newProp.instanceOf = scp
-                                    newProp.save(flush: true)
+                                    newProp.save()
                                 }
                             }
                         }
@@ -4224,7 +4224,7 @@ class SurveyController {
                                 org: org
                         )
 
-                        if (!surveyOrg.save(flush: true)) {
+                        if (!surveyOrg.save()) {
                             log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
                         }else{
                             if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
@@ -4239,7 +4239,7 @@ class SurveyController {
                                             surveyConfig: surveyConfig
                                     )
 
-                                    if (surveyResult.save(flush: true)) {
+                                    if (surveyResult.save()) {
                                         log.debug( surveyResult.toString() )
                                     } else {
                                         log.error("Not create surveyResult: " + surveyResult)
@@ -4636,7 +4636,7 @@ class SurveyController {
         if (value == '' && field) {
             // Allow user to set a rel to null be calling set rel ''
             property[field] = null
-            property.save(flush: true)
+            property.save()
         } else {
 
                 if (property && value && field){
