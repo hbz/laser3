@@ -106,7 +106,7 @@ ${surveyInfo.name}
         </g:if>
         <g:else>
             <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription?.id]"
+                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
                     class="ui button ">
                 <g:message code="renewalWithSurvey.newSub"/>
             </g:link>
@@ -243,7 +243,7 @@ ${surveyInfo.name}
                         </td>
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
-                                ${subscriberOrg?.sortname}
+                                ${subscriberOrg.sortname}
                                 <br>
 
                                 <g:link controller="organisation" action="show"
@@ -296,7 +296,7 @@ ${surveyInfo.name}
                         </td>
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
-                                ${subscriberOrg?.sortname}
+                                ${subscriberOrg.sortname}
                                 <br>
                                 <g:link controller="organisation" action="show"
                                         id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
