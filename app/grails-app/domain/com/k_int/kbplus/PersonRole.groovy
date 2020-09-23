@@ -79,17 +79,15 @@ class PersonRole implements Comparable<PersonRole>{
     /**
      * Generic setter
      */
-    def setReference(def owner) {
+    void setReference(def owner) {
         org     = owner instanceof Org ? owner : org
-
         lic     = owner instanceof License ? owner : lic
         pkg     = owner instanceof Package ? owner : pkg
         sub     = owner instanceof Subscription ? owner : sub
         title   = owner instanceof TitleInstance ? owner : title
     }
 
-    def getReference() {
-
+    String getReference() {
         if (lic)        return 'lic:' + lic.id
         if (pkg)        return 'pkg:' + pkg.id
         if (sub)        return 'sub:' + sub.id

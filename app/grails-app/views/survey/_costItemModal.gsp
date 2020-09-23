@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.finance.CostItem; de.laser.UserSettings; de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder" %>
 <laser:serviceInjection/>
 
 <g:if test="${setting == 'bulkForAll'}">
@@ -256,7 +256,7 @@
             //console.log("input: "+input+", typeof: "+typeof(input));
             var output;
             //determine locale from server
-            var userLang = "${contextService.user.getSettingsValue(UserSettings.KEYS.LANGUAGE,null)}";
+            var userLang = "${contextService.user.getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}";
             //console.log(userLang);
             if(typeof(input) === 'number') {
                 output = input.toFixed(2);

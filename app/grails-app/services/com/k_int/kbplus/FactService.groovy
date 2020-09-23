@@ -4,7 +4,7 @@ import de.laser.Fact
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinition
-import de.laser.OrgSettings
+import de.laser.OrgSetting
 import de.laser.StatsTripleCursor
 import de.laser.helper.RDConstants
 import grails.transaction.Transactional
@@ -585,10 +585,10 @@ class FactService {
 
   List<Org> institutionsWithRequestorIDAndAPIKey()
   {
-    String hql = "select os.org from OrgSettings as os" +
-        " where os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
-        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org) order by os.org.name"
-    return OrgSettings.executeQuery(hql)
+    String hql = "select os.org from OrgSetting as os" +
+        " where os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
+        " and exists (select 1 from OrgSetting as inneros where inneros.key = '${OrgSetting.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org) order by os.org.name"
+    return OrgSetting.executeQuery(hql)
   }
 
   List<Platform> platformsWithNatstatId()

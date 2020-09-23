@@ -160,7 +160,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                     }
                 %>
                 <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}
-                                                onClick="javascript:selectAll();"/></g:if>
+                                                onClick="javascript:selectAll()"/></g:if>
             </th>
             <th rowspan="3"><g:message code="sidewide.number"/></th>
             <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>

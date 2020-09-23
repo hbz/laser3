@@ -145,7 +145,6 @@
                 </table>
               </g:else>
             </td>
-            </td>
           </tr>
         </g:each>
       

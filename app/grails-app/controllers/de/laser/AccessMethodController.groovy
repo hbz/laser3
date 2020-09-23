@@ -59,9 +59,9 @@ class AccessMethodController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
         PlatformAccessMethod accessMethod = PlatformAccessMethod.get(params.id)
-        
-        def platform = accessMethod.platf
-        def platformId = platform.id
+
+        Platform platform = accessMethod.platf
+        Long platformId = platform.id
         
         try {
             accessMethod.delete(flush: true)
@@ -78,7 +78,7 @@ class AccessMethodController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit() {
         PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
-        def platf = accessMethod.getPlatf()
+        Platform platf = accessMethod.platf
 
         [accessMethod: accessMethod, platfId: platf.id]
 
@@ -87,7 +87,7 @@ class AccessMethodController extends AbstractDebugController {
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def update() {
         PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
-        def platf = accessMethod.getPlatf()
+        Platform platf = accessMethod.platf
 
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()

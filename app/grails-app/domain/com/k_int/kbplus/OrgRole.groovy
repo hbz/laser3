@@ -77,7 +77,7 @@ class OrgRole implements ShareableTrait {
     /**
      * Generic setter
      */
-    def setReference(def owner) {
+    void setReference(def owner) {
         org     = owner instanceof Org ? owner : org
         pkg     = owner instanceof Package ? owner : pkg
         lic     = owner instanceof License ? owner : lic
@@ -115,45 +115,6 @@ class OrgRole implements ShareableTrait {
             return title.getStatus()
         }
     }
-
-    static def assertOrgTitleLink(porg, ptitle, prole, pstart, pend) {
-    // def link = OrgRole.findByTitleAndOrgAndRoleType(ptitle, porg, prole) ?: new OrgRole(title:ptitle, org:porg, roleType:prole).save();
-
-    if ( porg && ptitle && prole ) {
-
-      def link = OrgRole.find{ title==ptitle && org==porg && roleType==prole }
-      if ( ! link ) {
-
-        link = new OrgRole(title:ptitle, org:porg, roleType:prole)
-
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
-        if(pstart){
-          if(pstart instanceof Date){
-
-          }else{
-            pstart = sdf.parse(pstart)
-          }
-          link.startDate = pstart
-        }
-        if(pend){
-          if(pend instanceof Date){
-
-          }else{
-            pend = sdf.parse(pend)
-          }
-          link.endDate = pend
-        }
-
-        if ( !porg.links )
-          porg.links = [link]
-        else
-          porg.links.add(link)
-  
-        porg.save(flush:true, failOnError:true);
-      }
-    }
-  }
 
     void afterUpdate(PostUpdateEvent event) {
         log.debug('afterUpdate')

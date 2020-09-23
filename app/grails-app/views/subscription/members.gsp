@@ -102,27 +102,9 @@
     </h1>
     <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-
     <g:render template="nav" />
-    <%--
-    <semui:filter>
-        <form class="ui form">
-            <div class="fields">
-                <div class="field">
-                    <div class="ui checkbox">
-                        <input class="hidden" type="checkbox" name="showDeleted" value="Y" ${params.showDeleted?'checked="checked"':''}>
-                        <label>Gelöschte Teilnehmer anzeigen</label>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
-                </div>
-            </div>
-        </form>
-    </semui:filter>
-    --%>
     <g:render template="/templates/filter/javascript" />
+
     <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <%

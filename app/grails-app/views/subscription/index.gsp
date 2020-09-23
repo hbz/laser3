@@ -284,7 +284,7 @@
                     <tr>
                         <g:if test="${editable}">
                             <th>
-                                <input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
+                                <input id="select-all" type="checkbox" name="chkall" onClick="selectAll()"/>
                             </th>
                             <th colspan="2">
                                 <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>

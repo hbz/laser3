@@ -7,15 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2879    22.09.2020  rc1.5   1.5.10      Andreas Bug         Datenleck bei Verträgen behoben
+
 2874    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Übertrag Option für Teilnehmer in Lizenz ermöglichen
 
 2848    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Auswertungsreiter vereinheitlichen
 
 2873    21.09.2020  hbz-dev             Moe     Feature     Umfrage: Verlängerungsübersicht überarbeiten
 
+2878    21.09.2020  rc1.5   1.5.10      Andreas Bug         Export von Teilnehmer einer Lizenz hakte, Überprüfungen angepasst
+
 1956    18.09.2020  hbz-dev             Moe     Feature     Überarbeitung Mein Adressbuch (Vollnutzer und Konsortien)
 
---      18.09.2020  rc1.5   1.5.9       Moe     Bug          Bug bei Berechnung der Prozent für Kosten in der Umfrage
+--      18.09.2020  rc1.5   1.5.9       Moe     Bug         Bug bei Berechnung der Prozent für Kosten in der Umfrage
 
 --      18.09.2020  rc1.5   1.5.9       Andreas Bug         Klausel zur Berücksichtigung des Lizenznamens bei Meine Verträge korrigiert 
 
@@ -26,6 +30,7 @@
 --      18.09.2020  rc1.5   1.5.9       Moe     Bug         Renewal Export: Sortierung + Späteinsteiger entfernen
 
 --      18.09.2020  rc1.5   1.5.9       Andreas Bug         Brücke in Sync gebaut zum Abfangen von Bestandstitel ohne SubscriptionPackage
+
 
 2867    16.09.2020  rc1.5   1.5.8       Andreas Bug         Prüfung des Vorhandenseins eines Konsortiums bei Lizenz-/Vertragsmerkmalen eingebaut 
 

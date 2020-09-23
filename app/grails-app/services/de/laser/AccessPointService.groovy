@@ -137,7 +137,7 @@ class AccessPointService {
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_IP) {
 
-                    Map accessPointDataList = accessPoint.getAccessPointIpRanges()
+                    Map<String, Object> accessPointDataList = accessPoint.getAccessPointIpRanges()
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
@@ -198,7 +198,7 @@ class AccessPointService {
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_PROXY) {
 
-                    Map accessPointDataList = accessPoint.getAccessPointIpRanges()
+                    Map<String, Object> accessPointDataList = accessPoint.getAccessPointIpRanges()
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
@@ -259,7 +259,7 @@ class AccessPointService {
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_EZPROXY) {
 
-                    Map accessPointDataList = accessPoint.getAccessPointIpRanges()
+                    Map<String, Object> accessPointDataList = accessPoint.getAccessPointIpRanges()
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []

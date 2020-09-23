@@ -58,8 +58,8 @@
 					</g:each>
 					</tbody>
 				</table>
+
 					<semui:paginate total="${issueEntitlementInstanceTotal}" />
-				</div>
 
 		</div>
 	</body>

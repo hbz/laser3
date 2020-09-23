@@ -9,6 +9,8 @@ import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.*
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
+import de.laser.system.SystemEvent
+import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils

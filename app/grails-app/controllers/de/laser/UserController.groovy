@@ -51,7 +51,7 @@ class UserController extends AbstractDebugController {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
                 result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
             }
@@ -142,8 +142,8 @@ class UserController extends AbstractDebugController {
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
             else {*/
-                result.availableOrgs = Org.executeQuery("select o from Org o left join o.status s where exists (select os.org from OrgSettings os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
-                        [customerType: OrgSettings.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
+                result.availableOrgs = Org.executeQuery("select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
+                        [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
                 )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             result.manipulateAffiliations = true

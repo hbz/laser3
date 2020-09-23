@@ -5,7 +5,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
-class UserSettings {
+class UserSetting {
 
     def genericOIDService
 
@@ -118,17 +118,17 @@ class UserSettings {
      */
     static def get(User user, KEYS key) {
 
-        def uss = findWhere(user: user, key: key)
+        UserSetting uss = findWhere(user: user, key: key)
         uss ?: SETTING_NOT_FOUND
     }
 
     /*
         adds new user depending setting (with value) for given key
      */
-    static UserSettings add(User user, KEYS key, def value) {
+    static UserSetting add(User user, KEYS key, def value) {
 
         withTransaction {
-            def uss = new UserSettings(user: user, key: key)
+            def uss = new UserSetting(user: user, key: key)
             uss.setValue(value)
             uss.save()
 
@@ -142,7 +142,7 @@ class UserSettings {
     static void delete(User user, KEYS key) {
 
         withTransaction {
-            def uss = UserSettings.findWhere(user: user, key: key)
+            UserSetting uss = findWhere(user: user, key: key)
             uss?.delete()
         }
     }
@@ -152,7 +152,7 @@ class UserSettings {
      */
     def getValue() {
 
-        def result = null
+        def result
 
         switch (key.type) {
             case Integer:

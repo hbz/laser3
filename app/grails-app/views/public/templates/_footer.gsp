@@ -67,20 +67,6 @@
                 </div>
             </div>
 
-           <%--
-            <div class="three wide column left aligned">
-                <h4 class="ui inverted header">
-                    ${message(code: 'landingpage.footer.2.head')}
-                </h4>
-
-                <div class="ui inverted link list">
-                    <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" target="_blank">${message(code: 'landingpage.footer.2.link1')}</a>
-                    <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank" >${message(code: 'landingpage.footer.2.link2')}</a>
-                    <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Blog" target="_blank" >${message(code: 'landingpage.footer.2.link3')}</a>
-                </div>
-            </div>
-            --%>
-
             <div class="four wide column left aligned">
                <h4 class="ui inverted header">
                    ${message(code: 'landingpage.footer.4.head')}
@@ -101,10 +87,6 @@
                        </g:link>
                    </div>
                 </g:if>
-%{--                   <div class="item">
-                       <i class="universal access icon"></i>
-                       <a target="_blank" class="content" href="https://www.schlichtungsstelle-bgg.de">${message(code: 'landingpage.footer.4.link3')}</a>
-                   </div>--}%
                    <div class="item">
                        <i class="universal access icon"></i>
                         <g:link controller="public" action="wcagEasyLanguage" class="content">

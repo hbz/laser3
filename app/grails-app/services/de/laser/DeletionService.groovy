@@ -13,6 +13,8 @@ import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.system.SystemProfiler
+import de.laser.system.SystemTicket
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
@@ -484,8 +486,8 @@ class DeletionService {
 
         List orgTypes      = new ArrayList(org.orgType)
         List orgLinks      = new ArrayList(org.links)
-        List orgSettings   = OrgSettings.findAllWhere(org: org)
-        List userSettings  = UserSettings.findAllWhere(orgValue: org)
+        List orgSettings   = OrgSetting.findAllWhere(org: org)
+        List userSettings  = UserSetting.findAllWhere(orgValue: org)
 
         List addresses      = new ArrayList(org.addresses)
         List contacts       = new ArrayList(org.contacts)
@@ -686,7 +688,7 @@ class DeletionService {
 
         List userOrgs       = new ArrayList(user.affiliations)
         List userRoles      = new ArrayList(user.roles)
-        List userSettings   = UserSettings.findAllWhere(user: user)
+        List userSettings   = UserSetting.findAllWhere(user: user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 

@@ -9,6 +9,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
+import de.laser.system.SystemEvent
 import grails.plugin.mail.MailService
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -586,12 +587,12 @@ class SurveyService {
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
                     User user = userOrg.user
-                    Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
                     String currentServer = ServerUtils.getCurrentServer()
                     String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
@@ -601,10 +602,10 @@ class SurveyService {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {
                                 log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
                             } else {
-                                boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                                boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
                                 String ccAddress = null
                                 if (isNotificationCCbyEmail){
-                                    ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                                    ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                                 }
 
                                 List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
@@ -792,8 +793,8 @@ class SurveyService {
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
-                if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
                     def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
@@ -817,8 +818,8 @@ class SurveyService {
 
         //Only User with Notification by Email and for Surveys Start
         userOrgs.each { userOrg ->
-            if(userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                    userOrg.user.getSettingsValue(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+            if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                    userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
             {
                 sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
             }
@@ -840,10 +841,10 @@ class SurveyService {
                     if (emailReceiver == null || emailReceiver.isEmpty()) {
                         log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
                     } else {
-                        boolean isNotificationCCbyEmail = user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                        boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
                         String ccAddress = null
                         if (isNotificationCCbyEmail) {
-                            ccAddress = user.getSetting(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                            ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                         }
 
                         List generalContactsEMails = []
@@ -857,7 +858,7 @@ class SurveyService {
                         }
 
                         replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
-                        Locale language = new Locale(user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+                        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
                         Object[] args = ["${survey.type.getI10n('value', language)}"]
                         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " " + survey.name + "")
 

@@ -26,25 +26,25 @@ class UserService {
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
-        def uss = UserSettings.get(user, UserSettings.KEYS.DASHBOARD)
+        def uss = UserSetting.get(user, UserSetting.KEYS.DASHBOARD)
 
         def userOrgMatches = user.getAuthorizedOrgsIds()
         if (userOrgMatches.size() > 0) {
-            if (uss == UserSettings.SETTING_NOT_FOUND) {
-                user.getSetting(UserSettings.KEYS.DASHBOARD, Org.findById(userOrgMatches.first()))
+            if (uss == UserSetting.SETTING_NOT_FOUND) {
+                user.getSetting(UserSetting.KEYS.DASHBOARD, Org.findById(userOrgMatches.first()))
             }
             else if (! uss.getValue()) {
                 uss.setValue(Org.findById(userOrgMatches.first()))
             }
         }
 
-        user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_YES)
-        user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_YES)
-        user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSettings.DEFAULT_REMINDER_PERIOD)
+        user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_YES)
+        user.getSetting(UserSetting.KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_YES)
+        user.getSetting(UserSetting.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD)
 
-        user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_YES)
-        user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_YES)
-        user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_YES)
+        user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_YES)
+        user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_YES)
+        user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_YES)
     }
 
     Set<User> getUserSet(Map params) {
@@ -130,8 +130,8 @@ class UserService {
                     }
                 }
 
-                user.getSetting(UserSettings.KEYS.DASHBOARD, org)
-                user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
+                user.getSetting(UserSetting.KEYS.DASHBOARD, org)
+                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             }
         }
 
@@ -169,7 +169,7 @@ class UserService {
                             if (! user.hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
 
                                 instAdmService.createAffiliation(user, orgs[customerKey], userRole, UserOrg.STATUS_APPROVED, null)
-                                user.getSetting(UserSettings.KEYS.DASHBOARD, orgs[customerKey])
+                                user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
                             }
                         }
                     }
