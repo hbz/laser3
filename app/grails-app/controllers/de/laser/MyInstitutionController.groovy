@@ -2539,6 +2539,11 @@ join sub.orgRelations or_sub where
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
+        if (visiblePersons){
+            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
+        }
+
         result
       }
 

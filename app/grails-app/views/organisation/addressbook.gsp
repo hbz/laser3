@@ -40,7 +40,11 @@
                                                        'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]"/>
 
 		<g:if test="${visiblePersons}">
-			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: orgInstance]}" />
+			<g:render template="/templates/cpa/person_table" model="${[
+                    persons: visiblePersons,
+                    restrictToOrg: orgInstance,
+                    tmplConfigShow: ['lineNumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
+            ]}" />
 		</g:if>
 
   </body>
