@@ -86,7 +86,6 @@ class DataManagerController extends AbstractDebugController {
         if ( params.titles=="Y" ) types_to_include.add( TitleInstance.class.name )
         if ( params.tipps=="Y" ) types_to_include.add( TitleInstancePackagePlatform.class.name )
         // com.k_int.kbplus.Subscription                 |
-        // com.k_int.kbplus.IdentifierOccurrence         |
 
         def events_to_include=[]
         if ( params.creates=="Y" ) events_to_include.add('INSERT');

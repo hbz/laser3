@@ -202,7 +202,7 @@ class ApiCollectionReader {
 
     static Collection<Object> getIdentifierCollection(Collection<Identifier> list) {
         Collection<Object> result = []
-        list.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
+        list.each { it ->   // de.laser.Identifier
             Map<String, Object> tmp = [:]
 
             tmp.put( 'namespace', it.ns?.ns )
