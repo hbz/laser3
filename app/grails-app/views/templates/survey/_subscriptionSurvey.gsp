@@ -10,8 +10,8 @@
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
                 <div class="ui segment center aligned">
-                    <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
                     <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
+                        <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
                         <div class="ui circular label">
                             ${countParticipants.subMembers}
                         </div>
@@ -19,10 +19,10 @@
                 </div>
 
                 <div class="ui segment center aligned">
-                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]">
+                        <b>${message(code: 'surveyConfig.orgs.label')}:</b>
                         <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
 

@@ -45,13 +45,6 @@
         </semui:actionsDropdown>
     </g:if>
 </g:if>
-<g:if test="${actionName in ['addressbook']}">
-    <g:if test="${editable}">
-        <semui:actionsDropdown>
-            <semui:actionsDropdownItem message="person.create_new.contactPerson.label" data-semui="modal" href="#personFormModal" />
-        </semui:actionsDropdown>
-    </g:if>
-</g:if>
 
 <g:if test="${actionName in ['documents']}">
     <g:if test="${editable}">

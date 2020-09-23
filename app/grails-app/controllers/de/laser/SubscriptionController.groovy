@@ -1595,7 +1595,7 @@ class SubscriptionController
             Map privateContacts = allContacts.privateContacts
             result.filteredSubChilds.each { row ->
                 Subscription subChild = (Subscription) row.sub
-                row.orgs.each { subscr ->
+                row.orgs.each { Org subscr ->
                     Map<String,Object> org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname
@@ -1611,8 +1611,8 @@ class SubscriptionController
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
-                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && it.tenant.id == result.institution.id && it.isPublic }
-                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant.id == result.institution.id && it.tenant.id == result.institution.id && !it.isPublic }
+                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && ((it.tenant?.id == result.institution.id && it.isPublic) || it.tenant == null) }
+                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant?.id == result.institution.id }
                     Set generalContacts = []
                     if (publicContacts.get(subscr))
                         generalContacts.addAll(publicContacts.get(subscr))

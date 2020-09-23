@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="personEditModal" text="${modalText ?: message(code: 'person.create_new.label')}" contentClass="scrolling "
+<semui:modal id="${modalID?: 'personEditModal'}" text="${modalText ?: message(code: 'person.create_new.label')}" contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="create_person" class="ui form" url="${url}" method="POST">

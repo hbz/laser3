@@ -44,13 +44,6 @@
     <div class="sixteen wide stretched column">
         <div class="ui top attached tabular menu">
 
-
-            <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
-                <a class="item active" data-tab="surveyConfigsView">
-                ${message(code: 'surveyEvaluation.label')}
-                </a>
-            </g:if>
-
             <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
                 ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
                 <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
@@ -67,19 +60,6 @@
             </a>
 
         </div>
-
-        <g:if test="${surveyConfig.surveyProperties?.size() > 0}">
-            <div class="ui bottom attached tab segment active" data-tab="surveyConfigsView">
-
-                <g:if test="${surveyConfig}">
-
-                    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-                        <g:render template="evaluationSubscription" />
-                    </g:if>
-
-                </g:if>
-            </div>
-        </g:if>
 
         <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
 

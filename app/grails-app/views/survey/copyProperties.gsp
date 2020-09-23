@@ -19,23 +19,27 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
-        <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyInfo.id}"
+        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+            <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" message="surveyInfo.renewalOverView"/>
+        </g:if>
     </g:if>
     <semui:crumb message="surveyInfo.transferOverView" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <semui:actionsDropdown>
-        <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
-                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                   message="surveyInfo.renewalOverView"/>
+    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
+                                       params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                       message="surveyInfo.renewalOverView"/>
 
-        <semui:actionsDropdownItem controller="survey" action="setCompleted"
-                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                   message="surveyInfo.completed.action"/>
+            <semui:actionsDropdownItem controller="survey" action="setCompleted"
+                                       params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                       message="surveyInfo.completed.action"/>
 
-    </semui:actionsDropdown>
+        </semui:actionsDropdown>
+    </g:if>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -51,7 +55,7 @@ ${surveyInfo.name}
         <div class="content">
             <div class="title">
                 <g:link controller="survey" action="compareMembersOfTwoSubs"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
                     ${message(code: 'surveyInfo.transferMembers')}
                 </g:link>
             </div>
@@ -83,7 +87,7 @@ ${surveyInfo.name}
         <div class="content">
             <div class="title">
                 <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties']">
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription?.id]">
                     ${message(code: 'copyProperties.surveyProperties.short')}
                 </g:link>
             </div>
@@ -112,7 +116,7 @@ ${surveyInfo.name}
         <div class="content">
             <div class="title">
                 <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'customProperties']">
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'customProperties', targetSubscriptionId: targetSubscription?.id]">
                     ${message(code: 'copyProperties.customProperties.short')}
                 </g:link>
             </div>
@@ -142,7 +146,7 @@ ${surveyInfo.name}
         <div class="content">
             <div class="title">
                 <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'privateProperties']">
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'privateProperties', targetSubscriptionId: targetSubscription?.id]">
                     ${message(code: 'copyProperties.privateProperties.short')}
                 </g:link>
             </div>
@@ -172,7 +176,7 @@ ${surveyInfo.name}
         <div class="content">
             <div class="title">
                 <g:link controller="survey" action="copySurveyCostItems"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
                     ${message(code: 'copySurveyCostItems.surveyCostItems')}
                 </g:link>
             </div>
@@ -212,13 +216,17 @@ ${surveyInfo.name}
             <div class="eight wide column">
                 <h3 class="ui header center aligned">
 
-                    <g:message code="renewalWithSurvey.parentSubscription"/>:<br>
+                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        <g:message code="renewalWithSurvey.parentSubscription"/>:
+                    </g:if><g:else>
+                        <g:message code="copyElementsIntoObject.sourceObject.name" args="[message(code: 'subscription.label')]"/>:
+                    </g:else><br>
                     <g:if test="${parentSubscription}">
                         <g:link controller="subscription" action="show"
-                                id="${parentSubscription?.id}">${parentSubscription?.dropdownNamingConvention()}</g:link>
+                                id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
                         <br>
                         <g:link controller="subscription" action="members"
-                                id="${parentSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                                id="${parentSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
                     </g:if>
                 </h3>
@@ -226,13 +234,17 @@ ${surveyInfo.name}
 
             <div class="eight wide column">
                 <h3 class="ui header center aligned">
-                    <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:<br>
+                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
+                    </g:if><g:else>
+                        <g:message code="copyElementsIntoObject.targetObject.name" args="[message(code: 'subscription.label')]"/>:
+                    </g:else><br>
                     <g:if test="${parentSuccessorSubscription}">
                         <g:link controller="subscription" action="show"
-                                id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
+                                id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
                         <br>
                         <g:link controller="subscription" action="members"
-                                id="${parentSuccessorSubscription?.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                                id="${parentSuccessorSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSuccessorSubscription.getDerivedSubscribers().size() ?: 0}"/>
 
                     </g:if>
@@ -266,7 +278,7 @@ ${surveyInfo.name}
     <g:if test="${properties}">
 
         <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id, tab: params.tab]"
+                params="[surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]"
                 method="post" class="ui form ">
             <g:hiddenField name="copyProperty" value="${selectedProperty}"/>
 
@@ -280,10 +292,14 @@ ${surveyInfo.name}
                     <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
 
                     <g:if test="${params.tab == 'surveyProperties'}">
-                        <th><g:message code="renewalWithSurvey.parentSubscription"/></th>
+                        <th> <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                            <g:message code="renewalWithSurvey.parentSubscription"/>
+                        </g:if><g:else>
+                            <g:message code="copyElementsIntoObject.sourceObject.name" args="[message(code: 'subscription.label')]"/>
+                        </g:else></th>
                         <th>
                             <g:form id="selectedPropertyForm" action="copyProperties" method="post"
-                                    params="${params + [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]}">
+                                    params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
                                 <laser:select name="selectedProperty"
                                               from="${properties}"
                                               optionKey="id"
@@ -295,9 +311,13 @@ ${surveyInfo.name}
                         </th>
                     </g:if>
                     <g:else>
-                        <th><g:message code="renewalWithSurvey.parentSubscription"/>
+                        <th> <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                            <g:message code="renewalWithSurvey.parentSubscription"/>
+                        </g:if><g:else>
+                            <g:message code="copyElementsIntoObject.sourceObject.name" args="[message(code: 'subscription.label')]"/>
+                        </g:else>
                             <g:form action="copyProperties" method="post"
-                                    params="${params + [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]}">
+                                    params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
                                 <laser:select name="selectedProperty"
                                               from="${properties.sort { it.getI10n('name') }}"
                                               optionKey="id"
@@ -308,7 +328,11 @@ ${surveyInfo.name}
                             </g:form>
                         </th>
                     </g:else>
-                    <th><g:message code="renewalWithSurvey.parentSuccessorSubscription"/></th>
+                    <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>
+                    </g:if><g:else>
+                        <g:message code="copyElementsIntoObject.targetObject.name" args="[message(code: 'subscription.label')]"/>
+                    </g:else></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -332,7 +356,7 @@ ${surveyInfo.name}
                             </g:if>
                             <g:link controller="myInstitution" action="manageParticipantSurveys"
                                     id="${participant.id}">
-                                ${participant?.sortname}
+                                ${participant.sortname}
                             </g:link>
                             <br>
                             <g:link controller="organisation" action="show"
@@ -658,14 +682,14 @@ ${surveyInfo.name}
 <div class="sixteen wide field" style="text-align: center;">
 <g:if test="${params.tab != 'privateProperties'}">
     <g:link class="ui button" controller="survey" action="copyProperties"
-            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties'))]">
+            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties')), targetSubscriptionId: targetSubscription?.id]">
         ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
     </g:link>
 </g:if>
 
 <g:if test="${params.tab == 'privateProperties'}">
     <g:link class="ui button" controller="survey" action="copySurveyCostItems"
-            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
         ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
     </g:link>
 </g:if>

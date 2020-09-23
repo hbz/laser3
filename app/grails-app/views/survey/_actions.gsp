@@ -71,14 +71,6 @@
             %{-- Only for Survey with Renewal  Beginn --}%
             <g:if test="${surveyInfo && surveyConfig && surveyConfig.subSurveyUseForTransfer
                     && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
-                <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey"
-                                           params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"
-                                           message="surveyInfo.renewal.action"/>
-                <div class="ui divider"></div>
-                <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
-                                           params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"
-                                           message="surveyInfo.transferOverView"/>
-                <div class="ui divider"></div>
 
                 <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_COMPLETED.id}">
                     <semui:actionsDropdownItem controller="survey" action="setInEvaluation" params="[id: params.id]"

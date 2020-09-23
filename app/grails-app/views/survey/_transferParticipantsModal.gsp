@@ -7,7 +7,7 @@
     <h3><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
 
     <g:form class="ui form"
-            url="[controller: 'survey', action: 'processTransferParticipants', params: [id: params.id, surveyConfigID: surveyConfig.id]]">
+            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id]]">
         <div class="field">
             <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
             <g:if test="${properties}">
