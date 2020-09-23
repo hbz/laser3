@@ -517,7 +517,7 @@ class FinanceService {
         BigDecimal billingSum = 0.0
         BigDecimal billingSumAfterTax = 0.0
         if(billingSumsPositive.size() > 0) {
-            billingSumsPositive.each { CostItem posEntry ->
+            billingSumsPositive.each {  posEntry ->
                 if (billingSumsNegative.size() > 0) {
                     int index = getCurrencyIndexInList(billingSumsNegative,posEntry.currency)
                     if(index > -1) {
@@ -539,7 +539,7 @@ class FinanceService {
             }
         }
         if(billingSumsNegative.size() > 0) {
-            billingSumsNegative.each { CostItem negEntry ->
+            billingSumsNegative.each {  negEntry ->
                 if(!positiveCurrencies.contains(negEntry.currency))
                     billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
             }
