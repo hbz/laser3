@@ -1,6 +1,6 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.Identifier
+import de.laser.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole

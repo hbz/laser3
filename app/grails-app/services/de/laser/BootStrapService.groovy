@@ -2,7 +2,6 @@ package de.laser
 
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.kbplus.ContentItem
-import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription

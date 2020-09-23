@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.GlobalRecordSource
+import de.laser.Identifier
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.SystemEvent

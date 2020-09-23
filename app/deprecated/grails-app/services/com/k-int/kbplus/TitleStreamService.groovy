@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Identifier
+import de.laser.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import de.laser.helper.RDStore
 import grails.transaction.Transactional

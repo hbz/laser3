@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IdentifierNamespace; com.k_int.kbplus.Identifier;de.laser.I10nTranslation" %>
+<%@ page import="de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
 <!doctype html>
 <html>
 	<head>

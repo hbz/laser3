@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import de.laser.Identifier
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinitionGroup

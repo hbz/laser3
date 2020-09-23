@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.Identifier
 import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.TIPPCoverage

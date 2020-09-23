@@ -1,12 +1,16 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.TitleInstance
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-
-import javax.persistence.Transient
 
 class Identifier implements CalculatedLastUpdated {
 

@@ -1,8 +1,5 @@
 package de.laser
 
-import com.k_int.kbplus.IdentifierNamespace
-import com.k_int.kbplus.Identifier
-
 class SemanticUiIdentifierTagLib {
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]

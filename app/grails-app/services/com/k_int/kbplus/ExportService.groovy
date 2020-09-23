@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

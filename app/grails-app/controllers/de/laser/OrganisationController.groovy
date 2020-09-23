@@ -2,8 +2,6 @@ package de.laser
 
 
 import com.k_int.kbplus.DocContext
-import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty

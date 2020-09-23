@@ -13,11 +13,6 @@ class AccessService {
     static final CHECK_EDIT = 'CHECK_EDIT'
     static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
-    static final ORG_INST = 'ORG_INST'
-    static final ORG_BASIC_MEMBER = 'ORG_BASIC_MEMBER'
-    static final ORG_CONSORTIUM = 'ORG_CONSORTIUM'
-    static final ORG_INST_COLLECTIVE = 'ORG_INST_COLLECTIVE'
-
     def grailsApplication
     def springSecurityService
     def contextService

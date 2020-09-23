@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.IdentifierNamespace
+
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
