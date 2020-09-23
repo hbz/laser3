@@ -50,7 +50,7 @@
             </g:if>
 
             <semui:menuDropdownItems actionName="surveyEvaluation" message="surveyEvaluation.label">
-                <g:each in="${surveyInfo.surveyConfigs.sort { it?.getConfigNameShort() }}" var="surveyConfig">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                     <semui:menuDropdownItem controller="survey" action="surveyEvaluation"
                                             params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                             text="${surveyConfig.getConfigNameShort()}"/>
@@ -58,7 +58,7 @@
             </semui:menuDropdownItems>
 
             <semui:menuDropdownItems actionName="surveyTransfer" message="surveyTransfer.label">
-                <g:each in="${surveyInfo.surveyConfigs.sort { it?.getConfigNameShort() }}" var="surveyConfig">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                         <semui:menuDropdownItem controller="survey" action="renewalWithSurvey"
                                                 params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
