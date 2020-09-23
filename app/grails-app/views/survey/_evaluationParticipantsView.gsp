@@ -40,7 +40,7 @@
                 <b>${message(code: 'surveyConfig.orgs.label')}:</b>
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig?.id]">
+                        params="[surveyConfigID: surveyConfig.id]">
                     <div class="ui circular label">${countParticipants.surveyMembers}</div>
                 </g:link>
             </div>
