@@ -2,8 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.BookInstance
 import com.k_int.kbplus.ContentItem
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole

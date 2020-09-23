@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.Doc
+
 import static org.junit.Assert.*
 
 import grails.test.mixin.*

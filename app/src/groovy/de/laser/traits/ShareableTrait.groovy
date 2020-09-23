@@ -1,6 +1,6 @@
 package de.laser.traits
 
-import com.k_int.kbplus.DocContext
+import de.laser.DocContext
 import com.k_int.kbplus.OrgRole
 import de.laser.interfaces.ShareSupport
 

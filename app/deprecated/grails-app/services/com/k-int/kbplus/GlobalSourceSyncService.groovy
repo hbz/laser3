@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.Doc
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
 import de.laser.RefdataCategory

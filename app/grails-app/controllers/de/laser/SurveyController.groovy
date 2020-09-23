@@ -1,8 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
@@ -27,7 +25,6 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException

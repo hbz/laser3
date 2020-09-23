@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Doc
+
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDStore

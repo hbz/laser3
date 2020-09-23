@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.Doc
+import de.laser.DocContext
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
