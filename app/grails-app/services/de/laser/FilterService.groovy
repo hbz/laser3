@@ -66,6 +66,11 @@ class FilterService {
             queryParams << [region : regions]
         }
 
+        if (params.subjectGroup?.size() > 0) {
+            query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
+            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+        }
+
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")
@@ -164,6 +169,12 @@ class FilterService {
             }
             queryParams << [country : countries]
         }
+
+        if (params.subjectGroup?.size() > 0) {
+            query << "exists (select osg from OrgSubjectGroup as osg where osg.org.id = o.id and osg.subjectGroup.id in (:subjectGroup))"
+            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+        }
+
         if (params.libraryNetwork?.size() > 0) {
             query << "o.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")
@@ -794,6 +805,11 @@ class FilterService {
             }
             queryParams << [country : countries]
         }
+        if (params.subjectGroup?.size() > 0) {
+            base_qry +=  " and exists (select osg from OrgSubjectGroup as osg where osg.org.id = surResult.participant.id and osg.subjectGroup.id in (:subjectGroup))"
+            queryParams << [subjectGroup : params.list("subjectGroup").collect {Long.parseLong(it)}]
+        }
+
         if (params.libraryNetwork?.size() > 0) {
             base_qry += " and surResult.participant.libraryNetwork.id in (:libraryNetwork)"
             List<String> selLibraryNetworks = params.list("libraryNetwork")

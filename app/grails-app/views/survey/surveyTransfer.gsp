@@ -40,18 +40,17 @@
     ${message(code: 'surveyInfo.transfer')}
 </h2>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+    <semui:form>
+
+        <g:render template="evaluationParticipantsView" model="[showCheckbox: true, showTransferFields: true]"/>
+
+    </semui:form>
+</g:if>
+<g:else>
     <div class="ui segment">
         <b>${message(code: 'renewalWithSurvey.notInEvaliation')}</b>
     </div>
-</g:if>
-<g:else>
-
-    <semui:form>
-
-            <g:render template="evaluationParticipantsView" model="[showCheckbox: true, showTransferFields: true]"/>
-
-    </semui:form>
 </g:else>
 
 

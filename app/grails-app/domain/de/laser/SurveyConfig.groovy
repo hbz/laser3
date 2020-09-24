@@ -44,6 +44,9 @@ class SurveyConfig {
     String url
     String url2
     String url3
+    String urlComment
+    String urlComment2
+    String urlComment3
 
     Date dateCreated
     Date lastUpdated
@@ -81,6 +84,9 @@ class SurveyConfig {
         url(nullable: true, blank: false, maxSize:512)
         url2(nullable: true, blank: false, maxSize:512)
         url3(nullable: true, blank: false, maxSize:512)
+        urlComment(nullable: true, blank: false)
+        urlComment2(nullable: true, blank: false)
+        urlComment3(nullable: true, blank: false)
         evaluationFinish        (nullable: true)
         subSurveyUseForTransfer (nullable: true)
         propertySet(nullable: true, blank: false)
@@ -104,6 +110,9 @@ class SurveyConfig {
         url column: 'surconf_url'
         url2 column: 'surconf_url_2'
         url3 column: 'surconf_url_3'
+        urlComment column: 'surconf_url_comment', type: 'text'
+        urlComment2 column: 'surconf_url_comment_2', type: 'text'
+        urlComment3 column: 'surconf_url_comment_3', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         createTitleGroups column: 'surconf_create_title_groups'
         configFinish column: 'surconf_config_finish'

@@ -1810,13 +1810,13 @@ join sub.orgRelations or_sub where
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
-                " order by surConfig.surveyInfo.name",
+                " order by surConfig.surveyInfo.endDate",
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
         if(accessService.checkPerm('ORG_CONSORTIUM')){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
-                    " order by surConfig.surveyInfo.name",
+                    " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
                      status: RDStore.SURVEY_SURVEY_STARTED])
         }

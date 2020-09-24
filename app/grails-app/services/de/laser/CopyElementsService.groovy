@@ -63,7 +63,7 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'comment']
                 break
             case SurveyConfig.class.simpleName:
-                result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment', 'url', 'url2', 'url3']
+                result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment', 'url', 'url2', 'url3', 'urlComment', 'urlComment2', 'urlComment3']
                 break
         }
         result

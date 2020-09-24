@@ -2974,8 +2974,11 @@ class SurveyController {
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                             url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                            urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
                             url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                            urlComment2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.urlComment2 : null,
                             url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
+                            urlComment3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.urlComment3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                     ).save(flush:true)
 
@@ -3003,8 +3006,11 @@ class SurveyController {
                         surveyInfo: newSurveyInfo,
                         comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                         url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
+                        urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
                         url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
+                        urlComment2: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment2 : null,
                         url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
+                        urlComment3: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment3 : null,
                         configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                 ).save(flush:true)
 
