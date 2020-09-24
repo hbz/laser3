@@ -174,9 +174,13 @@ class SurveyService {
                     titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale())])
                 }
 
-                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                titles.addAll([
+                        messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
                         messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
                         messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                         messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale())])
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
@@ -212,8 +216,11 @@ class SurveyService {
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -235,8 +242,11 @@ class SurveyService {
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.push(messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()))
                     titles.push(messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()))
                     titles.push(messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()))
                     titles.push(messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()))
                 }
             }
 
@@ -260,8 +270,11 @@ class SurveyService {
                         row.add([field: surveyName ?: '', style: null])
                     }
                     row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment ?: '', style: null])
                     row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment2 ?: '', style: null])
                     row.add([field: surveyConfig.url3 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment3 ?: '', style: null])
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
                     if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
@@ -334,8 +347,11 @@ class SurveyService {
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment ?: '', style: null])
                     row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment2 ?: '', style: null])
                     row.add([field: surveyConfig.url3 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment3 ?: '', style: null])
                     subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
                     row.add([field: subscription?.name ?: surveyConfig.getConfigNameShort() ?: "", style: null])
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
@@ -370,8 +386,11 @@ class SurveyService {
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     row.add([field: surveyConfig.getConfigNameShort() ?: '', style: null])
                     row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment ?: '', style: null])
                     row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment2 ?: '', style: null])
                     row.add([field: surveyConfig.url3 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment3 ?: '', style: null])
                 }
 
                 surveyData.add(row)
@@ -442,8 +461,11 @@ class SurveyService {
                 }
 
                 titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
                                messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale())])
+                               messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale())])
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT ) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -479,8 +501,11 @@ class SurveyService {
                     }
 
                     row.add([field: surveyConfig.url ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment ?: '', style: null])
                     row.add([field: surveyConfig.url2 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment2 ?: '', style: null])
                     row.add([field: surveyConfig.url3 ?: '', style: null])
+                    row.add([field: surveyConfig.urlComment3 ?: '', style: null])
 
                     if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
@@ -512,8 +537,11 @@ class SurveyService {
 
             titles.addAll([messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.type.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -538,8 +566,11 @@ class SurveyService {
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.url ?: '', style: null])
+                row.add([field: surveyConfig.urlComment ?: '', style: null])
                 row.add([field: surveyConfig.url2 ?: '', style: null])
+                row.add([field: surveyConfig.urlComment2 ?: '', style: null])
                 row.add([field: surveyConfig.url3 ?: '', style: null])
+                row.add([field: surveyConfig.urlComment3 ?: '', style: null])
                 row.add([field: surveyName ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
 
@@ -653,8 +684,11 @@ class SurveyService {
                            messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
@@ -697,8 +731,11 @@ class SurveyService {
 
                         }
                         row.add([field: surveyResult.surveyConfig.url ?: '', style: null])
+                        row.add([field: surveyResult.surveyConfig.urlComment ?: '', style: null])
                         row.add([field: surveyResult.surveyConfig.url2 ?: '', style: null])
+                        row.add([field: surveyResult.surveyConfig.urlComment2 ?: '', style: null])
                         row.add([field: surveyResult.surveyConfig.url3 ?: '', style: null])
+                        row.add([field: surveyResult.surveyConfig.urlComment3 ?: '', style: null])
                         row.add([field: surveyResult.surveyConfig.comment ?: '', style: null])
 
                         if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {

@@ -50,10 +50,18 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
-                        <g:if test="${surveyConfig.url}">
-                            <semui:linkIcon href="${surveyConfig.url}"/>
-                        </g:if>
+                        <dd>
+                            <semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
+                            <g:if test="${surveyConfig.url}">
+                                <semui:linkIcon href="${surveyConfig.url}"/>
+                            </g:if>
+
+                        </dd>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.urlComment.label')}
+                        </dt>
+                        <dd>
+                            <semui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
                         </dd>
 
                     </dl>
@@ -62,11 +70,17 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url2.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
-                        <g:if test="${surveyConfig.url2}">
-                            <semui:linkIcon href="${surveyConfig.url2}"/>
-                        </g:if>
-
+                        <dd>
+                            <semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
+                            <g:if test="${surveyConfig.url2}">
+                                <semui:linkIcon href="${surveyConfig.url2}"/>
+                            </g:if>
+                        </dd>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.urlComment2.label')}
+                        </dt>
+                        <dd>
+                            <semui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
                         </dd>
 
                     </dl>
@@ -75,11 +89,17 @@
                         <dt class="control-label">
                             ${message(code: 'surveyConfig.url3.label')}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
-                        <g:if test="${surveyConfig.url3}">
-                            <semui:linkIcon href="${surveyConfig.url3}"/>
-                        </g:if>
-
+                        <dd>
+                            <semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
+                            <g:if test="${surveyConfig.url3}">
+                                <semui:linkIcon href="${surveyConfig.url3}"/>
+                            </g:if>
+                        </dd>
+                        <dt class="control-label">
+                            ${message(code: 'surveyConfig.urlComment3.label')}
+                        </dt>
+                        <dd>
+                            <semui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
                         </dd>
 
                     </dl>
@@ -112,12 +132,17 @@
                             <dt class="control-label">
                                 ${message(code: 'surveyConfig.url.label')}
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="url" type="text"
+                            <dd>
+                                <semui:xEditable owner="${surveyConfig}" field="url" type="text"
                                                  overwriteEditable="${false}"/>
 
+                                <g:if test="${surveyConfig.urlComment}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${surveyConfig.urlComment}">
+                                        <i class="info circle icon"></i>
+                                    </span>
+                                </g:if>
                                 <semui:linkIcon href="${surveyConfig.url}"/>
-
-
                             </dd>
 
                         </dl>
@@ -128,12 +153,18 @@
                             <dt class="control-label">
                                 ${message(code: 'surveyConfig.url2.label')}
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="url2" type="text"
+                            <dd>
+                                <semui:xEditable owner="${surveyConfig}" field="url2" type="text"
                                                  overwriteEditable="${false}"/>
 
-                            <semui:linkIcon href="${surveyConfig.url2}"/>
+                                <g:if test="${surveyConfig.urlComment2}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${surveyConfig.urlComment2}">
+                                        <i class="info circle icon"></i>
+                                    </span>
+                                </g:if>
 
-
+                                <semui:linkIcon href="${surveyConfig.url2}"/>
                             </dd>
 
                         </dl>
@@ -144,12 +175,18 @@
                             <dt class="control-label">
                                 ${message(code: 'surveyConfig.url3.label')}
                             </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="url3" type="text"
+                            <dd>
+                                <semui:xEditable owner="${surveyConfig}" field="url3" type="text"
                                                  overwriteEditable="${false}"/>
 
-                            <semui:linkIcon href="${surveyConfig.url3}"/>
+                                <g:if test="${surveyConfig.urlComment3}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${surveyConfig.urlComment3}">
+                                        <i class="info circle icon"></i>
+                                    </span>
+                                </g:if>
 
-
+                                <semui:linkIcon href="${surveyConfig.url3}"/>
                             </dd>
 
                         </dl>
