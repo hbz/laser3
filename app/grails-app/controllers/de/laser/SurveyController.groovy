@@ -3790,7 +3790,7 @@ class SurveyController {
                             token       : surveyProperty.name,
                             category    : 'Subscription Property',
                             type        : surveyProperty.type,
-                            rdc         : (surveyProperty.type == RefdataValue.toString()) ? surveyProperty.refdataCategory : null,
+                            rdc         : (surveyProperty.isRefdataValueType()) ? surveyProperty.refdataCategory : null,
                             i10n        : [
                                     name_de: surveyProperty.getI10n('name', 'de'),
                                     name_en: surveyProperty.getI10n('name', 'en'),
@@ -3845,7 +3845,7 @@ class SurveyController {
                                     } else {
                                         log.debug("New private property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
-                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                        if (copyProperty.type.isRefdataValueType()) {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
                                         def prop = setNewProperty(newProp, newValue)
@@ -3865,7 +3865,7 @@ class SurveyController {
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
-                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                        if (copyProperty.type.isRefdataValueType()) {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
                                         def prop = setNewProperty(newProp, newValue)
@@ -4606,22 +4606,22 @@ class SurveyController {
 
         String field = null
 
-        if(property.type.type == Integer.toString()) {
+        if(property.type.isIntegerType()) {
             field = "intValue"
         }
-        else if (property.type.type == String.toString())  {
+        else if (property.type.isStringType())  {
             field = "stringValue"
         }
-        else if (property.type.type == BigDecimal.toString())  {
+        else if (property.type.isBigDecimalType())  {
             field = "decValue"
         }
-        else if (property.type.type == Date.toString())  {
+        else if (property.type.isDateType())  {
             field = "dateValue"
         }
-        else if (property.type.type == URL.toString())  {
+        else if (property.type.isURLType())  {
             field = "urlValue"
         }
-        else if (property.type.type == RefdataValue.toString())  {
+        else if (property.type.isRefdataValueType())  {
             field = "refValue"
         }
 

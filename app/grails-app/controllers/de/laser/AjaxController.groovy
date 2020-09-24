@@ -290,19 +290,19 @@ class AjaxController {
                             Org org = contextService.getOrg()
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target?.owner?.id && target?.finishDate == null) {
+                            if (org?.id == target.owner?.id && target.finishDate == null) {
                                 String property = ""
-                                if (target?.type?.type == Integer.toString()) {
+                                if (target.type.isIntegerType()) {
                                     property = "intValue"
-                                } else if (target?.type?.type == String.toString()) {
+                                } else if (target.type.isStringType()) {
                                     property = "stringValue"
-                                } else if (target?.type?.type == BigDecimal.toString()) {
+                                } else if (target.type.isBigDecimalType()) {
                                     property = "decValue"
-                                } else if (target?.type?.type == Date.toString()) {
+                                } else if (target.type.isDateType()) {
                                     property = "dateValue"
-                                } else if (target?.type?.type == URL.toString()) {
+                                } else if (target.type.isURLType()) {
                                     property = "urlValue"
-                                } else if (target?.type?.type == RefdataValue.toString()) {
+                                } else if (target.type.isRefdataValueType()) {
                                     property = "refValue"
                                 }
 
@@ -2498,19 +2498,19 @@ class AjaxController {
 
                     Org org = contextService.getOrg()
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object?.owner?.id && target_object?.finishDate == null) {
+                    if (org?.id == target_object.owner?.id && target_object.finishDate == null) {
                         String property = ""
-                        if (target_object?.type?.type == Integer.toString()) {
+                        if (target_object.type.isIntegerType()) {
                             property = "intValue"
-                        } else if (target_object?.type?.type == String.toString()) {
+                        } else if (target_object.type.isStringType()) {
                             property = "stringValue"
-                        } else if (target_object?.type?.type == BigDecimal.toString()) {
+                        } else if (target_object.type.isBigDecimalType()) {
                             property = "decValue"
-                        } else if (target_object?.type?.type == Date.toString()) {
+                        } else if (target_object.type.isDateType()) {
                             property = "dateValue"
-                        } else if (target_object?.type?.type == URL.toString()) {
+                        } else if (target_object.type.isURLType()) {
                             property = "urlValue"
-                        } else if (target_object?.type?.type == RefdataValue.toString()) {
+                        } else if (target_object.type.isRefdataValueType()) {
                             property = "refValue"
                         }
 
