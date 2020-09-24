@@ -237,7 +237,7 @@
                                 <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) }">
                                     <g:link controller="subscription" action="surveys" id="${s.id}"
                                             class="ui icon button">
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"                                           data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info3")}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"                                           data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
                                             <i class="ui icon envelope open"></i>
                                         </span>
                                     </g:link>
@@ -247,13 +247,13 @@
                                             class="ui icon button">
                                         <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                                  data-content="${message(code: "surveyConfig.isCompletedforOwner.true")}">
+                                                  data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                 <i class="ui icon envelope green"></i>
                                             </span>
                                         </g:if>
                                         <g:else>
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                                  data-content="${message(code: "surveyConfig.isCompletedforOwner.false")}">
+                                                  data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
                                                 <i class="ui icon envelope open"></i>
                                             </span>
                                         </g:else>

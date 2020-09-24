@@ -149,7 +149,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkSubSurveyUseForTransfer">${message(code: 'surveyConfig.subSurveyUseForTransfer.label')}</label>
+                            <label for="checkSubSurveyUseForTransfer">${message(code: 'surveyconfig.subSurveyUseForTransfer.label')}</label>
                             <input id="checkSubSurveyUseForTransfer" name="checkSubSurveyUseForTransfer" type="checkbox"
                                    <g:if test="${params.checkSubSurveyUseForTransfer}">checked=""</g:if>
                                    tabindex="0">
@@ -237,7 +237,7 @@
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${message(code: "surveyConfig.subSurveyUseForTransfer.label.info2")}">
+                                  data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="yellow icon envelope large "></i>
                             </span>
                         </g:if>

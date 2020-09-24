@@ -1,4 +1,5 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Org" %>
+<laser:serviceInjection/>
 <semui:actionsDropdown>
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
@@ -12,7 +13,7 @@
                 <semui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
                                            message="copySurvey.label"/>
 
-                <semui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[id: params.id]"
+                <semui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[sourceObjectId: genericOIDService.getOID(surveyConfig)]"
                                            message="copySurvey.label"/>
                 <div class="ui divider"></div>
             </g:if>

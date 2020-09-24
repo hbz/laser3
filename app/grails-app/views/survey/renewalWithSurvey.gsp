@@ -121,7 +121,7 @@ ${surveyInfo.name}
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">
                 <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
-                    <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
+                    <b>${message(code: 'surveyconfig.subOrgs.label')}:</b>
 
                     <div class="ui circular label">
                         ${countParticipants.subMembers}
@@ -133,14 +133,14 @@ ${surveyInfo.name}
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id]">
-                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                    <b>${message(code: 'surveyconfig.orgs.label')}:</b>
 
                     <div class="ui circular label">${countParticipants.surveyMembers}</div>
                 </g:link>
 
                 <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
                     ( ${countParticipants.subMembersWithMultiYear}
-                    ${message(code: 'surveyConfig.subOrgsWithMultiYear.label')} )
+                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
                 </g:if>
             </div>
 

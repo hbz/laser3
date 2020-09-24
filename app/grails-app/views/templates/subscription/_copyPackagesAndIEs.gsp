@@ -22,7 +22,7 @@
                     <th class="six wide">
                         <div class="la-copyElements-th-flex-container">
                             <div class="la-copyElements-th-flex-item">
-                                <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject?.id}">${sourceObject?.dropdownNamingConvention()}</g:link></g:if>
+                                <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
                                 <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
@@ -46,8 +46,8 @@
             <tr>
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
-                    <b>${message(code: 'subscription.packages.label')}: ${sourceObject?.packages?.size()}</b>
-                    <g:each in="${sourceObject?.packages?.sort { it.pkg.name }}" var="sp">
+                    <b>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</b>
+                    <g:each in="${sourceObject.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>

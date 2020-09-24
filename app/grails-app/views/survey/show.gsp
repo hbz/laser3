@@ -111,7 +111,7 @@
 
                         <g:if test="${surveyInfo.isSubscriptionSurvey && surveyInfo.surveyConfigs.size() >= 1}">
                             <dl>
-                                <dt class="control-label">${message(code: 'surveyConfig.subSurveyUseForTransfer.label')}</dt>
+                                <dt class="control-label">${message(code: 'surveyconfig.subSurveyUseForTransfer.label')}</dt>
                                 <dd>
                                     ${surveyInfo.surveyConfigs[0].subSurveyUseForTransfer ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
                                 </dd>
@@ -224,7 +224,7 @@
                 <div class="ui checkbox">
                     <input type="checkbox" onchange="this.form.submit()"
                            name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
-                    <label><g:message code="surveyConfig.configFinish.label"/></label>
+                    <label><g:message code="surveyconfig.configFinish.label"/></label>
                 </div>
             </div>
 

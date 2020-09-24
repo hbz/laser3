@@ -151,7 +151,7 @@
                 <dd>
                     <div class="ui checkbox">
                         <input type="checkbox" name="docForAllSurveyConfigs">
-                        <label>${message(code: 'surveyConfig.documents.docForAllSurveyConfigs')}</label>
+                        <label>${message(code: 'surveyconfig.documents.docForAllSurveyConfigs')}</label>
                     </div>
                 </dd>
             </dl>
