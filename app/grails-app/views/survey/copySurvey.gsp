@@ -532,13 +532,13 @@
 
                                 <td>
                                     <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                        ${Subscription.findAllByInstanceOf(s)?.size()}
+                                        ${Subscription.findAllByInstanceOf(s).size()}
                                     </g:link>
                                 </td>
                                 <td>
                                     <g:link mapping="subfinance" controller="finance" action="index"
                                             params="${[sub: s.id]}">
-                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED).size()}
                                     </g:link>
                                 </td>
 
