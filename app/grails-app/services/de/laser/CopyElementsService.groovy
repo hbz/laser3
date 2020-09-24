@@ -79,14 +79,14 @@ class CopyElementsService {
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if(sourceObject.hasProperty('ids')) {
-            result.sourceIdentifiers = sourceObject?.ids?.sort { x, y ->
+            result.sourceIdentifiers = sourceObject.ids?.sort { x, y ->
                 if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
                     x.value <=> y.value
                 } else {
                     x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
                 }
             }
-            result.targetIdentifiers = targetObject?.ids?.sort { x, y ->
+            result.targetIdentifiers = targetObject.ids?.sort { x, y ->
                 if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
                     x.value <=> y.value
                 } else {

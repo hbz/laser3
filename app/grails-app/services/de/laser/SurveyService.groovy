@@ -315,17 +315,17 @@ class SurveyService {
 
                         String value = ""
 
-                        if (surResult.type.type == Integer.toString()) {
+                        if (surResult.type.isIntegerType()) {
                             value = surResult?.intValue ? surResult.intValue.toString() : ""
-                        } else if (surResult.type.type == String.toString()) {
+                        } else if (surResult.type.isStringType()) {
                             value = surResult.stringValue ?: ""
-                        } else if (surResult.type.type == BigDecimal.toString()) {
+                        } else if (surResult.type.isBigDecimalType()) {
                             value = surResult.decValue ? surResult.decValue.toString() : ""
-                        } else if (surResult.type.type == Date.toString()) {
+                        } else if (surResult.type.isDateType()) {
                             value = surResult.dateValue ? sdf.format(surResult.dateValue) : ""
-                        } else if (surResult.type.type == URL.toString()) {
+                        } else if (surResult.type.isURLType()) {
                             value = surResult.urlValue ? surResult.urlValue.toString() : ""
-                        } else if (surResult.type.type == RefdataValue.toString()) {
+                        } else if (surResult.type.isRefdataValueType()) {
                             value = surResult.refValue ? surResult.refValue.getI10n('value') : ""
                         }
 
@@ -413,17 +413,17 @@ class SurveyService {
 
                     String value = ""
 
-                    if (surResult.type.type == Integer.toString()) {
+                    if (surResult.type.isIntegerType()) {
                         value = surResult?.intValue ? surResult.intValue.toString() : ""
-                    } else if (surResult.type.type == String.toString()) {
+                    } else if (surResult.type.isStringType()) {
                         value = surResult.stringValue ?: ""
-                    } else if (surResult.type.type == BigDecimal.toString()) {
+                    } else if (surResult.type.isBigDecimalType()) {
                         value = surResult.decValue ? surResult.decValue.toString() : ""
-                    } else if (surResult.type.type == Date.toString()) {
+                    } else if (surResult.type.isDateType()) {
                         value = surResult.dateValue ? sdf.format(surResult.dateValue) : ""
-                    } else if (surResult.type.type == URL.toString()) {
+                    } else if (surResult.type.isURLType()) {
                         value = surResult.urlValue ? surResult.urlValue.toString() : ""
-                    } else if (surResult.type.type == RefdataValue.toString()) {
+                    } else if (surResult.type.isRefdataValueType()) {
                         value = surResult.refValue ? surResult.refValue.getI10n('value') : ""
                     }
 
@@ -786,17 +786,17 @@ class SurveyService {
 
                             String value = ""
 
-                            if (surveyResult.type.type == Integer.toString()) {
+                            if (surveyResult.type.isIntegerType()) {
                                 value = surveyResult?.intValue ? surveyResult.intValue.toString() : ""
-                            } else if (surveyResult.type.type == String.toString()) {
+                            } else if (surveyResult.type.isStringType()) {
                                 value = surveyResult.stringValue ?: ""
-                            } else if (surveyResult.type.type == BigDecimal.toString()) {
+                            } else if (surveyResult.type.isBigDecimalType()) {
                                 value = surveyResult.decValue ? surveyResult.decValue.toString() : ""
-                            } else if (surveyResult.type.type == Date.toString()) {
+                            } else if (surveyResult.type.isDateType()) {
                                 value = surveyResult.dateValue ? sdf.format(surveyResult.dateValue) : ""
-                            } else if (surveyResult.type.type == URL.toString()) {
+                            } else if (surveyResult.type.isURLType()) {
                                 value = surveyResult.urlValue ? surveyResult.urlValue.toString() : ""
-                            } else if (surveyResult.type.type == RefdataValue.toString()) {
+                            } else if (surveyResult.type.isRefdataValueType()) {
                                 value = surveyResult.refValue ? surveyResult.refValue.getI10n('value') : ""
                             }
 

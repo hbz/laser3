@@ -1,6 +1,7 @@
 package de.laser.api.v0.entities
 
 import com.k_int.kbplus.*
+import de.laser.Identifier
 import de.laser.finance.CostItem
 import de.laser.api.v0.*
 import de.laser.helper.Constants
@@ -137,9 +138,9 @@ class ApiSubscription {
 
 		// References
 
-		result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
+		result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // de.laser.DocContext
 		//result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
+		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // de.laser.Identifier
 		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
 		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 		result.orgAccessPoints			= ApiCollectionReader.getOrgAccessPointCollection(sub.getOrgAccessPointsOfSubscriber())

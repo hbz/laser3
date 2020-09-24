@@ -1,7 +1,7 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
-import de.laser.RefdataValue
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation

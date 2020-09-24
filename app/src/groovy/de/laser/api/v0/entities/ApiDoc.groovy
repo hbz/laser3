@@ -1,7 +1,7 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
+import de.laser.Doc
+import de.laser.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import de.laser.api.v0.*

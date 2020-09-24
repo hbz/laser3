@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.DocContext
+
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
@@ -418,7 +418,7 @@ class StatusUpdateService extends AbstractLockableService {
 
     /**
      * Triggered from the Yoda menu
-     * Loops through all {@link com.k_int.kbplus.Doc}ument objects without owner but with a {@link com.k_int.kbplus.DocContext} for a {@link Subscription} or {@link License} and assigns the ownership
+     * Loops through all {@link Doc}ument objects without owner but with a {@link DocContext} for a {@link Subscription} or {@link License} and assigns the ownership
      * to the respective subscriber/licensee.
      */
     void assignNoteOwners() {

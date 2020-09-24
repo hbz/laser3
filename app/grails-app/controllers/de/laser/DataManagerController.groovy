@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
@@ -87,7 +86,6 @@ class DataManagerController extends AbstractDebugController {
         if ( params.titles=="Y" ) types_to_include.add( TitleInstance.class.name )
         if ( params.tipps=="Y" ) types_to_include.add( TitleInstancePackagePlatform.class.name )
         // com.k_int.kbplus.Subscription                 |
-        // com.k_int.kbplus.IdentifierOccurrence         |
 
         def events_to_include=[]
         if ( params.creates=="Y" ) events_to_include.add('INSERT');

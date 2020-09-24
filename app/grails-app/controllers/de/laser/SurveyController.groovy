@@ -1,8 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
@@ -27,7 +25,6 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
@@ -3806,7 +3803,7 @@ class SurveyController {
                             token       : surveyProperty.name,
                             category    : 'Subscription Property',
                             type        : surveyProperty.type,
-                            rdc         : (surveyProperty.type == RefdataValue.toString()) ? surveyProperty.refdataCategory : null,
+                            rdc         : (surveyProperty.isRefdataValueType()) ? surveyProperty.refdataCategory : null,
                             i10n        : [
                                     name_de: surveyProperty.getI10n('name', 'de'),
                                     name_en: surveyProperty.getI10n('name', 'en'),
@@ -3861,7 +3858,7 @@ class SurveyController {
                                     } else {
                                         log.debug("New private property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
-                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                        if (copyProperty.type.isRefdataValueType()) {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
                                         def prop = setNewProperty(newProp, newValue)
@@ -3881,7 +3878,7 @@ class SurveyController {
                                     } else {
                                         log.debug("New custom property created: " + newProp.type.name)
                                         def newValue = copyProperty.getValue()
-                                        if (copyProperty.type.type == RefdataValue.toString()) {
+                                        if (copyProperty.type.isRefdataValueType()) {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
                                         def prop = setNewProperty(newProp, newValue)
@@ -4622,22 +4619,22 @@ class SurveyController {
 
         String field = null
 
-        if(property.type.type == Integer.toString()) {
+        if(property.type.isIntegerType()) {
             field = "intValue"
         }
-        else if (property.type.type == String.toString())  {
+        else if (property.type.isStringType())  {
             field = "stringValue"
         }
-        else if (property.type.type == BigDecimal.toString())  {
+        else if (property.type.isBigDecimalType())  {
             field = "decValue"
         }
-        else if (property.type.type == Date.toString())  {
+        else if (property.type.isDateType())  {
             field = "dateValue"
         }
-        else if (property.type.type == URL.toString())  {
+        else if (property.type.isURLType())  {
             field = "urlValue"
         }
-        else if (property.type.type == RefdataValue.toString())  {
+        else if (property.type.isRefdataValueType())  {
             field = "refValue"
         }
 

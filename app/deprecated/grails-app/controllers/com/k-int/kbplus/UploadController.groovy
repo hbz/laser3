@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.kbplus.auth.User
+import de.laser.Identifier
 import de.laser.RefdataValue
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDConstants

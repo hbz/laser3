@@ -47,22 +47,22 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${prop.type.type == Integer.toString()}">
+                        <g:if test="${prop.type.isIntegerType()}">
                             ${prop.intValue}
                         </g:if>
-                        <g:elseif test="${prop.type.type == String.toString()}">
+                        <g:elseif test="${prop.type.isStringType()}">
                             ${prop.stringValue}
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == BigDecimal.toString()}">
+                        <g:elseif test="${prop.type.isBigDecimalType()}">
                             ${prop.decValue}
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == Date.toString()}">
+                        <g:elseif test="${prop.type.isDateType()}">
                             <g:formatDate date="${prop.dateValue}" format="${message(code:'default.date.format.notime')}"/>
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
+                        <g:elseif test="${prop.type.isRefdataValueType()}">
                             ${prop.refValue?.getI10n('value')}
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == URL.toString()}">
+                        <g:elseif test="${prop.type.isURLType()}">
                             <span class="la-overflow la-ellipsis">
                                 ${prop.urlValue}
                                 <g:if test="${prop.value}">

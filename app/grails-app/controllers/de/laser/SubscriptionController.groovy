@@ -1,12 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.BookInstance
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.JournalInstance
 import com.k_int.kbplus.License
@@ -4949,15 +4945,15 @@ class SubscriptionController
                         def value = ''
                         org.customProperties.each { prop ->
                             if (prop.type.descr == pd.descr && prop.type == pd) {
-                                if (prop.type.type == Integer.toString()) {
+                                if (prop.type.isIntegerType()) {
                                     value = prop.intValue.toString()
-                                } else if (prop.type.type == String.toString()) {
+                                } else if (prop.type.isStringType()) {
                                     value = prop.stringValue ?: ''
-                                } else if (prop.type.type == BigDecimal.toString()) {
+                                } else if (prop.type.isBigDecimalType()) {
                                     value = prop.decValue.toString()
-                                } else if (prop.type.type == Date.toString()) {
+                                } else if (prop.type.isDateType()) {
                                     value = prop.dateValue.toString()
-                                } else if (prop.type.type == RefdataValue.toString()) {
+                                } else if (prop.type.isRefdataValueType()) {
                                     value = prop.refValue?.getI10n('value') ?: ''
                                 }
                             }
@@ -4965,15 +4961,15 @@ class SubscriptionController
 
                         org.privateProperties.each { prop ->
                             if (prop.type.descr == pd.descr && prop.type == pd) {
-                                if (prop.type.type == Integer.toString()) {
+                                if (prop.type.isIntegerType()) {
                                     value = prop.intValue.toString()
-                                } else if (prop.type.type == String.toString()) {
+                                } else if (prop.type.isStringType()) {
                                     value = prop.stringValue ?: ''
-                                } else if (prop.type.type == BigDecimal.toString()) {
+                                } else if (prop.type.isBigDecimalType()) {
                                     value = prop.decValue.toString()
-                                } else if (prop.type.type == Date.toString()) {
+                                } else if (prop.type.isDateType()) {
                                     value = prop.dateValue.toString()
-                                } else if (prop.type.type == RefdataValue.toString()) {
+                                } else if (prop.type.isRefdataValueType()) {
                                     value = prop.refValue?.getI10n('value') ?: ''
                                 }
 
@@ -5038,38 +5034,38 @@ class SubscriptionController
                         def value = ''
                         org.customProperties.each{ prop ->
                             if(prop.type.descr == pd.descr && prop.type == pd) {
-                                if(prop.type.type == Integer.toString()){
+                                if(prop.type.isIntegerType()){
                                     value = prop.intValue.toString()
                                 }
-                                else if (prop.type.type == String.toString()){
+                                else if (prop.type.isStringType()){
                                     value = prop.stringValue ?: ''
                                 }
-                                else if (prop.type.type == BigDecimal.toString()){
+                                else if (prop.type.isBigDecimalType()){
                                     value = prop.decValue.toString()
                                 }
-                                else if (prop.type.type == Date.toString()){
+                                else if (prop.type.isDateType()){
                                     value = prop.dateValue.toString()
                                 }
-                                else if (prop.type.type == RefdataValue.toString()) {
+                                else if (prop.type.isRefdataValueType()) {
                                     value = prop.refValue?.getI10n('value') ?: ''
                                 }
                             }
                         }
                         org.privateProperties.each{ prop ->
                             if(prop.type.descr == pd.descr && prop.type == pd) {
-                                if(prop.type.type == Integer.toString()){
+                                if(prop.type.isIntegerType()){
                                     value = prop.intValue.toString()
                                 }
-                                else if (prop.type.type == String.toString()){
+                                else if (prop.type.isStringType()){
                                     value = prop.stringValue ?: ''
                                 }
-                                else if (prop.type.type == BigDecimal.toString()){
+                                else if (prop.type.isBigDecimalType()){
                                     value = prop.decValue.toString()
                                 }
-                                else if (prop.type.type == Date.toString()){
+                                else if (prop.type.isDateType()){
                                     value = prop.dateValue.toString()
                                 }
-                                else if (prop.type.type == RefdataValue.toString()) {
+                                else if (prop.type.isRefdataValueType()) {
                                     value = prop.refValue?.getI10n('value') ?: ''
                                 }
                             }
@@ -5091,22 +5087,22 @@ class SubscriptionController
 
         String field
 
-        if(property.type.type == Integer.toString()) {
+        if(property.type.isIntegerType()) {
             field = "intValue"
         }
-        else if (property.type.type == String.toString())  {
+        else if (property.type.isStringType())  {
             field = "stringValue"
         }
-        else if (property.type.type == BigDecimal.toString())  {
+        else if (property.type.isBigDecimalType())  {
             field = "decValue"
         }
-        else if (property.type.type == Date.toString())  {
+        else if (property.type.isDateType())  {
             field = "dateValue"
         }
-        else if (property.type.type == URL.toString())  {
+        else if (property.type.isURLType())  {
             field = "urlValue"
         }
-        else if (property.type.type == RefdataValue.toString())  {
+        else if (property.type.isRefdataValueType())  {
             field = "refValue"
         }
 

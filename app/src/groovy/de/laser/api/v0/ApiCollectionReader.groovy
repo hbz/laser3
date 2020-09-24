@@ -1,6 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.DocContext
+import de.laser.Identifier
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
@@ -193,7 +195,7 @@ class ApiCollectionReader {
 
     static Collection<Object> getDocumentCollection(Collection<DocContext> list) {
         Collection<Object> result = []
-        list.each { it -> // com.k_int.kbplus.DocContext
+        list.each { it -> // de.laser.DocContext
             result << ApiDoc.getDocumentMap(it.owner)
         }
         result
@@ -201,7 +203,7 @@ class ApiCollectionReader {
 
     static Collection<Object> getIdentifierCollection(Collection<Identifier> list) {
         Collection<Object> result = []
-        list.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
+        list.each { it ->   // de.laser.Identifier
             Map<String, Object> tmp = [:]
 
             tmp.put( 'namespace', it.ns?.ns )

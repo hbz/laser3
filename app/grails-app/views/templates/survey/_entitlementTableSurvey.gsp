@@ -57,7 +57,7 @@
                     <br>
 
                     <div class="la-icon-list">
-                        <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
+                        <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
                             <div class="item">
                                 <i class="grey icon la-books la-popup-tooltip la-delay"
                                    data-content="${message(code: 'tipp.volume')}"></i>
@@ -68,7 +68,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
+                        <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                             <div class="item">
                                 <i class="grey icon user circle la-popup-tooltip la-delay"
                                    data-content="${message(code: 'author.slash.editor')}"></i>
@@ -79,7 +79,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
+                        <g:if test="${tipp.title instanceof BookInstance && tipp.title.editionStatement}">
                             <div class="item">
                                 <i class="grey icon copy la-popup-tooltip la-delay"
                                    data-content="${message(code: 'title.editionStatement.label')}"></i>
@@ -90,7 +90,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
+                        <g:if test="${tipp.title instanceof BookInstance && tipp.title.summaryOfContent}">
                             <div class="item">
                                 <i class="grey icon desktop la-popup-tooltip la-delay"
                                    data-content="${message(code: 'title.summaryOfContent.label')}"></i>
@@ -234,7 +234,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
+                    <g:if test="${isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
                         <g:link class="ui icon negative button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: isContainedByTarget.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"

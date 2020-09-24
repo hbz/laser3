@@ -1,6 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.Identifier
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import de.laser.Address

@@ -89,12 +89,6 @@ ${com.k_int.kbplus.Subscription.executeQuery('select sub.id from Subscription su
 
 <hr />
 
-<strong>FAIL</strong> <br />
-com.k_int.kbplus.IdentifierOccurrence.executeQuery('select subsc.id from IdentifierOccurrence io join io.sub subsc') <br />
-${com.k_int.kbplus.IdentifierOccurrence.executeQuery('select subsc.id from IdentifierOccurrence io join io.sub subsc') }
-
-<hr />
-
 com.k_int.kbplus.Subscription.executeQuery('select io.id from Subscription subsc join subsc.ids io ') <br />
 ${com.k_int.kbplus.Subscription.executeQuery('select io.id from Subscription subsc join subsc.ids io ') }
 --%>
