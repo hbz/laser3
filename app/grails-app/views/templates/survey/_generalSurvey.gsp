@@ -10,7 +10,7 @@
             <div class="ui horizontal segments">
 
                 <div class="ui segment left aligned">
-                    <b>${message(code: 'surveyconfig.orgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]">

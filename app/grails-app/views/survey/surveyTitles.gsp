@@ -178,7 +178,7 @@
                     </td>
                     <td>
                         <g:if test="${ie.priceItem}">
-                            <b><g:message code="tipp.listPrice"/>:</b>
+                            <strong><g:message code="tipp.listPrice"/>:</strong>
                             <semui:xEditable field="listPrice"
                                                                                  owner="${ie.priceItem}"
                                                                                  overwriteEditable="${false}"/>
@@ -187,7 +187,7 @@
                                     field="listCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
                                     config="Currency"/> --}%
                         <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br>
-                            <b> <g:message code="tipp.localPrice"/>:</b>
+                            <strong> <g:message code="tipp.localPrice"/>:</strong>
                             <semui:xEditable field="localPrice"
                                                                                   owner="${ie.priceItem}"
                                                                                   overwriteEditable="${false}"/>

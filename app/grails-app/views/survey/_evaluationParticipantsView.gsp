@@ -8,7 +8,7 @@
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">
                 <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
-                    <b>${message(code: 'surveyconfig.subOrgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
                     <div class="ui circular label">
                         ${countParticipants.subMembers}
@@ -20,7 +20,7 @@
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id]">
-                    <b>${message(code: 'surveyconfig.orgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
 
                     <div class="ui circular label">${countParticipants.surveyMembers}</div>
                 </g:link>
@@ -37,7 +37,7 @@
         <div class="ui horizontal segments">
 
             <div class="ui segment left aligned">
-                <b>${message(code: 'surveyconfig.orgs.label')}:</b>
+                <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id]">

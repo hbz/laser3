@@ -203,7 +203,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             </g:if>
 
             <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
-                <br><b>${tipp.title.getEbookFirstAutorOrFirstEditor()}</b>
+                <br><strong>${tipp.title.getEbookFirstAutorOrFirstEditor()}</strong>
             </g:if>
 
             <br>
@@ -233,7 +233,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
             <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance}">
                 <g:if test="${tipp.title.editionStatement}">
-                <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp.title.editionStatement}
+                <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.title.editionStatement}
                 </div>
                 </g:if>
                 <g:if test="${tipp.title.summaryOfContent}">
@@ -274,18 +274,18 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
             <div class="ui list">
                 <div class="item" title="${tipp.availabilityStatusExplanation}">
-                    <b>${message(code: 'default.access.label')}:</b> ${tipp.availabilityStatus?.getI10n('value')}
+                    <strong>${message(code: 'default.access.label')}:</strong> ${tipp.availabilityStatus?.getI10n('value')}
                 </div>
 
             </div>
 
             <div class="item">
-                <b>${message(code: 'default.status.label')}:</b>
+                <strong>${message(code: 'default.status.label')}:</strong>
                 <%--<semui:xEditableRefData owner="${tipp}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>--%>
                 ${tipp.status.getI10n('value')}
             </div>
 
-            <div class="item"><b>${message(code: 'package.label')}:</b>
+            <div class="item"><strong>${message(code: 'package.label')}:</strong>
 
                 <div class="la-flexbox">
                     <i class="icon gift scale la-list-icon"></i>
@@ -293,7 +293,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </div>
             </div>
 
-            <div class="item"><b>${message(code: 'tipp.platform')}:</b>
+            <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
                 <g:if test="${tipp?.platform.name}">
                     ${tipp?.platform.name}
                 </g:if>

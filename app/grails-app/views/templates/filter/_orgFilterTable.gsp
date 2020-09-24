@@ -636,9 +636,9 @@
 
                             <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
 
-                                <b><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
+                                <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
                                                    minFractionDigits="2"
-                                                   maxFractionDigits="2" type="number"/></b>
+                                                   maxFractionDigits="2" type="number"/></strong>
 
                                 (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
                                                  maxFractionDigits="2" type="number"/>)
@@ -673,8 +673,8 @@
 
                         <g:if test="${costItem}">
 
-                            <b><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/></b>
+                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                               maxFractionDigits="2" type="number"/></strong>
 
                             (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
                                              maxFractionDigits="2" type="number"/>)
@@ -687,9 +687,9 @@
                                    value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
 
                             <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                <br><b><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
+                                <br><strong><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
                                                        minFractionDigits="2"
-                                                       maxFractionDigits="2" type="number"/>%</b>
+                                                       maxFractionDigits="2" type="number"/>%</strong>
 
                                 (<g:formatNumber number="${((costItem.costInBillingCurrency-oldCostItem)/oldCostItem)*100}" minFractionDigits="2"
                                                  maxFractionDigits="2" type="number"/>%)
@@ -743,23 +743,23 @@
             </g:each>
             <g:if test="${'surveySubCostItem' in tmplConfigShow}">
                 <td>
-                    <b><g:formatNumber number="${sumOldCostItemAfterTax}" minFractionDigits="2"
-                                       maxFractionDigits="2" type="number"/></b>
+                    <strong><g:formatNumber number="${sumOldCostItemAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></strong>
                     (<g:formatNumber number="${sumOldCostItem}" minFractionDigits="2"
                                      maxFractionDigits="2" type="number"/>)
                 </td>
             </g:if>
             <g:if test="${'surveyCostItem' in tmplConfigShow}">
                 <td>
-                    <b><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
-                                       maxFractionDigits="2" type="number"/></b>
+                    <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></strong>
                     (<g:formatNumber number="${sumSurveyCostItem}" minFractionDigits="2"
                                      maxFractionDigits="2" type="number"/>)
 
                     <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                        <br><b><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                        <br><strong><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
                                                minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/>%</b>
+                                               maxFractionDigits="2" type="number"/>%</strong>
 
                         (<g:formatNumber number="${((sumSurveyCostItem-sumOldCostItem)/sumOldCostItem)*100}" minFractionDigits="2"
                                          maxFractionDigits="2" type="number"/>%)

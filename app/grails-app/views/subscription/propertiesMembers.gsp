@@ -56,7 +56,7 @@
 
 %{--<div class="ui segment">
 
-    <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
+    <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.isRefdataValueType()}">
         <g:set var="refdataValues" value="${[]}"/>
@@ -302,11 +302,11 @@
                 <div class="inline field">
                     <label>${message(code: 'subscription.propertiesMembers.propertySelected')}:</label>
 
-                    <b>${filterPropDef?.getI10n('name')}
+                    <strong>${filterPropDef?.getI10n('name')}
                         <g:if test="${filterPropDef?.tenant != null}">
                             <i class="shield alternate icon"></i>
                         </g:if>
-                    </b>
+                    </strong>
 
                 </div>
                 <g:hiddenField name="filterPropDef" value="${filterPropDef}"/>

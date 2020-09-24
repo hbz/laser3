@@ -46,8 +46,9 @@
             <tr>
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
-                    <b>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</b>
-                    <g:each in="${sourceObject.packages?.sort { it.pkg.name }}" var="sp">
+
+                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject?.packages?.size()}</strong>
+                    <g:each in="${sourceObject?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
@@ -92,7 +93,7 @@
 
 
                 <td name="subscription.takePackages.target">
-                    <b>${message(code: 'subscription.packages.label')}: ${targetObject?.packages?.size()}</b>
+                    <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages?.size()}</strong>
 
                     <g:each in="${targetObject?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
@@ -138,7 +139,7 @@
             </tr>
             <tr>
                 <td name="subscription.takeEntitlements.source">
-                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceObject? sourceIEs?.size() : ""}<br>
+                    <strong>${message(code: 'issueEntitlement.countSubscription')} </strong>${sourceObject? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
                         <div class="la-copyPack-container la-element">
                             <div  data-ieoid="${genericOIDService.getOID(ie)}" class="la-copyPack-item">
@@ -157,7 +158,7 @@
                     </g:each>
                 </td>
                 <td name="subscription.takeEntitlements.target">
-                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetObject? targetIEs?.size(): ""} <br />
+                    <strong>${message(code: 'issueEntitlement.countSubscription')} </strong>${targetObject? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}" class=" la-copyPack-item">

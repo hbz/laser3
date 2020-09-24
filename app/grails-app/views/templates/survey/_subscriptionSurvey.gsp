@@ -11,7 +11,7 @@
             <div class="ui horizontal segments">
                 <div class="ui segment center aligned">
                     <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
-                        <b>${message(code: 'surveyconfig.subOrgs.label')}:</b>
+                        <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
                         <div class="ui circular label">
                             ${countParticipants.subMembers}
                         </div>
@@ -22,7 +22,7 @@
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]">
-                        <b>${message(code: 'surveyconfig.orgs.label')}:</b>
+                        <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
                         <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
 
@@ -602,23 +602,23 @@
                                     ${costItem.costItemElement?.getI10n('value')}
                                 </td>
                                 <td>
-                                    <b>
+                                    <strong>
                                         <g:formatNumber
                                                 number="${costItem.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2"
                                                 type="number"/>
-                                    </b>
+                                    </strong>
 
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
                                 </td>
                                 <td>${costItem.taxKey ? costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)" : ''}</td>
                                 <td>
-                                    <b>
+                                    <strong>
                                         <g:formatNumber
                                                 number="${costItem.costInBillingCurrencyAfterTax}"
                                                 minFractionDigits="2" maxFractionDigits="2"
                                                 type="number"/>
-                                    </b>
+                                    </strong>
 
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
 
@@ -662,23 +662,23 @@
                                         ${costItemSurvey.costItemElement?.getI10n('value')}
                                     </td>
                                     <td>
-                                        <b>
+                                        <strong>
                                             <g:formatNumber
                                                     number="${costItemSurvey.costInBillingCurrency}"
                                                     minFractionDigits="2" maxFractionDigits="2"
                                                     type="number"/>
-                                        </b>
+                                        </strong>
 
                                         ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                                     </td>
                                     <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
                                     <td>
-                                        <b>
+                                        <strong>
                                             <g:formatNumber
                                                     number="${costItemSurvey.costInBillingCurrencyAfterTax}"
                                                     minFractionDigits="2" maxFractionDigits="2"
                                                     type="number"/>
-                                        </b>
+                                        </strong>
 
                                         ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
 
@@ -716,14 +716,14 @@
                                         <g:set var="newCostItem"
                                                value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
 
-                                        <b><g:formatNumber
+                                        <strong><g:formatNumber
                                                 number="${(newCostItem - oldCostItem)}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/>
                                             <br>
                                             (<g:formatNumber
                                                     number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
                                                     minFractionDigits="2"
-                                                    maxFractionDigits="2" type="number"/>%)</b>
+                                                    maxFractionDigits="2" type="number"/>%)</strong>
                                     </g:if>
                                 </td>
                             </tr>
@@ -774,23 +774,23 @@
 
                             </td>
                             <td>
-                                <b>
+                                <strong>
                                     <g:formatNumber
                                             number="${costItemSurvey.costInBillingCurrency}"
                                             minFractionDigits="2" maxFractionDigits="2"
                                             type="number"/>
-                                </b>
+                                </strong>
 
                                 ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                             </td>
                             <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
                             <td>
-                                <b>
+                                <strong>
                                     <g:formatNumber
                                             number="${costItemSurvey.costInBillingCurrencyAfterTax}"
                                             minFractionDigits="2" maxFractionDigits="2"
                                             type="number"/>
-                                </b>
+                                </strong>
 
                                 ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
 

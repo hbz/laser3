@@ -55,7 +55,7 @@
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
     <div class="ui segment">
-        <b>${message(code: 'surveyEvaluation.notOpenSurvey')}</b>
+        <strong>${message(code: 'surveyEvaluation.notOpenSurvey')}</strong>
     </div>
 </g:if>
 <g:else>

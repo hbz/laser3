@@ -200,7 +200,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                         ],
                         PendingChange.MSG_LI02,
                         msgParams,
-                        "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
+                        "Das Merkmal <strong>${lcp.type.name}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Vertragsvorlage geändert. " + description
                 )
                 if (newPendingChange && lcp.owner.isSlaved) {
                     slavedPendingChanges << newPendingChange

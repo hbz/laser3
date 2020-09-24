@@ -244,11 +244,11 @@
                                 </g:if>
 
                                 <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti.firstAuthor || ti.firstEditor)}">
-                                    <br><b>${ti?.getEbookFirstAutorOrFirstEditor()}</b>
+                                    <br><strong>${ti?.getEbookFirstAutorOrFirstEditor()}</strong>
                                 </g:if>
 
                                 <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.editionStatement}">
-                                    <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ti.editionStatement}
+                                    <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${ti.editionStatement}
                                     </div>
                                     <br/>
                                 </g:if>
@@ -278,7 +278,7 @@
 
                                         <g:set var="platform" value="${com.k_int.kbplus.Platform.get(platformID.key)}"/>
 
-                                        <div class="item"><b>${message(code: 'tipp.platform')}:</b>
+                                        <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
                                             <g:if test="${platform?.name}">
                                                 ${platform?.name}
                                             </g:if>

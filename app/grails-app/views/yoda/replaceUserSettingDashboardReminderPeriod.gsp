@@ -16,6 +16,6 @@
     <br />
     <br />
     <p>Es wird das UserSetting DASHBOARD_REMINDER_PERIOD durch die neuen feineren Erinnerungseinstellungen für jeden Benutzer in der DB ersetzt.</p>
-    <p>Aktion wurde durchgeführt für <b>${users? users?.size() : '<NULL>'}</b> Benutzer.</p>
+    <p>Aktion wurde durchgeführt für <strong>${users? users?.size() : '<NULL>'}</strong> Benutzer.</p>
 </body>
 </html>

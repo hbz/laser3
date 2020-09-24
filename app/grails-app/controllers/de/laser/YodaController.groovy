@@ -1624,7 +1624,7 @@ class YodaController {
             } catch (Exception ex) {
                 status.setRollbackOnly()
                 flash.error = 'Es ist ein Fehler aufgetreten beim Ersetzen des Usersetting DASHBOARD_REMINDER_PERIOD: ' + ex.message
-                flash.error += '<br /><br /><b>Es wurde ein Rollback durchgeführt!</b>'
+                flash.error += '<br /><br /><strong>Es wurde ein Rollback durchgeführt!</strong>'
             }
         }
         result

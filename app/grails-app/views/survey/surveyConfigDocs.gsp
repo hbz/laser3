@@ -53,7 +53,7 @@
 </h2>
 <br>
 
-%{--<p><b>${message(code: 'surveyConfigDocs.info')}</b></p>
+%{--<p><strong>${message(code: 'surveyConfigDocs.info')}</strong></p>
 <br>--}%
 
 

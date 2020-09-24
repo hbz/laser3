@@ -210,7 +210,7 @@
 
             </g:if>
             <g:else>
-                <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
+                <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
             </g:else>
         </div>
 
