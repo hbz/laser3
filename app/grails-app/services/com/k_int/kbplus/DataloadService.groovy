@@ -699,22 +699,22 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = subProp.getClass().getSimpleName()
 
-            if(subProp.type.type == Integer.toString()){
+            if(subProp.type.isIntegerType()){
                 result.description = subProp.intValue
             }
-            else if(subProp.type.type == String.toString()){
+            else if(subProp.type.isStringType()){
                 result.description = subProp.stringValue
             }
-            else if(subProp.type.type == BigDecimal.toString()){
+            else if(subProp.type.isBigDecimalType()){
                 result.description = subProp.decValue
             }
-            else if(subProp.type.type == Date.toString()){
+            else if(subProp.type.isDateType()){
                 result.description = subProp.dateValue
             }
-            else if(subProp.type.type == URL.toString()){
+            else if(subProp.type.isURLType()){
                 result.description = subProp.urlValue
             }
-            else if(subProp.type.type == RefdataValue.toString()){
+            else if(subProp.type.isRefdataValueType()){
                 result.description = subProp.refValue?.value
             }
 
@@ -767,22 +767,22 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = subPrivProp.getClass().getSimpleName()
 
-            if(subPrivProp.type.type == Integer.toString()){
+            if(subPrivProp.type.isIntegerType()){
                 result.description = subPrivProp.intValue
             }
-            else if(subPrivProp.type.type == String.toString()){
+            else if(subPrivProp.type.isStringType()){
                 result.description = subPrivProp.stringValue
             }
-            else if(subPrivProp.type.type == BigDecimal.toString()){
+            else if(subPrivProp.type.isBigDecimalType()){
                 result.description = subPrivProp.decValue
             }
-            else if(subPrivProp.type.type == Date.toString()){
+            else if(subPrivProp.type.isDateType()){
                 result.description = subPrivProp.dateValue
             }
-            else if(subPrivProp.type.type == URL.toString()){
+            else if(subPrivProp.type.isURLType()){
                 result.description = subPrivProp.urlValue
             }
-            else if(subPrivProp.type.type == RefdataValue.toString()){
+            else if(subPrivProp.type.isRefdataValueType()){
                 result.description = subPrivProp.refValue?.value
             }
 
@@ -813,22 +813,22 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = licProp.getClass().getSimpleName()
 
-            if(licProp.type.type == Integer.toString()){
+            if(licProp.type.isIntegerType()){
                 result.description = licProp.intValue
             }
-            else if(licProp.type.type == String.toString()){
+            else if(licProp.type.isStringType()){
                 result.description = licProp.stringValue
             }
-            else if(licProp.type.type == BigDecimal.toString()){
+            else if(licProp.type.isBigDecimalType()){
                 result.description = licProp.decValue
             }
-            else if(licProp.type.type == Date.toString()){
+            else if(licProp.type.isDateType()){
                 result.description = licProp.dateValue
             }
-            else if(licProp.type.type == URL.toString()){
+            else if(licProp.type.isURLType()){
                 result.description = licProp.urlValue
             }
-            else if(licProp.type.type == RefdataValue.toString()){
+            else if(licProp.type.isRefdataValueType()){
                 result.description = licProp.refValue?.value
             }
 
@@ -872,22 +872,22 @@ class DataloadService {
             result.visible = 'Private'
             result.rectype = licPrivProp.getClass().getSimpleName()
 
-            if(licPrivProp.type.type == Integer.toString()){
+            if(licPrivProp.type.isIntegerType()){
                 result.description = licPrivProp.intValue
             }
-            else if(licPrivProp.type.type == String.toString()){
+            else if(licPrivProp.type.isStringType()){
                 result.description = licPrivProp.stringValue
             }
-            else if(licPrivProp.type.type == BigDecimal.toString()){
+            else if(licPrivProp.type.isBigDecimalType()){
                 result.description = licPrivProp.decValue
             }
-            else if(licPrivProp.type.type == Date.toString()){
+            else if(licPrivProp.type.isDateType()){
                 result.description = licPrivProp.dateValue
             }
-            else if(licPrivProp.type.type == URL.toString()){
+            else if(licPrivProp.type.isURLType()){
                 result.description = licPrivProp.urlValue
             }
-            else if(licPrivProp.type.type == RefdataValue.toString()){
+            else if(licPrivProp.type.isRefdataValueType()){
                 result.description = licPrivProp.refValue?.value
             }
 
