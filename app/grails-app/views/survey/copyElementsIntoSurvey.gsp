@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService; com.k_int.kbplus.GenericOIDService;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
 <!doctype html>

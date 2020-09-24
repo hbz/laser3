@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.DocContext; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
@@ -686,7 +686,7 @@ String period
 
                             <g:if test="${hit.getSourceAsMap().rectype == 'Document'}">
                                 <td>
-                                    <g:set var="docContext" value="${com.k_int.kbplus.DocContext.get(hit.getSourceAsMap().dbId)}"/>
+                                    <g:set var="docContext" value="${DocContext.get(hit.getSourceAsMap().dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
                                         <i class="circular icon inverted orange file alternate outline"></i>

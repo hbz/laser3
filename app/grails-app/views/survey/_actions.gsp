@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.GenericOIDService; de.laser.helper.RDStore; com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Org" %>
 <laser:serviceInjection/>
 <semui:actionsDropdown>
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">

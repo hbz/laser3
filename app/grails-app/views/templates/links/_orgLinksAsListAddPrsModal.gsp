@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.PersonRole" %>
 <semui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
@@ -22,7 +23,7 @@
                                 ${p}
                             </td>
                             <td>
-                                <g:each in="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
+                                <g:each in="${PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
                                     ${prsFunc.functionType?.getI10n("value")}
                                 </g:each>
                             </td>
@@ -41,7 +42,7 @@
                 </g:each>
 
                 <g:each in="${modalVisiblePersons}" var="p">
-                    <g:if test="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}">
+                    <g:if test="${PersonRole.findByPrsAndOrg(p, orgRole.org)}">
                         <tr>
                             <td>
                                 <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
@@ -50,7 +51,7 @@
                                 ${p}
                             </td>
                             <td>
-                                <g:each in="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
+                                <g:each in="${PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
                                     ${prsFunc.functionType?.getI10n("value")}
                                 </g:each>
                             </td>

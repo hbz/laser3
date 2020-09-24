@@ -1,9 +1,7 @@
 package de.laser
 
 
-import com.k_int.kbplus.Doc
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
@@ -109,7 +107,10 @@ class MyInstitutionController extends AbstractDebugController {
         redirect(action:'dashboard')
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     def reporting() {
         Map<String, Object> result = setResultGenerics()
         result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
@@ -119,99 +120,6 @@ class MyInstitutionController extends AbstractDebugController {
         result.subKind = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
         result
     }
-
-    /*
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
-     */
-    @Secured(['ROLE_ADMIN'])
-    def reportingBase() {
-        //log.debug(params.toMapString())
-        Map<String, Object> result = setResultGenerics()
-        result.formSubmit = params.formSubmit == 'true'
-        Map<Object,Collection<CostItem>> costItemElementGroups = [:]
-        String instanceFilter = ''
-        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-            instanceFilter += ' and sub.instanceOf is null '
-        }
-        Set<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]
-        String spQuery = 'select sp from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where sub.status = :active and oo.org = :org and oo.roleType in (:roleTypes)'+instanceFilter+' order by sub.name asc'
-        Map<String,Object> spParams = [active:RDStore.SUBSCRIPTION_CURRENT,org:result.institution,roleTypes:roleTypes]
-        if(params.formSubmit) {
-            Map<String,Object> configMap = [institution:result.institution]
-            if(params.subscription)
-                configMap.subscription = params.subscription
-            else if(params.package)
-                configMap.package = params.package
-            else if(params.provider)
-                configMap.provider = params.provider
-            else if(params.subscriber)
-                configMap.subscriber = params.subscriber
-            if(params.filterPropDef) {
-                configMap.filterPropDef = params.filterPropDef
-                if (params.filterProp) {
-                    configMap.filterProp = params.filterProp //not prepared yet!
-                }
-            }
-            result.putAll(financeService.getCostItemsFromEntryPoint(configMap))
-            if(result.costItems) {
-                //test for ERMS-1125: group by elements
-                if(params.subscription) {
-                    costItemElementGroups.putAll(financeService.groupCostItems([groupOption: FinanceService.GROUP_OPTION_ELEMENT, costItems: result.costItems, contextOrg: result.institution]))
-                    result.costItemsByElement = costItemElementGroups
-                }
-                else if(params.provider) {
-                    result.costItemsByProvider = financeService.calculateResults(result.costItems)
-                }
-            }
-        }
-        Set<SubscriptionPackage> currentSubscriptionPackages = SubscriptionPackage.executeQuery(spQuery,spParams)
-        Set<Subscription> subscriptions = Subscription.executeQuery('select sub from OrgRole oo join oo.sub sub where sub.status = :current and oo.org = :contextOrg and oo.roleType in (:roleTypes)'+instanceFilter,[contextOrg:result.institution,current:RDStore.SUBSCRIPTION_CURRENT,roleTypes:roleTypes])
-        Set<Package> packages = []
-        Set<Org> providers = Org.executeQuery("select or_pa.org from OrgRole or_pa join or_pa.sub sub join sub.orgRelations or_sub where ( sub = or_sub.sub and or_sub.org = :subOrg ) and ( or_sub.roleType in (:subRoleTypes) ) and( or_pa.roleType in (:paRoleTypes) )",
-                [
-                    subOrg:       result.institution,
-                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                    paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-                ])
-        Set<Org> subscribers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :context and c.type = :comboType order by c.fromOrg.sortname asc, c.fromOrg.name asc',[context:result.institution,comboType:RDStore.COMBO_TYPE_CONSORTIUM])
-        currentSubscriptionPackages.each { SubscriptionPackage sp ->
-            packages << sp.pkg
-        }
-        result.subscriptions = subscriptions
-        result.packages = packages
-        result.providers = providers
-        result.subscribers = subscribers
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP], result.institution)
-        result
-    }
-
-    //BEGIN AJAX reload section
-
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def loadChartData() {
-        Org contextOrg = contextService.org
-        Map<String,Object> baseMap = financeService.getCostItemsFromEntryPoint([subscription:params.subscription,institution:contextOrg]), result = [:]
-        if(baseMap.costItems)
-            result = financeService.groupCostItems([groupOption:FinanceService.GROUP_OPTION_SUBSCRIPTION_GRAPH, costItems:baseMap.costItems, linkedSubscriptions:baseMap.linkedSubscriptionSet, contextOrg:contextOrg])
-        if(params.subscription) {
-            if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
-                result.graphB = subscriptionService.getSubscribersByRegion([subscription:params.subscription,institution:contextOrg])
-        }
-        else if(params.package)
-            result.graphA = packageService.getTitlesForYearRings([package: params.package,institution: contextOrg])
-        else if(params.subscriber)
-            result.putAll(organisationService.getSubscriberProviderPercentages([subscriber: params.subscriber, institution: contextOrg]))
-        else if(params.provider) {
-            result.putAll(organisationService.getSubscriberProviderPercentages([provider: params.provider, institution: contextOrg]))
-        }
-        render result as JSON
-    }
-
-    //END AJAX reload section
 
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')

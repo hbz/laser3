@@ -9,6 +9,8 @@
 
 2685    24.09.2020  hbz-dev             Moe     Feature     Umfrage Elemente von einer Umfrage in einer anderen Umfrage kopieren
 
+2762    24.09.2020  hbz-dev             Andreas Feature     erster Diskussionsstand des Reporting-Tools
+
 2885    23.09.2020  hbz-dev             Moe     Feature     Umfrage: Filter einbauen nach Fachrichtungen der Orgs
 
 2884    23.09.2020  hbz-dev             Moe     Feature     Umfrage: Eingabe von Bemerkung für URLs

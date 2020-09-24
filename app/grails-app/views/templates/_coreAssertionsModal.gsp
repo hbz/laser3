@@ -16,9 +16,11 @@
     
     <table class="ui celled la-table table">
       <thead>
+      <tr>
         <th>${message(code:'subscription.details.coreStartDate')}</th>
         <th>${message(code:'subscription.details.coreEndDate')}</th>
         <th>${message(code:'default.action.label')}</th>
+      </tr>
       </thead>
       <tbody>
          <g:each in="${coreDates}" var="coreDate">

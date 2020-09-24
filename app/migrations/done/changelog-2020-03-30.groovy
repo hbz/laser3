@@ -1,4 +1,4 @@
-import com.k_int.kbplus.IdentifierNamespace
+import de.laser.IdentifierNamespace
 
 databaseChangeLog = {
 

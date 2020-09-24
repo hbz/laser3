@@ -138,4 +138,22 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "klober (modified)", id: "1600754308495-15") {
+		grailsChange {
+			change {
+				sql.execute("update audit_log set new_value = replace(new_value, 'com.k_int.kbplus.Identifier', 'de.laser.Identifier') where new_value is not null")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "klober (modified)", id: "1600754308495-16") {
+		grailsChange {
+			change {
+				sql.execute("update audit_log set new_value = replace(new_value, 'com.k_int.kbplus.DocContext', 'de.laser.DocContext') where new_value is not null")
+			}
+			rollback {}
+		}
+	}
 }

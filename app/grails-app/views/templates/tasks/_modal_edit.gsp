@@ -33,41 +33,6 @@
                 - ${message(code: 'task.general')}
             </g:else>
         </div>
-        %{--<g:if test="${params.owntp == 'license' || enableMyInstFormFields}">
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
-                <label for="license">
-                    <g:message code="license.label" />
-                </label>
-                <g:select id="license" name="license.id" from="${validLicenses}" optionKey="id" value="${taskInstance?.license.id}" class="many-to-one" noSelection="['null': '']"/>
-            </div>
-        </g:if>
-
-        <g:if test="${params.owntp == 'organisation'}">
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
-                <label for="org">
-                    <g:message code="task.org.label" />
-                </label>
-                <g:select id="org" name="org.id" from="${validOrgs}" optionKey="id" value="${taskInstance?.org.id}" class="many-to-one" noSelection="['null': '']"/>
-            </div>
-        </g:if>
-
-        <g:if test="${params.owntp == 'package' || enableMyInstFormFields}">
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} ">
-                <label for="pkg">
-                    <g:message code="package.label" />
-                </label>
-                <g:select id="pkg" name="pkg.id" from="${validPackages}" optionKey="id" value="${taskInstance?.pkg.id}" class="many-to-one" noSelection="['null': '']"/>
-            </div>
-        </g:if>
-
-        <g:if test="${params.owntp == 'subscription' || enableMyInstFormFields}">
-            <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} ">
-                <label for="subscription">
-                    <g:message code="default.subscription.label" />
-                </label>
-                <g:select id="subscription" name="subscription.id" from="${validSubscriptions}" optionKey="id" value="${taskInstance?.subscription.id}" class="many-to-one" noSelection="['null': '']"/>
-            </div>
-        </g:if>--}%
 
         <div class="field">
             <div class="two fields">

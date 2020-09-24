@@ -139,7 +139,7 @@ class ControlledListService {
                 }
                 else propValInput << params.propVal
                 boolean dateFlag = false, refFlag = false, urlFlag = false
-                switch(filterPropDef.getPropertyType()) {
+                switch(filterPropDef.getImplClassValueProperty()) {
                     case 'intValue': queryString += " and sp.intValue in (:values)"
                         break
                     case 'decValue': queryString += " and sp.decValue in (:values)"
@@ -184,7 +184,7 @@ class ControlledListService {
                     filter[refdataField] = refList
                     queryString += " and s.${refdataField} in (:${refdataField}) "
                 } else {
-                    filter[refdataField] = params[refdataField]
+                    filter[refdataField] = RefdataValue.get(params[refdataField])
                     queryString += " and s.${refdataField} = :${refdataField} "
                 }
             }

@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.Doc
+import de.laser.DocContext
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import gov.loc.repository.bagit.BagFactory
