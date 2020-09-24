@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance" %>
 
 <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
     <thead>
@@ -35,7 +35,7 @@
                 </g:if>
                 <br>
                 <div class="la-icon-list">
-                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.volume}">
+                    <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
                         <div class="item">
                             <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                             <div class="content">
@@ -44,7 +44,7 @@
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
+                    <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
                         <div class="item">
                             <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
                             <div class="content">
@@ -53,7 +53,7 @@
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.editionStatement}">
+                    <g:if test="${tipp.title instanceof BookInstance && tipp.title.editionStatement}">
                         <div class="item">
                             <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
                             <div class="content">
@@ -62,7 +62,7 @@
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance && tipp.title.summaryOfContent}">
+                    <g:if test="${tipp.title instanceof BookInstance && tipp.title.summaryOfContent}">
                         <div class="item">
                             <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                             <div class="content">
@@ -168,7 +168,7 @@
             </td>
 
             <td class="la-tableCard">
-                <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance}">
+                <g:if test="${tipp.title instanceof BookInstance}">
                     <div class="ui card">
                         <div class="content">
                             <!-- von -->

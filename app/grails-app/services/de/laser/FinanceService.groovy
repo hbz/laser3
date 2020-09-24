@@ -2,7 +2,6 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.IssueEntitlement
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
@@ -1209,7 +1208,7 @@ class FinanceService {
             if (query && prop && configMap.filterProp) {
                 Set<String> filterPropValues = configMap.filterProp.split(',')
                 log.debug(filterPropValues.toString())
-                switch(filterPropDef.getPropertyType()) {
+                switch(filterPropDef.getImplClassValueProperty()) {
                     case 'intValue': query += " and ${prop}.intValue in (:values)"
                         break
                     case 'decValue': query += " and ${prop}.decValue in (:values)"

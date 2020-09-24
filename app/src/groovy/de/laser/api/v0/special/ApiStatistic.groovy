@@ -104,7 +104,7 @@ class ApiStatistic {
             // References
             result.contentProvider  = getPkgOrganisationCollection(pkg.orgs)
             result.license          = getPkgLicense(pkg.license)
-            result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
+            result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // de.laser.Identifier
             //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
             //result.tipps            = resolvePkgTipps(pkg.tipps)
             result.subscriptions    = getPkgSubscriptionCollection(pkg.subscriptions, getAccessibleOrgs())
@@ -159,7 +159,7 @@ class ApiStatistic {
 
         result.globalUID    = pform.globalUID
         result.name         = pform.name
-        //result.identifiers  = ApiCollectionReader.resolveIdentifiers(pform.ids) // com.k_int.kbplus.IdentifierOccurrence
+        //result.identifiers  = ApiCollectionReader.resolveIdentifiers(pform.ids) // de.laser.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }

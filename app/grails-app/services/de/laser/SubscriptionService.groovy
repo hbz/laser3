@@ -1160,7 +1160,7 @@ class SubscriptionService {
                         }
                         else {
                             String refCategory = ""
-                            if(propDef.type == RefdataValue.toString()) {
+                            if(propDef.isRefdataValueType()) {
                                 refCategory = propDef.refdataCategory
                             }
                             Map<String,Integer> defPair = [colno:c,refCategory:refCategory]

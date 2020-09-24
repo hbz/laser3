@@ -1,3 +1,4 @@
+<%@ page import="de.laser.RefdataCategory; de.laser.Doc;" %>
 <!doctype html>
 <html>
 <head>
@@ -93,7 +94,7 @@
         <th>${message(code:'license.copyAnnouncements')}</th>
         <td>
             <g:each in="${licenseInstance.documents.sort{it.owner?.title}}" var="docctx">
-                <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
+                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                             <g:if test="${docctx.owner.title}">
                                 <b>${docctx.owner.title}</b>
                             </g:if>

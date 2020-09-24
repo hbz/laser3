@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -265,7 +267,7 @@ class ExportService {
 				row.add([field:pd.getI10n("name"),style:null])
 				row.add([field:pd.getI10n("expl"),style:null])
 				String typeString = pd.getLocalizedValue(pd.type)
-				if(pd.type == RefdataValue.toString()) {
+				if(pd.isRefdataValueType()) {
 					List refdataValues = []
                     RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
 						refdataValues << refdataValue.getI10n("value")

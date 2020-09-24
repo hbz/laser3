@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; java.net.URL" %>
 <laser:serviceInjection />
 
 
@@ -19,7 +19,7 @@
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+            <g:if test="${ownobj instanceof License}">
                 <col style="width: 359px;">
             </g:if>
             <col style="width: 148px;">
@@ -29,7 +29,7 @@
             <tr>
                 <th class="la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -65,30 +65,30 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${prop.type.type == Integer.toString()}">
+                        <g:if test="${prop.type.isIntegerType()}">
                             <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" />
                         </g:if>
-                        <g:elseif test="${prop.type.type == String.toString()}">
+                        <g:elseif test="${prop.type.isStringType()}">
                             <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == BigDecimal.toString()}">
+                        <g:elseif test="${prop.type.isBigDecimalType()}">
                             <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == Date.toString()}">
+                        <g:elseif test="${prop.type.isDateType()}">
                             <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == URL.toString()}">
+                        <g:elseif test="${prop.type.isURLType()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
                             <g:if test="${prop.value}">
                                 <semui:linkIcon href="${prop.value}" />
                             </g:if>
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
+                        <g:elseif test="${prop.type.isRefdataValueType()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
 
                     </td>
-                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <g:if test="${ownobj instanceof License}">
                         <td>
                             <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
                         </td>

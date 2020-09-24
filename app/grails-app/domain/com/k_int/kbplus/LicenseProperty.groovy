@@ -164,10 +164,10 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
             depedingProps.each{ lcp ->
 
                 String definedType = 'text'
-                if (lcp.type.type == RefdataValue.class.toString()) {
+                if (lcp.type.isRefdataValueType()) {
                     definedType = 'rdv'
                 }
-                else if (lcp.type.type == Date.class.toString()) {
+                else if (lcp.type.isDateType()) {
                     definedType = 'date'
                 }
 

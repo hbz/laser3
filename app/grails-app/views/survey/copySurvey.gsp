@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;de.laser.RefdataValue;com.k_int.kbplus.Subscription;de.laser.SurveyConfig" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore;de.laser.helper.RDConstants;com.k_int.kbplus.OrgRole;de.laser.RefdataValue;com.k_int.kbplus.Subscription;de.laser.SurveyConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -233,7 +233,7 @@
                     <td>${message(code: 'copySurvey.copyAnnouncements')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
-                            <g:if test="${((docctx.owner.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status.value != 'Deleted'))}">
+                            <g:if test="${((docctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status.value != 'Deleted'))}">
                                 <g:if test="${docctx.owner.title}">
                                     <b>${docctx.owner.title}</b>
                                 </g:if>

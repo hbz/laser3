@@ -61,7 +61,7 @@ ${message(code: 'surveyInfo.name.label', locale: language)}: <b>${survey.name} <
                 </td>
                 <td>
                     ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                    <g:if test="${surveyResult.type.type == RefdataValue.CLASS}">
+                    <g:if test="${surveyResult.type.isRefdataValueType()}">
                         <g:set var="refdataValues" value="${[]}"/>
                         <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                 var="refdataValue">

@@ -1,7 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.Identifier
+
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
@@ -291,19 +290,19 @@ class AjaxController {
                             Org org = contextService.getOrg()
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target?.owner?.id && target?.finishDate == null) {
+                            if (org?.id == target.owner?.id && target.finishDate == null) {
                                 String property = ""
-                                if (target?.type?.type == Integer.toString()) {
+                                if (target.type.isIntegerType()) {
                                     property = "intValue"
-                                } else if (target?.type?.type == String.toString()) {
+                                } else if (target.type.isStringType()) {
                                     property = "stringValue"
-                                } else if (target?.type?.type == BigDecimal.toString()) {
+                                } else if (target.type.isBigDecimalType()) {
                                     property = "decValue"
-                                } else if (target?.type?.type == Date.toString()) {
+                                } else if (target.type.isDateType()) {
                                     property = "dateValue"
-                                } else if (target?.type?.type == URL.toString()) {
+                                } else if (target.type.isURLType()) {
                                     property = "urlValue"
-                                } else if (target?.type?.type == RefdataValue.toString()) {
+                                } else if (target.type.isRefdataValueType()) {
                                     property = "refValue"
                                 }
 
@@ -637,20 +636,20 @@ class AjaxController {
                     }
                 }
                 if (values) {
-                    if (propDef.type == Integer.toString()) {
+                    if (propDef.isIntegerType()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text }
                     }
-                    else if (propDef.type == Date.toString()) {
+                    else if (propDef.isDateType()) {
                         values.dateValue.findAll().unique().sort().reverse().each { v ->
                             String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
                             result.add([value: vt, text: vt])
                         }
                     }
-                    else if (propDef.type == RefdataValue.toString()) {
+                    else if (propDef.isRefdataValueType()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.getValue() != null)
                                 result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
@@ -2499,19 +2498,19 @@ class AjaxController {
 
                     Org org = contextService.getOrg()
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object?.owner?.id && target_object?.finishDate == null) {
+                    if (org?.id == target_object.owner?.id && target_object.finishDate == null) {
                         String property = ""
-                        if (target_object?.type?.type == Integer.toString()) {
+                        if (target_object.type.isIntegerType()) {
                             property = "intValue"
-                        } else if (target_object?.type?.type == String.toString()) {
+                        } else if (target_object.type.isStringType()) {
                             property = "stringValue"
-                        } else if (target_object?.type?.type == BigDecimal.toString()) {
+                        } else if (target_object.type.isBigDecimalType()) {
                             property = "decValue"
-                        } else if (target_object?.type?.type == Date.toString()) {
+                        } else if (target_object.type.isDateType()) {
                             property = "dateValue"
-                        } else if (target_object?.type?.type == URL.toString()) {
+                        } else if (target_object.type.isURLType()) {
                             property = "urlValue"
-                        } else if (target_object?.type?.type == RefdataValue.toString()) {
+                        } else if (target_object.type.isRefdataValueType()) {
                             property = "refValue"
                         }
 

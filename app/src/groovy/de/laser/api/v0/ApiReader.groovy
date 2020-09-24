@@ -99,7 +99,7 @@ class ApiReader {
             result.title    = opl.title
 
             // References
-            result.document = ApiDoc.getDocumentMap(opl.doc) // com.k_int.kbplus.Doc
+            result.document = ApiDoc.getDocumentMap(opl.doc) // de.laser.Doc
             //result.licenses = ApiStubReader.resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
             result = ApiToolkit.cleanUp(result, true, true)

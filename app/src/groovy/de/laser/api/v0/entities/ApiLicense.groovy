@@ -1,6 +1,6 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.Identifier
+import de.laser.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
@@ -135,10 +135,10 @@ class ApiLicense {
 
         // References
 
-        result.identifiers      = ApiCollectionReader.getIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
+        result.identifiers      = ApiCollectionReader.getIdentifierCollection(lic.ids) // de.laser.Identifier
         result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
         result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
-        result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
+        result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // de.laser.DocContext
         //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {

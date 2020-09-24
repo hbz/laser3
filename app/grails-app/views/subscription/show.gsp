@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.DocContext; de.laser.helper.ConfigUtils; de.laser.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
 <%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License" %>
 <%@ page import="de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
@@ -227,7 +227,7 @@
                                                         ${pair.name}
                                                     </g:link><br>
                                                     <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>–<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
-                                                    <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                                    <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">
                                                         <em>${comment.owner.content}</em>
                                                     </g:if>
@@ -492,7 +492,7 @@
                                                 ${pair.reference} (${pair.status.getI10n("value")})
                                             </g:link>
                                             <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
-                                            <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                            <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                             <g:if test="${comment}">
                                                 <em>${comment.owner.content}</em>
                                             </g:if>

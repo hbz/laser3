@@ -139,7 +139,7 @@ class ControlledListService {
                 }
                 else propValInput << params.propVal
                 boolean dateFlag = false, refFlag = false, urlFlag = false
-                switch(filterPropDef.getPropertyType()) {
+                switch(filterPropDef.getImplClassValueProperty()) {
                     case 'intValue': queryString += " and sp.intValue in (:values)"
                         break
                     case 'decValue': queryString += " and sp.decValue in (:values)"

@@ -418,7 +418,7 @@
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                        <g:if test="${surveyResult.type.type == RefdataValue.CLASS}">
+                        <g:if test="${surveyResult.type.isRefdataValueType()}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
@@ -430,19 +430,19 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${surveyResult.type.type == Integer.toString()}">
+                        <g:if test="${surveyResult.type.isIntegerType()}">
                             <semui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
                         </g:if>
-                        <g:elseif test="${surveyResult.type.type == String.toString()}">
+                        <g:elseif test="${surveyResult.type.isStringType()}">
                             <semui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
                         </g:elseif>
-                        <g:elseif test="${surveyResult.type.type == BigDecimal.toString()}">
+                        <g:elseif test="${surveyResult.type.isBigDecimalType()}">
                             <semui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
                         </g:elseif>
-                        <g:elseif test="${surveyResult.type.type == Date.toString()}">
+                        <g:elseif test="${surveyResult.type.isDateType()}">
                             <semui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
                         </g:elseif>
-                        <g:elseif test="${surveyResult.type.type == URL.toString()}">
+                        <g:elseif test="${surveyResult.type.isURLType()}">
                             <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                              overwriteEditable="${overwriteEditable}"
                                              class="la-overflow la-ellipsis"/>
@@ -450,7 +450,7 @@
                                 <semui:linkIcon/>
                             </g:if>
                         </g:elseif>
-                        <g:elseif test="${surveyResult.type.type == de.laser.RefdataValue.toString()}">
+                        <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
                             <g:if test="${surveyResult.type.name in ["Participation"] && surveyResult.owner.id != contextOrg.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"

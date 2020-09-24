@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.DocContext; com.k_int.kbplus.License;com.k_int.kbplus.Subscription;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <!doctype html>
 <%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
@@ -172,7 +172,7 @@
                                                             </g:link>
                                                         </g:elseif><br>
                                                         <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
-                                                        <g:set var="comment" value="${com.k_int.kbplus.DocContext.findByLink(link)}"/>
+                                                        <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                         <g:if test="${comment}">
                                                             <em>${comment.owner.content}</em>
                                                         </g:if>

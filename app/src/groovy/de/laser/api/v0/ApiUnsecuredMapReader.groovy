@@ -29,7 +29,7 @@ class ApiUnsecuredMapReader {
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
 
         // References
-        result.identifiers = ApiCollectionReader.getIdentifierCollection(lic.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(lic.ids) // de.laser.Identifier
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -63,7 +63,7 @@ class ApiUnsecuredMapReader {
         result.name         = org.name
 
         // References
-        result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.type        = org.orgType?.collect{ it.value }
 
         ApiToolkit.cleanUp(result, true, true)
@@ -83,7 +83,7 @@ class ApiUnsecuredMapReader {
         result.gokbId       = pkg.gokbId
 
         // References
-        result.identifiers = ApiCollectionReader.getIdentifierCollection(pkg.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(pkg.ids) // de.laser.Identifier
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -122,7 +122,7 @@ class ApiUnsecuredMapReader {
         result.endDate          = ApiToolkit.formatInternalDate(sub.endDate)
 
         // References
-        result.identifiers = ApiCollectionReader.getIdentifierCollection(sub.ids) // com.k_int.kbplus.Identifier
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(sub.ids) // de.laser.Identifier
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -144,7 +144,7 @@ class ApiUnsecuredMapReader {
         // References
 
         result.medium       = title.medium?.value
-        result.identifiers  = ApiCollectionReader.getIdentifierCollection(title.ids) // com.k_int.kbplus.Identifier
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(title.ids) // de.laser.Identifier
 
         ApiToolkit.cleanUp(result, true, true)
     }
