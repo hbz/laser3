@@ -494,10 +494,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
-    static getLocalizedValue(key){
+    static String getLocalizedValue(String key){
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
-        //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {
             return (PropertyDefinition.validTypes2.get(key)."${locale}") ?: PropertyDefinition.validTypes2.get(key)
         } else {

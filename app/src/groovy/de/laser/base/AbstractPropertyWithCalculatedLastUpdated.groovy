@@ -92,16 +92,6 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
-    @Transient
-    String getValueType(){
-        if (stringValue) { return "stringValue" }
-        if (intValue)    { return "intValue" }
-        if (decValue)    { return "decValue" }
-        if (refValue)    { return "refValue" }
-        if (dateValue)   { return "dateValue" }
-        if (urlValue)    { return "urlValue" }
-    }
-
     String getValue() {
         return toString()
     }
