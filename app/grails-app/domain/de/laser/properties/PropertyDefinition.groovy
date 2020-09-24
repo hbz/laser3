@@ -125,7 +125,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             propDefGroupItems: 'propDef'
     ]
 
-    static transients = ['descrClass', 'propertyType'] // mark read-only accessor methods
+    static transients = ['descrClass', 'typeBigDecimal', 'typeDate', 'typeInteger', 'typeRefdataValue', 'typeString', 'typeURL', 'implClassValueProperty'] // mark read-only accessor methods
 
     static mapping = {
                     cache  true
@@ -373,8 +373,15 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             if (parts[0] == "Organisation") {
                 parts[0] = "Org"
             }
-
-            result = Class.forName('com.k_int.kbplus.' + parts[0])?.name
+            List<String> fq = ['de.laser.', 'com.k_int.kbplus.']
+            fq.each {
+                try {
+                    if (! result) {
+                        result = Class.forName(it + parts[0])?.name
+                    }
+                } catch(Exception e) {
+                }
+            }
         }
         result
     }
@@ -518,13 +525,32 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         return a.toLowerCase()?.compareTo(b.toLowerCase())
     }
 
-    String getPropertyType(){
-       if(type == Integer.toString()){ return "intValue" }
-        if(type == String.toString()){ return "stringValue" }
-        if(type == BigDecimal.toString()){ return "decValue" }
-        if(type == Date.toString()){ return "dateValue" }
-        if(type == URL.toString()){ return "urlValue" }
-        if(type == RefdataValue.toString()){ return "refValue"}
+    boolean isTypeBigDecimal() {
+        type == BigDecimal.toString() // introduced for refactoring -> BigDecimal.class.name
+    }
+    boolean isTypeDate() {
+        type == Date.toString() // introduced for refactoring -> Date.class.name
+    }
+    boolean isTypeInteger() {
+        type == Integer.toString() // introduced for refactoring -> Integer.class.name
+    }
+    boolean isTypeRefdataValue() {
+        type == RefdataValue.toString() // introduced for refactoring -> RefdataValue.class.name
+    }
+    boolean isTypeString() {
+        type == String.toString() // introduced for refactoring -> String.class.name
+    }
+    boolean isTypeURL() {
+        type == URL.toString() // introduced for refactoring -> URL.class.name
+    }
+
+    String getImplClassValueProperty(){
+        if( isTypeInteger() )   { return "intValue" }
+        if( isTypeString() )    { return "stringValue" }
+        if( isTypeBigDecimal() ){ return "decValue" }
+        if( isTypeDate() )      { return "dateValue" }
+        if( isTypeURL() )       { return "urlValue" }
+        if( isTypeRefdataValue()) { return "refValue"}
     }
 }
 
