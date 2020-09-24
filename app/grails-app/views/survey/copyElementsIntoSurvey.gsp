@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -45,8 +45,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
-                <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
+            <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
                             ${message(code: 'consortium.subscriber')}
@@ -55,8 +54,7 @@
                             <i class="university icon"></i>${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
-                </semui:complexSubNavItem>
-            </g:if>
+            </semui:complexSubNavItem>
 
             <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}" >
                 <div class="content">
@@ -77,6 +75,9 @@
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="/templates/copyElements/copyDocsAndTasks" />
     </g:if>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && targetObject && targetObject.surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+        <g:render template="/templates/copyElements/copySurveyParticipants" />
+    </g:elseif>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
         <g:render template="/templates/copyElements/copyPropertiesCompare" />
     </g:elseif>

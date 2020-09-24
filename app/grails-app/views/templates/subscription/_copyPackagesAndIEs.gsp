@@ -25,7 +25,7 @@
                                 <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
-                                <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
+                                <input type="checkbox"  data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
                             </div>
                         </div>
                     </th>
