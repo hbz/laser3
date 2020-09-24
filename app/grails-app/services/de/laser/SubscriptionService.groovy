@@ -381,35 +381,12 @@ class SubscriptionService {
         result
     }
 
-    Set<OrgRole> getAllTimeSubscribersForConsortiaSubscription(Subscription entryPoint) {
+    Set<Org> getAllTimeSubscribersForConsortiaSubscription(Subscription entryPoint) {
         getAllTimeSubscribersForConsortiaSubscription([entryPoint].toSet())
     }
 
-    Set<OrgRole> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
-        OrgRole.executeQuery('select oo from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-    }
-
-    Map<String,Collection> getSubscribersByRegion(Map<String,Object> configMap) {
-        Map<String,Collection> result = [:]
-        if(configMap.subscription) {
-            Map<String,Object> consortiaMemberParams = [subscription:Subscription.get(configMap.subscription),roleType:RDStore.OR_SUBSCRIBER_CONS]
-            String column = 'value_'+ LocaleContextHolder.getLocale().toString().split('_')[0]
-            List consortiaMembers = Org.executeQuery('select org.region.'+column+',count(org.id) from OrgRole oo join oo.org org where oo.sub.instanceOf = :subscription and oo.roleType = :roleType group by org.region.'+column+' order by org.region.'+column+' asc',consortiaMemberParams)
-            Set<String> labels = []
-            List<Integer> series = []
-            int total = Org.executeQuery('select count(oo.org.id) from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType = :roleType',consortiaMemberParams)[0]
-            consortiaMembers.each { row ->
-                int percent = row[1] / total * 100
-                labels << "${row[0]} (${percent}%)"
-                series << row[1]
-            }
-            result.labels = labels
-            result.series = series
-        }
-        else if(configMap.package) {
-            //todo
-        }
-        result
+    Set<Org> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
+        Org.executeQuery('select oo.org from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
     }
 
     List getMySubscriptions_readRights(){
