@@ -26,7 +26,10 @@
         type="Survey"/>${surveyConfig.getConfigNameShort()}</h1>
 
 <h3>
-    ${message(code: 'copySurvey.label')}
+    ${message(code: 'copySurvey.label')}:
+    <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
+        ${surveyConfig.getConfigNameShort()}
+    </g:link>
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -63,11 +66,11 @@
             <table class="ui celled table">
                 <tbody>
 
-                <tr><th>${message(code: 'default.select.label')}</th><th>${message(code: 'copySurvey.property')}</th><th>${message(code: 'default.value.label')}</th>
+                <tr><td>${message(code: 'default.select.label')}</td><td>${message(code: 'copySurvey.property')}</td><td>${message(code: 'default.value.label')}</td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyDates" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyDates')}</th>
+                    <td><g:checkBox name="copySurvey.copyDates" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyDates')}</td>
                     <td>
                         ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp<g:if
                                 test="${!surveyInfo.startDate}">-</g:if><g:formatDate date="${surveyInfo.startDate}"
@@ -78,22 +81,22 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyMandatory" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyMandatory')}</th>
+                    <td><g:checkBox name="copySurvey.copyMandatory" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyMandatory')}</td>
                     <td>
                         ${surveyInfo.isMandatory ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyComment" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyComment')}</th>
+                    <td><g:checkBox name="copySurvey.copyComment" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyComment')}</td>
                     <td>
                         ${surveyInfo.comment}
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copySurveyConfigUrl" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copySurveyConfigUrl')}</th>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigUrl" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copySurveyConfigUrl')}</td>
                     <td>
                         ${surveyConfig.url}
                         <g:if test="${surveyConfig.url}">
@@ -103,8 +106,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copySurveyConfigUrl2" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copySurveyConfigUrl2')}</th>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigUrl2" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copySurveyConfigUrl2')}</td>
                     <td>
                         ${surveyConfig.url2}
                         <g:if test="${surveyConfig.url2}">
@@ -114,8 +117,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copySurveyConfigUrl3" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copySurveyConfigUrl3')}</th>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigUrl3" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copySurveyConfigUrl3')}</td>
                     <td>
                         ${surveyConfig.url3}
                         <g:if test="${surveyConfig.url3}">
@@ -125,8 +128,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copySurveyConfigComment" value="${true}"/></th>
-                    <th><g:message code="copySurvey.copySurveyConfigComment"/></th>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigComment" value="${true}"/></td>
+                    <td><g:message code="copySurvey.copySurveyConfigComment"/></td>
                     <td>
                         <g:if test="${surveyConfig.comment}">
                             <textarea readonly="readonly" rows="15">${surveyConfig.comment}</textarea>
@@ -135,73 +138,75 @@
                 </tr>
 
                 <tr>
-                    <th><g:checkBox name="copySurvey.copySurveyProperties" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copySurveyProperties')}</th>
-                    <td><table class="ui celled sortable table la-table">
-                        <thead>
-                        <tr>
-                            <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                            <th>${message(code: 'surveyProperty.name')}</th>
-                            <th>${message(code: 'surveyProperty.expl.label')}</th>
-                            <th>${message(code: 'default.type.label')}</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <g:each in="${surveyConfig.surveyProperties.sort { it.surveyProperty.getI10n('name') }}"
-                                var="surveyProperty"
-                                status="i">
+                    <td><g:checkBox name="copySurvey.copySurveyProperties" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copySurveyProperties')}</td>
+                    <td>
+                        <table class="ui celled sortable table la-table">
+                            <thead>
                             <tr>
-                                <td class="center aligned">
-                                    ${i + 1}
-                                </td>
-                                <td>
-                                    ${surveyProperty.surveyProperty.getI10n('name')}
-
-                                    <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                        <i class='shield alternate icon'></i>
-                                    </g:if>
-
-                                    <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                              data-position="right center"
-                                              data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                            <i class="question circle icon"></i>
-                                        </span>
-                                    </g:if>
-
-                                </td>
-
-                                <td>
-                                    <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                        ${surveyProperty.surveyProperty.getI10n('expl')}
-                                    </g:if>
-                                </td>
-                                <td>
-
-                                    ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                                    <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
-                                        <g:set var="refdataValues" value="${[]}"/>
-                                        <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
-                                                var="refdataValue">
-                                            <g:if test="${refdataValue.getI10n('value')}">
-                                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
-                                            </g:if>
-                                        </g:each>
-                                        <br>
-                                        (${refdataValues.join('/')})
-                                    </g:if>
-                                </td>
+                                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'surveyProperty.name')}</th>
+                                <th>${message(code: 'surveyProperty.expl.label')}</th>
+                                <th>${message(code: 'default.type.label')}</th>
                             </tr>
-                        </g:each>
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                            <g:each in="${surveyConfig.surveyProperties.sort { it.surveyProperty.getI10n('name') }}"
+                                    var="surveyProperty"
+                                    status="i">
+                                <tr>
+                                    <td class="center aligned">
+                                        ${i + 1}
+                                    </td>
+                                    <td>
+                                        ${surveyProperty.surveyProperty.getI10n('name')}
+
+                                        <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
+                                            <i class='shield alternate icon'></i>
+                                        </g:if>
+
+                                        <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
+                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                  data-position="right center"
+                                                  data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
+                                                <i class="question circle icon"></i>
+                                            </span>
+                                        </g:if>
+
+                                    </td>
+
+                                    <td>
+                                        <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
+                                            ${surveyProperty.surveyProperty.getI10n('expl')}
+                                        </g:if>
+                                    </td>
+                                    <td>
+
+                                        ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
+                                        <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
+                                            <g:set var="refdataValues" value="${[]}"/>
+                                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
+                                                    var="refdataValue">
+                                                <g:if test="${refdataValue.getI10n('value')}">
+                                                    <g:set var="refdataValues"
+                                                           value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                                </g:if>
+                                            </g:each>
+                                            <br>
+                                            (${refdataValues.join('/')})
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
                     </td>
                 </tr>
 
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyDocs" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyDocs')}</th>
+                    <td><g:checkBox name="copySurvey.copyDocs" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyDocs')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${(((docctx.owner.contentType == 1) || (docctx.owner.contentType == 3)) && (docctx.status.value != 'Deleted'))}">
@@ -224,8 +229,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyAnnouncements" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyAnnouncements')}</th>
+                    <td><g:checkBox name="copySurvey.copyAnnouncements" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyAnnouncements')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${((docctx.owner.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status.value != 'Deleted'))}">
@@ -246,8 +251,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyTasks" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyTasks')}</th>
+                    <td><g:checkBox name="copySurvey.copyTasks" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyTasks')}</td>
                     <td>
                         <g:each in="${tasks}" var="tsk">
                             <div id="summary" class="summary">
@@ -259,8 +264,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="copySurvey.copyParticipants" value="${true}"/></th>
-                    <th>${message(code: 'copySurvey.copyParticipants')}</th>
+                    <td><g:checkBox name="copySurvey.copyParticipants" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyParticipants')}</td>
                     <td>
                         <table class="ui sortable celled la-table table">
 
@@ -291,7 +296,7 @@
                 </tbody>
             </table>
             <input type="submit" class="ui button js-click-control"
-                   value="${message(code: 'default.button.create.label')}"/>
+                   value="${message(code: 'default.button.copy.label')}"/>
 
         </semui:form>
     </g:form>
@@ -423,12 +428,16 @@
 
 
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                            <a href="#" class="la-popup-tooltip la-delay"
+                               data-content="${message(code: 'subscription.numberOfLicenses.label')}"
+                               data-position="top center">
                                 <i class="users large icon"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                            <a href="#" class="la-popup-tooltip la-delay"
+                               data-content="${message(code: 'subscription.numberOfCostItems.label')}"
+                               data-position="top center">
                                 <i class="money bill large icon"></i>
                             </a>
                         </th>
@@ -467,9 +476,12 @@
                                     </g:link>
                                     <g:if test="${sourceLicenses}">
                                         <g:each in="${sourceLicenses}" var="license">
-                                            <g:link controller="license" action="show" target="_blank" id="${license.id}">
-                                                <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
-                                                    <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:</b>
+                                            <g:link controller="license" action="show" target="_blank"
+                                                    id="${license.id}">
+                                                <div data-oid="${genericOIDService.getOID(license)}"
+                                                     class="la-multi-sources">
+                                                    <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                                    </b>
                                                     ${license.reference}
                                                     <br>
                                                 </div>
@@ -496,11 +508,11 @@
                                     </g:if>
                                 <!-- packages -->
                                 </td>
-                            <%--
-                            <td>
-                                ${s.type?.getI10n('value')}
-                            </td>
-                            --%>
+                                <%--
+                                <td>
+                                    ${s.type?.getI10n('value')}
+                                </td>
+                                --%>
 
                                 <td>
                                 <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
@@ -518,26 +530,26 @@
                                     <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                                 </td>
 
-                                    <td>
-                                        <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                            ${Subscription.findAllByInstanceOf(s)?.size()}
-                                        </g:link>
-                                    </td>
-                                    <td>
-                                        <g:link mapping="subfinance" controller="finance" action="index"
-                                                params="${[sub: s.id]}">
-                                            ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
-                                        </g:link>
-                                    </td>
+                                <td>
+                                    <g:link controller="subscription" action="members" params="${[id: s.id]}">
+                                        ${Subscription.findAllByInstanceOf(s)?.size()}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <g:link mapping="subfinance" controller="finance" action="index"
+                                            params="${[sub: s.id]}">
+                                        ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED)?.size()}
+                                    </g:link>
+                                </td>
 
                                 <td class="x">
                                     <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                            <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                                    data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
-                                                    controller="survey" action="copySurvey"
-                                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">
-                                                <g:message code="createSubscriptionSurvey.selectButton"/>
-                                            </g:link>
+                                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
+                                                controller="survey" action="copySurvey"
+                                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">
+                                            <g:message code="createSubscriptionSurvey.selectButton"/>
+                                        </g:link>
                                     </g:if>
                                 </td>
                             </tr>

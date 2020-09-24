@@ -9,6 +9,7 @@ import de.laser.finance.CostItem
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -369,6 +370,19 @@ class SurveyConfig {
             result.subMembersWithMultiYear = subMembersWithMultiYear
         }
         result
+    }
+
+    String dropdownNamingConvention() {
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        String period = surveyInfo.startDate ? sdf.format(surveyInfo.startDate)  : ''
+
+        period = surveyInfo.endDate ? period + ' - ' + sdf.format(surveyInfo.endDate)  : ''
+
+        period = period ? '('+period+')' : ''
+
+        String statusString = surveyInfo.status ? surveyInfo.status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+
+        return surveyInfo.name + ' - ' + statusString + ' ' +period + ' ' + surveyInfo.type.getI10n('value')
     }
 
 

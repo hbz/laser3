@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.SubscriptionController; de.laser.CopyElementsService; com.k_int.kbplus.License; de.laser.SurveyConfig;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -20,72 +20,90 @@
             params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
-    %{--                    <g:if test="${customProperties?.size() > 0}">
-                            <table class="ui celled table la-table">
-                                <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'subscription.properties'), sourceObject:sourceObject]" />
-                            </table>
-                        </g:if>--}%
-        <g:if test="${groupedProperties?.size() > 0}">
-            <g:each in="${groupedProperties}" var="groupedProps">
-                <g:if test="${groupedProps.getValue()}">
+        <g:if test="${sourceObject instanceof SurveyConfig}">
+            <g:if test="${customProperties?.size() > 0 }">
+                <table class="ui celled table la-table">
+                    <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'surveyconfig.properties'), sourceObject:sourceObject]" />
+                </table>
+                <div class="ui divider"></div>
+            </g:if>
 
-                    <h5 class="ui header">
-                        ${message(code: 'subscription.properties.public')}
-                        (${groupedProps.getKey().name})
+            <g:if test="${privateProperties?.size() > 0}">
 
-                        <g:if test="${showConsortiaFunctions}">
-                            <g:if test="${groupedProps.getValue().binding?.isVisibleForConsortiaMembers}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'financials.isVisibleForSubscriber')}"
-                                      style="margin-left:10px">
-                                    <i class="ui icon eye orange"></i>
-                                </span>
+                <div class="content">
+                    <h5 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextOrg.name}</h5>
+                    <table class="ui celled table la-table">
+                        <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                                  model="[group: privateProperties, key: message(code: 'surveyconfig.properties') + ': ' + contextService.getOrg().name]"/>
+                    </table>
+                </div>
+
+            </g:if>
+        </g:if>
+
+        <g:if test="${sourceObject instanceof Subscription || sourceObject instanceof License}">
+            <g:if test="${groupedProperties?.size() > 0}">
+                <g:each in="${groupedProperties}" var="groupedProps">
+                    <g:if test="${groupedProps.getValue()}">
+
+                        <h5 class="ui header">
+                            ${message(code: 'subscription.properties.public')}
+                            (${groupedProps.getKey().name})
+
+                            <g:if test="${showConsortiaFunctions}">
+                                <g:if test="${groupedProps.getValue().binding?.isVisibleForConsortiaMembers}">
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: 'financials.isVisibleForSubscriber')}"
+                                          style="margin-left:10px">
+                                        <i class="ui icon eye orange"></i>
+                                    </span>
+                                </g:if>
                             </g:if>
+                        </h5>
+
+                        <table class="ui celled table la-table">
+                            <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                                      model="[group: groupedProps.getValue().groupTree, key: groupedProps.getKey().name, propBinding: groupedProps.getValue().binding]"/>
+                        </table>
+
+                        <div class="ui divider"></div>
+
+                    </g:if>
+                </g:each>
+            </g:if>
+
+            <g:if test="${orphanedProperties?.size() > 0}">
+
+                <div class="content">
+                    <h5 class="ui header">
+                        <g:if test="${groupedProperties?.size() > 0}">
+                            ${message(code: 'subscription.properties.orphaned')}
                         </g:if>
+                        <g:else>
+                            ${message(code: 'subscription.properties')}
+                        </g:else>
                     </h5>
 
                     <table class="ui celled table la-table">
                         <g:render template="/templates/copyElements/propertyComparisonTableRow"
-                                  model="[group: groupedProps.getValue().groupTree, key: groupedProps.getKey().name, propBinding: groupedProps.getValue().binding]"/>
+                                  model="[group: orphanedProperties, key: message(code: 'subscription.properties'), sourceObject: sourceObject]"/>
                     </table>
 
-                    <div class="ui divider"></div>
+                </div>
 
-                </g:if>
-            </g:each>
-        </g:if>
+                <div class="ui divider"></div>
+            </g:if>
+            <g:if test="${privateProperties?.size() > 0}">
 
-        <g:if test="${orphanedProperties?.size() > 0}">
+                <div class="content">
+                    <h5 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h5>
+                    <table class="ui celled table la-table">
+                        <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                                  model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
+                    </table>
+                </div>
 
-            <div class="content">
-                <h5 class="ui header">
-                    <g:if test="${groupedProperties?.size() > 0}">
-                        ${message(code: 'subscription.properties.orphaned')}
-                    </g:if>
-                    <g:else>
-                        ${message(code: 'subscription.properties')}
-                    </g:else>
-                </h5>
-
-                <table class="ui celled table la-table">
-                    <g:render template="/templates/copyElements/propertyComparisonTableRow"
-                              model="[group: orphanedProperties, key: message(code: 'subscription.properties'), sourceObject: sourceObject]"/>
-                </table>
-
-            </div>
-
-            <div class="ui divider"></div>
-        </g:if>
-        <g:if test="${privateProperties?.size() > 0}">
-
-            <div class="content">
-                <h5 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h5>
-                <table class="ui celled table la-table">
-                    <g:render template="/templates/copyElements/propertyComparisonTableRow"
-                              model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
-                </table>
-            </div>
-
+            </g:if>
         </g:if>
 
         <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>

@@ -10,7 +10,7 @@
             <div class="ui horizontal segments">
 
                 <div class="ui segment left aligned">
-                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                    <b>${message(code: 'surveyconfig.orgs.label')}:</b>
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]">
@@ -37,8 +37,8 @@
                     <dl>
                         <dt class="control-label">
                             <div class="ui icon la-popup-tooltip la-delay"
-                                 data-content="${message(code: "surveyConfig.internalComment.comment")}">
-                                ${message(code: 'surveyConfig.internalComment.label')}
+                                 data-content="${message(code: "surveyconfig.internalComment.comment")}">
+                                ${message(code: 'surveyconfig.internalComment.label')}
                                 <i class="question small circular inverted icon"></i>
                             </div>
                         </dt>
@@ -48,7 +48,7 @@
 
                     <dl>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.url.label')}
+                            ${message(code: 'surveyconfig.url.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
@@ -58,7 +58,7 @@
 
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.urlComment.label')}
+                            ${message(code: 'surveyconfig.urlComment.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
@@ -68,7 +68,7 @@
 
                     <dl>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.url2.label')}
+                            ${message(code: 'surveyconfig.url2.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
@@ -77,7 +77,7 @@
                             </g:if>
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.urlComment2.label')}
+                            ${message(code: 'surveyconfig.urlComment2.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
@@ -87,7 +87,7 @@
 
                     <dl>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.url3.label')}
+                            ${message(code: 'surveyconfig.url3.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
@@ -96,7 +96,7 @@
                             </g:if>
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.urlComment3.label')}
+                            ${message(code: 'surveyconfig.urlComment3.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
@@ -111,8 +111,8 @@
                                 params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                             <div class="field">
                                 <label><div class="ui icon la-popup-tooltip la-delay"
-                                            data-content="${message(code: "surveyConfig.comment.comment")}">
-                                    ${message(code: 'surveyConfig.comment.label')}
+                                            data-content="${message(code: "surveyconfig.comment.comment")}">
+                                    ${message(code: 'surveyconfig.comment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div></label>
                                 <textarea name="comment" rows="15">${surveyConfig.comment}</textarea>
@@ -130,7 +130,7 @@
                     <g:if test="${surveyConfig.url}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.url.label')}
+                                ${message(code: 'surveyconfig.url.label')}
                             </dt>
                             <dd>
                                 <semui:xEditable owner="${surveyConfig}" field="url" type="text"
@@ -151,7 +151,7 @@
                     <g:if test="${surveyConfig.url2}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.url2.label')}
+                                ${message(code: 'surveyconfig.url2.label')}
                             </dt>
                             <dd>
                                 <semui:xEditable owner="${surveyConfig}" field="url2" type="text"
@@ -173,7 +173,7 @@
                     <g:if test="${surveyConfig.url3}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.url3.label')}
+                                ${message(code: 'surveyconfig.url3.label')}
                             </dt>
                             <dd>
                                 <semui:xEditable owner="${surveyConfig}" field="url3" type="text"

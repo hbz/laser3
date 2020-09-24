@@ -50,8 +50,8 @@
 
                 <div class="meta">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                        ${message(code: 'surveyParticipants.label')}: <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                        <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id]" class="ui icon"> ${message(code: 'surveyParticipants.label')}:
                             <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                 ${surveyConfig.orgs?.size() ?: 0}
                             </div>
@@ -77,19 +77,19 @@
 
                     </g:if>
                     <g:else>
-                        <span><g:message code="surveyInfo.owner.label"/>: ${surveyInfo.owner}</span>
+                        <strong><g:message code="surveyInfo.owner.label"/>:</strong> ${surveyInfo.owner}
                     </g:else>
                 </div>
 
                 <div class="description">
                     <p>
                         <g:if test="${surveyInfo.startDate}">
-                            <g:message code="surveyInfo.startDate.label"/>: <g:formatDate
+                            <strong><g:message code="surveyInfo.startDate.label"/>:</strong> <g:formatDate
                                 date="${surveyInfo.startDate}" formatName="default.date.format.notime"/>
                         </g:if>
 
                         <g:if test="${surveyInfo.endDate}">
-                            <g:message code="surveyInfo.endDate.label"/>: <g:formatDate
+                            <strong><g:message code="surveyInfo.endDate.label"/>:</strong> <g:formatDate
                                 date="${surveyInfo.endDate}" formatName="default.date.format.notime"/>
                         </g:if>
 
@@ -97,7 +97,7 @@
 
                     <p>
                         <g:if test="${surveyInfo.comment}">
-                            <g:message code="surveyInfo.comment.label"/>: ${surveyInfo.comment}
+                            <strong><g:message code="surveyInfo.comment.label"/>:</strong> ${surveyInfo.comment}
                         </g:if>
                     </p>
                 </div>

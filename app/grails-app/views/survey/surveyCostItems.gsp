@@ -383,7 +383,7 @@
                     <div class="ui checkbox">
                         <input type="checkbox" onchange="this.form.submit()"
                                name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
-                        <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
+                        <label><g:message code="surveyconfig.costItemsFinish.label"/></label>
                     </div>
                 </div>
 

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2685    24.09.2020  hbz-dev             Moe     Feature     Umfrage Elemente von einer Umfrage in einer anderen Umfrage kopieren
+
 2885    23.09.2020  hbz-dev             Moe     Feature     Umfrage: Filter einbauen nach Fachrichtungen der Orgs
 
 2884    23.09.2020  hbz-dev             Moe     Feature     Umfrage: Eingabe von Bemerkung für URLs

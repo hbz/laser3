@@ -22,7 +22,7 @@
 ${message(code: 'email.text.title', locale: language)} ${userName},
 <br>
 <br>
-${message(code: 'surveyConfig.orgs.label', locale: language)}: ${orgName}
+${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br>
 <br>
 ${message(code: 'surveyInfo.name.label', locale: language)}: <b>${survey.name} </b>

@@ -63,7 +63,11 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'comment']
                 break
             case SurveyConfig.class.simpleName:
-                result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment', 'url', 'url2', 'url3', 'urlComment', 'urlComment2', 'urlComment3']
+                if(obj.subSurveyUseForTransfer) {
+                    result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment', 'url', 'urlComment', 'url2', 'urlComment2', 'url3', 'urlComment3']
+                }else {
+                    result = ['comment', 'internalComment', 'url', 'urlComment', 'url2', 'urlComment2', 'url3', 'urlComment3']
+                }
                 break
         }
         result
@@ -74,18 +78,20 @@ class CopyElementsService {
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
-        result.sourceIdentifiers = sourceObject.ids?.sort { x, y ->
-            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
-                x.value <=> y.value
-            } else {
-                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+        if(sourceObject.hasProperty('ids')) {
+            result.sourceIdentifiers = sourceObject?.ids?.sort { x, y ->
+                if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
+                    x.value <=> y.value
+                } else {
+                    x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+                }
             }
-        }
-        result.targetIdentifiers = targetObject?.ids?.sort { x, y ->
-            if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
-                x.value <=> y.value
-            } else {
-                x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+            result.targetIdentifiers = targetObject?.ids?.sort { x, y ->
+                if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
+                    x.value <=> y.value
+                } else {
+                    x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
+                }
             }
         }
 
@@ -147,7 +153,21 @@ class CopyElementsService {
             objectsToCompare.add(targetObject)
         }
 
-        result = regroupObjectProperties(objectsToCompare)
+        if(sourceObject instanceof Subscription || sourceObject instanceof License) {
+            result = regroupObjectProperties(objectsToCompare)
+        }
+
+        if(sourceObject instanceof SurveyConfig) {
+            Org contextOrg = contextService.org
+            objectsToCompare.each { Object obj ->
+                        Map customProperties = result.customProperties
+                        customProperties = comparisonService.buildComparisonTreePropertyDefintion(customProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant == null }.sort { it.getI10n('name') })
+                        result.customProperties = customProperties
+                        Map privateProperties = result.privateProperties
+                        privateProperties = comparisonService.buildComparisonTreePropertyDefintion(privateProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant?.id == contextOrg.id }.sort { it.getI10n('name') })
+                        result.privateProperties = privateProperties
+            }
+        }
 
         if (targetObject) {
             result.targetObject = targetObject.refresh()
@@ -343,7 +363,7 @@ class CopyElementsService {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSubscription
-                        newOrgRole.save(flush: true)
+                        newOrgRole.save()
                         log.debug("new org role set: ${newOrgRole.sub} for ${newOrgRole.org.sortname}")
                     }
                 }
@@ -415,7 +435,7 @@ class CopyElementsService {
 
                     if (newSubOrgRole.org in toggleShareOrgRoles.org) {
                         newSubOrgRole.isShared = true
-                        newSubOrgRole.save(flush: true)
+                        newSubOrgRole.save()
                         ((ShareSupport) targetObject).updateShare(newSubOrgRole)
                     }
                 }
@@ -578,7 +598,7 @@ class CopyElementsService {
     }
 
     Map copyObjectElements_Properties(Map params) {
-        LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
+        LinkedHashMap result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         boolean isRenewSub = params.isRenewSub ? true : false
 
@@ -590,14 +610,28 @@ class CopyElementsService {
 
         List auditProperties = params.list('auditProperties')
 
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('copyObject.deleteProperty').collect { genericOIDService.resolveOID(it) }
-        if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
-            deleteProperties(propertiesToDelete, targetObject, isRenewSub, flash, auditProperties)
+        if(sourceObject instanceof SurveyConfig){
+            List<PropertyDefinition> propertiesToDelete = params.list('copyObject.deleteProperty').collect { genericOIDService.resolveOID(it) }
+            if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
+                deleteSurveyProperties(propertiesToDelete, targetObject)
+            }
+
+            List<PropertyDefinition> propertiesToTake = params.list('copyObject.takeProperty').collect { genericOIDService.resolveOID(it) }
+            if (propertiesToTake && isBothObjectsSet(sourceObject, targetObject)) {
+                copySurveyProperties(propertiesToTake, sourceObject, targetObject)
+            }
         }
 
-        List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('copyObject.takeProperty').collect { genericOIDService.resolveOID(it) }
-        if (propertiesToTake && isBothObjectsSet(sourceObject, targetObject)) {
-            copyProperties(propertiesToTake, targetObject, isRenewSub, flash, auditProperties)
+        if(sourceObject instanceof Subscription || sourceObject instanceof License) {
+            List<AbstractPropertyWithCalculatedLastUpdated> propertiesToDelete = params.list('copyObject.deleteProperty').collect { genericOIDService.resolveOID(it) }
+            if (propertiesToDelete && isBothObjectsSet(sourceObject, targetObject)) {
+                deleteProperties(propertiesToDelete)
+            }
+
+            List<AbstractPropertyWithCalculatedLastUpdated> propertiesToTake = params.list('copyObject.takeProperty').collect { genericOIDService.resolveOID(it) }
+            if (propertiesToTake && isBothObjectsSet(sourceObject, targetObject)) {
+                copyProperties(propertiesToTake, targetObject, isRenewSub, flash, auditProperties)
+            }
         }
 
         if (targetObject) {
@@ -825,21 +859,21 @@ class CopyElementsService {
                                     def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                     additionalProp = targetProp.copyInto(additionalProp)
                                     additionalProp.instanceOf = targetProp
-                                    additionalProp.save(flush: true)
+                                    additionalProp.save()
                                 } else {
                                     def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
                                     // unbound prop found with matching type, set backref
                                     if (matchingProps) {
                                         matchingProps.each { memberProp ->
                                             memberProp.instanceOf = targetProp
-                                            memberProp.save(flush: true)
+                                            memberProp.save()
                                         }
                                     } else {
                                         // no match found, creating new prop with backref
                                         def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
                                         newProp = targetProp.copyInto(newProp)
                                         newProp.instanceOf = targetProp
-                                        newProp.save(flush: true)
+                                        newProp.save()
                                     }
                                 }
                             }
@@ -864,17 +898,36 @@ class CopyElementsService {
         }
     }
 
-    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties) {
+    boolean copySurveyProperties(List<PropertyDefinition> properties, Object sourceObject, Object targetObject) {
+        properties.each { PropertyDefinition prop ->
+            SurveyConfigProperties sourceSurveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(sourceObject, prop)
+            SurveyConfigProperties targetSurveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(targetObject, prop)
+            if (sourceSurveyConfigProperty && !targetSurveyConfigProperty) {
+                new SurveyConfigProperties(surveyConfig: targetObject, surveyProperty: prop).save()
+            }
+        }
+    }
+
+    boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties) {
         properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
             if (AuditConfig.getConfig(prop, AuditConfig.COMPLETE_OBJECT)) {
 
                 AuditConfig.removeAllConfigs(prop)
 
                 prop.getClass().findAllByInstanceOf(prop).each { prop2 ->
-                    prop2.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                    prop2.delete() //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
                 }
             }
-            prop.delete(flush: true)
+            prop.delete()
+        }
+    }
+
+    boolean deleteSurveyProperties(List<PropertyDefinition> properties, Object targetObject) {
+        properties.each { PropertyDefinition prop ->
+            SurveyConfigProperties surveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(targetObject, prop)
+            if (surveyConfigProperty) {
+                surveyConfigProperty.delete()
+            }
         }
     }
 
@@ -1016,7 +1069,7 @@ class CopyElementsService {
                     if (!costItem.sub) {
                         costItem.sub = subPkg.subscription
                     }
-                    costItem.save(flush: true)
+                    costItem.save()
                 }
             }
 
@@ -1102,7 +1155,7 @@ class CopyElementsService {
                             IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                             InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                             newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                            newIssueEntitlementCoverage.save(flush: true)
+                            newIssueEntitlementCoverage.save()
                         }
                     }
                 }
@@ -1111,7 +1164,7 @@ class CopyElementsService {
     }
 
     private boolean save(obj, flash) {
-        if (obj.save(flush: true)) {
+        if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
         } else {
@@ -1124,7 +1177,7 @@ class CopyElementsService {
 
     private boolean delete(obj, flash) {
         if (obj) {
-            obj.delete(flush: true)
+            obj.delete()
             log.debug("Delete ${obj} ok")
         } else {
             flash.error += messageSource.getMessage('default.delete.error.general.message', null, locale)

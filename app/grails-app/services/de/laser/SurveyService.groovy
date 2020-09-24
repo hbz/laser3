@@ -175,12 +175,12 @@ class SurveyService {
                 }
 
                 titles.addAll([
-                        messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
-                        messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
-                        messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
-                        messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
-                        messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
-                        messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
+                        messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                         messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale())])
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
@@ -215,12 +215,12 @@ class SurveyService {
                 titles.push(messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
-                    titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
+                    titles.addAll([messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -241,12 +241,12 @@ class SurveyService {
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.push(messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()))
-                    titles.push(messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()))
+                    titles.push(messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()))
                 }
             }
 
@@ -460,12 +460,12 @@ class SurveyService {
                     titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale())])
                 }
 
-                titles.addAll([messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
-                               messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale())])
+                titles.addAll([messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale())])
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT ) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -536,12 +536,12 @@ class SurveyService {
             List surveyData = []
 
             titles.addAll([messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.type.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
@@ -683,12 +683,12 @@ class SurveyService {
             titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyInfo.name.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.url.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.urlComment.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.url2.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.url3.label', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyConfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
