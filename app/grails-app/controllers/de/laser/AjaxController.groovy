@@ -636,20 +636,20 @@ class AjaxController {
                     }
                 }
                 if (values) {
-                    if (propDef.type == Integer.toString()) {
+                    if (propDef.isIntegerType()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.intValue != null)
                                 result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
                         }
                         result = result.sort { x, y -> x.text.compareTo y.text }
                     }
-                    else if (propDef.type == Date.toString()) {
+                    else if (propDef.isDateType()) {
                         values.dateValue.findAll().unique().sort().reverse().each { v ->
                             String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
                             result.add([value: vt, text: vt])
                         }
                     }
-                    else if (propDef.type == RefdataValue.toString()) {
+                    else if (propDef.isRefdataValueType()) {
                         values.each { AbstractPropertyWithCalculatedLastUpdated v ->
                             if(v.getValue() != null)
                                 result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
