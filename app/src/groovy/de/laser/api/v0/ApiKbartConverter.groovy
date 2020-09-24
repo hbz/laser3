@@ -1,6 +1,6 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.Doc
+import de.laser.Doc
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.json.JsonSlurper

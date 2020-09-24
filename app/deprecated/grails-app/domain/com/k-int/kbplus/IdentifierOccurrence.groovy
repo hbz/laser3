@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.Identifier
+
 class IdentifierOccurrence {
 
     // TODO AuditTrail

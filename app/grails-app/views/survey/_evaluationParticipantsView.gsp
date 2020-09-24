@@ -105,7 +105,7 @@
                 }.sort { it.value[0].type.name }}" var="property">
                     <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
                     <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                          property="surResult.${surveyProperty.getPropertyType()}, surResult.participant.sortname ASC">
+                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ASC">
                         <g:if test="${surveyProperty.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyProperty.getI10n('expl')}">
@@ -308,7 +308,7 @@
                 }.sort { it.value[0].type.name }}" var="property">
                     <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
                     <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                          property="surResult.${surveyProperty.getPropertyType()}, surResult.participant.sortname ASC">
+                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ASC">
                         <g:if test="${surveyProperty.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyProperty.getI10n('expl')}">

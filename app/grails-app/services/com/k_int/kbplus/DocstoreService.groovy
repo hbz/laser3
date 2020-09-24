@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.DocContext
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.apache.commons.io.IOUtils

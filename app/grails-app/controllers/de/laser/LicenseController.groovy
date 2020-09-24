@@ -1,7 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
+
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty

@@ -1,6 +1,6 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.Identifier
+import de.laser.Identifier
 import com.k_int.kbplus.Org
 import de.laser.api.v0.*
 import de.laser.helper.Constants
@@ -91,7 +91,7 @@ class ApiOrg {
 
         result.addresses    = ApiCollectionReader.getAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.Address
         result.contacts     = ApiCollectionReader.getContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.Contact
-        result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // com.k_int.kbplus.Identifier
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole

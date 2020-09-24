@@ -1,12 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.BookInstance
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.Identifier
-import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.JournalInstance
 import com.k_int.kbplus.License

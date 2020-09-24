@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 
+import de.laser.Doc
+import de.laser.DocContext
 import de.laser.FTControl
+import de.laser.Identifier
 import de.laser.RefdataValue
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
@@ -579,7 +582,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.DocContext.class) { docCon ->
+        updateES(DocContext.class) { docCon ->
             def result = [:]
 
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
@@ -589,7 +592,7 @@ class DataloadService {
             result.status= docCon.status?.value ?: ''
             result.statusId= docCon.status?.id ?: ''
             result.visible = 'Private'
-            result.rectype = (docCon.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
+            result.rectype = (docCon.owner?.contentType == Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
 
             result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
 

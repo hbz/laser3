@@ -1,9 +1,7 @@
 package de.laser
 
 
-import com.k_int.kbplus.Doc
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License

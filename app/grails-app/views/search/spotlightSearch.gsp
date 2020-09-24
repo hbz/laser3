@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;com.k_int.kbplus.DocContext;" %>
+<%@ page import="de.laser.DocContext; de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat" %>
 <%
     def result = []
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")

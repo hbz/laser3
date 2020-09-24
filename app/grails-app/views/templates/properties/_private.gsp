@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; java.net.URL" %>
 <laser:serviceInjection />
 
 
@@ -19,7 +19,7 @@
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+            <g:if test="${ownobj instanceof License}">
                 <col style="width: 359px;">
             </g:if>
             <col style="width: 148px;">
@@ -29,7 +29,7 @@
             <tr>
                 <th class="la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -88,7 +88,7 @@
                         </g:elseif>
 
                     </td>
-                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <g:if test="${ownobj instanceof License}">
                         <td>
                             <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
                         </td>

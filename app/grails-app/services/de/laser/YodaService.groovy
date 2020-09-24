@@ -10,7 +10,6 @@ import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.exceptions.CleanupException
