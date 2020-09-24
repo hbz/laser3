@@ -145,10 +145,10 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
             depedingProps.each{ scp ->
 
                 String definedType = 'text'
-                if (scp.type.type == RefdataValue.class.toString()) {
+                if (scp.type.isRefdataValueType()) {
                     definedType = 'rdv'
                 }
-                else if (scp.type.type == Date.class.toString()) {
+                else if (scp.type.isDateType()) {
                     definedType = 'date'
                 }
 

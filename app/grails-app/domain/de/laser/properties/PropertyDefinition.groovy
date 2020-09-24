@@ -125,7 +125,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             propDefGroupItems: 'propDef'
     ]
 
-    static transients = ['descrClass', 'typeBigDecimal', 'typeDate', 'typeInteger', 'typeRefdataValue', 'typeString', 'typeURL', 'implClassValueProperty'] // mark read-only accessor methods
+    static transients = ['descrClass', 'bigDecimalType', 'dateType', 'integerType', 'refdataValueType', 'stringType', 'URLType', 'implClassValueProperty'] // mark read-only accessor methods
 
     static mapping = {
                     cache  true
@@ -525,32 +525,32 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         return a.toLowerCase()?.compareTo(b.toLowerCase())
     }
 
-    boolean isTypeBigDecimal() {
+    boolean isBigDecimalType() {
         type == BigDecimal.toString() // introduced for refactoring -> BigDecimal.class.name
     }
-    boolean isTypeDate() {
+    boolean isDateType() {
         type == Date.toString() // introduced for refactoring -> Date.class.name
     }
-    boolean isTypeInteger() {
+    boolean isIntegerType() {
         type == Integer.toString() // introduced for refactoring -> Integer.class.name
     }
-    boolean isTypeRefdataValue() {
+    boolean isRefdataValueType() {
         type == RefdataValue.toString() // introduced for refactoring -> RefdataValue.class.name
     }
-    boolean isTypeString() {
+    boolean isStringType() {
         type == String.toString() // introduced for refactoring -> String.class.name
     }
-    boolean isTypeURL() {
+    boolean isURLType() {
         type == URL.toString() // introduced for refactoring -> URL.class.name
     }
 
     String getImplClassValueProperty(){
-        if( isTypeInteger() )   { return "intValue" }
-        if( isTypeString() )    { return "stringValue" }
-        if( isTypeBigDecimal() ){ return "decValue" }
-        if( isTypeDate() )      { return "dateValue" }
-        if( isTypeURL() )       { return "urlValue" }
-        if( isTypeRefdataValue()) { return "refValue"}
+        if( isIntegerType() )   { return "intValue" }
+        if( isStringType() )    { return "stringValue" }
+        if( isBigDecimalType() ){ return "decValue" }
+        if( isDateType() )      { return "dateValue" }
+        if( isURLType() )       { return "urlValue" }
+        if( isRefdataValueType()) { return "refValue"}
     }
 }
 

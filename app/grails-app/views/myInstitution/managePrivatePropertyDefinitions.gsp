@@ -92,7 +92,7 @@
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd.type)}
-                                            <g:if test="${pd.type == RefdataValue.CLASS}">
+                                            <g:if test="${pd.isRefdataValueType()}">
                                                 <g:set var="refdataValues" value="${[]}"/>
                                                 <g:each in="${RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
                                                         var="refdataValue">

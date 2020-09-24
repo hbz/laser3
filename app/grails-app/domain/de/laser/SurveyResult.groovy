@@ -104,22 +104,22 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     }
 
     boolean isResultProcessed() {
-        if (type.type == Integer.toString()) {
+        if (type.isIntegerType()) {
             return intValue ? true : false
         }
-        else if (type.type == String.toString()) {
+        else if (type.isStringType()) {
             return stringValue ? true : false
         }
-        else if (type.type ==  BigDecimal.toString()) {
+        else if (type.isBigDecimalType()) {
             return decValue ? true : false
         }
-        else if (type.type == Date.toString()) {
+        else if (type.isDateType()) {
             return dateValue ? true : false
         }
-        else if (type.type == URL.toString()) {
+        else if (type.isURLType()) {
             return urlValue ? true : false
         }
-        else if (type.type == RefdataValue.toString()) {
+        else if (type.isRefdataValueType()) {
             return refValue ? true : false
         }
     }
@@ -129,22 +129,22 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     }
 
     def getResult() {
-        if (type.type == Integer.toString()) {
+        if (type.isIntegerType()) {
             return intValue.toString()
         }
-        else if (type.type == String.toString()) {
+        else if (type.isStringType()) {
             return stringValue
         }
-        else if (type.type ==  BigDecimal.toString()) {
+        else if (type.isBigDecimalType()) {
             return decValue.toString()
         }
-        else if (type.type == Date.toString()) {
+        else if (type.isDateType()) {
             return dateValue.getDateString()
         }
-        else if (type.type == URL.toString()) {
+        else if (type.isURLType()) {
             return urlValue.toString()
         }
-        else if (type.type == RefdataValue.toString()) {
+        else if (type.isRefdataValueType()) {
             return refValue ? refValue?.getI10n('value') : ""
         }
     }
