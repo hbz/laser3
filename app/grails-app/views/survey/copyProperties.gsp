@@ -369,7 +369,7 @@ ${surveyInfo.name}
                                     <g:formatDate formatName="default.date.format.notime"
                                                   date="${participant.newSub.endDate}"/>
                                     <div class="right aligned wide column">
-                                        <b>${participant.newSub.status.getI10n('value')}</b>
+                                        <strong>${participant.newSub.status.getI10n('value')}</strong>
                                     </div>
                                 </div>
                             </g:if>

@@ -177,7 +177,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                         ],
                         PendingChange.MSG_SU02,
                         msgParams,
-                        "Das Merkmal <b>${scp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
+                        "Das Merkmal <strong>${scp.type.name}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
                 )
                 if (newPendingChange && scp.owner.isSlaved) {
                     slavedPendingChanges << newPendingChange

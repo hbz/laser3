@@ -38,7 +38,7 @@
 
 %{--<div class="ui segment">
 
-    <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
+    <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.type == RefdataValue.CLASS}">
         <g:set var="refdataValues" value="${[]}"/>

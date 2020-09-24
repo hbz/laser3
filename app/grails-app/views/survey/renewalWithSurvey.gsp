@@ -45,7 +45,7 @@ ${surveyInfo.name}
 
 <g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
-        <b>${message(code: 'renewalWithSurvey.notInEvaliation')}</b>
+        <strong>${message(code: 'renewalWithSurvey.notInEvaliation')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -121,7 +121,7 @@ ${surveyInfo.name}
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">
                 <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
-                    <b>${message(code: 'surveyconfig.subOrgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
                     <div class="ui circular label">
                         ${countParticipants.subMembers}
@@ -133,7 +133,7 @@ ${surveyInfo.name}
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id]">
-                    <b>${message(code: 'surveyconfig.orgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
 
                     <div class="ui circular label">${countParticipants.surveyMembers}</div>
                 </g:link>
@@ -145,7 +145,7 @@ ${surveyInfo.name}
             </div>
 
             <div class="ui segment center aligned">
-                <b>${message(code: 'renewalWithSurvey.orgsTotalInRenewalProcess')}:</b>
+                <strong>${message(code: 'renewalWithSurvey.orgsTotalInRenewalProcess')}:</strong>
                 <semui:totalNumber class="${totalOrgs != countParticipants.subMembers ? 'red' : ''}"
                                    total="${totalOrgs}"/>
 

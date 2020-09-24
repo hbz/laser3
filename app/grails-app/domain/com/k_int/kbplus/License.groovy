@@ -487,7 +487,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                               ],
                         PendingChange.MSG_LI01,
                         msgParams,
-                    "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
+                    "<strong>${changeDocument.prop}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Vertragsvorlage geändert. " + description
             )
 
             if (newPendingChange && dl.isSlaved) {

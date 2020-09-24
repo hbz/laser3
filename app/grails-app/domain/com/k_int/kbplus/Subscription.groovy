@@ -575,7 +575,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     ],
                     PendingChange.MSG_SU01,
                     msgParams,
-                    "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
+                    "<strong>${changeDocument.prop}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
             )
 
             if (newPendingChange && ds.isSlaved) {

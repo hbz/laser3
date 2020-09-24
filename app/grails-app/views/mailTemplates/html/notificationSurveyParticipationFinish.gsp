@@ -25,7 +25,7 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
 ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br>
 <br>
-${message(code: 'surveyInfo.name.label', locale: language)}: <b>${survey.name} </b>
+${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.name} </strong>
 
 <br>
 (<g:formatDate format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"

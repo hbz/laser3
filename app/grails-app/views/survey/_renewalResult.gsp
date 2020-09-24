@@ -182,8 +182,8 @@
                 <g:set var="costItem" value="${participantResult.resultOfParticipation.getCostItem()}"/>
 
                 <g:if test="${costItem}">
-                    <b><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                       maxFractionDigits="2" type="number"/></b>
+                    <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></strong>
 
                     (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
                                      maxFractionDigits="2" type="number"/>)

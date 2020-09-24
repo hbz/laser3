@@ -235,10 +235,10 @@
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${((docctx.owner.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status.value != 'Deleted'))}">
                                 <g:if test="${docctx.owner.title}">
-                                    <b>${docctx.owner.title}</b>
+                                    <strong>${docctx.owner.title}</strong>
                                 </g:if>
                                 <g:else>
-                                    <b>Ohne Titel</b>
+                                    <strong>Ohne Titel</strong>
                                 </g:else>
 
                                 (${message(code: 'template.notes.created')}
@@ -256,7 +256,7 @@
                     <td>
                         <g:each in="${tasks}" var="tsk">
                             <div id="summary" class="summary">
-                            <b>${tsk.title}</b> (${message(code: 'task.endDate.label')}
+                            <strong>${tsk.title}</strong> (${message(code: 'task.endDate.label')}
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                           date="${tsk.endDate}"/>)
                             <br>
@@ -480,8 +480,8 @@
                                                     id="${license.id}">
                                                 <div data-oid="${genericOIDService.getOID(license)}"
                                                      class="la-multi-sources">
-                                                    <b><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
-                                                    </b>
+                                                    <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                                    </strong>
                                                     ${license.reference}
                                                     <br>
                                                 </div>

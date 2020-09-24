@@ -283,12 +283,12 @@ String period
 
                                 </td>
                                 <td>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                     <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
                                     <br>
-                                    <b><g:message code="org.platforms.label"/></b>:
+                                    <strong><g:message code="org.platforms.label"/></strong>:
                                     <g:each in="${hit.getSourceAsMap().platforms?.sort { it.name }}" var="platform">
                                         <g:link controller="platform" action="show"
                                                 id="${platform.id}">${platform.name}</g:link>
@@ -308,7 +308,7 @@ String period
                                             id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
                                 </td>
                                 <td>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                     <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
@@ -327,7 +327,7 @@ String period
                                             id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
                                 </td>
                                 <td>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                 <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                     ${id.type}: ${id.value} &nbsp;
                                 </g:each>
@@ -346,7 +346,7 @@ String period
                                             id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
                                 </td>
                                 <td>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                 <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                     ${id.type}: ${id.value} &nbsp;
                                 </g:each>
@@ -365,7 +365,7 @@ String period
                                             id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
                                 </td>
                                 <td>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                 <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                     ${id.type}: ${id.value} &nbsp;
                                 </g:each>
@@ -384,12 +384,12 @@ String period
                                             id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
                                 </td>
                                 <td>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                     <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
                                     <br>
-                                    <b>${message(code: 'package.compare.overview.tipps')}</b>:
+                                    <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
                                     <g:link controller="package" action="index"
                                         id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().titleCountCurrent}</g:link>
 
@@ -408,13 +408,13 @@ String period
                                             id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'package.compare.overview.tipps')}</b>:
+                                    <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
                                         <g:link controller="platform" action="platformTipps"
                                         id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().titleCountCurrent}</g:link>
                                     <br>
-                                    <b>${message(code: 'platform.primaryURL')}</b>: ${hit.getSourceAsMap().primaryUrl}
+                                    <strong>${message(code: 'platform.primaryURL')}</strong>: ${hit.getSourceAsMap().primaryUrl}
                                     <br>
-                                    <b>${message(code: 'platform.org')}</b>:
+                                    <strong>${message(code: 'platform.org')}</strong>:
                                 <g:link controller="organisation" action="show"
                                         id="${hit.getSourceAsMap().orgId}">${hit.getSourceAsMap().orgName}</g:link>
 
@@ -448,25 +448,25 @@ String period
                                         period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
                                         period = period ? period : ''
                                     %>
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                     <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
                                     <br>
 
-                                    <b>${message(code: 'subscription.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'subscription.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'default.type.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
+                                    <strong>${message(code: 'default.type.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
-                                    <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
+                                    <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br>
                                     <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
                                     </g:if>
                                     <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <article class="la-readmore">
                                         <g:each in="${hit.getSourceAsMap().members}" var="member">
                                         <g:link controller="subscription" action="members"
@@ -476,7 +476,7 @@ String period
                                     </g:if>
                                     <br>
                                     <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
-                                    <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
+                                    <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
                                 </td>
                             </g:if>
@@ -508,24 +508,24 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b><g:message code="default.identifiers.label"/></b>:
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
                                     <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
                                         ${id.type}: ${id.value} &nbsp;
                                     </g:each>
                                     <br>
-                                    <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'default.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'default.type.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
+                                    <strong>${message(code: 'default.type.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
                                     <br>
-                                    <b>${message(code: 'subscription.periodOfValidity.label')}</b>: ${period}
+                                    <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br>
                                     <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="license" action="members"
                                                 id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().membersCount}</g:link>
                                     </g:if>
                                     <g:if test="${hit.getSourceAsMap().members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        <b>${message(code: 'subscription.details.consortiaMembers.label')}</b>:
+                                        <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members" id="${hit.getSourceAsMap().dbId}"> ${hit.getSourceAsMap().members.size()}</g:link>
                                         <article class="la-readmore">
                                         <g:each in="${hit.getSourceAsMap().members}" var="member">
@@ -535,7 +535,7 @@ String period
                                     </g:if>
                                     <br>
                                     <g:if test="${!(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
-                                        <b>${message(code: 'facet.so.consortiaName')}</b>: ${hit.getSourceAsMap().consortiaName}
+                                        <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
                                 </td>
                             </g:if>
@@ -571,12 +571,12 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'default.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
+                                    <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
                                     <br>
                                     <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        <b>${message(code: 'surveyParticipants.label')}</b>: ${hit.getSourceAsMap().membersCount}
+                                        <strong>${message(code: 'surveyParticipants.label')}</strong>: ${hit.getSourceAsMap().membersCount}
                                     </g:if>
                                 </td>
                             </g:if>
@@ -610,9 +610,9 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <b>${message(code: 'default.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'default.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'renewalWithSurvey.period')}</b>: ${period}
+                                    <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
                                 </td>
                             </g:if>
 
@@ -639,21 +639,21 @@ String period
                                 </td>
                                 <td>
                                     <g:if test="${hit.getSourceAsMap().objectClassName}">
-                                    <b>${message(code: 'task.typ')}</b>:${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}
+                                    <strong>${message(code: 'task.typ')}</strong>:${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     </g:if>
                                     <g:else>
                                         ${message(code: 'task.general')}
                                     </g:else>
                                     <br>
-                                    <b>${message(code: 'task.status.label')}</b>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'task.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
                                     <br>
-                                    <b>${message(code: 'task.endDate.label')}</b>:
+                                    <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
                                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
                                     <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                    <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'Note'}">
@@ -677,10 +677,10 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                    <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
 
@@ -707,10 +707,10 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'license.docs.table.type')}</b>: ${docContext ? docContext.owner?.type?.getI10n('value'): ""}
+                                    <strong>${message(code: 'license.docs.table.type')}</strong>: ${docContext ? docContext.owner?.type?.getI10n('value'): ""}
 
                                 </td>
                             </g:if>
@@ -735,7 +735,7 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
 
@@ -762,10 +762,10 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                    <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <%--<g:if test="${hit.getSourceAsMap().rectype == 'SubscriptionPrivateProperty'}">
@@ -789,10 +789,10 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                    <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>--%>
                             <g:if test="${hit.getSourceAsMap().rectype == 'LicenseProperty'}">
@@ -816,10 +816,10 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                    <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             <%--
@@ -844,10 +844,10 @@ String period
                                     </div>
                                 </td>
                                 <td>
-                                    <b>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</b>:
+                                    <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
                                     <br>
-                                    <b>${message(code: 'default.description.label')}</b>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                    <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
                             --%>

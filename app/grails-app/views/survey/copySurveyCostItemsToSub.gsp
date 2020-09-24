@@ -130,7 +130,7 @@ ${surveyInfo.name}
                                 <g:formatDate formatName="default.date.format.notime"
                                               date="${participant.newSub.endDate}"/>
                                 <div class="right aligned wide column">
-                                    <b>${participant.newSub.status.getI10n('value')}</b>
+                                    <strong>${participant.newSub.status.getI10n('value')}</strong>
                                 </div>
                             </div>
                         </g:if>
@@ -141,9 +141,9 @@ ${surveyInfo.name}
 
                         <g:if test="${participant.surveyCostItem}">
                             ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br>
-                            <b><g:formatNumber number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
+                            <strong><g:formatNumber number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
                                                minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/></b>
+                                               maxFractionDigits="2" type="number"/></strong>
 
                             (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}" minFractionDigits="2"
                                              maxFractionDigits="2" type="number"/>)
@@ -165,10 +165,10 @@ ${surveyInfo.name}
                                     var="costItemParticipantSub">
 
                                 ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
-                                <b><g:formatNumber
+                                <strong><g:formatNumber
                                         number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
                                         minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/></b>
+                                        maxFractionDigits="2" type="number"/></strong>
 
                                 (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
                                                  minFractionDigits="2"
@@ -196,18 +196,18 @@ ${surveyInfo.name}
             <tfoot>
             <tr>
                 <td></td>
-                <td><b><g:message code="financials.export.sums"/></b></td>
+                <td><strong><g:message code="financials.export.sums"/></strong></td>
                 <td></td>
                 <td>
-                    <b><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
-                                       maxFractionDigits="2" type="number"/></b>
+                    <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></strong>
                     (<g:formatNumber number="${sumSurveyCostItem}" minFractionDigits="2"
                                      maxFractionDigits="2" type="number"/>)
 
                 </td>
                 <td>
-                    <b><g:formatNumber number="${sumNewCostItemAfterTax}" minFractionDigits="2"
-                                       maxFractionDigits="2" type="number"/></b>
+                    <strong><g:formatNumber number="${sumNewCostItemAfterTax}" minFractionDigits="2"
+                                       maxFractionDigits="2" type="number"/></strong>
                     (<g:formatNumber number="${sumNewCostItem}" minFractionDigits="2"
                                     maxFractionDigits="2" type="number"/>)
 

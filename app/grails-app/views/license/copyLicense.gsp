@@ -48,7 +48,7 @@
         <th><g:checkBox name="license.copyLinks" value="${true}" /></th>
         <th>${message(code:'license.copyLinks')}</th>
         <td>
-            <b>${message(code:'license.linktoLicense')}:</b>
+            <strong>${message(code:'license.linktoLicense')}:</strong>
             <g:if test="${license.instanceOf}">
                 <g:link controller="license" action="show" target="_blank" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
             </g:if>
@@ -59,7 +59,7 @@
 
         <g:each in="${visibleOrgRelations}" var="role">
             <g:if test="${role.org}">
-                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="organisation" action="show" target="_blank" id="${role.org.id}">${role?.org?.name}</g:link><br>
+                <strong>${role?.roleType?.getI10n("value")}:</strong> <g:link controller="organisation" action="show" target="_blank" id="${role.org.id}">${role?.org?.name}</g:link><br>
             </g:if>
         </g:each>
         </td>
@@ -95,10 +95,10 @@
             <g:each in="${licenseInstance.documents.sort{it.owner?.title}}" var="docctx">
                 <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                             <g:if test="${docctx.owner.title}">
-                                <b>${docctx.owner.title}</b>
+                                <strong>${docctx.owner.title}</strong>
                             </g:if>
                             <g:else>
-                                <b>Ohne Titel</b>
+                                <strong>Ohne Titel</strong>
                             </g:else>
 
                             (${message(code:'template.notes.created')}
@@ -115,7 +115,7 @@
         <td>
             <g:each in="${tasks}" var="tsk">
                     <div id="summary" class="summary">
-                    <b>${tsk?.title}</b> (${message(code:'task.endDate.label')}
+                    <strong>${tsk?.title}</strong> (${message(code:'task.endDate.label')}
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>)
                     <br>
             </g:each>

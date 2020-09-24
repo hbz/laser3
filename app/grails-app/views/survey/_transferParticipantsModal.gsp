@@ -16,7 +16,7 @@
                 <div class="ui bulleted list">
                     <g:each in="${properties}" var="prop" >
                         <div class="item">
-                            <b><g:message code="subscription.${prop.referenceField}.label" /></b>:
+                            <strong><g:message code="subscription.${prop.referenceField}.label" /></strong>:
                         <g:if test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof RefdataValue}">
                             ${parentSuccessorSubscription.getProperty(prop.referenceField).getI10n('value')}
                         </g:if>
@@ -39,7 +39,7 @@
                 <div class="ui bulleted list">
                     <g:each in="${auditConfigProvidersAgencies}" var="role" >
                         <div class="item">
-                            <b> ${role.roleType.getI10n("value")}</b>:
+                            <strong> ${role.roleType.getI10n("value")}</strong>:
                         ${role.org.name}
                         </div>
                     </g:each>
