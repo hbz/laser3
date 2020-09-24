@@ -501,7 +501,7 @@
                                         </div>
 
                                         <g:if test="${privateProperty}">
-                                            <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
+                                            <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef.getI10n('name')}</div>
 
                                             <div class="content">
                                                 <g:if test="${privateProperty.type.isIntegerType()}">

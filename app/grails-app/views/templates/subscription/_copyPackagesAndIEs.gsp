@@ -46,6 +46,7 @@
             <tr>
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
+<<<<<<<<< Temporary merge branch 1
                     <strong>${message(code: 'subscription.packages.label')}: ${sourceObject?.packages?.size()}</strong>
                     <g:each in="${sourceObject.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
