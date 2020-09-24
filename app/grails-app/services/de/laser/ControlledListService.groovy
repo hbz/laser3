@@ -184,7 +184,7 @@ class ControlledListService {
                     filter[refdataField] = refList
                     queryString += " and s.${refdataField} in (:${refdataField}) "
                 } else {
-                    filter[refdataField] = params[refdataField]
+                    filter[refdataField] = RefdataValue.get(params[refdataField])
                     queryString += " and s.${refdataField} = :${refdataField} "
                 }
             }
