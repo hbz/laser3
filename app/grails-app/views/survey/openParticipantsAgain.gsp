@@ -249,19 +249,19 @@
                                             <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
                                         </g:if>
 
-                                        <g:if test="${resultProperty.type.type == Integer.toString()}">
+                                        <g:if test="${resultProperty.type.isIntegerType()}">
                                             <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
                                         </g:if>
-                                        <g:elseif test="${resultProperty.type.type == String.toString()}">
+                                        <g:elseif test="${resultProperty.type.isStringType()}">
                                             <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == BigDecimal.toString()}">
+                                        <g:elseif test="${resultProperty.type.isBigDecimalType()}">
                                             <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == Date.toString()}">
+                                        <g:elseif test="${resultProperty.type.isDateType()}">
                                             <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == URL.toString()}">
+                                        <g:elseif test="${resultProperty.type.isURLType()}">
                                             <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
                                                              overwriteEditable="${overwriteEditable}"
                                                              class="la-overflow la-ellipsis"/>
@@ -269,7 +269,7 @@
                                                 <semui:linkIcon/>
                                             </g:if>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == RefdataValue.toString()}">
+                                        <g:elseif test="${resultProperty.type.isRefdataValueType()}">
                                             <semui:xEditableRefData owner="${resultProperty}" type="text"
                                                                     field="refValue"
                                                                     config="${resultProperty.type.refdataCategory}"/>
@@ -449,19 +449,19 @@
                                             <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
                                         </g:if>
 
-                                        <g:if test="${resultProperty.type.type == Integer.toString()}">
+                                        <g:if test="${resultProperty.type.isIntegerType()}">
                                             <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
                                         </g:if>
-                                        <g:elseif test="${resultProperty.type.type == String.toString()}">
+                                        <g:elseif test="${resultProperty.type.isStringType()}">
                                             <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == BigDecimal.toString()}">
+                                        <g:elseif test="${resultProperty.type.isBigDecimalType()}">
                                             <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == Date.toString()}">
+                                        <g:elseif test="${resultProperty.type.isDateType()}">
                                             <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == URL.toString()}">
+                                        <g:elseif test="${resultProperty.type.isURLType()}">
                                             <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
                                                              overwriteEditable="${overwriteEditable}"
                                                              class="la-overflow la-ellipsis"/>
@@ -469,7 +469,7 @@
                                                 <semui:linkIcon/>
                                             </g:if>
                                         </g:elseif>
-                                        <g:elseif test="${resultProperty.type.type == RefdataValue.toString()}">
+                                        <g:elseif test="${resultProperty.type.isRefdataValueType()}">
                                             <semui:xEditableRefData owner="${resultProperty}" type="text"
                                                                     field="refValue"
                                                                     config="${resultProperty.type.refdataCategory}"/>

@@ -383,28 +383,28 @@ ${surveyInfo.name}
                                 </g:if>
                                 <g:elseif test="${participant.oldSub && participant.oldCustomProperty}">
 
-                                    <g:if test="${participant.oldCustomProperty.type.type == Integer.toString()}">
+                                    <g:if test="${participant.oldCustomProperty.type.isIntegerType()}">
                                         <semui:xEditable owner="${participant.oldCustomProperty}" type="number"
                                                          overwriteEditable="${false}"
                                                          field="intValue"/>
                                     </g:if>
-                                    <g:elseif test="${participant.oldCustomProperty.type.type == String.toString()}">
+                                    <g:elseif test="${participant.oldCustomProperty.type.isStringType()}">
                                         <semui:xEditable owner="${participant.oldCustomProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="stringValue"/>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.oldCustomProperty.type.type == BigDecimal.toString()}">
+                                            test="${participant.oldCustomProperty.type.isBigDecimalType()}">
                                         <semui:xEditable owner="${participant.oldCustomProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="decValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.oldCustomProperty.type.type == Date.toString()}">
+                                    <g:elseif test="${participant.oldCustomProperty.type.isDateType()}">
                                         <semui:xEditable owner="${participant.oldCustomProperty}" type="date"
                                                          overwriteEditable="${false}"
                                                          field="dateValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.oldCustomProperty.type.type == URL.toString()}">
+                                    <g:elseif test="${participant.oldCustomProperty.type.isURLType()}">
                                         <semui:xEditable owner="${participant.oldCustomProperty}" type="url"
                                                          field="urlValue"
                                                          overwriteEditable="${false}"
@@ -415,7 +415,7 @@ ${surveyInfo.name}
                                         </g:if>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.oldCustomProperty.type.type == RefdataValue.toString()}">
+                                            test="${participant.oldCustomProperty.type.isRefdataValueType()}">
                                         <semui:xEditableRefData owner="${participant.oldCustomProperty}" type="text"
                                                                 overwriteEditable="${false}"
                                                                 field="refValue"
@@ -445,28 +445,28 @@ ${surveyInfo.name}
                                 </g:if>
                                 <g:elseif test="${participant.oldSub && participant.oldPrivateProperty}">
 
-                                    <g:if test="${participant.oldPrivateProperty.type.type == Integer.toString()}">
+                                    <g:if test="${participant.oldPrivateProperty.type.isIntegerType()}">
                                         <semui:xEditable owner="${participant.oldPrivateProperty}" type="number"
                                                          overwriteEditable="${false}"
                                                          field="intValue"/>
                                     </g:if>
-                                    <g:elseif test="${participant.oldPrivateProperty.type.type == String.toString()}">
+                                    <g:elseif test="${participant.oldPrivateProperty.type.isStringType()}">
                                         <semui:xEditable owner="${participant.oldPrivateProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="stringValue"/>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.oldPrivateProperty.type.type == BigDecimal.toString()}">
+                                            test="${participant.oldPrivateProperty.type.isBigDecimalType()}">
                                         <semui:xEditable owner="${participant.oldPrivateProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="decValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.oldPrivateProperty.type.type == Date.toString()}">
+                                    <g:elseif test="${participant.oldPrivateProperty.type.isDateType()}">
                                         <semui:xEditable owner="${participant.oldPrivateProperty}" type="date"
                                                          overwriteEditable="${false}"
                                                          field="dateValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.oldPrivateProperty.type.type == URL.toString()}">
+                                    <g:elseif test="${participant.oldPrivateProperty.type.isURLType()}">
                                         <semui:xEditable owner="${participant.oldPrivateProperty}" type="url"
                                                          field="urlValue"
                                                          overwriteEditable="${false}"
@@ -477,7 +477,7 @@ ${surveyInfo.name}
                                         </g:if>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.oldPrivateProperty.type.type == RefdataValue.toString()}">
+                                            test="${participant.oldPrivateProperty.type.isRefdataValueType()}">
                                         <semui:xEditableRefData owner="${participant.oldPrivateProperty}" type="text"
                                                                 overwriteEditable="${false}"
                                                                 field="refValue"
@@ -497,27 +497,27 @@ ${surveyInfo.name}
                             <td class="center aligned">
                                 <g:if test="${participant.surveyProperty}">
 
-                                    <g:if test="${participant.surveyProperty.type.type == Integer.toString()}">
+                                    <g:if test="${participant.surveyProperty.type.isIntegerType()}">
                                         <semui:xEditable owner="${participant.surveyProperty}" type="number"
                                                          overwriteEditable="${false}"
                                                          field="intValue"/>
                                     </g:if>
-                                    <g:elseif test="${participant.surveyProperty.type.type == String.toString()}">
+                                    <g:elseif test="${participant.surveyProperty.type.isStringType()}">
                                         <semui:xEditable owner="${participant.surveyProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="stringValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.surveyProperty.type.type == BigDecimal.toString()}">
+                                    <g:elseif test="${participant.surveyProperty.type.isBigDecimalType()}">
                                         <semui:xEditable owner="${participant.surveyProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="decValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.surveyProperty.type.type == Date.toString()}">
+                                    <g:elseif test="${participant.surveyProperty.type.isDateType()}">
                                         <semui:xEditable owner="${participant.surveyProperty}" type="date"
                                                          overwriteEditable="${false}"
                                                          field="dateValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.surveyProperty.type.type == URL.toString()}">
+                                    <g:elseif test="${participant.surveyProperty.type.isURLType()}">
                                         <semui:xEditable owner="${participant.surveyProperty}" type="url"
                                                          field="urlValue"
                                                          overwriteEditable="${false}"
@@ -527,7 +527,7 @@ ${surveyInfo.name}
                                             <semui:linkIcon href="${participant.surveyProperty.value}"/>
                                         </g:if>
                                     </g:elseif>
-                                    <g:elseif test="${participant.surveyProperty.type.type == RefdataValue.toString()}">
+                                    <g:elseif test="${participant.surveyProperty.type.isRefdataValueType()}">
                                         <semui:xEditableRefData owner="${participant.surveyProperty}" type="text"
                                                                 overwriteEditable="${false}"
                                                                 field="refValue"
@@ -545,28 +545,28 @@ ${surveyInfo.name}
                             <g:if test="${params.tab in ['surveyProperties', 'customProperties']}">
                                 <g:if test="${participant.newCustomProperty}">
 
-                                    <g:if test="${participant.newCustomProperty.type.type == Integer.toString()}">
+                                    <g:if test="${participant.newCustomProperty.type.isIntegerType()}">
                                         <semui:xEditable owner="${participant.newCustomProperty}" type="number"
                                                          overwriteEditable="${false}"
                                                          field="intValue"/>
                                     </g:if>
-                                    <g:elseif test="${participant.newCustomProperty.type.type == String.toString()}">
+                                    <g:elseif test="${participant.newCustomProperty.type.isStringType()}">
                                         <semui:xEditable owner="${participant.newCustomProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="stringValue"/>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.newCustomProperty.type.type == BigDecimal.toString()}">
+                                            test="${participant.newCustomProperty.type.isBigDecimalType()}">
                                         <semui:xEditable owner="${participant.newCustomProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="decValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.newCustomProperty.type.type == Date.toString()}">
+                                    <g:elseif test="${participant.newCustomProperty.type.isDateType()}">
                                         <semui:xEditable owner="${participant.newCustomProperty}" type="date"
                                                          overwriteEditable="${false}"
                                                          field="dateValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.newCustomProperty.type.type == URL.toString()}">
+                                    <g:elseif test="${participant.newCustomProperty.type.isURLType()}">
                                         <semui:xEditable owner="${participant.newCustomProperty}" type="url"
                                                          field="urlValue"
                                                          overwriteEditable="${false}"
@@ -577,7 +577,7 @@ ${surveyInfo.name}
                                         </g:if>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.newCustomProperty.type.type == RefdataValue.toString()}">
+                                            test="${participant.newCustomProperty.type.isRefdataValueType()}">
                                         <semui:xEditableRefData owner="${participant.newCustomProperty}" type="text"
                                                                 overwriteEditable="${false}"
                                                                 field="refValue"
@@ -603,28 +603,28 @@ ${surveyInfo.name}
                             <g:if test="${params.tab == 'privateProperties'}">
                                 <g:if test="${participant.newPrivateProperty}">
 
-                                    <g:if test="${participant.newPrivateProperty.type.type == Integer.toString()}">
+                                    <g:if test="${participant.newPrivateProperty.type.isIntegerType()}">
                                         <semui:xEditable owner="${participant.newPrivateProperty}" type="number"
                                                          overwriteEditable="${false}"
                                                          field="intValue"/>
                                     </g:if>
-                                    <g:elseif test="${participant.newPrivateProperty.type.type == String.toString()}">
+                                    <g:elseif test="${participant.newPrivateProperty.type.isStringType()}">
                                         <semui:xEditable owner="${participant.newPrivateProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="stringValue"/>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.newPrivateProperty.type.type == BigDecimal.toString()}">
+                                            test="${participant.newPrivateProperty.type.isBigDecimalType()}">
                                         <semui:xEditable owner="${participant.newPrivateProperty}" type="text"
                                                          overwriteEditable="${false}"
                                                          field="decValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.newPrivateProperty.type.type == Date.toString()}">
+                                    <g:elseif test="${participant.newPrivateProperty.type.isDateType()}">
                                         <semui:xEditable owner="${participant.newPrivateProperty}" type="date"
                                                          overwriteEditable="${false}"
                                                          field="dateValue"/>
                                     </g:elseif>
-                                    <g:elseif test="${participant.newPrivateProperty.type.type == URL.toString()}">
+                                    <g:elseif test="${participant.newPrivateProperty.type.isURLType()}">
                                         <semui:xEditable owner="${participant.newPrivateProperty}" type="url"
                                                          field="urlValue"
                                                          overwriteEditable="${false}"
@@ -635,7 +635,7 @@ ${surveyInfo.name}
                                         </g:if>
                                     </g:elseif>
                                     <g:elseif
-                                            test="${participant.newPrivateProperty.type.type == RefdataValue.toString()}">
+                                            test="${participant.newPrivateProperty.type.isRefdataValueType()}">
                                         <semui:xEditableRefData owner="${participant.newPrivateProperty}" type="text"
                                                                 overwriteEditable="${false}"
                                                                 field="refValue"
