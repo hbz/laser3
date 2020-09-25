@@ -13,106 +13,112 @@
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <g:if test="${SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">
+        <g:if test="${sourceObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">
             <semui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>
 
             <table class="ui celled table">
                 <tbody>
-                <table>
-                    <tr>
-                        <td>
-                            <table class="ui celled la-table table">
-                                <thead>
-                                <tr>
-                                    <th colspan="5">
-            <g:if test="${sourceObject}"><g:link controller="subscription"
-                                                       action="show"
-                                                       id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
-            </th>
-        </tr>
-            <tr>
-                <th>${message(code: 'default.sortname.label')}</th>
-                <th>${message(code: 'default.startDate.label')}</th>
-                <th>${message(code: 'default.endDate.label')}</th>
-                <th>${message(code: 'default.status.label')}</th>
-                <th>
-                    <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy"
-                           onClick="toggleAllCheckboxes(this)" checked/>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${validSourceSubChilds}" var="sub">
                 <tr>
-                    <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
-                        <td>
-                            <g:link controller="subscription"
-                                    action="show"
-                                    id="${sub.id}">${subscriberOrg.sortname}</g:link>
-                            <g:if test="${subscriberOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${subscriberOrg.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
-                        </td>
-                        <td><g:formatDate formatName="default.date.format.notime"
-                                          date="${sub.startDate}"/></td>
-                        <td><g:formatDate formatName="default.date.format.notime"
-                                          date="${sub.endDate}"/></td>
-                        <td>${sub.status.getI10n('value')}</td>
-                        <td>
-                            <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="copyObject.copySubscriber"
-                                            value="${genericOIDService.getOID(sub)}"
-                                            data-action="copy" checked="${true}"/>
-                            </div>
-                        </td>
-                    </g:each>
-                </tr>
-            </g:each>
-            </tbody>
-            </table>
-        </td>
-            <td>
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr>
-                        <th colspan="4">
-                            <g:if test="${targetObject}"><g:link controller="subscription"
-                                                                       action="show"
-                                                                       id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>${message(code: 'default.sortname.label')}</th>
-                        <th>${message(code: 'default.startDate.label')}</th>
-                        <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'default.status.label')}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${validTargetSubChilds}" var="sub">
-                        <tr>
-                            <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
-                                <td>
-                                    <g:link controller="subscription"
-                                            action="show"
-                                            id="${sub.id}">${subscriberOrg.sortname}</g:link>
-                                </td>
-                                <td><g:formatDate formatName="default.date.format.notime"
-                                                  date="${sub.startDate}"/></td>
-                                <td><g:formatDate formatName="default.date.format.notime"
-                                                  date="${sub.endDate}"/></td>
-                                <td>${sub.status.getI10n('value')}</td>
+                    <td>
+                        <table class="ui celled la-table table" id="firstTable">
+                            <thead>
+                            <tr>
+                                <th colspan="5">
+                                    <g:if test="${sourceObject}"><g:link controller="subscription"
+                                                                         action="show"
+                                                                         id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'default.sortname.label')}</th>
+                                <th>${message(code: 'default.startDate.label')}</th>
+                                <th>${message(code: 'default.endDate.label')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
+                                <th class=" center aligned">
+                                    <input type="checkbox" data-action="copy"
+                                           onClick="toggleAllCheckboxes(this)" checked/>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:each in="${validSourceSubChilds}" var="sub" status="i">
+                                <tr>
+                                    <td>{i+1}</td>
+                                    <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
+                                        <td class="titleCell">
+                                            <g:link controller="subscription"
+                                                    action="show"
+                                                    id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                            <g:if test="${subscriberOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                      data-position="bottom center"
+                                                      data-content="${subscriberOrg.getCustomerTypeI10n()}">
+                                                    <i class="chess rook grey icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </td>
+                                        <td><g:formatDate formatName="default.date.format.notime"
+                                                          date="${sub.startDate}"/></td>
+                                        <td><g:formatDate formatName="default.date.format.notime"
+                                                          date="${sub.endDate}"/></td>
+                                        <td>${sub.status.getI10n('value')}</td>
+                                        <td class=" center aligned">
+                                            <div class="ui checkbox la-toggle-radio la-replace">
+                                                <g:checkBox name="copyObject.copySubscriber"
+                                                            value="${genericOIDService.getOID(sub)}"
+                                                            data-action="copy" checked="${true}"/>
+                                            </div>
+                                        </td>
+                                    </g:each>
+                                </tr>
                             </g:each>
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-            </td>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="ui celled la-table table" id="secondTable">
+                            <thead>
+                            <tr>
+                                <th colspan="4">
+                                    <g:if test="${targetObject}"><g:link controller="subscription"
+                                                                         action="show"
+                                                                         id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'default.sortname.label')}</th>
+                                <th>${message(code: 'default.startDate.label')}</th>
+                                <th>${message(code: 'default.endDate.label')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:each in="${validTargetSubChilds}" var="sub" status="i">
+                                <tr>
+                                    <td>{i+1}</td>
+                                    <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
+                                        <td class="titleCell">
+                                            <g:link controller="subscription"
+                                                    action="show"
+                                                    id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                        </td>
+                                        <td><g:formatDate formatName="default.date.format.notime"
+                                                          date="${sub.startDate}"/></td>
+                                        <td><g:formatDate formatName="default.date.format.notime"
+                                                          date="${sub.endDate}"/></td>
+                                        <td>${sub.status.getI10n('value')}</td>
+                                    </g:each>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
             </table>
         </g:else>
 
@@ -126,15 +132,22 @@
     </g:form>
 </semui:form>
 
-<script language="JavaScript">
-    $('#subListToggler').click(function () {
-        if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
-        } else {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
-        }
-    })
-</script>
+<r:script>
+    $(document).ready(function () {
+
+        $("#firstTable .titleCell").each(function (k) {
+            var v = $(this).height();
+            $("#secondTable .titleCell").eq(k).height(v);
+        });
+
+        $("#secondTable .titleCell").each(function (k) {
+            var v = $(this).height();
+            $("#firstTable .titleCell").eq(k).height(v);
+        });
+
+    });
+</r:script>
+
 <style>
 table {
     table-layout: fixed;

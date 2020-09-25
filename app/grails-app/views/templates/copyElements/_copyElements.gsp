@@ -47,7 +47,7 @@
                         </g:else>
                     </th>
                 </g:if>
-            <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes"
+            <th class="one wide center aligned"><input type="checkbox"
                                                        data-action="copy" onClick="toggleAllCheckboxes(this)"
                                                        checked/>
                 <g:if test="${!copyObject}">
