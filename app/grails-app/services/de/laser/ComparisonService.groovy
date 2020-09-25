@@ -66,7 +66,7 @@ class ComparisonService {
       props.each { prop ->
 
         //property level - check if the group contains already a mapping for the current property
-        def propertyMap = result.get(prop.type.class.name+":"+prop.type.id)
+        def propertyMap = result.get(genericOIDService.getOID(prop.type))
         if(propertyMap == null) {
           propertyMap = [:]
         }
@@ -79,7 +79,7 @@ class ComparisonService {
         }
 
         propertyMap.put(cmpObject,propertyList)
-        result.put(prop.type.class.name+":"+prop.type.id,propertyMap)
+        result.put(genericOIDService.getOID(prop.type),propertyMap)
       }
       result
     }
@@ -88,7 +88,7 @@ class ComparisonService {
     props.each { issueEntitlement ->
 
       //property level - check if the group contains already a mapping for the current property
-      def propertyMap = result.get(issueEntitlement.tipp.class.name+":"+issueEntitlement.tipp.id)
+      def propertyMap = result.get(genericOIDService.getOID(issueEntitlement.tipp))
       if(propertyMap == null) {
         propertyMap = [:]
       }
@@ -101,7 +101,7 @@ class ComparisonService {
       }
 
       propertyMap.put(cmpObject,propertyList)
-      result.put(issueEntitlement.tipp.class.name+":"+issueEntitlement.tipp.id,propertyMap)
+      result.put(genericOIDService.getOID(issueEntitlement.tipp),propertyMap)
     }
     result
   }
@@ -110,7 +110,7 @@ class ComparisonService {
     props.each { prop ->
 
       //property level - check if the group contains already a mapping for the current property
-      def propertyMap = result.get(prop.class.name+":"+prop.id)
+      def propertyMap = result.get(genericOIDService.getOID(prop))
       if(propertyMap == null) {
         propertyMap = [:]
       }
@@ -123,7 +123,7 @@ class ComparisonService {
       }
 
       propertyMap.put(cmpObject,propertyList)
-      result.put(prop.class.name+":"+prop.id,propertyMap)
+      result.put(genericOIDService.getOID(prop),propertyMap)
     }
     result
   }
@@ -137,17 +137,17 @@ class ComparisonService {
       //Vererbung
       if(AuditConfig.getConfig(prop)) {
 
-        List propertyList = result.get(prop.type.class.name+":"+prop.type.id)
+        List propertyList = result.get(genericOIDService.getOID(prop.type))
         if (propertyList == null) {
           propertyList = [prop]
         } else {
           propertyList.add(prop)
         }
-        result.put(prop.type.class.name+":"+prop.type.id, propertyList)
+        result.put(genericOIDService.getOID(prop.type), propertyList)
         if (propertyList.size() == 2){
           if((compareValue && propertyList[0].getValue() != propertyList[1].getValue()) || (compareNote && propertyList[0].note != propertyList[1].note) ) {
           }else{
-            result.remove(prop.type.class.name+":"+prop.type.id)
+            result.remove(genericOIDService.getOID(prop.type))
           }
         }
       }
