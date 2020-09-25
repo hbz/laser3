@@ -176,10 +176,10 @@ class SubscriptionsQueryService {
                 base_qry += tmpBaseQuery1 + ", OrgRole ro where ident.org = ro.org and ro.sub = s " + tmpBaseQuery2
 
                 base_qry += ")"
+                qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
             }
 
             qry_params.put('identifier', params.identifier.trim())
-            qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
             filterSet = true
         }
 

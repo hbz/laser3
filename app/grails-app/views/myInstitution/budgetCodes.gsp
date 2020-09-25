@@ -48,7 +48,7 @@
                     </td>
                     <td>
                         <div class="ui list">
-                            <g:each in="${CostItemGroup.findAllByBudgetCode(bcode)}" var="cig">
+                            <g:each in="${costItemGroups.get(bcode)}" var="cig">
 
                                 <div class="item">
                                     <g:if test="${cig.costItem.sub}">
@@ -71,16 +71,13 @@
                     </td>
                     <g:if test="${editable}">
                         <td class="x">
-                        <%--
-                        disabled open finance view, TODO [ticket=2214]
-                        <g:if test="${CostItemGroup.findAllByBudgetCode(bcode)}">
-                            <g:link controller="myInstitution" action="finance"  class="ui icon button"
-                                    params="[filterCIBudgetCode: bcode.value]">
-                                <i class="share icon"></i>
-                            </g:link>
-                        </g:if>
-                        --%>
-                            <g:if test="${!CostItemGroup.findAllByBudgetCode(bcode)}">
+                            <g:if test="${costItemGroups.get(bcode)}">
+                                <g:link controller="myInstitution" action="finance"  class="ui icon button"
+                                        params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
+                                    <i class="share icon"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
                                 <g:link controller="myInstitution"
                                         action="budgetCodes"
                                         params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
@@ -89,7 +86,7 @@
                                         class="ui icon negative button js-open-confirm-modal">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
-                            </g:if>
+                            </g:else>
                         </td>
                     </g:if>
                 </tr>

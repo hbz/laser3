@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      25.09.2020  hbz-dev             Andreas Bug         Bezeichner für Absendeknopf in Modal angepasst
+
+2802    25.09.2020  hbz-dev             Andreas Bug         Darstellung bei verknüpften Objekten verschönert
+
+2792    25.09.2020  hbz-dev             Andreas Bug         weitere Sortierungsklausel bei der Ausgabe von Merkmalen eingefügt
+
+2871    24.09.2020  hbz-dev             Andreas Bug         Weiterleitung von Meine Anbieter zu Meine Lizenzen korrigiert
+
+2856    24.09.2020  hbz-dev             Andreas Bug         Tippfehler in Übersetzungsdatei korrigiert
+
 2685    24.09.2020  hbz-dev             Moe     Feature     Umfrage Elemente von einer Umfrage in einer anderen Umfrage kopieren
 
 2762    24.09.2020  hbz-dev             Andreas Feature     erster Diskussionsstand des Reporting-Tools
