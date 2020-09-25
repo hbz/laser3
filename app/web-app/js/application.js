@@ -61,7 +61,7 @@ r2d2 = {
                     dict.get('loc.weekday.short.Thursday',currLanguage),
                     dict.get('loc.weekday.short.Friday',currLanguage),
                     dict.get('loc.weekday.short.Saturday',currLanguage)
-                    ],
+                ],
                 months: [
                     dict.get('loc.January',currLanguage),
                     dict.get('loc.February',currLanguage),
@@ -188,19 +188,19 @@ r2d2 = {
                     return response;
                 },
                 onError: function(errorMessage) {
-                  // invalid response
+                    // invalid response
 
                 }
             }
         });
 
-/*  Menue Search Animated Input
-       $('#btn-search').on('click', function(e) {
-            e.preventDefault();
+        /*  Menue Search Animated Input
+               $('#btn-search').on('click', function(e) {
+                    e.preventDefault();
 
-            $('#spotlightSearch').animate({width: 'toggle'}).focus();
-            $(this).toggleClass('open');
-        });*/
+                    $('#spotlightSearch').animate({width: 'toggle'}).focus();
+                    $(this).toggleClass('open');
+                });*/
 
         // metaboxes
         $('.metaboxToggle').click(function() {
@@ -390,38 +390,39 @@ r2d2 = {
 
     countSettedFilters: function () {
         // DROPDOWN AND INPUT FIELDS
-        var dropdownFilter  = $('.la-filter-dropdown-selected').length;
-        var inputTextFilter = $('.la-filter-selected').length;
-        var calendarFilter  = $('.la-calendar-selected').length;
-        var checkboxFilter  = 0;
-
-        // CHECKBOXES
-        // LOOP TROUGH CHECKBOXES
-        var allCheckboxes = [];
-        $('.la-filter .checkbox').each(function() {
-            allCheckboxes.push($(this).children('input').attr("name"));
-        });
-        // ELIMINATE DUPLICATES
-        var eliminateDuplicates = function (uniquecheckboxNames){
-            return uniquecheckboxNames.filter (function(v,i) {
-                return uniquecheckboxNames.indexOf(v) === i
-            });
-        };
-        var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
-        // COUNT SELECTED CHECKBOXES
-        countSettedCheckboxes(uniquecheckboxNames);
-        function countSettedCheckboxes(params) {
-            var sumCheck = 0;
-            for (i=0; i<params.length; i++) {
-                var checkboxName = params[i];
-                $('input[name='+ checkboxName +']').is(':checked')? sumCheck=sumCheck+1: sumCheck= sumCheck;
-            }
-            checkboxFilter = sumCheck;
-        }
-
-        // COUNT ALL SELECTIONS IN TOTAL
-        var total = dropdownFilter + inputTextFilter + calendarFilter +checkboxFilter;
         $( document ).ready(function() {
+            var dropdownFilter  = $('main > .la-filter .la-filter-dropdown-selected').length;
+            var inputTextFilter = $('main > .la-filter .la-filter-selected').length;
+            var calendarFilter  = $('main > .la-filter .la-calendar-selected').length;
+            var checkboxFilter  = 0;
+
+            // CHECKBOXES
+            // LOOP TROUGH CHECKBOXES
+            var allCheckboxes = [];
+            $('.la-filter .checkbox').each(function() {
+                allCheckboxes.push($(this).children('input').attr("name"));
+            });
+            // ELIMINATE DUPLICATES
+            var eliminateDuplicates = function (uniquecheckboxNames){
+                return uniquecheckboxNames.filter (function(v,i) {
+                    return uniquecheckboxNames.indexOf(v) === i
+                });
+            };
+            var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
+            // COUNT SELECTED CHECKBOXES
+            countSettedCheckboxes(uniquecheckboxNames);
+            function countSettedCheckboxes(params) {
+                var sumCheck = 0;
+                for (i=0; i<params.length; i++) {
+                    var checkboxName = params[i];
+                    $('input[name='+ checkboxName +']').is(':checked')? sumCheck=sumCheck+1: sumCheck= sumCheck;
+                }
+                checkboxFilter = sumCheck;
+            }
+
+            // COUNT ALL SELECTIONS IN TOTAL
+            var total = dropdownFilter + inputTextFilter + calendarFilter +checkboxFilter;
+
             if (total == 0) {
                 $('.la-js-filter-total').addClass('hidden');
                 $('.la-js-filterButton i').removeClass('hidden');
@@ -517,8 +518,8 @@ r2d2 = {
             forceSelection: false,
             selectOnKeydown: false,
             apiSettings: {
-                    cache: false
-                }
+                cache: false
+            }
         });
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
@@ -575,7 +576,7 @@ r2d2 = {
         })
 
         function addFilterDropdown(elem){
-           $(elem).is('select') ? $( elem ).parent().addClass("la-filter-dropdown-selected" ) : $( elem ).addClass("la-filter-dropdown-selected" );
+            $(elem).is('select') ? $( elem ).parent().addClass("la-filter-dropdown-selected" ) : $( elem ).addClass("la-filter-dropdown-selected" );
         }
 
         function removeFilterDropdown(elem){
@@ -699,48 +700,48 @@ r2d2 = {
                         onDeny : function() {
                             $('#js-confirmation-content-term').html('')
                         },
-/*                        onShow : function() {
-                            $modal.removeAttr('aria-hidden');
-                            // is needed to hide the rest of the page from Screenreaders in case of open the modal
-                            if ($('#js-modal-page').length === 0) { // just to avoid missing #js-modal-page
-                                $body.wrapInner('<div id="js-modal-page"></div>');
-                            }
-                            $page = $('#js-modal-page');
-                            $page.attr('aria-hidden', 'true');
-                            $body.on("keydown", "#js-modal", function(event) {
-                                var $this = $(this);
-                                if (event.keyCode == 9) { // tab or Strg tab
+                        /*                        onShow : function() {
+                                                    $modal.removeAttr('aria-hidden');
+                                                    // is needed to hide the rest of the page from Screenreaders in case of open the modal
+                                                    if ($('#js-modal-page').length === 0) { // just to avoid missing #js-modal-page
+                                                        $body.wrapInner('<div id="js-modal-page"></div>');
+                                                    }
+                                                    $page = $('#js-modal-page');
+                                                    $page.attr('aria-hidden', 'true');
+                                                    $body.on("keydown", "#js-modal", function(event) {
+                                                        var $this = $(this);
+                                                        if (event.keyCode == 9) { // tab or Strg tab
 
-                                    // get list of all children elements in given object
-                                    var children = $this.find('*');
+                                                            // get list of all children elements in given object
+                                                            var children = $this.find('*');
 
-                                    // get list of focusable items
-                                    var focusableItems = children.filter(focusableElementsString).filter(':visible');
+                                                            // get list of focusable items
+                                                            var focusableItems = children.filter(focusableElementsString).filter(':visible');
 
-                                    // get currently focused item
-                                    var focusedItem = $(document.activeElement);
+                                                            // get currently focused item
+                                                            var focusedItem = $(document.activeElement);
 
-                                    // get the number of focusable items
-                                    var numberOfFocusableItems = focusableItems.length;
+                                                            // get the number of focusable items
+                                                            var numberOfFocusableItems = focusableItems.length;
 
-                                    var focusedItemIndex = focusableItems.index(focusedItem);
+                                                            var focusedItemIndex = focusableItems.index(focusedItem);
 
-                                    if (!event.shiftKey && (focusedItemIndex == numberOfFocusableItems - 1)) {
-                                        focusableItems.get(0).focus();
-                                        event.preventDefault();
-                                    }
-                                    if (event.shiftKey && focusedItemIndex == 0) {
-                                        focusableItems.get(numberOfFocusableItems - 1).focus();
-                                        event.preventDefault();
-                                    }
-                                }
+                                                            if (!event.shiftKey && (focusedItemIndex == numberOfFocusableItems - 1)) {
+                                                                focusableItems.get(0).focus();
+                                                                event.preventDefault();
+                                                            }
+                                                            if (event.shiftKey && focusedItemIndex == 0) {
+                                                                focusableItems.get(numberOfFocusableItems - 1).focus();
+                                                                event.preventDefault();
+                                                            }
+                                                        }
 
-                            })
-                        },
-                        onHidden : function() {
-                            $page.removeAttr('aria-hidden');
-                            $modal.attr('aria-hidden', 'true');
-                        }*/
+                                                    })
+                                                },
+                                                onHidden : function() {
+                                                    $page.removeAttr('aria-hidden');
+                                                    $modal.attr('aria-hidden', 'true');
+                                                }*/
                     })
                     .modal('show')
                 ;
