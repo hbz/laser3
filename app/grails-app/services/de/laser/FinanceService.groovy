@@ -818,8 +818,13 @@ class FinanceService {
                         mappingErrorBag.multipleOrderError = orderNumber
                     else if(orderMatches.size() == 1)
                         costItem.order = orderMatches[0]
-                    else if(!orderMatches)
-                        costItem.order = new Order(orderNumber: orderNumber, owner: contextOrg)
+                    else if(!orderMatches) {
+                        Order order = new Order(orderNumber: orderNumber, owner: contextOrg)
+                        if(order.save()) {
+                            costItem.order = order
+                        }
+                        else log.error(order.errors)
+                    }
                 }
             }
             //invoice(nullable: true, blank: false) -> to invoice number
@@ -831,8 +836,13 @@ class FinanceService {
                         mappingErrorBag.multipleInvoiceError = invoiceNumber
                     else if(invoiceMatches.size() == 1)
                         costItem.invoice = invoiceMatches[0]
-                    else if(!invoiceMatches)
-                        costItem.invoice = new Invoice(invoiceNumber: invoiceNumber, owner: contextOrg)
+                    else if(!invoiceMatches) {
+                        Invoice invoice = new Invoice(invoiceNumber: invoiceNumber, owner: contextOrg)
+                        if(invoice.save()) {
+                            costItem.invoice = invoice
+                        }
+                        else log.error(invoice.errors)
+                    }
                 }
             }
             //billingCurrency(nullable: true, blank: false) -> to currency
@@ -1009,8 +1019,10 @@ class FinanceService {
                     RefdataValue status = RefdataValue.getByValueAndCategory(statusKey, RDConstants.COST_ITEM_STATUS)
                     if(!status)
                         status = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_STATUS, statusKey)
-                    if(!status)
+                    if(!status) {
                         mappingErrorBag.noValidStatus = statusKey
+                        status = RDStore.GENERIC_NULL_VALUE
+                    }
                     costItem.costItemStatus = status
                 }
             }
