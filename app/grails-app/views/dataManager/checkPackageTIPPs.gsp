@@ -50,13 +50,13 @@
                                 </td>
                             </g:else>
                             <td>
-                                <b>${hit.titleCount?:'0'} </b>
+                                <strong>${hit.titleCount?:'0'} </strong>
                             </td>
                             <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
                                 <g:set var="laserTipps" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.findAll {it.status.value == 'Current'}.size().toString())}" />
                                 <g:set var="style" value="${(laserTipps != hit.titleCount && hit.titleCount != '0') ? "style=background-color:red;":''}"/>
                                 <td ${style}>
-                                    <b>${laserTipps ?:'0'} </b>
+                                    <strong>${laserTipps ?:'0'} </strong>
                                 </td>
                             </g:if>
                             <g:else>

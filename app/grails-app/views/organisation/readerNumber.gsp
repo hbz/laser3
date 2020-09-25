@@ -63,12 +63,11 @@
                                     <g:if test="${number}">
                                         <semui:xEditable owner="${number}" field="value" format="number"/>
                                         <g:if test="${editable}">
-                                            <g:form controller="readerNumber" action="delete">
-                                                <g:hiddenField name="id" value="${number.id}"/>
-                                                <button class="ui icon negative button" type="submit" name="_action_delete">
-                                                    <i class="trash alternate icon"></i>
-                                                </button>
-                                            </g:form>
+                                            <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                                    data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                    data-confirm-term-how="ok" params="${[id:number.id]}">
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
                                         </g:if>
                                     </g:if>
                                 </td>
@@ -101,12 +100,11 @@
                                         <g:if test="${number}">
                                             <semui:xEditable owner="${number}" field="value" type="number"/>
                                             <g:if test="${editable}">
-                                                <g:form controller="readerNumber" action="delete">
-                                                    <g:hiddenField name="id" value="${number.id}"/>
-                                                    <button class="ui icon negative button" type="submit" name="_action_delete">
-                                                        <i class="trash alternate icon"></i>
-                                                    </button>
-                                                </g:form>
+                                                <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                                        data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                        data-confirm-term-how="ok" params="${[id:number.id]}">
+                                                    <i class="trash alternate icon"></i>
+                                                </g:link>
                                             </g:if>
                                         </g:if>
                                     </td>

@@ -38,7 +38,7 @@
 
 %{--<div class="ui segment">
 
-    <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
+    <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
     <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.isRefdataValueType()}">
         <g:set var="refdataValues" value="${[]}"/>
@@ -58,7 +58,7 @@
     <div class="ui segment">
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
-                <h2><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+                <h2><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
                 <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
                 <g:if test="${filterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
@@ -202,7 +202,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -287,7 +287,7 @@
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
                 <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
-                ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+                ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
                 <g:if test="${filterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
                     <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
@@ -344,7 +344,7 @@
                         <th>${message(code: 'property.manageProperties.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
                         <th class="x">
                             <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
-                            <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</button>
+                            <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
                                 <%-- TODO ask Ingrid
                                     js-open-confirm-modal
                                     data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"

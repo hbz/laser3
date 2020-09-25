@@ -106,7 +106,7 @@
                                             <i title="GOKB Link" class="external alternate icon"></i>
                                         </a>
                                     </g:else>
-                                        <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</b>
+                                        <br><strong>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</strong>
                                 </td>
                                 <td>
                                     <div class="ui bulleted list">
@@ -144,7 +144,7 @@
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents')}</g:link>
                                         </g:if>
                                         <g:else>
-                                            <span><b>${message(code: 'subscription.details.linkPackage.currentPackage')}</b>
+                                            <span><strong>${message(code: 'subscription.details.linkPackage.currentPackage')}</strong>
                                             </span>
                                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscriptionInstance])}" />
                                             <br>

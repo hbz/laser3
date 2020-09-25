@@ -45,7 +45,7 @@ ${surveyInfo.name}
 
 <g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
-        <b>${message(code: 'renewalWithSurvey.notInEvaliation')}</b>
+        <strong>${message(code: 'renewalWithSurvey.notInEvaliation')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -121,7 +121,7 @@ ${surveyInfo.name}
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">
                 <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
-                    <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
                     <div class="ui circular label">
                         ${countParticipants.subMembers}
@@ -133,19 +133,19 @@ ${surveyInfo.name}
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id]">
-                    <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
 
                     <div class="ui circular label">${countParticipants.surveyMembers}</div>
                 </g:link>
 
                 <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
                     ( ${countParticipants.subMembersWithMultiYear}
-                    ${message(code: 'surveyConfig.subOrgsWithMultiYear.label')} )
+                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
                 </g:if>
             </div>
 
             <div class="ui segment center aligned">
-                <b>${message(code: 'renewalWithSurvey.orgsTotalInRenewalProcess')}:</b>
+                <strong>${message(code: 'renewalWithSurvey.orgsTotalInRenewalProcess')}:</strong>
                 <semui:totalNumber class="${totalOrgs != countParticipants.subMembers ? 'red' : ''}"
                                    total="${totalOrgs}"/>
 

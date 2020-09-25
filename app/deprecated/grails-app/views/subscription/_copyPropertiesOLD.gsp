@@ -15,10 +15,10 @@
         <table class="ui celled table" style="table-layout: fixed; width: 100%">
             <tbody>
                 <tr>
-                    <td><b>${message(code: 'copyElementsIntoObject.sourceObject.name')}:</b>
+                    <td><strong>${message(code: 'copyElementsIntoObject.sourceObject.name')}:</strong>
                     <g:if test="${sourceObject}"><g:link controller="subscription" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </td>
-                    <td><b>${message(code: 'copyElementsIntoObject.targetObject.name')}:</b>
+                    <td><strong>${message(code: 'copyElementsIntoObject.targetObject.name')}:</strong>
                         <g:if test="${targetObject}"><g:link controller="subscription" action="show" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                     </td>
                 </tr>

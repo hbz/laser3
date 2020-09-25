@@ -383,7 +383,7 @@
                     <div class="ui checkbox">
                         <input type="checkbox" onchange="this.form.submit()"
                                name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
-                        <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
+                        <label><g:message code="surveyconfig.costItemsFinish.label"/></label>
                     </div>
                 </div>
 
@@ -393,7 +393,7 @@
     </div>
 </g:if>
 <g:else>
-    <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
+    <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
 </g:else>
 
 <g:javascript>

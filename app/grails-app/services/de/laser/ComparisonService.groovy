@@ -6,6 +6,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.transaction.Transactional
@@ -82,6 +83,28 @@ class ComparisonService {
       }
       result
     }
+
+  Map buildComparisonTreePropertyDefintion(Map result,cmpObject,Collection<PropertyDefinition> props) {
+    props.each { prop ->
+
+      //property level - check if the group contains already a mapping for the current property
+      def propertyMap = result.get(prop.class.name+":"+prop.id)
+      if(propertyMap == null) {
+        propertyMap = [:]
+      }
+      List propertyList = propertyMap.get(cmpObject)
+      if(propertyList == null) {
+        propertyList = [prop]
+      }
+      else {
+        propertyList.add(prop)
+      }
+
+      propertyMap.put(cmpObject,propertyList)
+      result.put(prop.class.name+":"+prop.id,propertyMap)
+    }
+    result
+  }
 
   Map comparePropertiesWithAudit(Collection<AbstractPropertyWithCalculatedLastUpdated> props, boolean compareValue, boolean compareNote) {
 

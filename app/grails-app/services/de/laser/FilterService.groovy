@@ -564,7 +564,7 @@ class FilterService {
 
             params.startDate = (params.startDate instanceof Date) ? params.startDate : sdFormat.parse(params.startDate)
 
-            query << "surveyConfig.surveyInfo.startDate >= :startDate"
+            query << "surveyconfig.surveyInfo.startDate >= :startDate"
             queryParams << [startDate : params.startDate]
         }
         if (params.endDate && sdFormat && !params.currentDate) {

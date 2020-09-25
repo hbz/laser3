@@ -64,7 +64,7 @@ class SurveyProperty implements I10nTrait {
         lastUpdated column: 'surpro_last_updated'
     }
 
-    static getLocalizedValue(key) {
+    static String getLocalizedValue(String key) {
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale

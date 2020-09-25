@@ -3,13 +3,13 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.OrgRole
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.Invoice
 import de.laser.finance.Order
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
@@ -22,7 +22,6 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.helper.RDConstants
 import de.laser.interfaces.CalculatedType
-import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
@@ -30,6 +29,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import java.math.RoundingMode
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -52,9 +52,6 @@ class FinanceService {
     LinksGenerationService linksGenerationService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
     Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
-
-    static final String GROUP_OPTION_ELEMENT = 'element'
-    static final String GROUP_OPTION_SUBSCRIPTION_GRAPH = 'subscription_graph'
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -516,7 +513,7 @@ class FinanceService {
         BigDecimal billingSum = 0.0
         BigDecimal billingSumAfterTax = 0.0
         if(billingSumsPositive.size() > 0) {
-            billingSumsPositive.each {  posEntry ->
+            billingSumsPositive.each { posEntry ->
                 if (billingSumsNegative.size() > 0) {
                     int index = getCurrencyIndexInList(billingSumsNegative,posEntry.currency)
                     if(index > -1) {
@@ -538,7 +535,7 @@ class FinanceService {
             }
         }
         if(billingSumsNegative.size() > 0) {
-            billingSumsNegative.each {  negEntry ->
+            billingSumsNegative.each { negEntry ->
                 if(!positiveCurrencies.contains(negEntry.currency))
                     billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
             }
@@ -1069,6 +1066,88 @@ class FinanceService {
         result
     }
 
+    Map<String,Object> groupCostItemsBySubscription(Map<String,Object> configMap) {
+        Map<String,Object> options = configMap.options, result = [:]
+        Set<Subscription> precedingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'source'),
+                          followingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'destination'),
+                          allYearRings = []
+        allYearRings.addAll(precedingYearRings)
+        allYearRings.add(configMap.entry)
+        allYearRings.addAll(followingYearRings)
+        Set<Org> allTimeSubscribers = subscriptionService.getAllTimeSubscribersForConsortiaSubscription(allYearRings)
+        Map<String,Object> queryParams = [:]
+        queryParams.subs = allYearRings
+        queryParams.context = configMap.institution
+        Set costItemRows = CostItem.executeQuery("select ci.sub,ci.costItemElementConfiguration,ci.costInBillingCurrency,ci.costItemElement from CostItem ci where ci.sub.instanceOf in (:subs) and ci.owner = :context",queryParams)
+        Set<RefdataValue> allElements = RefdataValue.executeQuery("select ci.costItemElement from CostItem ci where ci.sub.instanceOf in (:subs) and ci.owner = :context",queryParams)
+        options.displayConfiguration.each { String config ->
+            Map<String,Object> yearRings = [:]
+            if('subscriber' in options.group) {
+                //the option subscriber as grouping option is only available for consortia
+                allYearRings.each { Subscription parentSub ->
+                    //level 1: Map<Subscription,Map>, subscription represents sub year ring
+                    Set currentRingRows = costItemRows.findAll { row -> row[0].instanceOf.id == parentSub.id }
+                    Map<String,Object> currentRing = [:]
+                    allTimeSubscribers.each { Org subscriber ->
+                        //calculate by: subscriber, subscription start date, element sign
+                        String subSortName = subscriber.sortname
+                        if(config == 'costItemDevelopment') {
+                            def row = currentRingRows.find { row -> row[0].getSubscriber().id == subscriber.id }
+                            BigDecimal costItemsSubscriber = currentRing.get(subSortName)
+                            if(!costItemsSubscriber) {
+                                costItemsSubscriber = new BigDecimal(0)
+                                costItemsSubscriber.setScale(2, RoundingMode.HALF_EVEN)
+                            }
+                            if(row) {
+                                switch(row[1]) {
+                                    case RDStore.CIEC_POSITIVE: costItemsSubscriber += row[2]
+                                        break
+                                    case RDStore.CIEC_NEGATIVE: costItemsSubscriber -= row[2]
+                                        break
+                                    default: log.debug(row[1])
+                                        break
+                                }
+                            }
+                            currentRing.put(subSortName,costItemsSubscriber)
+                        }
+                        else if(config == 'costItemDivision') {
+                            allElements.each { RefdataValue element ->
+                                def row = currentRingRows.find { row -> row[0].getSubscriber().id == subscriber.id && row[3].id == element.id }
+                                String elementName = element.getI10n("value")
+                                Map costsForElement = currentRing.get(elementName)
+                                if(!costsForElement)
+                                    costsForElement = [:]
+                                BigDecimal costForSubscriberWithElement = new BigDecimal(0)
+                                costForSubscriberWithElement.setScale(2, RoundingMode.HALF_EVEN)
+                                if(row) {
+                                    costForSubscriberWithElement = row[2]
+                                }
+                                costsForElement.put(subSortName,costForSubscriberWithElement)
+                                currentRing.put(elementName,costsForElement)
+                            }
+                        }
+                    }
+                    yearRings.put(parentSub.dropdownNamingConvention(configMap.institution),currentRing)
+                }
+            }
+            result[config] = yearRings as JSON
+        }
+        result
+    }
+
+    BigDecimal calculateSum(Collection<CostItem> allCIs) {
+        BigDecimal result = 0.0
+        allCIs.each { CostItem ci ->
+            switch(ci.costItemElementConfiguration) {
+                case RDStore.CIEC_POSITIVE: result += ci.costInBillingCurrency
+                    break
+                case RDStore.CIEC_NEGATIVE: result -= ci.costInBillingCurrency
+                    break
+            }
+        }
+        result
+    }
+
     /**
      * Orders the currencies available in the database
      * @return the ordered list of currencies
@@ -1092,151 +1171,6 @@ class FinanceService {
             [id: rdv.id, text: rdv.getI10n('value')]
         })
 
-        result
-    }
-
-    /**
-     * Groups {@link CostItem}s according to the given configuratom {@link Map}.
-     * @param configMap - a {@link Map} containing parameters for cost item retrieval - imperatively needed are contextOrg and groupOption
-     * @return a {@link Map} retrieved for the given org
-     */
-    Map groupCostItems(Map<String,Object> configMap) {
-        Map<Object,Collection<CostItem>> result = [:]
-        Set<CostItem> costItems = (Set<CostItem>) configMap.costItems
-        switch(configMap.groupOption) {
-            case GROUP_OPTION_ELEMENT:
-                Set<RefdataValue> elementsOfContextOrg = RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :owner',[owner:configMap.contextOrg])
-                elementsOfContextOrg.each { RefdataValue element ->
-                    Collection<CostItem> costItemsWithElement = costItems.findAll { CostItem ci -> ci.costItemElement == element }
-                    result.put(element,costItemsWithElement)
-                }
-                Collection<CostItem> costItemsWithoutElement = costItems.findAll { CostItem ci -> ci.costItemElement == null }
-                result.put(RDStore.GENERIC_NULL_VALUE,costItemsWithoutElement)
-                break
-            case GROUP_OPTION_SUBSCRIPTION_GRAPH:
-                if(configMap.contextOrg.getCustomerType() == 'ORG_CONSORTIUM') {
-                    Set<String> labels = []
-                    List<Map> series = []
-                    /*
-                        structures
-                        cumulative:
-                        parent subs {
-                            child subs {
-                                list of each billing sum -> suitable for sums (currently two arrays of 118 items)
-                            }
-                        }
-
-                        distinctive:
-                        parent subs {
-                            for each year ring a list of two entries
-                        }
-                     */
-                    Map<Org,List<BigDecimal>> costItemMap = [:]
-                    Set<OrgRole> allTimeSubscriptionRoles = subscriptionService.getAllTimeSubscribersForConsortiaSubscription(configMap.linkedSubscriptions)
-                    Set<Org> allTimeSubscribers = allTimeSubscriptionRoles.collect { OrgRole row -> row.org }
-                    configMap.linkedSubscriptions.each { Subscription parentSub ->
-                        labels << parentSub.dropdownNamingConvention(configMap.contextOrg)
-                        allTimeSubscribers.each { Org subscr ->
-                            OrgRole childRole = allTimeSubscriptionRoles.find { OrgRole row -> row.org == subscr && row.sub.instanceOf == parentSub }
-                            List<BigDecimal> sumsOfSubscriber = costItemMap.get(subscr)
-                            if(!sumsOfSubscriber)
-                                sumsOfSubscriber = []
-                            if(childRole) {
-                                List<CostItem> allCIs = configMap.costItems.findAll { CostItem ci -> ci.sub.id == childRole.sub.id }
-                                sumsOfSubscriber << calculateSum(allCIs)
-                            }
-                            else sumsOfSubscriber << 0.0
-                            costItemMap.put(subscr,sumsOfSubscriber)
-                        }
-                    }
-                    //series.addAll(costItemMap.values())
-                    costItemMap.each { Org k, List<BigDecimal> v ->
-                        series.add([name:k.sortname ?: k.name, data: v])
-                    }
-                    Map<String,List> graph = [labels:labels,series:series]
-                    result.graphA = graph
-                }
-                break
-        }
-        result
-    }
-
-    Map<String,Object> getCostItemsFromEntryPoint(Map<String,Object> configMap) {
-        Map<String,Object> result = [:]
-        //we define some entry points
-        Set<Subscription> linkedSubscriptionSet = []
-        if(configMap.subscription || configMap.provider) {
-            String ciQuery = 'select ci from CostItem ci where ci.owner = :owner ', ciOrder = ' order by ci.datePaid asc, ci.startDate asc, ci.endDate asc', subFilter = ''
-            if (configMap.institution.getCustomerType() == 'ORG_CONSORTIUM') {
-                ciQuery += 'and ci.sub.instanceOf in (:subs)'
-            } else {
-                ciQuery += 'and ci.sub in (:subs)'
-            }
-            Map<String, Object> ciParams = [owner: configMap.institution]
-            if (configMap.subscription) {
-                Subscription starting = Subscription.get(configMap.subscription)
-                Map<String, Object> subQueryParams = [starting: genericOIDService.getOID(starting), linkType: RDStore.LINKTYPE_FOLLOWS]
-                //get precedents
-                String query1 = "select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.destination from Links li where li.source = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc"
-                linkedSubscriptionSet.addAll(Subscription.executeQuery(query1, subQueryParams))
-                linkedSubscriptionSet << starting
-                //get successors
-                String query2 = "select s from Subscription s where concat('" + Subscription.class.name + ":',s.id) in (select li.source from Links li where li.destination = :starting and li.linkType = :linkType) order by s.startDate asc, s.endDate asc"
-                linkedSubscriptionSet.addAll(Subscription.executeQuery(query2, subQueryParams))
-            }
-            else if(configMap.provider) {
-                Org starting = Org.get(configMap.provider)
-                linkedSubscriptionSet.addAll(Subscription.executeQuery("select s from Subscription s join s.orgRelations oo join s.orgRelations op where oo.roleType in (:subscrRoleTypes) and oo.org = :context and op.org = :starting",[subscrRoleTypes:[RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA],context:configMap.institution,starting:starting]))
-            }
-            result.linkedSubscriptionSet = linkedSubscriptionSet
-            result.costItems = linkedSubscriptionSet ? CostItem.executeQuery(ciQuery + ciOrder, ciParams + [subs: linkedSubscriptionSet]) : []
-        }
-        else if(configMap.filterPropDef) {
-            PropertyDefinition filterPropDef = genericOIDService.resolveOID(configMap.filterPropDef)
-            String prop, query
-            switch(filterPropDef.descr) {
-                case PropertyDefinition.SUB_PROP: query = "select sp.owner from SubscriptionProperty sp where sp.type = :pd"
-                    prop = "sp"
-                    break
-                case PropertyDefinition.ORG_PROP: query = "select op.owner from OrgProperty op where op.type = :pd"
-                    prop = "op"
-                    break
-                case PropertyDefinition.PLA_PROP: query = "select plp.owner from PlatformProperty plp where plp.type = :pd"
-                    prop = "plp"
-                    break
-            }
-            if (query && prop && configMap.filterProp) {
-                Set<String> filterPropValues = configMap.filterProp.split(',')
-                log.debug(filterPropValues.toString())
-                switch(filterPropDef.getImplClassValueProperty()) {
-                    case 'intValue': query += " and ${prop}.intValue in (:values)"
-                        break
-                    case 'decValue': query += " and ${prop}.decValue in (:values)"
-                        break
-                    case 'stringValue': query += " and ${prop}.stringValue in (:values)"
-                        break
-                    case 'dateValue': query += " and ${prop}.dateValue in (:values)"
-                        break
-                    case 'urlValue': query += " and ${prop}.urlValue in (:values)"
-                        break
-                    case 'refValue': query += " and ${prop}.refValue in (:values)"
-                        break
-                }
-            }
-        }
-        result
-    }
-
-    BigDecimal calculateSum(Collection<CostItem> allCIs) {
-        BigDecimal result = 0.0
-        allCIs.each { CostItem ci ->
-            switch(ci.costItemElementConfiguration) {
-                case RDStore.CIEC_POSITIVE: result += ci.costInBillingCurrency
-                    break
-                case RDStore.CIEC_NEGATIVE: result -= ci.costInBillingCurrency
-                    break
-            }
-        }
         result
     }
 

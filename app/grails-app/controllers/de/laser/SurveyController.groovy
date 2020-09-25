@@ -57,6 +57,7 @@ class SurveyController {
     InstitutionsService institutionsService
     PropertyService propertyService
     LinksGenerationService linksGenerationService
+    CopyElementsService copyElementsService
 
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
@@ -66,6 +67,18 @@ class SurveyController {
             new SimpleDateFormat('yyyy/MM'),
             new SimpleDateFormat('yyyy')
     ]
+
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+    })
+    Map<String, Object> redirectSurveyConfig() {
+        SurveyConfig surveyConfig = SurveyConfig.get(params.id)
+
+        redirect(action: 'show', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id])
+
+    }
 
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
@@ -4820,10 +4833,11 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> copyElementsIntoSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
-        if (!result.editable) {
-            response.sendError(401); return
-        }
+        def result             = [:]
+        result.user            = User.get(springSecurityService.principal.id)
+        result.institution     = contextService.org
+        result.contextOrg      = result.institution
+
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
@@ -4836,62 +4850,43 @@ class SurveyController {
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
 
-        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
-        result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.editable = result.sourceObject.surveyInfo.isEditable()
+
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: result.contextOrg])
+        //Nur Umfragen, die noch in Bearbeitung sind da sonst Umfragen-Prozesse zerstört werden.
+        result.allObjects_writeRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg and surInfo.status = :status order by surInfo.name", [contextOrg: result.contextOrg, status: RDStore.SURVEY_IN_PROCESSING])
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copyObjectElements_DatesOwnerRelations()
-                if (params.isRenewSub){
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
-                    result << loadDataFor_PackagesEntitlements()
-                } else {
-                    result << loadDataFor_DatesOwnerRelations()
-                }
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyObjectElements_DocsAnnouncementsTasks()
-                if (params.isRenewSub){
-                    if (result.isSubscriberVisible){
-                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
-                        result << loadDataFor_Subscriber()
-                    } else {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        result << loadDataFor_Properties()
-                    }
-                } else {
-                    result << loadDataFor_DocsAnnouncementsTasks()
-                }
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copyObjectElements_Subscriber()
-                if (params.isRenewSub) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    result << loadDataFor_Properties()
-                } else {
-                    result << loadDataFor_Subscriber()
-                }
+                result << copyElementsService.copyObjectElements_Subscriber(params)
+                result << copyElementsService.loadDataFor_Subscriber(params)
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyObjectElements_Properties()
-                if (params.isRenewSub && params.targetObjectId){
-                    flash.error = ""
-                    flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
-                } else {
-                    result << loadDataFor_Properties()
-                }
+                result << copyElementsService.copyObjectElements_Properties(params)
+                result << copyElementsService.loadDataFor_Properties(params)
                 break
             case CopyElementsService.WORKFLOW_END:
-                result << copyObjectElements_Properties()
+                result << copyElementsService.copyObjectElements_Properties(params)
                 if (params.targetObjectId){
                     flash.error = ""
                     flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: params.targetObjectId]
+                    redirect controller: 'survey', action: 'show', params: [id: result.targetObject.surveyInfo.id, surveyConfigID: result.targetObject.id]
                 }
                 break
             default:
-                result << loadDataFor_DatesOwnerRelations()
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
         }
 

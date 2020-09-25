@@ -311,7 +311,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                                                         dep_ie.subscription,
                 // pendingChange.message_TP02
                                                         "Die Information vom Titel <a href=\"${titleLink}\">${this.title.title}</a> haben sich im Paket <a href=\"${pkgLink}\">${this.pkg.name}</a> geändert. " +
-                                                                "<b>${messageSource.getMessage("tipp.${changeDocument.prop}",null,locale)?:changeDocument.prop}</b> wurde aktualisiert von <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) zu <b>\"${changeDocument.newLabel}\"</b>" +
+                                                                "<strong>${messageSource.getMessage("tipp.${changeDocument.prop}",null,locale)?:changeDocument.prop}</strong> wurde aktualisiert von <strong>\"${changeDocument.oldLabel}\"</strong>(${changeDocument.old}) zu <strong>\"${changeDocument.newLabel}\"</strong>" +
                                                                 "(${changeDocument.new}). "+description,
                                                         sub?.getSubscriber(),
                                                         [

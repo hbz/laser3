@@ -38,7 +38,7 @@
 
         <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field">
-                <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')}</label>
+                <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')}</label>
                 <div>
                     <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer"  ${params.subSurveyUseForTransfer? 'checked':''}>
                 </div>
@@ -46,8 +46,8 @@
         </g:if><g:else>
 
         <div class="field">
-            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info3')}">
-            <label>${message(code: 'surveyConfig.subSurveyUseForTransfer.label.info')} <i class="question circle icon"></i></label>
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
+            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="question circle icon"></i></label>
             </span>
             <div class="field disabled">
                 <input type="checkbox" name="subSurveyUseForTransfer">

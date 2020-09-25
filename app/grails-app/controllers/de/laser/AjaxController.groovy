@@ -20,6 +20,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.base.AbstractI10n
+import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
@@ -58,6 +59,7 @@ class AjaxController {
     CompareService compareService
     LinksGenerationService linksGenerationService
     AddressbookService addressbookService
+    FinanceService financeService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -790,11 +792,6 @@ class AjaxController {
    }
 
   @Secured(['ROLE_USER'])
-  def lookupPropertyDefinitionValues() {
-      render controlledListService.getPropertyDefinitionValues(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
       render controlledListService.getSubscriptions(params) as JSON
   }
@@ -843,6 +840,20 @@ class AjaxController {
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
         }
         else null
+    }
+
+    @Secured(['ROLE_USER'])
+    def getGraphsForSubscription() {
+        Map<String,Object> result = [institution:contextService.org], options = JSON.parse(params.requestOptions)
+        if(params.costItem) {
+            Subscription entry = genericOIDService.resolveOID(params.subscription)
+            //get cost item groupings
+            result.putAll(financeService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
+            result.entry = entry
+            result.displayConfig = options.displayConfiguration
+        }
+        log.debug(result)
+        render view: '/myInstitution/_graphs', model: result
     }
 
     @Secured(['ROLE_USER'])

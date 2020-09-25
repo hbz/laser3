@@ -207,8 +207,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     </g:if>
 
                     <semui:form>
-                        <g:message code="subscription"/>: <b><g:link action="show"
-                                                                     id="${newSub.id}">${newSub.name}</g:link></b>
+                        <g:message code="subscription"/>: <strong><g:link action="show"
+                                                                     id="${newSub.id}">${newSub.name}</g:link></strong>
                         <br>
                         <br>
                         <g:message code="package"/>:
@@ -216,7 +216,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                         <div class="ui list">
                             <g:each in="${newSub.packages.sort { it?.pkg?.name }}" var="subPkg">
                                 <div class="item">
-                                    <b>${subPkg?.pkg?.name}</b> (<g:message
+                                    <strong>${subPkg?.pkg?.name}</strong> (<g:message
                                         code="title.plural"/>: ${raw(subPkg.getIEandPackageSize())})
                                 </div>
                             </g:each>

@@ -39,8 +39,6 @@ class OrganisationController extends AbstractDebugController {
     def accessPointService
     FormService formService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
-
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params

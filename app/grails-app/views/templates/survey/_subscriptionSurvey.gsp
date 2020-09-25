@@ -11,7 +11,7 @@
             <div class="ui horizontal segments">
                 <div class="ui segment center aligned">
                     <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
-                        <b>${message(code: 'surveyConfig.subOrgs.label')}:</b>
+                        <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
                         <div class="ui circular label">
                             ${countParticipants.subMembers}
                         </div>
@@ -22,13 +22,13 @@
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]">
-                        <b>${message(code: 'surveyConfig.orgs.label')}:</b>
+                        <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
                         <div class="ui circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
 
                     <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
                         ( ${countParticipants.subMembersWithMultiYear}
-                        ${message(code: 'surveyConfig.subOrgsWithMultiYear.label')} )
+                        ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
                     </g:if>
                 </div>
             </div>
@@ -52,8 +52,8 @@
                         <dl>
                             <dt class="control-label">
                                 <div class="ui icon la-popup-tooltip la-delay"
-                                     data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
-                                    ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                     data-content="${message(code: "surveyconfig.scheduledStartDate.comment")}">
+                                    ${message(code: 'surveyconfig.scheduledStartDate.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
                             </dt>
@@ -64,8 +64,8 @@
                         <dl>
                             <dt class="control-label">
                                 <div class="ui icon la-popup-tooltip la-delay"
-                                     data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
-                                    ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                     data-content="${message(code: "surveyconfig.scheduledEndDate.comment")}">
+                                    ${message(code: 'surveyconfig.scheduledEndDate.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
                             </dt>
@@ -77,8 +77,8 @@
                     <dl>
                         <dt class="control-label">
                             <div class="ui icon la-popup-tooltip la-delay"
-                                 data-content="${message(code: "surveyConfig.internalComment.comment")}">
-                                ${message(code: 'surveyConfig.internalComment.label')}
+                                 data-content="${message(code: "surveyconfig.internalComment.comment")}">
+                                ${message(code: 'surveyconfig.internalComment.label')}
                                 <i class="question small circular inverted icon"></i>
                             </div>
                         </dt>
@@ -87,7 +87,7 @@
                     </dl>
                     <dl>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.url.label')}
+                            ${message(code: 'surveyconfig.url.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
@@ -97,7 +97,7 @@
 
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.urlComment.label')}
+                            ${message(code: 'surveyconfig.urlComment.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
@@ -107,7 +107,7 @@
 
                     <dl>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.url2.label')}
+                            ${message(code: 'surveyconfig.url2.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
@@ -116,7 +116,7 @@
                             </g:if>
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.urlComment2.label')}
+                            ${message(code: 'surveyconfig.urlComment2.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
@@ -126,7 +126,7 @@
 
                     <dl>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.url3.label')}
+                            ${message(code: 'surveyconfig.url3.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
@@ -135,7 +135,7 @@
                             </g:if>
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyConfig.urlComment3.label')}
+                            ${message(code: 'surveyconfig.urlComment3.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
@@ -150,8 +150,8 @@
                                 params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                             <div class="field">
                                 <label><div class="ui icon la-popup-tooltip la-delay"
-                                            data-content="${message(code: "surveyConfig.comment.comment")}">
-                                    ${message(code: 'surveyConfig.comment.label')}
+                                            data-content="${message(code: "surveyconfig.comment.comment")}">
+                                    ${message(code: 'surveyconfig.comment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div></label>
                                 <textarea name="comment" rows="15">${surveyConfig.comment}</textarea>
@@ -169,7 +169,7 @@
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                ${message(code: 'surveyconfig.scheduledStartDate.label')}
                             </dt>
                             <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
                                                  overwriteEditable="${false}"/>
@@ -177,7 +177,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                ${message(code: 'surveyconfig.scheduledEndDate.label')}
                             </dt>
                             <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
                                                  overwriteEditable="${false}"/></dd>
@@ -188,7 +188,7 @@
                     <g:if test="${surveyConfig.url}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.url.label')}
+                                ${message(code: 'surveyconfig.url.label')}
                             </dt>
                             <dd>
                                 <semui:xEditable owner="${surveyConfig}" field="url" type="text"
@@ -209,7 +209,7 @@
                     <g:if test="${surveyConfig.url2}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.url2.label')}
+                                ${message(code: 'surveyconfig.url2.label')}
                             </dt>
                             <dd>
                                 <semui:xEditable owner="${surveyConfig}" field="url2" type="text"
@@ -231,7 +231,7 @@
                     <g:if test="${surveyConfig.url3}">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyConfig.url3.label')}
+                                ${message(code: 'surveyconfig.url3.label')}
                             </dt>
                             <dd>
                                 <semui:xEditable owner="${surveyConfig}" field="url3" type="text"
@@ -602,23 +602,23 @@
                                     ${costItem.costItemElement?.getI10n('value')}
                                 </td>
                                 <td>
-                                    <b>
+                                    <strong>
                                         <g:formatNumber
                                                 number="${costItem.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2"
                                                 type="number"/>
-                                    </b>
+                                    </strong>
 
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
                                 </td>
                                 <td>${costItem.taxKey ? costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)" : ''}</td>
                                 <td>
-                                    <b>
+                                    <strong>
                                         <g:formatNumber
                                                 number="${costItem.costInBillingCurrencyAfterTax}"
                                                 minFractionDigits="2" maxFractionDigits="2"
                                                 type="number"/>
-                                    </b>
+                                    </strong>
 
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
 
@@ -662,23 +662,23 @@
                                         ${costItemSurvey.costItemElement?.getI10n('value')}
                                     </td>
                                     <td>
-                                        <b>
+                                        <strong>
                                             <g:formatNumber
                                                     number="${costItemSurvey.costInBillingCurrency}"
                                                     minFractionDigits="2" maxFractionDigits="2"
                                                     type="number"/>
-                                        </b>
+                                        </strong>
 
                                         ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                                     </td>
                                     <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
                                     <td>
-                                        <b>
+                                        <strong>
                                             <g:formatNumber
                                                     number="${costItemSurvey.costInBillingCurrencyAfterTax}"
                                                     minFractionDigits="2" maxFractionDigits="2"
                                                     type="number"/>
-                                        </b>
+                                        </strong>
 
                                         ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
 
@@ -716,14 +716,14 @@
                                         <g:set var="newCostItem"
                                                value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
 
-                                        <b><g:formatNumber
+                                        <strong><g:formatNumber
                                                 number="${(newCostItem - oldCostItem)}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/>
                                             <br>
                                             (<g:formatNumber
                                                     number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
                                                     minFractionDigits="2"
-                                                    maxFractionDigits="2" type="number"/>%)</b>
+                                                    maxFractionDigits="2" type="number"/>%)</strong>
                                     </g:if>
                                 </td>
                             </tr>
@@ -774,23 +774,23 @@
 
                             </td>
                             <td>
-                                <b>
+                                <strong>
                                     <g:formatNumber
                                             number="${costItemSurvey.costInBillingCurrency}"
                                             minFractionDigits="2" maxFractionDigits="2"
                                             type="number"/>
-                                </b>
+                                </strong>
 
                                 ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
                             </td>
                             <td>${costItemSurvey.taxKey ? costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)" : ''}</td>
                             <td>
-                                <b>
+                                <strong>
                                     <g:formatNumber
                                             number="${costItemSurvey.costInBillingCurrencyAfterTax}"
                                             minFractionDigits="2" maxFractionDigits="2"
                                             type="number"/>
-                                </b>
+                                </strong>
 
                                 ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
 

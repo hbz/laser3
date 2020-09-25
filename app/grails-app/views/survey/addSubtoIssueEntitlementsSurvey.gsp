@@ -38,7 +38,7 @@
         </div>
 
         <div class="field">
-            <label>${message(code: 'surveyConfig.createTitleGroups.label.info')}</label>
+            <label>${message(code: 'surveyconfig.createTitleGroups.label.info')}</label>
             <div>
                 <input type="checkbox" id="createTitleGroups" name="createTitleGroups" ${params.createTitleGroups? 'checked':''}>
             </div>

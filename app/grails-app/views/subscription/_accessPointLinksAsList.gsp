@@ -61,10 +61,10 @@
         <div class="ui top aligned divided relaxed list">
           <div class="item">
             <div class="right floated content">
-              <b>${message(code: 'subscription.details.linkAccessPoint.accessConfig.label')}</b>
+              <strong>${message(code: 'subscription.details.linkAccessPoint.accessConfig.label')}</strong>
             </div>
             <div class="content">
-              <b>${message(code: 'subscription.details.linkAccessPoint.platform.label')}</b>
+              <strong>${message(code: 'subscription.details.linkAccessPoint.platform.label')}</strong>
             </div>
           </div>
           <g:if test="${sp.pkg.tipps}">

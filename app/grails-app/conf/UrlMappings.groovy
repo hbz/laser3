@@ -12,6 +12,8 @@ class UrlMappings {
         "/lic/$action?/$id?"        (controller: 'license')
         "/org/$action?/$id?"        (controller: 'organisation')
 
+        "/surveyconfig/show/$id"        (controller: 'survey', action: 'redirectSurveyConfig')
+
         //"/myInstitution/tipview/$id"    (controller: 'myInstitution', action: 'tip')
         "/myInstitution/finance"        (controller: 'finance', action: 'index')
         name subfinance:                "/subscription/$sub/finance/"   (controller: 'finance', action: 'subFinancialData')
