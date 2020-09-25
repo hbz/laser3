@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
@@ -16,6 +17,7 @@ class CompareService {
     GenericOIDService genericOIDService
     ComparisonService comparisonService
     AccessService accessService
+    SubscriptionService subscriptionService
 
 
     List compareElements(Object obj) {
@@ -209,6 +211,16 @@ class CompareService {
 
         totalSubscriptions
 
+    }
+
+    Map compareEntitlements(List objects) {
+        LinkedHashMap result = [ies: [:]]
+        objects.each { object ->
+            Map ies = result.ies
+            ies = comparisonService.buildComparisonTreeIEs(ies, object, subscriptionService.getIssueEntitlementsWithFilter(object, [max: 5000, offset: 0]))
+            result.ies = ies
+        }
+        result
     }
 
 }

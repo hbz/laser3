@@ -116,7 +116,7 @@
                     </g:if>
 
                     <div class="item">
-                        <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
+                        <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
                         <div class="content">
                             ${ti.status.getI10n("value")}
                         </div>
@@ -273,7 +273,7 @@
                       </g:if>--}%
 
                       <div class="item">
-                          <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
+                          <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
                           <div class="content">
                               <semui:xEditableRefData owner="${t}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>
                           </div>

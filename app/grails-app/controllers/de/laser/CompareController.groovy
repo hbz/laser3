@@ -70,6 +70,12 @@ class CompareController extends AbstractDebugController {
             result = result + compareService.compareProperties(result.objects)
         }
 
+        if (params.tab == "compareEntitlements") {
+            result = result + compareService.compareEntitlements(result.objects)
+
+            result.ies = result.ies.sort { genericOIDService.resolveOID(it.key).title.title }
+        }
+
         result
     }
 }
