@@ -5,7 +5,7 @@
 
 <semui:form>
 
-    <table class="ui celled table table-tworow la-table">
+    <table class="ui selectable celled table la-table la-ignore-fixed">
         <thead>
         <tr>
             <th>${message(code: 'default.compare.elements')}</th>

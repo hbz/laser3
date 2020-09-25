@@ -99,7 +99,7 @@
         </dd>
 
         <div class="item">
-            <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+            <i class="grey key icon la-popup-tooltip la-delay"
                data-content="${message(code: 'default.status.label')}"></i>
 
             <div class="content">

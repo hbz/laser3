@@ -79,17 +79,21 @@
 
 
     <div style="overflow-y: scroll;">
-        <div class="ui padded grid">
 
             <g:if test="${params.tab == 'compareProperties'}">
+                <div class="ui padded grid">
                 <g:render template="compareProperties"/>
+                </div>
             </g:if>
 
             <g:if test="${params.tab == 'compareElements'}">
                 <g:render template="compareElements"/>
             </g:if>
 
-        </div>
+            <g:if test="${params.tab == 'compareEntitlements'}">
+                <g:render template="compareEntitlements" model="[showPackage: true, showPlattform: true]"/>
+            </g:if>
+
     </div>
 </g:if>
 
