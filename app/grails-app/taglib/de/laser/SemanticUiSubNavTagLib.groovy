@@ -21,6 +21,13 @@ class SemanticUiSubNavTagLib {
 
     def subNav = { attrs, body ->
 
+        out << '<nav class="ui secondary pointing stackable  menu la-clear-before" role="tablist">'
+        out <<   body()
+        out << '</nav>'
+    }
+
+    def subNav2 = { attrs, body ->
+
         out << '<nav class="ui tabular stackable  menu la-clear-before" role="tablist">'
         out <<   body()
         out << '</nav>'

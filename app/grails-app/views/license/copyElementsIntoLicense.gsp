@@ -27,7 +27,7 @@
 if (sourceObjectId) params << [sourceObjectId: genericOIDService.getOID(sourceObject)]
 if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetObject)]
 %>
-<semui:subNav>
+<semui:subNav2>
     <semui:complexSubNavItem
             class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}"
             controller="license" action="copyElementsIntoLicense"
@@ -95,7 +95,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 
         </div>
     </semui:complexSubNavItem>
-</semui:subNav>
+</semui:subNav2>
 
 <br>
 

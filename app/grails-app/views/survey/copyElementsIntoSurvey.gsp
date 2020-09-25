@@ -24,7 +24,7 @@
         if (sourceObjectId)   params << [sourceObjectId: genericOIDService.getOID(sourceObject)];
         if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(targetObject)];
     %>
-        <semui:subNav>
+        <semui:subNav2>
             <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'copyElementsIntoObject.general_data.label')}</div>
@@ -65,7 +65,7 @@
 
                 </div>
             </semui:complexSubNavItem>
-        </semui:subNav>
+        </semui:subNav2>
     <br>
     <div class="la-legend">
         <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}: </strong></span>
