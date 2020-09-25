@@ -25,7 +25,7 @@
                                 <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
-                                <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
+                                <input type="checkbox"  data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
                             </div>
                         </div>
                     </th>
@@ -46,9 +46,8 @@
             <tr>
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
-
-                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject?.packages?.size()}</strong>
-                    <g:each in="${sourceObject?.packages?.sort { it.pkg.name }}" var="sp">
+                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</strong>
+                    <g:each in="${sourceObject.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>

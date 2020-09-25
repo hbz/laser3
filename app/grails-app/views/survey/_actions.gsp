@@ -14,7 +14,7 @@
                                            message="copySurvey.label"/>
 
                 <semui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[sourceObjectId: genericOIDService.getOID(surveyConfig)]"
-                                           message="copySurvey.label"/>
+                                           message="survey.copyElementsIntoSurvey"/>
                 <div class="ui divider"></div>
             </g:if>
 

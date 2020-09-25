@@ -135,10 +135,13 @@ class CopyElementsService {
     Map loadDataFor_Subscriber(Map params) {
         Map<String, Object> result = [:]
         result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-        result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceObject)
-        if (params.targetObjectId) {
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            result.validTargetSubChilds = subscriptionService.getValidSubChilds(result.targetObject)
+
+        if(result.sourceObject instanceof Subscription) {
+            result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceObject)
+            if (params.targetObjectId) {
+                result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+                result.validTargetSubChilds = subscriptionService.getValidSubChilds(result.targetObject)
+            }
         }
         result
     }
@@ -382,6 +385,30 @@ class CopyElementsService {
         }
     }
 
+    void copySurveyParticipants(List<Org> orgToTake, Object targetObject, def flash) {
+        targetObject.refresh()
+
+        orgToTake.each { Org org ->
+
+            if(!SurveyOrg.findBySurveyConfigAndOrg(targetObject, org))
+            {
+                new SurveyOrg(surveyConfig: targetObject, org: org).save()
+            }
+        }
+    }
+
+    void deleteSurveyParticipants(List<Org> orgToDelete, Object targetObject, def flash) {
+        targetObject.refresh()
+
+        orgToDelete.each { Org org ->
+            SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(targetObject, org)
+            if(surveyOrg)
+            {
+                surveyOrg.delete()
+            }
+        }
+    }
+
     Map copyObjectElements_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
@@ -586,9 +613,25 @@ class CopyElementsService {
 
         if (formService.validateToken(params)) {
 
-            if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
-                List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
-                copySubscriber(toCopySubs, targetObject, flash)
+            if(sourceObject instanceof SurveyConfig) {
+                if (params.copyObject?.deleteParticipants && isBothObjectsSet(sourceObject, targetObject)) {
+                    List<Org> toDeleteOrgs = params.list('copyObject.deleteParticipants').collect { genericOIDService.resolveOID(it) }
+                    deleteSurveyParticipants(toDeleteOrgs, targetObject, flash)
+                }
+            }
+
+
+            if(sourceObject instanceof Subscription){
+                if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
+                        List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
+                        copySubscriber(toCopySubs, targetObject, flash)
+                }
+            }
+            if(sourceObject instanceof SurveyConfig) {
+                if (params.copyObject?.copyParticipants && isBothObjectsSet(sourceObject, targetObject)) {
+                    List<Org> toCopyOrgs = params.list('copyObject.copyParticipants').collect { genericOIDService.resolveOID(it) }
+                    copySurveyParticipants(toCopyOrgs, targetObject, flash)
+                }
             }
         }
 

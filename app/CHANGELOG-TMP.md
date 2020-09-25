@@ -17,6 +17,10 @@
 
 2856    24.09.2020  hbz-dev             Andreas Bug         Tippfehler in Übersetzungsdatei korrigiert
 
+2829    24.09.2020  hbz-dev             Moe     Feature     Es fehlen die Fragenzeichen bei den Zugangskonfigurationen
+
+2080    24.09.2020  hbz-dev             Andreas Feature     Einarbeitung des Bestätigungsdialoges zum Löschen von Nutzerzahlen
+
 2685    24.09.2020  hbz-dev             Moe     Feature     Umfrage Elemente von einer Umfrage in einer anderen Umfrage kopieren
 
 2762    24.09.2020  hbz-dev             Andreas Feature     erster Diskussionsstand des Reporting-Tools
