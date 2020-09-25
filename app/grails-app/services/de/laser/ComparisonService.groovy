@@ -84,6 +84,28 @@ class ComparisonService {
       result
     }
 
+  Map buildComparisonTreeIEs(Map result,cmpObject,Collection<IssueEntitlement> props) {
+    props.each { issueEntitlement ->
+
+      //property level - check if the group contains already a mapping for the current property
+      def propertyMap = result.get(issueEntitlement.tipp.class.name+":"+issueEntitlement.tipp.id)
+      if(propertyMap == null) {
+        propertyMap = [:]
+      }
+      List propertyList = propertyMap.get(cmpObject)
+      if(propertyList == null) {
+        propertyList = [issueEntitlement]
+      }
+      else {
+        propertyList.add(issueEntitlement)
+      }
+
+      propertyMap.put(cmpObject,propertyList)
+      result.put(issueEntitlement.tipp.class.name+":"+issueEntitlement.tipp.id,propertyMap)
+    }
+    result
+  }
+
   Map buildComparisonTreePropertyDefintion(Map result,cmpObject,Collection<PropertyDefinition> props) {
     props.each { prop ->
 

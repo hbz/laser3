@@ -110,7 +110,7 @@
 
                     <g:if test="${tipp.status.getI10n("value")}">
                         <div class="item">
-                            <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
+                            <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
                             <div class="content">
                                 ${tipp.status.getI10n("value")}
                             </div>
