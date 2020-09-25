@@ -529,7 +529,7 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
-                (value != '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
             }
         });
 
@@ -538,7 +538,7 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
-                (value != '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
             }
         });
 
@@ -548,7 +548,7 @@ r2d2 = {
             fullTextSearch: 'exact',
             clearable: true,
             onChange: function(value, text, $choice){
-                (value != '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
             }
         });
         $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
@@ -556,7 +556,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             onChange: function(value, text, $choice){
-                value != '' ? addFilterDropdown(this) : removeFilterDropdown(this);
+                value !== '' ? addFilterDropdown(this) : removeFilterDropdown(this);
             }
         });
 
