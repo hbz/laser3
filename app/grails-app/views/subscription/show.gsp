@@ -221,15 +221,15 @@
                                                     int perspectiveIndex = genericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
                                                 %>
                                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
-                                                <td>
+                                                <p>
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                                     <g:link controller="subscription" action="show" id="${pair.id}">
                                                         ${pair.name}
                                                     </g:link><br>
-                                                    <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>–<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                                    <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>–<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
                                                     <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">
-                                                        <em>${comment.owner.content}</em>
+                                                        <p><em>${comment.owner.content}</em></p>
                                                     </g:if>
                                                 </td>
                                                 <td class="right aligned">
@@ -278,64 +278,6 @@
                     </div>
                 </div>
 
-                %{--<div class="ui card">
-                    <div class="content">
-
-                            <table class="ui three column table">
-                                <tbody>
-                                <g:if test="${publicSubscriptionEditors}"></g:if>
-                                <g:else>
-                                    <dl>
-                                        <dt class="control-label"><g:message code="license.responsibilites" />
-                                        </dt>
-                                    </dl>
-                                </g:else>
-                                <g:each in="${publicSubscriptionEditors}" var="pse">
-                                        <tr>
-                                            <th scope="row" class="control-label la-js-dont-hide-this-card">
-                                                <g:message code="license.responsibilite" />
-                                            </th>
-                                            <td>
-                                                <g:render template="/templates/cpa/person_full_details" model="${[
-                                                        person              : pse,
-                                                        personContext       : pse.tenant,
-                                                        tmplShowDeleteButton    : true,
-                                                        tmplShowAddPersonRoles  : false,
-                                                        tmplShowAddContacts     : true,
-                                                        tmplShowAddAddresses    : true,
-                                                        tmplShowFunctions       : false,
-                                                        tmplShowPositions       : false,
-                                                        tmplShowResponsiblities : false,
-                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                        tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
-                                                        controller          : 'subscription',
-                                                        action              : 'show',
-                                                        id                  : pse.tenant.id,
-                                                        editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                                ]}"/>
-                                            </td>
-                                        </tr>
-                                    </g:each>
-
-                                </tbody>
-                            </table>
-
-                            <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
-                                <div class="ui la-vertical buttons">
-                                    <a role="button" class="ui button" data-semui="modal" href="#prsLinksModal">
-                                        ${message(code: 'default.add.label', args: [message(code: 'person.label')])}
-                                    </a>
-                                </div>
-                                <g:render template="/templates/links/prsResponsibilityModal"
-                                          model="[
-                                                  parent: subscriptionInstance,
-                                                  modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
-                                                  org: contextOrg,
-                                                  role: modalPrsLinkRole
-                                          ]"/>
-                            </g:if>
-                    </div>
-                </div>--}%
               <g:if test="${subscriptionInstance.packages}">
                 <div class="ui card la-js-hideable hidden">
                   <div class="content">
@@ -491,10 +433,10 @@
                                             <g:link controller="license" action="show" id="${pair.id}">
                                                 ${pair.reference} (${pair.status.getI10n("value")})
                                             </g:link>
-                                            <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                            <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
                                             <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                             <g:if test="${comment}">
-                                                <em>${comment.owner.content}</em>
+                                                <p><em>${comment.owner.content}</em></p>
                                             </g:if>
                                         </td>
                                         <td class="right aligned">

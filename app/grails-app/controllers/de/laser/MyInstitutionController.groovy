@@ -28,6 +28,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.controller.AbstractDebugController
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
+import de.laser.finance.CostItemGroup
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -2519,7 +2520,20 @@ join sub.orgRelations or_sub where
             }
 
         }
-        result.budgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
+        Set<BudgetCode> allBudgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
+        Map<BudgetCode, List<CostItemGroup>> costItemGroups = [:]
+        if(allBudgetCodes) {
+            List<CostItemGroup> ciGroupsForBC = CostItemGroup.findAllByBudgetCodeInList(allBudgetCodes)
+            ciGroupsForBC.each { CostItemGroup cig ->
+                List<CostItemGroup> ciGroupForBC = costItemGroups.get(cig.budgetCode)
+                if(!ciGroupForBC)
+                    ciGroupForBC = []
+                ciGroupForBC << cig
+                costItemGroups.put(cig.budgetCode,ciGroupForBC)
+            }
+        }
+        result.budgetCodes = allBudgetCodes
+        result.costItemGroups = costItemGroups
 
         if (params.redirect) {
             redirect(url: request.getHeader('referer'), params: params)
@@ -3167,12 +3181,13 @@ join sub.orgRelations or_sub where
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
         switch(params.cmd) {
             case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                result.createOrUpdate = message(code:'default.button.create.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
             case 'edit':
                 result.pdGroup = genericOIDService.resolveOID(params.oid)
                 result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
-
+                result.createOrUpdate = message(code:'default.button.save.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
             case 'delete':

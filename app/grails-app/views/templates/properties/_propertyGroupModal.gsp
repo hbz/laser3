@@ -1,7 +1,7 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; de.laser.FormService"%>
 <laser:serviceInjection />
 
-<semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
+<semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">
 
     <g:form class="ui form" url="${formUrl}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
