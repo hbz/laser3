@@ -106,7 +106,7 @@
                     forceSelection: false,
                     selectOnKeydown: false,
                     onChange: function (value, text, $selectedItem) {
-                        value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+                        value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                     }
                 });
             }, async: false
