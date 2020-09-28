@@ -34,8 +34,7 @@ class PropertyService {
             base_qry_params.put('propDef', pd)
             base_qry_params.put('tenant', contextService.org)
             if(params.filterProp) {
-                switch (pd.type) {
-                    case RefdataValue.toString():
+                if (pd.isRefdataValueType()) {
                         List<String> selFilterProps = params.filterProp.split(',')
                         List filterProp = []
                         selFilterProps.each { String sel ->
@@ -56,47 +55,46 @@ class PropertyService {
                             base_qry_params.put('prop', filterProp)
                         }
                         base_qry += " ) "
-                        break
-                    case Integer.toString():
+                }
+                else if (pd.isIntegerType()) {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.intValue = null ) "
                         } else {
                             base_qry += " and gProp.intValue = :prop ) "
                             base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
-                        break
-                    case String.toString():
+                }
+                else if (pd.isStringType()) {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
                             base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
                             base_qry_params.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                         }
-                        break
-                    case BigDecimal.toString():
+                }
+                else if (pd.isBigDecimalType()) {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.decValue = null ) "
                         } else {
                             base_qry += " and gProp.decValue = :prop ) "
                             base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
-                        break
-                    case Date.toString():
+                }
+                else if (pd.isDateType()) {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.dateValue = null ) "
                         } else {
                             base_qry += " and gProp.dateValue = :prop ) "
                             base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
-                        break
-                    case URL.toString():
+                }
+                else if (pd.isURLType()) {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.urlValue = null ) "
                         } else {
                             base_qry += " and genfunc_filter_matcher(gProp.urlValue, :prop) = true ) "
                             base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
-                        break
                 }
                 base_qry += " ) "
             }

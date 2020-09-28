@@ -180,7 +180,7 @@ class ApiCollectionReader {
 
             tmp.type = PropertyDefinition.validTypes2[it.type.type]['en']
 
-            if (it.type.type == RefdataValue.toString()) {
+            if (it.type.isRefdataValueType()) {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 
@@ -329,7 +329,7 @@ class ApiCollectionReader {
 
             tmp.type = PropertyDefinition.validTypes2[it.type.type]['en']
 
-            if (it.type.type == RefdataValue.toString()) {
+            if (it.type.isRefdataValueType()) {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 

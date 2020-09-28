@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.RefdataValue
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import de.laser.AuditConfig
 import de.laser.SubscriptionService
@@ -400,7 +401,7 @@ class PendingChangeService extends AbstractLockableService {
                             targetProperty."${changeDoc.prop}" = newProp
                         }
                         else {
-                            targetProperty."${changeDoc.prop}" = targetProperty.parseValue("${changeDoc.new}", changeDoc.type)
+                            targetProperty."${changeDoc.prop}" = AbstractPropertyWithCalculatedLastUpdated.parseValue("${changeDoc.new}", changeDoc.type)
                         }
 
                         log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
