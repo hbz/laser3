@@ -1,6 +1,6 @@
 databaseChangeLog = {
 
-	changeSet(author: "kloberd (generated)", id: "1601287052853-1") {
+	changeSet(author: "kloberd (modified)", id: "1601287052853-1") {
 		grailsChange {
 			change {
 				sql.execute("update audit_log set new_value = replace(new_value, 'com.k_int.kbplus.OrgRole', 'de.laser.OrgRole') where new_value is not null")
@@ -9,7 +9,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1601287052853-2") {
+	changeSet(author: "kloberd (modified)", id: "1601287052853-2") {
 		grailsChange {
 			change {
 				sql.execute("update audit_log set new_value = replace(new_value, 'com.k_int.kbplus.PersonRole', 'de.laser.PersonRole') where new_value is not null")
