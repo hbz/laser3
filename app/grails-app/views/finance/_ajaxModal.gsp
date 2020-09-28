@@ -134,7 +134,7 @@
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="text" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}"
-                               value="<g:formatNumber number="${copyCostsFromConsortia ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
+                               value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
                         <div class="ui icon button la-popup-tooltip la-delay" id="costButton3" data-content="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -150,7 +150,7 @@
                         <label><g:message code="financials.newCosts.totalAmount"/></label>
                         <input title="${g.message(code:'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
-                               value="<g:formatNumber number="${copyCostsFromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
+                               value="<g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
                     </div><!-- .field -->
                     <!-- TODO -->
@@ -192,7 +192,7 @@
                         <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.value')}"
-                               value="<g:formatNumber number="${copyCostsFromConsortia ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
+                               value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
                         <div class="ui icon button la-popup-tooltip la-delay" id="costButton1" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -202,7 +202,7 @@
                         <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
                         <input title="<g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
-                               value="<g:formatNumber number="${copyCostsFromConsortia ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
+                               value="<g:formatNumber number="${costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->
                 </div>
 

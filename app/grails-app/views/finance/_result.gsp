@@ -20,11 +20,6 @@
                             <g:message code="financials.tab.subscrCosts"/>
                         </div>
                     </g:if>
-                    <g:if test="${view in ['coll','collAtSubscr']}">
-                        <div class="item" data-tab="coll">
-                            <g:message code="financials.tab.collCosts"/>
-                        </div>
-                    </g:if>
                 </g:each>
             </div>
 
@@ -69,14 +64,9 @@
                         </g:else>
                     </div>
                 </g:if>
-                <g:if test="${view in ['coll','collAtSubscr']}">
-                    <div data-tab="coll" class="ui bottom attached tab">
-                        <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: coll, customerType: 'COLL', showView: view, offset: offsets.collOffset]"/>
-                    </div>
-                </g:if>
                 <g:if test="${view == 'subscr'}">
                     <div data-tab="subscr" class="ui bottom attached tab">
-                        <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
+                        <g:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: editable, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
                     </div>
                 </g:if>
             </g:each>
