@@ -884,7 +884,7 @@ class LicenseController
             result.targetObjectId = params.targetObjectId
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
-        println(result.sourceObject)
+        
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.sourceObject)
         result.consortialView = result.showConsortiaFunctions
