@@ -55,7 +55,7 @@ class ApiCatalogue {
 
             pdTmp.token = pd.name
             pdTmp.scope = pd.descr
-            pdTmp.type = PropertyDefinition.validTypes2[pd.type]['en']
+            pdTmp.type = PropertyDefinition.validTypes[pd.type]['en']
 
             pdTmp.label_de = validLabel(pd.getI10n('name', 'de'))
             pdTmp.label_en = validLabel(pd.getI10n('name', 'en'))

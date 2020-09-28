@@ -3,7 +3,6 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.DocContext
 import de.laser.Identifier
-import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
 import de.laser.properties.PropertyDefinition
@@ -178,9 +177,9 @@ class ApiCollectionReader {
                 tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
             }
 
-            tmp.type = PropertyDefinition.validTypes2[it.type.type]['en']
+            tmp.type = PropertyDefinition.validTypes[it.type.type]['en']
 
-            if (it.type.type == RefdataValue.toString()) {
+            if (it.type.isRefdataValueType()) {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 
@@ -327,9 +326,9 @@ class ApiCollectionReader {
                 tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
             }
 
-            tmp.type = PropertyDefinition.validTypes2[it.type.type]['en']
+            tmp.type = PropertyDefinition.validTypes[it.type.type]['en']
 
-            if (it.type.type == RefdataValue.toString()) {
+            if (it.type.isRefdataValueType()) {
                 tmp.refdataCategory = it.type.refdataCategory
             }
 

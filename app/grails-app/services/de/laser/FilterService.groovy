@@ -866,12 +866,11 @@ class FilterService {
 
         if (params.filterPropDef) {
             if (params.filterPropDef) {
-                PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+                PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
                 base_qry += ' and (surResult.type = :propDef '
                 queryParams.put('propDef', pd)
                 if (params.filterProp) {
-                    switch (pd.type) {
-                        case RefdataValue.toString():
+                    if (pd.isRefdataValueType()) {
                             List<String> selFilterProps = params.filterProp.split(',')
                             List filterProp = []
                             selFilterProps.each { String sel ->
@@ -890,47 +889,46 @@ class FilterService {
                                 queryParams.put('prop', filterProp)
                             }
                             base_qry += " ) "
-                            break
-                        case Integer.toString():
+                    }
+                    else if (pd.isIntegerType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.intValue = null ) "
                             } else {
                                 base_qry += " and surResult.intValue = :prop ) "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                            break
-                        case String.toString():
+                    }
+                    else if (pd.isStringType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.stringValue = null ) "
                             } else {
                                 base_qry += " and lower(surResult.stringValue) like lower(:prop) ) "
                                 queryParams.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                             }
-                            break
-                        case BigDecimal.toString():
+                    }
+                    else if (pd.isBigDecimalType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.decValue = null ) "
                             } else {
                                 base_qry += " and surResult.decValue = :prop ) "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                            break
-                        case Date.toString():
+                    }
+                    else if (pd.isDateType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.dateValue = null ) "
                             } else {
                                 base_qry += " and surResult.dateValue = :prop ) "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                            break
-                        case URL.toString():
+                    }
+                    else if (pd.isURLType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.urlValue = null ) "
                             } else {
                                 base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true ) "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                            break
                     }
                 }
             }

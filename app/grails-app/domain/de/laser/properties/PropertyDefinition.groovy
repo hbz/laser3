@@ -98,19 +98,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     def contextService
 
-    //Map keys can change and they wont affect any of the functionality
-    @Deprecated
     @Transient
-    static def validTypes = ["Number":  Integer.toString(), 
-                             "Text":    String.toString(), 
-                             "Refdata": RefdataValue.toString(), 
-                             "Decimal": BigDecimal.toString(),
-                             "Date":    Date.toString(),
-                             "Url":     URL.toString()]
-
-    @Transient
-    static def validTypes2 = [
-            'class java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number'],
+    static def validTypes = [
+            'class java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number' ],
             'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
             'class de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
             'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
@@ -284,10 +274,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     private static def typeIsValid(String key) {
-        if (validTypes2.containsKey(key)) {
+        if (validTypes.containsKey(key)) {
             return true;
         } else {
-            log.error("Provided prop type ${key} is not valid. Allowed types are ${validTypes2}")
+            log.error("Provided prop type ${key} is not valid. Allowed types are ${validTypes}")
             throw new UnexpectedTypeException()
         }
     }
@@ -497,8 +487,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static String getLocalizedValue(String key){
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
-        if (PropertyDefinition.validTypes2.containsKey(key)) {
-            return (PropertyDefinition.validTypes2.get(key)."${locale}") ?: PropertyDefinition.validTypes2.get(key)
+        if (PropertyDefinition.validTypes.containsKey(key)) {
+            return (PropertyDefinition.validTypes.get(key)."${locale}") ?: PropertyDefinition.validTypes.get(key)
         } else {
             return null
         }

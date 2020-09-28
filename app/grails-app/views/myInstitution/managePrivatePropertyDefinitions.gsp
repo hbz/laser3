@@ -205,7 +205,7 @@
                 <div class="field five wide">
                     <label class="property-label"><g:message code="default.type.label" /></label>
                     <g:select class="ui dropdown"
-                        from="${PropertyDefinition.validTypes2.entrySet()}"
+                        from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                         name="pd_type"
                         id="cust_prop_modal_select" />
