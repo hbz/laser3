@@ -6,11 +6,9 @@
             <th>${message(code:'financials.sum.billing')}</th>
             <th>${message(code:'financials.billingCurrency')}</th>
             <th>${message(code:'financials.sum.local')}</th>
-            <g:if test="${subscriptionInstance._getCalculatedType().equals(CalculatedType.TYPE_CONSORTIAL)}">
-                <th>${message(code:'financials.sum.billingAfterTax')}</th>
-                <th>${message(code:'financials.billingCurrency')}</th>
-                <th>${message(code:'financials.sum.localAfterTax')}</th>
-            </g:if>
+            <th>${message(code:'financials.sum.billingAfterTax')}</th>
+            <th>${message(code:'financials.billingCurrency')}</th>
+            <th>${message(code:'financials.sum.localAfterTax')}</th>
         </tr>
         </thead>
         <tbody>
@@ -18,19 +16,12 @@
         <g:each in="${sums}" var="entry">
             <g:set var="currency" value="${entry.currency}" />
             <tr>
-                <g:if test="${subscriptionInstance._getCalculatedType().equals(CalculatedType.TYPE_CONSORTIAL)}">
-                    <td><g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol=""/></td>
-                    <td>${entry.currency}</td>
-                    <td><g:formatNumber number="${data.localSums.localSum}" type="currency" currencySymbol=""/></td>
-                    <td><g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol=""/></td>
-                    <td>${entry.currency}</td>
-                    <td><g:formatNumber number="${data.localSums.localSumAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
-                </g:if>
-                <g:else>
-                    <td><g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol=""/></td>
-                    <td>${entry.currency}</td>
-                    <td><g:formatNumber number="${data.localSums.localSumAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
-                </g:else>
+                <td><g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol=""/></td>
+                <td>${entry.currency}</td>
+                <td><g:formatNumber number="${data.localSums.localSum}" type="currency" currencySymbol=""/></td>
+                <td><g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol=""/></td>
+                <td>${entry.currency}</td>
+                <td><g:formatNumber number="${data.localSums.localSumAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
             </tr>
         </g:each>
         </tbody>
