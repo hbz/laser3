@@ -693,8 +693,8 @@ class SurveyController {
 
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
-                 result.surveyConfig.subscription.orgRelations.each { or ->
-                    if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                 result.surveyConfig.subscription.orgRelations.each { OrgRole or ->
+                    if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -1557,8 +1557,8 @@ class SurveyController {
             result.contextOrg = result.institution
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            result.subscriptionInstance.orgRelations.each { OrgRole or ->
+                if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -1807,8 +1807,8 @@ class SurveyController {
             result.visibleOrgRelations = []
             result.costItemSums = [:]
             if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations.each { or ->
-                    if (!(or.org.id == result.institution.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                result.subscriptionInstance.orgRelations.each { OrgRole or ->
+                    if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -3141,9 +3141,9 @@ class SurveyController {
                 }
                 //Copy References
                 //OrgRole
-                baseSub.orgRelations.each { or ->
+                baseSub.orgRelations.each { OrgRole or ->
 
-                    if ((or.org.id == result.institution.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    if ((or.org.id == result.institution.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, or.properties)
                         newOrgRole.sub = newSub

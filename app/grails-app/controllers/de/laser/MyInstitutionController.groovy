@@ -2078,8 +2078,8 @@ join sub.orgRelations or_sub where
             result.costItemSums = [:]
             result.visibleOrgRelations = []
             if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations.each { or ->
-                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                result.subscriptionInstance.orgRelations.each { OrgRole or ->
+                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -2167,8 +2167,8 @@ join sub.orgRelations or_sub where
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            result.subscriptionInstance.orgRelations.each { OrgRole or ->
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                     result.visibleOrgRelations << or
                 }
             }

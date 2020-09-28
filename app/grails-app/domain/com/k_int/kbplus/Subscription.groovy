@@ -865,8 +865,8 @@ select distinct oap from OrgAccessPoint oap
 
         Subscription.findAllByInstanceOf(this).each { s ->
             List<OrgRole> ors = OrgRole.findAllWhere( sub: s )
-            ors.each { or ->
-                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] && or.org.id == org.id) {
+            ors.each { OrgRole or ->
+                if (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS] && or.org.id == org.id) {
                     result = or.sub
                 }
             }
