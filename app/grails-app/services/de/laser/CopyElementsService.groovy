@@ -875,7 +875,7 @@ class CopyElementsService {
     }
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties) {
-        String classString = targetObject.getClass().toString()
+        String classString = targetObject.getClass().toString() // TODO ERMS-2880
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
         def targetProp

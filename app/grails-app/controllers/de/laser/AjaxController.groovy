@@ -1217,7 +1217,7 @@ class AjaxController {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
-            if (params.cust_prop_type.equals(RefdataValue.toString())) {
+            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO ERMS-2880
                 if (params.refdatacategory) {
 
                     Map<String, Object> map = [
