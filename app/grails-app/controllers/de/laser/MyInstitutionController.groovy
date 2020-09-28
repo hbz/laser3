@@ -8,8 +8,6 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.Package
 import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
@@ -18,7 +16,6 @@ import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.auth.Role

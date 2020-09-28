@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.Cluster
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
+import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import com.k_int.kbplus.auth.User

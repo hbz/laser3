@@ -10,6 +10,7 @@ import de.laser.Combo
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinitionGroup

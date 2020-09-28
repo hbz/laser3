@@ -1,13 +1,16 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.RefdataValue
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.TitleInstance
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
 
 import javax.persistence.Transient
-import java.text.SimpleDateFormat
 
 class OrgRole implements ShareableTrait {
 

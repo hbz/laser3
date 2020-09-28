@@ -3,6 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.DocContext
 import de.laser.Identifier
+import de.laser.OrgRole
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
 import de.laser.properties.PropertyDefinition
@@ -269,7 +270,7 @@ class ApiCollectionReader {
     static Collection<Object> getOrgLinkCollection(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
         Collection<Object> result = []
 
-        list.each { it ->   // com.k_int.kbplus.OrgRole
+        list.each { it ->   // de.laser.OrgRole
             Map<String, Object> tmp = [:]
 
             tmp.endDate     = ApiToolkit.formatInternalDate(it.endDate)

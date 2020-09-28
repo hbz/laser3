@@ -5,7 +5,7 @@
   Time: 12:27
 --%>
 
-<%@ page import="grails.converters.JSON;com.k_int.kbplus.OrgRole;de.laser.helper.RDStore" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.OrgRole; grails.converters.JSON;de.laser.helper.RDStore" contentType="text/html;charset=UTF-8" %>
 <laser:serviceInjection/>
 <html>
     <head>

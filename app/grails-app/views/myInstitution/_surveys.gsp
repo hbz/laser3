@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; com.k_int.kbplus.OrgRole" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.OrgRole" %>
 
 <h3><g:message code="surveys.active"/></h3>
 

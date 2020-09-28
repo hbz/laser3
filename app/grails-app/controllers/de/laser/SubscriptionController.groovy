@@ -7,7 +7,6 @@ import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.JournalInstance
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Platform

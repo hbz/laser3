@@ -6,7 +6,6 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PersonProperty
@@ -20,7 +19,6 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.base.AbstractI10n
-import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition

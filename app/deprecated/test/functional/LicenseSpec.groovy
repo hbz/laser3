@@ -1,3 +1,4 @@
+import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -30,7 +31,7 @@ class LicenseSpec extends GebReportingSpec {
 
         def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee', RDConstants.ORGANISATIONAL_ROLE)
         def license  = new com.k_int.kbplus.License(reference:"Test License").save()
-        def licensee_role  = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license,org:org).save()
+        def licensee_role  = new OrgRole(roleType:licensee_role_ref,lic:license,org:org).save()
 
 
     }
@@ -82,8 +83,8 @@ class LicenseSpec extends GebReportingSpec {
           def l_status = RefdataValue.getByValueAndCategory('Current', RDConstants.LICENSE_STATUS)
           def license2 = new com.k_int.kbplus.License(reference:"Test License 2", startDate: sd, endDate: ed, status: l_status).save()
           def license3 = new com.k_int.kbplus.License(reference:"Test License 3", startDate: sd, endDate: ed, status: l_status).save()
-          def licensee_role2 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license2,org:org).save()
-          def licensee_role3 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license3,org:org).save()
+          def licensee_role2 = new OrgRole(roleType:licensee_role_ref,lic:license2,org:org).save()
+          def licensee_role3 = new OrgRole(roleType:licensee_role_ref,lic:license3,org:org).save()
           go '/laser/licenseCompare/index?shortcode='+Data.Org_Url
           at LicenseComparePage
         when:
