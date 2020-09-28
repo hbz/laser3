@@ -122,7 +122,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         newProp
     }
 
-    def static parseValue(value, type){
+    def static parseValue(String value, def type){
         def result
         static_logger.debug( value + " << " + type )
 

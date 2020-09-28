@@ -585,51 +585,6 @@ class MyInstitutionController extends AbstractDebugController {
         }
     }
 
-    private buildPropertySearchQuery(params,propDef) {
-        Map<String, Object> result = [:]
-
-        def query = " and exists ( select cp from l.customProperties as cp where cp.type.name = :prop_filter_name and  "
-        def queryParam = [prop_filter_name:params.propertyFilterType];
-        switch (propDef.type){
-            case Integer.toString():
-                query += "cp.intValue = :filter_val "
-                def value;
-                try{
-                 value =Integer.parseInt(params.propertyFilter)
-                }catch(Exception e){
-                    log.error("Exception parsing search value: ${e}")
-                    value = 0
-                }
-                queryParam += [filter_val:value]
-                break;
-            case BigDecimal.toString():
-                query += "cp.decValue = :filter_val "
-                try{
-                 value = new BigDecimal(params.propertyFilter)
-                }catch(Exception e){
-                    log.error("Exception parsing search value: ${e}")
-                    value = 0.0
-                }
-                queryParam += [filter_val:value]
-                break;
-            case String.toString():
-                query += "cp.stringValue like :filter_val "
-                queryParam += [filter_val:params.propertyFilter]
-                break;
-            case RefdataValue.toString():
-                query += "cp.refValue.value like :filter_val "
-                queryParam += [filter_val:params.propertyFilter]
-                break;
-            default:
-                log.error("Error executing buildPropertySearchQuery. Definition type ${propDef.type} case not found. ")
-        }
-        query += ")"
-
-        result.query = query
-        result.queryParam = queryParam
-        result
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -2078,8 +2033,8 @@ join sub.orgRelations or_sub where
             result.costItemSums = [:]
             result.visibleOrgRelations = []
             if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations.each { or ->
-                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                result.subscriptionInstance.orgRelations.each { OrgRole or ->
+                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         result.visibleOrgRelations << or
                     }
                 }
@@ -2167,8 +2122,8 @@ join sub.orgRelations or_sub where
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+            result.subscriptionInstance.orgRelations.each { OrgRole or ->
+                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -3473,21 +3428,27 @@ join sub.orgRelations or_sub where
     //explicit assignal raises a grails warning
     boolean setPropValue(prop, String filterPropValue) {
         prop = (AbstractPropertyWithCalculatedLastUpdated) prop
-        switch(prop.type.type) {
-            case Integer.toString(): prop.intValue = Integer.parseInt(filterPropValue)
-                break
-            case String.toString(): prop.stringValue = filterPropValue
-                break
-            case BigDecimal.toString(): prop.decValue = new BigDecimal(filterPropValue)
-                break
-            case Date.toString(): SimpleDateFormat sdf = DateUtil.SDF_NoTime
-                prop.dateValue = sdf.parse(filterPropValue)
-                break
-            case URL.toString(): prop.urlValue = filterPropValue.startsWith('http') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
-                break
-            case RefdataValue.toString(): prop.refValue = RefdataValue.get(filterPropValue)
-                break
+
+        if (prop.type.isIntegerType()) {
+            prop.intValue = Integer.parseInt(filterPropValue)
         }
+        else if (prop.type.isStringType()) {
+            prop.stringValue = filterPropValue
+        }
+        else if (prop.type.isBigDecimalType()) {
+            prop.decValue = new BigDecimal(filterPropValue)
+        }
+        else if (prop.type.isDateType()) {
+            SimpleDateFormat sdf = DateUtil.SDF_NoTime
+                prop.dateValue = sdf.parse(filterPropValue)
+        }
+        else if (prop.type.isURLType()) {
+            prop.urlValue = filterPropValue.startsWith('http') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
+        }
+        else if (prop.type.isRefdataValueType()) {
+            prop.refValue = RefdataValue.get(filterPropValue)
+        }
+
         prop.save(flush:true)
     }
 

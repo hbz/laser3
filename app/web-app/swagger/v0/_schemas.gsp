@@ -635,7 +635,7 @@
           type: string
         type:
           type: string
-          enum: <% println "[" + PropertyDefinition.validTypes.keySet().collect{"\"${it}\""}.join(', ') + "]" %>
+          enum: <% println "[" + PropertyDefinition.validTypes.collect{ "\"${it.value['en']}\"" }.join(', ') + "]" %>
         refdataCategory:
           description: Only if type = "Refdata"
           type: string
@@ -1046,7 +1046,7 @@
           type:
             type: string
             enum:
-              [${ PropertyDefinition.validTypes2.collect{ it.value['en'] }.join(', ') }]
+              [${ PropertyDefinition.validTypes.collect{ it.value['en'] }.join(', ') }]
           label_de:
             type: string
           label_en:

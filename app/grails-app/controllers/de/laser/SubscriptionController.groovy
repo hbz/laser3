@@ -4752,27 +4752,31 @@ class SubscriptionController
             //process custom property
             prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextOrg)
         }
-        switch(propDef.type) {
-            case Integer.toString(): int intVal = Integer.parseInt(value)
+        if (propDef.isIntegerType()) {
+                int intVal = Integer.parseInt(value)
                 prop.setIntValue(intVal)
-                break
-            case BigDecimal.toString(): BigDecimal decVal = new BigDecimal(value)
+        }
+        else if (propDef.isBigDecimalType()) {
+                BigDecimal decVal = new BigDecimal(value)
                 prop.setDecValue(decVal)
-                break
-            case RefdataValue.toString(): RefdataValue rdv = (RefdataValue) genericOIDService.resolveOID(value)
+        }
+        else if (propDef.isRefdataValueType()) {
+                RefdataValue rdv = (RefdataValue) genericOIDService.resolveOID(value)
                 if(rdv)
                     prop.setRefValue(rdv)
-                break
-            case Date.toString(): Date date = parseDate(value,possible_date_formats)
+        }
+        else if (propDef.isDateType()) {
+                Date date = parseDate(value,possible_date_formats)
                 if(date)
                     prop.setDateValue(date)
-                break
-            case URL.toString(): URL url = new URL(value)
+        }
+        else if (propDef.isURLType()) {
+                URL url = new URL(value)
                 if(url)
                     prop.setUrlValue(url)
-                break
-            default: prop.setStringValue(value)
-                break
+        }
+        else {
+                prop.setStringValue(value)
         }
         if(note)
             prop.note = note

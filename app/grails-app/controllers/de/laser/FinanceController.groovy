@@ -111,7 +111,7 @@ class FinanceController extends AbstractDebugController {
         if(result.dataToDisplay.contains("cons")) {
             result.cost_item_tabs["cons"] = financialData.cons
         }
-        if(result.dataToDisplay.contains(["subscr","consAtSubscr","collAtSubscr"])) {
+        if(result.dataToDisplay.any { d -> ["subscr","consAtSubscr"].contains(d) }) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
         SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()

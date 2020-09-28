@@ -4,6 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
 import de.laser.SurveyConfig
+import de.laser.helper.RDStore
 
 class SurveyOrg {
 
@@ -62,8 +63,8 @@ class SurveyOrg {
         if (surveyConfig.subscription) {
             Subscription.findAllByInstanceOf(surveyConfig.subscription).each { s ->
                 List<OrgRole> ors = OrgRole.findAllWhere(sub: s, org: this.org)
-                ors.each { or ->
-                    if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
+                ors.each { OrgRole or ->
+                    if (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]) {
                         hasOrgSubscription = true
                     }
                 }
