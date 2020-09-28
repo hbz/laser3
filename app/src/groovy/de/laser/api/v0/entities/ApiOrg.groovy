@@ -94,7 +94,7 @@ class ApiOrg {
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // com.k_int.kbplus.PersonRole
+        ) // de.laser.PersonRole
 
         result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
 

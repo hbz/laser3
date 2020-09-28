@@ -4,7 +4,6 @@ package de.laser
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role

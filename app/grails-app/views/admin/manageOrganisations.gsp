@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.PersonRole; de.laser.Contact; com.k_int.kbplus.Org; de.laser.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.PersonRole; de.laser.Contact; com.k_int.kbplus.Org; de.laser.OrgRole; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 

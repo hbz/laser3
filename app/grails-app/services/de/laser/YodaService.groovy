@@ -3,7 +3,6 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant

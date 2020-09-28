@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole;" %>
+<%@ page import="de.laser.PersonRole; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="showOnlyPublic" value="${true}"/>

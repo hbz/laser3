@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; com.k_int.kbplus.Org;de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; com.k_int.kbplus.Org; de.laser.Person; de.laser.helper.RDConstants" %>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">

@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.OrgRole
+import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage

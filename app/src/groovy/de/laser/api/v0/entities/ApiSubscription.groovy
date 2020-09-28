@@ -174,7 +174,7 @@ class ApiSubscription {
 		/*
 		result.persons      = exportHelperService.resolvePrsLinks(
 				sub.prsLinks,  true, true, context
-		) // com.k_int.kbplus.PersonRole
+		) // de.laser.PersonRole
 		*/
 
 		//result.license = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License

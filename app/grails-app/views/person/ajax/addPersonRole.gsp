@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.PersonRole" %>
+<%@ page import="de.laser.PersonRole" %>
 
 <%-- DEPRECATED --%>
 <%-- DEPRECATED --%>

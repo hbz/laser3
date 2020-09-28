@@ -103,7 +103,7 @@ class ApiPkg {
 		/*
 		result.persons          = exportHelperService.resolvePrsLinks(
 				pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
-		) // com.k_int.kbplus.PersonRole
+		) // de.laser.PersonRole
 		*/
 		ApiToolkit.cleanUp(result, true, true)
 	}

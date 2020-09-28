@@ -132,7 +132,7 @@ class ApiOAMonitor {
             result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
             //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
             //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // com.k_int.kbplus.PersonRole
+            //) // de.laser.PersonRole
 
             result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)

@@ -8,7 +8,6 @@ import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty

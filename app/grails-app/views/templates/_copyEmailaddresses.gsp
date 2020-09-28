@@ -1,5 +1,5 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
