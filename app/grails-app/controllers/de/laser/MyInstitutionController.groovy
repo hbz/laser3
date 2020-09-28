@@ -3744,14 +3744,7 @@ join sub.orgRelations or_sub where
             }
 
             if(isEditable){
-                redirect controller: 'license', action: 'processcopyLicense', params: ['baseLicense'                 : license.id,
-                                                                                       'license.copyAnnouncements'   : 'on',
-                                                                                       'license.copyCustomProperties': 'on',
-                                                                                       'license.copyDates'           : 'on',
-                                                                                       'license.copyDocs'             : 'on',
-                                                                                       'license.copyLinks'            : 'on',
-                                                                                       'license.copyPrivateProperties': 'on',
-                                                                                       'license.copyTasks'            : 'on']
+                redirect controller: 'license', action: 'copyLicense', params: [sourceObjectId: genericOIDService.getOID(license), copyObject: true]
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)
