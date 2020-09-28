@@ -114,7 +114,7 @@
                                 </div>
                             </g:else>
                             <%-- START Third Button --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && editable}">
+                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
