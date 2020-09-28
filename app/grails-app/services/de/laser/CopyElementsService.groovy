@@ -87,7 +87,7 @@ class CopyElementsService {
                     x.ns?.ns?.toLowerCase() <=> y.ns?.ns?.toLowerCase()
                 }
             }
-            result.targetIdentifiers = targetObject.ids?.sort { x, y ->
+            result.targetIdentifiers = targetObject?.ids?.sort { x, y ->
                 if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
                     x.value <=> y.value
                 } else {

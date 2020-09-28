@@ -2113,6 +2113,22 @@ class SubscriptionController
 
         params.id = oldID
 
+        List<Subscription> childSubs = result.parentSub.getNonDeletedDerivedSubscriptions()
+        if(childSubs) {
+            String localizedName
+            switch(LocaleContextHolder.getLocale()) {
+                case Locale.GERMANY:
+                case Locale.GERMAN: localizedName = "name_de"
+                    break
+                default: localizedName = "name_en"
+                    break
+            }
+            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+
+            result.memberProperties = memberProperties
+        }
+
         result
     }
 
@@ -4282,7 +4298,7 @@ class SubscriptionController
             )
             //Copy InstanceOf
             if (params.targetObject?.copylinktoSubscription) {
-                targetObject.instanceOf = result.sourceObject?.instanceOf ?: null
+                targetObject.instanceOf = result.sourceObject.instanceOf ?: null
             }
 
 

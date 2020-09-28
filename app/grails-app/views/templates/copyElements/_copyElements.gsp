@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="com.k_int.kbplus.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -134,7 +134,7 @@
                 </tr>
             </g:each>
 
-            <g:if test="${copyObject && accessService.checkPerm("ORG_CONSORTIUM") && sourceObject.hasProperty("instanceOf")}">
+            <g:if test="${copyObject && accessService.checkPerm("ORG_CONSORTIUM") && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
                 <tr>
                     <td>
                         <div>
@@ -156,6 +156,34 @@
                     <td class="center aligned">
                         <div class="ui checkbox la-toggle-radio la-replace">
                             <g:checkBox name="copyObject.copylinktoSubscription" data-action="copy"
+                                        checked="${true}"/>
+                        </div>
+                    </td>
+                </tr>
+            </g:if>
+
+            <g:if test="${copyObject && accessService.checkPerm("ORG_CONSORTIUM") && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
+                <tr>
+                    <td>
+                        <div>
+                            <strong><i class="clipboard icon"></i>${message(code: 'license.linktoLicense')}:</strong>
+                            <g:if test="${sourceObject.instanceOf}">
+                                <g:link controller="license" action="show" target="_blank"
+                                        id="${sourceObject.instanceOf.id}">${sourceObject.instanceOf}</g:link>
+                            </g:if>
+                            <g:else>
+                                ${message(code: 'license.linktoLicenseEmpty')}
+                            </g:else>
+                        </div>
+                    </td>
+                    <g:if test="${isConsortialObjects}">
+                        <td class="center aligned">
+                        </td>
+                    </g:if>
+                %{--AKTIONEN:--}%
+                    <td class="center aligned">
+                        <div class="ui checkbox la-toggle-radio la-replace">
+                            <g:checkBox name="copyObject.copylinktoLicense" data-action="copy"
                                         checked="${true}"/>
                         </div>
                     </td>

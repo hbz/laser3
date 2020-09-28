@@ -109,56 +109,48 @@
         <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
 
         <g:if test="${fromSurvey}">
-            <g:if test="${customProperties || privateProperties}">
+            <g:if test="${customProperties || privateProperties || groupedProperties || orphanedProperties}">
                 <g:set var="submitButtonText" value="${isRenewSub ?
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepSurvey') :
                         message(code: 'copyElementsIntoObject.copyProperties.button')}"/>
-                <div class="two fields">
-                    <div class="sixteen wide field" style="text-align: right;">
-                        <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                               onclick="return jsConfirmation()" ${submitDisabled}/>
-                    </div>
-                </div>
             </g:if>
             <g:else>
                 <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
                 <br><br>
-
-                <div class="two fields">
-                    <div class="sixteen wide field" style="text-align: right;">
-                        <g:set var="submitButtonText" value="${isRenewSub ?
-                                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepbySurvey') :
-                                message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
-                        <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                               onclick="return jsConfirmation()" ${submitDisabled}/>
-                    </div>
-                </div>
-
+                <g:set var="submitButtonText" value="${isRenewSub ?
+                        message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepbySurvey') :
+                        message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
             </g:else>
         </g:if>
+        <g:elseif test="${copyObject}">
+            <g:if test="${customProperties || privateProperties || groupedProperties || orphanedProperties}">
+                <g:set var="submitButtonText" value="${message(code: 'default.button.copy.label')}"/>
+            </g:if>
+            <g:else>
+                <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
+                <br><br>
+                <g:set var="submitButtonText" value="${message(code: 'default.button.copy.label')}"/>
+            </g:else>
+        </g:elseif>
         <g:else>
-            <g:if test="${customProperties || privateProperties}">
+            <g:if test="${customProperties || privateProperties || groupedProperties || orphanedProperties}">
                 <g:set var="submitButtonText" value="${isRenewSub ?
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStep') :
                         message(code: 'copyElementsIntoObject.copyProperties.button')}"/>
-                <div class="sixteen wide field" style="text-align: right;">
-                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                           onclick="return jsConfirmation()" ${submitDisabled}/>
-                </div>
             </g:if>
             <g:else>
                 <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
                 <br><br>
-
-                <div class="sixteen wide field" style="text-align: right;">
-                    <g:set var="submitButtonText" value="${isRenewSub ?
-                            message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
-                            message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
-                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                           onclick="return jsConfirmation()" ${submitDisabled}/>
-                </div>
+                <g:set var="submitButtonText" value="${isRenewSub ?
+                        message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
+                        message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
             </g:else>
         </g:else>
+
+        <div class="sixteen wide field" style="text-align: right;">
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
+                   onclick="return jsConfirmation()" ${submitDisabled}/>
+        </div>
     </g:form>
 </semui:form>
 </body>

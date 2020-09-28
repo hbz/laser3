@@ -21,7 +21,13 @@ class SemanticUiSubNavTagLib {
 
     def subNav = { attrs, body ->
 
-        out << '<nav class="ui tabular stackable  menu la-clear-before" role="tablist">'
+        out << '<nav class="ui '
+        if(attrs.showInTabular){
+            out << ' tabular '
+        }else{
+            out << ' secondary pointing '
+        }
+        out << ' stackable  menu la-clear-before" role="tablist">'
         out <<   body()
         out << '</nav>'
     }
