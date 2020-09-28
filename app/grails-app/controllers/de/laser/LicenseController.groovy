@@ -884,7 +884,6 @@ class LicenseController
             result.targetObjectId = params.targetObjectId
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
-        println(result.sourceObject)
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.sourceObject)
         result.consortialView = result.showConsortiaFunctions
@@ -909,7 +908,7 @@ class LicenseController
 
             //Copy InstanceOf
             if (params.targetObject?.copylinktoLicense) {
-                targetObject.instanceOf = result.sourceObject?.instanceOf ?: null
+                targetObject.instanceOf = result.sourceObject.instanceOf ?: null
             }
 
 

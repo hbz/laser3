@@ -147,7 +147,7 @@
                             &nbsp;
                             <span data-position="top left"
                                   class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
-                                  data-content="${propValue.note}">Anm.</span>
+                                  data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</span>
 
                         </g:if>
                         <g:if test="${object instanceof License && propValue.paragraph}">

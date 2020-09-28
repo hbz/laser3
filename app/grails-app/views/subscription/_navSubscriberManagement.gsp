@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<semui:subNav2 actionName="${actionName}">
+<semui:subNav showInTabular="true" actionName="${actionName}">
 
     <semui:subNavItem  controller="subscription" action="linkLicenseMembers"
                        params="${[id: params.id]}"
@@ -18,4 +18,4 @@
                       params="${[id: params.id]}"
                       text="${message(code:'subscription.subscriptionPropertiesMembers.label',args:args.memberTypeGenitive)}"/>
 
-</semui:subNav2>
+</semui:subNav>

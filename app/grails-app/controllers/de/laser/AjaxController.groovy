@@ -1303,7 +1303,6 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def addCustomPropertyValue(){
-      println(params)
     if(params.propIdent.length() > 0) {
       def error
       def newProp
@@ -1435,7 +1434,6 @@ class AjaxController {
     */
     @Secured(['ROLE_USER'])
     def addPrivatePropertyValue(){
-        println(params)
       if(params.propIdent.length() > 0) {
         def error
         def newProp
@@ -1490,7 +1488,7 @@ class AjaxController {
                       error           : error,
                       contextOrg      : contextService.org,
                       custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
-                      prop_desc       : type?.descr // form data
+                      prop_desc       : type.descr // form data
               ])
           }
       }
@@ -2677,7 +2675,6 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def personEdit() {
         Map result = [:]
-        println(params)
         result.personInstance = Person.get(params.id)
         if (result.personInstance){
             result.modalId = 'personEditModal'

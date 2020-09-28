@@ -152,7 +152,7 @@
                                         &nbsp;
                                         <g:if test="${propValue.note}">
                                             <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
-                                                 data-content="${propValue.note}">Anm.</div>
+                                                 data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
                                         <g:if test="${sourceObject instanceof License && propValue.paragraph}">
@@ -290,7 +290,7 @@
                                         &nbsp;
                                         <g:if test="${propValue.note}">
                                             <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
-                                                 data-content="${propValue.note}">Anm.</div>
+                                                 data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
                                             <g:if test="${targetObject instanceof License && propValue.paragraph}">

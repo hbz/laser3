@@ -74,7 +74,7 @@
                                     </g:else>
                                     <g:if test="${subProperty?.note}">
                                         <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
-                                             data-content="${subProperty?.note}">Anm.</div>
+                                             data-content="${subProperty?.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                     </g:if>
                                 </td>
                             </g:if>
@@ -131,7 +131,7 @@
                                     </g:else>
                                     <g:if test="${subProperty?.note}">
                                         <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
-                                             data-content="${subProperty?.note}">Anm.</div>
+                                             data-content="${subProperty?.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                     </g:if>
                                 </td>
                             </g:if>

@@ -4299,7 +4299,7 @@ class SubscriptionController
             )
             //Copy InstanceOf
             if (params.targetObject?.copylinktoSubscription) {
-                targetObject.instanceOf = result.sourceObject?.instanceOf ?: null
+                targetObject.instanceOf = result.sourceObject.instanceOf ?: null
             }
 
 
