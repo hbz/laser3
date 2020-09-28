@@ -221,7 +221,7 @@
                                                     int perspectiveIndex = genericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
                                                 %>
                                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
-                                                <p>
+                                                <td>
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                                     <g:link controller="subscription" action="show" id="${pair.id}">
                                                         ${pair.name}

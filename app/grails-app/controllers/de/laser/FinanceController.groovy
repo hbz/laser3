@@ -768,21 +768,23 @@ class FinanceController extends AbstractDebugController {
         CostItem ci = CostItem.get(params.id)
         if (ci) {
             List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
-
-            cigs.each { CostItemGroup item ->
-                item.delete(flush:true)
-                log.debug("deleting CostItemGroup: " + item)
-            }
-            if(!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(ci.order,ci.id,RDStore.COST_ITEM_DELETED))
-                ci.order.delete(flush:true)
-            if(!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(ci.invoice,ci.id,RDStore.COST_ITEM_DELETED))
-                ci.invoice.delete(flush:true)
+            Order order = ci.order
+            Invoice invoice = ci.invoice
             log.debug("deleting CostItem: " + ci)
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
             ci.invoice = null
             ci.order = null
-            if(!ci.save(flush:true))
-                log.error(ci.errors.toString())
+            if(ci.save(flush:true)) {
+                if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
+                    order.delete(flush: true)
+                if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
+                    invoice.delete(flush: true)
+                cigs.each { CostItemGroup item ->
+                    item.delete(flush:true)
+                    log.debug("deleting CostItemGroup: " + item)
+                }
+            }
+            else log.error(ci.errors.toString())
         }
 
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
@@ -907,9 +909,9 @@ class FinanceController extends AbstractDebugController {
               RefdataValue cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
 
               NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
-              Double cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
+              Double cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency.trim()).doubleValue() : 0.00
               Double cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
-              Double cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
+              Double cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency.trim()).doubleValue() : 0.00
 
               Double cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
               Double cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
@@ -1133,6 +1135,7 @@ class FinanceController extends AbstractDebugController {
                 costItem.financialYear = ci.financialYear ? Year.parse(ci.financialYear.value.toString()) : null
                 costItem.costTitle = ci.costTitle ?: null
                 costItem.costDescription = ci.costDescription ?: null
+                costItem.costItemStatus = RefdataValue.get(ci.costItemStatus.id)
                 costItem.reference = ci.reference ?: null
                 costItem.datePaid = ci.datePaid ? sdf.parse(ci.datePaid) : null
                 costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null

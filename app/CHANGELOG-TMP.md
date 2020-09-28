@@ -9,6 +9,10 @@
 
 2830    25.09.2020  hbz-dev             Moe     Feature     Teilnehmer verwalten: In Merkmale Verwaltung soll die ind. Vergabe von Merkmale zu ermöglichen 
 
+2888    25.09.2020  hbz-dev             Andreas Bug         Verarbeitung bei Import von Kosten korrigiert
+
+2812    25.09.2020  hbz-dev             Andreas Bug         Entfernen von Leerzeichen bei Summenwerten
+
 --      25.09.2020  hbz-dev             Andreas Bug         Bezeichner für Absendeknopf in Modal angepasst
 
 2802    25.09.2020  hbz-dev             Andreas Bug         Darstellung bei verknüpften Objekten verschönert

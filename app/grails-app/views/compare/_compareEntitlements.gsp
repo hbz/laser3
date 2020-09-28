@@ -132,7 +132,7 @@
 
                                 <div class="content">
                                     <g:link controller="package" action="show"
-                                            id="${tipp?.pkg?.id}">${tipp?.pkg?.name}</g:link>
+                                            id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
                                 </div>
                             </div>
                         </g:if>

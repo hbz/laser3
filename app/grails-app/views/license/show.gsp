@@ -171,10 +171,10 @@
                                                                 ${pair.name}
                                                             </g:link>
                                                         </g:elseif><br>
-                                                        <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                                        <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
                                                         <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                         <g:if test="${comment}">
-                                                            <em>${comment.owner.content}</em>
+                                                            <p><em>${comment.owner.content}</em></p>
                                                         </g:if>
                                                     </td>
                                                     <td class="right aligned">

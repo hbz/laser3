@@ -387,8 +387,8 @@
                 if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                    input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
+                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val().trim());
+                    input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val().trim()));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -404,8 +404,8 @@
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
-                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
+                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val().trim());
+                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val().trim());
                     input.val((parsedLocalCurrency / parsedBillingCurrency));
 
                     $(".la-account-currency").find(".field").removeClass("error");
@@ -416,8 +416,8 @@
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
-                    input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val()));
+                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val().trim());
+                    input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val().trim()));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -448,8 +448,8 @@
                 console.log($("*[name=newTaxRate]").val());
                 var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
-                var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
+                var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val().trim());
+                var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val().trim());
 
                 $('#newCostInBillingCurrencyAfterTax').val(
                     roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
