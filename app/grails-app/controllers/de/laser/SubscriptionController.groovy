@@ -3152,8 +3152,10 @@ class SubscriptionController
     }
 
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     def documents() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -4418,10 +4420,8 @@ class SubscriptionController
                                     uuid: dctx.owner.uuid,
                                     contentType: dctx.owner.contentType,
                                     title: dctx.owner.title,
-                                    creator: dctx.owner.creator,
                                     filename: dctx.owner.filename,
                                     mimeType: dctx.owner.mimeType,
-                                    user: dctx.owner.user,
                                     migrated: dctx.owner.migrated,
                                     owner: dctx.owner.owner
                             ).save(flush:true)
@@ -4452,10 +4452,8 @@ class SubscriptionController
                                     uuid: dctx.owner.uuid,
                                     contentType: dctx.owner.contentType,
                                     title: dctx.owner.title,
-                                    creator: dctx.owner.creator,
                                     filename: dctx.owner.filename,
                                     mimeType: dctx.owner.mimeType,
-                                    user: dctx.owner.user,
                                     migrated: dctx.owner.migrated
                             ).save(flush:true)
 

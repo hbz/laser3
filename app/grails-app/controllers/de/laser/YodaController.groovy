@@ -1112,20 +1112,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def showOldDocumentOwners(){
-        List currentDocuments = DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.sharedFrom = null order by dc.owner.creator.display asc')
-        Map<String, Object> result = [currentDocuments:currentDocuments]
-        result
-    }
-
-    @Secured(['ROLE_YODA'])
-    def updateShareConfigurations(){
-        flash.message = "Überarbeite Sichtbarkeitseinstellungen und Eigentümerverhältnisse ..."
-        documentUpdateService.updateShareConfigurations()
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @Secured(['ROLE_YODA'])
     def generateBatchUID() {
         flash.message = "Setze UID für Domänen ..."
         identifierService.checkNullUIDs()

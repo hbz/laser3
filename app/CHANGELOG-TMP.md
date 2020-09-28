@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2603    28.09.2020  hbz-dev             Andreas Feature     Löschen von Nutzern vervollständigt
+
 2889    28.09.2020  hbz-dev             Andreas Bug         Konsorten bekommen Excel-Export jetzt wieder befüllt
 
 2830    25.09.2020  hbz-dev             Moe     Feature     Teilnehmer verwalten: In Merkmale Verwaltung soll die ind. Vergabe von Merkmale zu ermöglichen

@@ -118,14 +118,22 @@
                 <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                     <div class="ui small feed content la-js-dont-hide-this-card">
 
-                        <div class="summary">
-                            <g:if test="${docctx.owner.title}">
-                                <a onclick="noteread(${docctx.owner.id});">${docctx.owner.title}</a>
-                            </g:if>
-                            <g:else>
-                                <a onclick="noteread(${docctx.owner.id});">Ohne Titel</a>
-                            </g:else>
-                            (${docctx.owner.type.getI10n("value")})
+                        <div class="ui grid summary">
+                            <div class="twelve wide column">
+                                <g:if test="${docctx.owner.title}">
+                                    <a onclick="noteread(${docctx.owner.id});">${docctx.owner.title}</a>
+                                </g:if>
+                                <g:else>
+                                    <a onclick="noteread(${docctx.owner.id});">Ohne Titel</a>
+                                </g:else>
+                                (${docctx.owner.type.getI10n("value")})
+                            </div>
+                            <div class="four wide column">
+                                <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                                    <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
+                                    <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                </g:if>
+                            </div>
                         </div>
                     </div>
                 </g:if>

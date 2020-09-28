@@ -119,7 +119,6 @@ class DocstoreController extends AbstractDebugController {
                                         mimeType: doc_content.mimeType,
                                         title: doc_content.title,
                                         type: doc_content.type,
-                                        creator: doc_content.creator,
                                         owner: contextService.getOrg())
 
                                 doc_content2.save(flush:true)

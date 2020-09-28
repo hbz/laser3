@@ -7,7 +7,7 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole(user, contextService.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            editable = accessService.checkMinUserOrgRole(contextService.user, contextService.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
@@ -24,7 +24,6 @@
         boolean visible = false
         boolean inOwnerOrg = false
         boolean inTargetOrg = false
-        boolean isCreator = false
         if(it.org) {
 
             if(it.owner.owner?.id == contextService.org.id){
@@ -35,12 +34,8 @@
                 inTargetOrg = true
             }
 
-            if(it.owner.creator?.id == user.id)
-                isCreator = true
 
             switch(it.shareConf) {
-                case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                    break
                 case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
                     break
                 case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
@@ -85,12 +80,12 @@
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
-                            <g:if test="${docctx.owner.owner?.id == contextService.org.id && accessService.checkMinUserOrgRole(user,docctx.owner?.owner,"INST_EDITOR")}">
+                            <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                                 <%-- STOP First Small Column --%>
-                                <g:if test="${!docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
+                                <g:if test="${!docctx.isShared}">
                                 <%-- START Second Button --%>
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"

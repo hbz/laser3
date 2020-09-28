@@ -593,6 +593,7 @@ class PackageController extends AbstractDebugController {
         }
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def deleteDocuments() {
         def ctxlist = []
@@ -604,7 +605,7 @@ class PackageController extends AbstractDebugController {
         redirect controller: 'package', action: params.redirectAction, id: params.instanceId
     }
 
-
+    @Deprecated
     @Secured(['ROLE_USER'])
     def documents() {
         Map<String, Object> result = [:]
