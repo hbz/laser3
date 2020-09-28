@@ -149,13 +149,14 @@
                                                 ${propValue.value}
                                             </div>
                                         </g:else>
+                                        &nbsp;
                                         <g:if test="${propValue.note}">
-                                            <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
-                                                 data-content="${propValue.note}">Anm.</div>
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                                 data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
                                         <g:if test="${sourceObject instanceof License && propValue.paragraph}">
-                                            <div class="ui circular huge label la-long-tooltip la-popup-tooltip la-delay"
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
                                                  data-content="${propValue.paragraph}">§</div><br>
                                         </g:if>
 
@@ -183,7 +184,7 @@
                     <td class="center aligned">
                         <g:if test="${propValues.containsKey(sourceObject)}">
                             <g:each var="propValue" in="${propValuesForSourceSub}">
-                                <g:if test="${propValue instanceof SubscriptionProperty}">
+                                <g:if test="${propValue instanceof SubscriptionProperty || propValue instanceof LicenseProperty}">
                                     <div class="ui checkbox la-toggle-radio la-inherit">
                                         <input type="checkbox" name="auditProperties"
                                                value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked'}/>
@@ -286,13 +287,14 @@
                                                 ${propValue.value}
                                             </div>
                                         </g:else>
+                                        &nbsp;
                                         <g:if test="${propValue.note}">
-                                            <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
-                                                 data-content="${propValue.note}">Anm.</div>
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                                 data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
                                             <g:if test="${targetObject instanceof License && propValue.paragraph}">
-                                                <div class="ui circular huge label la-long-tooltip la-popup-tooltip la-delay"
+                                                <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
                                                      data-content="${propValue.paragraph}">§</div><br>
                                             </g:if>
                                             <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>

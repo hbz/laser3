@@ -139,7 +139,7 @@
         </div>
     </g:if>
     <g:else>
-        <semui:subNav>
+        <semui:subNav showInTabular="true">
             <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'copyElementsIntoObject.general_data.label')}</div>

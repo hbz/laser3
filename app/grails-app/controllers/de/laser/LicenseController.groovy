@@ -865,35 +865,104 @@ class LicenseController
       redirect(action: 'show', id: license.id);
   }
      */
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copyLicense() {
+        Map<String,Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
+        flash.error = ""
+        flash.message = ""
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
 
-    def copyLicense()
-    {
-        log.debug("license: ${params}")
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+
+        if (!result.editable) {
             response.sendError(401); return
         }
 
-        result.visibleOrgRelations = []
-        result.license.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
-                result.visibleOrgRelations << or
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+        result.copyObject = true
+
+        if (params.name && !result.targetObject) {
+            String lic_name = params.name ?: "Kopie von ${result.sourceObject.reference}"
+
+            Object targetObject = new License(
+                    reference: lic_name,
+                    type: result.sourceObject.type,
+                    status: RDStore.LICENSE_NO_STATUS,
+                    openEnded: result.sourceObject.openEnded)
+
+            //Copy InstanceOf
+            if (params.targetObject?.copylinktoLicense) {
+                targetObject.instanceOf = result.sourceObject.instanceOf ?: null
+            }
+
+
+            if (!targetObject.save()) {
+                log.error("Problem saving subscription ${targetObject.errors}");
+            }else {
+                result.targetObject = targetObject
+                params.targetObjectId = genericOIDService.getOID(targetObject)
+
+                //Copy References
+                result.sourceObject.orgRelations.each { OrgRole or ->
+                    if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
+                        OrgRole newOrgRole = new OrgRole()
+                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        newOrgRole.lic = result.targetObject
+                        newOrgRole.save()
+                    }
+                }
+
             }
         }
-        result.visibleOrgRelations.sort{ it.org.sortname }
 
-        Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
-        def preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
-        result << preCon
+        switch (params.workFlowPart) {
+            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
+                if(result.targetObject) {
+                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                }
+                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                break
+            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                result << copyElementsService.loadDataFor_Properties(params)
+                break
+            case CopyElementsService.WORKFLOW_END:
+                result << copyElementsService.copyObjectElements_Properties(params)
+                if (result.targetObject){
+                    redirect controller: 'license', action: 'show', params: [id: result.targetObject.id]
+                }
+                break
+            default:
+                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                break
+        }
 
-
-        result.contextOrg = contextService.getOrg()
+        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
 
         result
 
     }
 
+    @Deprecated
     def processcopyLicense() {
 
         params.id = params.baseLicense

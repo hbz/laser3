@@ -233,7 +233,7 @@
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                                   <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
-                                      <g:link controller="myInstitution" action="copyLicense" params="${[id:l.id]}" class="ui icon button">
+                                      <g:link controller="myInstitution" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button">
                                           <i class="copy icon"></i>
                                       </g:link>
                                   </span>

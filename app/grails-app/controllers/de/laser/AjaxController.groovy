@@ -1326,35 +1326,46 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-      if (params.propDefGroup) {
-        render(template: "/templates/properties/group", model: [
-                ownobj          : owner,
-                contextOrg      : contextOrg,
-                newProp         : newProp,
-                error           : error,
-                showConsortiaFunctions: showConsortiaFunctions,
-                propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc       : type.descr // form data
-        ])
-      }
-      else {
-          Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
+        if(params.withoutRender){
+            if(params.url){
+                redirect(url: params.url)
+            }else {
+                redirect(url: request.getHeader('referer'))
+            }
+        }
+        else
+        {
+              if (params.propDefGroup) {
+                render(template: "/templates/properties/group", model: [
+                        ownobj          : owner,
+                        contextOrg      : contextOrg,
+                        newProp         : newProp,
+                        error           : error,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                        propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
+                        custom_props_div: "${params.custom_props_div}", // JS markup id
+                        prop_desc       : type.descr // form data
+                ])
+              }
+              else {
+                  Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
 
-          Map<String, Object> modelMap =  [
-                  ownobj                : owner,
-                  contextOrg            : contextOrg,
-                  newProp               : newProp,
-                  showConsortiaFunctions: showConsortiaFunctions,
-                  error                 : error,
-                  custom_props_div      : "${params.custom_props_div}", // JS markup id
-                  prop_desc             : type.descr, // form data
-                  orphanedProperties    : allPropDefGroups.orphanedProperties
-          ]
+                  Map<String, Object> modelMap =  [
+                          ownobj                : owner,
+                          contextOrg            : contextOrg,
+                          newProp               : newProp,
+                          showConsortiaFunctions: showConsortiaFunctions,
+                          error                 : error,
+                          custom_props_div      : "${params.custom_props_div}", // JS markup id
+                          prop_desc             : type.descr, // form data
+                          orphanedProperties    : allPropDefGroups.orphanedProperties
+                  ]
 
-          render(template: "/templates/properties/custom", model: modelMap)
-      }
+
+                      render(template: "/templates/properties/custom", model: modelMap)
+                  }
+        }
     }
     else {
       log.error("Form submitted with missing values")
@@ -1463,15 +1474,23 @@ class AjaxController {
         owner.refresh()
 
         request.setAttribute("editable", params.editable == "true")
-        render(template: "/templates/properties/private", model:[
-                ownobj: owner,
-                tenant: tenant,
-                newProp: newProp,
-                error: error,
-                contextOrg: contextService.org,
-                custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
-                prop_desc: type?.descr // form data
-        ])
+          if(params.withoutRender){
+              if(params.url){
+                  redirect(url: params.url)
+              }else {
+                  redirect(url: request.getHeader('referer'))
+              }
+          }else {
+              render(template: "/templates/properties/private", model: [
+                      ownobj          : owner,
+                      tenant          : tenant,
+                      newProp         : newProp,
+                      error           : error,
+                      contextOrg      : contextService.org,
+                      custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
+                      prop_desc       : type.descr // form data
+              ])
+          }
       }
       else  {
         log.error("Form submitted with missing values")
@@ -2656,7 +2675,6 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def personEdit() {
         Map result = [:]
-        println(params)
         result.personInstance = Person.get(params.id)
         if (result.personInstance){
             result.modalId = 'personEditModal'
