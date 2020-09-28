@@ -15,6 +15,7 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.oap.OrgAccessPointLink
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult

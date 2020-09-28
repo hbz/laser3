@@ -1,7 +1,10 @@
-package de.laser
+package de.laser.oap
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
+import de.laser.AccessPointData
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

@@ -7,7 +7,7 @@ import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage
-import de.laser.OrgAccessPointLink
+import de.laser.oap.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants

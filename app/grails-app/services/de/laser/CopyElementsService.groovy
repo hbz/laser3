@@ -8,6 +8,7 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import grails.util.Holders

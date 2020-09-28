@@ -8,6 +8,8 @@ import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.oap.OrgAccessPoint
+import de.laser.oap.OrgAccessPointLink
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 

@@ -10,7 +10,7 @@ import de.laser.finance.CostItemGroup
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact
-import de.laser.OrgAccessPoint
+import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage

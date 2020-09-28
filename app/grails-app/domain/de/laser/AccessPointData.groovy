@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractBase
+import de.laser.oap.OrgAccessPoint
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j

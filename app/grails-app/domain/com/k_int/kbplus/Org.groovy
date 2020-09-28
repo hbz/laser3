@@ -18,7 +18,7 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.Address
 import de.laser.Contact
-import de.laser.OrgAccessPoint
+import de.laser.oap.OrgAccessPoint
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.Person

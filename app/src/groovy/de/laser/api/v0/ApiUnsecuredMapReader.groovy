@@ -3,7 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.finance.Invoice
 import de.laser.IssueEntitlementCoverage
-import de.laser.OrgAccessPoint
+import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
 import groovy.util.logging.Log4j
 
