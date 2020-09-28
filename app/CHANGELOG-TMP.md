@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2889    28.09.2020  hbz-dev             Andreas Bug         Konsorten bekommen Excel-Export jetzt wieder befüllt
+
 2888    25.09.2020  hbz-dev             Andreas Bug         Verarbeitung bei Import von Kosten korrigiert
 
 2812    25.09.2020  hbz-dev             Andreas Bug         Entfernen von Leerzeichen bei Summenwerten
