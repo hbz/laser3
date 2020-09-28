@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.ChangeNotificationQueueItem
 import de.laser.Doc
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants
@@ -25,7 +26,7 @@ class ChangeNotificationService_en_original {
     def contextObject = genericOIDService.resolveOID(contextObjectOID);
 
     def jsonChangeDocument = changeDetailDocument as JSON
-    def new_queue_item = new ChangeNotificationQueueItem(oid:contextObjectOID, 
+    def new_queue_item = new ChangeNotificationQueueItem(oid:contextObjectOID,
                                                          changeDocument:jsonChangeDocument.toString(),
                                                          ts:new Date())
     if ( new_queue_item.save() ) {
