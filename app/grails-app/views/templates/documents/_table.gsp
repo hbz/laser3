@@ -51,18 +51,13 @@
                     boolean visible = false
                     boolean inOwnerOrg = false
                     boolean inTargetOrg = false
-                    boolean isCreator = false
 
                     if(docctx.owner.owner?.id == contextService.org.id)
                         inOwnerOrg = true
                     else if(contextService.org.id == docctx.targetOrg?.id)
                         inTargetOrg = true
-                    if(docctx.owner.creator?.id == user.id)
-                        isCreator = true
                     if(docctx.org) {
                         switch(docctx.shareConf) {
-                            case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                                break
                             case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
                                 break
                             case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true

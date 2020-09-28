@@ -376,6 +376,10 @@ class MyInstitutionController extends AbstractDebugController {
                 subscrQueryParams.subKinds = subKinds
             }
 
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                subscrQueryFilter << "s.instanceOf is null"
+            }
+
             if(subscrQueryFilter)
                 subscrQuery += " where "+subscrQueryFilter.join(" and ")
 
@@ -1295,8 +1299,10 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     Map documents() {
         Map<String, Object> result = setResultGenerics()
         result
