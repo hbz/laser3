@@ -3224,14 +3224,13 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecur
-        ityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         def ctxlist = []
 
         log.debug("deleteDocuments ${params}");
 
-        docstoreService.unifiedDeleteDocuments(params)CHANGELOG
+        docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId
     }
