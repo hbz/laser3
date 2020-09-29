@@ -755,7 +755,7 @@
         <script>
             $(document).ready(function() {
                 $.ajax({
-                    url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
+                    url: "${g.createLink(controller:'ajaxJson', action:'notifyProfiler')}",
                     <%--data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},--%>
                     data: {uri: "${ ProfilerUtils.generateKey( webRequest )}"},
                     success: function (data) {
