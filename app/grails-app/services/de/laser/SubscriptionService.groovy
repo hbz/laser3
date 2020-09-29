@@ -8,6 +8,7 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.DateUtil
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -50,6 +51,13 @@ class SubscriptionService {
     //ex SubscriptionController.currentSubscriptions()
     Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
+        EhcacheWrapper cache = contextService.getCache("/subscriptions/filter/",ContextService.USER_SCOPE)
+        if(cache && cache.get('subscriptionFilterCache')) {
+            if(!params.resetFilter)
+                params.putAll((GrailsParameterMap) cache.get('subscriptionFilterCache'))
+            else params.remove('resetFilter')
+            cache.remove('subscriptionFilterCache') //has to be executed in any case in order to enable cache updating
+        }
         result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
@@ -98,6 +106,10 @@ class SubscriptionService {
             else {
                 params.status = 'FETCH_ALL'
             }
+        }
+        if(params.isSiteReloaded == "yes") {
+            params.remove('isSiteReloaded')
+            cache.put('subscriptionFilterCache', params)
         }
 
         pu.setBenchmark('get base query')
