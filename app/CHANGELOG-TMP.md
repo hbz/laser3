@@ -9,6 +9,8 @@
 
 1951    29.09.2020  hbz-dev             Andreas Feature     Entfernen nicht benötigter Menüpunkte
 
+2718    29.09.2020  hbz-dev             Andreas Feature     Umstrukturierung der Löschanweisungen
+
 2027    29.09.2020  hbz-dev             Andreas Feature     Filtercaching für Meine Lizenzen / Meine Verträge
 
 2412    28.09.2020  hbz-dev             Andreas Feature     Kostendarstellungen überarbeitet
