@@ -54,21 +54,19 @@ class ReaderNumberController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        ReaderNumber numbersInstance = ReaderNumber.get(params.id)
-        if (! numbersInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
-			redirect(url: request.getHeader('referer'))
-            return
-        }
-
-        try {
-            numbersInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'readerNumber.label'), params.id])
-			redirect(url: request.getHeader('referer'))
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'readerNumber.label'), params.id])
-			redirect(url: request.getHeader('referer'))
-        }
+        List<Long> numbersToDelete = []
+		Org org = Org.get(params.org)
+		if(params.dueDate) {
+			Date dueDate = DateUtil.parseDateGeneric(params.dueDate)
+			numbersToDelete.addAll(ReaderNumber.findAllByDueDateAndOrg(dueDate,org).collect{ ReaderNumber rn -> rn.id })
+		}
+		else if(params.semester) {
+			RefdataValue semester = RefdataValue.get(params.semester)
+			numbersToDelete.addAll(ReaderNumber.findAllBySemesterAndOrg(semester,org).collect{ ReaderNumber rn -> rn.id })
+		}
+		if (numbersToDelete) {
+			RefdataValue.executeUpdate('delete from ReaderNumber rn where rn.id in (:ids)',[ids:numbersToDelete])
+		}
+		redirect(url: request.getHeader('referer'))
     }
 }

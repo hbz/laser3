@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2718    29.09.2020  hbz-dev             Andreas Feature     Umstrukturierung der Löschanweisungen
+
 2027    29.09.2020  hbz-dev             Andreas Feature     Filtercaching für Meine Lizenzen / Meine Verträge
 
 2412    28.09.2020  hbz-dev             Andreas Feature     Kostendarstellungen überarbeitet
