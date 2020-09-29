@@ -211,7 +211,7 @@ $(document).ready(function(){
     </g:if>
     $("#selSubscription").dropdown({
         apiSettings: {
-            url: "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
+            url: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
             cache: false
         },
         clearable: true,

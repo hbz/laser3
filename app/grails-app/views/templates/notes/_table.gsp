@@ -74,7 +74,7 @@
     function noteedit(id) {
 
         $.ajax({
-            url: '<g:createLink controller="ajax" action="editNote"/>?id='+id,
+            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
             success: function(result){
                 $("#dynamicModalContainer").empty();
                 $("#modalEditNote").remove();

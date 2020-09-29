@@ -183,7 +183,7 @@
                               <div id="${l.id}linkedSubscriptions">
                                   <script>
                                       $.ajax({
-                                          url: "<g:createLink controller="ajax" action="getLinkedSubscriptions" />",
+                                          url: "<g:createLink controller="ajaxJson" action="getLinkedSubscriptions" />",
                                           data: {
                                               license: "${genericOIDService.getOID(l)}",
                                               status: ${params.subStatus}

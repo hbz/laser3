@@ -44,7 +44,7 @@
         function setupDropdown() {
             $("#docTarget").dropdown({
                apiSettings: {
-                   url: "<g:createLink controller="ajax" action="lookupCombined"/>?query={query}&org="+org+"&license="+license+"&subscription="+subscription+"&package="+pkg,
+                   url: "<g:createLink controller="ajaxJson" action="lookupCombined"/>?query={query}&org="+org+"&license="+license+"&subscription="+subscription+"&package="+pkg,
                    cache: false
                },
                clearable: true,

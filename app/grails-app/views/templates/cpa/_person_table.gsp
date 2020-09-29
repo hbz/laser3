@@ -178,7 +178,7 @@
 
 <g:javascript>
     function personEdit(id) {
-        var url = '<g:createLink controller="ajax" action="personEdit"/>?id='+id+'&showAddresses='+${showAddresses?:false}+'&showContacts='+${showContacts?:false};
+        var url = '<g:createLink controller="ajaxHtml" action="editPerson"/>?id='+id+'&showAddresses='+${showAddresses?:false}+'&showContacts='+${showContacts?:false};
         person_editModal(url)
     }
     function person_editModal(url) {
