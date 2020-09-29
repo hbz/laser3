@@ -1,23 +1,11 @@
-package de.laser
+package de.laser.ajax
 
-
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.License
-import com.k_int.kbplus.LicenseProperty
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.PendingChange
-import com.k_int.kbplus.PersonProperty
-import com.k_int.kbplus.Platform
-import com.k_int.kbplus.PlatformProperty
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.SubscriptionProperty
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import de.laser.*
 import de.laser.base.AbstractI10n
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
@@ -2611,32 +2599,6 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def editTask() {
-        Org contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        if (result.taskInstance){
-            render template: "/templates/tasks/modal_edit", model: result
-//        } else {
-//            flash.error = "Diese Aufgabe existiert nicht (mehr)."
-//            redirect(url: request.getHeader('referer'))
-        }
-
-    }
-
-    @Secured(['ROLE_USER'])
-    def createTask() {
-        long backendStart = System.currentTimeMillis()
-        Org contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditions(contextOrg)
-        result.backendStart = backendStart
-
-        render template: "/templates/tasks/modal_create", model: result
-
-    }
-
-    @Secured(['ROLE_USER'])
     def editAddress() {
         Map model = [:]
         model.addressInstance = Address.get(params.id)
@@ -2686,18 +2648,6 @@ class AjaxController {
             result.contextOrg = contextService.getOrg()
             render template: "/templates/cpa/personFormModal", model: result
         }
-    }
-
-    @Secured(['ROLE_USER'])
-    def contactFields() {
-
-        render template: "/templates/cpa/contactFields"
-    }
-
-    @Secured(['ROLE_USER'])
-    def addressFields() {
-
-        render template: "/templates/cpa/addressFields"
     }
 
     def adjustSubscriptionList(){
@@ -2836,29 +2786,5 @@ class AjaxController {
         model.url = [controller: 'address', action: 'create']
 
         render template: "/templates/cpa/addressFormModal", model: model
-    }
-
-    @Secured(['ROLE_USER'])
-    def editNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
-
-        render template: "/templates/notes/modal_edit", model: result
-    }
-
-    @Secured(['ROLE_USER'])
-    def readNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
-
-        render template: "/templates/notes/modal_read", model: result
-    }
-
-    @Secured(['ROLE_USER'])
-    def consistencyCheck() {
-        List result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
-        render result as JSON
     }
 }

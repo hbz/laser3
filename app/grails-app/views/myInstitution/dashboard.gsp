@@ -440,7 +440,7 @@
         function taskcreate() {
 
             $.ajax({
-                url: '<g:createLink controller="ajax" action="createTask"/>',
+                url: '<g:createLink controller="ajaxHtml" action="createTask"/>',
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#modalCreateTask").remove();
@@ -460,7 +460,7 @@
         function taskedit(id) {
 
             $.ajax({
-                url: '<g:createLink controller="ajax" action="editTask"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#modalEditTask").remove();

@@ -13,6 +13,17 @@
 
 <h1 class="ui header la-noMargin-top">debug only</h1>
 
+<div class="ui raised segment">
+    <div class="ui medium header">Ajax @ de.laser.ajax</div>
+
+    <p><g:link controller="ajaxJson" action="test" id="111" target="_blank">controller="ajaxJson" &rArr; ajax/json/test</g:link></p>
+
+    <p><g:link controller="ajaxHtml" action="test" id="222" target="_blank">controller="ajaxHtml" &rArr; ajax/html/test</g:link></p>
+
+    <p><a href="../ajax/json/test?id=333">native href &rArr; ajax/json/test</a></p>
+
+    <p><a href="../ajax/html/test?id=444">native href &rArr; ajax/html/test</a></p>
+</div>
 
 <pre>numberOfActiveUsers : ${numberOfActiveUsers}</pre>
 
@@ -23,7 +34,7 @@
 <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
 
-<laser:remoteLink controller="ajax"
+<laser:remoteLink controller="ajaxHtml"
                   action="readNote"
                   id="1"
                   xyz="xyz"

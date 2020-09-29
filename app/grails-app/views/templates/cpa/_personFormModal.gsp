@@ -257,7 +257,7 @@
 
             $('#addContactElement').click(function () {
                 $.ajax({
-                    url: "<g:createLink controller="ajax" action="contactFields"/>",
+                    url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
                     type: "POST",
                     success: function (data) {
                         if (elementCount <= 3) {
@@ -292,7 +292,7 @@
 
             $('#addAddressElement').click(function () {
                 $.ajax({
-                    url: "<g:createLink controller="ajax" action="addressFields"/>",
+                    url: "<g:createLink controller="ajaxHtml" action="addressFields"/>",
                     type: "POST",
                     success: function (data) {
                         if (elementCount <= 3) {
