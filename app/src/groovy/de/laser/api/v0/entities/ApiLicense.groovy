@@ -3,7 +3,7 @@ package de.laser.api.v0.entities
 import de.laser.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
+import de.laser.OrgRole
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -175,7 +175,7 @@ class ApiLicense {
                 }
                 allOrgRoles = allOrgRoles.unique()
 
-                result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+                result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // de.laser.OrgRole
             }
         }
 
@@ -184,7 +184,7 @@ class ApiLicense {
         //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
-        ) // com.k_int.kbplus.PersonRole
+        ) // de.laser.PersonRole
         */
         ApiToolkit.cleanUp(result, true, true)
     }

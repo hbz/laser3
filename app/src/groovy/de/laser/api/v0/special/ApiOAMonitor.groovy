@@ -1,6 +1,7 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
+import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.OrgSetting
@@ -131,7 +132,7 @@ class ApiOAMonitor {
             result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
             //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
             //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // com.k_int.kbplus.PersonRole
+            //) // de.laser.PersonRole
 
             result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)
@@ -202,7 +203,7 @@ class ApiOAMonitor {
             }
             allOrgRoles.addAll(sub.orgRelations)
 
-            result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+            result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 
             result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages)
 
@@ -260,7 +261,7 @@ class ApiOAMonitor {
         list.each { subPkg ->
             Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
 
-            pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // com.k_int.kbplus.OrgRole
+            pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // de.laser.OrgRole
             result << pkg
 
             List tmp = []

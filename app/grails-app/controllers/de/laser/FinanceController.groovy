@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
@@ -753,8 +752,7 @@ class FinanceController extends AbstractDebugController {
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
-        if(!result.copyCostsFromConsortia)
-            result.taxKey = result.costItem.taxKey
+        result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy"])
         result.mode = "copy"
         render(template: "/finance/ajaxModal", model: result)

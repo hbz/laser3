@@ -3,7 +3,6 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.OrgRole
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
@@ -115,32 +114,6 @@ class FinanceService {
                         if(consCostItems) {
                             result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                             result.cons.sums = calculateResults(consCostItems)
-                        }
-                        break
-                    case "coll":
-                        List collCostRows = CostItem.executeQuery(
-                                'select ci, ' +
-                                        '(select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType = :roleType) as sortname ' +
-                                'from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub where sub.instanceOf = :sub '+
-                                filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
-                                ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                                [owner:org,sub:sub,roleType:RDStore.OR_SUBSCRIBER_COLLECTIVE]+genericExcludeParams+filterQuery.filterData)
-                        result.coll = [count:0]
-                        if(collCostRows) {
-                            Set<CostItem> collCostItems = collCostRows.collect { row -> row[0]}
-                            result.coll.count = collCostItems.size()
-                            result.coll.costItems = collCostItems.drop(configMap.offsets.collOffset).take(configMap.max)
-                            result.coll.sums = calculateResults(collCostItems)
-                        }
-                        break
-                    case "collAtSubscr": List<CostItem> collCostItems = CostItem.executeQuery('select ci from CostItem as ci join ci.sub sub where ci.owner = :owner and sub = :sub'+
-                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
-                                    ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                            [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
-                        result.coll = [count:collCostItems.size()]
-                        if(collCostItems) {
-                            result.coll.costItems = collCostItems.drop(configMap.offsets.collOffset).take(configMap.max)
-                            result.coll.sums = calculateResults(collCostItems)
                         }
                         break
                     case "subscr":
@@ -1239,16 +1212,10 @@ class FinanceService {
             We may see this view from the perspective of:
             1. consortia: parent subscription (show own and consortial tabs) (level 1)
             2. consortia: child subscription (show consortial tab) (level 2)
-            3. consortia: child subscription preview (show subscriber tab) (level 2)
-            4. collective user: own subscription (show own and collective tabs)
-            5. collective user: child subscription of own (show collective tab) (level 2)
-            6. collective user: child subscription preview of own (show subscriber tab) (level 2)
-            7. collective user: child subscription of consortia (show own, collective and subscriber tabs) (level 2)
-            8. collective user: child subscription of child (show collective tab) (level 3)
-            9. collective user: child subscription preview of child (show subscriber tab) (level 3)
-            10. single user: own subscription (show own tab) (level 1)
-            11. single user: child subscription (show own and subscriber tab) (level 2)
-            12. basic member or department: child subscription (show subscriber tab) (level 2 or 3)
+            3. consortia: child subscription preview (show consortial tab) (level 2)
+            4. single user: own subscription (show own tab) (level 1)
+            5. single user: child subscription (show own and subscriber tab) (level 2)
+            6. basic member or department: child subscription (show subscriber tab) (level 2 or 3)
          */
         List<String> dataToDisplay = []
         boolean editable = false
@@ -1307,94 +1274,30 @@ class FinanceService {
                     editable = true
                 }
                 break
-        //cases four to nine
-            case 'ORG_INST_COLLECTIVE':
-                if(result.subscription) {
-                    //cases five to nine: subscription has a parent
-                    if(result.subscription.instanceOf) {
-                        //case five, six, eight and nine: child of local subscription or of consortial subscription, department level
-                        if(result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION){
-                            //cases six and nine: department subscription preview
-                            if(params.orgBasicMemberView) {
-                                dataToDisplay << 'subscr'
-                                result.showView = 'subscr'
-                            }
-                            //cases five and eight: department subscription
-                            else {
-                                dataToDisplay << 'collAtSubscr'
-                                result.showView = 'coll'
-                                result.sortConfig.collSort = 'ci.costTitle'
-                                result.showCollectiveFunctions = true
-                                result.editConf.showVisibilitySettings = true
-                                editable = true
-                            }
-                        }
-                        //case seven: child of consortial subscription, collective level
-                        else if(result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE){
-                            dataToDisplay.addAll(['own','subscr','coll'])
-                            result.showView = 'subscr'
-                            result.showCollectiveFunctions = true
-                            result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
-                            result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
-                            result.editConf.showVisibilitySettings = true
-                            result.editConf.enableNewAndCopy = true
-                            editable = true
-                        }
-                    }
-                    //case four: local parent subscription
-                    else {
-                        dataToDisplay.addAll(['own','coll'])
-                        result.showView = 'coll'
-                        result.showCollectiveFunctions = true
-                        result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
-                        result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
-                        result.editConf.showVisibilitySettings = true
-                        editable = true
-                    }
-                }
-                //case seven summing up everything what the collective user may have subscribed
-                else {
-                    dataToDisplay.addAll(['own','subscr','coll'])
-                    result.showView = 'subscr'
-                    result.showCollectiveFunctions = true
-                    result.editConf.showVisibilitySettings = true
-                    result.subMemberLabel = messageSource.getMessage('collective.member',null,LocaleContextHolder.getLocale())
-                    Set<Org> consMembers = Org.executeQuery(
-                            'select oo.org, oo.org.sortname as sortname from Subscription s ' +
-                                    'join s.instanceOf subC ' +
-                                    'join subC.orgRelations roleC ' +
-                                    'join s.orgRelations roleMC ' +
-                                    'join s.orgRelations oo ' +
-                                    'where roleC.org = :contextOrg and roleMC.roleType = :collectiveType and oo.roleType = :subscrRole order by sortname asc',[contextOrg:result.institution,collectiveType: RDStore.OR_SUBSCRIPTION_COLLECTIVE,subscrRole:RDStore.OR_SUBSCRIBER_COLLECTIVE]).collect { row -> row[0]}
-                    result.consMembers = consMembers
-                    //result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo join s.instanceOf.orgRelations parent where oo.roleType in :subscrRoles and parent.org = :contextOrg order by sortname asc',[contextOrg:result.institution,subscrRoles:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]).collect { row -> row[0]}
-                    editable = true
-                }
-                break
-        //cases ten and eleven
+        //cases four and five
             case 'ORG_INST':
                 if(result.subscription) {
-                    //case eleven: child subscription
+                    //case four: child subscription
                     if(result.subscription.instanceOf) {
                         dataToDisplay.addAll(['own','subscr'])
                         result.showView = 'subscr'
                         editable = true
                     }
-                    //case ten: local subscription
+                    //case five: local subscription
                     else {
                         dataToDisplay << 'own'
                         result.showView = 'own'
                         editable = true
                     }
                 }
-                //case eleven for all subscriptions
+                //case five for all subscriptions
                 else {
                     dataToDisplay.addAll(['own','subscr'])
                     result.showView = 'subscr'
                     editable = true
                 }
                 break
-        //cases twelve: basic member
+        //cases six: basic member
             case 'ORG_BASIC_MEMBER':
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
@@ -1421,16 +1324,12 @@ class FinanceService {
             result.licenseeLabel = messageSource.getMessage( 'consortium.member',null,locale)
             result.licenseeTargetLabel = messageSource.getMessage('financials.newCosts.consortia.licenseeTargetLabel',null,locale)
         }
-        else if(configMap.dataToDisplay.stream().anyMatch(['coll','collAtSubscr'].&contains)) {
-            result.licenseeLabel = messageSource.getMessage('collective.member',null,locale)
-            result.licenseeTargetLabel = messageSource.getMessage('financials.newCosts.collective.licenseeTargetLabel',null,locale)
-        }
         Map<Long,Object> orgConfigurations = [:]
         result.costItemElements.each { oc ->
             orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
         }
         result.orgConfigurations = orgConfigurations as JSON
-        if(configMap.dataToDisplay.stream().anyMatch(["cons","coll"].&contains) && configMap.subMembers) {
+        if(configMap.dataToDisplay.contains("cons") && configMap.subMembers) {
             result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, locale)], [id: 'forAllSubscribers', label: result.licenseeTargetLabel]]
             result.validSubChilds.addAll(configMap.subMembers)
         }

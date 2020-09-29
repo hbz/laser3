@@ -1,5 +1,5 @@
-<%@ page import="de.laser.DocContext; de.laser.helper.ConfigUtils; de.laser.Person; com.k_int.kbplus.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.OrgRole; com.k_int.kbplus.License" %>
+<%@ page import="de.laser.DocContext; de.laser.helper.ConfigUtils; de.laser.Person; de.laser.PersonRole; java.math.MathContext; com.k_int.kbplus.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.OrgRole; com.k_int.kbplus.License" %>
 <%@ page import="de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
@@ -76,14 +76,14 @@
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date" validation="datesCheck"/></dd>
                                 <g:if test="${editable}">
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
                                 </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date" validation="datesCheck"/></dd>
                                 <g:if test="${editable}">
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
                                 </g:if>

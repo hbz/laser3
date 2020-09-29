@@ -73,7 +73,7 @@ trait AuditableTrait {
                                     event      : "${this.class.simpleName}.updated",
                                     prop       : cp,
                                     name       : type.name,
-                                    type       : this."${cp}".getClass().toString(),
+                                    type       : this."${cp}".getClass().toString(), // TODO ERMS-2880
                                     old        : old_oid ?: oldMap[cp], // Backward Compatibility
                                     oldLabel   : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
                                     new        : new_oid ?: newMap[cp], // Backward Compatibility

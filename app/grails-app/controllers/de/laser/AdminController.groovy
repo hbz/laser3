@@ -4,7 +4,6 @@ import com.k_int.kbplus.BookInstance
 import com.k_int.kbplus.ContentItem
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
@@ -723,10 +722,8 @@ class AdminController extends AbstractDebugController {
                     content: doc.content,
                     contentType: doc.contentType,
                     title: doc.title,
-                    creator: doc.creator,
                     filename: doc.filename,
                     mimeType: doc.mimeType,
-                    user: doc.user,
                     migrated: doc.migrated,
                     owner: doc.owner
             )

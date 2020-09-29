@@ -1,7 +1,7 @@
 package de.laser.traits
 
 import de.laser.DocContext
-import com.k_int.kbplus.OrgRole
+import de.laser.OrgRole
 import de.laser.interfaces.ShareSupport
 
 import javax.persistence.Transient

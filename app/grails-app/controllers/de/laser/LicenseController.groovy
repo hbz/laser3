@@ -5,7 +5,6 @@ import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
@@ -758,8 +757,10 @@ class LicenseController
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     def documents() {
         log.debug("license id:${params.id}");
 
@@ -770,20 +771,10 @@ class LicenseController
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-
-        params.id = params.instanceId // TODO refactoring frontend instanceId -> id
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        //def user = User.get(springSecurityService.principal.id)
-        //def l = License.get(params.instanceId);
-        //userAccessCheck(l,user,'edit')
+        log.debug("deleteDocuments ${params}")
 
         docstoreService.unifiedDeleteDocuments(params)
 
@@ -1007,10 +998,8 @@ class LicenseController
                                         uuid: dctx.owner.uuid,
                                         contentType: dctx.owner.contentType,
                                         title: dctx.owner.title,
-                                        creator: dctx.owner.creator,
                                         filename: dctx.owner.filename,
                                         mimeType: dctx.owner.mimeType,
-                                        user: dctx.owner.user,
                                         migrated: dctx.owner.migrated,
                                         owner: dctx.owner.owner
                                 ).save(flush:true)
@@ -1040,10 +1029,8 @@ class LicenseController
                                         uuid: dctx.owner.uuid,
                                         contentType: dctx.owner.contentType,
                                         title: dctx.owner.title,
-                                        creator: dctx.owner.creator,
                                         filename: dctx.owner.filename,
                                         mimeType: dctx.owner.mimeType,
-                                        user: dctx.owner.user,
                                         migrated: dctx.owner.migrated
                                 ).save(flush:true)
 

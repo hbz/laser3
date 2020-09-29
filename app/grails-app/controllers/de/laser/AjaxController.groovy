@@ -6,11 +6,9 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PersonProperty
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
@@ -20,7 +18,6 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.base.AbstractI10n
-import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
@@ -1217,7 +1214,7 @@ class AjaxController {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
-            if (params.cust_prop_type.equals(RefdataValue.toString())) {
+            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO ERMS-2880
                 if (params.refdatacategory) {
 
                     Map<String, Object> map = [

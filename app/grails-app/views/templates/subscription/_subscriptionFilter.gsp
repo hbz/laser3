@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Org;com.k_int.kbplus.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants;com.k_int.kbplus.Org;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <g:render template="/templates/filter/javascript" />
@@ -227,7 +227,7 @@
             </div>
         </g:if>
         <div class="field la-field-right-aligned">
-            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
             <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
         </div>
 

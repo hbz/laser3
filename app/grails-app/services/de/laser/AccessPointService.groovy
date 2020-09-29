@@ -4,6 +4,8 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.Org
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.oap.OrgAccessPoint
+import de.laser.oap.OrgAccessPointLink
 import grails.transaction.Transactional
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder

@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.AuditConfig
+import de.laser.ChangeNotificationQueueItem
 import de.laser.ContextService
 import de.laser.Doc
 import de.laser.PendingChangeConfiguration

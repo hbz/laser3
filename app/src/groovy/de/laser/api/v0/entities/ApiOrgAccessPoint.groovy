@@ -1,7 +1,7 @@
 package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Org
-import de.laser.OrgAccessPoint
+import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import grails.converters.JSON

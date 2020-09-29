@@ -4,7 +4,6 @@ package de.laser
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
@@ -1149,17 +1148,19 @@ class OrganisationController extends AbstractDebugController {
         Map<String,Map<String,ReaderNumber>> numbersWithSemester = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA]),"semester")
         Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
 
-        Set<String> semesterCols = [], dueDateCols = []
+        TreeSet<String> semesterCols = [], dueDateCols = []
         Map<String,Integer> semesterSums = [:], dueDateSums = [:]
         numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
             semesters.value.each { Map.Entry<String,ReaderNumber> row ->
                 semesterCols << row.key
                 ReaderNumber rn = row.value
                 Integer semesterSum = semesterSums.get(semesters.key)
-                if(semesterSum == null) {
-                    semesterSum = rn.value
+                if(rn.value) {
+                    if (semesterSum == null) {
+                        semesterSum = rn.value
+                    }
+                    else semesterSum += rn.value
                 }
-                else semesterSum += rn.value
                 semesterSums.put(semesters.key,semesterSum)
             }
 
@@ -1169,10 +1170,12 @@ class OrganisationController extends AbstractDebugController {
                 dueDateCols << row.key
                 ReaderNumber rn = row.value
                 Integer dueDateSum = dueDateSums.get(dueDates.key)
-                if(dueDateSum == null) {
-                    dueDateSum = rn.value
+                if(rn.value) {
+                    if(dueDateSum == null) {
+                        dueDateSum = rn.value
+                    }
+                    else dueDateSum += rn.value
                 }
-                else dueDateSum += rn.value
                 dueDateSums.put(dueDates.key,dueDateSum)
             }
         }

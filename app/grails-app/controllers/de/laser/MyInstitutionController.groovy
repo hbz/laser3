@@ -8,17 +8,13 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.Package
 import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
 import com.k_int.kbplus.PersonProperty
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.auth.Role
@@ -52,6 +48,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.commons.GrailsClass
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -263,6 +260,13 @@ class MyInstitutionController extends AbstractDebugController {
     def currentLicenses() {
 
         Map<String, Object> result = setResultGenerics()
+        EhcacheWrapper cache = contextService.getCache("/license/filter/",ContextService.USER_SCOPE)
+        if(cache && cache.get('licenseFilterCache')) {
+            if(!params.resetFilter)
+                params.putAll((GrailsParameterMap) cache.get('licenseFilterCache'))
+            else params.remove('resetFilter')
+            cache.remove('licenseFilterCache') //has to be executed in any case in order to enable cache updating
+        }
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
@@ -293,6 +297,9 @@ class MyInstitutionController extends AbstractDebugController {
         Map qry_params
 
         result.filterSet = params.filterSet ? true : false
+        if(result.filterSet) {
+            cache.put('licenseFilterCache', params)
+        }
 
         Set<String> licenseFilterTable = []
 
@@ -376,11 +383,15 @@ class MyInstitutionController extends AbstractDebugController {
                 subscrQueryParams.subKinds = subKinds
             }
 
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                subscrQueryFilter << "s.instanceOf is null"
+            }
+
             if(subscrQueryFilter)
                 subscrQuery += " where "+subscrQueryFilter.join(" and ")
 
             subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
-            base_qry += " or ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
+            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
             if(subscriptionOIDs)
                 qry_params.subOIDs = subscriptionOIDs
@@ -1295,8 +1306,10 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     Map documents() {
         Map<String, Object> result = setResultGenerics()
         result

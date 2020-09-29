@@ -2,9 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleHistoryEventParticipant
@@ -17,6 +15,7 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.oap.OrgAccessPointLink
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult

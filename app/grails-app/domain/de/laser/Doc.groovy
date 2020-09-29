@@ -26,14 +26,12 @@ class Doc {
 
   String title
   String filename
-  User creator
   String mimeType
   Integer contentType = CONTENT_TYPE_STRING
   String content
   String uuid 
   Date dateCreated
   Date lastUpdated
-  User user
   Org owner         //the context org of the user uploading a document
   String migrated
 
@@ -45,11 +43,9 @@ class Doc {
        contentType column:'doc_content_type'
               uuid column:'doc_docstore_uuid', index:'doc_uuid_idx'
              title column:'doc_title'
-           creator column:'doc_creator'
           filename column:'doc_filename'
            content column:'doc_content', type:'text'
           mimeType column:'doc_mime_type'
-              user column:'doc_user_fk'
              owner column:'doc_owner_fk'
   }
 
@@ -60,10 +56,8 @@ class Doc {
     uuid      (nullable:true, blank:false)
     contentType(nullable:true)
     title     (nullable:true, blank:false)
-    creator   (nullable:true)
     filename  (nullable:true, blank:false)
     mimeType  (nullable:true, blank:false)
-    user      (nullable:true)
     owner     (nullable:true)
     migrated  (nullable:true, blank:false, maxSize:1)
   }

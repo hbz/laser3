@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.Doc
 import de.laser.DocContext
+import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
@@ -112,10 +113,8 @@ class InstitutionsService {
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
                             title: dctx.owner.title,
-                            creator: dctx.owner.creator,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            user: dctx.owner.user,
                             migrated: dctx.owner.migrated
                     ).save()
 

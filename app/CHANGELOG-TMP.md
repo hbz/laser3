@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+1984    29.09.2020  hbz-dev             Andreas Feature     Validierung von Start- und Enddatum an verschiedenen Stellen eingebaut
+
+1951    29.09.2020  hbz-dev             Andreas Feature     Entfernen nicht benötigter Menüpunkte
+
+2718    29.09.2020  hbz-dev             Andreas Feature     Umstrukturierung der Löschanweisungen
+
+2027    29.09.2020  hbz-dev             Andreas Feature     Filtercaching für Meine Lizenzen / Meine Verträge
+
+2412    28.09.2020  hbz-dev             Andreas Feature     Kostendarstellungen überarbeitet
+
+2603    28.09.2020  hbz-dev             Andreas Feature     Löschen von Nutzern vervollständigt
+
 2889    28.09.2020  hbz-dev             Andreas Bug         Konsorten bekommen Excel-Export jetzt wieder befüllt
 
 2830    25.09.2020  hbz-dev             Moe     Feature     Teilnehmer verwalten: In Merkmale Verwaltung soll die ind. Vergabe von Merkmale zu ermöglichen

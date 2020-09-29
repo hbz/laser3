@@ -3,7 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.Doc
 import de.laser.finance.CostItem
-import de.laser.OrgAccessPoint
+import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
 import de.laser.api.v0.special.ApiOAMonitor

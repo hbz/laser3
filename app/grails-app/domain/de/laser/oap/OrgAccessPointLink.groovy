@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.oap
 
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.SubscriptionPackage

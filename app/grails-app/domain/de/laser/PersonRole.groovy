@@ -1,8 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.Person
-import de.laser.RefdataCategory
-import de.laser.RefdataValue
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.TitleInstance
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 
@@ -25,7 +27,7 @@ class PersonRole implements Comparable<PersonRole>{
 
     License         lic
     Package         pkg
-    Subscription    sub   
+    Subscription    sub
     TitleInstance   title
     Date            start_date 
     Date            end_date

@@ -9,6 +9,12 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.oap.OrgAccessPoint
+import de.laser.oap.OrgAccessPointEzproxy
+import de.laser.oap.OrgAccessPointLink
+import de.laser.oap.OrgAccessPointOA
+import de.laser.oap.OrgAccessPointShibboleth
+import de.laser.oap.OrgAccessPointVpn
 import de.uni_freiburg.ub.IpRange
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput
