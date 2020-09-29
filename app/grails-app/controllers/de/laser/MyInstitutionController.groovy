@@ -391,7 +391,7 @@ class MyInstitutionController extends AbstractDebugController {
                 subscrQuery += " where "+subscrQueryFilter.join(" and ")
 
             subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
-            base_qry += " or ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
+            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
             if(subscriptionOIDs)
                 qry_params.subOIDs = subscriptionOIDs
