@@ -11,6 +11,7 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -149,69 +150,6 @@ class AjaxController {
         }
         Map<String, Object> result = [:]
         render result as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def genericSetValue() {
-        def result = params.value
-
-        try {
-
-    // params.elementid (The id from the html element)  must be formed as domain:pk:property:otherstuff
-    String[] oid_components = params.elementid.split(":");
-
-    GrailsClass domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(oid_components[1])
-      if ( instance ) {
-
-        def value = params.value;
-        if ( value == '__NULL__' ) {
-           value=null;
-           result='';
-        }
-        else {
-          if ( params.dt == 'date' ) {
-            // log.debug("Special date processing, idf=${params.idf}");
-              SimpleDateFormat formatter = new SimpleDateFormat(params.idf)
-            value = formatter.parse(params.value)
-            if ( params.odf ) {
-                SimpleDateFormat of = new SimpleDateFormat(params.odf)
-              result=of.format(value);
-            }
-            else {
-                SimpleDateFormat of = DateUtil.getSDF_NoTime()
-              result=of.format(value)
-            }
-          }
-        }
-        // log.debug("Got instance ${instance}");
-        def binding_properties = [ "${oid_components[2]}":value ]
-        // log.debug("Merge: ${binding_properties}");
-        // see http://grails.org/doc/latest/ref/Controllers/bindData.html
-        bindData(instance, binding_properties)
-        instance.save(flush: true)
-      }
-      else {
-        log.debug("no instance");
-      }
-    }
-    else {
-      log.debug("no type");
-    }
-
-        } catch (Exception e) {
-            log.error("@ genericSetValue()")
-            log.error( e.toString() )
-        }
-
-        log.debug("genericSetValue() returns ${result}")
-        response.setContentType('text/plain')
-
-        def outs = response.outputStream
-        outs << result
-        outs.flush()
-        outs.close()
     }
 
     @Secured(['ROLE_USER'])
@@ -712,16 +650,6 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-    def getLicensePropertiesForSubscription() {
-        License loadFor = (License) genericOIDService.resolveOID(params.loadFor)
-        if(loadFor) {
-            Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
-            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
-        }
-        else null
-    }
-
-    @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
         Map<String,Object> result = [institution:contextService.org], options = JSON.parse(params.requestOptions)
         if(params.costItem) {
@@ -734,45 +662,6 @@ class AjaxController {
         log.debug(result)
         render view: '/myInstitution/_graphs', model: result
     }
-
-  @Secured(['ROLE_USER'])
-  def checkCascade() {
-      Map result = [sub:true,subPkg:true,ie:true]
-      if(!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
-          result.sub = false
-          result.subPkg = false
-          result.ie = false
-      }
-      else if(params.subscription) {
-          Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
-          if(!sub) {
-              result.sub = false
-              result.subPkg = false
-              result.ie = false
-          }
-          else if(params.issueEntitlement) {
-              if(!params.package || params.package.contains('null')) {
-                  result.subPkg = false
-                  result.ie = false
-              }
-              else if(params.package && !params.package.contains('null')) {
-                  SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
-                  if(!subPkg || subPkg.subscription != sub) {
-                      result.subPkg = false
-                      result.ie = false
-                  }
-                  else {
-                      IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
-                      if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
-                          result.ie = false
-                      }
-                  }
-              }
-          }
-      }
-      //Map result = [sub: params.subscription ? true : false,subPkg: params.package && !params.package.contains(":null"),ie: params.issueEntitlement ? true : false]
-      render result as JSON
-  }
 
   @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
   @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
@@ -2076,18 +1965,6 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-  def deleteManyToMany() {
-    // log.debug("deleteManyToMany(${params})");
-    def context_object = resolveOID2(params.contextOid)
-    def target_object = resolveOID2(params.targetOid)
-    if ( context_object."${params.contextProperty}".contains(target_object) ) {
-      context_object."${params.contextProperty}".remove(target_object)
-      context_object.save(flush: true)
-    }
-    redirect(url: request.getHeader('referer'))    
-  }
-
-    @Secured(['ROLE_USER'])
     def getEmailAddresses() {
         Set result = []
         if (params.orgIdList){
@@ -2315,58 +2192,6 @@ class AjaxController {
     result;
   }
 
-    @Secured(['ROLE_USER'])
-    def editAddress() {
-        Map model = [:]
-        model.addressInstance = Address.get(params.id)
-        if (model.addressInstance){
-            model.modalId = 'addressFormModal'
-            String messageCode = 'person.address.label'
-            switch (model.addressInstance.type){
-                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
-                    messageCode = 'addressFormModalLegalPatronAddress'
-                    break
-                case RDStore.ADRESS_TYPE_BILLING:
-                    messageCode = 'addressFormModalBillingAddress'
-                    break
-                case RDStore.ADRESS_TYPE_POSTAL:
-                    messageCode = 'addressFormModalPostalAddress'
-                    break
-                case RDStore.ADRESS_TYPE_DELIVERY:
-                    messageCode = 'addressFormModalDeliveryAddress'
-                    break
-                case RDStore.ADRESS_TYPE_LIBRARY:
-                    messageCode = 'addressFormModalLibraryAddress'
-                    break
-            }
-
-            model.typeId = model.addressInstance.type.id
-            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
-            model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'edit']
-            render template: "/templates/cpa/addressFormModal", model: model
-        }
-    }
-
-    @Secured(['ROLE_USER'])
-    def personEdit() {
-        Map result = [:]
-        result.personInstance = Person.get(params.id)
-        if (result.personInstance){
-            result.modalId = 'personEditModal'
-            result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
-            result.modalMsgSave = message(code: 'default.button.save_changes')
-            result.showContacts = params.showContacts == "true" ? true : ''
-            result.addContacts = params.showContacts == "true" ? true : ''
-            result.showAddresses = params.showAddresses == "true" ? true : ''
-            result.addAddresses = params.showAddresses == "true" ? true : ''
-            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
-            result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
-            result.contextOrg = contextService.getOrg()
-            render template: "/templates/cpa/personFormModal", model: result
-        }
-    }
-
     def adjustSubscriptionList(){
         List<Subscription> data
         List result = []
@@ -2479,29 +2304,22 @@ class AjaxController {
         }
     }
 
-    @Secured(['ROLE_USER'])
-    def createAddress() {
-        Map model = [:]
-        model.orgId = params.orgId
-        model.prsId = params.prsId
-        model.redirect = params.redirect
-        model.typeId = Long.valueOf(params.typeId)
-        model.hideType = params.hideType
-        if (model.orgId && model.typeId) {
-            String messageCode = 'addressFormModalLibraryAddress'
-            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {messageCode = 'addressFormModalLegalPatronAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {messageCode = 'addressFormModalBillingAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {messageCode = 'addressFormModalPostalAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {messageCode = 'addressFormModalDeliveryAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {messageCode = 'addressFormModalLibraryAddress'}
+    def notifyProfiler() {
+        Map<String, Object> result = [status: 'failed']
 
-            model.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
-        } else {
-            model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
+
+        if (pu) {
+            long delta = pu.stopSimpleBench(params.uri)
+
+            SystemProfiler.update(delta, params.uri)
+
+            result.uri = params.uri
+            result.delta = delta
+            result.status = 'ok'
         }
-        model.modalMsgSave = message(code: 'default.button.create.label')
-        model.url = [controller: 'address', action: 'create']
 
-        render template: "/templates/cpa/addressFormModal", model: model
+        render result as JSON
     }
 }

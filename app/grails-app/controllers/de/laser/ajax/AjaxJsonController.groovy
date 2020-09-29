@@ -1,9 +1,11 @@
 package de.laser.ajax
 
+import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionPackage
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.helper.ProfilerUtils
@@ -17,9 +19,16 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['permitAll'])
 class AjaxJsonController {
 
+    /**
+     * only json rendering here ..
+     * no object manipulation
+     *
+     */
+
     def contextService
     def controlledListService
     def dataConsistencyService
+    def genericOIDService
 
     def test() {
         Map<String, Object> result = [status: 'ok']
@@ -30,6 +39,44 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def consistencyCheck() {
         List result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def checkCascade() {
+        Map<String, Object> result = [sub:true, subPkg:true, ie:true]
+        if (!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
+            result.sub = false
+            result.subPkg = false
+            result.ie = false
+        }
+        else if (params.subscription) {
+            Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
+            if (!sub) {
+                result.sub = false
+                result.subPkg = false
+                result.ie = false
+            }
+            else if (params.issueEntitlement) {
+                if (!params.package || params.package.contains('null')) {
+                    result.subPkg = false
+                    result.ie = false
+                }
+                else if (params.package && !params.package.contains('null')) {
+                    SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
+                    if(!subPkg || subPkg.subscription != sub) {
+                        result.subPkg = false
+                        result.ie = false
+                    }
+                    else {
+                        IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
+                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
+                            result.ie = false
+                        }
+                    }
+                }
+            }
+        }
         render result as JSON
     }
 
@@ -154,24 +201,4 @@ class AjaxJsonController {
             render empty as JSON
         }
     }
-
-    def notifyProfiler() {
-        Map<String, Object> result = [status: 'failed']
-
-        SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
-
-        if (pu) {
-            long delta = pu.stopSimpleBench(params.uri)
-
-            SystemProfiler.update(delta, params.uri)
-
-            result.uri = params.uri
-            result.delta = delta
-            result.status = 'ok'
-        }
-
-        render result as JSON
-    }
-
 }

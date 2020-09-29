@@ -608,7 +608,7 @@
                 if(values.length === 1) {
                     subscription = values[0];
                     $.ajax({
-                        url: "<g:createLink controller="ajax" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
+                        url: "<g:createLink controller="ajaxJson" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
                     }).done(function (response) {
                         //console.log("function ran through w/o errors, please continue implementing! Response from server is: "+JSON.stringify(response))
                         if(!response.sub) $("#newSubscription").addClass("error");
