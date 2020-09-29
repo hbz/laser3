@@ -722,10 +722,8 @@ class AdminController extends AbstractDebugController {
                     content: doc.content,
                     contentType: doc.contentType,
                     title: doc.title,
-                    creator: doc.creator,
                     filename: doc.filename,
                     mimeType: doc.mimeType,
-                    user: doc.user,
                     migrated: doc.migrated,
                     owner: doc.owner
             )

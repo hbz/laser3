@@ -4744,10 +4744,8 @@ class SurveyController {
                                 uuid: dctx.owner.uuid,
                                 contentType: dctx.owner.contentType,
                                 title: dctx.owner.title,
-                                creator: dctx.owner.creator,
                                 filename: dctx.owner.filename,
                                 mimeType: dctx.owner.mimeType,
-                                user: dctx.owner.user,
                                 migrated: dctx.owner.migrated,
                                 owner: dctx.owner.owner
                         ).save(flush:true)
@@ -4777,10 +4775,8 @@ class SurveyController {
                                 uuid: dctx.owner.uuid,
                                 contentType: dctx.owner.contentType,
                                 title: dctx.owner.title,
-                                creator: dctx.owner.creator,
                                 filename: dctx.owner.filename,
                                 mimeType: dctx.owner.mimeType,
-                                user: dctx.owner.user,
                                 migrated: dctx.owner.migrated
                         ).save(flush:true)
 

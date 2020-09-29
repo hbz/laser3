@@ -113,10 +113,8 @@ class InstitutionsService {
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
                             title: dctx.owner.title,
-                            creator: dctx.owner.creator,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            user: dctx.owner.user,
                             migrated: dctx.owner.migrated
                     ).save()
 

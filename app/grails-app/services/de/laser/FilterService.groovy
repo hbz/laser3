@@ -275,10 +275,6 @@ class FilterService {
             query << "lower(d.filename) like lower(:filename)"
             queryParams << [filename:"%${params.docFilename}%"]
         }
-        if(params.docCreator) {
-            query << "d.creator = :creator"
-            queryParams << [creator: User.get(params.docCreator)]
-        }
         if(params.docType) {
             query << "d.type = :type"
             queryParams << [type: RefdataValue.get(params.docType)]
