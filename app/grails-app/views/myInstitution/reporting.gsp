@@ -256,7 +256,7 @@
 
             function updateSubscriptions() {
                 $.ajax({
-                    url: '<g:createLink controller="ajax" action="lookupSubscriptions"/>',
+                    url: '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>',
                     data: {
                         restrictLevel: "true",
                         status: qParams.status.join(","),

@@ -103,7 +103,7 @@
                                 <div id="${s.id}linkedLicenses">
                                     <script>
                                         $.ajax({
-                                            url: "<g:createLink controller="ajax" action="getLinkedLicenses" />",
+                                            url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
                                             data: {
                                                 subscription: "${genericOIDService.getOID(s)}"
                                             }

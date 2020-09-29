@@ -223,7 +223,7 @@
 
 <script>
     function editPerson(id) {
-        var url = '<g:createLink controller="ajax" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+        var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
         person_editModal(url)
     }
     function person_editModal(url) {

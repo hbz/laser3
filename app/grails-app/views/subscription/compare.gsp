@@ -234,7 +234,7 @@
 $(document).ready(function(){
 			$("div.dropdown").dropdown({
 				apiSettings: {
-				    url: "${createLink([controller: "ajax", action: "lookupSubscriptions"])}",
+				    url: "${createLink([controller: "ajaxJson", action: "lookupSubscriptions"])}",
 				    cache: false
 				},
 				clearable: true

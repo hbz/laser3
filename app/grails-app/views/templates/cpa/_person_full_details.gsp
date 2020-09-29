@@ -212,7 +212,7 @@
 
 <g:javascript>
         function addresscreate_prs(prsId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
+            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
         }
 

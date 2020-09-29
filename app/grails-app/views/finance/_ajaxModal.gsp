@@ -372,10 +372,10 @@
             var costItemElementConfigurations = ${raw(orgConfigurations as String)};
             console.log(costItemElementConfigurations);
             var selLinks = {
-                "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
-                "newPackage": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}",
-                "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}",
-                "newTitleGroup": "${createLink([controller:"ajax",action:"lookupTitleGroups"])}?query={query}"
+                "newSubscription": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
+                "newPackage": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
+                "newIE": "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
+                "newTitleGroup": "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
             };
             var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
             if($("[name='newSubscription']").val().length > 0) {
@@ -526,9 +526,9 @@
                 }
                 else if($("[name='newLicenseeTarget']").length === 0)
                     context = $("[name='newSubscription']").val();
-                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
-                selLinks.newTitleGroup = "${createLink([controller:"ajax",action:"lookupTitleGroups"])}?query={query}&sub="+context;
-                selLinks.newPackage = "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
+                selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
+                selLinks.newTitleGroup = "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub="+context;
+                selLinks.newPackage = "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
                 $("#newIE").dropdown('clear');
                 $("#newTitleGroup").dropdown('clear');
                 $("#newPackage").dropdown('clear');
@@ -545,7 +545,7 @@
                 }
                 else if($("[name='newLicenseeTarget']").length === 0)
                     context = $("[name='newSubscription']").val();
-                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
+                selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
                 $("#newIE").dropdown('clear');
                 ajaxPostFunc();
             });
@@ -608,7 +608,7 @@
                 if(values.length === 1) {
                     subscription = values[0];
                     $.ajax({
-                        url: "<g:createLink controller="ajax" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
+                        url: "<g:createLink controller="ajaxJson" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
                     }).done(function (response) {
                         //console.log("function ran through w/o errors, please continue implementing! Response from server is: "+JSON.stringify(response))
                         if(!response.sub) $("#newSubscription").addClass("error");
