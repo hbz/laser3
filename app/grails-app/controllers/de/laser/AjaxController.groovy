@@ -2646,26 +2646,15 @@ class AjaxController {
         if (model.addressInstance){
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
-            switch (model.addressInstance.type){
-                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
-                    messageCode = 'addressFormModalLegalPatronAddress'
-                    break
-                case RDStore.ADRESS_TYPE_BILLING:
-                    messageCode = 'addressFormModalBillingAddress'
-                    break
-                case RDStore.ADRESS_TYPE_POSTAL:
-                    messageCode = 'addressFormModalPostalAddress'
-                    break
-                case RDStore.ADRESS_TYPE_DELIVERY:
-                    messageCode = 'addressFormModalDeliveryAddress'
-                    break
-                case RDStore.ADRESS_TYPE_LIBRARY:
-                    messageCode = 'addressFormModalLibraryAddress'
-                    break
-            }
-
             model.typeId = model.addressInstance.type.id
-            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
+            if(model.addressInstance.prs) {
+                model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.prs.toString() + ')'
+            }
+            else if(model.addressInstance.org) {
+                model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.org.toString() + ')'
+            }else{
+                model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
+            }
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'address', action: 'edit']
             render template: "/templates/cpa/addressFormModal", model: model
@@ -2673,11 +2662,25 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def personEdit() {
+    def createPerson() {
+        Map result = [:]
+            result.modalId = 'personModal'
+            result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+            result.showContacts = params.showContacts == "true" ? true : ''
+            result.addContacts = params.showContacts == "true" ? true : ''
+            result.isPublic    = params.isPublic ? RDStore.YN_YES : RDStore.YN_NO
+            result.url = [controller: 'person', action: 'create']
+            result.contextOrg = contextService.getOrg()
+            result.org = contextService.getOrg()
+            render template: "/templates/cpa/personFormModal", model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def editPerson() {
         Map result = [:]
         result.personInstance = Person.get(params.id)
         if (result.personInstance){
-            result.modalId = 'personEditModal'
+            result.modalId = 'personModal'
             result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
             result.modalMsgSave = message(code: 'default.button.save_changes')
             result.showContacts = params.showContacts == "true" ? true : ''
@@ -2685,6 +2688,7 @@ class AjaxController {
             result.showAddresses = params.showAddresses == "true" ? true : ''
             result.addAddresses = params.showAddresses == "true" ? true : ''
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
+            result.tmplShowDeleteButton = result.editable
             result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
             render template: "/templates/cpa/personFormModal", model: result
@@ -2700,7 +2704,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def addressFields() {
 
-        render template: "/templates/cpa/addressFields"
+        render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
     }
 
     def adjustSubscriptionList(){
@@ -2821,7 +2825,7 @@ class AjaxController {
         model.orgId = params.orgId
         model.prsId = params.prsId
         model.redirect = params.redirect
-        model.typeId = Long.valueOf(params.typeId)
+        model.typeId = params.typeId ? Long.valueOf(params.typeId) : null
         model.hideType = params.hideType
         if (model.orgId && model.typeId) {
             String messageCode = 'addressFormModalLibraryAddress'

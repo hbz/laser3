@@ -13,6 +13,12 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
                 <col style="width: 236px;">
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
+                <col style="width: 118px;">
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
+                <col style="width: 118px;">
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
                 <col style="width: 236px;">
             </g:if>
@@ -45,6 +51,16 @@
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
         <th>
             ${message(code: 'person.organisation.label')}
+        </th>
+    </g:if>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
+        <th>
+            ${message(code: 'person.function.label')}
+        </th>
+    </g:if>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
+        <th>
+            ${message(code: 'person.position.label')}
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
@@ -109,6 +125,34 @@
                 </div>
             </td>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
+                <td>
+                    <%-- filter by model.restrictToOrg --%>
+                    <div class="ui divided middle aligned list la-flex-list ">
+                        <g:each in="${pRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.functionType}">
+                                    <div class="ui item ">
+                                        ${role.functionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
+                    </div>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
+                <td>
+                    <%-- filter by model.restrictToOrg --%>
+                    <div class="ui divided middle aligned list la-flex-list ">
+                        <g:each in="${pRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.positionType}">
+                                    <div class="ui item ">
+                                    ${role.positionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
+                    </div>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
                 <td>
                     <%-- filter by model.restrictToOrg --%>
@@ -128,7 +172,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
                 <td>
-                    <div class="ui divided middle aligned selection list la-flex-list ">
+                    <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
                             <g:render template="/templates/cpa/contact" model="${[
                                     contact             : contact,
@@ -143,11 +187,12 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <td>
-                    <div class="ui divided middle aligned selection list la-flex-list ">
-                        <g:each in="${person.addresses.sort { it.type?.getI10n('value') }}" var="address">
+                    <div class="ui divided middle aligned list la-flex-list ">
+                        <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                             <g:render template="/templates/cpa/address" model="${[
                                     address             : address,
-                                    tmplShowDeleteButton: true
+                                    tmplShowDeleteButton: true,
+                                    editable:             editable
                             ]}"/>
                         </g:each>
                     </div>
@@ -156,7 +201,7 @@
         </g:each>
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" onclick="personEdit(${person.id})" class="ui icon button">
+                    <button type="button" onclick="editPerson(${person.id})" class="ui icon button">
                         <i class="write icon"></i>
                     </button>
 
@@ -177,8 +222,8 @@
 </table>
 
 <g:javascript>
-    function personEdit(id) {
-        var url = '<g:createLink controller="ajax" action="personEdit"/>?id='+id+'&showAddresses='+${showAddresses?:false}+'&showContacts='+${showContacts?:false};
+    function editPerson(id) {
+        var url = '<g:createLink controller="ajax" action="editPerson"/>?id='+id+'&showAddresses='+${showAddresses?:false}+'&showContacts='+${showContacts?:false};
         person_editModal(url)
     }
     function person_editModal(url) {
@@ -186,13 +231,13 @@
             url: url,
             success: function(result){
                 $("#dynamicModalContainer").empty();
-                $("#personEditModal").remove();
+                $("#personModal").remove();
 
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personEditModal');
-                        r2d2.initDynamicXEditableStuff('#personEditModal');
+                        r2d2.initDynamicSemuiStuff('#personModal');
+                        r2d2.initDynamicXEditableStuff('#personModal');
                     }
                 }).modal('show');
             }

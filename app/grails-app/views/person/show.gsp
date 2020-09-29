@@ -112,6 +112,7 @@
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
                                     <g:render template="/templates/cpa/address" model="${[
                                             address: a,
+                                            editable            : editable,
                                             tmplShowDeleteButton: true,
                                             controller: 'person',
                                             action: 'show',

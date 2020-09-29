@@ -25,7 +25,7 @@
 
             <g:each in="${person?.addresses?.sort { it?.type?.getI10n('value') }}" var="address">
                 <g:render template="/templates/cpa/address"
-                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
+                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
 
         </g:if>
@@ -104,7 +104,7 @@
 
         <g:each in="${personRole?.prs?.addresses?.sort { it.type?.getI10n('value') }}" var="address">
             <g:render template="/templates/cpa/address"
-                      model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
+                      model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
         </g:each>
 
     </g:if>

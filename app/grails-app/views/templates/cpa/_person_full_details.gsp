@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.helper.RDConstants" %>
 
 <g:if test="${person && personContext}">
-    <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
+    <div class="ui divided middle aligned ${noSelection ? '' : 'selection'} list la-flex-list la-list-border-around">
 
         <div class="ui item person-details">
             <div class="content la-space-right">
@@ -78,9 +78,9 @@
         </g:if>
         <g:if test="${tmplConfigShow.contains('address') && person.addresses}">
 
-            <g:each in="${person.addresses.sort { it.type.getI10n('value') }}" var="address">
+            <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                 <g:render template="/templates/cpa/address"
-                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
+                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
 
         </g:if>

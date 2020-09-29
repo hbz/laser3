@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="${modalID?: 'personEditModal'}" text="${modalText ?: message(code: 'person.create_new.label')}" contentClass="scrolling "
+<semui:modal id="${modalID?: 'personModal'}" text="${modalText ?: message(code: 'person.create_new.label')}" contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="create_person" class="ui form" url="${url}" method="POST">
@@ -164,7 +164,7 @@
                 <br>
                 <br>
                 <label for="contacts">
-                    <g:message code="person.contacts.label"/>
+                    <g:message code="person.contacts.label"/>:
                 </label>
 
                 <g:if test="${personInstance}">
@@ -193,7 +193,28 @@
                 <br>
                 <br>
 
-                <div id="divElements"></div>
+                <div class="three fields">
+                    <div class="field three wide fieldcontain">
+                        <label></label>
+                        <laser:select class="ui dropdown" name="contentType.id"
+                                      from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${contactInstance?.contentType?.id}"/>
+                    </div>
+
+                    <div class="field one wide fieldcontain">
+
+                    </div>
+
+
+                    <div class="field twelve wide fieldcontain">
+                        <label></label>
+                        <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                    </div>
+                </div>
+
+                <div id="contcatElements"></div>
             </g:if>
 
         </g:if>
@@ -203,13 +224,15 @@
                 <br>
                 <br>
                 <label for="addresses">
-                    <g:message code="person.addresses.label"/>
+                    <g:message code="person.addresses.label"/>:
                 </label>
                 <g:if test="${personInstance}">
-                    <g:each in="${personInstance.addresses.sort { it.type.getI10n('value') }}" var="address">
+                    <div class="ui divided middle aligned list la-flex-list ">
+                    <g:each in="${personInstance.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                         <g:render template="/templates/cpa/address"
-                                  model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
+                                  model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
                     </g:each>
+                    </div>
                 </g:if>
             </div>
             <g:if test="${addAddresses}">
@@ -224,7 +247,7 @@
                 <br>
                 <br>
 
-                <div id="divElements"></div>
+                <div id="addressElements"></div>
             </g:if>
 
         </g:if>
@@ -251,26 +274,32 @@
                 }
             });
 
-            var elementCount = 0;
+            var contactElementCount = 0;
+            var addressElementCount = 0;
 
-            var container = $(document.createElement('div'));
+            var contcatContainer = $(document.createElement('div'));
+            $(contcatContainer).attr('id', 'contcatElementsContainer');
+
+            var addressContainer = $(document.createElement('div'));
+            $(addressContainer).attr('id', 'addressElementsContainer');
 
             $('#addContactElement').click(function () {
                 $.ajax({
                     url: "<g:createLink controller="ajax" action="contactFields"/>",
                     type: "POST",
                     success: function (data) {
-                        if (elementCount <= 3) {
+                        if (contactElementCount <= 3) {
 
-                            elementCount = elementCount + 1;
-                            $(container).append(data);
-                            $('#contactFields').attr('id', 'contactFields' + elementCount);
+                            contactElementCount = contactElementCount + 1;
+                            $(contcatContainer).append(data);
+                            $('#contactFields').attr('id', 'contactFields' + contactElementCount);
 
-                            $('#divElements').after(container);
+                            $('#contcatElements').after(contcatContainer);
                         } else {
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
                         }
+                        r2d2.initDynamicSemuiStuff('#contcatElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -279,33 +308,34 @@
             });
 
             $('#removeContactElement').click(function () {
-                if (elementCount != 0) {
-                    $('#contactFields' + elementCount).remove();
-                    elementCount = elementCount - 1;
+                if (contactElementCount != 0) {
+                    $('#contactFields' + contactElementCount).remove();
+                    contactElementCount = contactElementCount - 1;
                 }
 
-                if (elementCount == 0) {
-                    $(container).empty().remove();
+                if (contactElementCount == 0) {
+                    $(contcatContainer).empty().remove();
                     $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });
 
             $('#addAddressElement').click(function () {
                 $.ajax({
-                    url: "<g:createLink controller="ajax" action="addressFields"/>",
+                    url: "<g:createLink controller="ajax" action="addressFields" params="[multipleAddresses: true]"/>",
                     type: "POST",
                     success: function (data) {
-                        if (elementCount <= 3) {
+                        if (addressElementCount <= 3) {
 
-                            elementCount = elementCount + 1;
-                            $(container).append(data);
-                            $('#addressFormModal').attr('id', 'addressFormModal' + elementCount);
+                            addressElementCount = addressElementCount + 1;
+                            $(addressContainer).append(data);
+                            $('#addressFields').attr('id', 'addressFields' + addressElementCount);
 
-                            $('#divElements').after(container);
+                            $('#addressElements').after(addressContainer);
                         } else {
                             $('#addAddressElement').attr('class', 'ui icon button disable');
                             $('#addAddressElement').attr('disabled', 'disabled');
                         }
+                        r2d2.initDynamicSemuiStuff('#addressElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -314,13 +344,13 @@
             });
 
             $('#removeAddressElement').click(function () {
-                if (elementCount != 0) {
-                    $('#addressFormModal' + elementCount).remove();
-                    elementCount = elementCount - 1;
+                if (addressElementCount != 0) {
+                    $('#addressFields' + addressElementCount).remove();
+                    addressElementCount = addressElementCount - 1;
                 }
 
-                if (elementCount == 0) {
-                    $(container).empty().remove();
+                if (addressElementCount == 0) {
+                    $(addressContainer).empty().remove();
                     $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });

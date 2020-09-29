@@ -25,7 +25,13 @@
                 ${c + 1}
             </td>
             <td>
-                ${address.type?.getI10n('value')}
+                <div class="ui divided middle aligned list la-flex-list ">
+                <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">
+                    <div class="ui item ">
+                        ${type?.getI10n('value')}
+                    </div>
+                </g:each>
+                </div>
             </td>
             <td>
                 <div class="ui item address-details">

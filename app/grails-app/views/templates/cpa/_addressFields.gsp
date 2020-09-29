@@ -1,6 +1,10 @@
 <%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
-<laser:serviceInjection />
 
+<laser:serviceInjection />
+<div id="addressFields">
+        <g:if test="${multipleAddresses}">
+            <input type="hidden" name="multipleAddresses" value="multipleAddresses"/>
+        </g:if>
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>
@@ -10,19 +14,20 @@
         <g:if test="${prsId}">
             <input id="prs" name="prs" type="hidden" value="${prsId}"/>
         </g:if>
-        <g:if test="${typeId}">
+        %{--<g:if test="${typeId}">
             <input id="type" name="type.id" type="hidden" value="${typeId}"/>
-        </g:if>
+        </g:if>--}%
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
             <label for="type">
                 ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
             </label>
             %{--<laser:select class="ui dropdown multiple" id="type" name="type.id"--}%
-            <laser:select class="ui dropdown" id="type" name="type"
+            <laser:select class="ui dropdown search selection" id="type" name="type"
                           from="${Address.getAllRefdataValues()}"
                           optionKey="id"
                           optionValue="value"
+                          multiple=""
                           value="${addressInstance?.type?.id ?: typeId}"/>
         </div>
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
@@ -143,4 +148,4 @@
 
         </div>
 
-
+</div>

@@ -48,26 +48,15 @@
 
     <semui:controlButtons>
         <semui:actionsDropdown>
-            <g:if test="${editable && contextService.user.hasAffiliation('INST_EDITOR')}">
-                <semui:actionsDropdownItem data-semui="modal" href="#personEditModal"
-                                           message="person.create_new.contactPerson.label"/>
+            <g:if test="${editable}">
+                <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate(${false});"><g:message code="person.create_new.contactPerson.label"/></a>
             </g:if><g:else>
-            <semui:actionsDropdownItemDisabled data-semui="modal" href="#personEditModal"
-                                               message="person.create_new.contactPerson.label"/>
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
         </g:else>
             <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                        message="menu.institutions.copy_emailaddresses.button"/>
         </semui:actionsDropdown>
     </semui:controlButtons>
-
-
-    <g:render template="/templates/cpa/personFormModal" model="['org'   : institution,
-                                                                'isPublic'           : RDStore.YN_YES,
-                                                                'presetFunctionType' : RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                                'showContacts'       : true,
-                                                                'addContacts'       : true,
-                                                                'url'             :[controller: 'person', action: 'create']
-    ]"/>
 
     <g:render template="/templates/copyFilteredEmailAddresses" model="[orgList: [institution], emailAddresses: emailAddresses]"/>
     <br>
@@ -123,7 +112,7 @@
               model="${[persons: visiblePersons,
                         restrictToOrg: null,
                         showContacts: true,
-                        tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'functionPosition']
+                        tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
 
     <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
@@ -187,7 +176,7 @@
               model="${[persons: visiblePersons,
                         restrictToOrg: null,
                         showAddresses: true,
-                        tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'functionPosition']
+                        tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>
 
     <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
@@ -206,11 +195,10 @@
 
     <semui:controlButtons>
         <semui:actionsDropdown>
-            <g:if test="${editable && contextService.user.hasAffiliation('INST_EDITOR')}">
-                <semui:actionsDropdownItem data-semui="modal" href="#addressFormModal"
-                                           message="address.add.label"/>
+            <g:if test="${editable}">
+                <a href="#addressFormModal" class="item" data-semui="modal" onclick="addresscreate_org('${institution.id}');"><g:message code="address.add.label"/></a>
             </g:if><g:else>
-            <semui:actionsDropdownItemDisabled data-semui="modal" href="#addressFormModal"
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="address.add.label"/>
         </g:else>
 
@@ -218,9 +206,6 @@
     </semui:controlButtons>
     <br>
 
-    <g:render template="/templates/cpa/addressFormModal" model="['orgId'               : institution.id,
-                                                                'url'                  : [controller: 'address', action: 'create']
-    ]"/>
 
     <g:render template="/templates/cpa/address_table" model="${[
             hideAddressType     : true,
@@ -229,7 +214,7 @@
             controller          : 'org',
             action              : 'show',
             id                  : institution.id,
-            editable            : ((institution.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+            editable            : editable
     ]}"/>
 
 </div>
@@ -242,5 +227,53 @@
     $(document).ready(function () {
         $('.tabular.menu .item').tab()
     });
+
+    function personCreate(isPublic) {
+        var url = '<g:createLink controller="ajax" action="createPerson"/>?isPublic='+isPublic+'&showAddresses='+${false}+'&showContacts='+${true};
+        createPersonModal(url)
+    }
+    function createPersonModal(url) {
+        $.ajax({
+            url: url,
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#personModal").remove();
+
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#personModal');
+                        r2d2.initDynamicXEditableStuff('#personModal');
+                    }
+                }).modal('show');
+            }
+        });
+    }
+
+    function addresscreate_org(orgId) {
+            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?orgId='+orgId;
+            address_modal(url);
+    }
+
+    function address_modal(url) {
+            $.ajax({
+                url: url,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#addressFormModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#addressFormModal');
+                            r2d2.initDynamicXEditableStuff('#addressFormModal');
+
+                            // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+    }
+
 </r:script>
 </html>

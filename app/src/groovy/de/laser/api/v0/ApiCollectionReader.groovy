@@ -39,11 +39,11 @@ class ApiCollectionReader {
             // RefdataValues
             tmp.region       = it.region?.value
             tmp.country     = it.country?.value
-            tmp.type        = it.type?.value
+            tmp.type        = it.type?.collect{ it.value }
 
             tmp = ApiToolkit.cleanUp(tmp, true, false)
 
-            if(ApiReader.NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
+            if(ApiReader.NO_CONSTRAINT == allowedTypes || (allowedTypes.findAll{it in it.type?.value} != [])) {
                 result << tmp
             }
         }
