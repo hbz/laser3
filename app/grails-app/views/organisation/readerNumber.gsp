@@ -51,6 +51,7 @@
                                 <th>${column}</th>
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -62,17 +63,19 @@
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${number}">
                                         <semui:xEditable owner="${number}" field="value" format="number"/>
-                                        <g:if test="${editable}">
-                                            <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
-                                                    data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
-                                                    data-confirm-term-how="ok" params="${[id:number.id]}">
-                                                <i class="trash alternate icon"></i>
-                                            </g:link>
-                                        </g:if>
                                     </g:if>
                                 </td>
                             </g:each>
                             <td><g:formatNumber number="${semesterSums.get(numbersInstance.getKey())}"/></td>
+                            <td class="x">
+                                <g:if test="${editable}">
+                                    <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                            data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                            data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}">
+                                        <i class="trash alternate icon"></i>
+                                    </g:link>
+                                </g:if>
+                            </td>
                         </tr>
                     </g:each>
                     </tbody>
@@ -88,6 +91,7 @@
                                 <th>${column}</th>
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,17 +103,19 @@
                                         <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${number}">
                                             <semui:xEditable owner="${number}" field="value" type="number"/>
-                                            <g:if test="${editable}">
-                                                <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
-                                                        data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
-                                                        data-confirm-term-how="ok" params="${[id:number.id]}">
-                                                    <i class="trash alternate icon"></i>
-                                                </g:link>
-                                            </g:if>
                                         </g:if>
                                     </td>
                                 </g:each>
                                 <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}"/></td>
+                                <td>
+                                    <g:if test="${editable}">
+                                        <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                                data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}">
+                                            <i class="trash alternate icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                </td>
                             </tr>
                         </g:each>
                     </tbody>
