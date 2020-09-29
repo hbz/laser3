@@ -11,7 +11,6 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -34,9 +33,7 @@ class AjaxController {
     def genericOIDService
     def subscriptionService
     def contextService
-    def taskService
     def controlledListService
-    def dataConsistencyService
     def accessService
     def escapeService
     def formService
@@ -323,40 +320,6 @@ class AjaxController {
         log.debug("genericSetRel() returns ${resp as JSON}")
         render resp as JSON
     }
-
-  def orgs() {
-    // log.debug("Orgs: ${params}");
-
-    def result = [
-      options:[]
-    ]
-
-    def query_params = ["%${params.query.trim().toLowerCase()}%"];
-
-    // log.debug("q params: ${query_params}");
-
-    // result.options = Org.executeQuery("select o.name from Org as o where lower(o.name) like ? order by o.name desc",["%${params.query.trim().toLowerCase()}%"],[max:10]);
-    def ol = Org.executeQuery("select o from Org as o where lower(o.name) like ? order by o.name asc",query_params,[max:10,offset:0]);
-
-    ol.each {
-      result.options.add(it.name);
-    }
-
-    render result as JSON
-  }
-
-  def validatePackageId() {
-    Map<String, Object> result = [:]
-    result.response = false;
-    if( params.id ) {
-        Package p = Package.findByIdentifier(params.id)
-      if ( !p ) {
-        result.response = true
-      }
-    }
-
-    render result as JSON
-  }
 
   def generateBoolean() {
     def result = [
@@ -985,7 +948,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def delPrsRole() {
-        def prsRole = PersonRole.get(params.id)
+        PersonRole prsRole = PersonRole.get(params.id)
 
         if (prsRole && prsRole.delete(flush: true)) {
         }
@@ -999,11 +962,11 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def addRefdataValue() {
 
-        def newRefdataValue
-        def error
-        def msg
+        RefdataValue newRefdataValue
+        String error
+        String msg
 
-        def rdc = RefdataCategory.findById(params.refdata_category_id)
+        RefdataCategory rdc = RefdataCategory.findById(params.refdata_category_id)
 
         if (RefdataValue.getByValueAndCategory(params.refdata_value, rdc.desc)) {
             error = message(code: "refdataValue.create_new.unique")
@@ -1039,11 +1002,11 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def addRefdataCategory() {
 
-        def newRefdataCategory
-        def error
-        def msg
+        RefdataCategory newRefdataCategory
+        String error
+        String msg
 
-        def rdc = RefdataCategory.getByDesc(params.refdata_category)
+        RefdataCategory rdc = RefdataCategory.getByDesc(params.refdata_category)
         if (rdc) {
             error = message(code: 'refdataCategory.create_new.unique')
             log.debug(error)
@@ -2078,35 +2041,6 @@ class AjaxController {
     }
     redirect(url: request.getHeader('referer'))
   }
-
-  def validateIdentifierUniqueness(){
-    log.debug("validateIdentifierUniqueness - ${params}")
-    Map<String, Object> result = [:]
-    def owner = resolveOID2(params.owner)
-    def identifier = resolveOID2(params.identifier)
-
-    // TODO [ticket=1789]
-    def owner_type = Identifier.getAttributeName(owner)
-    if (!owner_type) {
-      log.error("Unexpected Identifier Owner ${owner.class}")
-      return null
-    }
-
-    // TODO: BUG !? multiple occurrences on the same object allowed
-    //def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
-
-    String query = "select ident from Identifier ident where ident.value = :iv and ident.${owner_type} != :ot"
-    def duplicates = Identifier.executeQuery( query, [iv: identifier.value, ot: owner] )
-
-    if(duplicates){
-      result.duplicates = duplicates.collect{ it."${owner_type}" }
-    }
-    else{
-      result.unique=true
-    }
-    log.debug("validateIdentifierUniqueness - ${result}")
-    render result as JSON
-  }
     
   def resolveOID2(oid) {
     def oid_components = oid.split(':')
@@ -2203,30 +2137,6 @@ class AjaxController {
             }
 
         }
-
-        render result as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def getRegions() {
-        List<RefdataValue> result = []
-        if (params.country) {
-            List<Long> countryIds = params.country.split ','
-            countryIds.each {
-                switch (RefdataValue.get(it).value) {
-                    case 'DE':
-                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE])
-                        break;
-                    case 'AT':
-                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT])
-                        break;
-                    case 'CH':
-                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH])
-                        break;
-                }
-            }
-        }
-        result = result.flatten()
 
         render result as JSON
     }

@@ -4,7 +4,10 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.helper.ProfilerUtils
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemProfiler
@@ -38,6 +41,30 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def getLinkedSubscriptions() {
         render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getRegions() {
+        List<RefdataValue> result = []
+        if (params.country) {
+            List<Long> countryIds = params.country.split(',')
+            countryIds.each {
+                switch (RefdataValue.get(it).value) {
+                    case 'DE':
+                        result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE]) )
+                        break;
+                    case 'AT':
+                        result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT]) )
+                        break;
+                    case 'CH':
+                        result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH]) )
+                        break;
+                }
+            }
+        }
+        result = result.flatten()
+
+        render result as JSON // TODO -> check response; remove unnecessary information! only id and value_<x>?
     }
 
     @Secured(['ROLE_USER'])

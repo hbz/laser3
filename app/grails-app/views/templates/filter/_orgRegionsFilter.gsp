@@ -39,7 +39,7 @@
             dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
-                url: '<g:createLink controller="ajax" action="getRegions"/>'
+                url: '<g:createLink controller="ajaxJson" action="getRegions"/>'
                 + '?country=' + selectedCountry + '&format=json',
                 success: function (data) {
                     $.each(data, function (key, entry) {
