@@ -6,15 +6,17 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.auth.User
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.helper.ProfilerUtils
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.SessionCacheWrapper
-import de.laser.system.SystemProfiler
+import de.laser.properties.PropertyDefinition
+
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll'])
 class AjaxJsonController {
@@ -77,6 +79,14 @@ class AjaxJsonController {
                 }
             }
         }
+        render result as JSON
+    }
+
+    def getBooleans() {
+        List result = [
+                [value: 1, text: RDStore.YN_YES.getI10n('value')],
+                [value: 0, text: RDStore.YN_NO.getI10n('value')]
+        ]
         render result as JSON
     }
 
@@ -200,5 +210,48 @@ class AjaxJsonController {
             Map empty = [results: []]
             render empty as JSON
         }
+    }
+
+    def searchPropertyAlternativesByOID() {
+        List<Map<String, Object>> result = []
+        PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+
+        List<PropertyDefinition> queryResult = PropertyDefinition.findAllWhere(
+                descr: pd.descr,
+                refdataCategory: pd.refdataCategory,
+                type: pd.type,
+                multipleOccurrence: pd.multipleOccurrence,
+                tenant: pd.tenant
+        )//.minus(pd)
+
+        queryResult.each { it ->
+            PropertyDefinition rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+            if (pd.isUsedForLogic) {
+                if (it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+            else {
+                if (! it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+        }
+        if (result.size() > 1) {
+            result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
+        }
+
+        render result as JSON
+    }
+
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def checkExistingUser() {
+        Map<String, Object> result = [result: false]
+        if (params.input) {
+            List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)", [searchTerm:params.input])
+            result.result = checkList.size() > 0
+        }
+        render result as JSON
     }
 }

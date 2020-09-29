@@ -233,7 +233,7 @@
                             $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
 
                             $.ajax({
-                                url: '<g:createLink controller="ajax" action="propertyAlternativesSearchByOID"/>' + '?oid=' + pd + '&format=json',
+                                url: '<g:createLink controller="ajaxJson" action="searchPropertyAlternativesByOID"/>' + '?oid=' + pd,
                                 success: function (data) {
                                     var select = '<option></option>';
                                     for (var index = 0; index < data.length; index++) {

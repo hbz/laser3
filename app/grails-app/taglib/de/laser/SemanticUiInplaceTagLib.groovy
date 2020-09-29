@@ -29,24 +29,25 @@ class SemanticUiInplaceTagLib {
 
         boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
-        if (editable == true) {
+        if ( editable ) {
 
-            def oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
-            def id            = attrs.id ?: "${oid}:${attrs.field}"
-            def default_empty = message(code:'default.button.edit.label')
-            def data_link     = null
+            String oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
+            String id            = attrs.id ?: "${oid}:${attrs.field}"
+            String default_empty = message(code:'default.button.edit.label')
+            String data_link     = null
 
-            out << "<a href=\"#\" id=\"${id}\" "
+            out << "<a href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+
             if(attrs.owner instanceof SurveyResult){
-                out << "data-onblur=\"submit\" "
+                out << " data-onblur=\"submit\""
             }else {
-                out << "data-onblur=\"ignore\" "
+                out << " data-onblur=\"ignore\""
             }
-            out << "class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
                 out << " data-type=\"text\"" // combodate | date
-                def df = "${message(code:'default.date.format.notime').toUpperCase()}"
+
+                String df = "${message(code:'default.date.format.notime').toUpperCase()}"
                 out << " data-format=\"${df}\""
                 out << " data-viewformat=\"${df}\""
                 out << " data-template=\"${df}\""
@@ -89,7 +90,7 @@ class SemanticUiInplaceTagLib {
             out << " data-url=\"${data_link}\""
 
             if (! body) {
-                def oldValue = ''
+                String oldValue = ''
                 if (attrs.owner[attrs.field] && attrs.type=='date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
                     oldValue = sdf.format(attrs.owner[attrs.field])
@@ -151,32 +152,32 @@ class SemanticUiInplaceTagLib {
         try {
             boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
-            if ( editable == true ) {
+            if ( editable ) {
 
-                def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
-                def dataController = attrs.dataController ?: 'ajax'
-                def dataAction = attrs.dataAction ?: 'sel2RefdataSearch'
+                String oid = "${attrs.owner.class.name}:${attrs.owner.id}"
+                String dataController = attrs.dataController ?: 'ajax'
+                String dataAction = attrs.dataAction ?: 'sel2RefdataSearch'
 
-                Map params = [id:attrs.config, format:'json', oid:oid]
+                Map<String, Object> params = [id:attrs.config, format:'json', oid:oid]
 
                 if (attrs.constraint) {
                     params.put('constraint', attrs.constraint)
                 }
 
-                def data_link = createLink(
+                String data_link = createLink(
                         controller:dataController,
                         action: dataAction,
                         params: params
                 ).encodeAsHTML()
 
-                def update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
-                def id = attrs.id ?: "${oid}:${attrs.field}"
-                def default_empty = message(code:'default.button.edit.label')
-                def emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+                String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
+                String id = attrs.id ?: "${oid}:${attrs.field}"
+                String default_empty = message(code:'default.button.edit.label')
+                String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << "<span>"
 
-                def dataValue = ""
+                String dataValue = ""
                 def obj = genericOIDService.resolveOID(oid)
 
                 if (obj && obj."${attrs.field}") {
@@ -218,14 +219,14 @@ class SemanticUiInplaceTagLib {
         try {
             boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
-            if ( editable == true ) {
+            if ( editable ) {
 
-                def oid 			= "${attrs.owner.class.name}:${attrs.owner.id}"
-                def update_link 	= createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
-                def data_link 		= createLink(controller:'ajax', action: 'generateBoolean').encodeAsHTML()
-                def id 				= attrs.id ?: "${oid}:${attrs.field}"
-                def default_empty 	= message(code:'default.button.edit.label')
-                def emptyText 		= attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+                String oid 			= "${attrs.owner.class.name}:${attrs.owner.id}"
+                String update_link 	= createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
+                String data_link 	= createLink(controller:'ajaxJson', action: 'getBooleans').encodeAsHTML()
+                String id 			= attrs.id ?: "${oid}:${attrs.field}"
+                String default_empty = message(code:'default.button.edit.label')
+                String emptyText    = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << "<span>"
 
@@ -257,7 +258,7 @@ class SemanticUiInplaceTagLib {
     }
 
     def simpleHiddenValue = { attrs, body ->
-        def default_empty = message(code:'default.button.edit.label')
+        String default_empty = message(code:'default.button.edit.label')
 
         if (attrs.type == "date") {
             out << '<div class="ui calendar datepicker">'
@@ -267,7 +268,8 @@ class SemanticUiInplaceTagLib {
 
         if (attrs.type == "date") {
             out << " data-type=\"text\"" // combodate | date
-            def df = "${message(code:'default.date.format.notime').toUpperCase()}"
+
+            String df = "${message(code:'default.date.format.notime').toUpperCase()}"
             out << " data-format=\"${df}\""
             out << " data-viewformat=\"${df}\""
             out << " data-template=\"${df}\""
@@ -281,7 +283,7 @@ class SemanticUiInplaceTagLib {
             out << " data-type=\"${attrs.type?:'text'}\" "
         }
 
-        def emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+        String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
         out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
         out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
@@ -292,8 +294,8 @@ class SemanticUiInplaceTagLib {
     }
 
     private renderObjectValue(value) {
-        def result = ''
-        def not_set = message(code:'refdata.notSet')
+        String result = ''
+        String not_set = message(code:'refdata.notSet')
 
         if ( value ) {
             switch ( value.class ) {
@@ -354,24 +356,25 @@ class SemanticUiInplaceTagLib {
 
         boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
-        if (editable == true) {
+        if (editable) {
 
-            def oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
-            def id            = attrs.id ?: "${oid}:${attrs.field}"
-            def default_empty = message(code:'default.button.edit.label')
-            def data_link     = null
+            String oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
+            String id            = attrs.id ?: "${oid}:${attrs.field}"
+            String default_empty = message(code:'default.button.edit.label')
+            String data_link     = null
 
-            out << "<a style=\"display: inline-block;\" href=\"#\" id=\"${id}\" "
+            out << "<a style=\"display: inline-block;\" href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+
             if(attrs.owner instanceof SurveyResult){
-                out << "data-onblur=\"submit\" "
+                out << " data-onblur=\"submit\""
             }else {
-                out << "data-onblur=\"ignore\" "
+                out << " data-onblur=\"ignore\""
             }
-            out << "class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
                 out << " data-type=\"text\"" // combodate | date
-                def df = "${message(code:'default.date.format.notime').toUpperCase()}"
+
+                String df = "${message(code:'default.date.format.notime').toUpperCase()}"
                 out << " data-format=\"${df}\""
                 out << " data-viewformat=\"${df}\""
                 out << " data-template=\"${df}\""
@@ -413,7 +416,7 @@ class SemanticUiInplaceTagLib {
 
             out << " data-url=\"${data_link}\""
 
-                def oldValue = ''
+                String oldValue = ''
                 if (attrs.owner[attrs.field] && attrs.type=='date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
                     oldValue = sdf.format(attrs.owner[attrs.field])

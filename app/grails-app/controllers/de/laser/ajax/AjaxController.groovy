@@ -41,7 +41,6 @@ class AjaxController {
     def dashboardDueDatesService
     CompareService compareService
     LinksGenerationService linksGenerationService
-    AddressbookService addressbookService
     FinanceService financeService
 
     def refdata_config = [
@@ -259,14 +258,6 @@ class AjaxController {
         render resp as JSON
     }
 
-  def generateBoolean() {
-    def result = [
-        [value: 1, text: RDStore.YN_YES.getI10n('value')],
-        [value: 0, text: RDStore.YN_NO.getI10n('value')]
-    ]
-    render result as JSON
-  }
-
   @Deprecated
   def refdataSearch() {
       // TODO: refactoring - only used by /templates/_orgLinksModal.gsp
@@ -357,46 +348,6 @@ class AjaxController {
     }
   }
 
-    def propertyAlternativesSearchByOID() {
-        def result = []
-        def pd = genericOIDService.resolveOID(params.oid)
-
-        def queryResult = PropertyDefinition.findAllWhere(
-                descr: pd.descr,
-                refdataCategory: pd.refdataCategory,
-                type: pd.type,
-                multipleOccurrence: pd.multipleOccurrence,
-                tenant: pd.tenant
-        )//.minus(pd)
-
-        queryResult.each { it ->
-            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-            if (pd.isUsedForLogic) {
-                if (it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
-                }
-            }
-            else {
-                if (! it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
-                }
-            }
-        }
-
-        if (result.size() > 1) {
-           result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
-        }
-
-        withFormat {
-            html {
-                result
-            }
-            json {
-                render result as JSON
-            }
-        }
-    }
-
     /**
      * Copied legacy sel2RefdataSearch(), but uses OID.
      *
@@ -459,14 +410,7 @@ class AjaxController {
 //            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
 
-        withFormat {
-            html {
-                result
-            }
-            json {
-                render result as JSON
-            }
-        }
+        render result as JSON
     }
 
     def getPropValues() {
@@ -662,17 +606,6 @@ class AjaxController {
         log.debug(result)
         render view: '/myInstitution/_graphs', model: result
     }
-
-  @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
-  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-  def verifyUserInput() {
-      Map result = [result:false]
-      if(params.input) {
-          List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)",[searchTerm:params.input])
-          result.result = checkList.size() > 0
-      }
-      render result as JSON
-  }
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
