@@ -48,6 +48,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.commons.GrailsClass
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -259,6 +260,13 @@ class MyInstitutionController extends AbstractDebugController {
     def currentLicenses() {
 
         Map<String, Object> result = setResultGenerics()
+        EhcacheWrapper cache = contextService.getCache("/license/filter/",ContextService.USER_SCOPE)
+        if(cache && cache.get('licenseFilterCache')) {
+            if(!params.resetFilter)
+                params.putAll((GrailsParameterMap) cache.get('licenseFilterCache'))
+            else params.remove('resetFilter')
+            cache.remove('licenseFilterCache') //has to be executed in any case in order to enable cache updating
+        }
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
@@ -289,6 +297,9 @@ class MyInstitutionController extends AbstractDebugController {
         Map qry_params
 
         result.filterSet = params.filterSet ? true : false
+        if(result.filterSet) {
+            cache.put('licenseFilterCache', params)
+        }
 
         Set<String> licenseFilterTable = []
 
