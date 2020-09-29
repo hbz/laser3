@@ -8,7 +8,6 @@
             <th>${message(code:'title.label')}</th>
             <th>${message(code:'default.note.label')}</th>
             <th>${message(code:'default.date.label')}</th>
-            <th>${message(code:'default.creator.label')}</th>
             <th>${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
@@ -26,9 +25,6 @@
                     </td>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>
-                    </td>
-                    <td>
-                            ${docctx.owner.user}
                     </td>
                     <td class="x">
                         <g:if test="${docctx.sharedFrom}">

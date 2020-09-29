@@ -75,13 +75,13 @@
         </tr>
         <tr>
             <g:if test="${!fixedSubscription}">
-                <th colspan="3"></th>
+                <th colspan="4"></th>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
                 <th colspan="6"></th>
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]"/>
             </g:if>
             <g:else>
-                <th colspan="9"></th>
+                <th colspan="10"></th>
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
             </g:else>
             <th colspan="2"></th>
@@ -130,7 +130,7 @@
                 <tr id="bulkdelete-b${ci.id}">
                     <g:if test="${tmplShowCheckbox}">
                         <td>
-                                        <g:checkBox name="selectedCostItems" value="${ci.id}" checked="false"/>
+                            <g:checkBox name="selectedCostItems" value="${ci.id}" checked="false"/>
                         </td>
                     </g:if>
                     <td>
@@ -206,31 +206,57 @@
                     </td>
                     <td class="x">
                         <g:if test="${editable}">
-                            <g:if test="${fixedSubscription}">
-                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
-                                    <i class="write icon"></i>
-                                </g:link>
-                                <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
-                                        <i class="copy icon"></i>
+                            <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
+                                <g:if test="${fixedSubscription}">
+                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
+                                        <i class="write icon"></i>
                                     </g:link>
-                                </span>
+                                    <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
+                                            <i class="copy icon"></i>
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
+                                        <i class="write icon"></i>
+                                    </g:link>
+                                    <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
+                                            <i class="copy icon"></i>
+                                        </g:link>
+                                    </span>
+                                </g:else>
+                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons']" class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
+                                        data-confirm-term-how="delete">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
                             </g:if>
-                            <g:else>
-                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
-                                    <i class="write icon"></i>
-                                </g:link>
-                                <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
-                                        <i class="copy icon"></i>
-                                    </g:link>
-                                </span>
-                            </g:else>
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons']" class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
-                                    data-confirm-term-how="delete">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
+                            <g:elseif test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
+                                <g:if test="${fixedSubscription}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
+
+                                            <i class="la-copySend icon"></i>
+
+                                            <i class="icon copy-send"></i>
+
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
+
+                                            <i class="la-copySend icon"></i>
+
+                                            <i class="icon copy-send"></i>
+
+                                        </g:link>
+                                    </span>
+                                </g:else>
+                            </g:elseif>
                         </g:if>
                     </td>
                 </tr>
