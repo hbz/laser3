@@ -221,9 +221,9 @@
     </tbody>
 </table>
 
-<g:javascript>
+<script>
     function editPerson(id) {
-        var url = '<g:createLink controller="ajax" action="editPerson"/>?id='+id+'&showAddresses='+${showAddresses?:false}+'&showContacts='+${showContacts?:false};
+        var url = '<g:createLink controller="ajax" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
         person_editModal(url)
     }
     function person_editModal(url) {
@@ -243,6 +243,6 @@
             }
         });
     }
-</g:javascript>
+</script>
 
 

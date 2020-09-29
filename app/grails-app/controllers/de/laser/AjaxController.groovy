@@ -2668,16 +2668,25 @@ class AjaxController {
             result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''
+            result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
             switch(params.contactFor) {
                 case 'contactPersonForInstitution':
                     result.isPublic    = false
-                    result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    if(result.org){
+                        result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
+                    }else{
+                        result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
+                        result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    }
                     break
                 case 'contactPersonForProviderAgency':
                     result.isPublic    = false
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
-                    result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    if(result.org){
+                        result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
+                    }else {
+                        result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
+                        result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    }
                     break
                 case 'contactPersonForPublic':
                     result.isPublic    = true
@@ -2686,7 +2695,6 @@ class AjaxController {
             }
             result.url = [controller: 'person', action: 'create']
             result.contextOrg = contextService.getOrg()
-            result.org = params.org ? Org.get(Long.toString(params.org)) : null
 
             render template: "/templates/cpa/personFormModal", model: result
     }
@@ -2696,8 +2704,18 @@ class AjaxController {
         Map result = [:]
         result.personInstance = Person.get(params.id)
         if (result.personInstance){
+            if (params.org && params.org instanceof String) {
+                result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
+                List allOrgTypeIds =result.org.getAllOrgTypeIds()
+                if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
+                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProviderAgency.label")]) + ' (' + result.org.toString() + ')'
+                }else{
+                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
+                }
+            }else {
+                result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
+            }
             result.modalId = 'personModal'
-            result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
             result.modalMsgSave = message(code: 'default.button.save_changes')
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''

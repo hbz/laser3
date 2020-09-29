@@ -110,7 +110,6 @@
 
     <g:render template="/templates/cpa/person_table"
               model="${[persons: visiblePersons,
-                        restrictToOrg: null,
                         showContacts: true,
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
@@ -174,7 +173,6 @@
 
     <g:render template="/templates/cpa/person_table"
               model="${[persons: visiblePersons,
-                        restrictToOrg: null,
                         showAddresses: true,
                         tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>

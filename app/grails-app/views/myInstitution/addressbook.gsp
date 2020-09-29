@@ -50,11 +50,6 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
 <semui:messages data="${flash}"/>
 
 
-<g:render template="/person/formModal" model="['org'               : institution,
-                                               'isPublic'          : false,
-                                               'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-]"/>
-
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
     <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
@@ -116,10 +111,9 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
 
 <g:render template="/templates/cpa/person_table" model="${[
         persons       : visiblePersons,
-        restrictToOrg : null,
         showContacts  : true,
         showAddresses : true,
-        tmplConfigShow: ['lineNumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
+        tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
 ]}"/>
 
 <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
