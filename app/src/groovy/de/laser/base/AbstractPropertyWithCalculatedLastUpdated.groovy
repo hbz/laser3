@@ -122,27 +122,33 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         newProp
     }
 
-    def static parseValue(String value, def type){
+    def static parseValue(String value, String type){
         def result
         static_logger.debug( value + " << " + type )
 
         switch (type){
             case Integer.toString():
+            case Integer.class.name:
                 result = Integer.parseInt(value)
                 break
             case String.toString():
+            case String.class.name:
                 result = value
                 break
             case BigDecimal.toString():
+            case BigDecimal.class.name:
                 result = new BigDecimal(value)
                 break
             case org.codehaus.groovy.runtime.NullObject.toString():
+            case org.codehaus.groovy.runtime.NullObject.class.name:
                 result = null
                 break
             case Date.toString():
+            case Date.class.name:
                 result = DateUtil.toDate_NoTime(value)
                 break
             case URL.toString():
+            case URL.class.name:
                 result = new URL(value)
                 break
             default:
@@ -151,24 +157,24 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         return result
     }
 
-    def setValue(value, type, rdc) {
+    def setValue(String value, String type, String rdc) {
 
-        if (type == Integer.toString()) {
+        if (type == Integer.toString() || type == Integer.class.name) {
             intValue = parseValue(value, type)
         }
-        else if (type == BigDecimal.toString()) {
+        else if (type == BigDecimal.toString() || type == BigDecimal.class.name) {
             decValue = parseValue(value, type)
         }
-        else if (type == String.toString()) {
+        else if (type == String.toString() || type == String.class.name) {
             stringValue = parseValue(value, type)
         }
-        else if (type == Date.toString()) {
+        else if (type == Date.toString() || type == Date.class.name) {
             dateValue = parseValue(value, type)
         }
-        else if (type == RefdataValue.toString()) {
+        else if (type == RefdataValue.toString() || type == RefdataValue.class.name) {
             refValue = RefdataValue.getByValueAndCategory(value.toString(), rdc)
         }
-        else if (type == URL.toString()) {
+        else if (type == URL.toString() || type == URL.class.name) {
             urlValue = parseValue(value, type)
         }
     }

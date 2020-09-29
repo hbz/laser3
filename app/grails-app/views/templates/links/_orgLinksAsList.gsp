@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.Person; com.k_int.kbplus.PersonRole; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
 
 <table class="ui three column table">

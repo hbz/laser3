@@ -1,6 +1,7 @@
 package de.laser.api.v0.special
 
 import com.k_int.kbplus.*
+import de.laser.OrgRole
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.api.v0.*

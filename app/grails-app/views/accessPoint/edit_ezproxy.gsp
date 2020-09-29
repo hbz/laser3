@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgAccessPoint; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.oap.OrgAccessPoint; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

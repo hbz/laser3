@@ -10,6 +10,7 @@ import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.oap.OrgAccessPoint
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding

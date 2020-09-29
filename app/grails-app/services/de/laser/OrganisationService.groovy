@@ -7,9 +7,7 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PersonRole
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
@@ -22,7 +20,6 @@ import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.ConfigUtils
-import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils

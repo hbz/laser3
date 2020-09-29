@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.TitleInstancePackagePlatform; com.k_int.kbplus.OrgRole; de.laser.RefdataValue" %>
-<%@ page import="com.k_int.kbplus.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.TitleInstancePackagePlatform; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <!doctype html>
 <html>

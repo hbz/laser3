@@ -10,13 +10,15 @@ import de.laser.Combo
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.OrgRole
+import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.Address
 import de.laser.Contact
-import de.laser.OrgAccessPoint
+import de.laser.oap.OrgAccessPoint
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.Person

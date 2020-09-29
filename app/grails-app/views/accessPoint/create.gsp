@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgAccessPoint" %>
+<%@ page import="de.laser.oap.OrgAccessPoint" %>
 <!doctype html>
 <html>
 	<head>

@@ -94,7 +94,7 @@ class ApiOrg {
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // com.k_int.kbplus.PersonRole
+        ) // de.laser.PersonRole
 
         result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
 
@@ -104,7 +104,7 @@ class ApiOrg {
 
         //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrg
         //result.incomingCombos       = org.incomingCombos // de.laser.Combo
-        //result.links                = exportHelperService.resolveOrgLinks(org.links) // com.k_int.kbplus.OrgRole
+        //result.links                = exportHelperService.resolveOrgLinks(org.links) // de.laser.OrgRole
         //result.membership           = org.membership?.value // RefdataValue
         //result.outgoingCombos       = org.outgoingCombos // de.laser.Combo
 

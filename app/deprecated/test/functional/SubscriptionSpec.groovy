@@ -1,3 +1,4 @@
+import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import geb.spock.GebReportingSpec
@@ -48,7 +49,7 @@ class SubscriptionSpec extends GebReportingSpec {
         def org = Org.findByNameAndImpId(Data.Org_name,Data.Org_impId)
         def subA = new com.k_int.kbplus.Subscription(name: Data.Subscription_name_A, identifier: java.util.UUID.randomUUID().toString(),startDate:startDate,endDate:endDate).save(flush: true)
         def subrefRole = RefdataValue.getByValueAndCategory('Subscriber', RDConstants.ORGANISATIONAL_ROLE)
-        def subRole    = new com.k_int.kbplus.OrgRole(roleType: subrefRole, sub: subA, org: org).save()
+        def subRole    = new OrgRole(roleType: subrefRole, sub: subA, org: org).save()
 
         go "subscription/details/"+subA.id
 

@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
-import de.laser.OrgAccessPoint
-import de.laser.OrgAccessPointLink
+import de.laser.oap.OrgAccessPoint
+import de.laser.oap.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap

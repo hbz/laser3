@@ -3,8 +3,8 @@ package com.k_int.kbplus
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.OrgAccessPoint
-import de.laser.OrgAccessPointLink
+import de.laser.oap.OrgAccessPoint
+import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

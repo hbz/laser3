@@ -2,6 +2,8 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.*
 import de.laser.Identifier
+import de.laser.OrgRole
+import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
@@ -142,7 +144,7 @@ class ApiWriterHelper {
     static getOrgRelations(def data, def owner, Org context) {
         def result = []
 
-        data?.each { it ->   // com.k_int.kbplus.OrgRole
+        data?.each { it ->   // de.laser.OrgRole
 
             // check existing resources
             def check = []

@@ -8,6 +8,7 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
 import grails.util.Holders
@@ -875,7 +876,7 @@ class CopyElementsService {
     }
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties) {
-        String classString = targetObject.getClass().toString()
+        String classString = targetObject.getClass().toString() // TODO ERMS-2880
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
         def targetProp

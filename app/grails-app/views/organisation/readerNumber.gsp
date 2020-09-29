@@ -1,5 +1,5 @@
 <%@ page
-        import="com.k_int.kbplus.Org;de.laser.Person;com.k_int.kbplus.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;java.text.SimpleDateFormat"
+        import="com.k_int.kbplus.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;java.text.SimpleDateFormat"
 %>
 <laser:serviceInjection />
 <g:set var="overwriteEditable"
