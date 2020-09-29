@@ -86,6 +86,29 @@
                         </select>
                     </div>
 
+                    <g:if test="${!isPublic}">
+                        <div class="field">
+                            <g:if test="${orgList}">
+                                <label for="functionOrg">
+                                    <g:message code="contact.belongesTo.label"/>
+                                </label>
+                                <g:select class="ui search dropdown"
+                                          name="personRoleOrg"
+                                          from="${orgList}"
+                                          value="${org?.id}"
+                                          optionKey="id"
+                                          optionValue=""/>
+                            </g:if>
+                            <g:else>
+                                <label for="functionOrg">
+                                    <g:message code="contact.belongesTo.label"/>
+                                </label>
+                                <i class="icon university la-list-icon"></i>${org?.name}
+                                <input id="functionOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
+                            </g:else>
+                        </div>
+                    </g:if>
+
                     %{-- <g:if test="${actionName != 'myPublicContacts'}">
                          <div class="field">
                              <g:if test="${institution}">

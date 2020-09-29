@@ -2668,10 +2668,26 @@ class AjaxController {
             result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''
-            result.isPublic    = params.isPublic ? RDStore.YN_YES : RDStore.YN_NO
+            switch(params.contactFor) {
+                case 'contactPersonForInstitution':
+                    result.isPublic    = false
+                    result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
+                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    break
+                case 'contactPersonForProviderAgency':
+                    result.isPublic    = false
+                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
+                    result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    break
+                case 'contactPersonForPublic':
+                    result.isPublic    = true
+                    result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
+                    break
+            }
             result.url = [controller: 'person', action: 'create']
             result.contextOrg = contextService.getOrg()
-            result.org = contextService.getOrg()
+            result.org = params.org ? Org.get(Long.toString(params.org)) : null
+
             render template: "/templates/cpa/personFormModal", model: result
     }
 
@@ -2687,6 +2703,7 @@ class AjaxController {
             result.addContacts = params.showContacts == "true" ? true : ''
             result.showAddresses = params.showAddresses == "true" ? true : ''
             result.addAddresses = params.showAddresses == "true" ? true : ''
+            result.isPublic = result.personInstance.isPublic
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
             result.tmplShowDeleteButton = result.editable
             result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]

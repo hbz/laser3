@@ -49,7 +49,7 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable}">
-                <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate(${false});"><g:message code="person.create_new.contactPerson.label"/></a>
+                <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
             </g:if><g:else>
             <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
         </g:else>
@@ -228,8 +228,8 @@
         $('.tabular.menu .item').tab()
     });
 
-    function personCreate(isPublic) {
-        var url = '<g:createLink controller="ajax" action="createPerson"/>?isPublic='+isPublic+'&showAddresses='+${false}+'&showContacts='+${true};
+    function personCreate(contactFor) {
+        var url = '<g:createLink controller="ajax" action="createPerson"/>?contactFor='+contactFor+'&showAddresses='+${false}+'&showContacts='+${true};
         createPersonModal(url)
     }
     function createPersonModal(url) {

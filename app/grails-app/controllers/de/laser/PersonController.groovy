@@ -61,14 +61,22 @@ class PersonController extends AbstractDebugController {
                 }
                 // processing dynamic form data
                 //addPersonRoles(personInstance)
+                Org personRoleOrg
+                if(params.personRoleOrg)
+                {
+                    personRoleOrg = Org.get(params.personRoleOrg)
+                }else {
+                    personRoleOrg = contextOrg
+                }
+
 
                 if(params.functionType) {
                     params.list('functionType').each {
                         PersonRole personRole
                         RefdataValue functionType = RefdataValue.get(it)
-                        personRole = new PersonRole(prs: personInstance, functionType: functionType, org: contextOrg)
+                        personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
 
-                        if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, functionType: functionType)) {
+                        if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, functionType: functionType)) {
                             log.debug("ignore adding PersonRole because of existing duplicate")
                         }
                         else if (personRole) {
@@ -86,9 +94,9 @@ class PersonController extends AbstractDebugController {
                     params.list('positionType').each {
                         PersonRole personRole
                         RefdataValue positionType = RefdataValue.get(it)
-                        personRole = new PersonRole(prs: personInstance, positionType: positionType, org: contextOrg)
+                        personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
 
-                        if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, positionType: positionType)) {
+                        if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, positionType: positionType)) {
                             log.debug("ignore adding PersonRole because of existing duplicate")
                         }
                         else if (personRole) {
@@ -255,13 +263,21 @@ class PersonController extends AbstractDebugController {
 	            return
 	        }
 
+        Org personRoleOrg
+        if(params.personRoleOrg)
+        {
+            personRoleOrg = Org.get(params.personRoleOrg)
+        }else {
+            personRoleOrg = contextOrg
+        }
+
         if(params.functionType) {
             params.list('functionType').each {
                 PersonRole personRole
                 RefdataValue functionType = RefdataValue.get(it)
-                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: contextOrg)
+                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
 
-                if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, functionType: functionType)) {
+                if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, functionType: functionType)) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (personRole) {
@@ -287,9 +303,9 @@ class PersonController extends AbstractDebugController {
             params.list('positionType').each {
                 PersonRole personRole
                 RefdataValue positionType = RefdataValue.get(it)
-                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: contextOrg)
+                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
 
-                if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, positionType: positionType)) {
+                if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, positionType: positionType)) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (personRole) {
@@ -340,7 +356,6 @@ class PersonController extends AbstractDebugController {
 
         if(params.multipleAddresses) {
             params.list('multipleAddresses').eachWithIndex { name, i ->
-                println(i)
                 Address addressInstance = new Address(
                         name: (1 == params.list('name').size()) ? params.name : params.name[i],
                         additionFirst:  (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],

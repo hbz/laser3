@@ -22,12 +22,12 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
         <g:if test="${editable}">
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
 
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate(${false});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForInstitution');"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
 
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate(${false});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForProviderAgency');"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
 
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate(${true});"><g:message code="person.create_new.contactPersonForPublic.label"/></a>
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPersonForPublic.label"/></a>
 
         </g:if>
 
@@ -131,39 +131,9 @@ import="de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.O
 </body>
 
 
-<g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
-    <g:render template="/templates/cpa/personFormModal" model="['org'               : institution,
-                                                                'isPublic'          : RDStore.YN_NO,
-                                                                'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                                'showContacts'      : true,
-                                                                'addContacts'       : true,
-                                                                'modalID'           : 'institutionPersonFormModal',
-                                                                'url'               : [controller: 'person', action: 'create']
-    ]"/>
-</g:if>
-
-<g:render template="/templates/cpa/personFormModal" model="['org'               : institution,
-                                                            'isPublic'          : RDStore.YN_NO,
-                                                            'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                            'showContacts'      : true,
-                                                            'addContacts'       : true,
-                                                            'modalID'           : 'providerAgencyPersonFormModal',
-                                                            'url'               : [controller: 'person', action: 'create']
-]"/>
-
-
-<g:render template="/templates/cpa/personFormModal" model="['org'               : institution,
-                                                            'isPublic'          : RDStore.YN_YES,
-                                                            'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                            'showContacts'      : true,
-                                                            'addContacts'       : true,
-                                                            'modalID'           : 'publicPersonFormModal',
-                                                            'url'               : [controller: 'person', action: 'create']
-]"/>
-
 <g:javascript>
-    function personCreate(isPublic) {
-        var url = '<g:createLink controller="ajax" action="createPerson"/>?isPublic='+isPublic+'&showAddresses='+${false}+'&showContacts='+${true};
+    function personCreate(contactFor) {
+        var url = '<g:createLink controller="ajax" action="createPerson"/>?contactFor='+contactFor+'&showAddresses='+${false}+'&showContacts='+${true};
         createPersonModal(url)
     }
     function createPersonModal(url) {
