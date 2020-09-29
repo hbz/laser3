@@ -89,10 +89,6 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItemDisabled role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
-
-                                <div class="divider"></div>
-
                                 <g:link class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
                                 <a href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
@@ -130,27 +126,15 @@
                                 <semui:securedMainNavItem role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
 
+
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
                             <semui:securedMainNavItem role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
 
-                            <%--
-                            <div class="divider"></div>
-                            <g:link class="item" controller="subscription" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
-
-                            <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
-                            <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
-
-                            <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
-                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
-                            <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
-                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
                         </div>
                     </div>
 
