@@ -158,7 +158,7 @@
             <div class="divider"></div>
 
             <div class="ui segment">
-                <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form">
+                <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form propertiesSubscription">
                     <g:hiddenField name="id" value="${params.id}"/>
                     <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -297,12 +297,10 @@
                                 </g:if>
 
                                 <td>
-                                    <semui:xEditable owner="${sub}" field="startDate" type="date"
-                                                     overwriteEditable="${editableOld}"/>
+                                    <semui:xEditable owner="${sub}" field="startDate" type="date" overwriteEditable="${editableOld}" validation="datesCheck"/>
                                     <semui:auditButton auditable="[sub, 'startDate']"/>
                                 </td>
-                                <td><semui:xEditable owner="${sub}" field="endDate" type="date"
-                                                     overwriteEditable="${editableOld}"/>
+                                <td><semui:xEditable owner="${sub}" field="endDate" type="date" overwriteEditable="${editableOld}" validation="datesCheck"/>
                                 <semui:auditButton auditable="[sub, 'endDate']"/>
                                 </td>
                                 <td>
@@ -660,10 +658,10 @@
                                 <td></td>
                             </g:if>
                             <td>
-                                <semui:xEditable owner="${sub}" field="startDate" type="date"/>
+                                <semui:xEditable owner="${sub}" field="startDate" type="date" validation="datesCheck"/>
                                 <semui:auditButton auditable="[sub, 'startDate']"/>
                             </td>
-                            <td><semui:xEditable owner="${sub}" field="endDate" type="date"/>
+                            <td><semui:xEditable owner="${sub}" field="endDate" type="date" validation="datesCheck"/>
                             <semui:auditButton auditable="[sub, 'endDate']"/>
                             </td>
                             <td>
@@ -710,6 +708,50 @@
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
         } else {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', false)
+        }
+    });
+
+    function formatDate(input) {
+        if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
+            var inArr = input.split(/[\.\/-]/g);
+            return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+        }
+        else {
+            return input;
+        }
+    }
+
+    $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
+        if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
+            var startDate = Date.parse(formatDate($("#valid_from").val()));
+            var endDate = Date.parse(formatDate($("#valid_to").val()));
+            return (startDate < endDate);
+        }
+        else return true;
+    };
+
+    $('.propertiesSubscription').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            valid_from: {
+                identifier: 'valid_from',
+                rules: [
+                    {
+                        type: 'endDateNotBeforeStartDate',
+                        prompt: '<g:message code="validation.startDateAfterEndDate"/>'
+                    }
+                ]
+            },
+            valid_to: {
+                identifier: 'valid_to',
+                rules: [
+                    {
+                        type: 'endDateNotBeforeStartDate',
+                        prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
+                    }
+                ]
+            }
         }
     });
 </r:script>

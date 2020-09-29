@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+1984    29.09.2020  hbz-dev             Andreas Feature     Validierung von Start- und Enddatum an verschiedenen Stellen eingebaut
+
 1951    29.09.2020  hbz-dev             Andreas Feature     Entfernen nicht benötigter Menüpunkte
 
 2718    29.09.2020  hbz-dev             Andreas Feature     Umstrukturierung der Löschanweisungen

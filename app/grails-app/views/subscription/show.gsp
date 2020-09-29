@@ -76,14 +76,14 @@
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date" validation="datesCheck"/></dd>
                                 <g:if test="${editable}">
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
                                 </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
-                                <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+                                <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date" validation="datesCheck"/></dd>
                                 <g:if test="${editable}">
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
                                 </g:if>

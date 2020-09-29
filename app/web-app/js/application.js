@@ -298,6 +298,24 @@ r2d2 = {
                             return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
                         }
                     }
+                    if (dVal.includes('datesCheck')) {
+                        let thisInput = $.trim(value), startDateInput, endDateInput, startDate, endDate;
+                        if($(this).attr("data-name") === "startDate") {
+                            startDateInput = thisInput;
+                            endDateInput = $('a[data-name="endDate"][data-pk="'+$(this).attr("data-pk")+'"]').text();
+                        }
+                        else if($(this).attr("data-name") === "endDate") {
+                            startDateInput = $('a[data-name="startDate"][data-pk="'+$(this).attr("data-pk")+'"]').text();
+                            endDateInput = thisInput
+                        }
+                        if(startDateInput !== '' && endDateInput !== '') {
+                            startDate = Date.parse(formatDate(startDateInput));
+                            endDate = Date.parse(formatDate(endDateInput));
+                            console.log(startDate+" "+endDate);
+                            if(startDate > endDate)
+                                return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
+                        }
+                    }
                 }
             },
             success: function(response) {
@@ -334,6 +352,16 @@ r2d2 = {
         }).on('hidden', function() {
             c3po.loadJsAfterAjax();
         });
+
+        function formatDate(input) {
+            if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
+                var inArr = input.split(/[\.\/-]/g);
+                return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+            }
+            else {
+                return input;
+            }
+        }
 
         $(ctxSel + ' .xEditableDatepicker').editable({
         });

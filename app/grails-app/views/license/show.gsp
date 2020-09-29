@@ -69,7 +69,7 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>
-                                        <semui:xEditable owner="${license}" type="date" field="startDate" />
+                                        <semui:xEditable owner="${license}" type="date" field="startDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
                                         <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
@@ -78,7 +78,7 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.endDate.label')}</dt>
                                     <dd>
-                                        <semui:xEditable owner="${license}" type="date" field="endDate" />
+                                        <semui:xEditable owner="${license}" type="date" field="endDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
                                         <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>

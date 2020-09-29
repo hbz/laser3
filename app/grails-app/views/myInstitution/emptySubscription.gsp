@@ -71,86 +71,6 @@
         </semui:form>
 
     <hr>
-
-    <%-- deactivated because of ERMS-1732
-        <g:if test="${consortialView || departmentalView}">
-
-            <g:if test="${! members}">
-                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
-                    <hr />
-
-                    <div class="ui info message">
-                        <div class="header">
-                            <g:if test="${consortialView}">
-                                <g:message code="myinst.noMembers.cons.header"/>
-                            </g:if>
-                            <g:elseif test="${departmentalView}">
-                                <g:message code="myinst.noMembers.dept.header"/>
-                            </g:elseif>
-                        </div>
-                        <p>
-                            <g:if test="${consortialView}">
-                                <g:message code="myinst.noMembers.cons.body" args="${["${link(action:'addMembers'){message(code:'myinst.noMembers.link')}}"]}"/>
-                            </g:if>
-                            <g:elseif test="${departmentalView}">
-                                <g:message code="myinst.noMembers.dept.body" args="${["${link(action:'addMembers'){message(code:'myinst.noMembers.link')}}"]}"/>
-                            </g:elseif>
-                        </p>
-                    </div>
-                </g:if>
-            </g:if>
-            <g:else>
-                <div class="cons-options">
-                    <semui:filter>
-                        <laser:remoteForm name="x" url="[controller:'myInstitution', action:'ajaxEmptySubscription']" data-update="orgListTable" class="ui form">
-                            <g:render template="/templates/filter/orgFilter"
-                                      model="[
-                                              tmplConfigShow: [['name']],
-                                              tmplConfigFormFilter: true,
-                                              useNewLayouter: true
-                                      ]" />
-                        </laser:remoteForm>
-                    </semui:filter>
-
-                    <div id="orgListTable">
-                        <g:render template="/templates/filter/orgFilterTable" model="[orgList: members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']]" />
-                    </div>
-
-                    <div class="ui checkbox">
-                        <input class="hidden" type="checkbox" checked="checked" readonly="readonly">
-                        <label>
-                            <g:if test="${consortialView}">${message(code:'myinst.separate_subs')}</g:if>
-                            <g:elseif test="${departmentalView}">${message(code:'myinst.separate_subs_dept')}</g:elseif>
-                        </label>
-                    </div>
-
-                </div><!-- .cons-options -->
-            </g:else>
-
-            <r:script>
-                $('#submitterFallback').click(function(e){
-                    e.preventDefault();
-                    $('#dynHiddenValues').empty();
-                    $('input[name=selectedOrgs]:checked').each(function(index, elem){
-                        var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">');
-                        $('#dynHiddenValues').append(newElem)
-                    });
-                    $(this).parents('form').submit()
-                });
-
-                $('#asOrgType').change(function() {
-                    var selVal = $(this).val();
-                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}','${RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE.id}'].indexOf(selVal) > -1) {
-                        $('.cons-options').show()
-                    }
-                    else {
-                        $('.cons-options').hide()
-                    }
-                })
-            </r:script>
-
-        </g:if>
-     --%>
         <r:script>
             function formatDate(input) {
                 if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
@@ -158,7 +78,6 @@
                     return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
                 }
                 else {
-                    console.log(input);
                     return input;
                 }
             }
@@ -166,7 +85,6 @@
                 if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
                     var startDate = Date.parse(formatDate($("#valid_from").val()));
                     var endDate = Date.parse(formatDate($("#valid_to").val()));
-                    console.log(formatDate($("#valid_from").val())+' '+formatDate($("#valid_to").val()));
                     return (startDate < endDate);
                 }
                 else return true;
