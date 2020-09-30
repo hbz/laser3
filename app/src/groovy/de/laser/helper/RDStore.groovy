@@ -121,7 +121,6 @@ class RDStore {
     public static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
 
     public static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
-    public static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator', RDConstants.SHARE_CONFIGURATION)
     public static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
     public static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
     public static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
