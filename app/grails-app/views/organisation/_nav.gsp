@@ -8,6 +8,9 @@
     <g:if test="${inContextOrg}">
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
+    <g:elseif test="${(contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM' && !isProviderOrAgency)}">
+        <semui:subNavItem controller="myInstitution" action="myPublicContacts" params="${[id: orgInstance.id]}" message="menu.institutions.publicContacts" />
+    </g:elseif>
     <g:else>
         <g:if test="${!isProviderOrAgency}">
             <semui:subNavItem disabled="true" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />

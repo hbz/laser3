@@ -14,7 +14,7 @@
 
 <semui:breadcrumbs>
     <g:if test="${institution.id != contextService.getOrg().id}">
-        <semui:crumb text="${institution.getDesignation()}" class="active"/>
+        <semui:crumb text="${institution.getDesignation()}" />
     </g:if>
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
 </semui:breadcrumbs>
@@ -27,7 +27,7 @@
 <semui:messages data="${flash}"/>
 
 <%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
-<g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: true]}"/>
+<g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: (institution.id == contextService.getOrg().id)]}"/>
 
 
 <div class="ui top attached tabular menu">

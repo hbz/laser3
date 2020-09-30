@@ -1404,9 +1404,6 @@ class OrganisationController extends AbstractDebugController {
             case '_delete':
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN')
                 break
-            case 'addressbook':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-                break
             case 'properties':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
                 break
@@ -1425,6 +1422,7 @@ class OrganisationController extends AbstractDebugController {
             case 'ids':
             case 'readerNumber':
             case 'accessPoints':
+            case 'addressbook':
                 Org contextOrg = contextService.org
                 Org orgInstance = org
                 boolean inContextOrg =  orgInstance?.id == contextOrg.id

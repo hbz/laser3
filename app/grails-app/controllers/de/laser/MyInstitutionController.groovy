@@ -2432,7 +2432,15 @@ join sub.orgRelations or_sub where
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        params.org = result.institution
+        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM' && params.id)
+        {
+            result.editable = false
+            result.institution = Org.get(params.id)
+            params.org = result.institution
+        }else{
+            params.org = result.institution
+        }
+
 
         result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)
