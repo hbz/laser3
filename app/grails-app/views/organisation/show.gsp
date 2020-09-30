@@ -362,7 +362,7 @@
                                     Map<String, List> typeAddressMap = [:]
                                     orgInstance.addresses.each {
                                         it.type.each { type ->
-                                            String typeName = type?.getI10n('value')
+                                            String typeName = type.getI10n('value')
                                             typeNames.add(typeName)
                                             List addresses = typeAddressMap.get(typeName) ?: []
                                             addresses.add(it)
