@@ -121,8 +121,8 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 <g:javascript>
     function personCreate(contactFor, org) {
-        var url = '<g:createLink controller="ajax"
-                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses='+${false}+'&showContacts='+${true};
+        var url = '<g:createLink controller="ajaxHtml"
+                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
         createPersonModal(url)
     }
     function createPersonModal(url) {

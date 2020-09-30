@@ -8,7 +8,7 @@
                 <g:if test="${ !hideAddressType}">
                     <strong>
                         <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">
-                            <p>${type?.getI10n('value')}</p>
+                            <p>${type.getI10n('value')}</p>
                         </g:each>
                      </strong>
                 </g:if>

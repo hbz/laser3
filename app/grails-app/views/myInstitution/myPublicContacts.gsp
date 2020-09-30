@@ -227,7 +227,7 @@
     });
 
     function personCreate(contactFor) {
-        var url = '<g:createLink controller="ajax" action="createPerson"/>?contactFor='+contactFor+'&showAddresses='+${false}+'&showContacts='+${true};
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
         createPersonModal(url)
     }
     function createPersonModal(url) {
@@ -249,7 +249,7 @@
     }
 
     function addresscreate_org(orgId) {
-            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?orgId='+orgId;
+            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId;
             address_modal(url);
     }
 

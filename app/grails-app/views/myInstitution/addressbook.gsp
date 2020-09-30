@@ -127,7 +127,7 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
 
 <g:javascript>
     function personCreate(contactFor) {
-        var url = '<g:createLink controller="ajax" action="createPerson"/>?contactFor='+contactFor+'&showAddresses='+${false}+'&showContacts='+${true};
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
         createPersonModal(url)
     }
     function createPersonModal(url) {

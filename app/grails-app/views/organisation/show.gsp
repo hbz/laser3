@@ -345,7 +345,7 @@
                                                   model="[tenant            : contextOrg,
                                                           org               : orgInstance,
                                                           isPublic          : true,
-                                                          presetFunctionType: RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
+                                                          presetFunctionType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT,
                                                           modalId           : 'personFormModalTechnichalSupport',
                                                           tmplHideFunctions : true]"/>
 

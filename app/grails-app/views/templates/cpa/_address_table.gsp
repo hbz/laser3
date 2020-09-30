@@ -28,7 +28,7 @@
                 <div class="ui divided middle aligned list la-flex-list ">
                 <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">
                     <div class="ui item ">
-                        ${type?.getI10n('value')}
+                        ${type.getI10n('value')}
                     </div>
                 </g:each>
                 </div>
