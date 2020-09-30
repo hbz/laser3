@@ -5,10 +5,14 @@
                 <i class="ui js-linkGoogle icon building map marker alternate la-list-icon"></i>
             </a>
             <div class="content la-space-right">
-                <g:if test="${ ! hideAddressType}">
-                    <strong>${address.type?.getI10n('value')}:</strong>
+                <g:if test="${ !hideAddressType}">
+                    <strong>
+                        <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">
+                            <p>${type.getI10n('value')}</p>
+                        </g:each>
+                     </strong>
                 </g:if>
-                <div class="item" onclick="editAddress(${address.id});" >
+                <div class="item" >
                     <g:if test="${address.name}">
                         ${address.name}
                     </g:if>
@@ -52,6 +56,10 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
+                    <a class="ui icon button" onclick="editAddress(${address.id});">
+                        <i class="pencil icon"></i>
+                    </a>
+
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
                     <g:link class="ui negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"

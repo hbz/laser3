@@ -31,7 +31,19 @@ class AddressController extends AbstractDebugController {
 				break
 			case 'POST':
                 if (formService.validateToken(params)) {
-                    Address addressInstance = new Address(params)
+                    Address addressInstance = new Address()
+
+                    params.list('type.id').each {
+                        if(!(it in addressInstance.type))
+                        {
+                            addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                        }
+                    }
+
+                    params.remove('type.id')
+
+                    addressInstance.properties = params
+
                     if (!addressInstance.save()) {
                         flash.error = message(code: 'default.save.error.general.message')
                         log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
@@ -114,7 +126,26 @@ class AddressController extends AbstractDebugController {
 
         addressInstance.properties = params
 
-        if (! addressInstance.save(flush: true)) {
+        List<RefdataValue> typesToRemove = []
+        addressInstance.type.each {
+            if(!(it.toString() in params.list('type.id'))){
+                typesToRemove << it
+            }
+        }
+
+        typesToRemove.each {
+            addressInstance.removeFromType(it)
+        }
+
+        params.list('type.id').each {
+                if(!(it in addressInstance.type))
+                {
+                    addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                }
+        }
+
+
+        if (! addressInstance.save()) {
             redirect(url: request.getHeader('referer'))
             return
         }

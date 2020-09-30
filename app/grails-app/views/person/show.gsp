@@ -109,9 +109,10 @@
                     <dl><dt><g:message code="person.addresses.label" /></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
+                                <g:each in="${personInstance.addresses.sort{it.type.each {it?.getI10n('value')}}}" var="a">
                                     <g:render template="/templates/cpa/address" model="${[
                                             address: a,
+                                            editable            : editable,
                                             tmplShowDeleteButton: true,
                                             controller: 'person',
                                             action: 'show',

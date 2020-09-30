@@ -60,14 +60,22 @@ class PersonController extends AbstractDebugController {
                 }
                 // processing dynamic form data
                 //addPersonRoles(personInstance)
+                Org personRoleOrg
+                if(params.personRoleOrg)
+                {
+                    personRoleOrg = Org.get(params.personRoleOrg)
+                }else {
+                    personRoleOrg = contextOrg
+                }
+
 
                 if(params.functionType) {
                     params.list('functionType').each {
                         PersonRole personRole
                         RefdataValue functionType = RefdataValue.get(it)
-                        personRole = new PersonRole(prs: personInstance, functionType: functionType, org: contextOrg)
+                        personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
 
-                        if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, functionType: functionType)) {
+                        if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, functionType: functionType)) {
                             log.debug("ignore adding PersonRole because of existing duplicate")
                         }
                         else if (personRole) {
@@ -85,9 +93,9 @@ class PersonController extends AbstractDebugController {
                     params.list('positionType').each {
                         PersonRole personRole
                         RefdataValue positionType = RefdataValue.get(it)
-                        personRole = new PersonRole(prs: personInstance, positionType: positionType, org: contextOrg)
+                        personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
 
-                        if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, positionType: positionType)) {
+                        if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, positionType: positionType)) {
                             log.debug("ignore adding PersonRole because of existing duplicate")
                         }
                         else if (personRole) {
@@ -121,7 +129,39 @@ class PersonController extends AbstractDebugController {
                     }
                 }
 
-                ['contact1', 'contact2', 'contact3'].each { c ->
+                if(params.multipleAddresses) {
+                    params.list('multipleAddresses').eachWithIndex { name, i ->
+                        Address addressInstance = new Address(
+                                name: (1 == params.list('name').size()) ? params.name : params.name[i],
+                                additionFirst:  (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
+                                additionSecond:  (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
+                                street_1:  (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
+                                street_2:  (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
+                                zipcode:  (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
+                                city:  (1 == params.list('city').size()) ? params.city : params.city[i],
+                                region:  (1 == params.list('region').size()) ? params.region : params.region[i],
+                                country:  (1 ==params.list('country').size()) ? params.country : params.country[i],
+                                pob:  (1 == params.list('pob').size()) ? params.pob : params.pob[i],
+                                pobZipcode:  (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
+                                pobCity:  (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
+                                prs: personInstance)
+
+                        params.list('type').each {
+                            if(!(it in addressInstance.type))
+                            {
+                                addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                            }
+                        }
+                        if (!addressInstance.save()) {
+                            flash.error = message(code: 'default.save.error.general.message')
+                            log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                            redirect(url: request.getHeader('referer'), params: params)
+                            return
+                        }
+                    }
+                }
+
+                /*['contact1', 'contact2', 'contact3'].each { c ->
                     if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
 
                         RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
@@ -137,7 +177,7 @@ class PersonController extends AbstractDebugController {
                         Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
                         contact.save(flush: true)
                     }
-                }
+                }*/
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
             }
@@ -222,13 +262,21 @@ class PersonController extends AbstractDebugController {
 	            return
 	        }
 
+        Org personRoleOrg
+        if(params.personRoleOrg)
+        {
+            personRoleOrg = Org.get(params.personRoleOrg)
+        }else {
+            personRoleOrg = contextOrg
+        }
+
         if(params.functionType) {
             params.list('functionType').each {
                 PersonRole personRole
                 RefdataValue functionType = RefdataValue.get(it)
-                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: contextOrg)
+                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
 
-                if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, functionType: functionType)) {
+                if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, functionType: functionType)) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (personRole) {
@@ -254,9 +302,9 @@ class PersonController extends AbstractDebugController {
             params.list('positionType').each {
                 PersonRole personRole
                 RefdataValue positionType = RefdataValue.get(it)
-                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: contextOrg)
+                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
 
-                if (PersonRole.findWhere(prs: personInstance, org:  contextOrg, positionType: positionType)) {
+                if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, positionType: positionType)) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (personRole) {
@@ -305,25 +353,29 @@ class PersonController extends AbstractDebugController {
             }
         }
 
-        if(params.type) {
-            params.list('type').eachWithIndex { content, i ->
-                println(params.region[i] != null )
-                println(i)
+        if(params.multipleAddresses) {
+            params.list('multipleAddresses').eachWithIndex { name, i ->
                 Address addressInstance = new Address(
-                        name: (i < params.list('name').size()) ? params.name[i] :"",
-                        additionFirst:  (i < params.list('additionFirst').size()) ? params.additionFirst[i] :"",
-                        additionSecond:  (i < params.list('additionSecond').size()) ? params.additionSecond[i] :"",
-                        street_1:  (i < params.list('street_1').size()) ? params.street_1[i] :"",
-                        street_2:  (i < params.list('street_2').size()) ? params.street_2[i] :"",
-                        zipcode:  (i < params.list('zipcode').size()) ? params.zipcode[i] :"",
-                        city:  (i < params.list('city').size()) ? params.city[i] :"",
-                        region:  (i < params.list('region').size()) ? params.region[i] :"",
-                        country:  (i < params.list('country').size()) ? params.country[i] :"",
-                        pob:  (i < params.list('postbox').size()) ? params.postbox[i] :"",
-                        pobZipcode:  (i < params.list('pobZipcode').size()) ? params.pobZipcode[i] :"",
-                        pobCity:  (i < params.list('pobCity').size()) ? params.pobCity[i] :"",
-                        type:  (i < params.list('type').size()) ? params.type[i] :"",
+                        name: (1 == params.list('name').size()) ? params.name : params.name[i],
+                        additionFirst:  (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
+                        additionSecond:  (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
+                        street_1:  (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
+                        street_2:  (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
+                        zipcode:  (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
+                        city:  (1 == params.list('city').size()) ? params.city : params.city[i],
+                        region:  (1 == params.list('region').size()) ? params.region : params.region[i],
+                        country:  (1 ==params.list('country').size()) ? params.country : params.country[i],
+                        pob:  (1 == params.list('pob').size()) ? params.pob : params.pob[i],
+                        pobZipcode:  (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
+                        pobCity:  (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
                         prs: personInstance)
+
+                params.list('type').each {
+                    if(!(it in addressInstance.type))
+                    {
+                        addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                    }
+                }
                 if (!addressInstance.save()) {
                     flash.error = message(code: 'default.save.error.general.message')
                     log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)

@@ -2125,6 +2125,8 @@ class AjaxController {
     result;
   }
 
+
+
     def adjustSubscriptionList(){
         List<Subscription> data
         List result = []
@@ -2239,7 +2241,6 @@ class AjaxController {
 
     def notifyProfiler() {
         Map<String, Object> result = [status: 'failed']
-
         SessionCacheWrapper cache = contextService.getSessionCache()
         ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
 

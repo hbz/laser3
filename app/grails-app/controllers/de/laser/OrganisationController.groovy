@@ -1093,7 +1093,12 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        List visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        params.org = result.orgInstance
+
+        List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
         result.propList =
                 PropertyDefinition.findAllWhere(
@@ -1101,8 +1106,13 @@ class OrganisationController extends AbstractDebugController {
                         tenant: contextService.getOrg() // private properties
                 )
 
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
-        result.visiblePersons = visiblePersons
+        if (visiblePersons){
+            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
+        }
 
         result
     }

@@ -21,20 +21,15 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
     <semui:actionsDropdown>
         <g:if test="${editable}">
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
-                <semui:actionsDropdownItem message="person.create_new.contactPersonForInstitution.label"
-                                           data-semui="modal"
-                                           href="#institutionPersonFormModal"/>
+
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForInstitution');"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
 
-            <semui:actionsDropdownItem message="person.create_new.contactPersonForProviderAgency.label"
-                                       data-semui="modal"
-                                       href="#providerAgencyPersonFormModal"/>
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForProviderAgency');"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
 
-            <semui:actionsDropdownItem message="person.create_new.contactPersonForPublic.label" data-semui="modal"
-                                       href="#publicPersonFormModal"/>
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPersonForPublic.label"/></a>
 
         </g:if>
-
 
 
         <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
@@ -42,35 +37,7 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
-    <g:render template="/templates/cpa/personFormModal" model="['org'               : institution,
-                                                                'isPublic'          : RDStore.YN_NO,
-                                                                'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                                'showContacts'      : true,
-                                                                'addContacts'       : true,
-                                                                'modalID'           : 'institutionPersonFormModal',
-                                                                'url'               : [controller: 'person', action: 'create']
-    ]"/>
-</g:if>
 
-<g:render template="/templates/cpa/personFormModal" model="['org'               : institution,
-                                                            'isPublic'          : RDStore.YN_NO,
-                                                            'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                            'showContacts'      : true,
-                                                            'addContacts'       : true,
-                                                            'modalID'           : 'providerAgencyPersonFormModal',
-                                                            'url'               : [controller: 'person', action: 'create']
-]"/>
-
-
-<g:render template="/templates/cpa/personFormModal" model="['org'               : institution,
-                                                            'isPublic'          : RDStore.YN_YES,
-                                                            'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                                                            'showContacts'      : true,
-                                                            'addContacts'       : true,
-                                                            'modalID'           : 'publicPersonFormModal',
-                                                            'url'               : [controller: 'person', action: 'create']
-]"/>
 
 <g:render template="/templates/copyFilteredEmailAddresses"
           model="[emailAddresses: emailAddresses]"/>
@@ -82,11 +49,6 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
 
 <semui:messages data="${flash}"/>
 
-
-<g:render template="/person/formModal" model="['org'               : institution,
-                                               'isPublic'          : false,
-                                               'presetFunctionType': RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-]"/>
 
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
@@ -149,10 +111,9 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
 
 <g:render template="/templates/cpa/person_table" model="${[
         persons       : visiblePersons,
-        restrictToOrg : null,
         showContacts  : true,
         showAddresses : true,
-        tmplConfigShow: ['lineNumber', 'organisation', 'functionPosition', 'name', 'showContacts', 'showAddresses']
+        tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
 ]}"/>
 
 <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
@@ -162,4 +123,30 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
                 total="${num_visiblePersons}"/>
 
 </body>
+
+
+<g:javascript>
+    function personCreate(contactFor) {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
+        createPersonModal(url)
+    }
+    function createPersonModal(url) {
+        $.ajax({
+            url: url,
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#personModal").remove();
+
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#personModal');
+                        r2d2.initDynamicXEditableStuff('#personModal');
+                    }
+                }).modal('show');
+            }
+        });
+    }
+</g:javascript>
+
 </html>
