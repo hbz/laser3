@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2886    30.09.2020  hbz-dev             Andreas Bug         Lizenzen werden jetzt auch im globalen Aufgabenpanel geladen
+
+2762    30.09.2020  hbz-dev             Andreas Bug         Bugs im Reporting-Tool behoben
+
 1984    29.09.2020  hbz-dev             Andreas Feature     Validierung von Start- und Enddatum an verschiedenen Stellen eingebaut
 
 1951    29.09.2020  hbz-dev             Andreas Feature     Entfernen nicht benötigter Menüpunkte

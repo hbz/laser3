@@ -283,41 +283,27 @@ class TaskService {
 
 
     private List<Map> getSubscriptionsDropdown(Org contextOrg, boolean isWithInstanceOf) {
-        List validSubscriptionsMitInstanceOf = []
-        List validSubscriptionsOhneInstanceOf = []
+        List validSubscriptionsWithInstanceOf = []
+        List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean binKonsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
+        boolean isConsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
 
         if (contextOrg) {
-            if (binKonsortium) {
+            if (isConsortium) {
 
                 Map<String, Object> qry_params_for_sub = [
                         'roleTypes' : [
                                 RDStore.OR_SUBSCRIBER,
                                 RDStore.OR_SUBSCRIBER_CONS,
-                                RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                                RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                                RDStore.OR_SUBSCRIPTION_CONSORTIA
                         ],
                         'activeInst': contextOrg
                 ]
 
-                validSubscriptionsOhneInstanceOf = Subscription.executeQuery("""
-select s.id, s.name, s.startDate, s.endDate, i10.valueDe from Subscription s, I10nTranslation i10 
-where s.status.id = i10.referenceId 
-    and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) 
-    and s.instanceOf is null 
-    and i10.referenceField=:referenceField 
-order by lower(s.name), s.endDate"""
-                        , qry_params_for_sub << [referenceField: 'value'])
+                validSubscriptionsWithoutInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, s.status from OrgRole oo join oo.sub s where oo.roleType IN (:roleTypes) AND oo.org = :activeInst and s.instanceOf is null order by lower(s.name), s.endDate", qry_params_for_sub)
 
                 if (isWithInstanceOf) {
-                    validSubscriptionsMitInstanceOf = Subscription.executeQuery("""
-select s.id, s.name, s.startDate, s.endDate, i10.valueDe, oo.sortname from Subscription s, Org oo, OrgRole rr, I10nTranslation i10
-where s.status.id = i10.referenceId
-    and rr.org = oo and rr.sub = s and rr.roleType in (:roleTypesOO)
-    and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) )
-    and s.instanceOf is not null and i10.referenceField=:referenceField
-order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'value', roleTypesOO: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+                    validSubscriptionsWithInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, s.status, oo.org.sortname from OrgRole oo join oo.sub s where oo.roleType in (:memberRoleTypes) and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:consRoleTypes) AND o.org = :activeInst ) ) ) ) and s.instanceOf is not null order by lower(s.name), s.endDate", qry_params_for_sub << [memberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],consRoleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA]])
                 }
 
             }
@@ -325,20 +311,20 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
 
         String NO_STATUS = RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
-        validSubscriptionsMitInstanceOf?.each {
+        validSubscriptionsWithInstanceOf.each {
 
             Long optionKey = it[0]
             String optionValue = (
                     it[1]
                             + ' - '
-                            + (it[4] ?: NO_STATUS)
+                            + (it[4] ? it[4].getI10n('value') : NO_STATUS)
                             + ((it[2] || it[3]) ? ' (' : ' ')
                             + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
                             + '-'
                             + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
                             + ((it[2] || it[3]) ? ') ' : ' ')
             )
-            if (binKonsortium) {
+            if (isConsortium) {
                 optionValue += " - " + it[5]
 
             } else {
@@ -346,13 +332,13 @@ order by lower(s.name), s.endDate""", qry_params_for_sub << [referenceField: 'va
             }
             validSubscriptionsDropdown << [optionKey: optionKey, optionValue: optionValue]
         }
-        validSubscriptionsOhneInstanceOf?.each {
+        validSubscriptionsWithoutInstanceOf.each {
 
             Long optionKey = it[0]
             String optionValue = (
                     it[1]
                             + ' - '
-                            + (it[4] ?: NO_STATUS)
+                            + (it[4] ? it[4].getI10n('value') : NO_STATUS)
                             + ((it[2] || it[3]) ? ' (' : ' ')
                             + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
                             + '-'
