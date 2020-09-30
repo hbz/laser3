@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2075    30.09.2020  rc1.6   1.6         Moe     Feature     Kopier- und Löschmarkierungen für Identifikator-Kopieren einfügen
+
 2886    30.09.2020  hbz-dev             Andreas Bug         Lizenzen werden jetzt auch im globalen Aufgabenpanel geladen
 
 2762    30.09.2020  hbz-dev             Andreas Bug         Bugs im Reporting-Tool behoben
