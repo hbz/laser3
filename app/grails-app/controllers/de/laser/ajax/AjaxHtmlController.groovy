@@ -44,44 +44,6 @@ class AjaxHtmlController {
     }
 
     @Secured(['ROLE_USER'])
-    def createAddress() {
-        Map<String, Object> result = [:]
-        result.orgId = params.orgId
-        result.prsId = params.prsId
-        result.redirect = params.redirect
-        result.typeId = Long.valueOf(params.typeId)
-        result.hideType = params.hideType
-
-        if (result.orgId && result.typeId) {
-            String messageCode = 'addressFormModalLibraryAddress'
-
-            if (result.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {
-                messageCode = 'addressFormModalLegalPatronAddress'
-            }
-            else if (result.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {
-                messageCode = 'addressFormModalBillingAddress'
-            }
-            else if (result.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {
-                messageCode = 'addressFormModalPostalAddress'
-            }
-            else if (result.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {
-                messageCode = 'addressFormModalDeliveryAddress'
-            }
-            else if (result.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {
-                messageCode = 'addressFormModalLibraryAddress'
-            }
-
-            result.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
-        } else {
-            result.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
-        }
-        result.modalMsgSave = message(code: 'default.button.create.label')
-        result.url = [controller: 'address', action: 'create']
-
-        render template: "/templates/cpa/addressFormModal", model: result
-    }
-
-    @Secured(['ROLE_USER'])
     def editNote() {
         Map<String, Object> result = [:]
         result.params = params
@@ -124,6 +86,32 @@ class AjaxHtmlController {
 //            flash.error = "Diese Aufgabe existiert nicht (mehr)."
 //            redirect(url: request.getHeader('referer'))
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def createAddress() {
+        Map model = [:]
+        model.orgId = params.orgId
+        model.prsId = params.prsId
+        model.redirect = params.redirect
+        model.typeId = params.typeId ? Long.valueOf(params.typeId) : null
+        model.hideType = params.hideType
+        if (model.orgId && model.typeId) {
+            String messageCode = 'addressFormModalLibraryAddress'
+            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {messageCode = 'addressFormModalLegalPatronAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {messageCode = 'addressFormModalBillingAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {messageCode = 'addressFormModalPostalAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {messageCode = 'addressFormModalDeliveryAddress'}
+            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {messageCode = 'addressFormModalLibraryAddress'}
+
+            model.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
+        } else {
+            model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
+        }
+        model.modalMsgSave = message(code: 'default.button.create.label')
+        model.url = [controller: 'address', action: 'create']
+
+        render template: "/templates/cpa/addressFormModal", model: model
     }
 
     @Secured(['ROLE_USER'])

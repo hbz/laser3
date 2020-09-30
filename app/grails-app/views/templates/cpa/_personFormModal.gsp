@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; com.k_int.kbplus.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <semui:modal id="${modalID ?: 'personModal'}" text="${modalText ?: message(code: 'person.create_new.label')}"
              contentClass="scrolling "
@@ -244,7 +244,7 @@
                     </div>
                 </div>
 
-                <div id="contcatElements"></div>
+                <div id="contactElements"></div>
             </g:if>
 
         </g:if>
@@ -337,8 +337,8 @@
             var contactElementCount = 0;
             var addressElementCount = 0;
 
-            var contcatContainer = $(document.createElement('div'));
-            $(contcatContainer).attr('id', 'contcatElementsContainer');
+            var contactContainer = $(document.createElement('div'));
+            $(contactContainer).attr('id', 'contactElementsContainer');
 
             var addressContainer = $(document.createElement('div'));
             $(addressContainer).attr('id', 'addressElementsContainer');
@@ -351,15 +351,15 @@
                         if (contactElementCount <= 3) {
 
                             contactElementCount = contactElementCount + 1;
-                            $(contcatContainer).append(data);
+                            $(contactContainer).append(data);
                             $('#contactFields').attr('id', 'contactFields' + contactElementCount);
 
-                            $('#contcatElements').after(contcatContainer);
+                            $('#contactElements').after(contactContainer);
                         } else {
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
                         }
-                        r2d2.initDynamicSemuiStuff('#contcatElementsContainer');
+                        r2d2.initDynamicSemuiStuff('#contactElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -374,7 +374,7 @@
                 }
 
                 if (contactElementCount == 0) {
-                    $(contcatContainer).empty().remove();
+                    $(contactContainer).empty().remove();
                     $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });

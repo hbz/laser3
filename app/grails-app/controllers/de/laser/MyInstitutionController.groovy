@@ -2814,7 +2814,7 @@ join sub.orgRelations or_sub where
                 subscrName += "(${subscr.name})"
                 cell.setCellValue(subscrName)
                 log.debug("insert general contacts")
-                //general contcats
+                //general contacts
                 Set<String> generalContacts = mailAddresses.get(subscr)
                 cell = row.createCell(cellnum++)
                 if(generalContacts)
@@ -2967,7 +2967,7 @@ join sub.orgRelations or_sub where
                         subscrName += "(${subscr.name})"
                         row.add(subscrName.replaceAll(',',' '))
                         log.debug("insert general contacts")
-                        //general contcats
+                        //general contacts
                         Set<String> generalContacts = mailAddresses.get(subscr)
                         if(generalContacts)
                             row.add(generalContacts.join('; '))

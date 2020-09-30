@@ -108,6 +108,13 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
             showAddresses: true,
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
+
+    <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}"
+                    max="${max}"
+                    total="${num_visiblePersons}"/>
+
 </g:if>
 
 </body>
