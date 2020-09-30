@@ -177,7 +177,8 @@
             $("#controlling").on('click','#reset',function(){
                 $('.ui.checkbox').checkbox('uncheck');
                 $('#displayConfigurations').empty();
-                $("#selection").empty();
+                $('#selection').empty();
+                $('.result').remove();
             });
             $("#selectionPanel").on('click','.pickSubscription',function(){
                 $(this).toggleClass('blue');
@@ -196,7 +197,7 @@
                         method: 'POST'
                     }).done(function(response){
                         if(subscriptionContainer.length === 0)
-                            $("#selection").after('<div data-entry="'+subscription+'">'+response+'</div>');
+                            $("#selection").after('<div class="result" data-entry="'+subscription+'">'+response+'</div>');
                         else if(subscriptionContainer.find("#chart"+subId).is(":empty"))
                             subscriptionContainer.html(response).show();
                     }).fail(function(xhr,status,message){
@@ -241,7 +242,8 @@
                 qParams.propDef = $(".propertyDefinition.active").attr("data-value");
                 if(qParams.status.length === 0)
                     qParams.status.push(${RDStore.SUBSCRIPTION_CURRENT.id});
-                updateSubscriptions();
+                if($(":checked").length > 0)
+                    updateSubscriptions();
             });
             $("#clickMe").on('click','.propertyDefinition',function(){
                 let propDefKey = $(this).attr('data-value');
