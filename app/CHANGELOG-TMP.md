@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2893    01.10.2020  rc1.6               Andreas Feature     Bereinigung falsch ausgefüllter Nutzerzahlen
+
 2698    01.10.2020  rc1.6               Moe     Feature     Verbesserung der Exportfunktion bei Umfragen
 
 2894    01.10.2020  rc1.6               Moe     Bug         Meine Elemente in andere Lizenz kopieren: Bug bei Merkmalen
