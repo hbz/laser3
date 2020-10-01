@@ -24,13 +24,28 @@
     println jb.toPrettyString()
 --%>
 <%
-    int colspan1 = 6
-    int colspan2 = 9
+    int colspan1 = 4
+    int colspan2 = 7
     int wideColspan2 = 15
+    if(showView == "cons") {
+        colspan1 = 6
+        colspan2 = 9
+        wideColspan2 = 15
+    }
     if(fixedSubscription) {
-        colspan1 = 5
-        colspan2 = 8
+        colspan1 = 3
+        colspan2 = 6
         wideColspan2 = 13
+        if(showView == "cons") {
+            colspan1 = 5
+            colspan2 = 8
+            wideColspan2 = 13
+        }
+        else if(showView == "consAtSubscr") {
+            colspan1 = 4
+            colspan2 = 7
+            wideColspan2 = 13
+        }
     }
 %>
 <table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
@@ -45,7 +60,9 @@
             </g:if>
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
-                <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
+                <g:if test="${showView == "cons"}">
+                    <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
+                </g:if>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[consSort: true]"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
@@ -60,7 +77,9 @@
             </g:if>
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
-                <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:if test="${showView == "cons"}">
+                    <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                </g:if>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true, sub: fixedSubscription.id]" mapping="subfinance"/>
@@ -70,18 +89,32 @@
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
+                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                </g:if>
             </g:else>
         </tr>
         <tr>
             <g:if test="${!fixedSubscription}">
-                <th colspan="4"></th>
+                <g:if test="${showView == "cons"}">
+                    <th colspan="4"></th>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
-                <th colspan="6"></th>
+                    <th colspan="6"></th>
+                </g:if>
+                <g:elseif test="${showView == "subscr"}">
+                    <th colspan="2"></th>
+                    <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
+                    <th colspan="6"></th>
+                </g:elseif>
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]"/>
             </g:if>
             <g:else>
-                <th colspan="10"></th>
+                <g:if test="${showView.contains("cons")}">
+                    <th colspan="9"></th>
+                </g:if>
+                <g:elseif test="${showView == "subscr"}">
+                    <th colspan="8"></th>
+                </g:elseif>
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
             </g:else>
             <th colspan="2"></th>
@@ -140,26 +173,29 @@
                         %>
                         ${ jj + 1 + offset }
                     </td>
+                    <g:if test="${showView == "cons"}">
+                        <td>
+                            <g:each in="${ci.sub.orgRelations}" var="or">
+                                <g:if test="${memberRoles.contains(or.roleType.id)}">
+                                    ${or.org.sortname}
+                                </g:if>
+                            </g:each>
+                        </td>
+                    </g:if>
                     <td>
-                        <g:each in="${ci.sub.orgRelations}" var="or">
-                            <g:if test="${memberRoles.contains(or.roleType.id)}">
-                                ${or.org.sortname}
-                            </g:if>
-                        </g:each>
-                    </td>
-                    <td>
-                        <g:each in="${ci.sub.orgRelations}" var="or">
-                           <g:if test="${memberRoles.contains(or.roleType.id)}">
-                               <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
-
-                               <g:if test="${ci.isVisibleForSubscriber}">
-                                   <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                       <i class="ui icon eye orange"></i>
-                                   </span>
-                               </g:if>
-                           </g:if>
-                        </g:each>
-                        <br />
+                        <g:if test="${showView == "cons"}">
+                            <g:each in="${ci.sub.orgRelations}" var="or">
+                                <g:if test="${memberRoles.contains(or.roleType.id)}">
+                                    <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
+                                    <g:if test="${ci.isVisibleForSubscriber}">
+                                        <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                            <i class="ui icon eye orange"></i>
+                                        </span>
+                                    </g:if>
+                                </g:if>
+                            </g:each>
+                            <br>
+                        </g:if>
                         <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                     </td>
                     <g:if test="${!fixedSubscription}">
@@ -204,9 +240,9 @@
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
-                    <td class="x">
-                        <g:if test="${editable}">
-                            <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
+                    <g:if test="${editable}">
+                        <g:if test="${showView == "cons"}">
+                            <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
                                         <i class="write icon"></i>
@@ -232,33 +268,29 @@
                                         data-confirm-term-how="delete">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
-                            </g:if>
-                            <g:elseif test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
+                            </td>
+                        </g:if>
+                        <g:elseif test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
+                            <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
                                         <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
-
                                             <i class="la-copySend icon"></i>
-
                                             <i class="icon copy-send"></i>
-
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
                                         <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button trigger-modal">
-
                                             <i class="la-copySend icon"></i>
-
                                             <i class="icon copy-send"></i>
-
                                         </g:link>
                                     </span>
                                 </g:else>
-                            </g:elseif>
-                        </g:if>
-                    </td>
+                            </td>
+                        </g:elseif>
+                    </g:if>
                 </tr>
             </g:each>
         </g:else>

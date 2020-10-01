@@ -71,7 +71,7 @@
 									</td>
 									<td>
 										<ul>
-											<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
+											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
 											<g:if test="${organisationInstance.gokbId}">
 												<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${organisationInstance}" field="gokbId"/></li>
 											</g:if>
