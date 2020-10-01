@@ -214,6 +214,7 @@ class SurveyService {
             } else {
                 titles.push(messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
+                titles.push(messageSource.getMessage('surveyInfo.endDate.label', null, LocaleContextHolder.getLocale()))
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     titles.addAll([messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
@@ -221,7 +222,6 @@ class SurveyService {
                                    messageSource.getMessage('surveyconfig.urlComment2.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
@@ -234,9 +234,11 @@ class SurveyService {
                                    messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale())])
                     if (surveyConfig.subSurveyUseForTransfer) {
-                        titles.push(messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()))
-                        titles.push(messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()))
-                        titles.push(messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale()))
+                        titles.addAll([messageSource.getMessage('surveyconfig.scheduledStartDate.label', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('surveyconfig.scheduledEndDate.label', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale())])
                     }
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -344,6 +346,7 @@ class SurveyService {
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.comment ?: '', style: null])
+                row.add([field: surveyConfig.surveyInfo.endDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.surveyInfo.endDate.toString()).format("dd.MM.yyy") : '', style: null])
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     row.add([field: surveyConfig.url ?: '', style: null])
@@ -377,6 +380,8 @@ class SurveyService {
                     if (surveyConfig.subSurveyUseForTransfer) {
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
 
+                        row.add([field: surveyConfig.scheduledStartDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledStartDate.toString()).format("dd.MM.yyy"): '', style: null])
+                        row.add([field: surveyConfig.scheduledEndDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledEndDate.toString()).format("dd.MM.yyy"): '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
