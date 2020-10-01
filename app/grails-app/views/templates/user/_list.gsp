@@ -37,8 +37,6 @@
                     <th>${message(code:'user.displayName.label')}</th>
                     <th>${message(code:'user.email')}</th>
                     <th>${message(code:'profile.membership.role')}</th>
-                    <th>${message(code: "profile.membership.date2")}</th>
-                    <th>${message(code:'user.status')}</th>
                     <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
@@ -56,12 +54,6 @@
                         </td>
                         <td>
                             <g:message code="cv.roles.${uo.formalRole?.authority}"/>
-                        </td>
-                        <td>
-                            <g:formatDate format="dd. MMMM yyyy" date="${uo.dateRequested}"/>
-                        </td>
-                        <td>
-                            <g:message code="cv.membership.status.${uo.status}" />
                         </td>
                         <td class="x">
                             <g:link controller="organisation" action="processAffiliation"

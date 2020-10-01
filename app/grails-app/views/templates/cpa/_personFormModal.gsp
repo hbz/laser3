@@ -79,7 +79,7 @@
                                 class="ui search selection dropdown sortable">
                             <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                            <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
+                            <g:each in="${functions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                                     var="functionType">
                                 <option <%=(personInstance ? (functionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
                                         value="${functionType.id}">
@@ -96,7 +96,7 @@
                         <select name="positionType" id="positionType" multiple="" class="ui search selection dropdown">
                             <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                            <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
+                            <g:each in="${positions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                                     var="positionType">
                                 <option <%=(personInstance ? (positionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
                                         value="${positionType.id}">

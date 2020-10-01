@@ -6,11 +6,14 @@
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
     <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
     <g:if test="${inContextOrg}">
-        <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
+        <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContacts" />
     </g:if>
+    <g:elseif test="${(institution.getCustomerType() == 'ORG_CONSORTIUM' && !isProviderOrAgency)}">
+        <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: orgInstance.id]}" message="menu.institutions.publicContacts" />
+    </g:elseif>
     <g:else>
         <g:if test="${!isProviderOrAgency}">
-            <semui:subNavItem disabled="true" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
+            <semui:subNavItem disabled="true" controller="organisation" action="myPublicContacts" message="menu.institutions.publicContacts" />
         </g:if>
     </g:else>
 

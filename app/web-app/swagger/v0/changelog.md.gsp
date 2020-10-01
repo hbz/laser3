@@ -4,7 +4,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 #### 0.121
 
-- internal refactoring
+- modified attribute: `Address.type`
 
 #### 0.120
 

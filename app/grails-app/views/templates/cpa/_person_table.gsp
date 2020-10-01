@@ -5,7 +5,7 @@
     <colgroup>
         <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
-                <col style="width:  30px;">
+                <col style="width:  15px;">
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <col style="width: 170px;">
@@ -38,7 +38,7 @@
         <th>${message(code: 'sidewide.number')}</th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-        <g:if test="${controllerName == 'myInstitution' && actionName == 'myPublicContacts'}">
+        <g:if test="${controllerName == 'org' && actionName == 'myPublicContacts'}">
             <g:sortableColumn params="${params}" property="p.last_name"
                               title="${message(code: 'person.name.label')}"/>
         </g:if>
@@ -113,12 +113,13 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
             <td>
                 <div class="ui divided middle aligned list la-flex-list ">
-                    <g:each in="${pRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
+                    <g:each in="${pRolesSorted.groupBy  {it.org.id}}" var="orgId">
+                        <g:set var="org" value="${Org.get(orgId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
                                     <i class="icon university la-list-icon"></i>
                                     <g:link controller="organisation" action="addressbook"
-                                            id="${role.org?.id}">${role.org}</g:link>
+                                            id="${org.id}">${org}</g:link>
                                 </div>
                         </div>
                     </g:each>

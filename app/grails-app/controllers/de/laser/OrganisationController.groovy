@@ -1368,6 +1368,49 @@ class OrganisationController extends AbstractDebugController {
         }
         redirect action: 'listInstitution'
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def myPublicContacts() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+        result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
+
+        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM' && result.orgInstance)
+        {
+            params.org = result.orgInstance
+            result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
+        }else{
+            params.org = result.institution
+        }
+
+        List allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
+        if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
+            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+            result.rdvAllPersonPositions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+
+        }
+
+        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
+
+        if (visiblePersons){
+            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
+        }
+
+        params.tab = params.tab ?: 'contacts'
+
+        result.addresses = Address.findAllByOrg(params.org)
+
+        result
+    }
+
     private Map<String, Object> setResultGenericsAndCheckAccess() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
@@ -1397,15 +1440,16 @@ class OrganisationController extends AbstractDebugController {
 
     private boolean checkIsEditable(User user, Org org) {
         boolean isEditable
+        Org contextOrg = contextService.org
+        Org orgInstance = org
+        boolean inContextOrg =  orgInstance?.id == contextOrg.id
+        boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') ||user.hasRole('ROLE_ORG_EDITOR') || user.hasAffiliation('INST_EDITOR')
         switch(params.action){
             case 'userEdit':
                 isEditable = true
                 break
             case '_delete':
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN')
-                break
-            case 'addressbook':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
@@ -1421,14 +1465,18 @@ class OrganisationController extends AbstractDebugController {
             case 'deleteOrgType':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
+            case 'myPublicContacts':
+                if (inContextOrg) {
+                    isEditable = userHasEditableRights
+                }else{
+                    isEditable = false
+                }
+                break
             case 'show':
             case 'ids':
             case 'readerNumber':
             case 'accessPoints':
-                Org contextOrg = contextService.org
-                Org orgInstance = org
-                boolean inContextOrg =  orgInstance?.id == contextOrg.id
-                boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') ||user.hasRole('ROLE_ORG_EDITOR') || user.hasAffiliation('INST_EDITOR')
+            case 'addressbook':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 } else {
