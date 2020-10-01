@@ -27,21 +27,18 @@
                 </g:if>
 
                 <div class="divider"></div>
-                <%
-                    boolean isCopyLicenseEnabled = license.orgRelations?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
-                %>
-                <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
-                    <% isCopyLicenseEnabled = true %>
-                </sec:ifAnyGranted>
-                <g:if test="${isCopyLicenseEnabled}">
+
+                <g:if test="${(accessService.checkPerm("ORG_INST") && license._getCalculatedType() == License.TYPE_LOCAL) || (accessService.checkPerm("ORG_CONSORTIUM") && license._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                     <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
-                    <g:if test="${(accessService.checkPerm("ORG_INST") && !license.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
-                        <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
-                    </g:if>
                 </g:if>
                 <g:else>
                     <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
                 </g:else>
+
+                <g:if test="${(accessService.checkPerm("ORG_INST") && !license.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
+                </g:if>
+
              </g:if>
             <g:if test="${actionName == 'show'}">
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
