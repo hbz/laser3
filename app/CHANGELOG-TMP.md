@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2698    01.10.2020  rc1.6               Moe     Feature     Verbesserung der Exportfunktion bei Umfragen
+
 2894    01.10.2020  rc1.6               Moe     Bug         Meine Elemente in andere Lizenz kopieren: Bug bei Merkmalen
 
 2896    01.10.2020  rc1.6               Moe     Bug         Elemente an andere Lizenz kopieren funktioniert nicht
