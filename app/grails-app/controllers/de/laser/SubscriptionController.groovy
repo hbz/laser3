@@ -4230,7 +4230,7 @@ class SubscriptionController
                 break;
             case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copyObjectElements_Properties(params)
-                result << copyElementsService.loadDataFor_MyProperties(params)
+                result << copyElementsService.loadDataFor_Properties(params)
 
                 break;
             case CopyElementsService.WORKFLOW_END:

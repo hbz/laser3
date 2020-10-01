@@ -95,7 +95,6 @@ databaseChangeLog = {
 	include file: 'changelog-2020-07-08.groovy'
 	include file: 'changelog-2020-07-13.groovy'
 	include file: 'changelog-2020-07-22.groovy'
-	//include file: 'changelog-2020-07-24.groovy' to be activated as soon as data migration has been talked over with Micha
 	include file: 'changelog-2020-09-03.groovy'
 	include file: 'changelog-2020-09-07.groovy'
 	include file: 'changelog-2020-09-14.groovy'
@@ -104,4 +103,5 @@ databaseChangeLog = {
 	include file: 'changelog-2020-09-23.groovy'
 	include file: 'changelog-2020-09-25.groovy'
     include file: 'changelog-2020-09-28.groovy'
+    include file: 'changelog-2020-10-01.groovy'
 }

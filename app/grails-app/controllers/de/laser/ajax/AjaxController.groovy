@@ -2146,8 +2146,14 @@ class AjaxController {
 
 
         if(data) {
-            data.each { Subscription s ->
-                result.add([value: s.id, text: s.dropdownNamingConvention()])
+            if(params.valueAsOID){
+                data.each { Subscription s ->
+                    result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
+                }
+            }else {
+                data.each { Subscription s ->
+                    result.add([value: s.id, text: s.dropdownNamingConvention()])
+                }
             }
         }
         withFormat {

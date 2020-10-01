@@ -1147,11 +1147,7 @@ class LicenseController
                 break
             case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copyObjectElements_Properties(params)
-                if(accessService.checkPerm("ORG_CONSORTIUM")){
-                    result << copyElementsService.loadDataFor_Properties(params)
-                }else{
-                    result << copyElementsService.loadDataFor_MyProperties(params)
-                }
+                result << copyElementsService.loadDataFor_Properties(params)
                 break
             case CopyElementsService.WORKFLOW_END:
                 result << copyElementsService.copyObjectElements_Properties(params)
