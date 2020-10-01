@@ -33,7 +33,7 @@
     <g:message code="subscription"/>:
     <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
-</h4>C
+</h4>
 
 <g:if test="${filteredSubChilds}">
     <div class="ui segment">
