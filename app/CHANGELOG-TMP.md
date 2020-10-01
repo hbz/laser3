@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2896    01.10.2020  rc1.6               Moe     Bug         Elemente an andere Lizenz kopieren funktioniert nicht
+
 2811    01.10.2020  rc1.6               Moe     Feature     Lizenz/Vertrag kopieren momentan nur für ROLE_ADMIN, ROLE_YODA möglich
 
 2683    30.09.2020  rc1.6               Moe     Feature     Position

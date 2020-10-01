@@ -72,7 +72,7 @@
         var showIntendedSubs = $("input[name='show.intendedSubscriptions'").prop('checked');
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedSubs = $("input[name='show.conntectedSubscriptions'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?showActiveSubs='+showActiveSubs+'&showIntendedSubs='+showIntendedSubs+'&showSubscriber='+showSubscriber+'&showConnectedSubs='+showConnectedSubs+'&format=json'
+        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?valueAsOID=true&showActiveSubs='+showActiveSubs+'&showIntendedSubs='+showIntendedSubs+'&showSubscriber='+showSubscriber+'&showConnectedSubs='+showConnectedSubs+'&format=json'
 
         $.ajax({
             url: url,
