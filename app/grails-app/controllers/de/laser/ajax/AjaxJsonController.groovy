@@ -7,6 +7,8 @@ import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
+import de.laser.Contact
+import de.laser.Person
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.helper.DebugAnnotation
@@ -202,6 +204,22 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
+    def lookupSubscriptionsLicenses() {
+        Map<String, Object> result = [results:[]]
+        result.results.addAll(controlledListService.getSubscriptions(params).results)
+        result.results.addAll(controlledListService.getLicenses(params).results)
+
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def lookupCurrentAndIndendedSubscriptions() {
+        params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
+
+        render controlledListService.getSubscriptions(params) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupTitleGroups() {
         params.checkView = true
         if(params.sub != "undefined") {
@@ -248,10 +266,59 @@ class AjaxJsonController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
+
         if (params.input) {
             List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)", [searchTerm:params.input])
             result.result = checkList.size() > 0
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getEmailAddresses() {
+        List result = []
+
+        if (params.orgIdList) {
+            List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
+            List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+
+            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+            Map<String, Object> queryParams = [orgs: orgList]
+
+            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+
+            if (showPublicContactEmails && showPrivateContactEmails){
+                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+                queryParams << [ctx: contextService.org]
+            } else {
+                if (showPublicContactEmails){
+                    query += "and p.isPublic = true "
+                } else if (showPrivateContactEmails){
+                    query += "and (p.isPublic = false and p.tenant = :ctx) "
+                    queryParams << [ctx: contextService.org]
+                } else {
+                    return [] as JSON
+                }
+            }
+
+            if (params.selectedRoleTypIds) {
+                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split(',').collect { Long.parseLong(it) }
+                List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
+
+                if (selectedRoleTypes) {
+                    query += "and pr.functionType in (:selectedRoleTypes) "
+                    queryParams << [selectedRoleTypes: selectedRoleTypes]
+                }
+            }
+
+            List<Person> persons = Person.executeQuery(query, queryParams)
+            if (persons) {
+                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            }
+        }
+
         render result as JSON
     }
 }

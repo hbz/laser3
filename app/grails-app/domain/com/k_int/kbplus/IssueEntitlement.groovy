@@ -219,20 +219,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
     return null
   }
-  
-  @Transient
-  def coreStatusOn(as_at) {
-    // Use the new core system to determine if this title really is core
-    TitleInstitutionProvider tip = getTIP()
-    if(tip) return tip.coreStatus(as_at);
-    return false
-  }
-  
-  @Transient
-  def extendCoreDates(startDate, endDate){
-    def tip = getTIP()
-      tip?.extendCoreExtent(startDate,endDate)
-  }
 
   @Transient
   static def refdataFind(params) {

@@ -90,19 +90,31 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def createAddress() {
-        Map model = [:]
+        Map<String, Object> model = [:]
         model.orgId = params.orgId
         model.prsId = params.prsId
         model.redirect = params.redirect
         model.typeId = params.typeId ? Long.valueOf(params.typeId) : null
         model.hideType = params.hideType
+
         if (model.orgId && model.typeId) {
             String messageCode = 'addressFormModalLibraryAddress'
-            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {messageCode = 'addressFormModalLegalPatronAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {messageCode = 'addressFormModalBillingAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {messageCode = 'addressFormModalPostalAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {messageCode = 'addressFormModalDeliveryAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {messageCode = 'addressFormModalLibraryAddress'}
+
+            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {
+                messageCode = 'addressFormModalLegalPatronAddress'
+            }
+            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {
+                messageCode = 'addressFormModalBillingAddress'
+            }
+            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {
+                messageCode = 'addressFormModalPostalAddress'
+            }
+            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {
+                messageCode = 'addressFormModalDeliveryAddress'
+            }
+            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {
+                messageCode = 'addressFormModalLibraryAddress'
+            }
 
             model.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
         } else {
@@ -116,8 +128,9 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def editAddress() {
-        Map model = [:]
+        Map<String, Object> model = [:]
         model.addressInstance = Address.get(params.id)
+
         if (model.addressInstance){
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
@@ -127,44 +140,47 @@ class AjaxHtmlController {
             }
             else if(model.addressInstance.org) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.org.toString() + ')'
-            }else{
+            }
+            else{
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             }
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'address', action: 'edit']
+
             render template: "/templates/cpa/addressFormModal", model: model
         }
     }
 
     @Secured(['ROLE_USER'])
     def createPerson() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         result.modalId = 'personModal'
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
+
         switch(params.contactFor) {
             case 'contactPersonForInstitution':
-                result.isPublic    = false
-                if(result.org){
+                result.isPublic = false
+                if (result.org) {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
-                }else{
+                } else {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
                     result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
                 }
                 break
             case 'contactPersonForProviderAgency':
-                result.isPublic    = false
-                if(result.org){
+                result.isPublic = false
+                if (result.org) {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
-                }else {
+                } else {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
-                    result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
                 }
                 break
             case 'contactPersonForPublic':
-                result.isPublic    = true
+                result.isPublic = true
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
@@ -176,15 +192,16 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def editPerson() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         result.personInstance = Person.get(params.id)
+
         if (result.personInstance){
             if (params.org && params.org instanceof String) {
                 result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
-                List allOrgTypeIds =result.org.getAllOrgTypeIds()
-                if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
+                List allOrgTypeIds = result.org.getAllOrgTypeIds()
+                if (RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds) {
                     result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProviderAgency.label")]) + ' (' + result.org.toString() + ')'
-                }else{
+                } else {
                     result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
                 }
             }else {
@@ -201,19 +218,18 @@ class AjaxHtmlController {
             result.tmplShowDeleteButton = result.editable
             result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
+
             render template: "/templates/cpa/personFormModal", model: result
         }
     }
 
     @Secured(['ROLE_USER'])
     def contactFields() {
-
         render template: "/templates/cpa/contactFields"
     }
 
     @Secured(['ROLE_USER'])
     def addressFields() {
-
         render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
     }
 }

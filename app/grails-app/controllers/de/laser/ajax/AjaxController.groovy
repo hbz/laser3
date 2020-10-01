@@ -579,19 +579,6 @@ class AjaxController {
     }
   }
 
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptionsLicenses() {
-    Map result = [results:[]]
-    result.results.addAll(controlledListService.getSubscriptions(params).results)
-    result.results.addAll(controlledListService.getLicenses(params).results)
-    render result as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptions_IndendedAndCurrent() {
-      params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
-      render controlledListService.getSubscriptions(params) as JSON
-  }
 
     @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
@@ -1488,7 +1475,7 @@ class AjaxController {
     private setDashboardDueDateIsHidden(boolean isHidden){
         log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.institution = contextService.org
         flash.error = ''
@@ -1540,7 +1527,7 @@ class AjaxController {
     private setDashboardDueDateIsDone(boolean isDone){
         log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.institution = contextService.org
         flash.error = ''
@@ -1585,43 +1572,6 @@ class AjaxController {
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
-    /*
-  @Deprecated
-  def coreExtend(){
-    log.debug("ajax::coreExtend:: ${params}")
-    def tipID = params.tipID
-    try{
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def startDate = sdf.parse(params.coreStartDate)
-      def endDate = params.coreEndDate? sdf.parse(params.coreEndDate) : null
-      if(tipID && startDate){
-        def tip = TitleInstitutionProvider.get(tipID)
-        log.debug("Extending tip ${tip.id} with start ${startDate} and end ${endDate}")
-        tip.extendCoreExtent(startDate, endDate)
-        params.message = message(code:'ajax.coreExtend.success')
-      }
-    }catch (Exception e){
-        log.error("Error while extending core dates",e)
-        params.message = message(code:'ajax.coreExtend.error')
-    }
-    redirect(action:'getTipCoreDates',controller:'ajax',params:params)
-  }
-
-  @Deprecated
-  def getTipCoreDates(){
-    log.debug("ajax::getTipCoreDates:: ${params}")
-    def tipID = params.tipID ?:params.id
-    def tip = null
-    if(tipID) tip = TitleInstitutionProvider.get(tipID);
-    if(tip){
-      def dates = tip.coreDates
-      log.debug("Returning ${dates}")
-      request.setAttribute("editable",params.editable?:true)
-      render(template: "/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);
-    }
-  }
-     */
-
     def delete() {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
@@ -1643,14 +1593,6 @@ class AjaxController {
                 obj.delete(flush:true)
         }
     }
-
-    @Secured(['ROLE_USER'])
-    def deleteCoreDate(){
-    log.debug("ajax:: deleteCoreDate::${params}")
-    def date = CoreAssertion.get(params.coreDateID)
-    if(date) date.delete(flush:true)
-    redirect(action:'getTipCoreDates',controller:'ajax',params:params)
-  }
 
   def getProvidersWithPrivateContacts() {
     Map<String, Object> result = [:]
@@ -1896,60 +1838,6 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
 
   }
-
-    @Secured(['ROLE_USER'])
-    def getEmailAddresses() {
-        Set result = []
-        if (params.orgIdList){
-            List<Long> orgIds = (params.orgIdList.split( ',')).each { (it instanceof Long) ? it : Long.parseLong(it)}
-            List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
-            
-            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
-            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
-
-            List<RefdataValue> selectedRoleTypes = null
-            if (params.selectedRoleTypIds) {
-                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-                selectedRoleTypes = selectedRoleTypIds.isEmpty() ? [] : RefdataValue.findAllByIdInList(selectedRoleTypIds)
-            }
-
-            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
-            Map queryParams = [orgs: orgList]
-
-            if (showPublicContactEmails && showPrivateContactEmails){
-                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
-                queryParams << [ctx: contextService.org]
-            } else {
-                if (showPublicContactEmails){
-                    query += "and p.isPublic = true "
-                } else if (showPrivateContactEmails){
-                    query += "and (p.isPublic = false and p.tenant = :ctx) "
-                    queryParams << [ctx: contextService.org]
-                } else {
-                    return [] as JSON
-                }
-            }
-
-            if (selectedRoleTypes) {
-                query += "and pr.functionType in (:selectedRoleTypes) "
-                queryParams << [selectedRoleTypes: selectedRoleTypes]
-//                selectedRoleTypes.eachWithIndex{ it, index ->
-//                    query += "and pr.functionType = :r${index} "
-//                    queryParams << ["r${index}": it]
-//                }
-            }
-
-            List<Person> persons = Person.executeQuery(query, queryParams)
-
-            if (persons){
-                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                        [persons: persons, contentType: RDStore.CCT_EMAIL])
-            }
-
-        }
-
-        render result as JSON
-    }
 
     @Secured(['ROLE_USER'])
     def editableSetValue() {
