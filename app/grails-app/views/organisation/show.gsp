@@ -319,7 +319,7 @@
 
                     <div class="ui la-float-right">
                         <g:if test="${((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                            <g:link action="myPublicContacts" controller="myInstitution" params="[tab: 'contacts']"
+                            <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
                     </div>

@@ -38,7 +38,7 @@
         <th>${message(code: 'sidewide.number')}</th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-        <g:if test="${controllerName == 'myInstitution' && actionName == 'myPublicContacts'}">
+        <g:if test="${controllerName == 'org' && actionName == 'myPublicContacts'}">
             <g:sortableColumn params="${params}" property="p.last_name"
                               title="${message(code: 'person.name.label')}"/>
         </g:if>

@@ -2424,42 +2424,6 @@ join sub.orgRelations or_sub where
         result
       }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def myPublicContacts() {
-        Map<String, Object> result = setResultGenerics()
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM' && params.id)
-        {
-            result.editable = false
-            result.institution = Org.get(params.id)
-            params.org = result.institution
-        }else{
-            params.org = result.institution
-        }
-
-
-        result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)
-        result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)
-
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-        result.num_visiblePersons = visiblePersons.size()
-        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
-
-        if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
-        }
-
-        params.tab = params.tab ?: 'contacts'
-
-        result.addresses = Address.findAllByOrg(result.institution)
-
-        result
-      }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -3846,9 +3810,6 @@ join sub.orgRelations or_sub where
             case 'addressbook':
             case 'budgetCodes':
             case 'tasks':
-            case 'myPublicContacts':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-                break
             case 'surveyInfos':
                 isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break

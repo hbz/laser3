@@ -13,21 +13,20 @@
 <body>
 
 <semui:breadcrumbs>
-    <g:if test="${institution.id != contextService.getOrg().id}">
-        <semui:crumb text="${institution.getDesignation()}" />
+    <g:if test="${orgInstance.id != contextService.getOrg().id}">
+        <semui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show" params="[id: orgInstance.id]" />
     </g:if>
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
 </semui:controlButtons>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${institution.name}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <semui:messages data="${flash}"/>
 
 <%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
-<g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: (institution.id == contextService.getOrg().id)]}"/>
+<g:render template="/organisation/nav"/>
 
 
 <div class="ui top attached tabular menu">
@@ -58,12 +57,12 @@
         </semui:actionsDropdown>
     </semui:controlButtons>
 
-    <g:render template="/templates/copyFilteredEmailAddresses" model="[orgList: [institution], emailAddresses: emailAddresses]"/>
+    <g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
     <br>
 
 
     <semui:filter>
-        <g:form action="${actionName}" controller="myInstitution" method="get" params="${params}" class="ui small form">
+        <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
                     <label for="prs">${message(code: 'person.filter.name')}</label>
@@ -114,7 +113,7 @@
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
 
-    <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
+    <semui:paginate action="myPublicContacts" controller="organisation" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}"
                     max="${max}"
@@ -126,7 +125,7 @@
 <div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}" data-tab="personAddresses">
 
     <semui:filter>
-        <g:form action="${actionName}" controller="myInstitution" method="get" params="${params}" class="ui small form">
+        <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
                     <label for="prs">${message(code: 'person.filter.name')}</label>
@@ -177,7 +176,7 @@
                         tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>
 
-    <semui:paginate action="myPublicContacts" controller="myInstitution" params="${params}"
+    <semui:paginate action="myPublicContacts" controller="organisation" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}"
                     max="${max}"
@@ -194,7 +193,7 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable}">
-                <a href="#addressFormModal" class="item" data-semui="modal" onclick="addresscreate_org('${institution.id}');"><g:message code="address.add.label"/></a>
+                <a href="#addressFormModal" class="item" data-semui="modal" onclick="addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
             </g:if><g:else>
             <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="address.add.label"/>
@@ -211,7 +210,7 @@
             tmplShowDeleteButton: true,
             controller          : 'org',
             action              : 'show',
-            id                  : institution.id,
+            id                  : orgInstance.id,
             editable            : editable
     ]}"/>
 

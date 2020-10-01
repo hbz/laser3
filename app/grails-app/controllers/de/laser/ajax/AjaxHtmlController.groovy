@@ -147,14 +147,15 @@ class AjaxHtmlController {
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
+        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
+            result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
+        }
+        result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
+
         switch(params.contactFor) {
             case 'contactPersonForInstitution':
                 result.isPublic    = false
-                result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
-                if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
-                    result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
-                }
-                result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
                 if(result.org){
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
                 }else{
@@ -176,11 +177,6 @@ class AjaxHtmlController {
                 break
             case 'contactPersonForPublic':
                 result.isPublic    = true
-                result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
-                if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
-                    result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
-                }
-                result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
