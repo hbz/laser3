@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-2075    30.09.2020  rc1.6   1.6         Moe     Feature     Kopier- und Löschmarkierungen für Identifikator-Kopieren einfügen
+2892    30.09.2020  rc1.6               Andreas Bug         Lizenzklausel im Vertragsfilter umstrukturiert
+
+2886    30.09.2020  rc1.6               Andreas Bug         Controller-Änderung in Template nachgezogen
+
+2075    30.09.2020  rc1.6               Moe     Feature     Kopier- und Löschmarkierungen für Identifikator-Kopieren einfügen
 
 2886    30.09.2020  hbz-dev             Andreas Bug         Lizenzen werden jetzt auch im globalen Aufgabenpanel geladen
 
