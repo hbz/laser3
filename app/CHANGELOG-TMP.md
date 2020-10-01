@@ -15,11 +15,15 @@
 
 2811    01.10.2020  rc1.6               Moe     Feature     Lizenz/Vertrag kopieren momentan nur für ROLE_ADMIN, ROLE_YODA möglich
 
+2892    30.09.2020  rc1.6               Andreas Bug         Lizenzklausel im Vertragsfilter umstrukturiert
+
+2886    30.09.2020  rc1.6               Andreas Bug         Controller-Änderung in Template nachgezogen
+
 2683    30.09.2020  rc1.6               Moe     Feature     Position
 
 2684    30.09.2020  rc1.6               Moe     Feature     Funktionen
 
-2075    30.09.2020  rc1.6   1.6         Moe     Feature     Kopier- und Löschmarkierungen für Identifikator-Kopieren einfügen
+2075    30.09.2020  rc1.6               Moe     Feature     Kopier- und Löschmarkierungen für Identifikator-Kopieren einfügen
 
 2886    30.09.2020  hbz-dev             Andreas Bug         Lizenzen werden jetzt auch im globalen Aufgabenpanel geladen
 
