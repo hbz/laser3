@@ -7,6 +7,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.syntax.Numbers
+import de.laser.helper.RDStore
 
 @Transactional
 class AddressbookService {
@@ -116,6 +117,18 @@ class AddressbookService {
         if (params.position){
             qParts << "pr.positionType.id in (:selectedPositions) "
             qParams << [selectedPositions: params.list('position').collect{Long.parseLong(it)}]
+
+        }
+
+        if (params.showOnlyContactPersonForInstitution){
+            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :orgType ) and pr.org.sector.id = :orgSector )"
+            qParams << [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id]
+
+        }
+
+        if (params.showOnlyContactPersonForProviderAgency){
+            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id in (:orgType)) and pr.org.sector.id = :orgSector )"
+            qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
 
         }
 

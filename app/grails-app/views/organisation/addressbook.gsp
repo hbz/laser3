@@ -18,7 +18,7 @@
 <semui:controlButtons>
     <semui:actionsDropdown>
     <g:if test="${editable}">
-        <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM' && !isProviderOrAgency}">
+        <g:if test="${(institution.getCustomerType() == 'ORG_CONSORTIUM') && !isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-semui="modal"
                onclick="personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForInstitution.label"/></a>
@@ -50,7 +50,7 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
-    <g:form action="addressbook" controller="organisation" method="get" class="ui small form">
+    <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
         <div class="three fields">
             <div class="field">
                 <label for="prs">${message(code: 'person.filter.name')}</label>

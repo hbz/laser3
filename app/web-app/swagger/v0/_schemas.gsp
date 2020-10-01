@@ -62,7 +62,9 @@
           description: Mapping RefdataCategory "${RDConstants.COUNTRY}"
           enum: <% printRefdataEnum(RDConstants.COUNTRY, 12) %>
         type:
-          type: string
+          type: array
+          items:
+            type: string
           description: Mapping RefdataCategory "${RDConstants.ADDRESS_TYPE}"
           enum: <% printRefdataEnum(RDConstants.ADDRESS_TYPE, 12) %>
         lastUpdated:
