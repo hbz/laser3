@@ -3,7 +3,7 @@
 <% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">
 	<label for="globalUID">
-		<g:message code="org.globalUID.label" default="Global UID" />
+		<g:message code="globalUID.label" default="Global UID" />
 	</label>
 	<g:textArea name="globalUID" cols="40" rows="5" maxlength="255" value="${orgInstance?.globalUID}"/>
 </div>

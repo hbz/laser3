@@ -2,7 +2,10 @@
     <td>${tableRowNr}</td>
     <td>
         <g:if test="${showGlobalUid}">
-            <g:message code="org.globalUID.label" />
+            <g:message code="globalUID.label" />
+            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'globalUID.desc')}">
+                <i class="question circle icon"></i>
+            </span>
         </g:if>
         <g:else>
             ${id.ns.getI10n('name') ?: id.ns.ns}

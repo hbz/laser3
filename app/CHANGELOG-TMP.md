@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2791    01.10.2020  rc1.6               Andreas Feature     Erklärungstest zur Global UID eingefügt
+
+2412    01.10.2020  rc1.6               Andreas Bug         verrutschte Spalten und Sicht in Kosteninformationen korrigert
+
 2892    30.09.2020  rc1.6               Andreas Bug         Lizenzklausel im Vertragsfilter umstrukturiert
 
 2886    30.09.2020  rc1.6               Andreas Bug         Controller-Änderung in Template nachgezogen

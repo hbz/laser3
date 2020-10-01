@@ -13,7 +13,7 @@
     <div class="content">
         <div class="inline-lists">
             <dl>
-                <dt><g:message code="org.globalUID.label"/></dt>
+                <dt><g:message code="globalUID.label"/></dt>
                 <dd><g:fieldValue bean="${object}" field="globalUID"/></dd>
 
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org.institution--%>
