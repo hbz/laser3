@@ -3,6 +3,7 @@ package de.laser.ajax
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -120,6 +121,10 @@ class AjaxController {
             format:'map'
     ]
   ]
+
+    def test() {
+        render 'test()'
+    }
 
     def genericDialogMessage() {
 
@@ -347,71 +352,6 @@ class AjaxController {
       }
     }
   }
-
-    /**
-     * Copied legacy sel2RefdataSearch(), but uses OID.
-     *
-     * @return
-     */
-    def refdataSearchByOID() {
-        def result = []
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-        def rdc = genericOIDService.resolveOID(params.oid)
-
-        def config = [
-                domain:'RefdataValue',
-                countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
-                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}' order by rdv.order, rdv.value_" + locale,
-                qryParams:[],
-                cols:['value'],
-                format:'simple'
-        ]
-
-        def query_params = []
-        config.qryParams.each { qp ->
-            if (qp?.clos) {
-                query_params.add(qp.clos(params[qp.param]?:''));
-            }
-            else if(qp?.value) {
-                params."${qp.param}" = qp?.value
-            }
-            else {
-                query_params.add(params[qp.param]);
-            }
-        }
-
-        def cq = RefdataValue.executeQuery(config.countQry, query_params);
-        def rq = RefdataValue.executeQuery(config.rowQry,
-                query_params,
-                [max:params.iDisplayLength?:1000, offset:params.iDisplayStart?:0]);
-
-        rq.each { it ->
-            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-
-            if ( it instanceof I10nTrait ) {
-                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
-            }
-            else if ( it instanceof AbstractI10n ) {
-                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
-            }
-            else {
-                def objTest = rowobj[config.cols[0]]
-                if (objTest) {
-                    def no_ws = objTest.replaceAll(' ','');
-                    def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
-                    result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
-                }
-            }
-        }
-
-        if(result) {
-            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
-            result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
-//            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-        }
-
-        render result as JSON
-    }
 
     def getPropValues() {
         Set result = []
@@ -872,7 +812,7 @@ class AjaxController {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
-            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO ERMS-2880
+            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO [ticket=2880]
                 if (params.refdatacategory) {
 
                     Map<String, Object> map = [
@@ -1697,48 +1637,6 @@ class AjaxController {
     render result as JSON
   }
 
-  def lookup() {
-      // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg().shortcode
-
-    // log.debug("AjaxController::lookup ${params}");
-    Map<String, Object> result = [:]
-    params.max = params.max ?: 40
-
-    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
-    if ( domain_class ) {
-      result.values = domain_class.getClazz().refdataFind(params);
-      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-    }
-    else {
-      log.error("Unable to locate domain class ${params.baseClass}");
-      result.values=[]
-    }
-    //result.values = [[id:'Person:45',text:'Fred'],
-    //                 [id:'Person:23',text:'Jim'],
-    //                 [id:'Person:22',text:'Jimmy'],
-    //                 [id:'Person:3',text:'JimBob']]
-    render result as JSON
-  }
-
-  // used only from IdentifierTabLib.formAddIdentifier
-  def lookup2() {
-      // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg().shortcode
-
-    Map<String, Object> result = [:]
-    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
-    if (domain_class) {
-      result.values = domain_class.getClazz().refdataFind2(params);
-      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-    }
-    else {
-      log.error("Unable to locate domain class ${params.baseClass}");
-      result.values=[]
-    }
-    render result as JSON
-  }
-
     def toggleEditMode() {
         log.debug ('toggleEditMode()')
 
@@ -1864,12 +1762,13 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
   }
     
-  def resolveOID2(oid) {
-    def oid_components = oid.split(':')
-    def result = null
-    GrailsClass domain_class = AppUtils.getDomainClass( oid_components[0] )
-    if ( domain_class ) {
-      if ( oid_components[1]=='__new__' ) {
+  def resolveOID2(String oid) {
+    String[] oid_components = oid.split(':')
+    def result
+
+    GrailsClass domain_class = AppUtils.getDomainClass(oid_components[0])
+    if (domain_class) {
+      if (oid_components[1] == '__new__') {
         result = domain_class.getClazz().refdataCreate(oid_components)
         // log.debug("Result of create ${oid} is ${result?.id}");
       }
@@ -2083,10 +1982,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        User user = resolveOID2(params.user);
-        Role role = resolveOID2(params.role);
+        User user = resolveOID2(params.user)
+        Role role = resolveOID2(params.role)
         if (user && role) {
-            com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+            UserRole.remove(user,role,true)
         }
         redirect(url: request.getHeader('referer'))
     }

@@ -123,7 +123,7 @@ class AuditService {
                                         event   : "${obj.class.simpleName}.updated",
                                         prop    : cp,
                                         name    : obj.type.name,
-                                        type    : obj."${cp}".getClass().toString(), // TODO ERMS-2880
+                                        type    : obj."${cp}".getClass().toString(), // TODO [ticket=2880]
                                         old     : old_oid ?: oldMap[cp], // Backward Compatibility
                                         oldLabel: oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
                                         new     : new_oid ?: newMap[cp], // Backward Compatibility
@@ -149,7 +149,7 @@ class AuditService {
                                             OID     : "${obj.class.name}:${obj.id}",
                                             event   : "${obj.class.simpleName}.updated",
                                             prop    : cp,
-                                            type    : RefdataValue.toString(), // TODO ERMS-2880
+                                            type    : RefdataValue.toString(), // TODO [ticket=2880]
                                             old     : old_oid,
                                             oldLabel: oldMap[cp]?.toString(),
                                             new     : new_oid,
