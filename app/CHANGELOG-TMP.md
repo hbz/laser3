@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2893    02.10.2020  rc1.6               Andreas Feature     weitere Bereinigungsabfrage
+
+2718    02.10.2020  rc1.6               Andreas Feature     Nachbestellungen Nutzerzahlensicht
+
 2899    01.10.2020  rc1.6               Andreas Bug         Prüfung auf Teilnehmerlizenzen bei Teilnehmer-Merkmale bearbeiten nachgereicht
 
 2893    01.10.2020  rc1.6               Andreas Feature     Bereinigung falsch ausgefüllter Nutzerzahlen
