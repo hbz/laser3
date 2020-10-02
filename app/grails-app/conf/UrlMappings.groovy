@@ -7,7 +7,9 @@ class UrlMappings {
             }
         }
 
-        "/ajax/$action?/$id?"       (controller: 'ajax')
+        "/ajax/json/$action?/$id?"      (controller: 'ajaxJson')
+        "/ajax/html/$action?/$id?"      (controller: 'ajaxHtml')
+        "/ajax/$action?/$id?"           (controller: 'ajax')
 
         "/lic/$action?/$id?"        (controller: 'license')
         "/org/$action?/$id?"        (controller: 'organisation')

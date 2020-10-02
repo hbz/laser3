@@ -555,10 +555,14 @@
             <g:if test="${sourceObject.hasProperty("ids")}">
                 <tr>
                     <td name="copyObject.takeIdentifier.source">
-                        <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
-                        <g:each in="${sourceIdentifiers}" var="ident">
-                            <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
-                        </g:each>
+                        <div>
+                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
+                            <g:each in="${sourceIdentifiers}" var="ident">
+                                <div data-oid="${genericOIDService.getOID(ident)}">
+                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
+                                </div>
+                            </g:each>
+                        </div>
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
@@ -568,9 +572,9 @@
                 %{--COPY:--}%
                     <td class="center aligned">
                         <g:each in="${sourceIdentifiers}" var="ident">
-                            <div data-id="${ident.id}" class="la-element">
+                            <div class="la-element">
                                 <div class="ui checkbox la-toggle-radio la-replace">
-                                    <g:checkBox name="copyObject.takeIdentifierIds" value="${ident.id}"
+                                    <g:checkBox name="copyObject.takeIdentifierIds" value="${genericOIDService.getOID(ident)}"
                                                 data-action="copy"/>
                                 </div>
                             </div>
@@ -579,17 +583,21 @@
                     </td>
                     <g:if test="${!copyObject}">
                         <td name="copyObject.takeIdentifier.target">
+                            <div>
                             <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
                             <g:each in="${targetIdentifiers}" var="ident">
-                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
+                                <div data-oid="${genericOIDService.getOID(ident)}">
+                                    <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
+                                </div>
                             </g:each>
+                            </div>
                         </td>
                     %{--DELETE:--}%
                         <td>
                             <g:each in="${targetIdentifiers}" var="ident">
-                                <div data-id="${ident.id}" class="la-element">
+                                <div class="la-element">
                                     <div class="ui checkbox la-toggle-radio la-noChange">
-                                        <g:checkBox name="copyObject.deleteIdentifierIds" value="${ident.id}"
+                                        <g:checkBox name="copyObject.deleteIdentifierIds" value="${genericOIDService.getOID(ident)}"
                                                     data-action="delete" checked="${false}"/>
                                     </div>
                                 </div>
@@ -649,7 +657,9 @@
                 $takeOrgRelations: $('input:checkbox[name="copyObject.takeOrgRelations"]'),
                 $deleteOrgRelations: $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
                 $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
-                $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]')
+                $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
+                $takeIdentifier: $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
+                $deleteIdentifier: $('input:checkbox[name="copyObject.deleteIdentifierIds"]')
             },
 
             init: function () {
@@ -677,6 +687,22 @@
 
                 ref.$deleteSpecificSubscriptionEditors.change(function (event) {
                     subCopyController.deleteSpecificSubscriptionEditors(this);
+                }).trigger('change')
+
+                ref.$takeSpecificSubscriptionEditors.change(function (event) {
+                    subCopyController.takeSpecificSubscriptionEditors(this);
+                }).trigger('change')
+
+                ref.$deleteSpecificSubscriptionEditors.change(function (event) {
+                    subCopyController.deleteSpecificSubscriptionEditors(this);
+                }).trigger('change')
+
+                ref.$takeIdentifier.change(function (event) {
+                    subCopyController.takeIdentifier(this);
+                }).trigger('change')
+
+                ref.$deleteIdentifier.change(function (event) {
+                    subCopyController.deleteIdentifier(this);
                 }).trigger('change')
 
                 $("input:checkbox[name^='copyObject']").change(function () {
@@ -743,6 +769,26 @@
                     $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
                 } else {
                     $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                }
+            },
+
+            takeIdentifier: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeIdentifier.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeIdentifier.target"] div div').addClass('willStay');
+                } else {
+                    $('.table tr td[name="copyObject.takeIdentifier.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeIdentifierIds') < 1) {
+                        $('.table tr td[name="copyObject.takeIdentifier.target"] div div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteIdentifier: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeIdentifier.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="copyObject.takeIdentifier.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
                 }
             },
 

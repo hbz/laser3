@@ -145,7 +145,7 @@
     <script>
         function noteedit(id) {
             $.ajax({
-                url: '<g:createLink controller="ajax" action="editNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#modalEditNote").remove();
@@ -157,7 +157,7 @@
         }
         function noteread(id) {
             $.ajax({
-                url: '<g:createLink controller="ajax" action="readNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#modalEditNote").remove();

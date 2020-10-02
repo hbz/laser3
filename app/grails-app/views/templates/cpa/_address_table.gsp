@@ -25,13 +25,19 @@
                 ${c + 1}
             </td>
             <td>
-                ${address.type?.getI10n('value')}
+                <div class="ui divided middle aligned list la-flex-list ">
+                <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">
+                    <div class="ui item ">
+                        ${type.getI10n('value')}
+                    </div>
+                </g:each>
+                </div>
             </td>
             <td>
                 <div class="ui item address-details">
                     <div style="display: flex">
                         <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
-                            <i class="ui js-linkGoogle icon building map marker alternate la-list-icon"></i>
+                            <i class="ui js-linkGoogle blue icon building map marker alternate la-list-icon"></i>
                         </a>
 
                         <g:if test="${address.name}">
@@ -90,7 +96,7 @@
 
 <g:javascript>
     function editAddress(id) {
-        var url = '<g:createLink controller="ajax" action="editAddress"/>?id='+id;
+        var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
         private_address_modal(url)
     }
     function private_address_modal(url) {

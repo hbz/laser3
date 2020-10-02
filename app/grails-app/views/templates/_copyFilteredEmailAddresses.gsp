@@ -4,7 +4,7 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyFilteredEmailAddresses_ajaxModal'}"/>
 
-<semui:modal id="${modalID ?: 'copyFilteredEmailAddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
+<semui:modal id="${modalID ?: 'copyFilteredEmailAddresses_ajaxModal'}" text="${orgList ? message(code:'menu.institutions.copy_emailaddresses', args:[orgList.size()?:0]) : message(code:'menu.institutions.copy_emailaddresses.button')}" hideSubmitButton="true">
 
     <div class="ui form">
         <div class="field">

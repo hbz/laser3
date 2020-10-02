@@ -721,7 +721,7 @@
 
           <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
               $.ajax({
-                  url: "<g:createLink controller="ajax" action="getLicensePropertiesForSubscription" />",
+                  url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
                   data: {
                        loadFor: "${link.source}",
                        linkId: ${link.id}

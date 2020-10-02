@@ -176,7 +176,7 @@
                         $('#replaceRefdataValueModal input[name=xcgRdvFrom]').attr('value', rdv);
 
                          $.ajax({
-                            url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + rdc + '&format=json',
+                            url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + rdc,
                             success: function (data) {
                                 var select = '<option></option>';
                                 for (var index = 0; index < data.length; index++) {

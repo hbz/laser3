@@ -41,11 +41,6 @@
             <semui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
         </g:if>
 
-        <g:if test="${actionName == 'addressbook'}">
-            <semui:actionsDropdownItem data-semui="modal"
-                                       href="#personFormModal" message="person.create_new.contactPerson.label" />
-        </g:if>
-
     </g:if>
     <g:if test="${actionName in ['documents','show'] && (editable || accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ORG_EDITOR'))}">
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument"/>

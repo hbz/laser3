@@ -1,23 +1,11 @@
-package de.laser
+package de.laser.ajax
 
-
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.License
-import com.k_int.kbplus.LicenseProperty
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.PendingChange
-import com.k_int.kbplus.PersonProperty
-import com.k_int.kbplus.Platform
-import com.k_int.kbplus.PlatformProperty
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.SubscriptionProperty
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import de.laser.*
 import de.laser.base.AbstractI10n
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
@@ -46,16 +34,13 @@ class AjaxController {
     def genericOIDService
     def subscriptionService
     def contextService
-    def taskService
     def controlledListService
-    def dataConsistencyService
     def accessService
     def escapeService
     def formService
     def dashboardDueDatesService
     CompareService compareService
     LinksGenerationService linksGenerationService
-    AddressbookService addressbookService
     FinanceService financeService
 
     def refdata_config = [
@@ -146,26 +131,6 @@ class AjaxController {
         }
     }
 
-
-    def notifyProfiler() {
-        Map<String, Object> result = [status:'failed']
-
-        SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
-
-        if (pu) {
-            long delta = pu.stopSimpleBench(params.uri)
-
-            SystemProfiler.update(delta, params.uri)
-
-            result.uri = params.uri
-            result.delta = delta
-            result.status = 'ok'
-        }
-
-        render result as JSON
-    }
-
     def updateSessionCache() {
         if (contextService.getUser()) {
             SessionCacheWrapper cache = contextService.getSessionCache()
@@ -184,69 +149,6 @@ class AjaxController {
         }
         Map<String, Object> result = [:]
         render result as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def genericSetValue() {
-        def result = params.value
-
-        try {
-
-    // params.elementid (The id from the html element)  must be formed as domain:pk:property:otherstuff
-    String[] oid_components = params.elementid.split(":");
-
-    GrailsClass domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(oid_components[1])
-      if ( instance ) {
-
-        def value = params.value;
-        if ( value == '__NULL__' ) {
-           value=null;
-           result='';
-        }
-        else {
-          if ( params.dt == 'date' ) {
-            // log.debug("Special date processing, idf=${params.idf}");
-              SimpleDateFormat formatter = new SimpleDateFormat(params.idf)
-            value = formatter.parse(params.value)
-            if ( params.odf ) {
-                SimpleDateFormat of = new SimpleDateFormat(params.odf)
-              result=of.format(value);
-            }
-            else {
-                SimpleDateFormat of = DateUtil.getSDF_NoTime()
-              result=of.format(value)
-            }
-          }
-        }
-        // log.debug("Got instance ${instance}");
-        def binding_properties = [ "${oid_components[2]}":value ]
-        // log.debug("Merge: ${binding_properties}");
-        // see http://grails.org/doc/latest/ref/Controllers/bindData.html
-        bindData(instance, binding_properties)
-        instance.save(flush: true)
-      }
-      else {
-        log.debug("no instance");
-      }
-    }
-    else {
-      log.debug("no type");
-    }
-
-        } catch (Exception e) {
-            log.error("@ genericSetValue()")
-            log.error( e.toString() )
-        }
-
-        log.debug("genericSetValue() returns ${result}")
-        response.setContentType('text/plain')
-
-        def outs = response.outputStream
-        outs << result
-        outs.flush()
-        outs.close()
     }
 
     @Secured(['ROLE_USER'])
@@ -356,48 +258,6 @@ class AjaxController {
         render resp as JSON
     }
 
-  def orgs() {
-    // log.debug("Orgs: ${params}");
-
-    def result = [
-      options:[]
-    ]
-
-    def query_params = ["%${params.query.trim().toLowerCase()}%"];
-
-    // log.debug("q params: ${query_params}");
-
-    // result.options = Org.executeQuery("select o.name from Org as o where lower(o.name) like ? order by o.name desc",["%${params.query.trim().toLowerCase()}%"],[max:10]);
-    def ol = Org.executeQuery("select o from Org as o where lower(o.name) like ? order by o.name asc",query_params,[max:10,offset:0]);
-
-    ol.each {
-      result.options.add(it.name);
-    }
-
-    render result as JSON
-  }
-
-  def validatePackageId() {
-    Map<String, Object> result = [:]
-    result.response = false;
-    if( params.id ) {
-        Package p = Package.findByIdentifier(params.id)
-      if ( !p ) {
-        result.response = true
-      }
-    }
-
-    render result as JSON
-  }
-
-  def generateBoolean() {
-    def result = [
-        [value: 1, text: RDStore.YN_YES.getI10n('value')],
-        [value: 0, text: RDStore.YN_NO.getI10n('value')]
-    ]
-    render result as JSON
-  }
-
   @Deprecated
   def refdataSearch() {
       // TODO: refactoring - only used by /templates/_orgLinksModal.gsp
@@ -488,46 +348,6 @@ class AjaxController {
     }
   }
 
-    def propertyAlternativesSearchByOID() {
-        def result = []
-        def pd = genericOIDService.resolveOID(params.oid)
-
-        def queryResult = PropertyDefinition.findAllWhere(
-                descr: pd.descr,
-                refdataCategory: pd.refdataCategory,
-                type: pd.type,
-                multipleOccurrence: pd.multipleOccurrence,
-                tenant: pd.tenant
-        )//.minus(pd)
-
-        queryResult.each { it ->
-            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-            if (pd.isUsedForLogic) {
-                if (it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
-                }
-            }
-            else {
-                if (! it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
-                }
-            }
-        }
-
-        if (result.size() > 1) {
-           result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
-        }
-
-        withFormat {
-            html {
-                result
-            }
-            json {
-                render result as JSON
-            }
-        }
-    }
-
     /**
      * Copied legacy sel2RefdataSearch(), but uses OID.
      *
@@ -590,14 +410,7 @@ class AjaxController {
 //            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
 
-        withFormat {
-            html {
-                result
-            }
-            json {
-                render result as JSON
-            }
-        }
+        render result as JSON
     }
 
     def getPropValues() {
@@ -767,33 +580,6 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
-  def lookupIssueEntitlements() {
-    params.checkView = true
-    if(params.sub != "undefined")
-        render controlledListService.getIssueEntitlements(params) as JSON
-    else {
-        Map entry = ["results": []]
-        render entry as JSON
-    }
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupTitleGroups() {
-     params.checkView = true
-     if(params.sub != "undefined")
-        render controlledListService.getTitleGroups(params) as JSON
-      else {
-         Map empty = [results: []]
-         render empty as JSON
-     }
-   }
-
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptions() {
-      render controlledListService.getSubscriptions(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
   def lookupSubscriptionsLicenses() {
     Map result = [results:[]]
     result.results.addAll(controlledListService.getSubscriptions(params).results)
@@ -806,38 +592,6 @@ class AjaxController {
       params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
       render controlledListService.getSubscriptions(params) as JSON
   }
-
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptionPackages() {
-      if(params.ctx != "undefined")
-        render controlledListService.getSubscriptionPackages(params) as JSON
-      else render [:] as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupLicenses() {
-    render controlledListService.getLicenses(params) as JSON
-  }
-
-    @Secured(['ROLE_USER'])
-    def getLinkedSubscriptions() {
-        render controlledListService.getLinkedObjects([source:params.license,destinationType:Subscription.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def getLinkedLicenses() {
-        render controlledListService.getLinkedObjects([destination:params.subscription,sourceType:License.class.name,linkTypes:[RDStore.LINKTYPE_LICENSE],status:params.status]) as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def getLicensePropertiesForSubscription() {
-        License loadFor = (License) genericOIDService.resolveOID(params.loadFor)
-        if(loadFor) {
-            Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
-            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
-        }
-        else null
-    }
 
     @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
@@ -852,102 +606,6 @@ class AjaxController {
         log.debug(result)
         render view: '/myInstitution/_graphs', model: result
     }
-
-    @Secured(['ROLE_USER'])
-    def lookupProviderAndPlatforms() {
-        def result = []
-
-        List<Org> provider = Org.executeQuery('SELECT o FROM Org o JOIN o.orgType ot WHERE ot = :ot', [ot: RDStore.OT_PROVIDER])
-        provider.each{ prov ->
-            Map<String, Object> pp = [name: prov.name, value: prov.class.name + ":" + prov.id, platforms:[]]
-
-            Platform.findAllByOrg(prov).each { plt ->
-                pp.platforms.add([name: plt.name, value: plt.class.name + ":" + plt.id])
-            }
-            result.add(pp)
-        }
-        render result as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def lookupProvidersAgencies() {
-        render controlledListService.getProvidersAgencies(params) as JSON
-    }
-
-  @Secured(['ROLE_USER'])
-  def lookupBudgetCodes() {
-      render controlledListService.getBudgetCodes(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupInvoiceNumbers() {
-      render controlledListService.getInvoiceNumbers(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupOrderNumbers() {
-      render controlledListService.getOrderNumbers(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupReferences() {
-      render controlledListService.getReferences(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupCombined() {
-      render controlledListService.getElements(params) as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def checkCascade() {
-      Map result = [sub:true,subPkg:true,ie:true]
-      if(!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
-          result.sub = false
-          result.subPkg = false
-          result.ie = false
-      }
-      else if(params.subscription) {
-          Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
-          if(!sub) {
-              result.sub = false
-              result.subPkg = false
-              result.ie = false
-          }
-          else if(params.issueEntitlement) {
-              if(!params.package || params.package.contains('null')) {
-                  result.subPkg = false
-                  result.ie = false
-              }
-              else if(params.package && !params.package.contains('null')) {
-                  SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
-                  if(!subPkg || subPkg.subscription != sub) {
-                      result.subPkg = false
-                      result.ie = false
-                  }
-                  else {
-                      IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
-                      if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
-                          result.ie = false
-                      }
-                  }
-              }
-          }
-      }
-      //Map result = [sub: params.subscription ? true : false,subPkg: params.package && !params.package.contains(":null"),ie: params.issueEntitlement ? true : false]
-      render result as JSON
-  }
-
-  @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
-  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-  def verifyUserInput() {
-      Map result = [result:false]
-      if(params.input) {
-          List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)",[searchTerm:params.input])
-          result.result = checkList.size() > 0
-      }
-      render result as JSON
-  }
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
@@ -1112,7 +770,7 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def delPrsRole() {
-        def prsRole = PersonRole.get(params.id)
+        PersonRole prsRole = PersonRole.get(params.id)
 
         if (prsRole && prsRole.delete(flush: true)) {
         }
@@ -1126,11 +784,11 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def addRefdataValue() {
 
-        def newRefdataValue
-        def error
-        def msg
+        RefdataValue newRefdataValue
+        String error
+        String msg
 
-        def rdc = RefdataCategory.findById(params.refdata_category_id)
+        RefdataCategory rdc = RefdataCategory.findById(params.refdata_category_id)
 
         if (RefdataValue.getByValueAndCategory(params.refdata_value, rdc.desc)) {
             error = message(code: "refdataValue.create_new.unique")
@@ -1166,11 +824,11 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def addRefdataCategory() {
 
-        def newRefdataCategory
-        def error
-        def msg
+        RefdataCategory newRefdataCategory
+        String error
+        String msg
 
-        def rdc = RefdataCategory.getByDesc(params.refdata_category)
+        RefdataCategory rdc = RefdataCategory.getByDesc(params.refdata_category)
         if (rdc) {
             error = message(code: 'refdataCategory.create_new.unique')
             log.debug(error)
@@ -1492,84 +1150,6 @@ class AjaxController {
       else  {
         log.error("Form submitted with missing values")
       }
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def showAuditConfigManager() {
-
-        def owner = genericOIDService.resolveOID(params.target)
-        if (owner) {
-            render(template: "/templates/audit/modal_config", model:[
-                    ownobj: owner,
-                    target: params.target,
-                    properties: owner.getClass().controlledProperties
-            ])
-        }
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def processAuditConfigManager() {
-
-        String referer = request.getHeader('referer')
-
-        def owner = genericOIDService.resolveOID(params.target)
-        if (owner) {
-            def objProps = owner.getClass().controlledProperties
-            def positiveList = params.list('properties')
-            def negativeList = objProps.minus(positiveList)
-
-            def members = owner.getClass().findAllByInstanceOf(owner)
-
-            positiveList.each{ prop ->
-                if (! AuditConfig.getConfig(owner, prop)) {
-                    AuditConfig.addConfig(owner, prop)
-
-                    members.each { m ->
-                        m.setProperty(prop, owner.getProperty(prop))
-                        m.save(flush:true)
-                    }
-                }
-            }
-
-            def keepProperties = params.list('keepProperties')
-
-            negativeList.each{ prop ->
-                if (AuditConfig.getConfig(owner, prop)) {
-                    AuditConfig.removeConfig(owner, prop)
-
-                    if (! keepProperties.contains(prop)) {
-                        members.each { m ->
-                            m.setProperty(prop, null)
-                            m.save(flush:true)
-                        }
-                    }
-
-                    // delete pending changes
-                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                    members.each { m ->
-                        def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
-                                [objectID: "${m.class.name}:${m.id}"])
-                        openPD.each { pc ->
-                            if (pc.payload) {
-                                def payload = JSON.parse(pc.payload)
-                                if (payload.changeDoc) {
-                                    def eventObj = genericOIDService.resolveOID(payload.changeDoc.OID)
-                                    def eventProp = payload.changeDoc.prop
-
-                                    if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
-                                        pc.delete(flush: true)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        redirect(url: referer)
     }
 
     @Secured(['ROLE_USER'])
@@ -2283,35 +1863,6 @@ class AjaxController {
     }
     redirect(url: request.getHeader('referer'))
   }
-
-  def validateIdentifierUniqueness(){
-    log.debug("validateIdentifierUniqueness - ${params}")
-    Map<String, Object> result = [:]
-    def owner = resolveOID2(params.owner)
-    def identifier = resolveOID2(params.identifier)
-
-    // TODO [ticket=1789]
-    def owner_type = Identifier.getAttributeName(owner)
-    if (!owner_type) {
-      log.error("Unexpected Identifier Owner ${owner.class}")
-      return null
-    }
-
-    // TODO: BUG !? multiple occurrences on the same object allowed
-    //def duplicates = identifier?.occurrences.findAll{it."${owner_type}" != owner && it."${owner_type}" != null}?.collect{it."${owner_type}"}
-
-    String query = "select ident from Identifier ident where ident.value = :iv and ident.${owner_type} != :ot"
-    def duplicates = Identifier.executeQuery( query, [iv: identifier.value, ot: owner] )
-
-    if(duplicates){
-      result.duplicates = duplicates.collect{ it."${owner_type}" }
-    }
-    else{
-      result.unique=true
-    }
-    log.debug("validateIdentifierUniqueness - ${result}")
-    render result as JSON
-  }
     
   def resolveOID2(oid) {
     def oid_components = oid.split(':')
@@ -2344,18 +1895,6 @@ class AjaxController {
     }
     redirect(url: request.getHeader('referer'))
 
-  }
-
-    @Secured(['ROLE_USER'])
-  def deleteManyToMany() {
-    // log.debug("deleteManyToMany(${params})");
-    def context_object = resolveOID2(params.contextOid)
-    def target_object = resolveOID2(params.targetOid)
-    if ( context_object."${params.contextProperty}".contains(target_object) ) {
-      context_object."${params.contextProperty}".remove(target_object)
-      context_object.save(flush: true)
-    }
-    redirect(url: request.getHeader('referer'))    
   }
 
     @Secured(['ROLE_USER'])
@@ -2408,30 +1947,6 @@ class AjaxController {
             }
 
         }
-
-        render result as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def getRegions() {
-        List<RefdataValue> result = []
-        if (params.country) {
-            List<Long> countryIds = params.country.split ','
-            countryIds.each {
-                switch (RefdataValue.get(it).value) {
-                    case 'DE':
-                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE])
-                        break;
-                    case 'AT':
-                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT])
-                        break;
-                    case 'CH':
-                        result << RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH])
-                        break;
-                }
-            }
-        }
-        result = result.flatten()
 
         render result as JSON
     }
@@ -2610,95 +2125,7 @@ class AjaxController {
     result;
   }
 
-    @Secured(['ROLE_USER'])
-    def editTask() {
-        Org contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        if (result.taskInstance){
-            render template: "/templates/tasks/modal_edit", model: result
-//        } else {
-//            flash.error = "Diese Aufgabe existiert nicht (mehr)."
-//            redirect(url: request.getHeader('referer'))
-        }
 
-    }
-
-    @Secured(['ROLE_USER'])
-    def createTask() {
-        long backendStart = System.currentTimeMillis()
-        Org contextOrg = contextService.getOrg()
-        def result     = taskService.getPreconditions(contextOrg)
-        result.backendStart = backendStart
-
-        render template: "/templates/tasks/modal_create", model: result
-
-    }
-
-    @Secured(['ROLE_USER'])
-    def editAddress() {
-        Map model = [:]
-        model.addressInstance = Address.get(params.id)
-        if (model.addressInstance){
-            model.modalId = 'addressFormModal'
-            String messageCode = 'person.address.label'
-            switch (model.addressInstance.type){
-                case RDStore.ADRESS_TYPE_LEGAL_PATRON:
-                    messageCode = 'addressFormModalLegalPatronAddress'
-                    break
-                case RDStore.ADRESS_TYPE_BILLING:
-                    messageCode = 'addressFormModalBillingAddress'
-                    break
-                case RDStore.ADRESS_TYPE_POSTAL:
-                    messageCode = 'addressFormModalPostalAddress'
-                    break
-                case RDStore.ADRESS_TYPE_DELIVERY:
-                    messageCode = 'addressFormModalDeliveryAddress'
-                    break
-                case RDStore.ADRESS_TYPE_LIBRARY:
-                    messageCode = 'addressFormModalLibraryAddress'
-                    break
-            }
-
-            model.typeId = model.addressInstance.type.id
-            model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
-            model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'edit']
-            render template: "/templates/cpa/addressFormModal", model: model
-        }
-    }
-
-    @Secured(['ROLE_USER'])
-    def personEdit() {
-        Map result = [:]
-        result.personInstance = Person.get(params.id)
-        if (result.personInstance){
-            result.modalId = 'personEditModal'
-            result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
-            result.modalMsgSave = message(code: 'default.button.save_changes')
-            result.showContacts = params.showContacts == "true" ? true : ''
-            result.addContacts = params.showContacts == "true" ? true : ''
-            result.showAddresses = params.showAddresses == "true" ? true : ''
-            result.addAddresses = params.showAddresses == "true" ? true : ''
-            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
-            result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
-            result.contextOrg = contextService.getOrg()
-            render template: "/templates/cpa/personFormModal", model: result
-        }
-    }
-
-    @Secured(['ROLE_USER'])
-    def contactFields() {
-
-        render template: "/templates/cpa/contactFields"
-    }
-
-    @Secured(['ROLE_USER'])
-    def addressFields() {
-
-        render template: "/templates/cpa/addressFields"
-    }
 
     def adjustSubscriptionList(){
         List<Subscription> data
@@ -2719,8 +2146,14 @@ class AjaxController {
 
 
         if(data) {
-            data.each { Subscription s ->
-                result.add([value: s.id, text: s.dropdownNamingConvention()])
+            if(params.valueAsOID){
+                data.each { Subscription s ->
+                    result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
+                }
+            }else {
+                data.each { Subscription s ->
+                    result.add([value: s.id, text: s.dropdownNamingConvention()])
+                }
             }
         }
         withFormat {
@@ -2812,53 +2245,21 @@ class AjaxController {
         }
     }
 
-    @Secured(['ROLE_USER'])
-    def createAddress() {
-        Map model = [:]
-        model.orgId = params.orgId
-        model.prsId = params.prsId
-        model.redirect = params.redirect
-        model.typeId = Long.valueOf(params.typeId)
-        model.hideType = params.hideType
-        if (model.orgId && model.typeId) {
-            String messageCode = 'addressFormModalLibraryAddress'
-            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {messageCode = 'addressFormModalLegalPatronAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {messageCode = 'addressFormModalBillingAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {messageCode = 'addressFormModalPostalAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {messageCode = 'addressFormModalDeliveryAddress'}
-            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {messageCode = 'addressFormModalLibraryAddress'}
+    def notifyProfiler() {
+        Map<String, Object> result = [status: 'failed']
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
 
-            model.modalText = message(code: 'default.create.label', args: [message(code: messageCode)])
-        } else {
-            model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
+        if (pu) {
+            long delta = pu.stopSimpleBench(params.uri)
+
+            SystemProfiler.update(delta, params.uri)
+
+            result.uri = params.uri
+            result.delta = delta
+            result.status = 'ok'
         }
-        model.modalMsgSave = message(code: 'default.button.create.label')
-        model.url = [controller: 'address', action: 'create']
 
-        render template: "/templates/cpa/addressFormModal", model: model
-    }
-
-    @Secured(['ROLE_USER'])
-    def editNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
-
-        render template: "/templates/notes/modal_edit", model: result
-    }
-
-    @Secured(['ROLE_USER'])
-    def readNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
-
-        render template: "/templates/notes/modal_read", model: result
-    }
-
-    @Secured(['ROLE_USER'])
-    def consistencyCheck() {
-        List result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
         render result as JSON
     }
 }

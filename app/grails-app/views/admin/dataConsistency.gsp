@@ -87,7 +87,7 @@
         var value = $(this).attr('data-value')
 
         $.ajax({
-            url: '<g:createLink controller="ajax" action="consistencyCheck"/>',
+            url: '<g:createLink controller="ajaxJson" action="consistencyCheck"/>',
             method: 'POST',
             data: {
                 key: key,

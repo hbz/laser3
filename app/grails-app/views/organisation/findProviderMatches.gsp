@@ -50,7 +50,7 @@
 								<tr>
 									<td>${providerInstance.name} <g:link controller="organisation" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
 									<td><ul>
-											<li><g:message code="org.globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
+											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
 											<g:if test="${providerInstance.gokbId}">
 												<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${providerInstance}" field="gokbId"/></li>
 											</g:if>

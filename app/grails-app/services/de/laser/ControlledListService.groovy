@@ -69,7 +69,7 @@ class ControlledListService {
     Map getSubscriptions(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
-        String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
+        String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org left join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {

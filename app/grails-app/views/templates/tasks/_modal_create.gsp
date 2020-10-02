@@ -3,7 +3,7 @@
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
-        <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajax'}">
+        <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
             <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
@@ -22,7 +22,7 @@
             <g:textArea name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
         </div>
 
-        <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
+        <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
             <div class="field fieldcontain required">
                 <fieldset>
                     <legend>
@@ -192,7 +192,7 @@
         </div>
 
     </g:form>
-    <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajax'}">
+    <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
         <script>
             // initial side call
             $("#generalradio").prop( "checked", true );

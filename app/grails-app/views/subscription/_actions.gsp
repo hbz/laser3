@@ -75,14 +75,7 @@
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
         <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
             <div class="divider"></div>
-            <%
-                Subscription sub = Subscription.get(params.id)
-                boolean isCopySubEnabled = sub?.orgRelations?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id || it.roleType.id == RDStore.OR_SUBSCRIBER.id)}
-            %>
-            <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
-                <% isCopySubEnabled = true %>
-            </sec:ifAnyGranted>
-            <g:if test="${isCopySubEnabled}">
+            <g:if test="${(accessService.checkPerm("ORG_INST") && subscriptionInstance._getCalculatedType() == Subscription.TYPE_LOCAL) || (accessService.checkPerm("ORG_CONSORTIUM") && subscriptionInstance._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscriptionInstance), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>

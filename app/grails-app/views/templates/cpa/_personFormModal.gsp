@@ -1,12 +1,15 @@
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="${modalID?: 'personEditModal'}" text="${modalText ?: message(code: 'person.create_new.label')}" contentClass="scrolling "
+<semui:modal id="${modalID ?: 'personModal'}" text="${modalText ?: message(code: 'person.create_new.label')}"
+             contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
-    <g:form id="create_person" class="ui form" url="${url}" method="POST">
+    <g:form id="person_form" class="ui form" url="${url}" method="POST">
 
-        <input type="hidden" name="tenant.id" value="${contextService.getOrg().id}"/>
-        <input id="isPublic" name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
+        <g:if test="${!personInstance}">
+            <input name="tenant.id" type="hidden" value="${contextService.getOrg().id}"/>
+            <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
+        </g:if>
 
         <div class="field">
             <div class="two fields">
@@ -76,9 +79,9 @@
                                 class="ui search selection dropdown sortable">
                             <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                            <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
+                            <g:each in="${functions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                                     var="functionType">
-                                <option <%=(personInstance ? (functionType.id in personInstance.getPersonRoleByOrg(contextOrg).functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
+                                <option <%=(personInstance ? (functionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
                                         value="${functionType.id}">
                                     ${functionType.getI10n('value')}
                                 </option>
@@ -86,34 +89,6 @@
                         </select>
                     </div>
 
-                    %{-- <g:if test="${actionName != 'myPublicContacts'}">
-                         <div class="field">
-                             <g:if test="${institution}">
-                                 <label for="functionOrg">
-                                     <g:message code="contact.belongesTo.label"/>
-                                 </label>
-                                 <g:select class="ui search dropdown"
-                                           name="functionOrg"
-                                           from="${orgList}"
-                                           value="${org?.id}"
-                                           optionKey="id"
-                                           optionValue=""/>
-                             </g:if>
-                             <g:else>
-                                 <label for="functionOrg">
-                                     <g:message code="contact.belongesTo.label"/>
-                                 </label>
-                                 <i class="icon university la-list-icon"></i>${org?.name}
-                                 <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
-                             </g:else>
-                         </div>
-                     </g:if>--}%
-
-                </div>
-            </div><!-- .field -->
-
-            <div class="field">
-                <div class="two fields">
                     <div class="field">
                         <label for="positionType">
                             <g:message code="person.position.label"/>
@@ -121,9 +96,9 @@
                         <select name="positionType" id="positionType" multiple="" class="ui search selection dropdown">
                             <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                            <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
+                            <g:each in="${positions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                                     var="positionType">
-                                <option <%=(personInstance ? (positionType.id in personInstance.getPersonRoleByOrg(contextOrg).positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
+                                <option <%=(personInstance ? (positionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
                                         value="${positionType.id}">
                                     ${positionType.getI10n('value')}
                                 </option>
@@ -131,29 +106,84 @@
                         </select>
 
                     </div>
-                    %{--<g:if test="${actionName != 'myPublicContacts'}">
-                        <div class="field">
 
-                            <g:if test="${institution}">
-                                <label for="positionOrg">
+                </div>
+            </div><!-- .field -->
+
+            <div class="field">
+                <div class="two fields">
+                    <g:if test="${!isPublic}">
+                        <div class="field">
+                            <g:if test="${orgList}">
+                                <label for="personRoleOrg">
                                     <g:message code="contact.belongesTo.label"/>
                                 </label>
                                 <g:select class="ui search dropdown"
-                                          name="positionOrg"
+                                          name="personRoleOrg"
                                           from="${orgList}"
                                           value="${org?.id}"
                                           optionKey="id"
                                           optionValue=""/>
                             </g:if>
-                            <g:else>
-                                <label for="positionOrg">
-                                    <g:message code="contact.belongesTo.label"/>
-                                </label>
-                                <i class="icon university la-list-icon"></i>${org?.name}
-                                <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
-                            </g:else>
+                            <g:if test="${org}">
+                                <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org.id}"/>
+                            </g:if>
+                        %{--<g:else>
+                            <label for="personRoleOrg">
+                                <g:message code="contact.belongesTo.label"/>
+                            </label>
+                            <i class="icon university la-list-icon"></i>${org?.name}
+                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
+                        </g:else>--}%
                         </div>
-                    </g:if>--}%
+                    </g:if>
+
+                %{-- <g:if test="${actionName != 'myPublicContacts'}">
+                     <div class="field">
+                         <g:if test="${institution}">
+                             <label for="functionOrg">
+                                 <g:message code="contact.belongesTo.label"/>
+                             </label>
+                             <g:select class="ui search dropdown"
+                                       name="functionOrg"
+                                       from="${orgList}"
+                                       value="${org?.id}"
+                                       optionKey="id"
+                                       optionValue=""/>
+                         </g:if>
+                         <g:else>
+                             <label for="functionOrg">
+                                 <g:message code="contact.belongesTo.label"/>
+                             </label>
+                             <i class="icon university la-list-icon"></i>${org?.name}
+                             <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
+                         </g:else>
+                     </div>
+                 </g:if>--}%
+
+                %{--<g:if test="${actionName != 'myPublicContacts'}">
+                    <div class="field">
+
+                        <g:if test="${institution}">
+                            <label for="positionOrg">
+                                <g:message code="contact.belongesTo.label"/>
+                            </label>
+                            <g:select class="ui search dropdown"
+                                      name="positionOrg"
+                                      from="${orgList}"
+                                      value="${org?.id}"
+                                      optionKey="id"
+                                      optionValue=""/>
+                        </g:if>
+                        <g:else>
+                            <label for="positionOrg">
+                                <g:message code="contact.belongesTo.label"/>
+                            </label>
+                            <i class="icon university la-list-icon"></i>${org?.name}
+                            <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
+                        </g:else>
+                    </div>
+                </g:if>--}%
 
                 </div>
             </div><!-- .field -->
@@ -164,7 +194,7 @@
                 <br>
                 <br>
                 <label for="contacts">
-                    <g:message code="person.contacts.label"/>
+                    <g:message code="person.contacts.label"/>:
                 </label>
 
                 <g:if test="${personInstance}">
@@ -193,7 +223,28 @@
                 <br>
                 <br>
 
-                <div id="divElements"></div>
+                <div class="three fields">
+                    <div class="field three wide fieldcontain">
+                        <label></label>
+                        <laser:select class="ui dropdown" name="contentType.id"
+                                      from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${contactInstance?.contentType?.id}"/>
+                    </div>
+
+                    <div class="field one wide fieldcontain">
+
+                    </div>
+
+
+                    <div class="field twelve wide fieldcontain">
+                        <label></label>
+                        <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                    </div>
+                </div>
+
+                <div id="contactElements"></div>
             </g:if>
 
         </g:if>
@@ -203,13 +254,16 @@
                 <br>
                 <br>
                 <label for="addresses">
-                    <g:message code="person.addresses.label"/>
+                    <g:message code="person.addresses.label"/>:
                 </label>
                 <g:if test="${personInstance}">
-                    <g:each in="${personInstance.addresses.sort { it.type.getI10n('value') }}" var="address">
-                        <g:render template="/templates/cpa/address"
-                                  model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
-                    </g:each>
+                    <div class="ui divided middle aligned list la-flex-list ">
+                        <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
+                                var="address">
+                            <g:render template="/templates/cpa/address"
+                                      model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
+                        </g:each>
+                    </div>
                 </g:if>
             </div>
             <g:if test="${addAddresses}">
@@ -224,17 +278,46 @@
                 <br>
                 <br>
 
-                <div id="divElements"></div>
+                <div id="addressElements"></div>
             </g:if>
 
         </g:if>
 
     </g:form>
 
+    <g:if test="${personInstance}">
+        <g:javascript src="properties.js"/>
+        <div class="ui grid">
+            <div class="sixteen wide column">
+                <div class="la-inline-lists">
+                    <div class="ui card">
+                        <div class="content">
+                            <div id="custom_props_div_${contextOrg.id}">
+                                <h5 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h5>
+                                <g:render template="/templates/properties/private" model="${[
+                                        prop_desc       : PropertyDefinition.PRS_PROP,
+                                        ownobj          : personInstance,
+                                        custom_props_div: "custom_props_div_${contextOrg.id}",
+                                        tenant          : contextOrg,
+                                        withoutRender:  true]}"/>
+                                <script>
+                                        $(document).ready(function(){
+                                            c3po.initProperties("<g:createLink controller='ajax'
+                                                                               action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+                                        });
+                                </script>
+                            </div>
+                        </div>
+                    </div><!-- .card -->
+                </div>
+            </div>
+        </div>
+    </g:if>
+
     <script>
 
         $(document).ready(function () {
-            $('#create_person').form({
+            $('#person_form').form({
                 on: 'blur',
                 inline: true,
                 fields: {
@@ -251,26 +334,32 @@
                 }
             });
 
-            var elementCount = 0;
+            var contactElementCount = 0;
+            var addressElementCount = 0;
 
-            var container = $(document.createElement('div'));
+            var contactContainer = $(document.createElement('div'));
+            $(contactContainer).attr('id', 'contactElementsContainer');
+
+            var addressContainer = $(document.createElement('div'));
+            $(addressContainer).attr('id', 'addressElementsContainer');
 
             $('#addContactElement').click(function () {
                 $.ajax({
-                    url: "<g:createLink controller="ajax" action="contactFields"/>",
+                    url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
                     type: "POST",
                     success: function (data) {
-                        if (elementCount <= 3) {
+                        if (contactElementCount <= 3) {
 
-                            elementCount = elementCount + 1;
-                            $(container).append(data);
-                            $('#contactFields').attr('id', 'contactFields' + elementCount);
+                            contactElementCount = contactElementCount + 1;
+                            $(contactContainer).append(data);
+                            $('#contactFields').attr('id', 'contactFields' + contactElementCount);
 
-                            $('#divElements').after(container);
+                            $('#contactElements').after(contactContainer);
                         } else {
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
                         }
+                        r2d2.initDynamicSemuiStuff('#contactElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -279,33 +368,34 @@
             });
 
             $('#removeContactElement').click(function () {
-                if (elementCount != 0) {
-                    $('#contactFields' + elementCount).remove();
-                    elementCount = elementCount - 1;
+                if (contactElementCount != 0) {
+                    $('#contactFields' + contactElementCount).remove();
+                    contactElementCount = contactElementCount - 1;
                 }
 
-                if (elementCount == 0) {
-                    $(container).empty().remove();
+                if (contactElementCount == 0) {
+                    $(contactContainer).empty().remove();
                     $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });
 
             $('#addAddressElement').click(function () {
                 $.ajax({
-                    url: "<g:createLink controller="ajax" action="addressFields"/>",
+                    url: "<g:createLink controller="ajaxHtml" action="addressFields"/>",
                     type: "POST",
                     success: function (data) {
-                        if (elementCount <= 3) {
+                        if (addressElementCount <= 3) {
 
-                            elementCount = elementCount + 1;
-                            $(container).append(data);
-                            $('#addressFormModal').attr('id', 'addressFormModal' + elementCount);
+                            addressElementCount = addressElementCount + 1;
+                            $(addressContainer).append(data);
+                            $('#addressFields').attr('id', 'addressFields' + addressElementCount);
 
-                            $('#divElements').after(container);
+                            $('#addressElements').after(addressContainer);
                         } else {
                             $('#addAddressElement').attr('class', 'ui icon button disable');
                             $('#addAddressElement').attr('disabled', 'disabled');
                         }
+                        r2d2.initDynamicSemuiStuff('#addressElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -314,13 +404,13 @@
             });
 
             $('#removeAddressElement').click(function () {
-                if (elementCount != 0) {
-                    $('#addressFormModal' + elementCount).remove();
-                    elementCount = elementCount - 1;
+                if (addressElementCount != 0) {
+                    $('#addressFields' + addressElementCount).remove();
+                    addressElementCount = addressElementCount - 1;
                 }
 
-                if (elementCount == 0) {
-                    $(container).empty().remove();
+                if (addressElementCount == 0) {
+                    $(addressContainer).empty().remove();
                     $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });

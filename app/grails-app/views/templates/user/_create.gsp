@@ -96,7 +96,7 @@
 
         function checkUsername() {
             $.ajax({
-                url: "<g:createLink controller="ajax" action="verifyUserInput" />",
+                url: "<g:createLink controller="ajaxJson" action="checkExistingUser" />",
                 data: {input: $("#username").val()},
                 method: 'POST'
             }).done(function(response){

@@ -24,8 +24,6 @@
             <th>${message(code: "profile.display")}</th>
             <th>${message(code: "profile.email")}</th>
             <th>${message(code: "profile.membership.role")}</th>
-            <th>${message(code: "default.status.label")}</th>
-            <th>${message(code: "profile.membership.date2")}</th>
             <th class="la-action-info">${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
@@ -36,8 +34,6 @@
                     <td>${req.user.displayName}</td>
                     <td>${req.user.email}</td>
                     <td><g:message code="cv.roles.${req.formalRole?.authority}"/></td>
-                    <td><g:message code="cv.membership.status.${req.status}"/></td>
-                    <td><g:formatDate format="dd MMMM yyyy" date="${req.dateRequested}"/></td>
                     <td class="x">
                         <g:if test="${editable}">
                             <g:link action="actionAffiliationRequestOrg" params="${[req: req.id, act: 'approve']}" class="ui icon positive button">

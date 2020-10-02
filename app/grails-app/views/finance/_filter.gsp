@@ -298,13 +298,13 @@
             fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
         </g:if>
         const links = {
-            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
-            "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
-            "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
-            "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
-            "filterCIInvoiceNumber": "${createLink([controller:"ajax",action:"lookupInvoiceNumbers"])}?query={query}",
-            "filterCIOrderNumber": "${createLink([controller:"ajax",action:"lookupOrderNumbers"])}?query={query}",
-            "filterCIReference": "${createLink([controller:"ajax",action:"lookupReferences"])}?query={query}"
+            "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
+            "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
+            "filterCISPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
+            "filterCIBudgetCode": "${createLink([controller:"ajaxJson", action:"lookupBudgetCodes"])}?query={query}",
+            "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
+            "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
+            "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"
         };
         $(".newFilter").each(function(k,v){
             let values = []

@@ -310,223 +310,99 @@
                 </div>
             </g:if>
 
-                <div class="ui card">
-                    <div class="content">
-                        <H3><g:message code="org.contactpersons.and.addresses.label" /></H3>
 
-                        <div class="ui la-float-right">
+            <div class="ui card">
+                <div class="content">
+                    <g:if test="${!isProviderOrAgency}">
+                        <h3><g:message code="org.contactpersons.and.addresses.label"/></h3>
+                    </g:if>
 
-                            <g:if test="${((orgInstance.id == contextService.getOrg().id  && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                                <g:link action="myPublicContacts" controller="myInstitution" params="[tab: 'contacts']"  class="ui button">${message('code':'org.edit.contactsAndAddresses')}</g:link>
-                            </g:if>
-                        </div>
-                        <br>
-                        <dl>
-                            <dt><g:message code="org.prsLinks.label" /></dt>
+                    <div class="ui la-float-right">
+                        <g:if test="${((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                            <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
+                                    class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
+                        </g:if>
+                    </div>
+                </div>
+
+                <div class="description">
+                    <dl>
+                        <dt>
                             <dd>
+                            <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]"/>
 
-                                <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]" />
+                            <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
+                                <div class="ui list">
 
+                                    <div class="item">
 
-                            <%-- </div> --%>
-%{--                                <g:if test="${((orgInstance.id == contextService.getOrg().id  && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">--}%
-%{--                                    <div class="ui list">--}%
-%{--                                        <div class="item">--}%
+                                        <input class="ui button" size="35"
+                                               value="${message(code: 'personFormModalTechnichalSupport')}"
+                                               data-semui="modal"
+                                               data-href="#personFormModalTechnichalSupport"/>
 
-%{--                                            <input class="ui button" size="35"--}%
-%{--                                                   value="${message(code: 'personFormModalGeneralContactPerson')}"--}%
-%{--                                                   data-semui="modal"--}%
-%{--                                                   data-href="#personFormModalGeneralContactPerson"/>--}%
+                                        <g:render template="/person/formModal"
+                                                  model="[tenant            : contextOrg,
+                                                          org               : orgInstance,
+                                                          isPublic          : true,
+                                                          presetFunctionType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT,
+                                                          modalId           : 'personFormModalTechnichalSupport',
+                                                          tmplHideFunctions : true]"/>
 
-%{--                                            <g:render template="/person/formModal"--}%
-%{--                                                      model="[tenant                           : contextOrg,--}%
-%{--                                                              org                              : orgInstance,--}%
-%{--                                                              isPublic                         : true,--}%
-%{--                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION),--}%
-%{--                                                              modalId                          : 'personFormModalGeneralContactPerson',--}%
-%{--                                                              tmplHideFunctions: true]"/>--}%
-
-%{--                                            <input class="ui button" size="35"--}%
-%{--                                                   value="${message(code: 'personFormModalResponsibleContact')}"--}%
-%{--                                                   data-semui="modal"--}%
-%{--                                                   data-href="#personFormModalResponsibleContact"/>--}%
-
-%{--                                            <g:render template="/person/formModal"--}%
-%{--                                                      model="[tenant                           : contextOrg,--}%
-%{--                                                              org                              : orgInstance,--}%
-%{--                                                              isPublic                         : true,--}%
-%{--                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION),--}%
-%{--                                                              modalId                          : 'personFormModalResponsibleContact',--}%
-%{--                                                              tmplHideFunctions: true]"/>--}%
-
-%{--                                        </div>--}%
-
-%{--                                        <div class="item">--}%
-
-%{--                                            <input class="ui button" size="35"--}%
-%{--                                                   value="${message(code: 'personFormModalBillingContact')}"--}%
-%{--                                                   data-semui="modal"--}%
-%{--                                                   data-href="#personFormModalBillingContact"/>--}%
-
-%{--                                            <g:render template="/person/formModal"--}%
-%{--                                                      model="[tenant                           : contextOrg,--}%
-%{--                                                              org                              : orgInstance,--}%
-%{--                                                              isPublic                         : true,--}%
-%{--                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION),--}%
-%{--                                                              modalId                          : 'personFormModalBillingContact',--}%
-%{--                                                              tmplHideFunctions: true]"/>--}%
-
-%{--                                            <input class="ui button" size="35"--}%
-%{--                                                   value="${message(code: 'personFormModalTechnichalSupport')}"--}%
-%{--                                                   data-semui="modal"--}%
-%{--                                                   data-href="#personFormModalTechnichalSupport"/>--}%
-
-%{--                                            <g:render template="/person/formModal"--}%
-%{--                                                      model="[tenant                           : contextOrg,--}%
-%{--                                                              org                              : orgInstance,--}%
-%{--                                                              isPublic                         : true,--}%
-%{--                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),--}%
-%{--                                                              modalId                          : 'personFormModalTechnichalSupport',--}%
-%{--                                                              tmplHideFunctions: true]"/>--}%
-
-%{--                                            --}%%{--<input class="ui button" size="35"--}%
-%{--                                                   value="${message(code: 'personFormModalOtherContact')}"--}%
-%{--                                                   data-semui="modal"--}%
-%{--                                                   data-href="#personFormModal"/>--}%
-
-%{--                                            <g:render template="/person/formModal"--}%
-%{--                                                      model="['tenant'            : contextOrg,--}%
-%{--                                                              'org'               : orgInstance,--}%
-%{--                                                              'isPublic'          : true,--}%
-%{--                                                              'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)]"/>--}%
-
-%{--                                        </div>--}%
-%{--                                    </div>--}%
-%{--                                </g:if>--}%
-                                <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
-                                    <div class="ui list">
-
-                                        <div class="item">
-
-                                            <input class="ui button" size="35"
-                                                   value="${message(code: 'personFormModalTechnichalSupport')}"
-                                                   data-semui="modal"
-                                                   data-href="#personFormModalTechnichalSupport"/>
-
-                                            <g:render template="/person/formModal"
-                                                      model="[tenant                           : contextOrg,
-                                                              org                              : orgInstance,
-                                                              isPublic                         : true,
-                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', RDConstants.PERSON_FUNCTION),
-                                                              modalId                          : 'personFormModalTechnichalSupport',
-                                                              tmplHideFunctions: true]"/>
-
-                                        </div>
                                     </div>
-                                </g:if>
-                            </dd>
-                        </dl>
-                        %{--ERMS:1236--}%
-                       %{-- <dl>
-                            <dt><g:message code="org.contacts.label" /></dt>
-                            <dd>
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance.contacts?.toSorted()}" var="c">
-                                        <g:if test="${c.org}">
-                                            <g:render template="/templates/cpa/contact" model="${[
-                                                    contact             : c,
-                                                    tmplShowDeleteButton: true,
-                                                    controller          : 'organisation',
-                                                    action              : 'show',
-                                                    id                  : orgInstance.id,
-                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                            ]}"/>
-                                        </g:if>
-                                    </g:each>
                                 </div>
-                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                                    <input class="ui button"
-                                           value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"
-                                           data-semui="modal"
-                                           data-href="#contactFormModal"/>
-                                    <g:render template="/contact/formModal" model="['orgId': orgInstance.id]"/>
-                                </g:if>
-                            </dd>
-                        </dl>--}%
-                        <dl>
+                            </g:if>
+                            <g:if test="${!isProviderOrAgency}">
+                                <div class="ui cards">
 
-                            <dt><g:message code="org.addresses.label" default="Addresses"/>
-
-                            </dt>
-                            <dd>
-
-                                <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
                                     <%
                                         Set<String> typeNames = new TreeSet<String>()
                                         typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
                                         typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
                                         Map<String, List> typeAddressMap = [:]
-                                        orgInstance.addresses.each{
-                                            String typeName = it.type?.getI10n('value')
-                                            typeNames.add(typeName)
-                                            List addresses = typeAddressMap.get(typeName)?: []
-                                            addresses.add(it)
-                                            typeAddressMap.put(typeName, addresses)
+                                        orgInstance.addresses.each {
+                                            it.type.each { type ->
+                                                String typeName = type.getI10n('value')
+                                                typeNames.add(typeName)
+                                                List addresses = typeAddressMap.get(typeName) ?: []
+                                                addresses.add(it)
+                                                typeAddressMap.put(typeName, addresses)
+                                            }
                                         }
                                     %>
                                     <g:each in="${typeNames}" var="typeName">
-                                        <h4 style="font-size: 1rem">${typeName}</h4>
-                                        <% List addresses = typeAddressMap.get(typeName) %>
-                                        <g:each in="${addresses}" var="a">
-                                            <g:if test="${a.org}">
-                                                <g:render template="/templates/cpa/address" model="${[
-                                                        hideAddressType     : true,
-                                                        address             : a,
-                                                        tmplShowDeleteButton: true,
-                                                        controller          : 'org',
-                                                        action              : 'show',
-                                                        id                  : orgInstance.id,
-                                                        editable            : false
-                                                ]}"/>
-                                            </g:if>
-                                        </g:each>
+                                        <div class="card">
+                                            <div class="content">
+                                                <div class="header">${typeName}</div>
+
+                                                <div class="description">
+                                                    <div class="ui divided middle aligned list la-flex-list">
+                                                        <% List addresses = typeAddressMap.get(typeName) %>
+                                                        <g:each in="${addresses}" var="a">
+                                                            <g:if test="${a.org}">
+                                                                <g:render template="/templates/cpa/address" model="${[
+                                                                        hideAddressType     : true,
+                                                                        address             : a,
+                                                                        tmplShowDeleteButton: false,
+                                                                        controller          : 'org',
+                                                                        action              : 'show',
+                                                                        id                  : orgInstance.id,
+                                                                        editable            : false
+                                                                ]}"/>
+                                                            </g:if>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </g:each>
                                 </div>
-                                %{--<g:if test="${((((orgInstance.id == contextService.getOrg().id) || Combo.findByFromOrgAndToOrgAndType(orgInstance,contextService.getOrg(),RDStore.COMBO_TYPE_DEPARTMENT)) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-
-                                <div class="ui list">
-                                <div class="item">
-
-                                <% Map model = [:]
-                                model.orgId = orgInstance.id
-                                model.redirect = '.'
-                                model.hideType = true%>
-                                <input class="ui icon button" type="button"
-                                value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalPostalAddress')])}"
-                                onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_POSTAL.id}', '${model.redirect}', '${model.hideType}');"
-                                >
-
-                                <input class="ui icon button" type="button"
-                                value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalBillingAddress')])}"
-                                onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_BILLING.id}', '${model.redirect}', '${model.hideType}');"
-                                >
-                                </div>
-
-                                <div class="item">
-                                <input class="ui icon button" type="button"
-                                value="${message(code: 'default.add.label', args: [message(code: 'addressFormModalLegalPatronAddress')])}"
-                                onclick="addresscreate_org('${model.orgId}', '${RDStore.ADRESS_TYPE_LEGAL_PATRON.id}', '${model.redirect}', '${model.hideType}');"
-                                >
-
-                                </div>
-                                </div>
-
-                                </g:if>--}%
-
-                    </div>
-                </div><!-- .card -->
+                            </g:if>
+                            </dd>
+                        </dt>
+                    </dl>
+                </div>
+            </div><!-- .card -->
 
                 <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM') && (contextService.getOrg() != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
@@ -630,11 +506,11 @@
 </r:script>
 <g:javascript>
         function addresscreate_org(orgId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
+            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
         }
         function addresscreate_prs(prsId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajax" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
+            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
         }
 

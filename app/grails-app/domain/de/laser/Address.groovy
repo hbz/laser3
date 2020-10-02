@@ -27,8 +27,6 @@ class Address {
     @RefdataAnnotation(cat = RDConstants.COUNTRY)
     RefdataValue country
 
-    @RefdataAnnotation(cat = RDConstants.ADDRESS_TYPE)
-    RefdataValue type
 
     String name
     String additionFirst
@@ -36,6 +34,11 @@ class Address {
 
     Person prs              // person related contact; exclusive with org
     Org    org              // org related contact; exclusive with prs
+
+    @RefdataAnnotation(cat = RDConstants.ADDRESS_TYPE)
+    static hasMany = [
+            type: RefdataValue
+    ]
     
     static mapping = {
         cache  true
@@ -53,13 +56,17 @@ class Address {
         name     column:'adr_name'
         additionFirst   column:'adr_addition_first'
         additionSecond  column:'adr_addition_second'
-        type     column:'adr_type_rv_fk'
         prs      column:'adr_prs_fk', index: 'adr_prs_idx'
         org      column:'adr_org_fk', index: 'adr_org_idx'
 
         lastUpdated     column: 'adr_last_updated'
         dateCreated     column: 'adr_date_created'
 
+        type            joinTable: [
+                name:   'address_type',
+                key:    'address_id',
+                column: 'refdata_value_id', type:   'BIGINT'
+        ], lazy: false
     }
     
     static constraints = {
@@ -89,7 +96,7 @@ class Address {
     
     @Override
     String toString() {
-        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type?.value
+        zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type.each {it.value}.join(',')
     }
 
     static Address lookup(
@@ -149,10 +156,6 @@ class Address {
             Address result
             String info = "saving new address: ${type}"
 
-            if (person && organisation) {
-                type = RefdataValue.getByValue("Job-related")
-            }
-
             Address check = Address.lookup(name, street1, street2, zipcode, city, region, country, postbox, pobZipcode,
                     pobCity, type, person, organisation)
             if (check) {
@@ -171,10 +174,11 @@ class Address {
                         pob: postbox,
                         pobZipcode: pobZipcode,
                         pobCity: pobCity,
-                        type: type,
                         prs: person,
                         org: organisation
                 )
+
+                result.addToType(type)
 
                 if (! result.save()) {
                     result.errors.each { println it }

@@ -12,19 +12,20 @@
         <g:if test="${prsId}">
             <input id="prs" name="prs" type="hidden" value="${prsId}"/>
         </g:if>
-        <g:if test="${typeId}">
+        %{--<g:if test="${typeId}">
             <input id="type" name="type.id" type="hidden" value="${typeId}"/>
-        </g:if>
+        </g:if>--}%
 
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
             <label for="type">
                 ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
             </label>
             %{--<laser:select class="ui dropdown multiple" id="type" name="type.id"--}%
-            <laser:select class="ui dropdown" id="type" name="type.id"
+            <laser:select class="ui dropdown search selection" id="type" name="type.id"
                           from="${Address.getAllRefdataValues()}"
                           optionKey="id"
                           optionValue="value"
+                          multiple=""
                           value="${addressInstance?.type?.id ?: typeId}"/>
         </div>
         <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
@@ -161,7 +162,7 @@
             dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
-                url: '<g:createLink controller="ajax" action="getRegions"/>'
+                url: '<g:createLink controller="ajaxJson" action="getRegions"/>'
                 + '?country=' + selectedCountry + '&format=json',
                 success: function (data) {
                     $.each(data, function (key, entry) {

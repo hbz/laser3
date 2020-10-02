@@ -2085,48 +2085,34 @@ class SubscriptionController
         result.parentSub = result.subscriptionInstance
 
         Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.parentSub,roleType:RDStore.OR_SUBSCRIBER_CONS])
-        /*Sortieren
-        result.validSubChilds = validSubChilds.sort { Subscription a, Subscription b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }*/
-        result.validSubChilds = validSubChildren
+        if(validSubChildren) {
+            result.validSubChilds = validSubChildren
+            Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+            propList.addAll(result.parentSub.propertySet.type)
+            result.propList = propList
 
-        /*String localizedName
-        switch(LocaleContextHolder.getLocale()) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }*/
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
-        propList.addAll(result.parentSub.propertySet.type)
-        result.propList = propList
+            def oldID = params.id
+            params.id = result.parentSub.id
 
-        def oldID = params.id
-        params.id = result.parentSub.id
+            result.filteredSubChilds = validSubChildren
 
-        result.filteredSubChilds = validSubChildren
+            params.id = oldID
 
-        params.id = oldID
+            List<Subscription> childSubs = result.parentSub.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName
+                switch(LocaleContextHolder.getLocale()) {
+                    case Locale.GERMANY:
+                    case Locale.GERMAN: localizedName = "name_de"
+                        break
+                    default: localizedName = "name_en"
+                        break
+                }
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
 
-        List<Subscription> childSubs = result.parentSub.getNonDeletedDerivedSubscriptions()
-        if(childSubs) {
-            String localizedName
-            switch(LocaleContextHolder.getLocale()) {
-                case Locale.GERMANY:
-                case Locale.GERMAN: localizedName = "name_de"
-                    break
-                default: localizedName = "name_en"
-                    break
+                result.memberProperties = memberProperties
             }
-            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
-
-            result.memberProperties = memberProperties
         }
 
         result
@@ -4230,7 +4216,7 @@ class SubscriptionController
                 break;
             case CopyElementsService.WORKFLOW_PROPERTIES:
                 result << copyElementsService.copyObjectElements_Properties(params)
-                result << copyElementsService.loadDataFor_MyProperties(params)
+                result << copyElementsService.loadDataFor_Properties(params)
 
                 break;
             case CopyElementsService.WORKFLOW_END:

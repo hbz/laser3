@@ -35,60 +35,63 @@
 
 </h4>
 
-<div class="ui segment">
-    <div class="ui two column very relaxed grid">
-        <div class="column">
-            <semui:filter>
-                <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
-                <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
-                    <g:render template="/templates/properties/genericFilter"
-                              model="[propList: propList, hideFilterProp: true]"/>
+<g:if test="${filteredSubChilds}">
+    <div class="ui segment">
+        <div class="ui two column very relaxed grid">
+            <div class="column">
+                <semui:filter>
+                    <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
+                    <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
+                        <g:render template="/templates/properties/genericFilter"
+                                  model="[propList: propList, hideFilterProp: true]"/>
 
-                    <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}"
-                           class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" value="${message(code: 'default.button.filter.label')}"
-                               class="ui secondary button"/>
-                    </div>
-                </g:form>
-            </semui:filter>
+                        <div class="field la-field-right-aligned">
+                            <a href="${request.forwardURI}"
+                               class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                            <input type="submit" value="${message(code: 'default.button.filter.label')}"
+                                   class="ui secondary button"/>
+                        </div>
+                    </g:form>
+                </semui:filter>
+            </div>
+
+            <div class="column">
+                <semui:filter>
+                    <h4>${message(code: 'subscription.properties')}:</h4>
+                    <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
+                        <g:render template="/templates/properties/genericFilter"
+                                  model="[propList: PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP)+PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP), hideFilterProp: true]"/>
+
+                        <div class="field la-field-right-aligned">
+                            <a href="${request.forwardURI}"
+                               class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                            <input type="submit" value="${message(code: 'default.button.filter.label')}"
+                                   class="ui secondary button"/>
+                        </div>
+                    </g:form>
+                </semui:filter>
+            </div>
         </div>
 
-        <div class="column">
-            <semui:filter>
-                <h4>${message(code: 'subscription.properties')}:</h4>
-                <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
-                    <g:render template="/templates/properties/genericFilter"
-                              model="[propList: PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP)+PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP), hideFilterProp: true]"/>
+        <div class="ui vertical divider"><g:message code="default.or"/> </div>
 
-                    <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}"
-                           class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" value="${message(code: 'default.button.filter.label')}"
-                               class="ui secondary button"/>
-                    </div>
-                </g:form>
-            </semui:filter>
-        </div>
     </div>
+    <div class="ui one stackable cards">
+        <div class="ui card la-dl-no-table">
+            <div class="content">
+                <h5 class="ui header">${message(code: 'subscription.properties.consortium')}</h5>
 
-    <div class="ui vertical divider"><g:message code="default.or"/> </div>
-</div>
-
-<div class="ui one stackable cards">
-    <div class="ui card la-dl-no-table">
-        <div class="content">
-            <h5 class="ui header">${message(code: 'subscription.properties.consortium')}</h5>
-
-            <div id="member_props_div">
-                <g:render template="/templates/properties/members" model="${[
-                        prop_desc       : PropertyDefinition.SUB_PROP,
-                        ownobj          : parentSub,
-                        custom_props_div: "member_props_div"]}"/>
+                <div id="member_props_div">
+                    <g:render template="/templates/properties/members" model="${[
+                            prop_desc       : PropertyDefinition.SUB_PROP,
+                            ownobj          : parentSub,
+                            custom_props_div: "member_props_div"]}"/>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</g:if>
+
 
 
 <g:if test="${filteredSubChilds && filterPropDef}">
@@ -674,11 +677,10 @@
     <g:if test="${!filteredSubChilds}">
         <strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
     </g:if>
-
-    <g:if test="${!filterPropDef}">
+    <g:elseif test="${!filterPropDef}">
         <strong><g:message code="subscription.propertiesMembers.noPropertySeleced"
                            args="${args.memberTypeGenitive}"/></strong>
-    </g:if>
+    </g:elseif>
 </g:else>
 
 <div id="magicArea"></div>
