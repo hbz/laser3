@@ -64,6 +64,9 @@ class ReaderNumberController extends AbstractDebugController {
 			RefdataValue semester = RefdataValue.get(params.semester)
 			numbersToDelete.addAll(ReaderNumber.findAllBySemesterAndOrg(semester,org).collect{ ReaderNumber rn -> rn.id })
 		}
+		else if(params.referenceGroup) {
+			numbersToDelete.addAll(ReaderNumber.findAllByReferenceGroupAndOrg(params.referenceGroup,org).collect{ ReaderNumber rn -> rn.id })
+		}
 		if (numbersToDelete) {
 			RefdataValue.executeUpdate('delete from ReaderNumber rn where rn.id in (:ids)',[ids:numbersToDelete])
 		}

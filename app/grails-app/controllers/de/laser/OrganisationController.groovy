@@ -1149,21 +1149,25 @@ class OrganisationController extends AbstractDebugController {
         Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
 
         TreeSet<String> semesterCols = [], dueDateCols = []
-        Map<String,Integer> semesterSums = [:], dueDateSums = [:]
+        Map<String,Integer> dueDateSums = [:]
+        Map<String,Map<String,Integer>> semesterSums = [:]
         numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
             semesters.value.each { Map.Entry<String,ReaderNumber> row ->
                 semesterCols << row.key
                 ReaderNumber rn = row.value
-                Integer semesterSum = semesterSums.get(semesters.key)
+                Map<String,Integer> semesterSumRow = semesterSums.get(semesters.key)
+                if(!semesterSumRow)
+                    semesterSumRow = [:]
                 if(rn.value) {
-                    if (semesterSum == null) {
-                        semesterSum = rn.value
+                    Integer groupSum = semesterSumRow.get(rn.referenceGroup)
+                    if(groupSum == null) {
+                        groupSum = rn.value
                     }
-                    else semesterSum += rn.value
+                    else groupSum += rn.value
+                    semesterSumRow.put(rn.referenceGroup,groupSum)
                 }
-                semesterSums.put(semesters.key,semesterSum)
+                semesterSums.put(semesters.key,semesterSumRow)
             }
-
         }
         numbersWithDueDate.each { Map.Entry<String,Map<String,ReaderNumber>> dueDates ->
             dueDates.value.each { Map.Entry<String,ReaderNumber> row ->

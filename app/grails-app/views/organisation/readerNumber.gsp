@@ -1,10 +1,5 @@
-<%@ page
-        import="com.k_int.kbplus.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;java.text.SimpleDateFormat"
-%>
+<%@ page import="com.k_int.kbplus.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants;de.laser.ReaderNumber" %>
 <laser:serviceInjection />
-<g:set var="overwriteEditable"
-       value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}"/>
-<g:set var="sdf" value="${de.laser.helper.DateUtil.getSDF_NoTime()}"/>
 <!doctype html>
 <html>
     <head>
@@ -48,7 +43,18 @@
                         <tr>
                             <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"/>
                             <g:each in="${semesterCols}" var="column">
-                                <th>${column}</th>
+                                <th>
+                                    ${column}
+                                    <g:if test="${editable}">
+                                        <%--<g:if test="${!(column in RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect {rdv->rdv.getI10n("value")})}">
+                                            <g:link class="ui icon button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                                    data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                    data-confirm-term-how="ok" params="${[referenceGroup:column,org:params.id]}">
+                                                <i class="red times icon"></i>
+                                            </g:link>
+                                        </g:if>--%>
+                                    </g:if>
+                                </th>
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
                             <th></th>
@@ -66,14 +72,28 @@
                                     </g:if>
                                 </td>
                             </g:each>
-                            <td><g:formatNumber number="${semesterSums.get(numbersInstance.getKey())}"/></td>
+                            <%
+                                Map<String,Integer> sumRow = semesterSums.get(numbersInstance.getKey())
+                                int students = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_STUDENTS,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                int FTEs = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_FTE,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                int staff = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                boolean missing = students == 0 || FTEs == 0 || staff == 0
+                                //int allOthers = sumRow.findAll { row -> !RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect { rdv -> rdv.getI10n("value") }.contains(row.key) }.collect { row -> row.value }.sum()
+                            %>
+                            <td><g:formatNumber number="${students+FTEs}"/>/<g:formatNumber number="${students+staff}"/></td>
                             <td class="x">
                                 <g:if test="${editable}">
+                                    <g:if test="${missing}">
+                                        <a role="button" class="ui icon button" data-semui="modal" href="#newForSemester${numbersInstance.getKey()}">
+                                            <i class="write icon"></i>
+                                        </a>
+                                    </g:if>
                                     <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
+                                    <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey(),semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
                                 </g:if>
                             </td>
                         </tr>
