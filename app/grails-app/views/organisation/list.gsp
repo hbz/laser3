@@ -61,7 +61,7 @@
                 <g:render template="/templates/filter/orgFilter"
                           model="[
                                   tmplConfigShow: [['name', 'identifier', 'type'], ['region', 'libraryNetwork',
-                                                                                    'sector', 'libraryType']],
+                                                                                    'sector', 'libraryType', 'subjectGroup']],
                                   tmplConfigFormFilter: true,
                                   useNewLayouter: true
                           ]"/>

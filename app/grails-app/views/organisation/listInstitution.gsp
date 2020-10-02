@@ -39,7 +39,7 @@
         <g:form action="listInstitution" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier'], ['region', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier'], ['region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
