@@ -4,26 +4,26 @@
         <div class="ui item person-details">
             <h5 class="ui header">
 
-                    ${person?.title}
-                    ${person?.first_name}
-                    ${person?.middle_name}
-                    ${person?.last_name}
+                    ${person.title}
+                    ${person.first_name}
+                    ${person.middle_name}
+                    ${person.last_name}
 
             </h5>
 
         </div><!-- .person-details -->
 
-        <g:if test="${person?.contacts}">
+        <g:if test="${person.contacts}">
 
-            <g:each in="${person?.contacts?.toSorted()}" var="contact">
+            <g:each in="${person.contacts?.toSorted()}" var="contact">
                 <g:render template="/templates/cpa/contact"
                           model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton, overwriteEditable: overwriteEditable]}"/>
             </g:each>
 
         </g:if>
-        <g:if test="${person?.addresses}">
+        <g:if test="${person.addresses}">
 
-            <g:each in="${person?.addresses?.sort { it?.type.each {it?.getI10n('value')} }}" var="address">
+            <g:each in="${person.addresses?.sort { it?.type.each {it?.getI10n('value')} }}" var="address">
                 <g:render template="/templates/cpa/address"
                           model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
@@ -32,9 +32,9 @@
 
         <g:if test="${!personRole && !tmplHideLinkToAddressbook}">
 
-            <g:each in="${person?.roleLinks}" var="role">
+            <g:each in="${person.roleLinks}" var="role">
                 <div class="item">
-                    <g:link controller="organisation" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                    <g:link controller="organisation" action="addressbook" id="${role.org.id}">${role.org}</g:link>
                 </div>
             </g:each>
 
@@ -50,20 +50,20 @@
             <div class="content la-space-right">
                 <h5 class="ui header">
 
-                        ${personRole?.prs?.title}
-                        ${personRole?.prs?.first_name}
-                        ${personRole?.prs?.middle_name}
-                        ${personRole?.prs?.last_name}
+                        ${personRole.prs.title}
+                        ${personRole.prs.first_name}
+                        ${personRole.prs.middle_name}
+                        ${personRole.prs.last_name}
 
                 </h5>
-                <g:if test="${personRole?.functionType}">
-                    (${personRole?.functionType?.getI10n('value')})
+                <g:if test="${personRole.functionType}">
+                    (${personRole.functionType.getI10n('value')})
                 </g:if>
-                <g:if test="${personRole?.positionType}">
-                    (${personRole?.positionType?.getI10n('value')})
+                <g:if test="${personRole.positionType}">
+                    (${personRole.positionType.getI10n('value')})
                 </g:if>
-                <g:if test="${personRole?.responsibilityType}">
-                    (${personRole?.responsibilityType?.getI10n('value')})
+                <g:if test="${personRole.responsibilityType}">
+                    (${personRole.responsibilityType.getI10n('value')})
                 </g:if>
             </div>
 
@@ -72,13 +72,13 @@
 
                     <g:if test="${showAddContacts}">
                         <input class="ui mini icon button" type="button" data-semui="modal"
-                               data-href="#contactFormModal${personRole?.prs?.id}"
+                               data-href="#contactFormModal${personRole.prs.id}"
                                value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
-                        <g:render template="/contact/formModal" model="['prsId': personRole?.prs?.id, modalId: 'contactFormModal'+personRole?.prs?.id]"/>
+                        <g:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
                     </g:if>
 
 
-                    <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
+                    <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
 
                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
@@ -89,9 +89,9 @@
                 </g:if>
             </div>
         </div><!-- .person-details -->
-    <g:if test="${personRole?.prs?.contacts}">
-        <g:each in="${personRole?.prs?.contacts?.toSorted()}" var="contact">
-            <g:if test="${tmplConfigShow.contains(contact?.contentType?.value)}">
+    <g:if test="${personRole.prs.contacts}">
+        <g:each in="${personRole.prs.contacts?.toSorted()}" var="contact">
+            <g:if test="${tmplConfigShow.contains(contact.contentType?.value)}">
                 <g:render template="/templates/cpa/contact" model="${[
                         contact             : contact,
                         tmplShowDeleteButton: true
@@ -100,9 +100,9 @@
         </g:each>
 
     </g:if>
-    <g:if test="${tmplConfigShow?.contains('address') && personRole?.prs?.addresses}">
+    <g:if test="${tmplConfigShow?.contains('address') && personRole.prs.addresses}">
 
-        <g:each in="${personRole?.prs?.addresses?.sort { it.type.each {it?.getI10n('value')} }}" var="address">
+        <g:each in="${personRole.prs.addresses?.sort { it.type.each {it?.getI10n('value')} }}" var="address">
             <g:render template="/templates/cpa/address"
                       model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
         </g:each>
