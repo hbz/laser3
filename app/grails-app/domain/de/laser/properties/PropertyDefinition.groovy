@@ -291,7 +291,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(String flag, def owner, PropertyDefinition type, Org contextOrg) {
 
         withTransaction {
-            String classString = owner.getClass().toString() // TODO ERMS-2880
+            String classString = owner.getClass().toString() // TODO [ticket=2880]
             String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
             boolean isPublic = false
             if(owner instanceof Subscription)

@@ -36,7 +36,7 @@
 
 <r:script>
         $(document).ready(function(){
-            c3po.initGroupedProperties("<g:createLink controller='ajax' action='lookup'/>", "#${custom_props_div}");
+            c3po.initGroupedProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${custom_props_div}");
         });
 </r:script>
 

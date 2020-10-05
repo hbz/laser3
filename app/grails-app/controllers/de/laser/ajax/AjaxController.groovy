@@ -3,6 +3,7 @@ package de.laser.ajax
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -42,6 +43,7 @@ class AjaxController {
     CompareService compareService
     LinksGenerationService linksGenerationService
     FinanceService financeService
+    LicenseService licenseService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -120,6 +122,10 @@ class AjaxController {
             format:'map'
     ]
   ]
+
+    def test() {
+        render 'test()'
+    }
 
     def genericDialogMessage() {
 
@@ -348,71 +354,6 @@ class AjaxController {
     }
   }
 
-    /**
-     * Copied legacy sel2RefdataSearch(), but uses OID.
-     *
-     * @return
-     */
-    def refdataSearchByOID() {
-        def result = []
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-        def rdc = genericOIDService.resolveOID(params.oid)
-
-        def config = [
-                domain:'RefdataValue',
-                countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
-                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}' order by rdv.order, rdv.value_" + locale,
-                qryParams:[],
-                cols:['value'],
-                format:'simple'
-        ]
-
-        def query_params = []
-        config.qryParams.each { qp ->
-            if (qp?.clos) {
-                query_params.add(qp.clos(params[qp.param]?:''));
-            }
-            else if(qp?.value) {
-                params."${qp.param}" = qp?.value
-            }
-            else {
-                query_params.add(params[qp.param]);
-            }
-        }
-
-        def cq = RefdataValue.executeQuery(config.countQry, query_params);
-        def rq = RefdataValue.executeQuery(config.rowQry,
-                query_params,
-                [max:params.iDisplayLength?:1000, offset:params.iDisplayStart?:0]);
-
-        rq.each { it ->
-            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-
-            if ( it instanceof I10nTrait ) {
-                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
-            }
-            else if ( it instanceof AbstractI10n ) {
-                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
-            }
-            else {
-                def objTest = rowobj[config.cols[0]]
-                if (objTest) {
-                    def no_ws = objTest.replaceAll(' ','');
-                    def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
-                    result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
-                }
-            }
-        }
-
-        if(result) {
-            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
-            result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
-//            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-        }
-
-        render result as JSON
-    }
-
     def getPropValues() {
         Set result = []
         if(params.oid != "undefined") {
@@ -579,19 +520,6 @@ class AjaxController {
     }
   }
 
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptionsLicenses() {
-    Map result = [results:[]]
-    result.results.addAll(controlledListService.getSubscriptions(params).results)
-    result.results.addAll(controlledListService.getLicenses(params).results)
-    render result as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptions_IndendedAndCurrent() {
-      params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
-      render controlledListService.getSubscriptions(params) as JSON
-  }
 
     @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
@@ -872,7 +800,7 @@ class AjaxController {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
-            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO ERMS-2880
+            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO [ticket=2880]
                 if (params.refdatacategory) {
 
                     Map<String, Object> map = [
@@ -1333,7 +1261,7 @@ class AjaxController {
                         additionalProp.save(flush: true)
                     }
                     else {
-                        AbstractPropertyWithCalculatedLastUpdated matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
+                        List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
@@ -1488,7 +1416,7 @@ class AjaxController {
     private setDashboardDueDateIsHidden(boolean isHidden){
         log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.institution = contextService.org
         flash.error = ''
@@ -1540,7 +1468,7 @@ class AjaxController {
     private setDashboardDueDateIsDone(boolean isDone){
         log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.institution = contextService.org
         flash.error = ''
@@ -1585,43 +1513,6 @@ class AjaxController {
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
-    /*
-  @Deprecated
-  def coreExtend(){
-    log.debug("ajax::coreExtend:: ${params}")
-    def tipID = params.tipID
-    try{
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def startDate = sdf.parse(params.coreStartDate)
-      def endDate = params.coreEndDate? sdf.parse(params.coreEndDate) : null
-      if(tipID && startDate){
-        def tip = TitleInstitutionProvider.get(tipID)
-        log.debug("Extending tip ${tip.id} with start ${startDate} and end ${endDate}")
-        tip.extendCoreExtent(startDate, endDate)
-        params.message = message(code:'ajax.coreExtend.success')
-      }
-    }catch (Exception e){
-        log.error("Error while extending core dates",e)
-        params.message = message(code:'ajax.coreExtend.error')
-    }
-    redirect(action:'getTipCoreDates',controller:'ajax',params:params)
-  }
-
-  @Deprecated
-  def getTipCoreDates(){
-    log.debug("ajax::getTipCoreDates:: ${params}")
-    def tipID = params.tipID ?:params.id
-    def tip = null
-    if(tipID) tip = TitleInstitutionProvider.get(tipID);
-    if(tip){
-      def dates = tip.coreDates
-      log.debug("Returning ${dates}")
-      request.setAttribute("editable",params.editable?:true)
-      render(template: "/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);
-    }
-  }
-     */
-
     def delete() {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
@@ -1643,14 +1534,6 @@ class AjaxController {
                 obj.delete(flush:true)
         }
     }
-
-    @Secured(['ROLE_USER'])
-    def deleteCoreDate(){
-    log.debug("ajax:: deleteCoreDate::${params}")
-    def date = CoreAssertion.get(params.coreDateID)
-    if(date) date.delete(flush:true)
-    redirect(action:'getTipCoreDates',controller:'ajax',params:params)
-  }
 
   def getProvidersWithPrivateContacts() {
     Map<String, Object> result = [:]
@@ -1694,48 +1577,6 @@ class AjaxController {
         result.aaData.add(row)
       }
 
-    render result as JSON
-  }
-
-  def lookup() {
-      // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg().shortcode
-
-    // log.debug("AjaxController::lookup ${params}");
-    Map<String, Object> result = [:]
-    params.max = params.max ?: 40
-
-    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
-    if ( domain_class ) {
-      result.values = domain_class.getClazz().refdataFind(params);
-      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-    }
-    else {
-      log.error("Unable to locate domain class ${params.baseClass}");
-      result.values=[]
-    }
-    //result.values = [[id:'Person:45',text:'Fred'],
-    //                 [id:'Person:23',text:'Jim'],
-    //                 [id:'Person:22',text:'Jimmy'],
-    //                 [id:'Person:3',text:'JimBob']]
-    render result as JSON
-  }
-
-  // used only from IdentifierTabLib.formAddIdentifier
-  def lookup2() {
-      // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg().shortcode
-
-    Map<String, Object> result = [:]
-    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
-    if (domain_class) {
-      result.values = domain_class.getClazz().refdataFind2(params);
-      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-    }
-    else {
-      log.error("Unable to locate domain class ${params.baseClass}");
-      result.values=[]
-    }
     render result as JSON
   }
 
@@ -1864,12 +1705,13 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
   }
     
-  def resolveOID2(oid) {
-    def oid_components = oid.split(':')
-    def result = null
-    GrailsClass domain_class = AppUtils.getDomainClass( oid_components[0] )
-    if ( domain_class ) {
-      if ( oid_components[1]=='__new__' ) {
+  def resolveOID2(String oid) {
+    String[] oid_components = oid.split(':')
+    def result
+
+    GrailsClass domain_class = AppUtils.getDomainClass(oid_components[0])
+    if (domain_class) {
+      if (oid_components[1] == '__new__') {
         result = domain_class.getClazz().refdataCreate(oid_components)
         // log.debug("Result of create ${oid} is ${result?.id}");
       }
@@ -1896,60 +1738,6 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
 
   }
-
-    @Secured(['ROLE_USER'])
-    def getEmailAddresses() {
-        Set result = []
-        if (params.orgIdList){
-            List<Long> orgIds = (params.orgIdList.split( ',')).each { (it instanceof Long) ? it : Long.parseLong(it)}
-            List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
-            
-            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
-            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
-
-            List<RefdataValue> selectedRoleTypes = null
-            if (params.selectedRoleTypIds) {
-                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-                selectedRoleTypes = selectedRoleTypIds.isEmpty() ? [] : RefdataValue.findAllByIdInList(selectedRoleTypIds)
-            }
-
-            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
-            Map queryParams = [orgs: orgList]
-
-            if (showPublicContactEmails && showPrivateContactEmails){
-                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
-                queryParams << [ctx: contextService.org]
-            } else {
-                if (showPublicContactEmails){
-                    query += "and p.isPublic = true "
-                } else if (showPrivateContactEmails){
-                    query += "and (p.isPublic = false and p.tenant = :ctx) "
-                    queryParams << [ctx: contextService.org]
-                } else {
-                    return [] as JSON
-                }
-            }
-
-            if (selectedRoleTypes) {
-                query += "and pr.functionType in (:selectedRoleTypes) "
-                queryParams << [selectedRoleTypes: selectedRoleTypes]
-//                selectedRoleTypes.eachWithIndex{ it, index ->
-//                    query += "and pr.functionType = :r${index} "
-//                    queryParams << ["r${index}": it]
-//                }
-            }
-
-            List<Person> persons = Person.executeQuery(query, queryParams)
-
-            if (persons){
-                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                        [persons: persons, contentType: RDStore.CCT_EMAIL])
-            }
-
-        }
-
-        render result as JSON
-    }
 
     @Secured(['ROLE_USER'])
     def editableSetValue() {
@@ -2083,10 +1871,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        User user = resolveOID2(params.user);
-        Role role = resolveOID2(params.role);
+        User user = resolveOID2(params.user)
+        Role role = resolveOID2(params.role)
         if (user && role) {
-            com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+            UserRole.remove(user,role,true)
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -2130,17 +1918,17 @@ class AjaxController {
     def adjustSubscriptionList(){
         List<Subscription> data
         List result = []
-        boolean showActiveSubs = params.showActiveSubs == 'true'
-        boolean showIntendedSubs = params.showIntendedSubs == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedSubs = params.showConnectedSubs == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
         queryParams.status = []
-        if (showActiveSubs) { queryParams.status << RDStore.SUBSCRIPTION_CURRENT.id }
-        if (showIntendedSubs) { queryParams.status << RDStore.SUBSCRIPTION_INTENDED.id }
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
 
         queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedSubs = showConnectedSubs
+        queryParams.showConnectedObjs = showConnectedObjs
 
         data = subscriptionService.getMySubscriptions_writeRights(queryParams)
 
@@ -2163,20 +1951,55 @@ class AjaxController {
         }
     }
 
+    def adjustLicenseList(){
+        List<Subscription> data
+        List result = []
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
+        Map queryParams = [:]
+        queryParams.status = []
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedObjs = showConnectedObjs
+
+        data =  licenseService.getMyLicenses_writeRights(queryParams)
+
+
+        if(data) {
+            if(params.valueAsOID){
+                data.each { License l ->
+                    result.add([value: genericOIDService.getOID(l), text: l.dropdownNamingConvention()])
+                }
+            }else {
+                data.each { License l ->
+                    result.add([value: l.id, text: l.dropdownNamingConvention()])
+                }
+            }
+        }
+        withFormat {
+            json {
+                render result as JSON
+            }
+        }
+    }
+
     def adjustCompareSubscriptionList(){
         List<Subscription> data
         List result = []
-        boolean showActiveSubs = params.showActiveSubs == 'true'
-        boolean showIntendedSubs = params.showIntendedSubs == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedSubs = params.showConnectedSubs == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        queryParams.status = []
-        if (showActiveSubs) { queryParams.status << RDStore.SUBSCRIPTION_CURRENT.id }
-        if (showIntendedSubs) { queryParams.status << RDStore.SUBSCRIPTION_INTENDED.id }
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
 
         queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedSubs = showConnectedSubs
+        queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
 
@@ -2188,7 +2011,7 @@ class AjaxController {
             }
         }
 
-        if (showConnectedSubs){
+        if (showConnectedObjs){
             data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.user))
         }
 
@@ -2196,7 +2019,10 @@ class AjaxController {
             data.each { Subscription s ->
                 result.add([value: s.id, text: s.dropdownNamingConvention()])
             }
+
+            result.sort{it.text}
         }
+
         withFormat {
             json {
                 render result as JSON
@@ -2207,14 +2033,13 @@ class AjaxController {
     def adjustCompareLicenseList(){
         List<License> data
         List result = []
-        boolean showActiveLics = params.showActiveLics == 'true'
-        boolean showIntendedLics = params.showIntendedLics == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
-        queryParams.status = []
-        if (showActiveLics) { queryParams.status << RDStore.LICENSE_CURRENT.id }
-        if (showIntendedLics) { queryParams.status << RDStore.LICENSE_INTENDED.id }
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
 
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedLics = showConnectedLics
@@ -2237,6 +2062,7 @@ class AjaxController {
             data.each { License l ->
                 result.add([value: l.id, text: l.dropdownNamingConvention()])
             }
+            result.sort{it.text}
         }
         withFormat {
             json {

@@ -81,7 +81,7 @@
                             </g:elseif>
                             <g:elseif test="${propValue.type.isRefdataValueType()}">
                                 <span data-position="top left" class="la-popup-tooltip la-delay"
-                                      data-content="${propValue.refValue.getI10n("value")}">
+                                      data-content="${propValue.refValue?.getI10n("value")}">
                                     <g:if test="${object instanceof License}">
                                         <%
                                             String value
@@ -117,15 +117,15 @@
                                                             break
                                                     }
                                                     break
-                                                default: value = propValue.refValue.getI10n("value")
+                                                default: value = propValue.refValue?.getI10n("value")
                                                     break
                                             }
 
                                         %>
-                                        ${value ?: propValue.refValue.getI10n("value")}
+                                        ${value ?: propValue.refValue?.getI10n("value")}
                                     </g:if>
                                     <g:else>
-                                        ${propValue.refValue.getI10n("value")}
+                                        ${propValue.refValue?.getI10n("value")}
                                     </g:else>
                                 </span>
                             </g:elseif>

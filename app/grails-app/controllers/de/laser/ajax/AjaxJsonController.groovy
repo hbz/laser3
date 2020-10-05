@@ -7,15 +7,22 @@ import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
+import de.laser.I10nTranslation
+import de.laser.Contact
+import de.laser.Person
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.base.AbstractI10n
+import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-
+import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
+import org.springframework.context.i18n.LocaleContextHolder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll'])
@@ -124,6 +131,26 @@ class AjaxJsonController {
         render result as JSON // TODO -> check response; remove unnecessary information! only id and value_<x>?
     }
 
+    def lookup() {
+        // fallback for static refdataFind calls
+        params.shortcode  = contextService.getOrg().shortcode
+
+        Map<String, Object> result = [values: []]
+        params.max = params.max ?: 40
+
+        GrailsClass domain_class = AppUtils.getDomainClass(params.baseClass)
+
+        if (domain_class) {
+            result.values = domain_class.getClazz().refdataFind(params)
+            result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text }
+        }
+        else {
+            log.error("Unable to locate domain class ${params.baseClass}")
+        }
+
+        render result as JSON
+    }
+
     @Secured(['ROLE_USER'])
     def lookupBudgetCodes() {
         render controlledListService.getBudgetCodes(params) as JSON
@@ -202,6 +229,22 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
+    def lookupSubscriptionsLicenses() {
+        Map<String, Object> result = [results:[]]
+        result.results.addAll(controlledListService.getSubscriptions(params).results)
+        result.results.addAll(controlledListService.getLicenses(params).results)
+
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def lookupCurrentAndIndendedSubscriptions() {
+        params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
+
+        render controlledListService.getSubscriptions(params) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupTitleGroups() {
         params.checkView = true
         if(params.sub != "undefined") {
@@ -210,6 +253,38 @@ class AjaxJsonController {
             Map empty = [results: []]
             render empty as JSON
         }
+    }
+
+    def refdataSearchByOID() {
+        List result = []
+
+        def rdc = genericOIDService.resolveOID(params.oid)
+        if (rdc) {
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+            String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale
+
+            List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])
+
+            rq.each { RefdataValue it ->
+                if (it instanceof I10nTrait || it instanceof AbstractI10n) {
+                    result.add([value: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
+                }
+                else {
+                    String value = it.value
+                    if (value) {
+                        String no_ws = value.replaceAll(' ', '')
+                        String locale_text = message(code: "refdata.${no_ws}", default: "${value}")
+                        result.add([value: "${it.class.name}:${it.id}", text: "${locale_text}"])
+                    }
+                }
+            }
+        }
+        if (result) {
+            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
+            result.add([value: "${notSet.class.name}:${notSet.id}", text: "${notSet.getI10n('value')}"])
+        }
+
+        render result as JSON
     }
 
     def searchPropertyAlternativesByOID() {
@@ -248,10 +323,59 @@ class AjaxJsonController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
+
         if (params.input) {
             List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)", [searchTerm:params.input])
             result.result = checkList.size() > 0
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getEmailAddresses() {
+        List result = []
+
+        if (params.orgIdList) {
+            List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
+            List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+
+            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+            Map<String, Object> queryParams = [orgs: orgList]
+
+            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+
+            if (showPublicContactEmails && showPrivateContactEmails){
+                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+                queryParams << [ctx: contextService.org]
+            } else {
+                if (showPublicContactEmails){
+                    query += "and p.isPublic = true "
+                } else if (showPrivateContactEmails){
+                    query += "and (p.isPublic = false and p.tenant = :ctx) "
+                    queryParams << [ctx: contextService.org]
+                } else {
+                    return [] as JSON
+                }
+            }
+
+            if (params.selectedRoleTypIds) {
+                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split(',').collect { Long.parseLong(it) }
+                List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
+
+                if (selectedRoleTypes) {
+                    query += "and pr.functionType in (:selectedRoleTypes) "
+                    queryParams << [selectedRoleTypes: selectedRoleTypes]
+                }
+            }
+
+            List<Person> persons = Person.executeQuery(query, queryParams)
+            if (persons) {
+                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            }
+        }
+
         render result as JSON
     }
 }

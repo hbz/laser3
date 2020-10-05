@@ -63,7 +63,7 @@
                 //If we are working with RefdataValue, grab the values and create select box
                 if (selOpt.attr('data-rdc')) {
                     $.ajax({
-                        url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc'),
+                        url: '<g:createLink controller="ajaxJson" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc'),
                         success: function (data) {
                             var genericNullValue = "${RefdataValue.class.name}:${RDStore.GENERIC_NULL_VALUE.id}";
                             var select = '';

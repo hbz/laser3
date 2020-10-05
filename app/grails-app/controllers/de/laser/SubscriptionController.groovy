@@ -565,12 +565,6 @@ class SubscriptionController
 
     }
 
-    private def sortOnCoreStatus(result, params) {
-        result.entitlements.sort { it.getTIP()?.coreStatus(null) }
-        if (params.order == 'desc') result.entitlements.reverse(true);
-        result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
-    }
-
     /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -580,105 +574,6 @@ class SubscriptionController
         Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
 
         result
-        /*
-        result.unionList = []
-
-        result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        if (params.subA?.length() > 0 && params.subB?.length() > 0) {
-            log.debug("Subscriptions submitted for comparison ${params.subA} and ${params.subB}.")
-            log.debug("Dates submited are ${params.dateA} and ${params.dateB}")
-
-            result.subInsts = []
-            result.subDates = []
-
-            def listA
-            def listB
-            try {
-                listA = createCompareList(params.subA, params.dateA, params, result)
-                listB = createCompareList(params.subB, params.dateB, params, result)
-                if (!params.countA) {
-                    def countQuery = "select count(elements(sub.issueEntitlements)) from Subscription sub where sub.id = ?"
-                    params.countA = Subscription.executeQuery(countQuery, [result.subInsts.get(0).id])
-                    params.countB = Subscription.executeQuery(countQuery, [result.subInsts.get(1).id])
-                }
-            } catch (IllegalArgumentException e) {
-                request.message = e.getMessage()
-                return
-            }
-
-            result.listACount = listA.size()
-            result.listBCount = listB.size()
-
-            def mapA = listA.collectEntries { [it.tipp.title.title, it] }
-            def mapB = listB.collectEntries { [it.tipp.title.title, it] }
-
-            //FIXME: It should be possible to optimize the following lines - it is. The whole code can be optimised as it is legacy
-            def unionList = mapA.keySet().plus(mapB.keySet()).toList()
-            unionList = unionList.unique()
-            result.unionListSize = unionList.size()
-            unionList.sort()
-
-            def filterRules = [params.insrt ? true : false, params.dlt ? true : false, params.updt ? true : false, params.nochng ? true : false]
-            withFormat {
-                html {
-                    def toIndex = result.offset + result.max < unionList.size() ? result.offset + result.max : unionList.size()
-                    result.comparisonMap =
-                            institutionsService.generateComparisonMap(unionList, mapA, mapB, result.offset, toIndex.intValue(), filterRules)
-                    log.debug("Comparison Map" + result.comparisonMap)
-                    result
-                }
-                csv {
-                    try {
-                        log.debug("Create CSV Response")
-                        def comparisonMap =
-                                institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
-                        def dateFormatter = DateUtil.getSDF_NoTime()
-
-                        response.setHeader("Content-disposition", "attachment; filename=\"subscriptionComparison.csv\"")
-                        response.contentType = "text/csv"
-                        def out = response.outputStream
-                        out.withWriter { writer ->
-                            writer.write("${result.subInsts[0].name} on ${params.dateA}, ${result.subInsts[1].name} on ${params.dateB}\n")
-                            writer.write('IE Title, pISSN, eISSN, Start Date A, Start Date B, Start Volume A, Start Volume B, Start Issue A, Start Issue B, End Date A, End Date B, End Volume A, End Volume B, End Issue A, End Issue B, Coverage Note A, Coverage Note B, ColorCode\n');
-                            log.debug("UnionList size is ${unionList.size}")
-                            comparisonMap.each { title, values ->
-                                def ieA = values[0]
-                                def ieB = values[1]
-                                def colorCode = values[2]
-                                def pissn = ieA ? ieA.tipp.title.getIdentifierValue('issn') : ieB.tipp.title.getIdentifierValue('issn');
-                                def eissn = ieA ? ieA.tipp.title.getIdentifierValue('eISSN') : ieB.tipp.title.getIdentifierValue('eISSN')
-
-                                writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${formatDateOrNull(dateFormatter, ieA?.startDate)}\",\"${formatDateOrNull(dateFormatter, ieB?.startDate)}\",\"${ieA?.startVolume ?: ''}\",\"${ieB?.startVolume ?: ''}\",\"${ieA?.startIssue ?: ''}\",\"${ieB?.startIssue ?: ''}\",\"${formatDateOrNull(dateFormatter, ieA?.endDate)}\",\"${formatDateOrNull(dateFormatter, ieB?.endDate)}\",\"${ieA?.endVolume ?: ''}\",\"${ieB?.endVolume ?: ''}\",\"${ieA?.endIssue ?: ''}\",\"${ieB?.endIssue ?: ''}\",\"${ieA?.coverageNote ?: ''}\",\"${ieB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
-                            }
-                            writer.write("END");
-                            writer.flush();
-                            writer.close();
-                        }
-                        out.close()
-
-                    } catch (Exception e) {
-                        log.error("An Exception was thrown here", e)
-                    }
-                }
-            }
-        } else {
-            def currentDate = (DateUtil.getSDF_NoTime()).format(new Date())
-            params.dateA = currentDate
-            params.dateB = currentDate
-            params.insrt = "Y"
-            params.dlt = "Y"
-            params.updt = "Y"
-
-            if (contextService.getOrg()) {
-                result.institutionName = contextService.getOrg().getName()
-                log.debug("FIND ORG NAME ${result.institutionName}")
-            }
-            flash.message = message(code: 'subscription.compare.note')
-        }
-        */
     }
 
     def formatDateOrNull(formatter, date) {
@@ -4075,7 +3970,7 @@ class SubscriptionController
 
         if (params.copyObject) {result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)}
 
-        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
+        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
@@ -4205,8 +4100,8 @@ class SubscriptionController
             response.sendError(401); return
         }
 
-        result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights()
-        result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
+        result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:

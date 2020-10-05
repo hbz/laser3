@@ -97,7 +97,7 @@
 
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyconfig.urlComment.label')}
+                            ${message(code: 'surveyInfo.comment.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
@@ -116,7 +116,7 @@
                             </g:if>
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyconfig.urlComment2.label')}
+                            ${message(code: 'surveyInfo.comment.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
@@ -135,7 +135,7 @@
                             </g:if>
                         </dd>
                         <dt class="control-label">
-                            ${message(code: 'surveyconfig.urlComment3.label')}
+                            ${message(code: 'surveyInfo.comment.label')}
                         </dt>
                         <dd>
                             <semui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
