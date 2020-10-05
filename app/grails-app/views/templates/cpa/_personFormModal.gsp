@@ -17,7 +17,7 @@
                     <div class="field">
                         <g:if test="${orgList}">
                             <label for="personRoleOrg">
-                                <g:message code="contact.belongesTo.label"/>
+                                <g:message code="person.belongs.to"/>
                             </label>
                             <g:select class="ui search dropdown"
                                       name="personRoleOrg"
@@ -28,10 +28,10 @@
                         </g:if>
                         <g:if test="${org}">
                             <label for="personRoleOrg">
-                                <g:message code="contact.belongesTo.label"/>
+                                <g:message code="person.belongs.to"/>
                             </label>
-                            ${org}
-                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org.id}"/>
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
+                            <input name="personRoleOrg" type="hidden" value="${org.id}"/>
                         </g:if>
                     %{--<g:else>
                         <label for="personRoleOrg">
@@ -353,6 +353,8 @@
                     }
                 }
             });
+
+            tooltip.go()
 
             var contactElementCount = 0;
             var addressElementCount = 0;
