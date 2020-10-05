@@ -3,8 +3,10 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.DocContext
 import de.laser.Identifier
+import de.laser.IssueEntitlement
 import de.laser.OrgRole
 import de.laser.PersonRole
+import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
 import de.laser.properties.PropertyDefinition
@@ -116,7 +118,7 @@ class ApiCollectionReader {
             tmp.budgetCodes         = CostItemGroup.findAllByCostItem(it).collect{ it.budgetCode?.value }.unique()
             tmp.copyBase            = it.copyBase?.globalUID
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // de.laser.finance.Invoice
-            // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+            // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, ApiReader.IGNORE_ALL, context) // de.laser.IssueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // de.laser.finance.Order
             // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
             // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
@@ -231,7 +233,7 @@ class ApiCollectionReader {
                 [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
         )
         ieList.each{ ie ->
-            result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
+            result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
         }
 
         return ApiToolkit.cleanUp(result, true, true)
@@ -240,7 +242,7 @@ class ApiCollectionReader {
     static Collection<Object> getIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list) {
         Collection<Object> result = []
 
-        list?.each { it -> // com.k_int.kbplus.IssueEntitlementCoverage
+        list?.each { it -> // de.laser.IssueEntitlementCoverage
             result << ApiUnsecuredMapReader.getIssueEntitlementCoverageMap(it)
         }
 
@@ -450,7 +452,7 @@ class ApiCollectionReader {
     static Collection<Object> getTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
         Collection<Object> result = []
 
-        list.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
+        list.each { it -> // de.laser.TitleInstancePackagePlatform
             result << ApiMapReader.getTippMap(it, ignoreRelation, context)
         }
 

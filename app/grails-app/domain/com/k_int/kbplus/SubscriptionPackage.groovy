@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.TitleInstancePackagePlatform
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import de.laser.PendingChangeConfiguration

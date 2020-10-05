@@ -1,5 +1,5 @@
-<%@ page import="de.laser.ApiSource; com.k_int.kbplus.IssueEntitlement; de.laser.helper.RDStore; de.laser.IdentifierNamespace" %>
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription; com.k_int.kbplus.IssueEntitlement" %>
+<%@ page import="de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Package; com.k_int.kbplus.Subscription; de.laser.IssueEntitlement" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 

@@ -3,7 +3,6 @@ package de.laser
 import de.laser.titles.BookInstance
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.IssueEntitlement
 import de.laser.titles.JournalInstance
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
@@ -15,7 +14,6 @@ import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

@@ -2,14 +2,12 @@ package de.laser
 
 import de.laser.titles.BookInstance
 import com.k_int.kbplus.ContentItem
-import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
 import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg

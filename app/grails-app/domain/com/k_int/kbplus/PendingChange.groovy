@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
+import de.laser.IssueEntitlement
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration

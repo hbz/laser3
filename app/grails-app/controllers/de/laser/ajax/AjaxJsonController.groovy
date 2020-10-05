@@ -1,6 +1,6 @@
 package de.laser.ajax
 
-import com.k_int.kbplus.IssueEntitlement
+import de.laser.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org

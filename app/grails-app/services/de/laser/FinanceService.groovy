@@ -2,7 +2,6 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.IssueEntitlement
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration

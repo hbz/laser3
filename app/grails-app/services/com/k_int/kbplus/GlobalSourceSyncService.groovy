@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
+import de.laser.IssueEntitlement
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage

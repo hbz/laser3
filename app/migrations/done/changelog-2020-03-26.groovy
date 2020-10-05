@@ -1,6 +1,6 @@
 import com.k_int.kbplus.Platform
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.TitleInstancePackagePlatform
+import de.laser.TitleInstancePackagePlatform
 import de.laser.YodaService
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription

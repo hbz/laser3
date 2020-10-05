@@ -21,6 +21,6 @@
 		<g:message code="platform.tipps.label" default="Tipps" />
 		
 	</label>
-	<g:select name="tipps" from="${com.k_int.kbplus.TitleInstancePackagePlatform.list()}" multiple="multiple" optionKey="id" size="5" value="${platformInstance?.tipps*.id}" class="many-to-many"/>
+	<g:select name="tipps" from="${de.laser.TitleInstancePackagePlatform.list()}" multiple="multiple" optionKey="id" size="5" value="${platformInstance?.tipps*.id}" class="many-to-many"/>
 </div>
 

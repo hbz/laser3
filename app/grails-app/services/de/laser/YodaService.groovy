@@ -8,8 +8,6 @@ import com.k_int.kbplus.SubscriptionPackage
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.titles.TitleInstance
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.exceptions.CleanupException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants

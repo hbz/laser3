@@ -3,7 +3,6 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
-import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org

@@ -4,6 +4,7 @@ import de.laser.Doc
 import de.laser.DocContext
 import de.laser.FTControl
 import de.laser.Identifier
+import de.laser.IssueEntitlement
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.system.SystemEvent
@@ -630,7 +631,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.IssueEntitlement.class) { ie ->
+        updateES(IssueEntitlement.class) { ie ->
             def result = [:]
 
             result._id = ie.globalUID

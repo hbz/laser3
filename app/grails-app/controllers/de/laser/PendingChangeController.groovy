@@ -1,10 +1,9 @@
 package de.laser
 
-import com.k_int.kbplus.IssueEntitlement
+
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore

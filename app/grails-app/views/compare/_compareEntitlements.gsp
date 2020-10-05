@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; com.k_int.kbplus.TitleInstancePackagePlatform; com.k_int.kbplus.TitleInstance; de.laser.helper.RDStore; de.laser.ApiSource" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.helper.RDStore; de.laser.ApiSource" %>
 <laser:serviceInjection/>
 <semui:form>
     <table class="ui selectable celled table la-table la-ignore-fixed">

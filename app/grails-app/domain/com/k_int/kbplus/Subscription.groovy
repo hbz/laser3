@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.DocContext
 import de.laser.Identifier
+import de.laser.IssueEntitlement
 import de.laser.OrgRole
 import de.laser.PersonRole
 import de.laser.RefdataValue

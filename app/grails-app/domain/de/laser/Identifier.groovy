@@ -5,7 +5,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log

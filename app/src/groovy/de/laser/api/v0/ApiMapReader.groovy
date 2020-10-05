@@ -3,7 +3,7 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.Org
 import de.laser.Person
-import com.k_int.kbplus.TitleInstancePackagePlatform
+import de.laser.TitleInstancePackagePlatform
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -36,7 +36,7 @@ class ApiMapReader {
     /**
      * Access rights due wrapping object. Some relations may be blocked
      *
-     * @param com.k_int.kbplus.TitleInstancePackagePlatform tipp
+     * @param de.laser.TitleInstancePackagePlatform tipp
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
      * @return Map<String, Object>
@@ -76,8 +76,8 @@ class ApiMapReader {
                 result.subscription = ApiStubReader.requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
             }
         }
-        //result.derivedFrom      = ApiStubReader.resolveTippStub(tipp.derivedFrom)  // com.k_int.kbplus.TitleInstancePackagePlatform
-        //result.masterTipp       = ApiStubReader.resolveTippStub(tipp.masterTipp)   // com.k_int.kbplus.TitleInstancePackagePlatform
+        //result.derivedFrom      = ApiStubReader.resolveTippStub(tipp.derivedFrom)  // de.laser.TitleInstancePackagePlatform
+        //result.masterTipp       = ApiStubReader.resolveTippStub(tipp.masterTipp)   // de.laser.TitleInstancePackagePlatform
 
         return ApiToolkit.cleanUp(result, true, true)
     }

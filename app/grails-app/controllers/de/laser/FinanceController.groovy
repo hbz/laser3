@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.IssueEntitlement
+
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
