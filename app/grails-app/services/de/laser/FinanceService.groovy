@@ -439,20 +439,26 @@ class FinanceService {
             queryParams.filterCIValidOn = validOn
             log.info(queryParams.filterCIValidOn)
         }
-        //paid from
-        if(params.filterCIPaidFrom) {
-            costItemFilterQuery += " and (ci.datePaid >= :filterCIPaidFrom AND ci.datePaid is not null) "
-            Date invoiceFrom = sdf.parse(params.filterCIPaidFrom)
-            queryParams.filterCIPaidFrom = invoiceFrom
-            log.info(queryParams.filterCIPaidFrom)
+        if(params.filterCIUnpaid) {
+            costItemFilterQuery += " and ci.datePaid is null "
         }
-        //paid to
-        if(params.filterCIPaidTo) {
-            costItemFilterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
-            Date invoiceTo = sdf.parse(params.filterCIPaidTo)
-            queryParams.filterCIPaidTo = invoiceTo
-            log.info(queryParams.filterCIPaidTo)
+        else {
+            //paid from
+            if(params.filterCIPaidFrom) {
+                costItemFilterQuery += " and (ci.datePaid >= :filterCIPaidFrom AND ci.datePaid is not null) "
+                Date invoiceFrom = sdf.parse(params.filterCIPaidFrom)
+                queryParams.filterCIPaidFrom = invoiceFrom
+                log.info(queryParams.filterCIPaidFrom)
+            }
+            //paid to
+            if(params.filterCIPaidTo) {
+                costItemFilterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
+                Date invoiceTo = sdf.parse(params.filterCIPaidTo)
+                queryParams.filterCIPaidTo = invoiceTo
+                log.info(queryParams.filterCIPaidTo)
+            }
         }
+
         return [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
     }
 
