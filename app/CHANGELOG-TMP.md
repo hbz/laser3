@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2900    05.10.2020  rc1.6               Moe     Feature     Auffälligkeiten Kopierdialog Vertrag / Vertrag kopieren / Schnellkopie
+
 2893    02.10.2020  rc1.6               Andreas Feature     weitere Bereinigungsabfrage
 
 2718    02.10.2020  rc1.6               Andreas Feature     Nachbestellungen Nutzerzahlensicht

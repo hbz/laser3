@@ -55,7 +55,7 @@ class CopyElementsService {
         List result = []
         switch (obj.class.simpleName) {
             case License.class.simpleName:
-                result = ['startDate', 'endDate', 'status', 'type', 'licenseUrl', 'licenseCategory', 'openEnded', 'isPublicForApi']
+                result = ['startDate', 'endDate', 'status', 'licenseCategory', 'openEnded', 'isPublicForApi']
                 break
             case Subscription.class.simpleName:
                 result = ['startDate', 'endDate', 'manualCancellationDate', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess']
@@ -420,7 +420,9 @@ class CopyElementsService {
         if (formService.validateToken(params)) {
 
             params.list('copyObject.take').each { takeProperty ->
+                println(takeProperty)
                 if (takeProperty in allowedProperties(sourceObject)) {
+                    println("takeProperty in allowedProperties(sourceObject)")
                     copyObjectProperty(sourceObject, targetObject, flash, takeProperty)
                 }
             }
@@ -977,7 +979,9 @@ class CopyElementsService {
     boolean copyObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {
 
         if (sourceObject.getClass() == targetObject.getClass()) {
+            println(sourceObject.getClass() == targetObject.getClass())
             if (sourceObject.hasProperty(propertyName)) {
+                println("sourceObject.hasProperty(propertyName)")
                 targetObject[propertyName] = sourceObject."$propertyName"
                 return save(targetObject, flash)
             }
@@ -1206,7 +1210,8 @@ class CopyElementsService {
     }
 
     private boolean save(obj, flash) {
-        if (obj.save()) {
+        //Flush muss drin bleiben sonst werden die Werte nicht gespeichert
+        if (obj.save(flush: true)) {
             log.debug("Save ${obj} ok")
             return true
         } else {
