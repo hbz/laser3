@@ -69,7 +69,7 @@
         List configShowFilter = []
         List configShowTable = []
         if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
-            configShowFilter = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property']]
+            configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property']]
             configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
         }
         else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {

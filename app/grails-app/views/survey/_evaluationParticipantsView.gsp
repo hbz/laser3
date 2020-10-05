@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;com.k_int.kbplus.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 
 <g:if test="${surveyConfig}">
 
@@ -484,26 +484,21 @@
                     <div class="ui field">
                         <label for="subscription">${message(code: 'surveyTransfer.info.label')}</label>
 
-                        <div class="ui checkbox">
-                            <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true"
-                                        onchange="adjustDropdown()"/>
-                            <label for="show.activeSubscriptions">${message(code: 'default.compare.show.activeSubscriptions.name')}</label>
-                        </div><br/>
+                        <div class="field fieldcontain">
+                            <label>${message(code: 'filter.status')}</label>
+                            <laser:select class="ui dropdown" name="status" id="status"
+                                          from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                                          optionKey="id"
+                                          optionValue="value"
+                                          multiple="true"
+                                          value="${RDStore.SUBSCRIPTION_CURRENT.id}"
+                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                          onchange="adjustDropdown()"/>
+                        </div>
+                        <br>
+                        <br id="element-vor-target-dropdown" />
+                        <br>
 
-                        <div class="ui checkbox">
-                            <g:checkBox name="show.intendedSubscriptions" value="intended" checked="false"
-                                        onchange="adjustDropdown()"/>
-                            <label for="show.intendedSubscriptions">${message(code: 'default.compare.show.intendedSubscriptions.name')}</label>
-                        </div><br/>
-                        <br id="element-vor-target-dropdown"/>
-
-                        <g:select class="ui search selection dropdown"
-                                  id="subscription"
-                                  name="targetSubscriptionId"
-                                  from="${availableSubscriptions}"
-                                  optionValue="${{ it.dropdownNamingConvention() }}"
-                                  optionKey="id"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </div>
 
                     <div class="field">
@@ -539,9 +534,10 @@
     <g:javascript>
 
     function adjustDropdown() {
+        var status = $("#status").val();
         var showActiveSubs = $("input[name='show.activeSubscriptions'").prop('checked');
         var showIntendedSubs = $("input[name='show.intendedSubscriptions'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?showActiveSubs='+showActiveSubs+'&showIntendedSubs='+showIntendedSubs+'&format=json'
+        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&format=json'
 
         $.ajax({
             url: url,

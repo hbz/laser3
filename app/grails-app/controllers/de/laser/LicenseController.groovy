@@ -1121,8 +1121,8 @@ class LicenseController
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
 
-        result.allObjects_readRights = licenseService.getMyLicenses_readRights()
-        result.allObjects_writeRights = licenseService.getMyLicenses_writeRights()
+        result.allObjects_readRights = licenseService.getMyLicenses_readRights([status: RDStore.LICENSE_CURRENT.id])
+        result.allObjects_writeRights = licenseService.getMyLicenses_writeRights([status: RDStore.LICENSE_CURRENT.id])
 
         List<String> licTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
                                                 CalculatedType.TYPE_ADMINISTRATIVE]

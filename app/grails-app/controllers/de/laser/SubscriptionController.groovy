@@ -3970,7 +3970,7 @@ class SubscriptionController
 
         if (params.copyObject) {result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)}
 
-        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights()
+        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
         result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
@@ -4100,8 +4100,8 @@ class SubscriptionController
             response.sendError(401); return
         }
 
-        result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights()
-        result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights()
+        result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:

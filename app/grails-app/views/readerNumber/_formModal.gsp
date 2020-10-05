@@ -18,7 +18,6 @@
             RefdataValue group = RefdataValue.getByValueAndCategory(groupConst,RDConstants.NUMBER_TYPE)
             if(group)
                 referenceGroups << [id:group.id,value:group.getI10n("value"),expl:group.getI10n("expl")]
-            //else println "eee"
         }
     }
 %>
@@ -44,7 +43,7 @@
                         <laser:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER)}"
                                       optionKey="id" optionValue="value" required=""
-                                      value="${numbersInstance?.semester?.id}"/>
+                                      value="${semester}"/>
                     </g:if>
                     <g:elseif test="${withDueDate}">
                         <semui:datepicker label="readerNumber.dueDate.label" id="dueDate" name="dueDate"

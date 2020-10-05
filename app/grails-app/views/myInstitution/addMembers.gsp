@@ -56,7 +56,7 @@
         <g:form action="addMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name'], ['region', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow: [['name'], ['region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
