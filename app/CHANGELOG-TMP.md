@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-2900    05.10.2020  rc1.6               Moe     Feature     Auffälligkeiten Kopierdialog Vertrag / Vertrag kopieren / Schnellkopie
+2817    05.10.2020  rc1.6               Moe     Bug         Anbieterkontakte unter "Mein Adressbuch" nicht bearbeitbar 
+    
+2900    05.10.2020  rc1.6               Moe     Bug         Auffälligkeiten Kopierdialog Vertrag / Vertrag kopieren / Schnellkopie
 
 2904    05.10.2020  rc1.6               Andreas Bug         Cache wurde nicht überschrieben
 
