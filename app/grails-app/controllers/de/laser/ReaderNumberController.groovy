@@ -29,7 +29,7 @@ class ReaderNumberController extends AbstractDebugController {
 			flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
 			log.error(numbersInstance.errors.toString())
 		}
-		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid]
+		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid,tableA:params.tableA,tableB:params.tableB,sort:params.sort,order:params.order]
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -48,7 +48,7 @@ class ReaderNumberController extends AbstractDebugController {
 			flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
 			log.error(numbersInstance.errors.toString())
 		}
-		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid]
+		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid,tableA:params.tableA,tableB:params.tableB,sort:params.sort,order:params.order]
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

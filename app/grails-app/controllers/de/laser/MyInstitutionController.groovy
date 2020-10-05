@@ -262,7 +262,7 @@ class MyInstitutionController extends AbstractDebugController {
         Map<String, Object> result = setResultGenerics()
         EhcacheWrapper cache = contextService.getCache("/license/filter/",ContextService.USER_SCOPE)
         if(cache && cache.get('licenseFilterCache')) {
-            if(!params.resetFilter)
+            if(!params.resetFilter && !params.filterSet)
                 params.putAll((GrailsParameterMap) cache.get('licenseFilterCache'))
             else params.remove('resetFilter')
             cache.remove('licenseFilterCache') //has to be executed in any case in order to enable cache updating

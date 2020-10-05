@@ -53,7 +53,7 @@ class SubscriptionService {
         Map<String,Object> result = [:]
         EhcacheWrapper cache = contextService.getCache("/subscriptions/filter/",ContextService.USER_SCOPE)
         if(cache && cache.get('subscriptionFilterCache')) {
-            if(!params.resetFilter)
+            if(!params.resetFilter && !params.isSiteReloaded)
                 params.putAll((GrailsParameterMap) cache.get('subscriptionFilterCache'))
             else params.remove('resetFilter')
             cache.remove('subscriptionFilterCache') //has to be executed in any case in order to enable cache updating

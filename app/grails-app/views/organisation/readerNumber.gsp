@@ -41,7 +41,7 @@
                 <table class="ui table celled sortable la-table">
                     <thead>
                         <tr>
-                            <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}"/>
+                            <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}" params="${[tableA:true]}"/>
                             <g:each in="${semesterCols}" var="column">
                                 <th>
                                     ${column}
@@ -84,7 +84,7 @@
                             <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">
-                                        <a role="button" class="ui icon button" data-semui="modal" href="#newForSemester${numbersInstance.getKey()}">
+                                        <a role="button" class="ui icon button" data-semui="modal" href="#newForSemester${numbersInstance.getKey().id}">
                                             <i class="write icon"></i>
                                         </a>
                                     </g:if>
@@ -93,7 +93,7 @@
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
-                                    <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey(),semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
+                                    <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
                                 </g:if>
                             </td>
                         </tr>
@@ -106,7 +106,7 @@
                 <table class="ui table celled sortable la-table">
                     <thead>
                         <tr>
-                            <g:sortableColumn property="dueDate" title="${message(code: 'readerNumber.dueDate.label')}"/>
+                            <g:sortableColumn property="dueDate" title="${message(code: 'readerNumber.dueDate.label')}" params="${[tableB:true]}"/>
                             <g:each in="${dueDateCols}" var="column">
                                 <th>${column}</th>
                             </g:each>
