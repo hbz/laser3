@@ -353,79 +353,6 @@ class AjaxController {
     }
   }
 
-    def getPropValues() {
-        Set result = []
-        if(params.oid != "undefined") {
-            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-            if(propDef) {
-                List<AbstractPropertyWithCalculatedLastUpdated> values
-                if(propDef.tenant) {
-                    switch(propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
-                            break
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                    }
-                }
-                else {
-                    switch(propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
-                            break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
-                            break
-                        /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
-                            break*/
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
-                            break
-                    }
-                }
-                if (values) {
-                    if (propDef.isIntegerType()) {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if(v.intValue != null)
-                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
-                        }
-                        result = result.sort { x, y -> x.text.compareTo y.text }
-                    }
-                    else if (propDef.isDateType()) {
-                        values.dateValue.findAll().unique().sort().reverse().each { v ->
-                            String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
-                            result.add([value: vt, text: vt])
-                        }
-                    }
-                    else if (propDef.isRefdataValueType()) {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if(v.getValue() != null)
-                                result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
-                        }
-                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
-                    }
-                    else {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if(v.getValue() != null)
-                                result.add([value:v.getValue(),text:v.getValue()])
-                        }
-                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
-                    }
-                }
-            }
-        }
-        //excepted structure: [[value:,text:],[value:,text:]]
-        withFormat {
-            json {
-                render result as JSON
-            }
-        }
-    }
-
     def sel2RefdataSearch() {
 
         log.debug("sel2RefdataSearch params: ${params}");
@@ -518,21 +445,6 @@ class AjaxController {
       }
     }
   }
-
-
-    @Secured(['ROLE_USER'])
-    def getGraphsForSubscription() {
-        Map<String,Object> result = [institution:contextService.org], options = JSON.parse(params.requestOptions)
-        if(params.costItem) {
-            Subscription entry = genericOIDService.resolveOID(params.subscription)
-            //get cost item groupings
-            result.putAll(financeService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
-            result.entry = entry
-            result.displayConfig = options.displayConfiguration
-        }
-        log.debug(result)
-        render view: '/myInstitution/_graphs', model: result
-    }
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
@@ -1533,51 +1445,6 @@ class AjaxController {
                 obj.delete(flush:true)
         }
     }
-
-  def getProvidersWithPrivateContacts() {
-    Map<String, Object> result = [:]
-    String fuzzyString = '%'
-    if(params.sSearch) {
-      fuzzyString+params.sSearch.trim().toLowerCase()+'%'
-    }
-
-      Map<String, Object> query_params = [
-              name: fuzzyString,
-              status: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
-      ]
-      String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
-      String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
-
-    def cq = Org.executeQuery(countQry,query_params);
-
-    def rq = Org.executeQuery(rowQry,
-            query_params,
-            [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
-
-    result.aaData = []
-    result.sEcho = params.sEcho
-    result.iTotalRecords = cq[0]
-    result.iTotalDisplayRecords = cq[0]
-    def currOrg = genericOIDService.resolveOID(params.oid)
-    List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.PERSON_CONTACT_TYPE_PERSONAL, currOrg)
-    LinkedHashMap personRoles = [:]
-    PersonRole.findAll().collect { prs ->
-      personRoles.put(prs.org,prs.prs)
-    }
-      rq.each { it ->
-        def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-        int ctr = 0;
-        LinkedHashMap row = [:]
-        String name = rowobj["name"]
-        if(personRoles.get(rowobj) && contacts.indexOf(personRoles.get(rowobj)) > -1)
-          name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
-        row["${ctr++}"] = name
-        row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
-        result.aaData.add(row)
-      }
-
-    render result as JSON
-  }
 
     def toggleEditMode() {
         log.debug ('toggleEditMode()')

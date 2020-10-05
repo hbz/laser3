@@ -24,6 +24,7 @@ class AjaxHtmlController {
 
     def addressbookService
     def contextService
+    def financeService
     def genericOIDService
     def taskService
 
@@ -34,6 +35,23 @@ class AjaxHtmlController {
         }
         result += '</p>'
         render result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getGraphsForSubscription() {
+        Map<String, Object> result = [institution:contextService.org]
+        def options = JSON.parse(params.requestOptions)
+
+        if (params.costItem) {
+            Subscription entry = (Subscription) genericOIDService.resolveOID(params.subscription)
+            //get cost item groupings
+            result.putAll(financeService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
+            result.entry = entry
+            result.displayConfig = options.displayConfiguration
+        }
+        log.debug(result)
+
+        render view: '/myInstitution/_graphs', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -101,7 +119,6 @@ class AjaxHtmlController {
 
         if (model.orgId && model.typeId) {
             String messageCode = 'addressFormModalLibraryAddress'
-
             if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {
                 messageCode = 'addressFormModalLegalPatronAddress'
             }
@@ -157,6 +174,7 @@ class AjaxHtmlController {
     def createPerson() {
         Map<String, Object> result = [:]
         Org contextOrg = contextService.getOrg()
+
         result.modalId = 'personModal'
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
