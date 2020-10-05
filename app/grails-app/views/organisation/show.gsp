@@ -476,10 +476,7 @@
         </div>
     </div>
     <aside class="four wide column la-sidekick">
-        <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_USER')}">
-            <g:render template="/templates/documents/card"
-                      model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
-        </g:if>
+        <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
     </aside>
 </div>
 </body>

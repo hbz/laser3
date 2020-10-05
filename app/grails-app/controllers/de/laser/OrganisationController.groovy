@@ -468,6 +468,7 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def setupBasicTestData() {
         Org targetOrg = Org.get(params.id)
@@ -832,6 +833,29 @@ class OrganisationController extends AbstractDebugController {
         render template: "/templates/documents/modal", model: result
     }
 
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def deleteDocuments() {
+        log.debug("deleteDocuments ${params}");
+
+        docstoreService.unifiedDeleteDocuments(params)
+
+        redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER")
+    })
+    def notes() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        result
+    }
+
     @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -872,16 +896,6 @@ class OrganisationController extends AbstractDebugController {
             }
         }
         redirect(url: request.getHeader('referer'))
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
