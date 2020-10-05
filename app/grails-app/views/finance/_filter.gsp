@@ -216,34 +216,21 @@
 
             <div class="three fields">
                 <div class="field">
-                    <semui:datepicker label="default.valid_on.label" id="filterCIValidOn" name="filterCIValidOn" placeholder="filter.placeholder"
-                                      value="${filterPresets?.filterCIValidOn}"/>
+                    <semui:datepicker label="default.valid_on.label" id="filterCIValidOn" name="filterCIValidOn" placeholder="filter.placeholder" value="${filterPresets?.filterCIValidOn}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.paid_from" id="filterCIPaidFrom" name="filterCIPaidFrom" placeholder="filter.placeholder"
-                                      value="${filterPresets?.filterCIPaidFrom}"/>
+                    <semui:datepicker label="financials.paid_from" id="filterCIPaidFrom" name="filterCIPaidFrom" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidFrom}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder"
-                                      value="${filterPresets?.filterCIPaidTo}"/>
+                    <semui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidTo}"/>
                 </div>
             </div>
 
             <div class="three fields">
-                <div class="field"><!-- here comes the new field for tax rate, see ERMS-1046 -->
-                <%--
-                <label for="filterCICategory">${message(code:'financials.costItemCategory')}</label>
-                <laser:select id="filterCICategory" class="ui dropdown selection"
-                              name="filterCICategory"
-                              from="${costItemCategory}"
-                              optionKey="${{it.class.getName() + ":" + it.id}}"
-                              optionValue="value"
-                              value="${filterPresets?.filterCICategory}"
-                              noSelection="${['':message(code:'default.select.all.label')]}"/>
-                --%>
-                    <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
+                <div class="field">
+                    <label for="filterCITaxType"><g:message code="financials.newCosts.taxTypeAndRate"/></label>
                     <%
                         List taxTypesList = []
                         CostItem.TAX_TYPES.every { taxType ->
@@ -262,7 +249,12 @@
                               value="${filterPresets?.filterCITaxType}"
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
-                <div class="field"></div>
+                <div class="field">
+                    <div class="ui checkbox">
+                        <label for="filterCIUnpaid"><g:message code="financials.costItemUnpaid"/></label>
+                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${params.filterCIUnpaid}">checked="checked"</g:if>>
+                    </div>
+                </div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}?reset=true" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                     <g:hiddenField name="showView" value="${showView}"/>
@@ -347,9 +339,18 @@
         });
     }
     $(document).ready(function(){
+        <g:if test="${params.filterCIUnpaid}">
+            $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
+        </g:if>
         setupDropdowns();
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year'
+        });
+        $("#filterCIUnpaid").change(function() {
+            if($(this).is(":checked"))
+                $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
+            else
+                $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",false);
         });
     });
 </r:script>

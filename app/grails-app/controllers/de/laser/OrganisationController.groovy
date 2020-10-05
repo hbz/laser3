@@ -1130,7 +1130,7 @@ class OrganisationController extends AbstractDebugController {
             params.orderA = params.order
         }
         else {
-            params.sortA = 'dueDate'
+            params.sortA = 'semester'
             params.orderA = 'desc'
         }
 
@@ -1139,11 +1139,9 @@ class OrganisationController extends AbstractDebugController {
             params.orderB = params.order
         }
         else {
-            params.sortB = 'semester'
+            params.sortB = 'dueDate'
             params.orderB = 'desc'
         }
-        params.remove('sort')
-        params.remove('order')
 
         Map<String,Map<String,ReaderNumber>> numbersWithSemester = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA]),"semester")
         Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")

@@ -73,7 +73,10 @@
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true]"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true]"/>
-                <th></th>
+                <%-- editable must be checked here as well because of the consortia preview! --%>
+                <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
+                    <th></th>
+                </g:if>
             </g:if>
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
@@ -89,7 +92,8 @@
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
+                <%-- editable must be checked here as well because of the consortia preview! --%>
+                <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
                     <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </g:if>
             </g:else>
@@ -109,9 +113,12 @@
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]"/>
             </g:if>
             <g:else>
-                <g:if test="${showView.contains("cons")}">
-                    <th colspan="9"></th>
+                <g:if test="${showView == "cons"}">
+                    <th colspan="10"></th>
                 </g:if>
+                <g:elseif test="${showView == "consAtSubscr"}">
+                    <th colspan="9"></th>
+                </g:elseif>
                 <g:elseif test="${showView == "subscr"}">
                     <th colspan="8"></th>
                 </g:elseif>
@@ -241,7 +248,7 @@
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
                     <g:if test="${editable}">
-                        <g:if test="${showView == "cons"}">
+                        <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
