@@ -1,4 +1,5 @@
-package com.k_int.kbplus
+package de.laser.titles
+
 
 import de.laser.RefdataValue
 import de.laser.exceptions.CreationException

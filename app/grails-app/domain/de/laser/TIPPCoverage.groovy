@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.TitleInstancePackagePlatform
+
 import de.laser.base.AbstractCoverage
 
 class TIPPCoverage extends AbstractCoverage {

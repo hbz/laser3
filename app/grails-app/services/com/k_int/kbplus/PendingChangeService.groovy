@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 
+import de.laser.IssueEntitlement
+import de.laser.PendingChange
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import de.laser.AuditConfig

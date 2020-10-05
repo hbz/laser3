@@ -1,3 +1,4 @@
+<%@ page import="de.laser.IssueEntitlement" %>
 <!doctype html>
 <html>
   <head>
@@ -62,8 +63,8 @@
 			      </tr>
 			      <tr>
 			      	<td><strong> Number of IEs</strong></td>
-			      	<td>${com.k_int.kbplus.IssueEntitlement.countByTipp(sourceTIPPObj)}</td>
-			      	<td>${com.k_int.kbplus.IssueEntitlement.countByTipp(targetTIPPObj)}</td>
+			      	<td>${IssueEntitlement.countByTipp(sourceTIPPObj)}</td>
+			      	<td>${IssueEntitlement.countByTipp(targetTIPPObj)}</td>
 			      </tr>
 			      </tbody>
 			      </table>

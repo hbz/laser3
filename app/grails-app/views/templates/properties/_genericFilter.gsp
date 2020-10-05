@@ -105,7 +105,7 @@
                     });
                 } else {
                     $.ajax({
-                        url: '<g:createLink controller="ajax" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value') + '&format=json',
+                        url: '<g:createLink controller="ajaxJson" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value'),
                         success: function (data) {
                             var select = '';
                             for (var index = 0; index < data.length; index++) {

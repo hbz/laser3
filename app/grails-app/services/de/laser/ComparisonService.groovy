@@ -1,10 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup

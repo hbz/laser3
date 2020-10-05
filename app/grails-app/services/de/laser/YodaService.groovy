@@ -5,11 +5,9 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.TitleHistoryEventParticipant
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleHistoryEventParticipant
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.exceptions.CleanupException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants

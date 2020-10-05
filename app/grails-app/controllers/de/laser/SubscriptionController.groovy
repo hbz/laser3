@@ -1,21 +1,18 @@
 package de.laser
 
-import com.k_int.kbplus.BookInstance
+import de.laser.titles.BookInstance
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.JournalInstance
+import de.laser.titles.JournalInstance
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.TitleInstance
-import com.k_int.kbplus.TitleInstancePackagePlatform
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
