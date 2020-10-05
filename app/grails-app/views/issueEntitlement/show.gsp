@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.helper.ConfigUtils; com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.BookInstance; com.k_int.kbplus.JournalInstance;" %>
+<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.ConfigUtils; com.k_int.kbplus.IssueEntitlement" %>
 <!doctype html>
 <html>
 <head>

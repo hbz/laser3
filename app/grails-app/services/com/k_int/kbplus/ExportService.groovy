@@ -12,6 +12,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.titles.BookInstance
 import grails.transaction.Transactional
 import groovy.time.TimeDuration
 import org.apache.poi.POIXMLProperties

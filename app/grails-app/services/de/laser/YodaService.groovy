@@ -5,7 +5,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.TitleHistoryEventParticipant
+import de.laser.titles.TitleHistoryEventParticipant
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.IssueEntitlement

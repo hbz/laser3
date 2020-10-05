@@ -1,4 +1,6 @@
-package com.k_int.kbplus
+package de.laser.titles
+
+import com.k_int.kbplus.TitleInstance
 
 class TitleHistoryEventParticipant {
 

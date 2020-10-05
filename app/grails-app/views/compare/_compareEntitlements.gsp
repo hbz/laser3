@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.TitleInstancePackagePlatform; com.k_int.kbplus.TitleInstance; de.laser.helper.RDStore; com.k_int.kbplus.BookInstance; com.k_int.kbplus.JournalInstance; de.laser.ApiSource; com.k_int.kbplus.TitleInstance" %>
+<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; com.k_int.kbplus.TitleInstancePackagePlatform; com.k_int.kbplus.TitleInstance; de.laser.helper.RDStore; de.laser.ApiSource" %>
 <laser:serviceInjection/>
 <semui:form>
     <table class="ui selectable celled table la-table la-ignore-fixed">
@@ -196,7 +196,7 @@
                                                       date="${ieValue.tipp.title.dateFirstOnline}"/>
 
                                     </g:if>
-                                    <g:elseif test="${ieValue.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
+                                    <g:elseif test="${ieValue.tipp.title instanceof JournalInstance}">
                                         <div class="ui cards">
                                             <g:each in="${ieValue.coverages}" var="covStmt">
                                                 <div class="ui card">

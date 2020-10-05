@@ -1,9 +1,9 @@
 package de.laser
 
-import com.k_int.kbplus.BookInstance
-import com.k_int.kbplus.DatabaseInstance
-import com.k_int.kbplus.JournalInstance
-import com.k_int.kbplus.TitleHistoryEvent
+import de.laser.titles.BookInstance
+import de.laser.titles.DatabaseInstance
+import de.laser.titles.JournalInstance
+import de.laser.titles.TitleHistoryEvent
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User

@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.BookInstance
+import de.laser.titles.BookInstance
 import com.k_int.kbplus.ContentItem
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org

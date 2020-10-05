@@ -1,5 +1,6 @@
+<%@ page import="de.laser.titles.BookInstance" %>
 <div class="la-icon-list">
-  <g:if test="${item.tipp.title instanceof com.k_int.kbplus.BookInstance}">
+  <g:if test="${item.tipp.title instanceof BookInstance}">
     <g:if test="${item.tipp.title.volume}">
       <div class="item">
         <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>

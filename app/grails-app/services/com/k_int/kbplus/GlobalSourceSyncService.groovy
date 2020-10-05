@@ -15,6 +15,11 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
+import de.laser.titles.BookInstance
+import de.laser.titles.DatabaseInstance
+import de.laser.titles.JournalInstance
+import de.laser.titles.TitleHistoryEvent
+import de.laser.titles.TitleHistoryEventParticipant
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren

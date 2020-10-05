@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform; de.laser.titles.BookInstance; com.k_int.kbplus.Org" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
