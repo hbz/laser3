@@ -1,9 +1,7 @@
 package de.laser.titles
 
-
-import de.laser.RefdataValue
 import de.laser.exceptions.CreationException
-import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -62,7 +60,7 @@ class BookInstance extends TitleInstance {
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('Book', RDConstants.TITLE_MEDIUM).getI10n('value')
+        RDStore.TITLE_TYPE_EBOOK.getI10n('value')
     }
 
     String getEbookFirstAutorOrFirstEditor(){

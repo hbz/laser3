@@ -53,9 +53,7 @@ class OrganisationService {
         log.debug("initMandatorySettings for org ${org.id}") //org.id call crashes when called from sync
 
         if (OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
-            OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
-            )
+            OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, RDStore.YN_NO)
         }
         if (OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY) == OrgSetting.SETTING_NOT_FOUND) {
             OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,'')
@@ -64,9 +62,7 @@ class OrganisationService {
             OrgSetting.add(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID, '')
         }
         if (OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
-            OrgSetting.add(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', RDConstants.Y_N)
-            )
+            OrgSetting.add(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, RDStore.YN_NO)
         }
 
         // called after

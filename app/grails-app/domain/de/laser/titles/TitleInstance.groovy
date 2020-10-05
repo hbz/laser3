@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import java.text.Normalizer
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 @Log4j
@@ -199,18 +200,18 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
   }
 
     def getInstitutionalCoverageSummary(institution, dateformat) {
-        getInstitutionalCoverageSummary(institution, dateformat, null);
+        getInstitutionalCoverageSummary(institution, dateformat, null)
     }
 
     def getInstitutionalCoverageSummary(institution, dateformat, date_restriction) {
-        def sdf = new java.text.SimpleDateFormat(dateformat)
-        def qry = """
+        SimpleDateFormat sdf = new SimpleDateFormat(dateformat)
+        String qry = """
 select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o 
   where ie.tipp.title = :title and o.org = :institution 
   AND (o.roleType.value = 'Subscriber' OR o.roleType.value = 'Subscriber_Consortial' OR o.roleType.value = 'Subscription Consortia') 
   AND ie.status.value != 'Deleted'
 """
-        def qry_params = ['title':this, institution:institution]
+        Map<String, Object> qry_params = [title:this, institution:institution]
 
         if ( date_restriction ) {
             qry += " AND (ie.subscription.startDate <= :date_restriction OR ie.subscription.startDate = null) AND (ie.subscription.endDate >= :date_restriction OR ie.subscription.endDate = null) "
@@ -241,7 +242,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
   static String generateSortTitle(String input_title) {
     if ( ! input_title ) return null;
 
-    def s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
+    String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
     s1 = s1.replaceFirst('^copy of ','')
     s1 = s1.replaceFirst('^the ','')
     s1 = s1.replaceFirst('^a ','')
@@ -253,7 +254,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
   static String generateNormTitle(String input_title) {
     if (!input_title) return null;
 
-    def result = input_title.replaceAll('&',' and ');
+    String result = input_title.replaceAll('&',' and ');
     result = result.trim();
     result = result.toLowerCase();
     result = alphanum.matcher(result).replaceAll("");
