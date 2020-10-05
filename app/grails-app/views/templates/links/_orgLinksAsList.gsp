@@ -42,7 +42,9 @@
                             <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
                                     data-confirm-how = "unlink">
-                                <i class="unlink icon"></i>
+                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
+                                    <i class="unlink icon"></i>
+                                </span>
                             </g:link>
                         </g:if>
 
@@ -54,7 +56,9 @@
 
                         <g:if test="${showPersons}">
                          <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
-                             <i class="address plus icon"></i>
+                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.addNewContact')}">
+                                 <i class="address plus icon"></i>
+                             </span>
                          </button>
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="['cssId': cssId,

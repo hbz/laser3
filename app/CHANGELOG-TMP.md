@@ -9,6 +9,18 @@
 
 2891    05.10.2020  hbz-dev             David               AjaxController restrukturieren
 
+2883    02.10.2020  rc1.6               Andreas Feature     Erklärungstexte bei Ver-/Entknüpfung von Anbietern eingefügt
+
+2872    02.10.2020  rc1.6               Andreas Feature     Mehrfachvergabe bei acht Vertragsmerkmalen aktiviert
+
+2820    02.10.2020  rc1.6               Andreas Bug         Vererbung wird bei Merkmalen wieder korrekt durchgeführt
+
+1043    02.10.2020  rc1.6               Andreas Feature     Filtermöglichkeit "Kosten ohne Zahlungsdatum" eingebaut
+
+2893    02.10.2020  rc1.6               Andreas Feature     weitere Bereinigungsabfrage
+
+2718    02.10.2020  rc1.6               Andreas Feature     Nachbestellungen Nutzerzahlensicht
+
 2899    01.10.2020  rc1.6               Andreas Bug         Prüfung auf Teilnehmerlizenzen bei Teilnehmer-Merkmale bearbeiten nachgereicht
 
 2893    01.10.2020  rc1.6               Andreas Feature     Bereinigung falsch ausgefüllter Nutzerzahlen

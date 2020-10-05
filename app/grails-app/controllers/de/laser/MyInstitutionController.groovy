@@ -3792,6 +3792,8 @@ join sub.orgRelations or_sub where
             case 'addressbook':
             case 'budgetCodes':
             case 'tasks':
+                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                break
             case 'surveyInfos':
                 isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
