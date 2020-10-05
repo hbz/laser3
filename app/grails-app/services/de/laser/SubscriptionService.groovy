@@ -431,7 +431,7 @@ class SubscriptionService {
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
-            if (params?.showSubscriber) {
+            if (params.showSubscriber) {
                 List parents = result.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
                 result.addAll(Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parents: parents, subscriberRoleTypes:subscriberRoleTypes]))
@@ -447,7 +447,7 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
-        if (params?.showConnectedObjs){
+        if (params.showConnectedObjs){
             result.addAll(linksGenerationService.getAllLinkedSubscriptions(result, contextService.user))
         }
         result.sort {it.dropdownNamingConvention()}
