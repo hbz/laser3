@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License" %>
+<%@ page import="com.k_int.kbplus.License; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.RefdataCategory" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -22,42 +22,32 @@
         <div class="ui field">
             <label for="selectedSubscriptions">${message(code: 'default.compare.subscriptions')}</label>
 
-            <div class="ui checkbox">
-                <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true"
-                            onchange="adjustDropdown()"/>
-                <label for="show.activeSubscriptions">${message(code: 'default.compare.show.activeSubscriptions.name')}</label>
-            </div><br/>
-
-            <div class="ui checkbox">
-                <g:checkBox name="show.intendedSubscriptions" value="intended" checked="false"
-                            onchange="adjustDropdown()"/>
-                <label for="show.intendedSubscriptions">${message(code: 'default.compare.show.intendedSubscriptions.name')}</label>
-            </div><br/>
+            <div class="field fieldcontain">
+                <label>${message(code: 'filter.status')}</label>
+                <laser:select class="ui dropdown" name="status" id="status"
+                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                              optionKey="id"
+                              optionValue="value"
+                              multiple="true"
+                              value="${RDStore.SUBSCRIPTION_CURRENT.id}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                              onchange="adjustDropdown()"/>
+            </div>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
-                    <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false"
+                    <g:checkBox name="show.subscriber" value="true" checked="false"
                                 onchange="adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                 </div><br/>
             </g:if>
             <div class="ui checkbox">
-                <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false"
+                <g:checkBox name="show.conntectedObjects" value="true" checked="false"
                             onchange="adjustDropdown()"/>
-                <label for="show.conntectedSubscriptions">${message(code: 'default.compare.show.conntectedSubscriptions.name')}</label>
+                <label for="show.conntectedObjects">${message(code: 'default.compare.show.conntectedObjects.name')}</label>
             </div>
-            <br id="element-vor-target-dropdown"/>
-
-            <select id="selectedSubscriptions" name="selectedObjects" multiple=""
-                    class="ui search selection multiple dropdown">
-                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                <g:each in="${availableSubscriptions.sort { it.dropdownNamingConvention() }}" var="sub">
-                    <option <%=(sub in objects) ? 'selected="selected"' : ''%>
-                    value="${sub.id}" ">
-                    ${sub.dropdownNamingConvention()}
-                    </option>
-                </g:each>
-            </select>
+            <br>
+            <br id="element-vor-target-dropdown" />
+            <br>
         </div>
 
         <div class="field">
@@ -98,12 +88,14 @@
 </g:if>
 
 <g:javascript>
+    $(document).ready(function(){
+       adjustDropdown()
+    });
     function adjustDropdown() {
-        var showActiveSubs = $("input[name='show.activeSubscriptions'").prop('checked');
-        var showIntendedSubs = $("input[name='show.intendedSubscriptions'").prop('checked');
+        var status = $( "select#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedSubs = $("input[name='show.conntectedSubscriptions'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustCompareSubscriptionList"/>'+'?showActiveSubs='+showActiveSubs+'&showIntendedSubs='+showIntendedSubs+'&showSubscriber='+showSubscriber+'&showConnectedSubs='+showConnectedSubs+'&format=json'
+        var showConnectedObjs = $("input[name='show.conntectedObjects'").prop('checked');
+        var url = '<g:createLink controller="ajax" action="adjustCompareSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
 
         $.ajax({
             url: url,

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License" %>
+<%@ page import="com.k_int.kbplus.License; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.RefdataCategory" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -21,24 +21,25 @@
         <div class="ui field">
             <label for="selectedLicenses">${message(code: 'default.compare.licenses')}</label>
 
-            <div class="ui checkbox">
-                <g:checkBox name="show.activeLicenses" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
-                <label for="show.activeLicenses">${message(code: 'default.compare.show.activeLicenses.name')}</label>
-            </div><br/>
-
-            <div class="ui checkbox">
-                <g:checkBox name="show.intendedLicenses" value="intended" checked="false" onchange="adjustDropdown()"/>
-                <label for="show.intendedLicenses">${message(code: 'default.compare.show.intendedLicenses.name')}</label>
-            </div><br/>
+        <label>${message(code: 'filter.status')}</label>
+        <laser:select class="ui dropdown" name="status" id="status"
+                      from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
+                      optionKey="id"
+                      optionValue="value"
+                      multiple="true"
+                      value="${RDStore.LICENSE_CURRENT.id}"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      onchange="adjustDropdown()"/>
+        </div<br/>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
-                    <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false"
+                    <g:checkBox name="show.subscriber" value="true" checked="false"
                                 onchange="adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                 </div><br/>
             </g:if>
         %{--<div class="ui checkbox">
-            <g:checkBox name="show.conntectedLicenses" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
+            <g:checkBox name="show.conntectedLicenses" value="true" checked="false" onchange="adjustDropdown()"/>
             <label for="show.conntectedLicenses">${message(code:'default.compare.show.conntectedLicenses.name')}</label>
         </div>--}%
             <br id="element-vor-target-dropdown"/>
@@ -84,11 +85,10 @@
 
 <g:javascript>
     function adjustDropdown() {
-        var showActiveLics = $("input[name='show.activeLicenses'").prop('checked');
-        var showIntendedLics = $("input[name='show.intendedLicenses'").prop('checked');
+        var status = $("#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedLics = $("input[name='show.conntectedLicenses'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustCompareLicenseList"/>'+'?showActiveLics='+showActiveLics+'&showIntendedLics='+showIntendedLics+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics+'&format=json'
+        var url = '<g:createLink controller="ajax" action="adjustCompareLicenseList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics+'&format=json'
 
         $.ajax({
             url: url,

@@ -400,25 +400,25 @@ class SubscriptionService {
         Org.executeQuery('select oo.org from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
     }
 
-    List getMySubscriptions_readRights(){
+    List getMySubscriptions_readRights(Map params){
         List result = []
         List tmpQ
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getSubscriptionsConsortiaQuery(null)
+            tmpQ = getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery(null)
+            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(null)
+            tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
            /* tmpQ = getSubscriptionsConsortialLicenseQuery()
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))*/
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(null)
+            tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         result
@@ -447,38 +447,38 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
-        if (params?.showConnectedSubs){
+        if (params?.showConnectedObjs){
             result.addAll(linksGenerationService.getAllLinkedSubscriptions(result, contextService.user))
         }
         result.sort {it.dropdownNamingConvention()}
     }
 
-    List getMySubscriptionsWithMyElements_readRights(){
+    List getMySubscriptionsWithMyElements_readRights(Map params){
         List result = []
         List tmpQ
 
         if(accessService.checkPerm("ORG_INST")) {
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery()
+            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery()
+            tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         }
         result
     }
 
-    List getMySubscriptionsWithMyElements_writeRights(){
+    List getMySubscriptionsWithMyElements_writeRights(Map params){
         List result = []
         List tmpQ
 
         if(accessService.checkPerm("ORG_INST")) {
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery()
+            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery()
+            tmpQ = getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
 

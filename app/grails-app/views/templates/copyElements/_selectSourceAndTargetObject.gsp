@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.RefdataCategory; com.k_int.kbplus.License" %>
 <laser:serviceInjection/>
 <g:if test="${! (sourceObject && targetObject)}">
     <% if (params){
@@ -21,34 +21,56 @@
             </div>
             <div class="eight wide field">
                 <label>${message(code: 'copyElementsIntoObject.targetObject.name', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}: </label>
-                <g:if test="${sourceObject instanceof com.k_int.kbplus.Subscription}">
-                    <div class="ui checkbox">
-                        <g:checkBox name="show.activeSubscriptions" value="nur aktive" checked="true" onchange="adjustDropdown()"/>
-                        <label for="show.activeSubscriptions">${message(code:'copyElementsIntoObject.show.activeSubscriptions.name')}</label>
-                    </div><br />
-                    <div class="ui checkbox">
-                        <g:checkBox name="show.intendedSubscriptions" value="intended" checked="false" onchange="adjustDropdown()"/>
-                        <label for="show.intendedSubscriptions">${message(code:'copyElementsIntoObject.show.intendedSubscriptions.name')}</label>
-                    </div><br />
+                <g:if test="${sourceObject instanceof Subscription}">
+                    <div class="field fieldcontain">
+                    <label>${message(code: 'filter.status')}</label>
+                        <laser:select class="ui dropdown" name="status" id="status"
+                                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  multiple="true"
+                                  value="${RDStore.SUBSCRIPTION_CURRENT.id}"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                  onchange="adjustDropdown()"/>
+                    </div<br />
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                     <div class="ui checkbox">
-                        <g:checkBox name="show.subscriber" value="auch Teilnehmerlizenzen" checked="false" onchange="adjustDropdown()" />
-                        <label for="show.subscriber">${message(code:'copyElementsIntoObject.show.subscriber.name')}</label>
+                        <g:checkBox name="show.subscriber" value="true" checked="false" onchange="adjustDropdown()" />
+                        <label for="show.subscriber">${message(code:'copyElementsIntoObject.show.subscriber.sub')}</label>
                     </div><br />
                     </g:if>
                     <div class="ui checkbox">
-                        <g:checkBox name="show.conntectedSubscriptions" value="auch verknüpfte Lizenzen" checked="false" onchange="adjustDropdown()"/>
-                        <label for="show.conntectedSubscriptions">${message(code:'copyElementsIntoObject.show.conntectedSubscriptions.name')}</label>
-                    </div><br id="element-vor-target-dropdown" />
+                        <g:checkBox name="show.conntectedObjects" value="true" checked="false" onchange="adjustDropdown()"/>
+                        <label for="show.conntectedObjects">${message(code:'copyElementsIntoObject.show.conntectedObjects.sub')}</label>
+                    </div>
                 </g:if>
-                <g:select class="ui search selection dropdown"
-                      id="targetObjectId"
-                      name="targetObjectId"
-                      from="${allObjects_writeRights}"
-                      optionValue="${{it.dropdownNamingConvention()}}"
-                      optionKey="${{genericOIDService.getOID(it)}}"
-                      value="${{genericOIDService.getOID(targetObject)}}"
-                      noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <g:if test="${sourceObject instanceof License}">
+                    <div class="field fieldcontain">
+                    <label>${message(code: 'filter.status')}</label>
+                    <laser:select class="ui dropdown" name="status" id="status"
+                                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  multiple="true"
+                                  value="${RDStore.LICENSE_CURRENT.id}"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                  onchange="adjustDropdown()"/>
+                    </div<br />
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <div class="ui checkbox">
+                            <g:checkBox name="show.subscriber" value="true" checked="false" onchange="adjustDropdown()" />
+                            <label for="show.subscriber">${message(code:'copyElementsIntoObject.show.subscriber.lic')}</label>
+                        </div><br />
+                    </g:if>
+                    <div class="ui checkbox">
+                        <g:checkBox name="show.conntectedObjects" value="true" checked="false" onchange="adjustDropdown()"/>
+                        <label for="show.conntectedObjects">${message(code:'copyElementsIntoObject.show.conntectedObjects.lic')}</label>
+                    </div>
+                </g:if>
+                <br>
+                <br id="element-vor-target-dropdown" />
+                <br>
+
             </div>
         </div>
         <div class="fields" style="justify-content: flex-end;">
@@ -64,15 +86,14 @@
     //     alert("Geladen")
     //     $("input[name='show.activeSubscriptions'").prop('checked', true);
     //     $("input[name='show.subscriber'").prop('checked', false);
-    //     $("input[name='show.conntectedSubscriptions'").prop('checked', false);
+    //     $("input[name='show.conntectedObjects'").prop('checked', false);
     // })
 
     function adjustDropdown() {
-        var showActiveSubs = $("input[name='show.activeSubscriptions'").prop('checked');
-        var showIntendedSubs = $("input[name='show.intendedSubscriptions'").prop('checked');
+        var status = $("#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedSubs = $("input[name='show.conntectedSubscriptions'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?valueAsOID=true&showActiveSubs='+showActiveSubs+'&showIntendedSubs='+showIntendedSubs+'&showSubscriber='+showSubscriber+'&showConnectedSubs='+showConnectedSubs+'&format=json'
+        var showConnectedObjs = $("input[name='show.conntectedObjects'").prop('checked');
+        var url = '<g:createLink controller="ajax" action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'+'?valueAsOID=true&status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
 
         $.ajax({
             url: url,
