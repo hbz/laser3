@@ -313,44 +313,18 @@ class MyInstitutionController extends AbstractDebugController {
             licenseFilterTable << "licensingConsortium"
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            base_qry = """from License as l where (
-                    exists ( select o from l.orgRelations as o where ( 
-                    ( o.roleType = :roleTypeC 
-                        AND o.org = :lic_org 
-                        AND l.instanceOf is null
-                        AND NOT exists (
-                        select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL
-                    )
-                )
-            )))"""
+            base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
             if(result.editable)
                 licenseFilterTable << "action"
         }
         else {
-            base_qry = """from License as l where (
-                exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
-            )"""
+            base_qry = "from License as l where exists ( select o from l.orgRelations as o where  o.roleType = :roleType AND o.org = :lic_org ) "
             qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
             licenseFilterTable << "licensingConsortium"
         }
         result.licenseFilterTable = licenseFilterTable
-
-        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-                    // + " or exists ( select s from Subscription as s where concat('${Subscription.class.name}:',s.id) in (select li.destination from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType) and genfunc_filter_matcher(s.name, :name_filter) = true ) " filter by subscription
-            + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-            + "   orgR.roleType in (:licRoleTypes) and ( "
-            + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-            + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-            + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-            + " ) ) ) " // filter by Lizenzgeber, Konsortium
-            +  " ")
-            qry_params += [name_filter:"${params['keyword-search']}"]
-            qry_params += [licRoleTypes: [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]]
-            result.keyWord = params['keyword-search']
-        }
 
         Set<String> subscriptionOIDs
         if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
@@ -391,18 +365,27 @@ class MyInstitutionController extends AbstractDebugController {
                 subscrQuery += " where "+subscrQueryFilter.join(" and ")
 
             subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
-            base_qry += " and ( exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.destination in (:subOIDs) and li.linkType = :linkType ) ) "
-            qry_params.linkType = RDStore.LINKTYPE_LICENSE
-            if(subscriptionOIDs)
-                qry_params.subOIDs = subscriptionOIDs
-            else qry_params.subOIDs = ['false'] //workaround against empty list
+            String subscrFilter = ""
+            if(subscriptionOIDs) {
+                subscrFilter = " or exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (:subscriptions) ) "
+                qry_params.subscriptions = subscriptionOIDs
+                qry_params.linkType = RDStore.LINKTYPE_LICENSE
+            }
+            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
+            if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || subscriptionOIDs) {
+                base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+                        + subscrFilter //filter by subscription
+                        + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+                        + "   orgR.roleType in (:licRoleTypes) and ( "
+                        + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                        + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                        + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                        + " ) ) ) ) ")
+                qry_params += [name_filter:"${params['keyword-search']}"]
+                qry_params += [licRoleTypes: [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]]
+                result.keyWord = params['keyword-search']
+            }
         }
-
-        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += " ) "
-        }
-
-
 
         if(params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
@@ -2424,34 +2407,6 @@ join sub.orgRelations or_sub where
         result
       }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def myPublicContacts() {
-        Map<String, Object> result = setResultGenerics()
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
-        params.org = result.institution
-
-        result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)
-        result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)
-
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
-        result.num_visiblePersons = visiblePersons.size()
-        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
-
-        if (visiblePersons){
-            result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
-        }
-
-        params.tab = params.tab ?: 'contacts'
-
-        result.addresses = Address.findAllByOrg(result.institution)
-
-        result
-      }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -3838,9 +3793,6 @@ join sub.orgRelations or_sub where
             case 'addressbook':
             case 'budgetCodes':
             case 'tasks':
-            case 'myPublicContacts':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-                break
             case 'surveyInfos':
                 isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break

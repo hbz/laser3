@@ -1,5 +1,5 @@
 <%@ page
-import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory"
+        import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory"
 %>
 
 <!doctype html>
@@ -22,12 +22,18 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
         <g:if test="${editable}">
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
 
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForInstitution');"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+                <a href="#createPersonModal" class="item" data-semui="modal"
+                   onclick="personCreate('contactPersonForInstitution');"><g:message
+                        code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
 
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForProviderAgency');"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
+            <a href="#createPersonModal" class="item" data-semui="modal"
+               onclick="personCreate('contactPersonForProviderAgency');"><g:message
+                    code="person.create_new.contactPersonForProviderAgency.label"/></a>
 
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPersonForPublic.label"/></a>
+            <a href="#createPersonModal" class="item" data-semui="modal"
+               onclick="personCreate('contactPersonForPublic');"><g:message
+                    code="person.create_new.contactPersonForPublic.label"/></a>
 
         </g:if>
 
@@ -99,6 +105,31 @@ import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.helper.RDConstant
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </div>
+
+        <div class="field">
+            <label>${message(code: 'person.filter.contactArt')}</label>
+
+            <div class="inline fields la-filter-inline">
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="showOnlyContactPersonForInstitution">${message(code: 'person.contactPersonForInstitution.label')}</label>
+                        <input id="showOnlyContactPersonForInstitution" name="showOnlyContactPersonForInstitution" type="checkbox"
+                               <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="showOnlyContactPersonForProviderAgency">${message(code: 'person.contactPersonForProviderAgency.label')}</label>
+                        <input id="showOnlyContactPersonForProviderAgency" name="showOnlyContactPersonForProviderAgency" type="checkbox"
+                               <g:if test="${params.subRunTime}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <div class="field la-field-right-aligned">
             <label></label>

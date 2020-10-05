@@ -322,23 +322,6 @@ class Identifier implements CalculatedLastUpdated {
         result
     }
 
-    // called from AjaxController.lookup2
-    static def refdataFind2(params) {
-        List<Map<String, Object>> result = []
-        if (params.q.contains(':')) {
-            String[] qp = params.q.split(':')
-            IdentifierNamespace namespace = IdentifierNamespace.findByNsIlike(qp[0])
-
-            if (namespace && qp.size() == 2) {
-                List<Identifier> ql = Identifier.findAllByNsAndValueIlike(namespace, "${qp[1]}%")
-                ql.each { id ->
-                    result.add([id: "${id.class.name}:${id.id}", text: "${id.value}"])
-                }
-            }
-        }
-        result
-    }
-
     // called from AjaxController.resolveOID2()
     @Deprecated
     // front end creation broken

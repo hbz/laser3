@@ -271,7 +271,7 @@
             return "${message(code:'select2.minChars.note')}";
         },
         ajax: { 
-            url: '<g:createLink controller='ajax' action='lookup'/>',
+            url: '<g:createLink controller='ajaxJson' action='lookup'/>',
             dataType: 'json',
             data: function (term, page) {
                 return {

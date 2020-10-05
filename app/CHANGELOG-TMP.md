@@ -7,6 +7,32 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2899    01.10.2020  rc1.6               Andreas Bug         Prüfung auf Teilnehmerlizenzen bei Teilnehmer-Merkmale bearbeiten nachgereicht
+
+2893    01.10.2020  rc1.6               Andreas Feature     Bereinigung falsch ausgefüllter Nutzerzahlen
+
+2698    01.10.2020  rc1.6               Moe     Feature     Verbesserung der Exportfunktion bei Umfragen
+
+2894    01.10.2020  rc1.6               Moe     Bug         Meine Elemente in andere Lizenz kopieren: Bug bei Merkmalen
+
+2896    01.10.2020  rc1.6               Moe     Bug         Elemente an andere Lizenz kopieren funktioniert nicht
+
+2811    01.10.2020  rc1.6               Moe     Feature     Lizenz/Vertrag kopieren momentan nur für ROLE_ADMIN, ROLE_YODA möglich
+
+2791    01.10.2020  rc1.6               Andreas Feature     Erklärungstest zur Global UID eingefügt
+
+2412    01.10.2020  rc1.6               Andreas Bug         verrutschte Spalten und Sicht in Kosteninformationen korrigert
+
+2892    30.09.2020  rc1.6               Andreas Bug         Lizenzklausel im Vertragsfilter umstrukturiert
+
+2886    30.09.2020  rc1.6               Andreas Bug         Controller-Änderung in Template nachgezogen
+
+2683    30.09.2020  rc1.6               Moe     Feature     Position
+
+2684    30.09.2020  rc1.6               Moe     Feature     Funktionen
+
+2075    30.09.2020  rc1.6               Moe     Feature     Kopier- und Löschmarkierungen für Identifikator-Kopieren einfügen
+
 2886    30.09.2020  hbz-dev             Andreas Bug         Lizenzen werden jetzt auch im globalen Aufgabenpanel geladen
 
 2762    30.09.2020  hbz-dev             Andreas Bug         Bugs im Reporting-Tool behoben

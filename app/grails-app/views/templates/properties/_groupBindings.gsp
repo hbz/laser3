@@ -71,7 +71,7 @@
                                                                editable:"${editable}",
                                                                showConsortiaFunctions:"${showConsortiaFunctions}"
                                                                 ]'
-                                                      onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
+                                                      onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       data-update="propDefGroupBindingConfig"
                                                       class="ui icon button">
                                             Nicht anzeigen
@@ -85,7 +85,7 @@
                                                                editable:"${editable}",
                                                                showConsortiaFunctions:"${showConsortiaFunctions}"
                                                                ]'
-                                                      onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
+                                                      onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       data-update="propDefGroupBindingConfig"
                                                       class="ui icon button">
                                             Anzeigen
@@ -100,7 +100,7 @@
                                                            editable:"${editable}",
                                                            showConsortiaFunctions:"${showConsortiaFunctions}"
                                                   ]'
-                                                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
+                                                  onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                   data-update="propDefGroupBindingConfig"
                                                   class="ui icon negative button">
                                         <i class="icon times"></i>

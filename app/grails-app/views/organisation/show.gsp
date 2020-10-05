@@ -319,7 +319,7 @@
 
                     <div class="ui la-float-right">
                         <g:if test="${((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                            <g:link action="myPublicContacts" controller="myInstitution" params="[tab: 'contacts']"
+                            <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
                     </div>
@@ -352,51 +352,52 @@
                                     </div>
                                 </div>
                             </g:if>
+                            <g:if test="${!isProviderOrAgency}">
+                                <div class="ui cards">
 
-                            <div class="ui cards">
-
-                                <%
-                                    Set<String> typeNames = new TreeSet<String>()
-                                    typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
-                                    typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
-                                    Map<String, List> typeAddressMap = [:]
-                                    orgInstance.addresses.each {
-                                        it.type.each { type ->
-                                            String typeName = type.getI10n('value')
-                                            typeNames.add(typeName)
-                                            List addresses = typeAddressMap.get(typeName) ?: []
-                                            addresses.add(it)
-                                            typeAddressMap.put(typeName, addresses)
+                                    <%
+                                        Set<String> typeNames = new TreeSet<String>()
+                                        typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
+                                        typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
+                                        Map<String, List> typeAddressMap = [:]
+                                        orgInstance.addresses.each {
+                                            it.type.each { type ->
+                                                String typeName = type.getI10n('value')
+                                                typeNames.add(typeName)
+                                                List addresses = typeAddressMap.get(typeName) ?: []
+                                                addresses.add(it)
+                                                typeAddressMap.put(typeName, addresses)
+                                            }
                                         }
-                                    }
-                                %>
-                                <g:each in="${typeNames}" var="typeName">
-                                    <div class="card">
-                                        <div class="content">
-                                            <div class="header">${typeName}</div>
+                                    %>
+                                    <g:each in="${typeNames}" var="typeName">
+                                        <div class="card">
+                                            <div class="content">
+                                                <div class="header">${typeName}</div>
 
-                                            <div class="description">
-                                                <div class="ui divided middle aligned list la-flex-list">
-                                                    <% List addresses = typeAddressMap.get(typeName) %>
-                                                    <g:each in="${addresses}" var="a">
-                                                        <g:if test="${a.org}">
-                                                            <g:render template="/templates/cpa/address" model="${[
-                                                                    hideAddressType     : true,
-                                                                    address             : a,
-                                                                    tmplShowDeleteButton: false,
-                                                                    controller          : 'org',
-                                                                    action              : 'show',
-                                                                    id                  : orgInstance.id,
-                                                                    editable            : false
-                                                            ]}"/>
-                                                        </g:if>
-                                                    </g:each>
+                                                <div class="description">
+                                                    <div class="ui divided middle aligned list la-flex-list">
+                                                        <% List addresses = typeAddressMap.get(typeName) %>
+                                                        <g:each in="${addresses}" var="a">
+                                                            <g:if test="${a.org}">
+                                                                <g:render template="/templates/cpa/address" model="${[
+                                                                        hideAddressType     : true,
+                                                                        address             : a,
+                                                                        tmplShowDeleteButton: false,
+                                                                        controller          : 'org',
+                                                                        action              : 'show',
+                                                                        id                  : orgInstance.id,
+                                                                        editable            : false
+                                                                ]}"/>
+                                                            </g:if>
+                                                        </g:each>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </g:each>
-                            </div>
+                                    </g:each>
+                                </div>
+                            </g:if>
                             </dd>
                         </dt>
                     </dl>

@@ -7,17 +7,22 @@ import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
+import de.laser.I10nTranslation
 import de.laser.Contact
 import de.laser.Person
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.base.AbstractI10n
+import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-
+import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
+import org.springframework.context.i18n.LocaleContextHolder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll'])
@@ -126,6 +131,26 @@ class AjaxJsonController {
         render result as JSON // TODO -> check response; remove unnecessary information! only id and value_<x>?
     }
 
+    def lookup() {
+        // fallback for static refdataFind calls
+        params.shortcode  = contextService.getOrg().shortcode
+
+        Map<String, Object> result = [values: []]
+        params.max = params.max ?: 40
+
+        GrailsClass domain_class = AppUtils.getDomainClass(params.baseClass)
+
+        if (domain_class) {
+            result.values = domain_class.getClazz().refdataFind(params)
+            result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text }
+        }
+        else {
+            log.error("Unable to locate domain class ${params.baseClass}")
+        }
+
+        render result as JSON
+    }
+
     @Secured(['ROLE_USER'])
     def lookupBudgetCodes() {
         render controlledListService.getBudgetCodes(params) as JSON
@@ -228,6 +253,38 @@ class AjaxJsonController {
             Map empty = [results: []]
             render empty as JSON
         }
+    }
+
+    def refdataSearchByOID() {
+        List result = []
+
+        def rdc = genericOIDService.resolveOID(params.oid)
+        if (rdc) {
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+            String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale
+
+            List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])
+
+            rq.each { RefdataValue it ->
+                if (it instanceof I10nTrait || it instanceof AbstractI10n) {
+                    result.add([value: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
+                }
+                else {
+                    String value = it.value
+                    if (value) {
+                        String no_ws = value.replaceAll(' ', '')
+                        String locale_text = message(code: "refdata.${no_ws}", default: "${value}")
+                        result.add([value: "${it.class.name}:${it.id}", text: "${locale_text}"])
+                    }
+                }
+            }
+        }
+        if (result) {
+            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
+            result.add([value: "${notSet.class.name}:${notSet.id}", text: "${notSet.getI10n('value')}"])
+        }
+
+        render result as JSON
     }
 
     def searchPropertyAlternativesByOID() {

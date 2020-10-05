@@ -122,7 +122,7 @@
                                                           data-confirm-term-how="inherit"
                                                           id="${prop.id}"
                                                           data-content="${message(code:'property.audit.off.tooltip')}"
-                                                          data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
+                                                          data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}','#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()"
                                                           data-update="${custom_props_div}"
                                                           role="button"
@@ -147,7 +147,7 @@
                                                           data-confirm-term-how="inherit"
                                                           id="${prop.id}"
                                                           data-content="${message(code:'property.audit.off.tooltip')}"
-                                                          data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
+                                                          data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}','#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()"
                                                           data-update="${custom_props_div}"
                                                           role="button"
@@ -173,7 +173,7 @@
                                                       data-content="${message(code:'property.audit.on.tooltip')}"
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="inherit"
-                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}"
                                                       role="button"
@@ -192,7 +192,7 @@
                                                                    propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                    showConsortiaFunctions: "${showConsortiaFunctions}",
                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
-                                                          data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                          data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
                                             <i class="icon eye la-js-editmode-icon"></i>
@@ -206,7 +206,7 @@
                                                                    propDefGroup: "${genericOIDService.getOID(propDefGroup)}",
                                                                    showConsortiaFunctions: "${showConsortiaFunctions}",
                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
-                                                          data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                          data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                           data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
                                             <i class="icon eye slash la-js-editmode-icon"></i>
@@ -231,7 +231,7 @@
                                                   id="${prop.id}"
                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                                   data-confirm-term-how="delete"
-                                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                   data-always="c3po.loadJsAfterAjax()"
                                                   data-update="${custom_props_div}"
                                                   role="button"
@@ -285,7 +285,7 @@
                                   class="ui form"
                                   data-update="${custom_props_div}"
                                   data-always="c3po.loadJsAfterAjax()"
-                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')">
 
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>

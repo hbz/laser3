@@ -481,15 +481,13 @@ class CopyElementsService {
             }
 
             if (params.list('copyObject.deleteIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
-                def toDeleteIdentifiers = []
-                params.list('copyObject.deleteIdentifierIds').each { identifier -> toDeleteIdentifiers << Long.valueOf(identifier) }
+                List<Identifier> toDeleteIdentifiers = params.list('copyObject.deleteIdentifierIds').collect { genericOIDService.resolveOID(it) }
                 deleteIdentifiers(toDeleteIdentifiers, targetObject, flash)
                 //isTargetSubChanged = true
             }
 
             if (params.list('copyObject.takeIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
-                def toCopyIdentifiers = []
-                params.list('copyObject.takeIdentifierIds').each { identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
+                List<Identifier> toCopyIdentifiers = params.list('copyObject.takeIdentifierIds').collect { genericOIDService.resolveOID(it) }
                 copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
                 //isTargetSubChanged = true
             }
@@ -815,10 +813,9 @@ class CopyElementsService {
         }
     }
 
-    void copyIdentifiers(Object sourceObject, List<String> toCopyIdentifiers, Object targetObject, def flash) {
-        toCopyIdentifiers.each { identifierId ->
+    void copyIdentifiers(Object sourceObject, List<Identifier> toCopyIdentifiers, Object targetObject, def flash) {
+        toCopyIdentifiers.each { sourceIdentifier ->
             def owner = targetObject
-            Identifier sourceIdentifier = Identifier.get(identifierId)
             IdentifierNamespace namespace = sourceIdentifier.ns
             String value = sourceIdentifier.value
 
@@ -830,9 +827,10 @@ class CopyElementsService {
         }
     }
 
-    void deleteIdentifiers(List<String> toDeleteIdentifiers, Object targetObject, def flash) {
-        int countDeleted = Identifier.executeUpdate('delete from Identifier i where i.id in (:toDeleteIdentifiers) and i.sub = :sub',
-                [toDeleteIdentifiers: toDeleteIdentifiers, sub: targetObject])
+    void deleteIdentifiers(List<Identifier> toDeleteIdentifiers, Object targetObject, def flash) {
+        String attr = Identifier.getAttributeName(targetObject)
+        int countDeleted = Identifier.executeUpdate('delete from Identifier i where i in (:toDeleteIdentifiers) and i.' + attr + ' = :reference',
+                [toDeleteIdentifiers: toDeleteIdentifiers, reference: targetObject])
         Object[] args = [countDeleted]
         flash.message += messageSource.getMessage('identifier.delete.success', args, locale)
     }
@@ -876,7 +874,7 @@ class CopyElementsService {
     }
 
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties) {
-        String classString = targetObject.getClass().toString() // TODO ERMS-2880
+        String classString = targetObject.getClass().toString() // TODO [ticket=2880]
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
         def targetProp
