@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2904    05.10.2020  rc1.6               Andreas Bug         Cache wurde nicht überschrieben
+
+2718    05.10.2020  rc1.6               Andreas Bug         Modal startete nicht immer, Sortierung der Tabelle repariert
+
 2883    02.10.2020  rc1.6               Andreas Feature     Erklärungstexte bei Ver-/Entknüpfung von Anbietern eingefügt
 
 2872    02.10.2020  rc1.6               Andreas Feature     Mehrfachvergabe bei acht Vertragsmerkmalen aktiviert

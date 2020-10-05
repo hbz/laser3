@@ -12,6 +12,8 @@
         case 'newForState': preloadGroups = ReaderNumber.CONSTANTS_STATE_LIBRARY
             break
     }
+    if(formId.contains("newForSemester"))
+        preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL
     List<Map<String,Object>> referenceGroups = []
     if(preloadGroups) {
         preloadGroups.each { String groupConst ->
@@ -24,8 +26,11 @@
 <semui:modal id="${formId}" text="${title}" isEditModal="${!formId.contains('new') ? formId : null}">
 
     <g:form class="ui form create_number" url="[controller: 'readerNumber', action: !formId.contains('new') ? 'edit' : 'create', id: numbersInstance ? numbersInstance.id : null]" method="POST">
-    <g:hiddenField name="orgid" value="${params.id}"/>
-
+        <g:hiddenField name="orgid" value="${params.id}"/>
+        <g:hiddenField name="tableA" value="${params.tableA}"/>
+        <g:hiddenField name="tableB" value="${params.tableB}"/>
+        <g:hiddenField name="sort" value="${params.sort}"/>
+        <g:hiddenField name="order" value="${params.order}"/>
             <div class="three fields">
                 <div class="field ten wide">
                     <label for="referenceGroup">
