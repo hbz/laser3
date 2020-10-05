@@ -6,6 +6,7 @@ import de.laser.base.AbstractBase
 import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
+import de.laser.titles.TitleInstance
 import groovy.time.TimeCategory
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

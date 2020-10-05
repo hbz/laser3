@@ -6,7 +6,7 @@ import com.k_int.kbplus.Package
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.SubscriptionPackage
 import de.laser.titles.TitleHistoryEventParticipant
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.TitleInstancePackagePlatform

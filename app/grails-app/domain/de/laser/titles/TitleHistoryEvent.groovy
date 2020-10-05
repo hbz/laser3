@@ -1,8 +1,6 @@
 package de.laser.titles
 
 
-import com.k_int.kbplus.TitleInstance
-
 import javax.persistence.Transient
 
 class TitleHistoryEvent {

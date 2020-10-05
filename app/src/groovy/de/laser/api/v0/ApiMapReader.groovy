@@ -66,7 +66,7 @@ class ApiMapReader {
         //result.additionalPlatforms  = getPlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
         result.identifiers          = ApiCollectionReader.getIdentifierCollection(tipp.ids)       // de.laser.Identifier
         result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
-        result.title                = ApiUnsecuredMapReader.getTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
+        result.title                = ApiUnsecuredMapReader.getTitleStubMap(tipp.title)       // de.laser.titles.TitleInstance
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {

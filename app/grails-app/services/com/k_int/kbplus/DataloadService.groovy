@@ -4,7 +4,6 @@ import de.laser.Doc
 import de.laser.DocContext
 import de.laser.FTControl
 import de.laser.Identifier
-import de.laser.RefdataValue
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.system.SystemEvent
@@ -12,6 +11,7 @@ import de.laser.Task
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
+import de.laser.titles.TitleInstance
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
@@ -152,15 +152,15 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.TitleInstance.class) { ti ->
+        updateES(TitleInstance.class) { ti ->
 
             def result = [:]
 
                 if (ti.title != null) {
-                    /*def new_key_title = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                    /*def new_key_title = de.laser.titles.TitleInstance.generateKeyTitle(ti.title)
                     if (ti.keyTitle != new_key_title) {
-                        ti.normTitle = com.k_int.kbplus.TitleInstance.generateNormTitle(ti.title)
-                        ti.keyTitle = com.k_int.kbplus.TitleInstance.generateKeyTitle(ti.title)
+                        ti.normTitle = de.laser.titles.TitleInstance.generateNormTitle(ti.title)
+                        ti.keyTitle = de.laser.titles.TitleInstance.generateKeyTitle(ti.title)
                         //
                         // This alone should trigger before update to do the necessary...
                         //

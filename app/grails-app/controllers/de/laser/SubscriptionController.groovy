@@ -14,7 +14,7 @@ import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait

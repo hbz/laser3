@@ -4,7 +4,7 @@ import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 import de.laser.titles.TitleHistoryEvent
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
@@ -83,8 +83,8 @@ class TitleController extends AbstractDebugController {
     // find all titles by n_title proposedTitle
     Map<String, Object> result = [:]
     if ( params.proposedTitle ) {
-      // def proposed_title_key = com.k_int.kbplus.TitleInstance.generateKeyTitle(params.proposedTitle)
-      // result.titleMatches=com.k_int.kbplus.TitleInstance.findAllByKeyTitle(proposed_title_key)
+      // def proposed_title_key = de.laser.titles.TitleInstance.generateKeyTitle(params.proposedTitle)
+      // result.titleMatches=de.laser.titles.TitleInstance.findAllByKeyTitle(proposed_title_key)
       String normalised_title = TitleInstance.generateNormTitle(params.proposedTitle)
       result.titleMatches = TitleInstance.findAllByNormTitleLike("${normalised_title}%")
     }

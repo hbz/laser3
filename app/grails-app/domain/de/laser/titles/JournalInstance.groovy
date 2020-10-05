@@ -1,6 +1,6 @@
 package de.laser.titles
 
-import com.k_int.kbplus.TitleInstance
+
 import de.laser.RefdataValue
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants

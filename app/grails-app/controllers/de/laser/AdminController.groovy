@@ -8,7 +8,7 @@ import com.k_int.kbplus.Package
 import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User

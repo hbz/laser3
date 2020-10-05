@@ -12,7 +12,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.User
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.ConfigUtils
@@ -20,7 +20,6 @@ import de.laser.helper.DateUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.helper.RDConstants
-import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional

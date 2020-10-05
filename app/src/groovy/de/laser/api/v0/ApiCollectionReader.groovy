@@ -294,7 +294,7 @@ class ApiCollectionReader {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
             if (it.title && (ApiReader.IGNORE_TITLE != ignoreRelationType)) {
-                tmp.title = ApiUnsecuredMapReader.getTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
+                tmp.title = ApiUnsecuredMapReader.getTitleStubMap(it.title) // de.laser.titles.TitleInstance
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -423,7 +423,7 @@ class ApiCollectionReader {
                         role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
                     }
                     if (it.title) {
-                        role.title = ApiStubReader.resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
+                        role.title = ApiStubReader.resolveTitleStub(it.title) // de.laser.titles.TitleInstance
                     }
                 }*/
             }

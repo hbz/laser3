@@ -16,7 +16,7 @@ import com.k_int.kbplus.Platform
 import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionProperty
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg

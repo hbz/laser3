@@ -1,5 +1,8 @@
-package com.k_int.kbplus
+package de.laser.titles
 
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.Identifier
 import de.laser.OrgRole
 import de.laser.PersonRole
@@ -7,7 +10,6 @@ import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import de.laser.titles.TitleHistoryEventParticipant
 import groovy.util.logging.Log4j
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
