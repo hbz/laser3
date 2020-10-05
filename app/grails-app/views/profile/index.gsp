@@ -97,7 +97,7 @@
 
     <div class="column wide eight">
 
-        <div class="ui segment">
+        <div class="ui segment la-js-changePassword">
 
             <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_YODA'))}">
                 <g:img dir="images" file="yoda.gif" style="
@@ -120,15 +120,15 @@
 
                 <div class="field required">
                     <label>${message(code: 'profile.password.current')}</label>
-                    <input type="password" name="passwordCurrent" required class="pw"/>
+                    <input type="password" name="passwordCurrent"  class="pw"/>
                 </div>
                 <div class="field required">
                     <label>${message(code: 'profile.password.new')}</label>
-                    <input type="password" name="passwordNew" required class="pw pwn"/>
+                    <input type="password" name="passwordNew"  class="pw pwn"/>
                 </div>
                 <div class="field required">
                     <label>${message(code: 'profile.password.new.repeat')}</label>
-                    <input type="password" name="passwordNew2" required class="pw pwn"/>
+                    <input type="password" name="passwordNew2"  class="pw pwn"/>
                 </div>
                 <div class="field">
                     <label>${message(code: 'profile.password.show')}</label>
@@ -525,6 +525,44 @@
                                     {
                                         type   : 'empty',
                                         prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            }
+                         }
+                    });
+                    $('.la-js-changePassword .form')
+                            .form({
+                        on: 'change',
+                        inline: true,
+                        fields: {
+                            passwordCurrent: {
+                                identifier  : 'passwordCurrent',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
+                            passwordNew: {
+                                identifier  : 'passwordNew',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            },
+                            passwordNew2: {
+                                identifier  : 'passwordNew2',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    },
+                                    {
+                                        type: 'match[passwordNew]',
+                                        prompt : '{name} <g:message code="validation.mustMatch" default=" muss übereinstimmen" />'
                                     }
                                 ]
                             }
