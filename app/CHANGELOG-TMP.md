@@ -9,6 +9,18 @@
 
 2900    05.10.2020  rc1.6               Moe     Feature     Auffälligkeiten Kopierdialog Vertrag / Vertrag kopieren / Schnellkopie
 
+2904    05.10.2020  rc1.6               Andreas Bug         Cache wurde nicht überschrieben
+
+2718    05.10.2020  rc1.6               Andreas Bug         Modal startete nicht immer, Sortierung der Tabelle repariert
+
+2883    02.10.2020  rc1.6               Andreas Feature     Erklärungstexte bei Ver-/Entknüpfung von Anbietern eingefügt
+
+2872    02.10.2020  rc1.6               Andreas Feature     Mehrfachvergabe bei acht Vertragsmerkmalen aktiviert
+
+2820    02.10.2020  rc1.6               Andreas Bug         Vererbung wird bei Merkmalen wieder korrekt durchgeführt
+
+1043    02.10.2020  rc1.6               Andreas Feature     Filtermöglichkeit "Kosten ohne Zahlungsdatum" eingebaut
+
 2893    02.10.2020  rc1.6               Andreas Feature     weitere Bereinigungsabfrage
 
 2718    02.10.2020  rc1.6               Andreas Feature     Nachbestellungen Nutzerzahlensicht

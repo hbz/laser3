@@ -202,7 +202,6 @@ class RDStore {
 
     public static final PRS_POS_ACCOUNT     = getRefdataValue('Account Manager', RDConstants.PERSON_POSITION)
     public static final PRS_POS_BBL     = getRefdataValue('Bereichsbibliotheksleitung', RDConstants.PERSON_POSITION)
-    public static final PRS_POS_BA     = getRefdataValue('Bestandsaufbau,Bestandsaufbau', RDConstants.PERSON_POSITION)
     public static final PRS_POS_DIREKTION     = getRefdataValue('Direktion', RDConstants.PERSON_POSITION)
     public static final PRS_POS_DIREKTION_ASS     = getRefdataValue('Direktionsassistenz', RDConstants.PERSON_POSITION)
     public static final PRS_POS_EA     = getRefdataValue('Erwerbungsabteilung', RDConstants.PERSON_POSITION)
