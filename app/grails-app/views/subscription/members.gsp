@@ -110,7 +110,7 @@
             <%
                 List<List<String>> tmplConfigShow
                 if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                    tmplConfigShow = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
                 else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
                     tmplConfigShow = [['name', 'identifier'], ['property']]
             %>
@@ -235,7 +235,12 @@
                             <g:link controller="subscription" action="show" id="${navPrevSubMember.id}"><i class="arrow left icon"></i></g:link>
                         </g:if>
                         <g:elseif test="${(navPrevSubscription?.size() > 0) && navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org)}">
-                            <g:link controller="subscription" action="linkNextPrevMemberSub" id="${subscriptionInstance.id}" params="[prev: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow left icon grey"></i></g:link>
+                            <g:link controller="subscription" class="ui icon js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.linkPrevMemberSub")}"
+                                    data-confirm-term-how="ok"
+                                    action="linkNextPrevMemberSub"
+                                    id="${subscriptionInstance.id}"
+                                    params="[prev: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow left icon grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
@@ -245,7 +250,12 @@
                             <g:link controller="subscription" action="show" id="${navNextSubMember.id}"><i class="arrow right icon"></i></g:link>
                         </g:if>
                         <g:elseif test="${(navNextSubscription?.size() > 0) && navNextSubscription[0].getDerivedSubscriptionBySubscribers(org)}">
-                            <g:link controller="subscription" action="linkNextPrevMemberSub" id="${subscriptionInstance.id}" params="[next: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
+                            <g:link controller="subscription" class="ui icon js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.linkNextMemberSub")}"
+                                    data-confirm-term-how="ok"
+                                    action="linkNextPrevMemberSub"
+                                    id="${subscriptionInstance.id}"
+                                    params="[next: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">

@@ -42,6 +42,7 @@ class AjaxController {
     CompareService compareService
     LinksGenerationService linksGenerationService
     FinanceService financeService
+    LicenseService licenseService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -2130,17 +2131,17 @@ class AjaxController {
     def adjustSubscriptionList(){
         List<Subscription> data
         List result = []
-        boolean showActiveSubs = params.showActiveSubs == 'true'
-        boolean showIntendedSubs = params.showIntendedSubs == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedSubs = params.showConnectedSubs == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
         queryParams.status = []
-        if (showActiveSubs) { queryParams.status << RDStore.SUBSCRIPTION_CURRENT.id }
-        if (showIntendedSubs) { queryParams.status << RDStore.SUBSCRIPTION_INTENDED.id }
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
 
         queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedSubs = showConnectedSubs
+        queryParams.showConnectedObjs = showConnectedObjs
 
         data = subscriptionService.getMySubscriptions_writeRights(queryParams)
 
@@ -2163,20 +2164,55 @@ class AjaxController {
         }
     }
 
+    def adjustLicenseList(){
+        List<Subscription> data
+        List result = []
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
+        Map queryParams = [:]
+        queryParams.status = []
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedObjs = showConnectedObjs
+
+        data =  licenseService.getMyLicenses_writeRights(queryParams)
+
+
+        if(data) {
+            if(params.valueAsOID){
+                data.each { License l ->
+                    result.add([value: genericOIDService.getOID(l), text: l.dropdownNamingConvention()])
+                }
+            }else {
+                data.each { License l ->
+                    result.add([value: l.id, text: l.dropdownNamingConvention()])
+                }
+            }
+        }
+        withFormat {
+            json {
+                render result as JSON
+            }
+        }
+    }
+
     def adjustCompareSubscriptionList(){
         List<Subscription> data
         List result = []
-        boolean showActiveSubs = params.showActiveSubs == 'true'
-        boolean showIntendedSubs = params.showIntendedSubs == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedSubs = params.showConnectedSubs == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        queryParams.status = []
-        if (showActiveSubs) { queryParams.status << RDStore.SUBSCRIPTION_CURRENT.id }
-        if (showIntendedSubs) { queryParams.status << RDStore.SUBSCRIPTION_INTENDED.id }
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
 
         queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedSubs = showConnectedSubs
+        queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
 
@@ -2188,7 +2224,7 @@ class AjaxController {
             }
         }
 
-        if (showConnectedSubs){
+        if (showConnectedObjs){
             data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.user))
         }
 
@@ -2196,7 +2232,10 @@ class AjaxController {
             data.each { Subscription s ->
                 result.add([value: s.id, text: s.dropdownNamingConvention()])
             }
+
+            result.sort{it.text}
         }
+
         withFormat {
             json {
                 render result as JSON
@@ -2207,14 +2246,13 @@ class AjaxController {
     def adjustCompareLicenseList(){
         List<License> data
         List result = []
-        boolean showActiveLics = params.showActiveLics == 'true'
-        boolean showIntendedLics = params.showIntendedLics == 'true'
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
-        queryParams.status = []
-        if (showActiveLics) { queryParams.status << RDStore.LICENSE_CURRENT.id }
-        if (showIntendedLics) { queryParams.status << RDStore.LICENSE_INTENDED.id }
+        if(params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+
+        }
 
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedLics = showConnectedLics
@@ -2237,6 +2275,7 @@ class AjaxController {
             data.each { License l ->
                 result.add([value: l.id, text: l.dropdownNamingConvention()])
             }
+            result.sort{it.text}
         }
         withFormat {
             json {

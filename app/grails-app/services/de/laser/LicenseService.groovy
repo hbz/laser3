@@ -10,43 +10,43 @@ class LicenseService {
     AccessService accessService
     ContextService contextService
 
-    List<License> getMyLicenses_readRights(){
+    List<License> getMyLicenses_readRights(Map params){
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getLicensesConsortiaQuery()
+            tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getLicensesConsortialLicenseQuery()
+            tmpQ = getLicensesConsortialLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getLicensesLocalLicenseQuery()
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = getLicensesLocalLicenseQuery()
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
         result
     }
 
-    List<License> getMyLicenses_writeRights(){
+    List<License> getMyLicenses_writeRights(Map params){
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getLicensesConsortiaQuery()
+            tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getLicensesConsortialLicenseQuery()
+            tmpQ = getLicensesConsortialLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getLicensesLocalLicenseQuery()
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = getLicensesLocalLicenseQuery()
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
         result.sort {it.dropdownNamingConvention()}
@@ -54,7 +54,8 @@ class LicenseService {
 
 
     //Konsortialverträge
-    private List getLicensesConsortiaQuery() {
+    private List getLicensesConsortiaQuery(Map params) {
+        Map qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org]
         String base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
@@ -66,25 +67,60 @@ class LicenseService {
                 )
             )))"""
 
-        return [ base_qry, [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org] ]
+            if (params.status) {
+
+                if(params.status instanceof List){
+                    base_qry += " and l.status.id in (:status) "
+                    qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+                }else {
+                    base_qry += " and l.status.id = :status "
+                    qry_params.put('status', (params.status as Long))
+                }
+            }
+
+        return [base_qry, qry_params]
     }
 
     //Teilnehmerverträge
-    private List getLicensesConsortialLicenseQuery() {
+    private List getLicensesConsortialLicenseQuery(Map params) {
+        Map qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org]
         String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType  AND o.org = :lic_org ) ) 
             )"""
 
-        return [ base_qry, [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org] ]
+        if (params.status) {
+
+            if(params.status instanceof List){
+                base_qry += " and l.status.id in (:status) "
+                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+            }else {
+                base_qry += " and l.status.id = :status "
+                qry_params.put('status', (params.status as Long))
+            }
+        }
+
+        return [ base_qry, qry_params ]
     }
 
     //Lokalverträge
-    private List getLicensesLocalLicenseQuery() {
+    private List getLicensesLocalLicenseQuery(Map params) {
+        Map qry_params = [roleType: RDStore.OR_LICENSEE, lic_org: contextService.org]
         String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
 
-        return [ base_qry, [roleType: RDStore.OR_LICENSEE, lic_org: contextService.org] ]
+        if (params.status) {
+
+            if(params.status instanceof List){
+                base_qry += " and l.status.id in (:status) "
+                qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
+            }else {
+                base_qry += " and l.status.id = :status "
+                qry_params.put('status', (params.status as Long))
+            }
+        }
+
+        return [ base_qry, qry_params ]
     }
 
     List getVisibleOrgRelations(License license) {
