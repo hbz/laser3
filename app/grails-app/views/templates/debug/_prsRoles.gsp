@@ -17,7 +17,7 @@
                     <td>${c+1}</td>
                     <td>
                         <g:if test="${role.prs}">
-                            <g:link controller="person" action="show" id="${role.prs.id}">${role.prs}</g:link>
+                            ${role.prs}
                         </g:if>
                     </td>
                     <td>

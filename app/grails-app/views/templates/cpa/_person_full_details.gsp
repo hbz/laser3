@@ -6,12 +6,12 @@
         <div class="ui item person-details">
             <div class="content la-space-right">
                 <h5 class="ui header">
-                    <g:link controller="person" action="show" id="${person.id}">
+
                         ${person.title}
                         ${person.first_name}
                         ${person.middle_name}
                         ${person.last_name}
-                    </g:link>
+
                 </h5>
             </div>
 

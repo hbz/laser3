@@ -65,7 +65,7 @@
                         <g:elseif test="${obj instanceof de.laser.base.AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
                                 <i class="icon address book la-list-icon"></i>
-                                <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp;${obj.owner?.last_name}</g:link>
+                                <${obj.owner?.first_name}&nbsp;${obj.owner?.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">
                                 <i class="icon clipboard outline la-list-icon"></i>

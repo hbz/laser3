@@ -3,12 +3,12 @@
 
         <div class="ui item person-details">
             <h5 class="ui header">
-                <g:link controller="person" action="show" id="${person?.id}">
+
                     ${person?.title}
                     ${person?.first_name}
                     ${person?.middle_name}
                     ${person?.last_name}
-                </g:link>
+
             </h5>
 
         </div><!-- .person-details -->
@@ -49,12 +49,12 @@
         <div class="ui item person-details">
             <div class="content la-space-right">
                 <h5 class="ui header">
-                    <g:link controller="person" action="show" id="${personRole?.prs?.id}">
+
                         ${personRole?.prs?.title}
                         ${personRole?.prs?.first_name}
                         ${personRole?.prs?.middle_name}
                         ${personRole?.prs?.last_name}
-                    </g:link>
+
                 </h5>
                 <g:if test="${personRole?.functionType}">
                     (${personRole?.functionType?.getI10n('value')})

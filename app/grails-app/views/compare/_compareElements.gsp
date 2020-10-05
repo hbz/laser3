@@ -171,8 +171,7 @@
                                           data-position="top right">
                                         <i class="address card icon"></i>
                                     </span>
-                                    <g:link controller="person" action="show"
-                                            id="${resp.id}">${resp}</g:link>
+                                    ${resp}
                                     (<strong><i
                                         class="university icon"></i>&nbsp${role.roleType.getI10n("value")}:
                                 </strong>
@@ -190,8 +189,7 @@
                                           data-position="top right">
                                         <i class="address card outline icon"></i>
                                     </span>
-                                    <g:link controller="person" action="show"
-                                            id="${resp.id}">${resp}</g:link>
+                                    ${resp}
                                     (<strong><i
                                         class="university icon"></i>&nbsp${role.roleType.getI10n("value")}:
                                 </strong>

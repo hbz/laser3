@@ -196,25 +196,25 @@
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
                                     <div class="item">
-                                        <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
+                                        ${gcp}
                                         (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
                                     </div>
                                 </g:each>
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
                                     <div class="item">
-                                        <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
+                                        ${gcp}
                                         (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
                                     </div>
                                 </g:each>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
                                     <div class="item">
-                                        <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
+                                        ${sse}
                                         (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
                                     </div>
                                 </g:each>
                                 <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
                                     <div class="item">
-                                        <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
+                                        ${sse}
                                         (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
                                     </div>
                                 </g:each>

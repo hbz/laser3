@@ -141,14 +141,15 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def createPerson() {
         Map result = [:]
-        Org contextOrg = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
+        result.tenant = result.contextOrg
         result.modalId = 'personModal'
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
-        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
+        if(result.contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -175,13 +176,28 @@ class AjaxHtmlController {
                 }
 
                 break
+            case 'contactPersonForProviderAgencyPublic':
+                result.contactPersonForProviderAgencyPublic = true
+                result.isPublic    = true
+                result.presetFunctionType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                if(result.org){
+                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
+                    result.tenant = result.org
+                }else {
+                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
+                    result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                }
+
+                break
             case 'contactPersonForPublic':
                 result.isPublic    = true
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
         result.url = [controller: 'person', action: 'create']
-        result.contextOrg = contextService.getOrg()
+
 
         render template: "/templates/cpa/personFormModal", model: result
     }
