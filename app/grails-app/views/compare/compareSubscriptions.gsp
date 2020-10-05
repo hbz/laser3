@@ -41,9 +41,9 @@
                 </div><br/>
             </g:if>
             <div class="ui checkbox">
-                <g:checkBox name="show.conntectedObjects" value="true" checked="false"
+                <g:checkBox name="show.connectedObjects" value="true" checked="false"
                             onchange="adjustDropdown()"/>
-                <label for="show.conntectedObjects">${message(code: 'default.compare.show.conntectedObjects.name')}</label>
+                <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
             </div>
             <br>
             <br id="element-vor-target-dropdown" />
@@ -94,7 +94,7 @@
     function adjustDropdown() {
         var status = $( "select#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedObjs = $("input[name='show.conntectedObjects'").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
         var url = '<g:createLink controller="ajax" action="adjustCompareSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
 
         $.ajax({

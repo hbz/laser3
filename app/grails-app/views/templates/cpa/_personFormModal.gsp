@@ -13,10 +13,96 @@
 
         <div class="field">
             <div class="two fields">
+                <g:if test="${!isPublic}">
+                    <div class="field">
+                        <g:if test="${orgList}">
+                            <label for="personRoleOrg">
+                                <g:message code="contact.belongesTo.label"/>
+                            </label>
+                            <g:select class="ui search dropdown"
+                                      name="personRoleOrg"
+                                      from="${orgList}"
+                                      value="${org?.id}"
+                                      optionKey="id"
+                                      optionValue=""/>
+                        </g:if>
+                        <g:if test="${org}">
+                            <label for="personRoleOrg">
+                                <g:message code="contact.belongesTo.label"/>
+                            </label>
+                            ${org}
+                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org.id}"/>
+                        </g:if>
+                    %{--<g:else>
+                        <label for="personRoleOrg">
+                            <g:message code="contact.belongesTo.label"/>
+                        </label>
+                        <i class="icon university la-list-icon"></i>${org?.name}
+                        <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
+                    </g:else>--}%
+                    </div>
+                </g:if>
+
+            %{-- <g:if test="${actionName != 'myPublicContacts'}">
+                 <div class="field">
+                     <g:if test="${institution}">
+                         <label for="functionOrg">
+                             <g:message code="contact.belongesTo.label"/>
+                         </label>
+                         <g:select class="ui search dropdown"
+                                   name="functionOrg"
+                                   from="${orgList}"
+                                   value="${org?.id}"
+                                   optionKey="id"
+                                   optionValue=""/>
+                     </g:if>
+                     <g:else>
+                         <label for="functionOrg">
+                             <g:message code="contact.belongesTo.label"/>
+                         </label>
+                         <i class="icon university la-list-icon"></i>${org?.name}
+                         <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
+                     </g:else>
+                 </div>
+             </g:if>--}%
+
+            %{--<g:if test="${actionName != 'myPublicContacts'}">
+                <div class="field">
+
+                    <g:if test="${institution}">
+                        <label for="positionOrg">
+                            <g:message code="contact.belongesTo.label"/>
+                        </label>
+                        <g:select class="ui search dropdown"
+                                  name="positionOrg"
+                                  from="${orgList}"
+                                  value="${org?.id}"
+                                  optionKey="id"
+                                  optionValue=""/>
+                    </g:if>
+                    <g:else>
+                        <label for="positionOrg">
+                            <g:message code="contact.belongesTo.label"/>
+                        </label>
+                        <i class="icon university la-list-icon"></i>${org?.name}
+                        <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
+                    </g:else>
+                </div>
+            </g:if>--}%
+
+            </div>
+        </div><!-- .field -->
+
+        <div class="field">
+            <div class="two fields">
 
                 <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
                     <label for="last_name">
                         <g:message code="person.last_name.label"/>
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: 'person.last_name.info')}">
+                        <i class="question circle icon"></i>
+                        </span>
                     </label>
                     <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
                 </div>
@@ -110,83 +196,7 @@
                 </div>
             </div><!-- .field -->
 
-            <div class="field">
-                <div class="two fields">
-                    <g:if test="${!isPublic}">
-                        <div class="field">
-                            <g:if test="${orgList}">
-                                <label for="personRoleOrg">
-                                    <g:message code="contact.belongesTo.label"/>
-                                </label>
-                                <g:select class="ui search dropdown"
-                                          name="personRoleOrg"
-                                          from="${orgList}"
-                                          value="${org?.id}"
-                                          optionKey="id"
-                                          optionValue=""/>
-                            </g:if>
-                            <g:if test="${org}">
-                                <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org.id}"/>
-                            </g:if>
-                        %{--<g:else>
-                            <label for="personRoleOrg">
-                                <g:message code="contact.belongesTo.label"/>
-                            </label>
-                            <i class="icon university la-list-icon"></i>${org?.name}
-                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
-                        </g:else>--}%
-                        </div>
-                    </g:if>
 
-                %{-- <g:if test="${actionName != 'myPublicContacts'}">
-                     <div class="field">
-                         <g:if test="${institution}">
-                             <label for="functionOrg">
-                                 <g:message code="contact.belongesTo.label"/>
-                             </label>
-                             <g:select class="ui search dropdown"
-                                       name="functionOrg"
-                                       from="${orgList}"
-                                       value="${org?.id}"
-                                       optionKey="id"
-                                       optionValue=""/>
-                         </g:if>
-                         <g:else>
-                             <label for="functionOrg">
-                                 <g:message code="contact.belongesTo.label"/>
-                             </label>
-                             <i class="icon university la-list-icon"></i>${org?.name}
-                             <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
-                         </g:else>
-                     </div>
-                 </g:if>--}%
-
-                %{--<g:if test="${actionName != 'myPublicContacts'}">
-                    <div class="field">
-
-                        <g:if test="${institution}">
-                            <label for="positionOrg">
-                                <g:message code="contact.belongesTo.label"/>
-                            </label>
-                            <g:select class="ui search dropdown"
-                                      name="positionOrg"
-                                      from="${orgList}"
-                                      value="${org?.id}"
-                                      optionKey="id"
-                                      optionValue=""/>
-                        </g:if>
-                        <g:else>
-                            <label for="positionOrg">
-                                <g:message code="contact.belongesTo.label"/>
-                            </label>
-                            <i class="icon university la-list-icon"></i>${org?.name}
-                            <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
-                        </g:else>
-                    </div>
-                </g:if>--}%
-
-                </div>
-            </div><!-- .field -->
         </g:if>
 
         <g:if test="${showContacts}">
@@ -219,6 +229,11 @@
                 <button type="button" id="removeContactElement" class="ui icon button">
                     <i class="minus red circle icon"></i>
                 </button>
+
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'person.contacts.add.button')}">
+                    <i class="question circle icon"></i>
+                </span>
 
                 <br>
                 <br>
@@ -274,6 +289,11 @@
                 <button type="button" id="removeAddressElement" class="ui icon button">
                     <i class="minus red circle icon"></i>
                 </button>
+
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'person.addresses.add.button')}">
+                    <i class="question circle icon"></i>
+                </span>
 
                 <br>
                 <br>

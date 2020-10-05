@@ -40,8 +40,8 @@
                     </div><br />
                     </g:if>
                     <div class="ui checkbox">
-                        <g:checkBox name="show.conntectedObjects" value="true" checked="false" onchange="adjustDropdown()"/>
-                        <label for="show.conntectedObjects">${message(code:'copyElementsIntoObject.show.conntectedObjects.sub')}</label>
+                        <g:checkBox name="show.connectedObjects" value="true" checked="false" onchange="adjustDropdown()"/>
+                        <label for="show.connectedObjects">${message(code:'copyElementsIntoObject.show.connectedObjects.sub')}</label>
                     </div>
                 </g:if>
                 <g:if test="${sourceObject instanceof License}">
@@ -63,8 +63,8 @@
                         </div><br />
                     </g:if>
                     <div class="ui checkbox">
-                        <g:checkBox name="show.conntectedObjects" value="true" checked="false" onchange="adjustDropdown()"/>
-                        <label for="show.conntectedObjects">${message(code:'copyElementsIntoObject.show.conntectedObjects.lic')}</label>
+                        <g:checkBox name="show.connectedObjects" value="true" checked="false" onchange="adjustDropdown()"/>
+                        <label for="show.connectedObjects">${message(code:'copyElementsIntoObject.show.connectedObjects.lic')}</label>
                     </div>
                 </g:if>
                 <br>
@@ -86,13 +86,13 @@
     //     alert("Geladen")
     //     $("input[name='show.activeSubscriptions'").prop('checked', true);
     //     $("input[name='show.subscriber'").prop('checked', false);
-    //     $("input[name='show.conntectedObjects'").prop('checked', false);
+    //     $("input[name='show.connectedObjects'").prop('checked', false);
     // })
 
     function adjustDropdown() {
         var status = $("#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedObjs = $("input[name='show.conntectedObjects'").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
         var url = '<g:createLink controller="ajax" action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'+'?valueAsOID=true&status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
 
         $.ajax({

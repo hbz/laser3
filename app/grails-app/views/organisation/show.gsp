@@ -41,7 +41,7 @@
         <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
     </semui:controlButtons>
 </g:if>
-${orgInstance.orgType.each{it.getAllValues()}}
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
