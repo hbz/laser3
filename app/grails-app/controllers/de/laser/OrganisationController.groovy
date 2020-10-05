@@ -37,6 +37,7 @@ class OrganisationController extends AbstractDebugController {
     def userService
     def accessPointService
     FormService formService
+    TaskService taskService
 
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def index() {
@@ -615,6 +616,12 @@ class OrganisationController extends AbstractDebugController {
         return
       }
 
+        pu.setBenchmark('tasks')
+
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
+        Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.institution)
+        result << preCon
+
         pu.setBenchmark('properties')
 
         result.authorizedOrgs = result.user?.authorizedOrgs
@@ -799,6 +806,42 @@ class OrganisationController extends AbstractDebugController {
         }
         List bm = pu.stopBenchmark()
         result.benchMark = bm
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    def tasks() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (params.deleteId) {
+            Task dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
+                    dTask.delete()
+                    if(params.returnToShow)
+                        redirect action: 'show', id: params.id
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
+                }
+            }
+        }
+
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.orgInstance)
+        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.orgInstance)
+        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+
+        log.debug(result.taskInstanceList.toString())
         result
     }
 

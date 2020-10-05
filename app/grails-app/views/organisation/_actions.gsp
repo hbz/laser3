@@ -1,7 +1,7 @@
 <%@page import="de.laser.helper.RDStore; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+<g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
     <semui:actionsDropdown>
         <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
             <g:if test="${actionName == 'list'}">
@@ -16,6 +16,7 @@
             <g:if test="${actionName == 'show'}">
                 <semui:actionsDropdownItem data-semui="modal" href="#modalCreateTask" message="task.create.new"/>
                 <semui:actionsDropdownItem data-semui="modal" href="#modalCreateDocument" message="template.documents.add"/>
+                <semui:actionsDropdownItem data-semui="modal" href="#modalCreateNote" message="template.notes.add"/>
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
             <g:if test="${actionName == 'ids'}">
@@ -45,8 +46,8 @@
             </g:if>
 
         </g:if>
-        <g:if test="${actionName == 'documents'}">
-            <semui:actionsDropdownItem message="tasks.create.new" data-semui="modal" href="#modalCreateTask"/>
+        <g:if test="${actionName == 'tasks'}">
+            <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask"/>
         </g:if>
         <g:if test="${actionName == 'documents'}">
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument"/>
@@ -55,7 +56,6 @@
             <semui:actionsDropdownItem message="template.notes.add" data-semui="modal" href="#modalCreateNote"/>
         </g:if>
         <g:if test="${actionName == 'show'}">
-            <semui:actionsDropdownItem data-semui="modal" href="#modalCreateNote" message="template.notes.add"/>
             <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
                 <div class="divider"></div>
                 <g:link class="item" action="_delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.org')}</g:link>
@@ -63,6 +63,13 @@
         </g:if>
     </semui:actionsDropdown>
 </g:if>
+<g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+    <g:if test="${actionName in ['show','notes']}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem message="template.notes.add" data-semui="modal" href="#modalCreateNote"/>
+        </semui:actionsDropdown>
+    </g:if>
+</g:elseif>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>

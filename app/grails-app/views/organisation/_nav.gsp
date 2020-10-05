@@ -24,7 +24,7 @@
 
     <semui:securedSubNavItem controller="organisation" action="tasks" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
     <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />
-    <semui:securedSubNavItem controller="organisation" action="notes" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="default.notes.label"/>
+    <semui:subNavItem controller="organisation" action="notes" params="${[id: orgInstance.id]}" message="default.notes.label"/>
 
     <g:if test="${!inContextOrg}">
         <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.myAddressbook"/>
