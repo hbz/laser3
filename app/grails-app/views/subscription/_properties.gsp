@@ -29,7 +29,7 @@
 
                 <%--<r:script>
                     $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                     });
                 </r:script>--%>
             </div>
@@ -127,7 +127,7 @@
 
     <r:script>
     $(document).ready(function(){
-        c3po.initProperties("<g:createLink controller='ajax' action='lookup' params='[oid:"${subscriptionInstance.class.simpleName}:${subscriptionInstance.id}"]'/>", "#custom_props_div_props");
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${subscriptionInstance.class.simpleName}:${subscriptionInstance.id}"]'/>", "#custom_props_div_props");
     });
     </r:script>
 
@@ -148,7 +148,7 @@
 
             <r:script>
                     $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
                     });
             </r:script>
         </div>

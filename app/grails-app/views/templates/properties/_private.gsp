@@ -105,7 +105,7 @@
                                               id="${prop.id}"
                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                               data-confirm-term-how="delete"
-                                              data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                              data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
                                               data-always="c3po.loadJsAfterAjax()"
                                               data-update="${custom_props_div}"
                                               role="button"
@@ -132,7 +132,7 @@
                                       name="cust_prop_add_value_private"
                                       class="ui form"
                                       data-update="${custom_props_div}"
-                                      data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                      data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
                                       data-always="c3po.loadJsAfterAjax()"
                         >
                         <g:if test="${!(actionName.contains('survey') || controllerName.contains('survey'))}">

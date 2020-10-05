@@ -302,7 +302,7 @@
                                         withoutRender:  true]}"/>
                                 <script>
                                         $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajax'
+                                            c3po.initProperties("<g:createLink controller='ajaxJson'
                                                                                action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
                                         });
                                 </script>
