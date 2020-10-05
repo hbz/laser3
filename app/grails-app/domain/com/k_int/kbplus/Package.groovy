@@ -4,6 +4,7 @@ import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.OrgRole
+import de.laser.PendingChange
 import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform

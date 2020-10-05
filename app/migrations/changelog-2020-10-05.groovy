@@ -101,4 +101,14 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "kloberd (modified)", id: "1601896321308-11") {
+		grailsChange {
+			change {
+				sql.execute("update audit_log set old_value = replace(old_value, 'com.k_int.kbplus.PendingChange', 'de.laser.PendingChange') where old_value is not null")
+				sql.execute("update audit_log set new_value = replace(new_value, 'com.k_int.kbplus.PendingChange', 'de.laser.PendingChange') where new_value is not null")
+			}
+			rollback {}
+		}
+	}
 }

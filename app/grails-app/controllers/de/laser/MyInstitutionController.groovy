@@ -8,7 +8,6 @@ import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgProperty
 import com.k_int.kbplus.PackageService
-import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
 import com.k_int.kbplus.PersonProperty
 import com.k_int.kbplus.Platform

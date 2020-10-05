@@ -6,6 +6,7 @@ import de.laser.ChangeNotificationQueueItem
 import de.laser.ContextService
 import de.laser.Doc
 import de.laser.IssueEntitlement
+import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants

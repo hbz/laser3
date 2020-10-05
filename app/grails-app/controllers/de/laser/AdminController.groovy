@@ -4,7 +4,6 @@ import de.laser.titles.BookInstance
 import com.k_int.kbplus.ContentItem
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.PendingChangeService
 import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
