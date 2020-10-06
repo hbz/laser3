@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2910    06.10.2020  rc1.6               Moe     Bug         Fehlermeldung bei weiterer Funktion eines Kontaktes
+
+2907    06.10.2020  rc1.6               Moe     Feature     Umfrage: Renewal Export fehlende Angaben
+
+2908    06.10.2020  rc1.6               Moe     Feature     Umfrage: fehlende Angabe in Umfrage Sichten
+
 2911    06.10.2020  rc1.6               Andreas Bug         Einrichtungseinstellungen sind wieder aufrufbar
 
 2909    06.10.2020  rc1.6               Andreas Bug         Fächergruppen können wieder frei manipuliert werden
