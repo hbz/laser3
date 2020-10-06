@@ -3089,11 +3089,11 @@ class SubscriptionController
 
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
-        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
         result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscriptionInstance)
-        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         log.debug(result.taskInstanceList.toString())
