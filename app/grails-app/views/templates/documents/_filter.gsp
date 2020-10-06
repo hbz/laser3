@@ -1,8 +1,6 @@
-<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <%
-    List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
-                         RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
-                         RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)]
+    List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
     List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
 %>
 <semui:filter>

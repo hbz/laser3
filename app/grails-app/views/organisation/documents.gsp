@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDConstants" %>
+<%@page import="com.k_int.kbplus.*; de.laser.*; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
   <head>
@@ -10,9 +10,7 @@
   <laser:serviceInjection />
 
     <%
-      List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
-                           RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
-                           RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)]
+      List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
       List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
     %>
     <semui:breadcrumbs>

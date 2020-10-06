@@ -1454,13 +1454,13 @@ class AjaxController {
         def show = params.showEditMode
 
         if (show) {
-            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
+            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)
 
             if (show == 'true') {
-                setting.setValue(RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
+                setting.setValue(RDStore.YN_YES)
             }
             else if (show == 'false') {
-                setting.setValue(RefdataValue.getByValueAndCategory('No', RDConstants.Y_N))
+                setting.setValue(RDStore.YN_NO)
             }
         }
         render show
