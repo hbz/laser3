@@ -15,7 +15,7 @@
             <g:if test="${pr.org}">
                 <td>
                     <g:if test="${! pr.prs.isPublic}"><i class="address book outline icon"></i> </g:if>
-                    <g:link controller="person" action="show" id="${pr.prs.id}">${pr.prs}</g:link>
+                    ${pr.prs}
                 </td>
                 <g:if test="${tmplShowFunction}">
                     <td>

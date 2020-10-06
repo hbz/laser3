@@ -84,6 +84,9 @@
 </g:if>
 
 <g:javascript>
+ $(document).ready(function(){
+       adjustDropdown()
+    });
     function adjustDropdown() {
         var status = $("#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
