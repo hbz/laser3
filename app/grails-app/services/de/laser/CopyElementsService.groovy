@@ -1152,7 +1152,7 @@ class CopyElementsService {
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
                         if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                             def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
-                            if (list?.size() > 0) {
+                            if (list.size() > 0) {
                                 // mich gibts schon! Fehlermeldung ausgeben!
                                 Object[] args = [ie.tipp.title.title]
                                 flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
@@ -1210,7 +1210,7 @@ class CopyElementsService {
         entitlementsToTake.each { ieToTake ->
             if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
                 def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
-                if (list?.size() > 0) {
+                if (list.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
                     flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)

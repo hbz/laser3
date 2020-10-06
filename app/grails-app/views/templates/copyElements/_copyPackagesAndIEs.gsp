@@ -53,7 +53,7 @@
                 <g:set var="excludes"
                        value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
-                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</strong>
+                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages.size()}</strong>
                     <g:each in="${sourceObject.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
@@ -69,7 +69,7 @@
 
                                 <div class="ui accordion">
                                     <div class="title"><i
-                                            class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies ? ies.size() : ""}
+                                            class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
                                     </div>
 
                                     <div class="content">
@@ -144,7 +144,7 @@
 
 
                 <td name="subscription.takePackages.target">
-                    <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages?.size()}</strong>
+                    <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages.size()}</strong>
 
                     <g:each in="${targetObject?.packages?.sort { it.pkg.name }}" var="sp">
                         <div class="la-copyPack-container la-element">
@@ -159,7 +159,7 @@
 
                                 <div class="ui accordion">
                                     <div class="title"><i
-                                            class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies ? ies.size() : ""}
+                                            class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
                                     </div>
 
                                     <div class="content">
