@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.BookInstance; com.k_int.kbplus.Package; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Package; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
 
 <%-- r:require module="annotations" --%>
 
@@ -409,7 +409,7 @@
                                                       date="${ie.tipp.title.dateFirstOnline}"/>
 
                                     </g:if>
-                                    <g:elseif test="${ie.tipp.title instanceof com.k_int.kbplus.JournalInstance}">
+                                    <g:elseif test="${ie.tipp.title instanceof JournalInstance}">
                                         <%
                                             Map<String, Object> paramData = [issueEntitlement: ie.id]
                                             if(params.sort && params.order) {

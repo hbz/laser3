@@ -3,6 +3,7 @@ package de.laser.ajax
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -121,6 +122,10 @@ class AjaxController {
             format:'map'
     ]
   ]
+
+    def test() {
+        render 'test()'
+    }
 
     def genericDialogMessage() {
 
@@ -349,144 +354,6 @@ class AjaxController {
     }
   }
 
-    /**
-     * Copied legacy sel2RefdataSearch(), but uses OID.
-     *
-     * @return
-     */
-    def refdataSearchByOID() {
-        def result = []
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-        def rdc = genericOIDService.resolveOID(params.oid)
-
-        def config = [
-                domain:'RefdataValue',
-                countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
-                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}' order by rdv.order, rdv.value_" + locale,
-                qryParams:[],
-                cols:['value'],
-                format:'simple'
-        ]
-
-        def query_params = []
-        config.qryParams.each { qp ->
-            if (qp?.clos) {
-                query_params.add(qp.clos(params[qp.param]?:''));
-            }
-            else if(qp?.value) {
-                params."${qp.param}" = qp?.value
-            }
-            else {
-                query_params.add(params[qp.param]);
-            }
-        }
-
-        def cq = RefdataValue.executeQuery(config.countQry, query_params);
-        def rq = RefdataValue.executeQuery(config.rowQry,
-                query_params,
-                [max:params.iDisplayLength?:1000, offset:params.iDisplayStart?:0]);
-
-        rq.each { it ->
-            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-
-            if ( it instanceof I10nTrait ) {
-                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
-            }
-            else if ( it instanceof AbstractI10n ) {
-                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
-            }
-            else {
-                def objTest = rowobj[config.cols[0]]
-                if (objTest) {
-                    def no_ws = objTest.replaceAll(' ','');
-                    def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
-                    result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
-                }
-            }
-        }
-
-        if(result) {
-            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
-            result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
-//            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-        }
-
-        render result as JSON
-    }
-
-    def getPropValues() {
-        Set result = []
-        if(params.oid != "undefined") {
-            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-            if(propDef) {
-                List<AbstractPropertyWithCalculatedLastUpdated> values
-                if(propDef.tenant) {
-                    switch(propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
-                            break
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                    }
-                }
-                else {
-                    switch(propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
-                            break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
-                            break
-                        /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
-                            break
-                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
-                            break*/
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
-                            break
-                    }
-                }
-                if (values) {
-                    if (propDef.isIntegerType()) {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if(v.intValue != null)
-                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
-                        }
-                        result = result.sort { x, y -> x.text.compareTo y.text }
-                    }
-                    else if (propDef.isDateType()) {
-                        values.dateValue.findAll().unique().sort().reverse().each { v ->
-                            String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
-                            result.add([value: vt, text: vt])
-                        }
-                    }
-                    else if (propDef.isRefdataValueType()) {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if(v.getValue() != null)
-                                result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
-                        }
-                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
-                    }
-                    else {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if(v.getValue() != null)
-                                result.add([value:v.getValue(),text:v.getValue()])
-                        }
-                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
-                    }
-                }
-            }
-        }
-        //excepted structure: [[value:,text:],[value:,text:]]
-        withFormat {
-            json {
-                render result as JSON
-            }
-        }
-    }
-
     def sel2RefdataSearch() {
 
         log.debug("sel2RefdataSearch params: ${params}");
@@ -579,34 +446,6 @@ class AjaxController {
       }
     }
   }
-
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptionsLicenses() {
-    Map result = [results:[]]
-    result.results.addAll(controlledListService.getSubscriptions(params).results)
-    result.results.addAll(controlledListService.getLicenses(params).results)
-    render result as JSON
-  }
-
-  @Secured(['ROLE_USER'])
-  def lookupSubscriptions_IndendedAndCurrent() {
-      params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
-      render controlledListService.getSubscriptions(params) as JSON
-  }
-
-    @Secured(['ROLE_USER'])
-    def getGraphsForSubscription() {
-        Map<String,Object> result = [institution:contextService.org], options = JSON.parse(params.requestOptions)
-        if(params.costItem) {
-            Subscription entry = genericOIDService.resolveOID(params.subscription)
-            //get cost item groupings
-            result.putAll(financeService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
-            result.entry = entry
-            result.displayConfig = options.displayConfiguration
-        }
-        log.debug(result)
-        render view: '/myInstitution/_graphs', model: result
-    }
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
@@ -873,7 +712,7 @@ class AjaxController {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
-            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO ERMS-2880
+            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO [ticket=2880]
                 if (params.refdatacategory) {
 
                     Map<String, Object> map = [
@@ -1489,7 +1328,7 @@ class AjaxController {
     private setDashboardDueDateIsHidden(boolean isHidden){
         log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.institution = contextService.org
         flash.error = ''
@@ -1541,7 +1380,7 @@ class AjaxController {
     private setDashboardDueDateIsDone(boolean isDone){
         log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
 
-        def result = [:]
+        Map<String, Object> result = [:]
         result.user = contextService.user
         result.institution = contextService.org
         flash.error = ''
@@ -1586,43 +1425,6 @@ class AjaxController {
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
-    /*
-  @Deprecated
-  def coreExtend(){
-    log.debug("ajax::coreExtend:: ${params}")
-    def tipID = params.tipID
-    try{
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-      def startDate = sdf.parse(params.coreStartDate)
-      def endDate = params.coreEndDate? sdf.parse(params.coreEndDate) : null
-      if(tipID && startDate){
-        def tip = TitleInstitutionProvider.get(tipID)
-        log.debug("Extending tip ${tip.id} with start ${startDate} and end ${endDate}")
-        tip.extendCoreExtent(startDate, endDate)
-        params.message = message(code:'ajax.coreExtend.success')
-      }
-    }catch (Exception e){
-        log.error("Error while extending core dates",e)
-        params.message = message(code:'ajax.coreExtend.error')
-    }
-    redirect(action:'getTipCoreDates',controller:'ajax',params:params)
-  }
-
-  @Deprecated
-  def getTipCoreDates(){
-    log.debug("ajax::getTipCoreDates:: ${params}")
-    def tipID = params.tipID ?:params.id
-    def tip = null
-    if(tipID) tip = TitleInstitutionProvider.get(tipID);
-    if(tip){
-      def dates = tip.coreDates
-      log.debug("Returning ${dates}")
-      request.setAttribute("editable",params.editable?:true)
-      render(template: "/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);
-    }
-  }
-     */
-
     def delete() {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
@@ -1645,101 +1447,6 @@ class AjaxController {
         }
     }
 
-    @Secured(['ROLE_USER'])
-    def deleteCoreDate(){
-    log.debug("ajax:: deleteCoreDate::${params}")
-    def date = CoreAssertion.get(params.coreDateID)
-    if(date) date.delete(flush:true)
-    redirect(action:'getTipCoreDates',controller:'ajax',params:params)
-  }
-
-  def getProvidersWithPrivateContacts() {
-    Map<String, Object> result = [:]
-    String fuzzyString = '%'
-    if(params.sSearch) {
-      fuzzyString+params.sSearch.trim().toLowerCase()+'%'
-    }
-
-      Map<String, Object> query_params = [
-              name: fuzzyString,
-              status: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
-      ]
-      String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
-      String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
-
-    def cq = Org.executeQuery(countQry,query_params);
-
-    def rq = Org.executeQuery(rowQry,
-            query_params,
-            [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
-
-    result.aaData = []
-    result.sEcho = params.sEcho
-    result.iTotalRecords = cq[0]
-    result.iTotalDisplayRecords = cq[0]
-    def currOrg = genericOIDService.resolveOID(params.oid)
-    List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.PERSON_CONTACT_TYPE_PERSONAL, currOrg)
-    LinkedHashMap personRoles = [:]
-    PersonRole.findAll().collect { prs ->
-      personRoles.put(prs.org,prs.prs)
-    }
-      rq.each { it ->
-        def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-        int ctr = 0;
-        LinkedHashMap row = [:]
-        String name = rowobj["name"]
-        if(personRoles.get(rowobj) && contacts.indexOf(personRoles.get(rowobj)) > -1)
-          name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
-        row["${ctr++}"] = name
-        row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
-        result.aaData.add(row)
-      }
-
-    render result as JSON
-  }
-
-  def lookup() {
-      // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg().shortcode
-
-    // log.debug("AjaxController::lookup ${params}");
-    Map<String, Object> result = [:]
-    params.max = params.max ?: 40
-
-    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
-    if ( domain_class ) {
-      result.values = domain_class.getClazz().refdataFind(params);
-      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-    }
-    else {
-      log.error("Unable to locate domain class ${params.baseClass}");
-      result.values=[]
-    }
-    //result.values = [[id:'Person:45',text:'Fred'],
-    //                 [id:'Person:23',text:'Jim'],
-    //                 [id:'Person:22',text:'Jimmy'],
-    //                 [id:'Person:3',text:'JimBob']]
-    render result as JSON
-  }
-
-  // used only from IdentifierTabLib.formAddIdentifier
-  def lookup2() {
-      // fallback for static refdataFind calls
-      params.shortcode  = contextService.getOrg().shortcode
-
-    Map<String, Object> result = [:]
-    GrailsClass domain_class = AppUtils.getDomainClass( params.baseClass )
-    if (domain_class) {
-      result.values = domain_class.getClazz().refdataFind2(params);
-      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
-    }
-    else {
-      log.error("Unable to locate domain class ${params.baseClass}");
-      result.values=[]
-    }
-    render result as JSON
-  }
-
     def toggleEditMode() {
         log.debug ('toggleEditMode()')
 
@@ -1747,13 +1454,13 @@ class AjaxController {
         def show = params.showEditMode
 
         if (show) {
-            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
+            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)
 
             if (show == 'true') {
-                setting.setValue(RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))
+                setting.setValue(RDStore.YN_YES)
             }
             else if (show == 'false') {
-                setting.setValue(RefdataValue.getByValueAndCategory('No', RDConstants.Y_N))
+                setting.setValue(RDStore.YN_NO)
             }
         }
         render show
@@ -1865,12 +1572,13 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
   }
     
-  def resolveOID2(oid) {
-    def oid_components = oid.split(':')
-    def result = null
-    GrailsClass domain_class = AppUtils.getDomainClass( oid_components[0] )
-    if ( domain_class ) {
-      if ( oid_components[1]=='__new__' ) {
+  def resolveOID2(String oid) {
+    String[] oid_components = oid.split(':')
+    def result
+
+    GrailsClass domain_class = AppUtils.getDomainClass(oid_components[0])
+    if (domain_class) {
+      if (oid_components[1] == '__new__') {
         result = domain_class.getClazz().refdataCreate(oid_components)
         // log.debug("Result of create ${oid} is ${result?.id}");
       }
@@ -1897,60 +1605,6 @@ class AjaxController {
     redirect(url: request.getHeader('referer'))
 
   }
-
-    @Secured(['ROLE_USER'])
-    def getEmailAddresses() {
-        Set result = []
-        if (params.orgIdList){
-            List<Long> orgIds = (params.orgIdList.split( ',')).each { (it instanceof Long) ? it : Long.parseLong(it)}
-            List<Org> orgList = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds)
-            
-            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
-            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
-
-            List<RefdataValue> selectedRoleTypes = null
-            if (params.selectedRoleTypIds) {
-                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split ','
-                selectedRoleTypes = selectedRoleTypIds.isEmpty() ? [] : RefdataValue.findAllByIdInList(selectedRoleTypIds)
-            }
-
-            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
-            Map queryParams = [orgs: orgList]
-
-            if (showPublicContactEmails && showPrivateContactEmails){
-                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
-                queryParams << [ctx: contextService.org]
-            } else {
-                if (showPublicContactEmails){
-                    query += "and p.isPublic = true "
-                } else if (showPrivateContactEmails){
-                    query += "and (p.isPublic = false and p.tenant = :ctx) "
-                    queryParams << [ctx: contextService.org]
-                } else {
-                    return [] as JSON
-                }
-            }
-
-            if (selectedRoleTypes) {
-                query += "and pr.functionType in (:selectedRoleTypes) "
-                queryParams << [selectedRoleTypes: selectedRoleTypes]
-//                selectedRoleTypes.eachWithIndex{ it, index ->
-//                    query += "and pr.functionType = :r${index} "
-//                    queryParams << ["r${index}": it]
-//                }
-            }
-
-            List<Person> persons = Person.executeQuery(query, queryParams)
-
-            if (persons){
-                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
-                        [persons: persons, contentType: RDStore.CCT_EMAIL])
-            }
-
-        }
-
-        render result as JSON
-    }
 
     @Secured(['ROLE_USER'])
     def editableSetValue() {
@@ -2084,10 +1738,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        User user = resolveOID2(params.user);
-        Role role = resolveOID2(params.role);
+        User user = resolveOID2(params.user)
+        Role role = resolveOID2(params.role)
         if (user && role) {
-            com.k_int.kbplus.auth.UserRole.remove(user,role,true);
+            UserRole.remove(user,role,true)
         }
         redirect(url: request.getHeader('referer'))
     }

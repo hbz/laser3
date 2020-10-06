@@ -5,7 +5,6 @@ import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
@@ -744,11 +743,11 @@ class LicenseController
 
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
-        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
         result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.license)
-        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         log.debug(result.taskInstanceList.toString())

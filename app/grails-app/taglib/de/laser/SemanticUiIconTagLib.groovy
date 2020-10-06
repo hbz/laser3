@@ -1,8 +1,8 @@
 package de.laser
 
-import com.k_int.kbplus.BookInstance
-import com.k_int.kbplus.DatabaseInstance
-import com.k_int.kbplus.JournalInstance
+import de.laser.titles.BookInstance
+import de.laser.titles.DatabaseInstance
+import de.laser.titles.JournalInstance
 
 class SemanticUiIconTagLib {
     static namespace = "semui"

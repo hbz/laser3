@@ -1,8 +1,7 @@
-package com.k_int.kbplus
+package de.laser.titles
 
-import de.laser.RefdataValue
 import de.laser.exceptions.CreationException
-import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 
 class DatabaseInstance extends TitleInstance{
 
@@ -24,6 +23,6 @@ class DatabaseInstance extends TitleInstance{
     }
 
     String printTitleType() {
-        RefdataValue.getByValueAndCategory('Database', RDConstants.TITLE_MEDIUM).getI10n('value')
+        RDStore.TITLE_TYPE_DATABASE.getI10n('value')
     }
 }

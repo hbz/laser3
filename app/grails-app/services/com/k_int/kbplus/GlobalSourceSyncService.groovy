@@ -2,9 +2,12 @@ package com.k_int.kbplus
 
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
+import de.laser.IssueEntitlement
 import de.laser.OrgRole
+import de.laser.PendingChange
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
@@ -15,6 +18,12 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
+import de.laser.titles.BookInstance
+import de.laser.titles.DatabaseInstance
+import de.laser.titles.JournalInstance
+import de.laser.titles.TitleHistoryEvent
+import de.laser.titles.TitleHistoryEventParticipant
+import de.laser.titles.TitleInstance
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren

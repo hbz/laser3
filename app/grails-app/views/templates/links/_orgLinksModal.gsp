@@ -38,7 +38,7 @@
         oOrTable = $('#org_role_tab_${tmplModalID}').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
-            "sAjaxSource": "<g:createLink controller="ajax" action="getProvidersWithPrivateContacts" id="${ajaxID}" params="${[oid:"${contextOrg.class.name}:${contextOrg.id}"]}"/>",
+            "sAjaxSource": "<g:createLink controller="ajaxJson" action="getProvidersWithPrivateContacts" id="${ajaxID}" params="${[oid:"${contextOrg.class.name}:${contextOrg.id}"]}"/>",
             "bServerSide": true,
             "bProcessing": true,
             "bDestroy":    true,

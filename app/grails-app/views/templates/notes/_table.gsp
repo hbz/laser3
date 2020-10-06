@@ -33,7 +33,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${instance?.showUIShareButton()}">
+                        <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                     <g:link controller="ajax" action="toggleShare" class="ui icon button green"

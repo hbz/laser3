@@ -34,13 +34,11 @@
 </semui:debugInfo>
 
 <g:render template="breadcrumb"
-          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
+          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-<g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ORG_EDITOR,ROLE_ADMIN')}">
-    <semui:controlButtons>
-        <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
-    </semui:controlButtons>
-</g:if>
+<semui:controlButtons>
+    <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
+</semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
@@ -467,10 +465,7 @@
         </div>
     </div>
     <aside class="four wide column la-sidekick">
-        <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_USER')}">
-            <g:render template="/templates/documents/card"
-                      model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
-        </g:if>
+        <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
     </aside>
 </div>
 </body>

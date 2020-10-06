@@ -1,11 +1,11 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.Identifier
-import de.laser.RefdataValue
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.Platform
 import de.laser.base.AbstractBase
-import de.laser.TIPPCoverage
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
+import de.laser.titles.TitleInstance
 import groovy.time.TimeCategory
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

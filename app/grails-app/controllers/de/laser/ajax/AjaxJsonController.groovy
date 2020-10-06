@@ -1,21 +1,35 @@
 package de.laser.ajax
 
-import com.k_int.kbplus.IssueEntitlement
+import de.laser.IssueEntitlement
 import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseProperty
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgProperty
+import com.k_int.kbplus.PersonProperty
 import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformProperty
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
+import com.k_int.kbplus.SubscriptionProperty
 import com.k_int.kbplus.auth.User
+import de.laser.I10nTranslation
+import de.laser.Contact
+import de.laser.Person
+import de.laser.PersonRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.base.AbstractI10n
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-
+import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsClass
+import org.springframework.context.i18n.LocaleContextHolder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll'])
@@ -100,6 +114,121 @@ class AjaxJsonController {
         render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
     }
 
+    def getPropValues() {
+        List<Map<String, Object>> result = []
+
+        if (params.oid != "undefined") {
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+            if (propDef) {
+                List<AbstractPropertyWithCalculatedLastUpdated> values
+
+                if (propDef.tenant) {
+                    switch (propDef.descr) {
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                            break
+                        case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                            break
+                        case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                            break
+                        case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
+                            break
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                            break
+                    }
+                }
+                else {
+                    switch (propDef.descr) {
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                            break
+                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
+                            break
+                    /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        break
+                    case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
+                        break*/
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                            break
+                    }
+                }
+                if (values) {
+                    if (propDef.isIntegerType()) {
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
+                            if (v.intValue != null)
+                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+                        }
+                        result = result.sort { x, y -> x.text.compareTo(y.text) }
+                    }
+                    else if (propDef.isDateType()) {
+                        values.dateValue.findAll().unique().sort().reverse().each { v ->
+                            String vt = g.formatDate(formatName:"default.date.format.notime", date:v)
+                            result.add([value: vt, text: vt])
+                        }
+                    }
+                    else if (propDef.isRefdataValueType()) {
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
+                            if (v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.refValue.getI10n("value")])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase(y.text) }
+                    }
+                    else {
+                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
+                            if (v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.getValue()])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase(y.text) }
+                    }
+                }
+            }
+        }
+        //excepted structure: [[value:,text:],[value:,text:]]
+
+        render result as JSON
+    }
+
+    def getProvidersWithPrivateContacts() {
+        Map<String, Object> result = [:]
+        String fuzzyString = params.sSearch ? ('%' + params.sSearch.trim().toLowerCase() + '%') : '%'
+
+        Map<String, Object> query_params = [
+                name: fuzzyString,
+                status: RDStore.O_STATUS_DELETED
+        ]
+        String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
+        String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
+
+        def cq = Org.executeQuery(countQry,query_params)
+
+        List<Org> rq = Org.executeQuery(rowQry,
+                query_params,
+                [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0])
+
+        result.aaData = []
+        result.sEcho = params.sEcho
+        result.iTotalRecords = cq[0]
+        result.iTotalDisplayRecords = cq[0]
+
+        Org currOrg = (Org) genericOIDService.resolveOID(params.oid)
+        List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.PERSON_CONTACT_TYPE_PERSONAL, currOrg)
+
+        LinkedHashMap personRoles = [:]
+        PersonRole.findAll().each { PersonRole prs ->
+            personRoles.put(prs.org, prs.prs)
+        }
+        rq.each { Org it ->
+            int ctr = 0
+            LinkedHashMap row = [:]
+            String name = it["name"]
+            if (personRoles.get(it) && contacts.indexOf(personRoles.get(it)) > -1)
+                name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
+            row["${ctr++}"] = name
+            row["DT_RowId"] = "${it.class.name}:${it.id}"
+            result.aaData.add(row)
+        }
+
+        render result as JSON
+    }
+
     @Secured(['ROLE_USER'])
     def getRegions() {
         List<RefdataValue> result = []
@@ -122,6 +251,26 @@ class AjaxJsonController {
         result = result.flatten()
 
         render result as JSON // TODO -> check response; remove unnecessary information! only id and value_<x>?
+    }
+
+    def lookup() {
+        // fallback for static refdataFind calls
+        params.shortcode  = contextService.getOrg().shortcode
+
+        Map<String, Object> result = [values: []]
+        params.max = params.max ?: 40
+
+        GrailsClass domain_class = AppUtils.getDomainClass(params.baseClass)
+
+        if (domain_class) {
+            result.values = domain_class.getClazz().refdataFind(params)
+            result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text }
+        }
+        else {
+            log.error("Unable to locate domain class ${params.baseClass}")
+        }
+
+        render result as JSON
     }
 
     @Secured(['ROLE_USER'])
@@ -202,6 +351,22 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
+    def lookupSubscriptionsLicenses() {
+        Map<String, Object> result = [results:[]]
+        result.results.addAll(controlledListService.getSubscriptions(params).results)
+        result.results.addAll(controlledListService.getLicenses(params).results)
+
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def lookupCurrentAndIndendedSubscriptions() {
+        params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
+
+        render controlledListService.getSubscriptions(params) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupTitleGroups() {
         params.checkView = true
         if(params.sub != "undefined") {
@@ -210,6 +375,38 @@ class AjaxJsonController {
             Map empty = [results: []]
             render empty as JSON
         }
+    }
+
+    def refdataSearchByOID() {
+        List result = []
+
+        RefdataCategory rdc = (RefdataCategory) genericOIDService.resolveOID(params.oid)
+        if (rdc) {
+            String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+            String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale
+
+            List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])
+
+            rq.each { RefdataValue it ->
+                if (it instanceof I10nTrait || it instanceof AbstractI10n) {
+                    result.add([value: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
+                }
+                else {
+                    String value = it.value
+                    if (value) {
+                        String no_ws = value.replaceAll(' ', '')
+                        String locale_text = message(code: "refdata.${no_ws}", default: "${value}")
+                        result.add([value: "${it.class.name}:${it.id}", text: "${locale_text}"])
+                    }
+                }
+            }
+        }
+        if (result) {
+            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
+            result.add([value: "${notSet.class.name}:${notSet.id}", text: "${notSet.getI10n('value')}"])
+        }
+
+        render result as JSON
     }
 
     def searchPropertyAlternativesByOID() {
@@ -248,10 +445,59 @@ class AjaxJsonController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
+
         if (params.input) {
             List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)", [searchTerm:params.input])
             result.result = checkList.size() > 0
         }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getEmailAddresses() {
+        List result = []
+
+        if (params.orgIdList) {
+            List<Long> orgIds = params.orgIdList.split(',').collect{ Long.parseLong(it) }
+            List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+
+            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+            Map<String, Object> queryParams = [orgs: orgList]
+
+            boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
+            boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
+
+            if (showPublicContactEmails && showPrivateContactEmails){
+                query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
+                queryParams << [ctx: contextService.org]
+            } else {
+                if (showPublicContactEmails){
+                    query += "and p.isPublic = true "
+                } else if (showPrivateContactEmails){
+                    query += "and (p.isPublic = false and p.tenant = :ctx) "
+                    queryParams << [ctx: contextService.org]
+                } else {
+                    return [] as JSON
+                }
+            }
+
+            if (params.selectedRoleTypIds) {
+                List<Long> selectedRoleTypIds = params.selectedRoleTypIds.split(',').collect { Long.parseLong(it) }
+                List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
+
+                if (selectedRoleTypes) {
+                    query += "and pr.functionType in (:selectedRoleTypes) "
+                    queryParams << [selectedRoleTypes: selectedRoleTypes]
+                }
+            }
+
+            List<Person> persons = Person.executeQuery(query, queryParams)
+            if (persons) {
+                result = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
+                        [persons: persons, contentType: RDStore.CCT_EMAIL])
+            }
+        }
+
         render result as JSON
     }
 }

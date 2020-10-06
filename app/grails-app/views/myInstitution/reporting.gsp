@@ -188,7 +188,7 @@
                 if(subscriptionContainer.length === 0 || (subscriptionContainer.find("#chart"+subId).is(":empty") && !subscriptionContainer.is(":visible"))) {
                     let requestOptions = JSON.stringify({ group: gParams, displayConfiguration: dConfs })
                     $.ajax({
-                        url: '<g:createLink controller="ajax" action="getGraphsForSubscription"/>',
+                        url: '<g:createLink controller="ajaxHtml" action="getGraphsForSubscription"/>',
                         data: {
                             costItem: "true", //temp
                             subscription: subscription,
@@ -287,7 +287,7 @@
 
             function updatePropertyDefinitions(params) {
                 $.ajax({
-                    url: '<g:createLink controller="ajax" action="getPropValues"/>',
+                    url: '<g:createLink controller="ajaxJson" action="getPropValues"/>',
                     data: params
                 }).done(function(data){
                     let elemContent = $("[data-triggeredBy='"+params.elemKey+"']");

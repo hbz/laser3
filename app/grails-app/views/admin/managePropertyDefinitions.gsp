@@ -341,7 +341,7 @@
                     return "${message(code:'select2.formatSearching')}";
                 },
 				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-					url: '${createLink(controller:'ajax', action:'lookup')}',
+					url: '${createLink(controller:'ajaxJson', action:'lookup')}',
 					dataType: 'json',
 					data: function (term, page) {
 						return {

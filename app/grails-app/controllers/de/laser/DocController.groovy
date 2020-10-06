@@ -6,6 +6,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
@@ -77,7 +78,7 @@ class DocController extends AbstractDebugController {
 				Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
 						title: params.licenseNoteTitle,
 						content: params.licenseNote,
-						type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
+						type: RDStore.DOC_TYPE_NOTE,
 						owner: contextService.org,
 						user: user).save(flush:true)
 
@@ -86,7 +87,7 @@ class DocController extends AbstractDebugController {
 				DocContext doc_context = new DocContext(
 						"${params.ownertp}": instance,
 						owner: doc_content,
-						doctype: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE))
+						doctype: RDStore.DOC_TYPE_NOTE)
 				doc_context.save(flush:true)
 			}
 			else {

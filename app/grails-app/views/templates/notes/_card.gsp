@@ -34,7 +34,7 @@
                                         ${docctx.owner.title}</a>
                                     </g:if>
                                     <g:else>
-                                        Ohne Titel
+                                        <g:message code="license.notes.noTitle"/>
                                     </g:else>
                                 </a>
                             </g:if>
@@ -44,7 +44,7 @@
                                         ${docctx.owner.title}</a>
                                     </g:if>
                                     <g:else>
-                                        Ohne Titel
+                                        <g:message code="license.notes.noTitle"/>
                                     </g:else>
                                 </a>
                             </g:else>
@@ -63,7 +63,7 @@
                                 </g:link>
                             </g:if>
                             <%-- STOP First Button --%>
-                            <g:if test="${ownobj?.showUIShareButton()}">
+                            <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
                             <%-- START Second Button --%>
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"

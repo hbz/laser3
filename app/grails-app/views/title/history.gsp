@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.TitleInstance" %>
+<%@ page import="de.laser.titles.TitleInstance" %>
 <!doctype html>
 <html>
 <head>

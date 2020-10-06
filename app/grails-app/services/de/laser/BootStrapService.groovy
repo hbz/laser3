@@ -36,11 +36,11 @@ class BootStrapService {
 
         ConfigUtils.checkConfig()
 
-        log.info("SystemId: " + ConfigUtils.getLaserSystemId())
+        log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
         log.info("Database: ${grailsApplication.config.dataSource.url}")
         log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
         log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
-        log.info("Documents: " + ConfigUtils.getDocumentStorageLocation())
+        log.info("Documents: ${ConfigUtils.getDocumentStorageLocation()}")
 
         log.info("--------------------------------------------------------------------------------")
 
@@ -198,7 +198,7 @@ class BootStrapService {
                             Role role = Role.findByAuthorityAndRoleType(affil, 'user')
                             if (org && role) {
                                 log.debug("  -> adding affiliation: ${role} for ${org.shortname} ")
-                                UserOrg userOrg = new UserOrg(
+                                new UserOrg(
                                         user: user,
                                         org: org,
                                         formalRole: role,
@@ -262,18 +262,16 @@ class BootStrapService {
 
         // Global System Roles
 
-        Role yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
-        Role adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-        //Role dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
-        Role userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-        Role apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
+        Role tmp = Role.findByAuthority('ROLE_YODA')    ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_ADMIN')   ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_USER')    ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_API')     ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-        Role globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
-        Role orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-        //Role orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
-        Role packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
-        Role statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
-        Role ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
+             tmp = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -309,7 +307,7 @@ class BootStrapService {
         Closure createOrgPerms = { Role role, List<String> permList ->
             // TODO PermGrant.executeQuery('DELETE ALL')
 
-            permList.each{ code ->
+            permList.each{ String code ->
                 code = code.toLowerCase()
                 Perm perm = Perm.findByCode(code) ?: new Perm(code: code).save(failOnError: true)
                 ensurePermGrant(role, perm)
@@ -481,11 +479,11 @@ class BootStrapService {
         }
     }
 
-    void ensurePermGrant(role, perm) {
+    void ensurePermGrant(Role role, Perm perm) {
         PermGrant existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
         if (! existingPermGrant) {
             log.debug("create new perm grant for ${role}, ${perm}")
-            PermGrant new_grant = new PermGrant(role:role, perm:perm).save()
+            new PermGrant(role:role, perm:perm).save()
         }
         else {
             log.debug("grant already exists ${role}, ${perm}")
@@ -501,7 +499,7 @@ class BootStrapService {
         String sub = Subscription.name
         String pkg = Package.name
 
-        def entries = [
+        List entries = [
                 ['Licensor', lic],
                 ['Licensee', lic],
                 ['Licensing Consortium', lic],
@@ -516,13 +514,13 @@ class BootStrapService {
                 ['Agency', sub]
         ]
 
-        entries.each{ rdv ->
-            def token = rdv[0]
-            def group = rdv[1]
+        entries.each{ List<String> rdv ->
+            String token = rdv[0]
+            String group = rdv[1]
 
             RefdataValue val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
             if (group) {
-                val.setGroup(group)
+                val.setGroup(group) // TODO [ticket=2880]
             }
             val.save()
         }
@@ -556,7 +554,7 @@ class BootStrapService {
 
         // Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
         // add them to the DB if they don't already exist.
-        def refdatavalues = [
+        Map<String, List> refdatavalues = [
                 "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
                            "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
                            "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
@@ -581,8 +579,8 @@ class BootStrapService {
                                   "TrainingMaterial", "UserContent", "UserWebsite"]
         ]
 
-        refdatavalues.each { rdc, rdvList ->
-            rdvList.each { rdv ->
+        refdatavalues.each { String rdc, List<String> rdvList ->
+            rdvList.each { String rdv ->
 
                 Map<String, Object> map = [
                         token   : rdv,
@@ -616,7 +614,7 @@ class BootStrapService {
                 'UseForDataMining', 'InterpretedAsPermitted', 'InterpretedAsProhibited',
                 'Permitted', 'Prohibited', 'SilentUninterpreted', 'NotApplicable'
         ]
-        usageStatusList.each { token ->
+        usageStatusList.each { String token ->
             RefdataValue.construct( [token: token, rdc: RDConstants.USAGE_STATUS, hardData: BOOTSTRAP, i10n:[value_de: token, value_en: token]] )
         }
 
@@ -681,7 +679,7 @@ No Host Platform URL Content
 
     void setIdentifierNamespace() {
 
-        def namespaces = [
+        List namespaces = [
                 [ns: "ISIL"],
                 [ns: "ISIL_Paketsigel"],
                 [ns: "uri"],
@@ -692,9 +690,9 @@ No Host Platform URL Content
                 [ns: "eissn"]
         ]
 
-        namespaces.each { namespaceproperties ->
-            def namespace = namespaceproperties["ns"]
-            def typ = namespaceproperties["typ"]?:null
+        namespaces.each { Map<String, String> namespaceProperties ->
+            String namespace = namespaceProperties["ns"]
+            String typ = namespaceProperties["typ"] ?: null
             //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
             IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save(flush: true);
         }

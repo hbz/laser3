@@ -74,7 +74,7 @@ class TaskService {
 
     List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
         //chop everything off beyond the user's pagination limit
-        int taskInstanceCount = taskInstanceList?.size() ?: 0
+        int taskInstanceCount = taskInstanceList.size() ?: 0
         if (taskInstanceCount > user.getDefaultPageSize()) {
             try {
                 taskInstanceList = taskInstanceList.subList(offset, offset + user.getDefaultPageSizeAsInteger())

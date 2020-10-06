@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionPackage; de.laser.helper.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.IssueEntitlement; com.k_int.kbplus.SubscriptionPackage; de.laser.helper.RDConstants; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -146,7 +146,7 @@
       var selectedSub = $('#filterSubscription').val();
 
       $.ajax({
-        url: "<g:createLink controller='ajax' action='lookup'/>",
+        url: "<g:createLink controller='ajaxJson' action='lookup'/>",
         data: {
           format:'json',
           subFilter:selectedSub,
@@ -173,7 +173,7 @@
       placeholder: "Identifier..",
       minimumInputLength: 1,
       ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-        url: "<g:createLink controller='ajax' action='lookup'/>",
+        url: "<g:createLink controller='ajaxJson' action='lookup'/>",
         dataType: 'json',
         data: function (term, page) {
             return {

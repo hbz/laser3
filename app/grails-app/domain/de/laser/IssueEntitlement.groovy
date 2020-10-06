@@ -1,11 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.RefdataValue
+import com.k_int.kbplus.Subscription
 import de.laser.base.AbstractBase
-import de.laser.IssueEntitlementCoverage
-import de.laser.IssueEntitlementGroupItem
 import de.laser.finance.PriceItem
-import de.laser.TIPPCoverage
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -218,20 +215,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       return tip
     }
     return null
-  }
-  
-  @Transient
-  def coreStatusOn(as_at) {
-    // Use the new core system to determine if this title really is core
-    TitleInstitutionProvider tip = getTIP()
-    if(tip) return tip.coreStatus(as_at);
-    return false
-  }
-  
-  @Transient
-  def extendCoreDates(startDate, endDate){
-    def tip = getTIP()
-      tip?.extendCoreExtent(startDate,endDate)
   }
 
   @Transient

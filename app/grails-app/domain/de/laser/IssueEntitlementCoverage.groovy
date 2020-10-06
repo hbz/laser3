@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.IssueEntitlement
+
 import de.laser.base.AbstractCoverage
 
 class IssueEntitlementCoverage extends AbstractCoverage {

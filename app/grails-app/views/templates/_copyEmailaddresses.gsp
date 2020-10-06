@@ -118,8 +118,8 @@
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
 
             $.ajax({
-                url: '<g:createLink controller="ajax" action="getEmailAddresses"/>'
-                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + jsonOrgIdList + '&format=json',
+                url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
+                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + jsonOrgIdList,
                 success: function (data) {
                     $("#emailAddressesTextArea").val(data.join('; '));
                 }

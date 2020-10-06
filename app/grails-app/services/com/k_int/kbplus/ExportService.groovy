@@ -2,8 +2,10 @@ package com.k_int.kbplus
 
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.IssueEntitlement
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -12,6 +14,8 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.titles.BookInstance
+import de.laser.titles.TitleInstance
 import grails.transaction.Transactional
 import groovy.time.TimeDuration
 import org.apache.poi.POIXMLProperties

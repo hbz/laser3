@@ -3,9 +3,7 @@ package de.laser
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
@@ -874,11 +872,11 @@ class PackageController extends AbstractDebugController {
 
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
-        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
         result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.packageInstance)
-        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         log.debug(result.taskInstanceList.toListString())
