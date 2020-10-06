@@ -9,6 +9,7 @@ import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.titles.TitleInstance
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil

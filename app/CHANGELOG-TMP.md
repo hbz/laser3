@@ -9,6 +9,8 @@
 
 1363    05.10.2020  hbz-dev             Andreas Feature     Anmerkungen und Aufgaben können jetzt auch an Orgs gehängt werden
 
+2891    05.10.2020  hbz-dev             David               AjaxController restrukturieren
+
 2883    02.10.2020  rc1.6               Andreas Feature     Erklärungstexte bei Ver-/Entknüpfung von Anbietern eingefügt
 
 2872    02.10.2020  rc1.6               Andreas Feature     Mehrfachvergabe bei acht Vertragsmerkmalen aktiviert

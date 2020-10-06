@@ -5,7 +5,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.PersonProperty
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

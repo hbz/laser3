@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform" %>
 
 
 
@@ -23,7 +23,7 @@
 		<g:message code="issueEntitlement.tipp.label" default="Tipp" />
 		
 	</label>
-	<g:select id="tipp" name="tipp.id" from="${com.k_int.kbplus.TitleInstancePackagePlatform.list()}" optionKey="id" value="${issueEntitlementInstance?.tipp?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="tipp" name="tipp.id" from="${TitleInstancePackagePlatform.list()}" optionKey="id" value="${issueEntitlementInstance?.tipp?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: issueEntitlementInstance, field: 'startDate', 'error')} ">

@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.titles.TitleInstance
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import grails.transaction.Transactional
