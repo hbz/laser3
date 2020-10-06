@@ -571,6 +571,8 @@
                             </g:link>
                         </g:else>
 
+                        <semui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+
                     </g:if>
                 </td>
             </g:if>
@@ -597,6 +599,9 @@
                                               date="${orgSub.endDate}"/>
                             </g:link>
                         </g:else>
+
+                        <semui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+
                     </g:if>
                 </td>
             </g:if>

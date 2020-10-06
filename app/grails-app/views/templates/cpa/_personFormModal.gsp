@@ -1,6 +1,6 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="${modalID ?: 'personModal'}" text="${modalText ?: message(code: 'person.create_new.label')}"
+<semui:modal id="${modalID ?: 'personModal'}" formID="person_form" text="${modalText ?: message(code: 'person.create_new.label')}"
              contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
