@@ -190,12 +190,14 @@
                                                                             link                   : link
                                                                   ]}" />
                                                         <g:if test="${editable}">
-                                                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.license.license")}"
-                                                                    data-confirm-term-how="unlink"
-                                                                    controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
-                                                                <i class="unlink icon"></i>
-                                                            </g:link>
+                                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
+                                                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.license.license")}"
+                                                                        data-confirm-term-how="unlink"
+                                                                        controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
+                                                                    <i class="unlink icon"></i>
+                                                                </g:link>
+                                                            </span>
                                                         </g:if>
                                                     </td>
                                                 </tr>

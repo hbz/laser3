@@ -245,12 +245,14 @@
                                                                         link: link
                                                               ]}" />
                                                     <g:if test="${editable}">
-                                                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                                data-confirm-term-how="unlink"
-                                                                controller="myInstitution" action="unlinkObjects" params="${[oid : link.class.name+':'+link.id]}">
-                                                            <i class="unlink icon"></i>
-                                                        </g:link>
+                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
+                                                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                                    data-confirm-term-how="unlink"
+                                                                    controller="myInstitution" action="unlinkObjects" params="${[oid : link.class.name+':'+link.id]}">
+                                                                <i class="unlink icon"></i>
+                                                            </g:link>
+                                                        </span>
                                                     </g:if>
                                                 </td>
                                             </tr>
@@ -441,17 +443,20 @@
                                         </td>
                                         <td class="right aligned">
                                             <g:if test="${pair.propertySet}">
-                                                <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
-                                                    <i class="ui angle double down icon"></i></button>
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                                    <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
+                                                        <i class="ui angle double down icon"></i>
+                                                    </button>
+                                                </span>
                                                 <r:script>
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
 
                                                         if ($("#derived-license-properties${link.id}").hasClass('visible')) {
-                                                            $(this).html('<i class="ui angle double down icon"></i>')
+                                                            $(this).html('<i class="ui angle double down icon"></i>');
                                                         } else {
-                                                            $(this).html('<i class="ui angle double up icon"></i>')
+                                                            $(this).html('<i class="ui angle double up icon"></i>');
                                                         }
                                                     })
                                                 </r:script>
@@ -470,12 +475,14 @@
                                                       ]}" />
                                             <g:if test="${editable}">
                                                 <div class="ui icon negative buttons">
-                                                    <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                            data-confirm-term-how="unlink"
-                                                            action="unlinkLicense" params="${[licenseOID: link.source, id:subscription.id]}">
-                                                        <i class="unlink icon"></i>
-                                                    </g:link>
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
+                                                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                                data-confirm-term-how="unlink"
+                                                                action="unlinkLicense" params="${[licenseOID: link.source, id:subscription.id]}">
+                                                            <i class="unlink icon"></i>
+                                                        </g:link>
+                                                    </span>
                                                 </div>
                                                 <br />
                                             </g:if>
@@ -512,11 +519,11 @@
 
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
-                <g:if test="${costItemSums.ownCosts || costItemSums.collCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts}">
-                                <g:if test="${(!(contextOrg.id in [subscription.getConsortia()?.id,subscription.getCollective()?.id]) && subscription.instanceOf) || !subscription.instanceOf}">
+                                <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                                     <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.ownCosts')}</h5>
                                     <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
                                 </g:if>
@@ -525,10 +532,6 @@
                                 <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.consCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.consCosts]"/>
                             </g:if>
-                            <g:elseif test="${costItemSums.collCosts}">
-                                <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.collCosts')}</h5>
-                                <g:render template="financials" model="[data:costItemSums.collCosts]"/>
-                            </g:elseif>
                             <g:elseif test="${costItemSums.subscrCosts}">
                                 <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.subscrCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>
