@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-2908    05.10.2020  rc1.6               Moe     Bug         Umfrage: fehlende Angabe in Umfrage Sichten
+2907    05.10.2020  rc1.6               Moe     Feature     Umfrage: Renewal Export fehlende Angaben
+
+2908    05.10.2020  rc1.6               Moe     Feature     Umfrage: fehlende Angabe in Umfrage Sichten
 
 2817    05.10.2020  rc1.6               Moe     Bug         Anbieterkontakte unter "Mein Adressbuch" nicht bearbeitbar 
     
