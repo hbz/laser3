@@ -18,16 +18,16 @@
 
 #### Setup
 
-sdk i grails 3.3.11  
-sdk i groovy 2.4.17  
+    sdk i grails 3.3.11  
+    sdk i groovy 2.4.17
 
-git init  
-git add \*     
-git commit  
+    git init  
+    git add \*     
+    git commit  
 
-##### Migration
+#### Migration
 
-$ ./go.sh
+    ./go.sh
 
 ##### Docs
 
