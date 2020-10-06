@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2908    05.10.2020  rc1.6               Moe     Bug         Umfrage: fehlende Angabe in Umfrage Sichten
+
 2817    05.10.2020  rc1.6               Moe     Bug         Anbieterkontakte unter "Mein Adressbuch" nicht bearbeitbar 
     
 2900    05.10.2020  rc1.6               Moe     Bug         Auffälligkeiten Kopierdialog Vertrag / Vertrag kopieren / Schnellkopie
