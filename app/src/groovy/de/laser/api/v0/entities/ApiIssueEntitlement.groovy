@@ -1,6 +1,6 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.IssueEntitlement
+import de.laser.IssueEntitlement
 import com.k_int.kbplus.Org
 import de.laser.api.v0.*
 import groovy.util.logging.Log4j
@@ -82,17 +82,17 @@ class ApiIssueEntitlement {
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // de.laser.TitleInstancePackagePlatform
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
                     result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
-                    // com.k_int.kbplus.TitleInstancePackagePlatform
+                    // de.laser.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
                     result.subscription = ApiStubReader.requestSubscriptionStub(ie.subscription, context)

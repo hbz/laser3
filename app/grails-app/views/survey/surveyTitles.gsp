@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Subscription; com.k_int.kbplus.Package; de.laser.RefdataCategory; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.titles.BookInstance; de.laser.ApiSource; com.k_int.kbplus.Subscription; com.k_int.kbplus.Package; de.laser.RefdataCategory; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -139,7 +139,7 @@
                                                 overwriteEditable="${false}"/>
                     </td>
                     <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                        <g:if test="${ie.tipp.title instanceof com.k_int.kbplus.BookInstance}">
+                        <g:if test="${ie.tipp.title instanceof BookInstance}">
 
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>

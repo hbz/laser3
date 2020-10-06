@@ -5,7 +5,7 @@
   Time: 15:33
 --%>
 <laser:serviceInjection/>
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>
 <html>
     <head>

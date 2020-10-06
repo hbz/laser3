@@ -1,10 +1,10 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.RefdataValue
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Package
+import com.k_int.kbplus.Subscription
 import de.laser.finance.CostItem
-import de.laser.IssueEntitlementCoverage
-import de.laser.PendingChangeConfiguration
-import de.laser.TIPPCoverage
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtil

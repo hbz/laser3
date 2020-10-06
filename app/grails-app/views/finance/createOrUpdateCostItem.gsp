@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionPackage; de.laser.helper.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.IssueEntitlement; com.k_int.kbplus.SubscriptionPackage; de.laser.helper.RDConstants; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>

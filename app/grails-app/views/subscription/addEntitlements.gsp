@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform;com.k_int.kbplus.BookInstance" %>
+<%@ page import="de.laser.ApiSource; grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform;de.laser.titles.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -231,7 +231,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </g:each>
             <br>
 
-            <g:if test="${tipp.title instanceof com.k_int.kbplus.BookInstance}">
+            <g:if test="${tipp.title instanceof BookInstance}">
                 <g:if test="${tipp.title.editionStatement}">
                 <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.title.editionStatement}
                 </div>

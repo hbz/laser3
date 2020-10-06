@@ -1,7 +1,5 @@
 package de.laser
 
-import com.k_int.kbplus.IssueEntitlement
-
 class IssueEntitlementGroupItem {
 
     Date dateCreated

@@ -6,7 +6,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.TitleInstance
+import de.laser.titles.TitleInstance
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import grails.transaction.Transactional
 

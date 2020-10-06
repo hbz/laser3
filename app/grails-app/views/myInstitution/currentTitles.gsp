@@ -1,3 +1,4 @@
+<%@ page import="de.laser.titles.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -239,15 +240,15 @@
                                 <strong><g:link controller="title" action="show"
                                                 id="${ti?.id}">${ti?.title}</g:link></strong>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.volume}">
+                                <g:if test="${ti instanceof BookInstance && ti.volume}">
                                     (${message(code: 'title.volume.label')} ${ti.volume})
                                 </g:if>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti.firstAuthor || ti.firstEditor)}">
+                                <g:if test="${ti instanceof BookInstance && (ti.firstAuthor || ti.firstEditor)}">
                                     <br><strong>${ti?.getEbookFirstAutorOrFirstEditor()}</strong>
                                 </g:if>
 
-                                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && ti.editionStatement}">
+                                <g:if test="${ti instanceof BookInstance && ti.editionStatement}">
                                     <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${ti.editionStatement}
                                     </div>
                                     <br/>
@@ -325,7 +326,7 @@
                                         </div>
 
                                         <div class="eight wide centered column">
-                                            <g:if test="${ie.tipp.title instanceof com.k_int.kbplus.BookInstance}">
+                                            <g:if test="${ie.tipp.title instanceof BookInstance}">
 
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
