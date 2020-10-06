@@ -213,8 +213,8 @@ class CopyElementsService {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
-        result.sourceIEs = subscriptionService.getIssueEntitlements(sourceObject)
-        result.targetIEs = subscriptionService.getIssueEntitlements(targetObject)
+        //result.sourceIEs = subscriptionService.getIssueEntitlements(sourceObject)
+        //result.targetIEs = subscriptionService.getIssueEntitlements(targetObject)
         result.targetObject = targetObject
         result.sourceObject = sourceObject
         result
@@ -691,16 +691,6 @@ class CopyElementsService {
 
         if (formService.validateToken(params)) {
             boolean isTargetSubChanged = false
-            if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject)) {
-                List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
-                deletePackages(packagesToDelete, targetObject, flash)
-                isTargetSubChanged = true
-            }
-            if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject)) {
-                List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
-                copyPackages(packagesToTake, targetObject, flash)
-                isTargetSubChanged = true
-            }
 
             if (params.subscription?.deletePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
                 List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
@@ -715,6 +705,19 @@ class CopyElementsService {
                 }
                 isTargetSubChanged = true
             }
+
+            if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject)) {
+                List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
+                deletePackages(packagesToDelete, targetObject, flash)
+                isTargetSubChanged = true
+            }
+            if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject)) {
+                List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
+                copyPackages(packagesToTake, targetObject, flash)
+                isTargetSubChanged = true
+            }
+
+
             if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
                 List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
                     genericOIDService.resolveOID(it)
@@ -822,7 +825,7 @@ class CopyElementsService {
             if (owner && namespace && value) {
                 FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: owner, namespace: namespace])
 
-                factoryResult.setFlashScopeByStatus(flash)
+                //factoryResult.setFlashScopeByStatus(flash)
             }
         }
     }
@@ -832,7 +835,7 @@ class CopyElementsService {
         int countDeleted = Identifier.executeUpdate('delete from Identifier i where i in (:toDeleteIdentifiers) and i.' + attr + ' = :reference',
                 [toDeleteIdentifiers: toDeleteIdentifiers, reference: targetObject])
         Object[] args = [countDeleted]
-        flash.message += messageSource.getMessage('identifier.delete.success', args, locale)
+        //flash.message += messageSource.getMessage('identifier.delete.success', args, locale)
     }
 
     def deleteDocs(List<Long> toDeleteDocs, Object targetObject, def flash) {
@@ -1144,6 +1147,36 @@ class CopyElementsService {
                         InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
+                    }
+
+                    subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
+                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                            def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
+                            if (list?.size() > 0) {
+                                // mich gibts schon! Fehlermeldung ausgeben!
+                                Object[] args = [ie.tipp.title.title]
+                                flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
+                            } else {
+                                def properties = ie.properties
+                                properties.globalUID = null
+                                IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                                InvokerHelper.setProperties(newIssueEntitlement, properties)
+                                newIssueEntitlement.coverages = null
+                                newIssueEntitlement.ieGroups = null
+                                newIssueEntitlement.subscription = targetObject
+
+                                if (save(newIssueEntitlement, flash)) {
+                                    ie.properties.coverages.each { coverage ->
+
+                                        def coverageProperties = coverage.properties
+                                        IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                                        InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                                        newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                        newIssueEntitlementCoverage.save()
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
