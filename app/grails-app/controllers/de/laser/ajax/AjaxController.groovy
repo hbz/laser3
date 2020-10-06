@@ -1025,6 +1025,7 @@ class AjaxController {
     }
     else {
       log.error("Form submitted with missing values")
+        redirect(url: request.getHeader('referer'))
     }
   }
 
@@ -1150,6 +1151,7 @@ class AjaxController {
       }
       else  {
         log.error("Form submitted with missing values")
+          redirect(url: request.getHeader('referer'))
       }
     }
 
