@@ -27,7 +27,15 @@
 
 #### Migration
 
-    ./go.sh
+    git remote add grails2 https://github.com/hbz/laser
+    git remote set-url --push grails2 DISABLED
+    git fetch grails2 grails-upgrade-source:grails2
+    git merge -s ours --no-commit --allow-unrelated-histories grails2/grails-upgrade-source
+    git read-tree --prefix=grails2/ -u grails2/grails-upgrade-source
+    git commit -m 'laser (grails2) imported ..'
+    
+    ./x-migrate.sh
+    ./x-move.sh
 
 ##### Docs
 
