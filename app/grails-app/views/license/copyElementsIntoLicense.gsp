@@ -14,7 +14,7 @@
     <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 
     <g:if test="${sourceObject}">
-        <semui:crumb class="active" controller="license" id="${sourceObject.id}" action="show" text="${sourceObject.name}" />
+        <semui:crumb class="active" controller="license" id="${sourceObject.id}" action="show" text="${sourceObject.dropdownNamingConvention()}" />
     </g:if>
 </semui:breadcrumbs>
 <br>

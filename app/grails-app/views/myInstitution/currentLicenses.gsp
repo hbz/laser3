@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.RefdataValue;de.laser.Links" %>
+<%@ page import="com.k_int.kbplus.License; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.RefdataValue;de.laser.Links" %>
 <!doctype html>
 <html>
   <head>
@@ -232,11 +232,13 @@
                           <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
+                              <g:if test="${(accessService.checkPerm("ORG_INST") && l._getCalculatedType() == License.TYPE_LOCAL) || (accessService.checkPerm("ORG_CONSORTIUM") && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                                   <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
-                                      <g:link controller="myInstitution" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button">
+                                      <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button">
                                           <i class="copy icon"></i>
                                       </g:link>
                                   </span>
+                              </g:if>
                               </td>
                         </g:if>
                     </tr>

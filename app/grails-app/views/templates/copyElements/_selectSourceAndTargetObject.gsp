@@ -32,7 +32,7 @@
                                   value="${RDStore.SUBSCRIPTION_CURRENT.id}"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                                   onchange="adjustDropdown()"/>
-                    </div<br />
+                    </div><br />
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                     <div class="ui checkbox">
                         <g:checkBox name="show.subscriber" value="true" checked="false" onchange="adjustDropdown()" />
@@ -55,7 +55,7 @@
                                   value="${RDStore.LICENSE_CURRENT.id}"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                                   onchange="adjustDropdown()"/>
-                    </div<br />
+                    </div><br />
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false" onchange="adjustDropdown()" />
@@ -88,6 +88,9 @@
     //     $("input[name='show.subscriber'").prop('checked', false);
     //     $("input[name='show.connectedObjects'").prop('checked', false);
     // })
+     $(document).ready(function(){
+       adjustDropdown()
+    });
 
     function adjustDropdown() {
         var status = $("#status").val();

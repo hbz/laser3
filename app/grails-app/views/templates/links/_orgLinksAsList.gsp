@@ -89,7 +89,7 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
+                                            ${func}
                                             (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
@@ -100,7 +100,7 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
+                                            ${resp}
                                             (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
@@ -129,7 +129,7 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
+                                            ${func}
                                             (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
+                                            ${resp}
                                             (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">

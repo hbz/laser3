@@ -7,7 +7,7 @@
     <g:form id="person_form" class="ui form" url="${url}" method="POST">
 
         <g:if test="${!personInstance}">
-            <input name="tenant.id" type="hidden" value="${contextService.getOrg().id}"/>
+            <input name="tenant.id" type="hidden" value="${tenant.id}"/>
             <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
         </g:if>
 
@@ -17,7 +17,7 @@
                     <div class="field">
                         <g:if test="${orgList}">
                             <label for="personRoleOrg">
-                                <g:message code="contact.belongesTo.label"/>
+                                <g:message code="person.belongs.to"/>
                             </label>
                             <g:select class="ui search dropdown"
                                       name="personRoleOrg"
@@ -28,10 +28,10 @@
                         </g:if>
                         <g:if test="${org}">
                             <label for="personRoleOrg">
-                                <g:message code="contact.belongesTo.label"/>
+                                <g:message code="person.belongs.to"/>
                             </label>
-                            ${org}
-                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org.id}"/>
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
+                            <input name="personRoleOrg" type="hidden" value="${org.id}"/>
                         </g:if>
                     %{--<g:else>
                         <label for="personRoleOrg">
@@ -42,29 +42,33 @@
                     </g:else>--}%
                     </div>
                 </g:if>
+            %{--Only for public contact person for Provider/Agency --}%
+            <g:if test="${contactPersonForProviderAgencyPublic}">
+                <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
+            </g:if>
 
-            %{-- <g:if test="${actionName != 'myPublicContacts'}">
-                 <div class="field">
-                     <g:if test="${institution}">
-                         <label for="functionOrg">
-                             <g:message code="contact.belongesTo.label"/>
-                         </label>
-                         <g:select class="ui search dropdown"
-                                   name="functionOrg"
-                                   from="${orgList}"
-                                   value="${org?.id}"
-                                   optionKey="id"
-                                   optionValue=""/>
-                     </g:if>
-                     <g:else>
-                         <label for="functionOrg">
-                             <g:message code="contact.belongesTo.label"/>
-                         </label>
-                         <i class="icon university la-list-icon"></i>${org?.name}
-                         <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
-                     </g:else>
-                 </div>
-             </g:if>--}%
+        %{-- <g:if test="${actionName != 'myPublicContacts'}">
+             <div class="field">
+                 <g:if test="${institution}">
+                     <label for="functionOrg">
+                         <g:message code="contact.belongesTo.label"/>
+                     </label>
+                     <g:select class="ui search dropdown"
+                               name="functionOrg"
+                               from="${orgList}"
+                               value="${org?.id}"
+                               optionKey="id"
+                               optionValue=""/>
+                 </g:if>
+                 <g:else>
+                     <label for="functionOrg">
+                         <g:message code="contact.belongesTo.label"/>
+                     </label>
+                     <i class="icon university la-list-icon"></i>${org?.name}
+                     <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
+                 </g:else>
+             </div>
+         </g:if>--}%
 
             %{--<g:if test="${actionName != 'myPublicContacts'}">
                 <div class="field">
@@ -353,6 +357,8 @@
                     }
                 }
             });
+
+            tooltip.go()
 
             var contactElementCount = 0;
             var addressElementCount = 0;
