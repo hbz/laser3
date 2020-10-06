@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2911    06.10.2020  rc1.6               Andreas Bug         Einrichtungseinstellungen sind wieder aufrufbar
+
+2909    06.10.2020  rc1.6               Andreas Bug         Fächergruppen können wieder frei manipuliert werden
+
 2817    05.10.2020  rc1.6               Moe     Bug         Anbieterkontakte unter "Mein Adressbuch" nicht bearbeitbar 
     
 2900    05.10.2020  rc1.6               Moe     Bug         Auffälligkeiten Kopierdialog Vertrag / Vertrag kopieren / Schnellkopie
