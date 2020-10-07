@@ -27,7 +27,7 @@
                             <tr>
                                 <th colspan="5">
                                     <g:if test="${sourceObject}"><g:link controller="subscription"
-                                                                         action="show"
+                                                                         action="members"
                                                                          id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                                 </th>
                             </tr>
@@ -84,7 +84,7 @@
                             <tr>
                                 <th colspan="4">
                                     <g:if test="${targetObject}"><g:link controller="subscription"
-                                                                         action="show"
+                                                                         action="members"
                                                                          id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                                 </th>
                             </tr>
