@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2914    07.10.2020  rc1.6               Andreas Bug         Organisationen konnten nicht gelöscht werden
+
+2913    07.10.2020  rc1.6               Andreas Bug         Vererbung wird korrekt in die Ziellizenz übertragen
+
+2912    07.10.2020  rc1.6               Andreas Bug         Controlleraufruf bei Einladen der Lizenzen/Verträge korrigiert
+
 2910    06.10.2020  rc1.6               Moe     Bug         Fehlermeldung bei weiterer Funktion eines Kontaktes
 
 2907    06.10.2020  rc1.6               Moe     Feature     Umfrage: Renewal Export fehlende Angaben

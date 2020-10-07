@@ -890,7 +890,7 @@ class CopyElementsService {
                 targetProp.isPublic = sourceProp.isPublic
                 //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
-                if (((sourceProp.id.toString() in auditProperties)) && targetProp.isPublic) {
+                if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
 
