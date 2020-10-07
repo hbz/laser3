@@ -225,7 +225,7 @@
         <g:render template="/templates/copyElements/copyPropertiesCompare" />
     </g:elseif>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS}">
-        <g:render template="/templates/subscription/copyPackagesAndIEs" />
+        <g:render template="/templates/copyElements/copyPackagesAndIEs" />
     </g:elseif>
     %{--<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS}">--}%
     <g:else>

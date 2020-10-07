@@ -49,21 +49,19 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
-
-        User user = contextService.user
-        Org org   = Org.get(params.id)
-        Org contextOrg = contextService.org
-        if (! org) {
+        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
-        Boolean inContextOrg = contextOrg.id == org.id
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextOrg)
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
+        result.isComboRelated = isComboRelated
+        result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextOrg, 'INST_ADM')) ||
+        Boolean hasAccess = (result.inContextOrg && accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         // forbidden access
@@ -71,20 +69,11 @@ class OrganisationController extends AbstractDebugController {
             redirect controller: 'organisation', action: 'show', id: org.id
         }
 
-        Map result = [
-                user:           user,
-                orgInstance:    org,
-                contextOrg:     contextOrg, //object type Org
-                editable:   	true, //as method is secured agains INST_ADMins of all kinds; this implicites editability
-                inContextOrg:   inContextOrg, //boolean to ensure if in contextOrg
-                isComboRelated: isComboRelated
-        ]
-
         // adding default settings
-        organisationService.initMandatorySettings(org)
+        organisationService.initMandatorySettings(result.orgInstance)
 
         // collecting visible settings by customer type, role and/or combo
-        List<OrgSetting> allSettings = OrgSetting.findAllByOrg(org)
+        List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.orgInstance)
 
         List<OrgSetting.KEYS> ownerSet = [
                 OrgSetting.KEYS.API_LEVEL,
@@ -1187,7 +1176,7 @@ class OrganisationController extends AbstractDebugController {
             params.orderA = params.order
         }
         else {
-            params.sortA = 'dueDate'
+            params.sortA = 'semester'
             params.orderA = 'desc'
         }
 
@@ -1196,11 +1185,9 @@ class OrganisationController extends AbstractDebugController {
             params.orderB = params.order
         }
         else {
-            params.sortB = 'semester'
+            params.sortB = 'dueDate'
             params.orderB = 'desc'
         }
-        params.remove('sort')
-        params.remove('order')
 
         Map<String,Map<String,ReaderNumber>> numbersWithSemester = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA]),"semester")
         Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
@@ -1333,11 +1320,9 @@ class OrganisationController extends AbstractDebugController {
         }
     }
     def addSubjectGroup() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Org orgInstance = Org.get(params.org)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
 
-        if (!orgInstance) {
+        if (!result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect(url: request.getHeader('referer'))
             return
@@ -1348,37 +1333,34 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        if (orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
+        if (result.orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
             flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
             redirect(url: request.getHeader('referer'))
             return
         }
-        result.editable = checkIsEditable(result.user, orgInstance)
+        result.editable = checkIsEditable(result.user, result.orgInstance)
 
         if (result.editable){
-            orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
-            orgInstance.save(flush: true)
+            result.orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
+            result.orgInstance.save(flush: true)
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-            redirect action: 'show', id: orgInstance.id
+            redirect action: 'show', id: params.id
         }
     }
 
     def deleteSubjectGroup() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Org orgInstance = Org.get(params.org)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
 
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+        if (!result.orgInstance) {
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect(url: request.getHeader('referer'))
             return
         }
-        result.isEditable = checkIsEditable(result.user, orgInstance)
         if(result.editable) {
-            def osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
-            orgInstance.removeFromSubjectGroup(osg)
-            orgInstance.save(flush:true)
-            osg.delete(flush:true)
+            OrgSubjectGroup osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
+            result.orgInstance.removeFromSubjectGroup(osg)
+            result.orgInstance.save()
+            osg.delete()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect(url: request.getHeader('referer'))
         }
@@ -1517,7 +1499,7 @@ class OrganisationController extends AbstractDebugController {
                 break
             case 'addSubjectGroup':
             case 'deleteSubjectGroup':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
                 break
             case 'users':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')

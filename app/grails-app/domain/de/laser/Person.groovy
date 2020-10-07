@@ -265,4 +265,20 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     def beforeDelete() {
         super.beforeDeleteHandler()
     }
+
+    Org getBelongsToOrg() {
+
+        List<Org> orgs = PersonRole.executeQuery(
+                "select distinct(pr.org) from PersonRole as pr where pr.prs = :person ", [person: this]
+        )
+
+        if(orgs.size() > 0)
+        {
+
+            return orgs[0]
+        }else {
+            return null
+        }
+
+    }
 }

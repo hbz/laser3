@@ -78,12 +78,12 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
-                            <g:if test="${!isRenewSub}">
+
                                 <div class="ui checkbox la-toggle-radio la-inherit">
                                     <g:checkBox name="copyObject.toggleAudit" value="${objProperty}"
                                                 checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
                                 </div>
-                            </g:if>
+
                         </td>
                     </g:if>
                 %{--AKTIONEN:--}%
@@ -379,8 +379,7 @@
                                                       data-position="top right">
                                                     <i class="address card icon"></i>
                                                 </span>
-                                                <g:link controller="person" action="show"
-                                                        id="${resp.id}">${resp}</g:link>
+                                                ${resp}
                                                 (<strong><i
                                                     class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
                                             </strong>
@@ -400,8 +399,7 @@
                                                       data-position="top right">
                                                     <i class="address card outline icon"></i>
                                                 </span>
-                                                <g:link controller="person" action="show"
-                                                        id="${resp.id}">${resp}</g:link>
+                                                ${resp}
                                                 (<strong><i
                                                     class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
                                             </strong>
@@ -476,8 +474,7 @@
                                                           data-position="top right">
                                                         <i class="address card icon"></i>
                                                     </span>
-                                                    <g:link controller="person" action="show"
-                                                            id="${resp.id}">${resp}</g:link>
+                                                    ${resp}
                                                     (<strong><i
                                                         class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
                                                 </strong>
@@ -498,8 +495,7 @@
                                                           data-position="top right">
                                                         <i class="address card outline icon"></i>
                                                     </span>
-                                                    <g:link controller="person" action="show"
-                                                            id="${resp.id}">${resp}</g:link>
+                                                    ${resp}
                                                     (<strong><i
                                                         class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
                                                 </strong>

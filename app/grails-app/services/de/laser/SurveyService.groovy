@@ -166,7 +166,8 @@ class SurveyService {
 
             if (exportForSurveyOwner) {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
-                                messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
+                               messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
+                               messageSource.getMessage('surveyOrg.ownerComment.label', null, LocaleContextHolder.getLocale())])
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
@@ -184,7 +185,8 @@ class SurveyService {
                         messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale())])
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
-                    titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
+                    titles.addAll([messageSource.getMessage('subscription.comment.label', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('license.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('subscription.packages.label', null, LocaleContextHolder.getLocale()),
@@ -261,6 +263,7 @@ class SurveyService {
 
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
                     row.add([field: surveyOrg.org.name ?: '', style: null])
+                    row.add([field: surveyOrg.ownerComment ?: '', style: null])
 
                     if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
@@ -280,6 +283,7 @@ class SurveyService {
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
                     if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                        row.add([field: subscription?.comment ? subscription.comment : '', style: null])
                         //Performance lastig providers und agencies
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])

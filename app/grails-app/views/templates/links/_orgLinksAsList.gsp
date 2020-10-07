@@ -39,13 +39,13 @@
                             </g:else>
                         </g:if>
                         <g:if test="${! role.isShared && ! role.sharedFrom}">
-                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
+                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
                                     data-confirm-how = "unlink">
-                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
                                     <i class="unlink icon"></i>
-                                </span>
-                            </g:link>
+                                </g:link>
+                            </span>
                         </g:if>
 
                         <g:if test="${!role.isShared && role.sharedFrom}">
@@ -55,11 +55,11 @@
                         </g:if>
 
                         <g:if test="${showPersons}">
-                         <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
-                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.addNewContact')}">
-                                 <i class="address plus icon"></i>
-                             </span>
-                         </button>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
+                                    <i class="address plus icon"></i>
+                                </button>
+                            </span>
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="['cssId': cssId,
                                           'orgRole': role,
@@ -89,7 +89,7 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
+                                            ${func}
                                             (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
@@ -100,7 +100,7 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
+                                            ${resp}
                                             (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">
@@ -129,7 +129,7 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
+                                            ${func}
                                             (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
+                                            ${resp}
                                             (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
 
                                             <g:if test="${editmode}">

@@ -532,6 +532,9 @@
 
 <g:if test="${showTransferFields}">
     <g:javascript>
+     $(document).ready(function(){
+       adjustDropdown()
+    });
 
     function adjustDropdown() {
         var status = $("#status").val();

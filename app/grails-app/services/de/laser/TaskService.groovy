@@ -293,7 +293,6 @@ class TaskService {
 
                 Map<String, Object> qry_params_for_sub = [
                         'roleTypes' : [
-                                RDStore.OR_SUBSCRIBER,
                                 RDStore.OR_SUBSCRIBER_CONS,
                                 RDStore.OR_SUBSCRIPTION_CONSORTIA
                         ],
@@ -306,6 +305,16 @@ class TaskService {
                     validSubscriptionsWithInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, s.status, oo.org.sortname from OrgRole oo join oo.sub s where oo.roleType in (:memberRoleTypes) and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:consRoleTypes) AND o.org = :activeInst ) ) ) ) and s.instanceOf is not null order by lower(s.name), s.endDate", qry_params_for_sub << [memberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],consRoleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA]])
                 }
 
+            }
+            else {
+                Map<String, Object> qry_params_for_sub = [
+                        'roleTypes' : [
+                                RDStore.OR_SUBSCRIBER,
+                                RDStore.OR_SUBSCRIBER_CONS
+                        ],
+                        'activeInst': contextOrg
+                ]
+                validSubscriptionsWithoutInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, s.status from OrgRole oo join oo.sub s where oo.roleType IN (:roleTypes) AND oo.org = :activeInst order by lower(s.name), s.endDate", qry_params_for_sub)
             }
         }
 

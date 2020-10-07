@@ -23,7 +23,7 @@ class CompareService {
         List result = []
         switch (obj.class.simpleName) {
             case License.class.simpleName:
-                result = ['startDate', 'endDate', 'status', 'type', 'licenseUrl', 'licenseCategory', 'openEnded', 'isPublicForApi']
+                result = ['startDate', 'endDate', 'status', 'licenseCategory', 'openEnded', 'isPublicForApi']
                 break
             case Subscription.class.simpleName:
                 result = ['startDate', 'endDate', 'manualCancellationDate', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess']

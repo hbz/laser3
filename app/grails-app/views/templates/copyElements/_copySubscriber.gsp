@@ -46,7 +46,7 @@
                             <tbody>
                             <g:each in="${validSourceSubChilds}" var="sub" status="i">
                                 <tr>
-                                    <td>{i+1}</td>
+                                    <td>${i+1}</td>
                                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                                         <td class="titleCell">
                                             <g:link controller="subscription"
@@ -94,12 +94,16 @@
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
                                 <th>${message(code: 'default.status.label')}</th>
+                                <th class=" center aligned">
+                                    <input type="checkbox" data-action="copy"
+                                           onClick="toggleAllCheckboxes(this)" checked/>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
                             <g:each in="${validTargetSubChilds}" var="sub" status="i">
                                 <tr>
-                                    <td>{i+1}</td>
+                                    <td>${i+1}</td>
                                     <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
                                         <td class="titleCell">
                                             <g:link controller="subscription"

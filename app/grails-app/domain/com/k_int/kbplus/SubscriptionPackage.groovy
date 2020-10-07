@@ -83,9 +83,9 @@ class SubscriptionPackage implements Comparable {
     result
   }
 
-  def getIssueEntitlementsofPackage(){
+  List getIssueEntitlementsofPackage(){
 
-    def result = []
+    List result = []
 
     this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id) && (it.acceptStatus?.id == RDStore.IE_ACCEPT_STATUS_FIXED.id)}.each { iE ->
       if(TitleInstancePackagePlatform.findByIdAndPkg(iE.tipp?.id, pkg))

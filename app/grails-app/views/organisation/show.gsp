@@ -316,7 +316,7 @@
                     </g:if>
 
                     <div class="ui la-float-right">
-                        <g:if test="${((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                        <g:if test="${(orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -329,23 +329,14 @@
                             <dd>
                             <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]"/>
 
-                            <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
+                            <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
                                 <div class="ui list">
 
                                     <div class="item">
 
-                                        <input class="ui button" size="35"
-                                               value="${message(code: 'personFormModalTechnichalSupport')}"
-                                               data-semui="modal"
-                                               data-href="#personFormModalTechnichalSupport"/>
-
-                                        <g:render template="/person/formModal"
-                                                  model="[tenant            : contextOrg,
-                                                          org               : orgInstance,
-                                                          isPublic          : true,
-                                                          presetFunctionType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT,
-                                                          modalId           : 'personFormModalTechnichalSupport',
-                                                          tmplHideFunctions : true]"/>
+                                        <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
+                                           onclick="personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
+                                                code="personFormModalTechnichalSupport"/></a>
 
                                     </div>
                                 </div>
@@ -529,3 +520,29 @@
             });
         }
 </g:javascript>
+<g:if test="${isProviderOrAgency}">
+<g:javascript>
+    function personCreate(contactFor, org) {
+        var url = '<g:createLink controller="ajaxHtml"
+                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
+        createPersonModal(url)
+    }
+    function createPersonModal(url) {
+        $.ajax({
+            url: url,
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#personModal").remove();
+
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#personModal');
+                        r2d2.initDynamicXEditableStuff('#personModal');
+                    }
+                }).modal('show');
+            }
+        });
+    }
+</g:javascript>
+</g:if>
