@@ -1,6 +1,7 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="${modalID ?: 'personModal'}" formID="person_form" text="${modalText ?: message(code: 'person.create_new.label')}"
+<semui:modal id="${modalID ?: 'personModal'}" formID="person_form"
+             text="${modalText ?: message(code: 'person.create_new.label')}"
              contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
@@ -11,201 +12,208 @@
             <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
         </g:if>
 
-        <div class="field">
-            <div class="two fields">
-                <g:if test="${!isPublic}">
-                    <div class="field">
-                        <g:if test="${orgList}">
+    %{--Only for public contact person for Provider/Agency --}%
+        <g:if test="${contactPersonForProviderAgencyPublic && !personInstance}">
+            <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
+            <input name="functionType" type="hidden" value="${presetFunctionType.id}"/>
+            <input name="last_name" type="hidden" value="${presetFunctionType.getI10n('value')}"/>
+        </g:if>
+
+        <g:if test="${!contactPersonForProviderAgencyPublic}">
+
+            <div class="field">
+                <div class="two fields">
+                    <g:if test="${!isPublic}">
+                        <div class="field required">
+                            <g:if test="${orgList}">
+                                <label for="personRoleOrg">
+                                    <g:message code="person.belongs.to"/>
+                                </label>
+                                <g:select class="ui search dropdown"
+                                          name="personRoleOrg"
+                                          from="${orgList.sort { it.name }}"
+                                          value="${org?.id}"
+                                          optionKey="id"
+                                          optionValue="${{ it.name + ' ' + (it.sortname ? '(' + it.sortname + ')' : '') }}"
+                                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                            </g:if>
+                            <g:if test="${org}">
+                                <label for="personRoleOrg">
+                                    <g:message code="person.belongs.to"/>
+                                </label>
+                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
+                                <input name="personRoleOrg" type="hidden" value="${org.id}"/>
+                            </g:if>
+                        %{--<g:else>
                             <label for="personRoleOrg">
-                                <g:message code="person.belongs.to"/>
+                                <g:message code="contact.belongesTo.label"/>
+                            </label>
+                            <i class="icon university la-list-icon"></i>${org?.name}
+                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
+                        </g:else>--}%
+                        </div>
+                    </g:if>
+
+                %{-- <g:if test="${actionName != 'myPublicContacts'}">
+                     <div class="field">
+                         <g:if test="${institution}">
+                             <label for="functionOrg">
+                                 <g:message code="contact.belongesTo.label"/>
+                             </label>
+                             <g:select class="ui search dropdown"
+                                       name="functionOrg"
+                                       from="${orgList}"
+                                       value="${org?.id}"
+                                       optionKey="id"
+                                       optionValue=""/>
+                         </g:if>
+                         <g:else>
+                             <label for="functionOrg">
+                                 <g:message code="contact.belongesTo.label"/>
+                             </label>
+                             <i class="icon university la-list-icon"></i>${org?.name}
+                             <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
+                         </g:else>
+                     </div>
+                 </g:if>--}%
+
+                %{--<g:if test="${actionName != 'myPublicContacts'}">
+                    <div class="field">
+
+                        <g:if test="${institution}">
+                            <label for="positionOrg">
+                                <g:message code="contact.belongesTo.label"/>
                             </label>
                             <g:select class="ui search dropdown"
-                                      name="personRoleOrg"
+                                      name="positionOrg"
                                       from="${orgList}"
                                       value="${org?.id}"
                                       optionKey="id"
                                       optionValue=""/>
                         </g:if>
-                        <g:if test="${org}">
-                            <label for="personRoleOrg">
-                                <g:message code="person.belongs.to"/>
+                        <g:else>
+                            <label for="positionOrg">
+                                <g:message code="contact.belongesTo.label"/>
                             </label>
-                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
-                            <input name="personRoleOrg" type="hidden" value="${org.id}"/>
-                        </g:if>
-                    %{--<g:else>
-                        <label for="personRoleOrg">
-                            <g:message code="contact.belongesTo.label"/>
-                        </label>
-                        <i class="icon university la-list-icon"></i>${org?.name}
-                        <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
-                    </g:else>--}%
+                            <i class="icon university la-list-icon"></i>${org?.name}
+                            <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
+                        </g:else>
                     </div>
-                </g:if>
-            %{--Only for public contact person for Provider/Agency --}%
-            <g:if test="${contactPersonForProviderAgencyPublic}">
-                <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
-            </g:if>
-
-        %{-- <g:if test="${actionName != 'myPublicContacts'}">
-             <div class="field">
-                 <g:if test="${institution}">
-                     <label for="functionOrg">
-                         <g:message code="contact.belongesTo.label"/>
-                     </label>
-                     <g:select class="ui search dropdown"
-                               name="functionOrg"
-                               from="${orgList}"
-                               value="${org?.id}"
-                               optionKey="id"
-                               optionValue=""/>
-                 </g:if>
-                 <g:else>
-                     <label for="functionOrg">
-                         <g:message code="contact.belongesTo.label"/>
-                     </label>
-                     <i class="icon university la-list-icon"></i>${org?.name}
-                     <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
-                 </g:else>
-             </div>
-         </g:if>--}%
-
-            %{--<g:if test="${actionName != 'myPublicContacts'}">
-                <div class="field">
-
-                    <g:if test="${institution}">
-                        <label for="positionOrg">
-                            <g:message code="contact.belongesTo.label"/>
-                        </label>
-                        <g:select class="ui search dropdown"
-                                  name="positionOrg"
-                                  from="${orgList}"
-                                  value="${org?.id}"
-                                  optionKey="id"
-                                  optionValue=""/>
-                    </g:if>
-                    <g:else>
-                        <label for="positionOrg">
-                            <g:message code="contact.belongesTo.label"/>
-                        </label>
-                        <i class="icon university la-list-icon"></i>${org?.name}
-                        <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
-                    </g:else>
-                </div>
-            </g:if>--}%
-
-            </div>
-        </div><!-- .field -->
-
-        <div class="field">
-            <div class="two fields">
-
-                <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
-                    <label for="last_name">
-                        <g:message code="person.last_name.label"/>
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'person.last_name.info')}">
-                        <i class="question circle icon"></i>
-                        </span>
-                    </label>
-                    <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
-                </div>
-
-                <div id="person_title"
-                     class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
-                    <label for="title">
-                        <g:message code="person.title.label"/>
-                    </label>
-                    <g:textField name="title" required="required" value="${personInstance?.title}"/>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="field">
-            <div class="three fields">
-
-                <div id="person_first_name"
-                     class="field wide eight ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
-                    <label for="first_name">
-                        <g:message code="person.first_name.label"/>
-                    </label>
-                    <g:textField name="first_name" value="${personInstance?.first_name}"/>
-                </div>
-
-                <div id="person_middle_name"
-                     class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
-                    <label for="middle_name">
-                        <g:message code="person.middle_name.label"/>
-                    </label>
-                    <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
-                </div>
-
-                <div id="person_gender"
-                     class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
-                    <label for="gender">
-                        <g:message code="person.gender.label"/>
-                    </label>
-                    <laser:select class="ui dropdown" id="gender" name="gender"
-                                  from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${personInstance?.gender?.id}"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                </div>
-            </div>
-        </div>
-
-        <g:if test="${!tmplHideFunctions}">
-
-            <div class="field">
-                <div class="two fields">
-                    <div class="field">
-                        <label for="functionType">
-                            <g:message code="person.function.label"/>
-                        </label>
-
-                        <select name="functionType" id="functionType" multiple=""
-                                class="ui search selection dropdown sortable">
-                            <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                            <g:each in="${functions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
-                                    var="functionType">
-                                <option <%=(personInstance ? (functionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
-                                        value="${functionType.id}">
-                                    ${functionType.getI10n('value')}
-                                </option>
-                            </g:each>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label for="positionType">
-                            <g:message code="person.position.label"/>
-                        </label>
-                        <select name="positionType" id="positionType" multiple="" class="ui search selection dropdown">
-                            <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                            <g:each in="${positions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
-                                    var="positionType">
-                                <option <%=(personInstance ? (positionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
-                                        value="${positionType.id}">
-                                    ${positionType.getI10n('value')}
-                                </option>
-                            </g:each>
-                        </select>
-
-                    </div>
+                </g:if>--}%
 
                 </div>
             </div><!-- .field -->
 
+            <div class="field">
+                <div class="two fields">
+
+                    <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
+                        <label for="last_name">
+                            <g:message code="person.last_name.label"/>
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'person.last_name.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </label>
+                        <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
+                    </div>
+
+                    <div id="person_title"
+                         class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+                        <label for="title">
+                            <g:message code="person.title.label"/>
+                        </label>
+                        <g:textField name="title" required="required" value="${personInstance?.title}"/>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="three fields">
+
+                    <div id="person_first_name"
+                         class="field wide eight ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
+                        <label for="first_name">
+                            <g:message code="person.first_name.label"/>
+                        </label>
+                        <g:textField name="first_name" value="${personInstance?.first_name}"/>
+                    </div>
+
+                    <div id="person_middle_name"
+                         class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                        <label for="middle_name">
+                            <g:message code="person.middle_name.label"/>
+                        </label>
+                        <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
+                    </div>
+
+                    <div id="person_gender"
+                         class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+                        <label for="gender">
+                            <g:message code="person.gender.label"/>
+                        </label>
+                        <laser:select class="ui dropdown" id="gender" name="gender"
+                                      from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${personInstance?.gender?.id}"
+                                      noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    </div>
+                </div>
+            </div>
+
+            <g:if test="${!tmplHideFunctions}">
+
+                <div class="field">
+                    <div class="two fields">
+                        <div class="field">
+                            <label for="functionType">
+                                <g:message code="person.function.label"/>
+                            </label>
+
+                            <select name="functionType" id="functionType" multiple=""
+                                    class="ui search selection dropdown sortable">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${functions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
+                                        var="functionType">
+                                    <option <%=(personInstance ? (functionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
+                                            value="${functionType.id}">
+                                        ${functionType.getI10n('value')}
+                                    </option>
+                                </g:each>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="positionType">
+                                <g:message code="person.position.label"/>
+                            </label>
+                            <select name="positionType" id="positionType" multiple=""
+                                    class="ui search selection dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                <g:each in="${positions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
+                                        var="positionType">
+                                    <option <%=(personInstance ? (positionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
+                                            value="${positionType.id}">
+                                        ${positionType.getI10n('value')}
+                                    </option>
+                                </g:each>
+                            </select>
+
+                        </div>
+
+                    </div>
+                </div><!-- .field -->
+
+            </g:if>
 
         </g:if>
 
         <g:if test="${showContacts}">
             <div class="field">
-                <br>
                 <br>
                 <label for="contacts">
                     <g:message code="person.contacts.label"/>:
@@ -271,7 +279,6 @@
         <g:if test="${showAddresses}">
             <div class="field">
                 <br>
-                <br>
                 <label for="addresses">
                     <g:message code="person.addresses.label"/>:
                 </label>
@@ -309,7 +316,7 @@
 
     </g:form>
 
-    <g:if test="${personInstance}">
+    <g:if test="${personInstance && !contactPersonForProviderAgencyPublic}">
         <g:javascript src="properties.js"/>
         <div class="ui grid">
             <div class="sixteen wide column">
@@ -323,12 +330,12 @@
                                         ownobj          : personInstance,
                                         custom_props_div: "custom_props_div_${contextOrg.id}",
                                         tenant          : contextOrg,
-                                        withoutRender:  true]}"/>
+                                        withoutRender   : true]}"/>
                                 <script>
-                                        $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajax'
+                                    $(document).ready(function () {
+                                        c3po.initProperties("<g:createLink controller='ajax'
                                                                                action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
-                                        });
+                                    });
                                 </script>
                             </div>
                         </div>

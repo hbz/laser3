@@ -54,6 +54,7 @@ class PersonController extends AbstractDebugController {
                 def personInstance = new Person(params)
                 if (!personInstance.save(flush: true)) {
                     flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
+                    log.debug("Person could not be created: "+personInstance.errors )
                     redirect(url: request.getHeader('referer'))
                     //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
                     return
