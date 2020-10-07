@@ -729,13 +729,13 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            if (params.subscription?.takeTitleGroups) {
+            if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
                 copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
 
             }
 
-            if (params.subscription?.deleteTitleGroups) {
+            if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
                 deleteIssueEntitlementGroupItem(deleteTitleGroups)
 
