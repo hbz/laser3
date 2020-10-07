@@ -121,7 +121,7 @@
 
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takePackageSettings"
-                                                        value="${genericOIDService.getOID(sp)}" data-pkgoid="${sp.id}"
+                                                        value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
                                                         data-action="copy" checked="${true}"/>
                                         </div>
                                     </div>
@@ -132,7 +132,7 @@
                             <div data-pkgoid="${genericOIDService.getOID(sp)}">
                                 <div class="ui checkbox la-toggle-radio la-replace">
                                     <g:checkBox name="subscription.takePackageIds"
-                                                value="${genericOIDService.getOID(sp)}" data-pkgoid="${sp.id}"
+                                                value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
                                                 data-action="copy" checked="${true}"/>
                                 </div>
                                 <br/>
@@ -445,10 +445,10 @@
 
         takePackageIds: function (elem) {
             if (elem.checked) {
-                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').addClass('willStay');
                 $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
             } else {
-                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').removeClass('willStay');
+                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').removeClass('willStay');
                 if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
                     $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
                 }
@@ -456,7 +456,7 @@
         },
 
         deletePackageIds: function (elem) {
-            var pkgOid = $(elem).attr('data-pkgoid'); // FEHLER dk !?
+            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
             //var pkgOid = $(elem).attr('data-pkgoid'); // dk
             $('[name="subscription.deletePackageSettings"]').filter('[data-pkgoid="' + pkgOid + '"]').change();
             if (elem.checked) {
@@ -469,7 +469,7 @@
         },
 
         takePackageSettings: function (elem) {
-            var pkgOid = $(elem).attr('data-pkgoid'); // FEHLER dk !?
+            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
             //var pkgOid = $(elem).attr('data-pkgoid'); // dk
             if (elem.checked) {
                 $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
@@ -481,7 +481,7 @@
         },
 
         deletePackageSettings: function (elem) {
-            var pkgOid = $(elem).attr('data-pkgoid'); // FEHLER dk !?
+            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
             //var pkgOid = $(elem).attr('data-pkgoid'); // dk
             if (elem.checked) {
                 $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').addClass('willBeReplacedStrong');

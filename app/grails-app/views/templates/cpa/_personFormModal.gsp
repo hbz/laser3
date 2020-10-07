@@ -27,7 +27,7 @@
                         <div class="field required">
                             <g:if test="${orgList}">
                                 <label for="personRoleOrg">
-                                    <g:message code="person.belongs.to"/>
+                                    <g:message code="person.belongsTo"/>
                                 </label>
                                 <g:select class="ui search dropdown"
                                           name="personRoleOrg"
@@ -39,7 +39,7 @@
                             </g:if>
                             <g:if test="${org}">
                                 <label for="personRoleOrg">
-                                    <g:message code="person.belongs.to"/>
+                                    <g:message code="person.belongsTo"/>
                                 </label>
                                 <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
                                 <input name="personRoleOrg" type="hidden" value="${org.id}"/>
