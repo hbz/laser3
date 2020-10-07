@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement" %>
+<%@ page import="de.laser.IssueEntitlement" %>
 <!doctype html>
 <html>
 	<head>
