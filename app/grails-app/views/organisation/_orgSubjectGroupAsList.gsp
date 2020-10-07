@@ -13,7 +13,7 @@
                                 <g:link class="ui negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [subjectGroup?.subjectGroup?.getI10n('value')])}"
                                         data-confirm-term-how="delete"
-                                        controller="organisation" action="deleteSubjectGroup" params="[org: org.id, removeOrgSubjectGroup: subjectGroup.id]">
+                                        controller="organisation" action="deleteSubjectGroup" params="[id: org.id, removeOrgSubjectGroup: subjectGroup.id]">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </div>
