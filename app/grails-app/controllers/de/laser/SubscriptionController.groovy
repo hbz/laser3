@@ -4314,8 +4314,13 @@ class SubscriptionController
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                 if(result.targetObject) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                 }
+                result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                break
+            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
+                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
+                params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
