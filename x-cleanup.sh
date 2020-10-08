@@ -53,7 +53,7 @@ currentDate=`date +"%Y-%m-%d %T"`
 echo ""
 echo "> finished: $currentDate"
 echo ""
-echo "> known issues (git rollback):"
+echo "> known issues (git rollback required):"
 echo ""
 echo "./grails-app/assets/images/*"
 echo "./grails-app/controllers/de/laser/SystemProfilerInterceptor.groovy"

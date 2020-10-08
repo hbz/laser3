@@ -36,7 +36,7 @@
     
     ./x-cleanup.sh
     ./x-migrate.sh
-    ./x-move.sh
+    ./x-init.sh
 
 ##### Docs
 
