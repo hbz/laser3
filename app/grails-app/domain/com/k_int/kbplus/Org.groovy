@@ -14,6 +14,7 @@ import de.laser.OrgRole
 import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
+import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.Address

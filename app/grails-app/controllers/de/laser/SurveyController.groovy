@@ -10,7 +10,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.SubscriptionProperty
+import de.laser.properties.SubscriptionProperty
 import com.k_int.kbplus.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem

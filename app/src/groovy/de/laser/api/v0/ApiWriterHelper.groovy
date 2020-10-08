@@ -5,6 +5,9 @@ import de.laser.Identifier
 import de.laser.OrgRole
 import de.laser.PersonRole
 import de.laser.RefdataValue
+import de.laser.properties.LicenseProperty
+import de.laser.properties.OrgProperty
+import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact

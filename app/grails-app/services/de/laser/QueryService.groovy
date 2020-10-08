@@ -6,6 +6,10 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.LicenseProperty
+import de.laser.properties.OrgProperty
+import de.laser.properties.PersonProperty
+import de.laser.properties.SubscriptionProperty
 import grails.transaction.Transactional
 
 import de.laser.UserSetting.KEYS

@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
+import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint

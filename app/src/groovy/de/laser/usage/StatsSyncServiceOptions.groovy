@@ -5,6 +5,7 @@ import de.laser.Identifier
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants
+import de.laser.properties.PlatformProperty
 import de.laser.titles.TitleInstance
 import groovy.util.logging.Log4j
 

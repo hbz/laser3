@@ -7,6 +7,8 @@ import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
+import de.laser.properties.LicenseProperty
+import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemEvent
 import de.laser.Task
 import de.laser.helper.RDStore

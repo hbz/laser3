@@ -2,7 +2,7 @@ package de.laser
 
 
 import com.k_int.kbplus.Platform
-import com.k_int.kbplus.PlatformProperty
+import de.laser.properties.PlatformProperty
 import com.k_int.kbplus.auth.User
 import de.laser.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
