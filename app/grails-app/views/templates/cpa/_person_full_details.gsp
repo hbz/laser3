@@ -6,14 +6,20 @@
         <div class="ui item person-details">
             <div class="content la-space-right">
                 <h5 class="ui header">
-
                         ${person.title}
                         ${person.first_name}
                         ${person.middle_name}
                         ${person.last_name}
-
                 </h5>
             </div>
+
+            <g:if test="${overwriteEditable}">
+                        <div class="content la-space-right">
+                        <button class="ui mini icon button" type="button" onclick="editPerson(${person.id})" >
+                            <i class="write icon"></i>
+                        </button>
+                        </div>
+            </g:if>
 
             <div class="content">
                 <g:if test="${editable}">
@@ -230,6 +236,28 @@
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
                             // ajaxPostFunc()
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+
+        function editPerson(id) {
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+            person_editModal(url)
+        }
+        function person_editModal(url) {
+            $.ajax({
+                url: url,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#personModal").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#personModal');
+                            r2d2.initDynamicXEditableStuff('#personModal');
                         }
                     }).modal('show');
                 }

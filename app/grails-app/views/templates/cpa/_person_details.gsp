@@ -11,6 +11,14 @@
 
             </h5>
 
+            <g:if test="${overwriteEditable}">
+                <div class="content la-space-right">
+                    <button class="ui mini icon button" type="button" onclick="editPerson(${person.id})" >
+                        <i class="write icon"></i>
+                    </button>
+                </div>
+            </g:if>
+
         </div><!-- .person-details -->
 
         <g:if test="${person.contacts}">
@@ -110,5 +118,27 @@
     </g:if>
     </div><!-- .la-flex-list -->
 </g:if>
+<g:javascript>
+function editPerson(id) {
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+            person_editModal(url)
+        }
+        function person_editModal(url) {
+            $.ajax({
+                url: url,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#personModal").remove();
 
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff('#personModal');
+                            r2d2.initDynamicXEditableStuff('#personModal');
+                        }
+                    }).modal('show');
+                }
+            });
+        }
+</g:javascript>
 							

@@ -19,10 +19,14 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="${Subscription.class.name}" pk="${subscriptionInstance.id}" field="name" id="name"
-               class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+<h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+<semui:xEditable owner="${subscriptionInstance}" field="name" />
 </h1>
+<g:if test="${editable}">
+    <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+</g:if>
+
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="manageEntitlementGroup" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.manageEntitlementGroup.label')}</h2>
 <semui:messages data="${flash}"/>

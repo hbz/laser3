@@ -30,7 +30,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 %>
 
 <div class="ui tablet stackable steps la-clear-before">
-    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS] ? 'completed' : '')} step">
         <i class=" icon"></i>
             <div class="content" >
                 <div class="title">
@@ -51,6 +51,17 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 
                 </div>
+        </div>
+    </div>
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+        <div class="content" >
+            <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
+            <div class="description">
+                <i class="gift icon"></i>${message(code: 'package.label')}
+                <i class="book icon"></i>${message(code: 'title')}
+                <br>
+                <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
+            </div>
         </div>
     </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
@@ -83,6 +94,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 </g:if>
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
     <g:render template="/templates/copyElements/copyPropertiesCompare" />
+</g:elseif>
+<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS}">
+    <g:render template="/templates/copyElements/copyPackagesAndIEs" />
 </g:elseif>
 <g:else>
     <g:render template="/templates/copyElements/copyElements" />

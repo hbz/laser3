@@ -5,7 +5,7 @@
 
 <semui:form>
 
-    <g:if test="${!fromSurvey && !isRenewSub}">
+    <g:if test="${!fromSurvey && !isRenewSub && !copyObject}">
         <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
                 targetObject          : targetObject,
@@ -23,7 +23,7 @@
                     <div class="la-copyElements-th-flex-container">
                         <div class="la-copyElements-th-flex-item">
                             <g:if test="${sourceObject}"><g:link
-                                    controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show"
+                                    controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="index"
                                     id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                         </div>
 
@@ -32,20 +32,21 @@
                         </div>
                     </div>
                 </th>
+                <g:if test="${!copyObject}">
+                        <th class="six wide">
+                            <div class="la-copyElements-th-flex-container">
+                                <div class="la-copyElements-th-flex-item">
+                                    <g:if test="${targetObject}"><g:link
+                                            controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="index"
+                                            id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
+                                </div>
 
-                <th class="six wide">
-                    <div class="la-copyElements-th-flex-container">
-                        <div class="la-copyElements-th-flex-item">
-                            <g:if test="${targetObject}"><g:link
-                                    controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show"
-                                    id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
-                        </div>
-
-                        <div>
-                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)"/>
-                        </div>
-                    </div>
-                </th>
+                                <div>
+                                    <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)"/>
+                                </div>
+                            </div>
+                        </th>
+                </g:if>
             </tr>
             </thead>
             <tbody class="top aligned">
@@ -54,7 +55,7 @@
                        value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
                     <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages.size()}</strong>
-                    <g:each in="${sourceObject.packages?.sort { it.pkg.name }}" var="sp">
+                    <g:each in="${sourceObject.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
@@ -74,7 +75,7 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${ies}" var="ie">
+                                            <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
                                                 <div class="item">
                                                     <semui:listIcon hideTooltip="true"
                                                                     type="${ie.tipp.title.class.name}"/>
@@ -142,11 +143,11 @@
                 </td>
 
 
-
+            <g:if test="${!copyObject}">
                 <td name="subscription.takePackages.target">
                     <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages.size()}</strong>
 
-                    <g:each in="${targetObject?.packages?.sort { it.pkg.name }}" var="sp">
+                    <g:each in="${targetObject?.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
                                 <i class="gift icon"></i>
@@ -164,7 +165,7 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${ies}" var="ie">
+                                            <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
                                                 <div class="item">
                                                     <semui:listIcon hideTooltip="true"
                                                                     type="${ie.tipp.title.class.name}"/>
@@ -211,7 +212,7 @@
                                             <div class="ui checkbox la-toggle-radio la-noChange">
                                                 <g:checkBox name="subscription.deletePackageSettings"
                                                             value="${genericOIDService.getOID(sp)}"
-                                                            data-pkgid="${genericOIDService.getOID(sp.pkg)}"
+                                                            data-pkgoid="${genericOIDService.getOID(sp.pkg)}"
                                                             data-action="delete" checked="${false}"/>
                                             </div>
                                         </g:if>
@@ -225,13 +226,107 @@
                                 <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="subscription.deletePackageIds"
                                                 value="${genericOIDService.getOID(sp)}"
-                                                data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete"
+                                                data-pkgoid="${genericOIDService.getOID(sp.pkg)}" data-action="delete"
                                                 checked="${false}"/>
                                 </div>
                             </div>
                         </div>
                     </g:each>
                 </td>
+            </g:if>
+            </tr>
+            <tr>
+                <td name="subscription.takeTitleGroups.source">
+                    <strong>${message(code: 'subscription.details.ieGroups')}: ${sourceObject.ieGroups.size()}</strong>
+
+                    <g:each in="${sourceObject.ieGroups.sort { it.name }}" var="titleGroup">
+                        <div class="la-copyPack-container la-element">
+                            <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
+                                <g:link action="index" controller="subscription" id="${sourceObject.id}"
+                                        params="[titleGroup: titleGroup.id]">
+                                    <i class="grey icon object group la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
+                                </g:link>
+                                <div class="ui accordion">
+                                    <div class="title"><i
+                                            class="dropdown icon"></i>
+                                        ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
+                                    </div>
+
+                                    <div class="content">
+                                        <div class="ui list">
+                                            <g:each in="${titleGroup.items.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                                    var="item">
+                                                <div class="item">
+                                                    <semui:listIcon hideTooltip="true"
+                                                                    type="${item.ie.tipp.title.class.name}"/>
+                                                    <strong><g:link controller="title" action="show"
+                                                                    id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
+                                <div class="ui checkbox la-toggle-radio la-replace">
+                                    <g:checkBox name="subscription.takeTitleGroups"
+                                                value="${genericOIDService.getOID(titleGroup)}"
+                                                data-action="copy"
+                                                checked="${true}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </g:each>
+                </td>
+                <g:if test="${!copyObject}">
+                <td name="subscription.takeTitleGroups.target">
+                    <strong>${message(code: 'subscription.details.ieGroups')}: ${targetObject.ieGroups.size()}</strong>
+
+                    <g:each in="${targetObject.ieGroups.sort { it.name }}" var="titleGroup">
+                        <div class="la-copyPack-container la-element">
+                            <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
+                                <g:link action="index" controller="subscription" id="${targetObject.id}"
+                                        params="[titleGroup: titleGroup.id]">
+                                    <i class="grey icon object group la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
+                                </g:link>
+                                <div class="ui accordion">
+                                    <div class="title"><i
+                                            class="dropdown icon"></i>
+                                        ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
+                                    </div>
+
+                                    <div class="content">
+                                        <div class="ui list">
+                                            <g:each in="${titleGroup.items.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                                    var="item">
+                                                <div class="item">
+                                                    <semui:listIcon hideTooltip="true"
+                                                                    type="${item.ie.tipp.title.class.name}"/>
+                                                    <strong><g:link controller="title" action="show"
+                                                                    id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
+                                <div class="ui checkbox la-toggle-radio la-noChange">
+                                    <g:checkBox name="subscription.deleteTitleGroups"
+                                                value="${genericOIDService.getOID(titleGroup)}"
+                                                data-action="delete"
+                                                checked="${false}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </g:each>
+                </div>
+                </td>
+            </g:if>
             </tr>
             %{--<tr>
                 <td name="subscription.takeEntitlements.source">
@@ -293,6 +388,12 @@
                 </div>
             </div>
         </g:if>
+        <g:elseif test="${copyObject}">
+            <div class="sixteen wide field" style="text-align: right;">
+                <input type="submit" class="ui button js-click-control"
+                       value="${message(code: 'default.button.copy.label')}"/>
+            </div>
+        </g:elseif>
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
@@ -302,131 +403,162 @@
         </g:else>
     </g:form>
 </semui:form>
+<g:if test="${!copyObject}">
+    <r:script>
 
-<r:script>
+        var subCopyController = {
 
-    var subCopyController = {
+            checkboxes: {
+                $takePackageIds: $('input[name="subscription.takePackageIds"]'),
+                $takePackageSettings: $('input[name="subscription.takePackageSettings"]'),
+                $deletePackageIds: $('input[name="subscription.deletePackageIds"]'),
+                $deletePackageSettings: $('input[name="subscription.deletePackageSettings"]'),
+                $takeEntitlementIds: $('input[name="subscription.takeEntitlementIds"]'),
+                $deleteEntitlementIds: $('input[name="subscription.deleteEntitlementIds"]'),
+                $takeTitleGroups: $('input[name="subscription.takeTitleGroups"]'),
+                $deleteTitleGroups: $('input[name="subscription.deleteTitleGroups"]')
+            },
 
-        checkboxes: {
-            $takePackageIds: $('input[name="subscription.takePackageIds"]'),
-            $takePackageSettings: $('input[name="subscription.takePackageSettings"]'),
-            $deletePackageIds: $('input[name="subscription.deletePackageIds"]'),
-            $deletePackageSettings: $('input[name="subscription.deletePackageSettings"]'),
-            $takeEntitlementIds: $('input[name="subscription.takeEntitlementIds"]'),
-            $deleteEntitlementIds: $('input[name="subscription.deleteEntitlementIds"]')
-        },
+            init: function (elem) {
+                var ref = subCopyController.checkboxes
 
-        init: function (elem) {
-            var ref = subCopyController.checkboxes
+                ref.$takePackageIds.change(function (event) {
+                    subCopyController.takePackageIds(this);
+                }).trigger('change')
 
-            ref.$takePackageIds.change(function (event) {
-                subCopyController.takePackageIds(this);
-            }).trigger('change')
+                ref.$takePackageSettings.change(function (event) {
+                    subCopyController.takePackageSettings(this);
+                }).trigger('change')
 
-            ref.$takePackageSettings.change(function (event) {
-                subCopyController.takePackageSettings(this);
-            }).trigger('change')
+                ref.$deletePackageIds.change(function (event) {
+                    subCopyController.deletePackageIds(this);
+                }).trigger('change')
 
-            ref.$deletePackageIds.change(function (event) {
-                subCopyController.deletePackageIds(this);
-            }).trigger('change')
+                ref.$deletePackageSettings.change(function (event) {
+                    subCopyController.deletePackageSettings(this);
+                }).trigger('change')
 
-            ref.$deletePackageSettings.change(function (event) {
-                subCopyController.deletePackageSettings(this);
-            }).trigger('change')
+                ref.$takeEntitlementIds.change(function (event) {
+                    subCopyController.takeEntitlementIds(this);
+                }).trigger('change')
 
-            ref.$takeEntitlementIds.change(function (event) {
-                subCopyController.takeEntitlementIds(this);
-            }).trigger('change')
+                ref.$deleteEntitlementIds.change(function (event) {
+                    subCopyController.deleteEntitlementIds(this);
+                }).trigger('change')
 
-            ref.$deleteEntitlementIds.change(function (event) {
-                subCopyController.deleteEntitlementIds(this);
-            }).trigger('change')
-        },
+                ref.$takeTitleGroups.change(function (event) {
+                    subCopyController.takeTitleGroups(this);
+                }).trigger('change')
 
-        takePackageIds: function (elem) {
-            if (elem.checked) {
-                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
-            } else {
-                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
-                    $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
+                ref.$deleteTitleGroups.change(function (event) {
+                    subCopyController.deleteTitleGroups(this);
+                }).trigger('change')
+            },
+
+            takePackageIds: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
+                } else {
+                    $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
+                        $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
+                    }
                 }
-            }
-        },
+            },
 
-        deletePackageIds: function (elem) {
-            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
-            //var pkgOid = $(elem).attr('data-pkgoid'); // dk
-            $('[name="subscription.deletePackageSettings"]').filter('[data-pkgoid="' + pkgOid + '"]').change();
-            if (elem.checked) {
-                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
-                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
-            } else {
-                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
-                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
-            }
-        },
-
-        takePackageSettings: function (elem) {
-            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
-            //var pkgOid = $(elem).attr('data-pkgoid'); // dk
-            if (elem.checked) {
-                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
-                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
-            } else {
-                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
-                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
-            }
-        },
-
-        deletePackageSettings: function (elem) {
-            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
-            //var pkgOid = $(elem).attr('data-pkgoid'); // dk
-            if (elem.checked) {
-                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').addClass('willBeReplacedStrong');
-            } else {
-                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').removeClass('willBeReplacedStrong');
-            }
-        },
-
-        takeEntitlementIds: function (elem) {
-            if (elem.checked) {
-                $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').addClass('willStay');
-                $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
-            } else {
-                $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1) {
-                    $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
+            deletePackageIds: function (elem) {
+                var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
+                //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+                $('[name="subscription.deletePackageSettings"]').filter('[data-pkgoid="' + pkgOid + '"]').change();
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
                 }
-            }
-        },
+            },
 
-        deleteEntitlementIds: function (elem) {
-            var ieoid = elem.value // FEHLER dk !?
-            //var ieoid = $(elem).attr('data-ieoid'); // dk
-            if (elem.checked) {
-                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').addClass('willBeReplacedStrong');
-            } else {
-                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').removeClass('willBeReplacedStrong');
-            }
-        },
-
-        getNumberOfCheckedCheckboxes: function (inputElementName) {
-            var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
-            var numberOfChecked = 0;
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
-                    numberOfChecked++;
+            takePackageSettings: function (elem) {
+                var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
+                //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
+                } else {
+                    $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
                 }
+            },
+
+            deletePackageSettings: function (elem) {
+                var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
+                //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').removeClass('willBeReplacedStrong');
+                }
+            },
+
+            takeEntitlementIds: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
+                } else {
+                    $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1) {
+                        $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteEntitlementIds: function (elem) {
+                var ieoid = elem.value // FEHLER dk !?
+                //var ieoid = $(elem).attr('data-ieoid'); // dk
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').removeClass('willBeReplacedStrong');
+                }
+            },
+
+            takeTitleGroups: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takeTitleGroups.source"] div[data-oid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="subscription.takeTitleGroups.target"] div').addClass('willStay');
+                } else {
+                    $('.table tr td[name="subscription.takeTitleGroups.source"] div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                    if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeTitleGroups') < 1) {
+                        $('.table tr td[name="subscription.takeTitleGroups.target"] div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteTitleGroups: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="subscription.takeTitleGroups.target"] div [data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="subscription.takeTitleGroups.target"] div [data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                }
+            },
+
+            getNumberOfCheckedCheckboxes: function (inputElementName) {
+                var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
+                var numberOfChecked = 0;
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        numberOfChecked++;
+                    }
+                }
+                return numberOfChecked;
             }
-            return numberOfChecked;
         }
-    }
 
-    subCopyController.init()
-</r:script>
+        subCopyController.init()
+    </r:script>
+</g:if>
 
 
 
