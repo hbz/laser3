@@ -226,7 +226,7 @@
                         <td></td>
                     </g:if>
                     <%
-                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(sub))
+                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(sub)
                         Subscription navPrevSubMember = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                         Subscription navNextSubMember = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
@@ -260,7 +260,7 @@
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:set var="license" value="${Links.findByDestinationAndLinkType(genericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)}"/>
+                            <g:set var="license" value="${Links.findByDestinationSubscriptionAndLinkType(sub,RDStore.LINKTYPE_LICENSE)}"/>
                             <g:if test="${!license}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>

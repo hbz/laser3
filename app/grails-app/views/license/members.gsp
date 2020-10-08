@@ -110,7 +110,7 @@
         <g:each in="${validMemberLicenses}" status="i" var="row">
             <g:set var="lic" value="${row.license}"/>
             <%
-                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(lic))
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(lic)
                 License navPrevLicense = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
                 License navNextLicense = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>

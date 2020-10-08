@@ -125,7 +125,7 @@
                 </g:if>
             </sec:ifAnyGranted>
 
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, genericOIDService.getOID(subscriptionInstance))}"/>
+            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestinationSubscription(RDStore.LINKTYPE_FOLLOWS, subscriptionInstance)}"/>
 
 
             <g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
@@ -159,11 +159,11 @@
             </g:if>
 
 
-            <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
+            <g:if test="${showConsortiaFunctions || subscriptionInstance.administrative}">
                 <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
             </g:if>
 
-            <g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+            <g:if test="${subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && accessService.checkPerm("ORG_CONSORTIUM")}">
 
                   <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                              params="${[id: params.id]}"

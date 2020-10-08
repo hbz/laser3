@@ -17,21 +17,29 @@ class LinksGenerationService {
     GenericOIDService genericOIDService
     def messageSource
 
-    LinkedHashMap<String,List> generateNavigation(String contextOID) {
+    LinkedHashMap<String,List> generateNavigation(context) {
         List prevLink = []
         List nextLink = []
-        List previous = Links.findAllBySourceAndLinkType(contextOID,RDStore.LINKTYPE_FOLLOWS)
-        List next = Links.findAllByDestinationAndLinkType(contextOID,RDStore.LINKTYPE_FOLLOWS)
+        List previous = Links.executeQuery('select li from Links li where :context in (li.sourceLicense,li.sourceSubscription) and linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS])
+        List next = Links.executeQuery('select li from Links li where :context in (li.destinationLicense,li.destinationSubscription) and linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS])
         if(previous.size() > 0) {
-            previous.each { it ->
-                def obj = genericOIDService.resolveOID(it.destination)
+            previous.each { Links li ->
+                def obj
+                if(li.destinationLicense)
+                    obj = li.destinationLicense
+                else if(li.destinationSubscription)
+                    obj = li.destinationSubscription
                 prevLink.add(obj)
             }
         }
         else prevLink = null
         if(next.size() > 0) {
-            next.each { it ->
-                def obj = genericOIDService.resolveOID(it.source)
+            next.each { Links li ->
+                def obj
+                if(li.sourceLicense)
+                    obj = li.sourceLicense
+                else if(li.sourceSubscription)
+                    obj = li.sourceSubscription
                 nextLink.add(obj)
             }
         }
@@ -42,12 +50,16 @@ class LinksGenerationService {
     Map<String,Object> getSourcesAndDestinations(obj,user) {
         Map<String,Set<Links>> links = [:]
         // links
-        Set<Links> sources = Links.findAllBySource(genericOIDService.getOID(obj))
-        Set<Links> destinations = Links.findAllByDestination(genericOIDService.getOID(obj))
+        Set<Links> sources = Links.executeQuery('select li from Links li where :context in (li.sourceSubscription,li.sourceLicense)',[context:obj])
+        Set<Links> destinations = Links.executeQuery('select li from Links li where :context in (li.destinationSubscription,li.destinationLicense)',[context:obj])
         //IN is from the point of view of the context object (= obj)
 
         sources.each { Links link ->
-            def destination = genericOIDService.resolveOID(link.destination)
+            def destination
+            if(link.destinationSubscription)
+                destination = link.destinationSubscription
+            else if(link.destinationLicense)
+                destination = link.destinationLicense
             if (destination.respondsTo("isVisibleBy") && destination.isVisibleBy(user)) {
                 String index = genericOIDService.getOID(link.linkType)
                 if (links[index] == null) {
@@ -57,7 +69,11 @@ class LinksGenerationService {
             }
         }
         destinations.each { Links link ->
-            def source = genericOIDService.resolveOID(link.source)
+            def source
+            if(link.sourceSubscription)
+                source = link.sourceSubscription
+            else if(link.sourceLicense)
+                source = link.sourceLicense
             if (source.respondsTo("isVisibleBy") && source.isVisibleBy(user)) {
                 String index = genericOIDService.getOID(link.linkType)
                 if (links[index] == null) {
@@ -146,7 +162,7 @@ class LinksGenerationService {
             try {
                 link = Links.construct(configMap)
                 if(configMap.contextInstances) {
-                    def sourceObj = genericOIDService.resolveOID(configMap.source), destObj = genericOIDService.resolveOID(configMap.destination)
+                    def sourceObj = configMap.source, destObj = configMap.destination
                     configMap.contextInstances.each { contextInstance ->
                         def pairChild
                         if(contextInstance instanceof Subscription) {
@@ -158,12 +174,12 @@ class LinksGenerationService {
                         if(pairChild) {
                             Map<String,Object> childConfigMap = [linkType:configMap.linkType,owner:configMap.owner]
                             if(contextInstance.instanceOf == sourceObj) {
-                                childConfigMap.source = genericOIDService.getOID(contextInstance)
-                                childConfigMap.destination = genericOIDService.getOID(pairChild)
+                                childConfigMap.source = contextInstance
+                                childConfigMap.destination = pairChild
                             }
                             else if(contextInstance.instanceOf == destObj) {
-                                childConfigMap.source = genericOIDService.getOID(pairChild)
-                                childConfigMap.destination = genericOIDService.getOID(contextInstance)
+                                childConfigMap.source = pairChild
+                                childConfigMap.destination = contextInstance
                             }
                             Links.construct(childConfigMap)
                         }
@@ -178,8 +194,7 @@ class LinksGenerationService {
 
         if(link) {
             link.linkType = configMap.linkType
-            link.source = configMap.source
-            link.destination = configMap.destination
+            link.setSourceAndDestination(configMap.source, configMap.destination)
             if(linkComment) {
                 if(configMap.commentContent.length() > 0) {
                     linkComment.content = configMap.commentContent
@@ -220,7 +235,7 @@ class LinksGenerationService {
                 comment.delete(flush:true)
                 commentContent.delete(flush:true)
             }
-            def source = genericOIDService.resolveOID(obj.source), destination = genericOIDService.resolveOID(obj.destination)
+            def source = obj.determineSource(), destination = obj.determineDestination()
             Set sourceChildren = source.getClass().findAllByInstanceOf(source), destinationChildren = destination.getClass().findAllByInstanceOf(destination)
             sourceChildren.each { sourceChild ->
                 def destinationChild
@@ -229,7 +244,7 @@ class LinksGenerationService {
                 else if(sourceChild instanceof License)
                     destinationChild = destinationChildren.find { dest -> dest.getLicensee() == sourceChild.getLicensee() }
                 if(destinationChild)
-                    Links.executeUpdate('delete from Links li where li.source = :source and li.destination = :destination and li.linkType = :linkType and li.owner = :owner',[source:genericOIDService.getOID(sourceChild), destination:genericOIDService.getOID(destinationChild), linkType:obj.linkType, owner:obj.owner])
+                    Links.executeUpdate('delete from Links li where :source in (li.sourceSubscription,li.sourceLicense) and :destination in (li.destinationSubscription,li.destinationLicense) and li.linkType = :linkType and li.owner = :owner',[source:sourceChild, destination:destinationChild, linkType:obj.linkType, owner:obj.owner])
             }
             obj.delete(flush:true)
             true

@@ -104,7 +104,7 @@ class AjaxJsonController {
         render result as JSON
     }
 
-    @Secured(['ROLE_USER'])
+    /*@Secured(['ROLE_USER'])
     def getLinkedLicenses() {
         render controlledListService.getLinkedObjects([destination:params.subscription, sourceType: License.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
     }
@@ -112,7 +112,7 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def getLinkedSubscriptions() {
         render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
-    }
+    }*/
 
     def getPropValues() {
         List<Map<String, Object>> result = []
@@ -377,10 +377,14 @@ class AjaxJsonController {
         }
     }
 
-    def refdataSearchByOID() {
+    def refdataSearchByCategory() {
         List result = []
 
-        RefdataCategory rdc = (RefdataCategory) genericOIDService.resolveOID(params.oid)
+        RefdataCategory rdc
+        if(params.oid)
+            rdc = (RefdataCategory) genericOIDService.resolveOID(params.oid)
+        else if(params.cat)
+            rdc = RefdataCategory.getByDesc(params.cat)
         if (rdc) {
             String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
             String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale

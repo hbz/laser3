@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
@@ -16,12 +16,12 @@
     <semui:dropdown id="filterPropDef" name="filterPropDef"
 
                     class="la-filterPropDef"
-                    from="${propList.toSorted()}"
+                    from="${propList}"
                     iconWhich = "shield alternate"
                     optionKey="${{
                         it.refdataCategory ?
-                                "${PropertyDefinition.class.name}:${it.id}\" data-rdc=\"${RefdataCategory.class.name}:${RefdataCategory.getByDesc(it.refdataCategory)?.id}"
-                                : "${PropertyDefinition.class.name}:${it.id}"
+                                "${genericOIDService.getOID(it)}\" data-rdc=\"${it.refdataCategory}"
+                                : "${genericOIDService.getOID(it)}"
                     }}"
                     optionValue="${{ it.getI10n('name') }}"
                     noSelection="${message(code: 'default.select.choose.label')}"/>
@@ -63,7 +63,7 @@
                 //If we are working with RefdataValue, grab the values and create select box
                 if (selOpt.attr('data-rdc')) {
                     $.ajax({
-                        url: '<g:createLink controller="ajaxJson" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc'),
+                        url: '<g:createLink controller="ajaxJson" action="refdataSearchByCategory"/>' + '?cat=' + selOpt.attr('data-rdc'),
                         success: function (data) {
                             var genericNullValue = "${RefdataValue.class.name}:${RDStore.GENERIC_NULL_VALUE.id}";
                             var select = '';

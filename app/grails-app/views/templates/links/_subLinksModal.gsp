@@ -52,10 +52,10 @@
                     }
                     if(link && link.linkType == rv) {
                         int perspIndex
-                        if(genericOIDService.getOID(context) == link.source) {
+                        if(context in [link.sourceSubscription,link.sourceLicense]) {
                             perspIndex = 0
                         }
-                        else if(genericOIDService.getOID(context) == link.destination) {
+                        else if(context in [link.destinationSubscription,link.destinationLicense]) {
                             perspIndex = 1
                         }
                         else {
@@ -147,7 +147,7 @@
        console.log("${lookupName}");
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
                 cache: false
             },
             clearable: true,

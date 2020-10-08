@@ -125,17 +125,9 @@ class SubscriptionService {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
-        /*du.setBenchmark('fetch licenses')
-        result.allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
-        du.setBenchmark('process licenses')
-        allLinkedLicenses.each { Links li ->
-            Set<String> linkedLicenses = result.allLinkedLicenses.get(li.destination)
-            if(!linkedLicenses)
-                linkedLicenses = []
-            linkedLicenses << li.source
-            result.allLinkedLicenses.put(li.destination,linkedLicenses)
-        }
-        du.setBenchmark('after licenses')*/
+        pu.setBenchmark('fetch licenses')
+        result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(subscriptions,RDStore.LINKTYPE_LICENSE)
+        pu.setBenchmark('after licenses')
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 

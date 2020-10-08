@@ -100,7 +100,7 @@
                                 </g:if>
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
-                                <div id="${s.id}linkedLicenses">
+                                <%--<div id="${s.id}linkedLicenses">
                                     <script>
                                         $.ajax({
                                             url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
@@ -108,21 +108,22 @@
                                                 subscription: "${genericOIDService.getOID(s)}"
                                             }
                                         }).done(function(data) {
-                                            <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
-                                            let link = "<g:createLink controller="license" action="show"/>";
-                                            $.each(data.results,function(k,v) {
-                                                $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                                let link = "<g:createLink controller="license" action="show"/>";
+                                                $.each(data.results,function(k,v) {
+                                                    $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                                });
                                             });
-                                        });
                                     </script>
-                                </div>
-                                <%--<g:each in="${allLinkedLicenses.findAll { Links li -> li.destination == genericOIDService.getOID(s)}}" var="row">
-                                    <g:set var="license" value="${genericOIDService.resolveOID(row.source)}"/>
-                                    <div class="la-flexbox">
-                                        <i class="icon balance scale la-list-icon"></i>
-                                        <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
-                                    </div>
-                                </g:each>--%>
+                                </div>--%>
+                                <g:each in="${allLinkedLicenses}" var="row">
+                                    <g:if test="${s == row.destinationSubscription}">
+                                        <g:set var="license" value="${row.sourceLicense}"/>
+                                        <div class="la-flexbox">
+                                            <i class="icon balance scale la-list-icon"></i>
+                                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                                        </div>
+                                    </g:if>
+                                </g:each>
                             </g:if>
                         </td>
                         <td>

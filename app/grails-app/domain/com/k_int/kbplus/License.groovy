@@ -619,10 +619,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     Set<Subscription> getSubscriptions() {
-        Set<Subscription> result = []
-        Links.findAllBySourceAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+        Set<Subscription> result = Subscription.executeQuery("select s from Subscription s, Links li where li.destination = s.id and li.destinationType = '"+Subscription.class.name+"' and li.source = :license and li.sourceType = '"+License.class.name+"' and li.linkType = :linkType",[license:id,linkType:RDStore.LINKTYPE_LICENSE])
+        /*Links.findAllBySourceAndSourceTypeAndDestinationTypeAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
             result << genericOIDService.resolveOID(l.destination)
-        }
+        }*/
         result
     }
 }

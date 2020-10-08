@@ -1177,7 +1177,7 @@ class LicenseController
         result.contextOrg      = result.institution
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.license))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)

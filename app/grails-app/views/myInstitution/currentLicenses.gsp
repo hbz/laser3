@@ -45,9 +45,7 @@
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
-
   <g:render template="/templates/filter/javascript" />
-
 
   <semui:filter showFilterButton="true" class="license-searches">
       <form class="ui form">
@@ -180,34 +178,15 @@
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
-                              <div id="${l.id}linkedSubscriptions">
-                                  <script>
-                                      $.ajax({
-                                          url: "<g:createLink controller="ajaxJson" action="getLinkedSubscriptions" />",
-                                          data: {
-                                              license: "${genericOIDService.getOID(l)}",
-                                              status: ${params.subStatus}
-                                          }
-                                      }).done(function(data) {
-                                          <%--<g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link>+--%>
-                                          let link = "<g:createLink controller="subscription" action="show"/>";
-                                          $.each(data.results,function(k,v) {
-                                              $("#${l.id}linkedSubscriptions").append('<i class="icon clipboard outline outline la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
-                                          });
-                                      });
-                                  </script>
-                              </div>
-                              <%--<g:each in="${allLinkedSubscriptions.findAll { Links li -> li.source == genericOIDService.getOID(l) }}" var="row">
-                                  <g:set var="sub" value="${genericOIDService.resolveOID(row.destination)}"/>
-                                  <g:if test="${sub.status.id == RDStore.SUBSCRIPTION_CURRENT.id}">
-                                      <%--<g:if test="${institution.id in orgRelations.org.id/* || accessService.checkPerm("ORG_CONSORTIUM")*/}">
-                                          <div class="la-flexbox">
-                                              <i class="icon clipboard outline outline la-list-icon"></i>
-                                              <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
-                                          </div>
-                                      </g:if>
+                              <g:each in="${allLinkedSubscriptions}" var="row">
+                                  <g:if test="${l == row.sourceLicense}">
+                                      <g:set var="sub" value="${row.destinationSubscription}"></g:set>
+                                      <div class="la-flexbox">
+                                          <i class="icon clipboard outline outline la-list-icon"></i>
+                                          <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                      </div>
                                   </g:if>
-                              </g:each>--%>
+                              </g:each>
                           </td>
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>
