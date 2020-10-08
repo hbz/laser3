@@ -1,9 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.LicenseProperty
+import de.laser.properties.LicenseProperty
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionProperty
+import de.laser.properties.SubscriptionProperty
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.interfaces.AuditableSupport
 import grails.transaction.Transactional

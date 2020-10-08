@@ -298,7 +298,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                 isPublic = owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && owner.getConsortia()?.id == contextOrg.id
             else if(owner instanceof License)
                 isPublic = owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && owner.getLicensingConsortium()?.id == contextOrg.id
-            ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
+            ownerClassName = "de.laser.properties.${ownerClassName}Property"
 
             def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
             newProp.setNote("")

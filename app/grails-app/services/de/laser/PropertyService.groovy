@@ -5,7 +5,11 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.LicenseProperty
+import de.laser.properties.OrgProperty
+import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import grails.transaction.Transactional
 
 @Transactional

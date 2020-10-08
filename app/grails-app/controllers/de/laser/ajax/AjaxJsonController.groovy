@@ -2,15 +2,15 @@ package de.laser.ajax
 
 import de.laser.IssueEntitlement
 import com.k_int.kbplus.License
-import com.k_int.kbplus.LicenseProperty
+import de.laser.properties.LicenseProperty
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgProperty
-import com.k_int.kbplus.PersonProperty
+import de.laser.properties.OrgProperty
+import de.laser.properties.PersonProperty
 import com.k_int.kbplus.Platform
-import com.k_int.kbplus.PlatformProperty
+import de.laser.properties.PlatformProperty
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.SubscriptionProperty
+import de.laser.properties.SubscriptionProperty
 import com.k_int.kbplus.auth.User
 import de.laser.I10nTranslation
 import de.laser.Contact

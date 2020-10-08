@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.Fact
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
+import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.OrgSetting
 import de.laser.StatsTripleCursor

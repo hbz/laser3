@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.PersonProperty
+import de.laser.properties.PersonProperty
 import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated

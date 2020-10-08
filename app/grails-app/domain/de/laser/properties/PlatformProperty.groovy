@@ -1,11 +1,12 @@
-package com.k_int.kbplus
+package de.laser.properties
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Platform
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 
-/**Org custom properties are used to store Org related settings and options**/
-class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
+class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type
     boolean isPublic = false
@@ -19,29 +20,29 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     Date             dateValue
     Org              tenant
 
-    Org owner
+    Platform owner
 
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
     static mapping = {
-        id                   column: 'op_id'
-        version              column: 'op_version'
-        stringValue          column: 'op_string_value', type: 'text'
-        intValue             column: 'op_int_value'
-        decValue             column: 'op_dec_value'
-        refValue             column: 'op_ref_value_rv_fk'
-        urlValue             column: 'op_url_value'
-        note                 column: 'op_note', type: 'text'
-        dateValue            column: 'op_date_value'
-        type                 column: 'op_type_fk', index:'op_type_idx'
-        tenant               column: 'op_tenant_fk', index:'op_tenant_idx'
-        owner                column: 'op_owner_fk', index:'op_owner_idx'
-        isPublic             column: 'op_is_public'
-        dateCreated          column: 'op_date_created'
-        lastUpdated          column: 'op_last_updated'
-        lastUpdatedCascading column: 'op_last_updated_cascading'
+        id          column: 'plp_id'
+        version     column: 'plp_version'
+        stringValue column: 'plp_string_value', type: 'text'
+        intValue    column: 'plp_int_value'
+        decValue    column: 'plp_dec_value'
+        refValue    column: 'plp_ref_value_rv_fk'
+        urlValue    column: 'plp_url_value'
+        note        column: 'plp_note', type: 'text'
+        dateValue   column: 'plp_date_value'
+        owner       column: 'plp_owner_fk', index: 'plp_owner_idx'
+        type        column: 'plp_type_fk', index: 'plp_type_idx'
+        tenant      column: 'plp_tenant_fk', index: 'plp_tenant_idx'
+        isPublic    column: 'plp_is_public'
+        dateCreated column: 'plp_date_created'
+        lastUpdated column: 'plp_last_updated'
+        lastUpdatedCascading column: 'plp_last_updated_cascading'
     }
 
     static constraints = {
@@ -52,7 +53,7 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
         urlValue    (nullable: true)
         note        (nullable: true)
         dateValue   (nullable: true)
-        tenant      (nullable: true) //subject of discussion, for the moment, it cannot be determined exactly
+        tenant      (nullable: true) //as no tenant can be determined for the moment, subject of discussion
 
         dateCreated (nullable: true)
         lastUpdated (nullable: true)
@@ -61,7 +62,7 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     static belongsTo = [
         type : PropertyDefinition,
-        owner: Org
+        owner : Platform
     ]
 
     @Override

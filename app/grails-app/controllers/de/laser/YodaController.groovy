@@ -8,7 +8,11 @@ import com.k_int.kbplus.auth.UserRole
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
+import de.laser.properties.LicenseProperty
+import de.laser.properties.OrgProperty
+import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting

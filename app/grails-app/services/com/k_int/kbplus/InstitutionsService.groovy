@@ -4,6 +4,7 @@ import de.laser.Doc
 import de.laser.DocContext
 import de.laser.OrgRole
 import de.laser.RefdataValue
+import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
