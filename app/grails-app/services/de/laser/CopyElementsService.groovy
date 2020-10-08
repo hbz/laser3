@@ -880,7 +880,7 @@ class CopyElementsService {
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties) {
         String classString = targetObject.getClass().toString() // TODO [ticket=2880]
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
-        ownerClassName = "com.k_int.kbplus.${ownerClassName}Property"
+        ownerClassName = "de.laser.properties.${ownerClassName}Property"
         def targetProp
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
