@@ -20,8 +20,6 @@ grails.gorm.default.mapping = {
 // database migration plugin
 
 grails.plugin.databasemigration.updateOnStart                       = false
-grails.plugin.databasemigration.updateOnStartFileNames              = [ 'changelog.groovy' ]
-grails.plugin.databasemigration.changelogLocation                   = "./migrations"
 
 // audit-logging-plugin
 

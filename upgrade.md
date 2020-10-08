@@ -34,6 +34,7 @@
     git read-tree --prefix=grails2/ -u grails2/grails-upgrade-source
     git commit -m 'laser (grails2) imported ..'
     
+    ./x-cleanup.sh
     ./x-migrate.sh
     ./x-move.sh
 

@@ -70,7 +70,7 @@ do
   done
 done
 
-declare -a locations=('./grails-app/views' './grails-app/taglib')
+declare -a locations=('./grails2/app/grails-app/views' './grails2/app/grails-app/taglib')
 declare -a migrations=()
 
 # gsp
@@ -129,6 +129,9 @@ echo ""
 echo "> finished: $currentDate"
 echo ""
 echo "> known issues:"
+echo ""
 echo "- fix code signed with: grails-3-fix"
 echo "- remove multiple <asset:deferredScripts/>"
 echo "- update de.laser.auth.*"
+echo "- remove tests manually: /src/main/java/de/uni_freiburg/ub/<X>Test.java"
+echo "- fix /grails-app/taglib/de/laser/SemanticUiTagLib.groovy"

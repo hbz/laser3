@@ -95,6 +95,8 @@ dependencies {
     compile "com.opencsv:opencsv:3.7" // moved from net.sf.opencsv:opencsv
     compile "gov.loc:bagit:4.0"
     compile "org.codehaus.gpars:gpars:1.2.1"
+    compile 'org.liquibase:liquibase-core:3.5.5' // org.grails.plugins:database-migration:3.0.3
+
 
     runtime "org.postgresql:postgresql:42.2.5.jre6"
 }
@@ -118,4 +120,12 @@ assets {
     minifyCss = false
 
     from '/themes'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'grails-app/migrations'
+        }
+    }
 }

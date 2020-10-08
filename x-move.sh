@@ -10,154 +10,121 @@ DST=.
 LS=de/laser
 KB=com/k_int/kbplus
 
-# mkdirs
+# moving sources
 
-echo "> mkdirs .."
+echo "> moving sources: [ $SRC ] -> [ $DST ]"
 
-mkdir -p $DST/grails-app/controllers/$LS
-mkdir -p $DST/grails-app/domain/$LS
-mkdir -p $DST/grails-app/jobs
-mkdir -p $DST/grails-app/domain/org/codehaus/groovy/grails/plugins/orm/auditable
-mkdir -p $DST/grails-app/services/$KB
-mkdir -p $DST/grails-app/services/$LS
+git mv ./grails2/app/grails-app/controllers/de/laser/*      ./grails-app/controllers/de/laser
 
-mkdir -p $DST/grails-app/views/layouts/
-mkdir -p $DST/grails-app/views/login/
-mkdir -p $DST/grails-app/views/public/
-mkdir -p $DST/grails-app/views/serverCodes/
+mkdir -p ./grails-app/domain/com/k_int/kbplus
 
-mkdir -p $DST/src/main/groovy
-mkdir -p $DST/src/main/resources
-mkdir -p $DST/src/main/webapp
+git mv ./grails2/app/grails-app/domain/com/k_int/kbplus/*.groovy    ./grails-app/domain/com/k_int/kbplus
 
-mkdir -p $DST/src/main/groovy/$KB/traits/
-mkdir -p $DST/src/main/groovy/$KB/utils/
+git mv ./grails2/app/grails-app/domain/de/laser/finance     ./grails-app/domain/de/laser
+git mv ./grails2/app/grails-app/domain/de/laser/oap         ./grails-app/domain/de/laser
+git mv ./grails2/app/grails-app/domain/de/laser/properties  ./grails-app/domain/de/laser
+git mv ./grails2/app/grails-app/domain/de/laser/system      ./grails-app/domain/de/laser
+git mv ./grails2/app/grails-app/domain/de/laser/titles      ./grails-app/domain/de/laser
 
-mkdir -p $DST/src/main/groovy/$LS/api/v0/
-mkdir -p $DST/src/main/groovy/$LS/base/
-mkdir -p $DST/src/main/groovy/$LS/controller/
-mkdir -p $DST/src/main/groovy/$LS/exceptions/
-mkdir -p $DST/src/main/groovy/$LS/helper/
-mkdir -p $DST/src/main/groovy/$LS/interfaces/
-mkdir -p $DST/src/main/groovy/$LS/oai/
-mkdir -p $DST/src/main/groovy/$LS/quartz/
-mkdir -p $DST/src/main/groovy/$LS/traits/
-mkdir -p $DST/src/main/groovy/$LS/usage/
-mkdir -p $DST/src/main/groovy/$LS/web/
-mkdir -p $DST/src/main/groovy/org/gokb/
+git mv ./grails2/app/grails-app/domain/de/laser/*.groovy    ./grails-app/domain/de/laser
 
-mkdir -p $DST/grails-app/assets/vendor
+git mv ./grails2/app/grails-app/jobs/*        ./grails-app/jobs
 
-# copy sources
+git mv ./grails2/app/grails-app/services/*    ./grails-app/services
 
-echo "> copying sources: [ $SRC ] -> [ $DST ]"
+git mv ./grails2/app/grails-app/taglib/*      ./grails-app/taglib
 
-cp -r $SRC/grails-app/controllers/$LS/*                 $DST/grails-app/controllers/$LS/.
+git mv ./grails2/app/grails-app/views/accessMethod      ./grails-app/views
+git mv ./grails2/app/grails-app/views/accessPoint       ./grails-app/views
+git mv ./grails2/app/grails-app/views/address           ./grails-app/views
+git mv ./grails2/app/grails-app/views/admin             ./grails-app/views
+git mv ./grails2/app/grails-app/views/ajax              ./grails-app/views
+git mv ./grails2/app/grails-app/views/announcement		  ./grails-app/views
+git mv ./grails2/app/grails-app/views/api					      ./grails-app/views
+git mv ./grails2/app/grails-app/views/compare				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/contact				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/costConfiguration	    ./grails-app/views
+git mv ./grails2/app/grails-app/views/dataManager			  ./grails-app/views
+git mv ./grails2/app/grails-app/views/dev					      ./grails-app/views
+git mv ./grails2/app/grails-app/views/doc					      ./grails-app/views
+git mv ./grails2/app/grails-app/views/_fields				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/finance           ./grails-app/views
+git mv ./grails2/app/grails-app/views/globalDataSync      ./grails-app/views
+git mv ./grails2/app/grails-app/views/issueEntitlement	  ./grails-app/views
+git mv ./grails2/app/grails-app/views/layouts				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/license				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/licenseCompare		./grails-app/views
+git mv ./grails2/app/grails-app/views/licenseImport		  ./grails-app/views
+git mv ./grails2/app/grails-app/views/login/denied.gsp  ./grails-app/views/login
+git mv ./grails2/app/grails-app/views/mailTemplates		  ./grails-app/views
+git mv ./grails2/app/grails-app/views/myInstitution		  ./grails-app/views
+git mv ./grails2/app/grails-app/views/organisation		  ./grails-app/views
+git mv ./grails2/app/grails-app/views/package				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/person				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/platform			    ./grails-app/views
+git mv ./grails2/app/grails-app/views/profile				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/public				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/readerNumber  	  ./grails-app/views
+git mv ./grails2/app/grails-app/views/search				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/serverCodes			  ./grails-app/views
+git mv ./grails2/app/grails-app/views/stats				      ./grails-app/views
+git mv ./grails2/app/grails-app/views/subscription		  ./grails-app/views
+git mv ./grails2/app/grails-app/views/survey				    ./grails-app/views
+git mv ./grails2/app/grails-app/views/task				      ./grails-app/views
+git mv ./grails2/app/grails-app/views/templates			    ./grails-app/views
+git mv ./grails2/app/grails-app/views/tipp				      ./grails-app/views
+git mv ./grails2/app/grails-app/views/title				      ./grails-app/views
+git mv ./grails2/app/grails-app/views/usage             ./grails-app/views
+git mv ./grails2/app/grails-app/views/user				      ./grails-app/views
+git mv ./grails2/app/grails-app/views/yoda				      ./grails-app/views
+git mv ./grails2/app/grails-app/views/index.gsp 	      ./grails-app/views
 
-cp -r $SRC/grails-app/domain/$KB/*                      $DST/grails-app/domain/$KB/.
-cp -r $SRC/grails-app/domain/$LS/*                      $DST/grails-app/domain/$LS/.
+git mv ./grails2/app/grails-app/i18n/*              ./grails-app/i18n
 
-cp -r $SRC/grails-app/i18n/*                            $DST/grails-app/i18n/.
+mkdir ./src/main/groovy/com
+mkdir ./src/main/groovy/org
 
-cp -r $SRC/grails-app/services/$KB/*                    $DST/grails-app/services/$KB/.
-cp -r $SRC/grails-app/services/$LS/*                    $DST/grails-app/services/$LS/.
+git mv ./grails2/app/src/groovy/com/* ./src/main/groovy/com
+git mv ./grails2/app/src/groovy/org/* ./src/main/groovy/org
 
-cp -r $SRC/grails-app/taglib/*                          $DST/grails-app/taglib/.
+git mv ./grails2/app/src/groovy/de/laser/api          ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/base         ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/controller   ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/dbm          ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/exceptions   ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/helper       ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/interfaces   ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/oai          ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/quartz       ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/traits       ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/usage        ./src/main/groovy/de/laser
+git mv ./grails2/app/src/groovy/de/laser/web          ./src/main/groovy/de/laser
 
-cp -r $SRC/grails-app/views/accessMethod		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/accessPoint			$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/address				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/admin				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/ajax				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/announcement		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/api					    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/contact				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/costConfiguration	$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/dataManager			$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/dev					    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/doc					    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/_fields				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/finance				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/globalDataSync		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/issueEntitlement	$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/layouts				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/license				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/licenseCompare		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/licenseImport		$DST/grails-app/views/.
-#cp -r $SRC/grails-app/views/login				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/mailTemplates		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/myInstitution		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/organisation		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/package				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/person				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/platform			  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/profile				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/public				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/readerNumber		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/search				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/serverCodes			$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/stats				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/subscription		$DST/grails-app/views/.
-cp -r $SRC/grails-app/views/survey				  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/task				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/templates			  $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/tipp				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/title				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/usage				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/user				    $DST/grails-app/views/.
-cp -r $SRC/grails-app/views/yoda				    $DST/grails-app/views/.
+git mv ./grails2/app/src/java/* ./src/main/java
 
-cp -r $SRC/src/groovy/$KB/traits/*              $DST/src/main/groovy/$KB/traits/.
-cp -r $SRC/src/groovy/$KB/utils/*               $DST/src/main/groovy/$KB/utils/.
+mkdir ./src/main/webapp/files
 
-cp -r $SRC/src/groovy/$LS/api/v0/*              $DST/src/main/groovy/$LS/api/v0/.
-cp -r $SRC/src/groovy/$LS/base/*                $DST/src/main/groovy/$LS/base/.
-cp -r $SRC/src/groovy/$LS/controller/*          $DST/src/main/groovy/$LS/controller/.
+git mv ./grails2/app/web-app/setup                ./src/main/webapp
+git mv ./grails2/app/web-app/resources/*          ./src/main/webapp/files
+git mv ./grails2/app/web-app/swagger              ./src/main/webapp/
 
-cp -r $SRC/src/groovy/$LS/dbm/*                 $DST/src/main/groovy/$LS/dbm/.
+git mv ./grails2/app/web-app/css/jquery-editable.css  ./grails-app/assets/stylesheets
+git mv ./grails2/app/web-app/css/tmp_semui.css        ./grails-app/assets/stylesheets
+git mv ./grails2/app/web-app/images/gasco         ./grails-app/assets/images
+git mv ./grails2/app/web-app/images/landingpage   ./grails-app/assets/images
+#git mv -f ./grails2/app/web-app/images/*            ./grails-app/assets/images
+git mv    ./grails2/app/web-app/js/libs             ./grails-app/assets/javascripts
+git mv    ./grails2/app/web-app/js/submodules       ./grails-app/assets/javascripts
+git mv    ./grails2/app/web-app/js/*.js             ./grails-app/assets/javascripts
 
-cp -r $SRC/src/groovy/$LS/exceptions/*          $DST/src/main/groovy/$LS/exceptions/.
-cp -r $SRC/src/groovy/$LS/helper/*              $DST/src/main/groovy/$LS/helper/.
-cp -r $SRC/src/groovy/$LS/interfaces/*          $DST/src/main/groovy/$LS/interfaces/.
-cp -r $SRC/src/groovy/$LS/oai/*                 $DST/src/main/groovy/$LS/oai/.
-cp -r $SRC/src/groovy/$LS/quartz/*              $DST/src/main/groovy/$LS/quartz/.
-cp -r $SRC/src/groovy/$LS/traits/*              $DST/src/main/groovy/$LS/traits/.
-cp -r $SRC/src/groovy/$LS/usage/*               $DST/src/main/groovy/$LS/usage/.
-cp -r $SRC/src/groovy/$LS/web/*                 $DST/src/main/groovy/$LS/web/.
+mkdir ./grails-app/assets/vendor
 
-cp -r $SRC/src/groovy/org/gokb/*                $DST/src/main/groovy/org/gokb/.
+git mv ./grails2/app/web-app/semantic             ./grails-app/assets/themes
+git mv ./grails2/app/web-app/vendor/*             ./grails-app/assets/vendor
 
-cp -r $SRC/src/java/*                           $DST/src/main/java/.
+git mv ./grails2/app/grails-app/conf/UrlMappings.groovy  ./grails-app/controllers/de/laser/UrlMappings.groovy
 
-cp -r $SRC/web-app/setup                    $DST/src/main/webapp/.
-cp -r $SRC/web-app/resources/*              $DST/src/main/webapp/files
-cp -r $SRC/web-app/swagger                  $DST/src/main/webapp/.
-
-cp -r $SRC/web-app/css/*                    $DST/grails-app/assets/stylesheets/.
-cp -r $SRC/web-app/images/*                 $DST/grails-app/assets/images/.
-cp -r $SRC/web-app/js/*                     $DST/grails-app/assets/javascripts/.
-
-cp -r $SRC/web-app/semantic                 $DST/grails-app/assets/themes
-cp -r $SRC/web-app/vendor/*                 $DST/grails-app/assets/vendor/.
-
-# specials
-
-echo "> copying specials .."
-
-cp -v $SRC/grails-app/conf/UrlMappings.groovy  $DST/grails-app/controllers/$LS/UrlMappings.groovy
-
-# cleanup
-
-echo "> cleanup .."
-
-rm $DST/src/main/java/de/uni_freiburg/ub/IpAddressTest.java
-rm $DST/src/main/java/de/uni_freiburg/ub/IpRangeCollectionTest.java
-rm $DST/src/main/java/de/uni_freiburg/ub/IpRangeTest.java
-
-rm $DST/src/main/groovy/de/laser/interfaces/AuditableSupport.groovy
-rm $DST/src/main/groovy/de/laser/controller/AbstractDebugController.groovy
-
-rm -r $DST/grails-app/domain/$KB/auth # old auth
+git mv ./grails2/app/migrations       ./grails-app/migrations
 
 # issues
 
@@ -167,6 +134,6 @@ echo ""
 echo "> finished: $currentDate"
 echo ""
 echo "> known issues:"
-echo "- fix code signed with: grails-3-fix"
-echo "- remove multiple <asset:deferredScripts/>"
-echo "- update de.laser.auth.*"
+echo ""
+echo "./grails2/app/web-app/images/* (move manually)"
+
