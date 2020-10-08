@@ -7,6 +7,7 @@ import de.laser.OrgRole
 import de.laser.PendingChange
 import de.laser.PersonRole
 import de.laser.RefdataValue
+import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage
@@ -207,31 +208,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result = or.org
     }
     result
-  }
-
-  @Deprecated
-  @Transient
-  void updateNominalPlatform() {
-      Map<String, Object> platforms = [:]
-    tipps.each{ tipp ->
-      if ( !platforms.keySet().contains(tipp.platform.id) ) {
-        platforms[tipp.platform.id] = [count:1, platform:tipp.platform]
-      }
-      else {
-        platforms[tipp.platform.id].count++
-      }
-    }
-
-    def selected_platform = null;
-    def largest = 0;
-    platforms.values().each { pl ->
-      log.debug("Processing ${pl}");
-      if ( pl['count'] > largest ) {
-        selected_platform = pl['platform']
-      }
-    }
-
-    nominalPlatform = selected_platform
   }
 
   @Transient

@@ -9,7 +9,6 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
 import de.laser.properties.SubscriptionProperty
 import com.k_int.kbplus.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

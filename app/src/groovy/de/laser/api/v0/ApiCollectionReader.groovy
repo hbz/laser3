@@ -6,6 +6,7 @@ import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.OrgRole
 import de.laser.PersonRole
+import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
@@ -123,7 +124,7 @@ class ApiCollectionReader {
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // de.laser.finance.Order
             // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
             // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-            // tmp.package             = ApiStubReader.retrieveSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+            // tmp.package             = ApiStubReader.retrieveSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
             //tmp.surveyOrg
             //tmp.subPkg
 
@@ -220,7 +221,7 @@ class ApiCollectionReader {
     }
 
     /**
-     * @param com.k_int.kbplus.SubscriptionPackage subPkg
+     * @param de.laser.SubscriptionPackage subPkg
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
      * @return Collection<Object>
@@ -467,7 +468,7 @@ class ApiCollectionReader {
             return null
         }
 
-        list.each { it -> // com.k_int.kbplus.SubscriptionPackage
+        list.each { it -> // de.laser.SubscriptionPackage
             result << ApiStubReader.requestSubscriptionPackageStubMixed(it, ignoreRelation, context)
         }
         result

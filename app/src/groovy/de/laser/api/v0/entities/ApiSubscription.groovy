@@ -164,13 +164,13 @@ class ApiSubscription {
 		result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 
 		// TODO refactoring with issueEntitlementService
-		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context) // de.laser.SubscriptionPackage
 
 		// Ignored
 
-		//result.packages = exportHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+		//result.packages = exportHelperService.resolvePackagesWithIssueEntitlements(sub.packages, context) // de.laser.SubscriptionPackage
 		//result.issueEntitlements = exportHelperService.resolveIssueEntitlements(sub.issueEntitlements, context) // de.laser.IssueEntitlement
-		//result.packages = exportHelperService.resolveSubscriptionPackageStubs(sub.packages, exportHelperService.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+		//result.packages = exportHelperService.resolveSubscriptionPackageStubs(sub.packages, exportHelperService.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
 		/*
 		result.persons      = exportHelperService.resolvePrsLinks(
 				sub.prsLinks,  true, true, context

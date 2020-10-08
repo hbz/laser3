@@ -92,27 +92,6 @@ class SurveyService {
         }
 
     }
-    @Deprecated
-    Map<String, Object> getParticipantConfigNavigation(Org org, SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
-        Map<String, Object> result = [:]
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs).sort { it.surveyConfig.configOrder }
-
-        int currentOrder = surveyConfig.configOrder
-        List<Integer> configOrders = SurveyConfig.findAllByIdInList(surveyResults.findAll { it.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION }.groupBy { it.surveyConfig.id }.keySet()).configOrder
-        int currentOrderIndex = configOrders.indexOf(currentOrder)
-
-        if (currentOrderIndex > 0) {
-            result.prev = SurveyConfig.executeQuery('select sc from SurveyConfig sc where sc.configOrder = :prev and sc.surveyInfo = :surInfo', [prev: configOrders.get(currentOrderIndex - 1), surInfo: surveyInfo])[0]
-        }
-        if (currentOrderIndex < configOrders.size() - 1) {
-            result.next = SurveyConfig.executeQuery('select sc from SurveyConfig sc where sc.configOrder = :next and sc.surveyInfo = :surInfo', [next: configOrders.get(currentOrderIndex + 1), surInfo: surveyInfo])[0]
-        }
-
-        result.total = configOrders.size()
-
-        return result
-
-    }
 
     Map<String, Object> getConfigNavigation(SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]

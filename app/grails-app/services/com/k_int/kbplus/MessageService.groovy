@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
-
-import grails.plugin.cache.CachePut
-import grails.plugin.cache.Cacheable
+import de.laser.ContentItem
 import grails.transaction.Transactional
 
 @Transactional

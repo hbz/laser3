@@ -3,7 +3,6 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
@@ -1189,38 +1188,6 @@ class FinanceController extends AbstractDebugController {
     }
 
     @Deprecated
-    private def createBudgetCodes(CostItem costItem, String budgetcodes, Org budgetOwner)
-    {
-        def result = []
-        if(budgetcodes && budgetOwner && costItem) {
-            budgetcodes.split(",").each { c ->
-                def bc = null
-                if (c.startsWith("-1")) { //New code option from select2 UI
-                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2)).save(flush: true)
-                }
-                else {
-                    bc = BudgetCode.get(c)
-                }
-
-                if (bc != null) {
-                    // WORKAROUND ERMS-337: only support ONE budgetcode per costitem
-                    def existing = CostItemGroup.executeQuery(
-                            "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc != ?",
-                            [costItem, budgetOwner, bc] );
-                    existing.each { id ->
-                        CostItemGroup.get(id).delete(flush:true)
-                    }
-                    if (! CostItemGroup.findByCostItemAndBudgetCode(costItem, bc)) {
-                        result.add(new CostItemGroup(costItem: costItem, budgetCode: bc).save(flush: true))
-                    }
-                }
-            }
-        }
-
-        result
-    }
-
-    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
@@ -1236,30 +1203,6 @@ class FinanceController extends AbstractDebugController {
         log.debug("FinanceController - getRecentCostItems, rendering template with model: ${result}")
 
         render(template: "/finance/recentlyAddedModal", model: result)
-    }
-
-    @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def newCostItemsPresent() {
-        def institution = contextService.getOrg()
-        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
-        Date dateTo
-
-        try {
-            dateTo = dateTimeFormat.parse(params.to)
-        } catch(Exception e) {
-            dateTo = new Date()
-        }
-        int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution, dateTo)
-
-        JsonBuilder builder = new JsonBuilder()
-        def root    = builder {
-            count counter
-            to dateTimeFormat.format(dateTo)
-        }
-        log.debug("Finance - newCostItemsPresent ? params: ${params} JSON output: ${builder.toString()}")
-        render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
     @Deprecated
@@ -1319,120 +1262,6 @@ class FinanceController extends AbstractDebugController {
             results.message = "Incorrect parameters sent, not able to process the following : ${results.sentIDs.size()==0? 'Empty, no IDs present' : results.sentIDs}"
 
         render results as JSON
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def financialRef() {
-        log.debug("Financials :: financialRef - Params: ${params}")
-
-        def result      = [:]
-        result.error    = [] as List
-        def institution = Org.get(params.orgId)
-        def owner       = refData(params.owner)
-        log.debug("Financials :: financialRef - Owner instance returned: ${owner.obj}")
-
-        //check in reset mode e.g. subscription changed, meaning IE & SubPkg will have to be reset
-        boolean resetMode = params.boolean('resetMode',false) && params.fields
-        boolean wasReset  = false
-
-
-        if (owner) {
-            if (resetMode)
-                wasReset = refReset(owner,params.fields,result)
-
-
-            if (resetMode && !wasReset)
-                log.debug("Field(s): ${params.fields} should have been reset as relation: ${params.relation} has been changed")
-            else {
-                //continue happy path...
-                def relation = refData(params.relation)
-                log.debug("Financials :: financialRef - relation obj or stub returned " + relation)
-
-                if (relation) {
-                    log.debug("Financials :: financialRef - Relation needs creating: " + relation.create)
-                    if (relation.create) {
-                        if (relation.obj.hasProperty(params.relationField)) {
-                            relation.obj."${params.relationField}" = params.val
-                            relation.obj.owner = institution
-                            log.debug("Financials :: financialRef -Creating Relation val:${params.val} field:${params.relationField} org:${institution.name}")
-                            if (relation.obj.save(flush:true))
-                                log.debug("Financials :: financialRef - Saved the new relational inst ${relation.obj}")
-                            else
-                                result.error.add([status: "FAILED: Creating ${params.ownerField}", msg: "Invalid data received to retrieve from DB"])
-                        } else
-                            result.error.add([status: "FAILED: Setting value", msg: "The data you are trying to set does not exist"])
-                    }
-
-                    if (owner.obj.hasProperty(params.ownerField)) {
-                        log.debug("Using owner instance field of ${params.ownerField} to set new instance of ${relation.obj.class} with ID ${relation.obj.id}")
-                        owner.obj."${params.ownerField}" = relation.obj
-                        result.relation = ['class':relation.obj.id, 'id':relation.obj.id] //avoid excess data leakage
-                    }
-                } else
-                    result.error.add([status: "FAILED: Related Cost Item Data", msg: "Invalid data received to retrieve from DB"])
-            }
-        } else
-            result.error.add([status: "FAILED: Cost Item", msg: "Invalid data received to retrieve from DB"])
-
-
-
-        render result as JSON
-    }
-
-    /**
-     *
-     * @param costItem - The owner instance passed from financialRef
-     * @param fields - comma seperated list of fields to reset, has to be in allowed list (see below)
-     * @param result - LinkedHashMap from financialRef
-     * @return
-     */
-    @Deprecated
-    def private refReset(costItem, String fields, result) {
-        log.debug("Attempting to reset a reference for cost item data ${costItem} for field(s) ${fields}")
-        def wasResetCounter = 0
-        def f               = fields?.split(',')
-        def allowed         = ["sub", "issueEntitlement", "subPkg", "invoice", "order"]
-        boolean validFields = false
-
-        if (f)
-        {
-            validFields = f.every { allowed.contains(it) && costItem.obj.hasProperty(it) }
-
-            if (validFields)
-                f.each { field ->
-                    costItem.obj."${field}" = null
-                    if (costItem.obj."${field}" == null)
-                        wasResetCounter++
-                    else
-                        result.error.add([status: "FAILED: Cost Item", msg: "Problem resetting data for field ${field}"])
-                }
-            else
-                result.error.add([status: "FAILED: Cost Item", msg: "Problem resetting data, invalid fields received"])
-        }
-        else
-            result.error.add([status: "FAILED: Cost Item", msg: "Invalid data received"])
-
-        return validFields && wasResetCounter == f.size()
-    }
-
-    @Deprecated
-    def private refData(String oid) {
-        def result         = [:]
-        result.create      = false
-        def oid_components = oid.split(':');
-        def dynamic_class  = AppUtils.getDomainClass( oid_components[0] )?.getClazz()
-        if ( dynamic_class)
-        {
-            if (oid_components[1].equals("create"))
-            {
-                result.obj    = dynamic_class.newInstance()
-                result.create = true
-            }
-            else
-                result.obj = dynamic_class.get(oid_components[1])
-        }
-        result
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")

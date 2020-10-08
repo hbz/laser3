@@ -35,14 +35,12 @@ class AjaxController {
     def genericOIDService
     def subscriptionService
     def contextService
-    def controlledListService
     def accessService
     def escapeService
     def formService
     def dashboardDueDatesService
     CompareService compareService
     LinksGenerationService linksGenerationService
-    FinanceService financeService
     LicenseService licenseService
 
     def refdata_config = [
@@ -574,13 +572,13 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addPrsRole() {
-        def org     = genericOIDService.resolveOID(params.org)
-        def parent  = genericOIDService.resolveOID(params.parent)
-        def person  = genericOIDService.resolveOID(params.person)
-        def role    = genericOIDService.resolveOID(params.role)
+        Org org             = (Org) genericOIDService.resolveOID(params.org)
+        def parent          = genericOIDService.resolveOID(params.parent)
+        Person person       = (Person) genericOIDService.resolveOID(params.person)
+        RefdataValue role   = (RefdataValue) genericOIDService.resolveOID(params.role)
 
-        def newPrsRole
-        def existingPrsRole
+        PersonRole newPrsRole
+        PersonRole existingPrsRole
 
         if (org && person && role) {
             newPrsRole = new PersonRole(prs: person, org: org)
@@ -588,7 +586,7 @@ class AjaxController {
                 newPrsRole.responsibilityType = role
                 newPrsRole.setReference(parent)
 
-                def ref = newPrsRole.getReference().split(":")
+                String[] ref = newPrsRole.getReference().split(":")
                 existingPrsRole = PersonRole.findWhere(prs:person, org: org, responsibilityType: role, "${ref[0]}": parent)
             }
             else {

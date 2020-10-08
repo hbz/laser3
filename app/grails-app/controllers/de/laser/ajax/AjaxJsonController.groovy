@@ -9,7 +9,7 @@ import de.laser.properties.PersonProperty
 import com.k_int.kbplus.Platform
 import de.laser.properties.PlatformProperty
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
+import de.laser.SubscriptionPackage
 import de.laser.properties.SubscriptionProperty
 import com.k_int.kbplus.auth.User
 import de.laser.I10nTranslation
