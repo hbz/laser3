@@ -358,7 +358,8 @@ class SubscriptionService {
                     }
                     if (obj[1]) {
                         Subscription subCons = obj[1]
-                        linkedLicenses.put(subCons,Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
+                        //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
+                        linkedLicenses.put(subCons,Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:subCons,linkType:RDStore.LINKTYPE_LICENSE]))
                     }
                 }
                 entries
@@ -370,8 +371,7 @@ class SubscriptionService {
             if(memberSubscriptions) {
                 memberSubscriptions.each { row ->
                     Subscription subCons = row[0]
-                    Set<Links> links = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subCons),RDStore.LINKTYPE_LICENSE)
-                    linkedLicenses.put(subCons,links.collect {Links li -> genericOIDService.resolveOID(li.source)})
+                    linkedLicenses.put(subCons,Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:subCons,linkType:RDStore.LINKTYPE_LICENSE]))
                 }
             }
             result.totalCount = memberSubscriptions.size()
@@ -999,11 +999,11 @@ class SubscriptionService {
 
     boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
-        Links curLink = Links.findBySourceAndDestinationAndLinkType(genericOIDService.getOID(newLicense),genericOIDService.getOID(sub),RDStore.LINKTYPE_LICENSE)
+        Links curLink = Links.findBySourceLicenseAndDestinationSubscriptionAndLinkType(newLicense,sub,RDStore.LINKTYPE_LICENSE)
         Org subscr = sub.getSubscriber()
         if(!unlink && !curLink) {
             try {
-                if(Links.construct([source: genericOIDService.getOID(newLicense), destination: genericOIDService.getOID(sub), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
+                if(Links.construct([source: newLicense, destination: sub, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
                     RefdataValue licRole
                     switch(sub._getCalculatedType()) {
                         case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
@@ -1040,12 +1040,11 @@ class SubscriptionService {
             }
         }
         else if(unlink && curLink) {
-            String sourceOID = curLink.source
-            License lic = genericOIDService.resolveOID(sourceOID)
-            curLink.delete(flush:true) //delete() is void, no way to check whether errors occurred or not
+            License lic = curLink.sourceLicense
+            curLink.delete(flush:true) //delete() is void, no way to check whether errors occurred or not; flush is necessary because of list processing and/or grails 3
             if(sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                String linkedSubsQuery = "select li from Links li where li.source = :lic and li.linkType = :linkType and li.destination in (select concat('${Subscription.class.name}:',oo.sub.id) from OrgRole oo where oo.roleType in (:subscrTypes) and oo.org = :subscr)"
-                Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: sourceOID, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
+                String linkedSubsQuery = "select li from Links li, OrgRole oo where li.sourceLicense = :lic and li.linkType = :linkType and li.destinationSubscription = oo.sub and oo.roleType in (:subscrTypes) and oo.org = :subscr"
+                Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: lic, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
                 if (linkedSubs.size() < 1) {
                     log.info("no more license <-> subscription links between org -> removing licensee role")
                     OrgRole.executeUpdate("delete from OrgRole oo where oo.lic = :lic and oo.org = :subscriber", [lic: lic, subscriber: subscr])

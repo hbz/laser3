@@ -1628,7 +1628,7 @@ SELECT * FROM (
                                 flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
                             }
                             catch (Exception e) {
-                                log.error( e.toString() )
+                                e.printStackTrace()
                                 flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
                             }
 

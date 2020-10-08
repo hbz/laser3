@@ -32,7 +32,6 @@ class LinksGenerationService {
                 prevLink.add(obj)
             }
         }
-        else prevLink = null
         if(next.size() > 0) {
             next.each { Links li ->
                 def obj
@@ -43,7 +42,6 @@ class LinksGenerationService {
                 nextLink.add(obj)
             }
         }
-        else nextLink = null
         return [prevLink:prevLink,nextLink:nextLink]
     }
 

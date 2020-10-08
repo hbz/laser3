@@ -3595,9 +3595,7 @@ join sub.orgRelations or_sub where
                         privatePropDef.save(flush:true)
 
                         // delete inbetween created mandatories
-                        Class.forName(
-                                privatePropDef.getImplClass('private')
-                        )?.findAllByType(privatePropDef)?.each { it ->
+                        Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { it ->
                             it.delete(flush:true)
                         }
                     }

@@ -64,6 +64,12 @@ class Links {
 
     }
 
+    /**
+     * Constructor for a Subscription/License linking. Parameters are specified in a {@link Map}.
+     * @param configMap - contains the parameters. The source and destination are expected on source and destination; the determination of object type is done in the setter {@link #setSourceAndDestination() setSourceAndDestination()}
+     * @return the persisted linking object
+     * @throws CreationException
+     */
     static Links construct(Map<String, Object> configMap) throws CreationException {
         withTransaction {
             Links links = new Links(owner: configMap.owner, linkType: configMap.linkType)

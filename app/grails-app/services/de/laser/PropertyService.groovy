@@ -11,6 +11,7 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.transaction.Transactional
+import javafx.beans.property.Property
 
 @Transactional
 class PropertyService {
@@ -127,14 +128,23 @@ class PropertyService {
 
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
                 //log.debug(pds)
-                detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
+                detailsMap << ["${dc.shortName}": pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort()]
 
                 // ids of used property definitions
-                pds.each{ it ->
-                    usedPdList << it.id
+                pds.each{ PropertyDefinition pd ->
+                    usedPdList << pd.id
                 }
 
                 String query2 = "select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+                multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.org] ))
+            }
+            else if(SurveyResult.class.name.contains(dc.name)) {
+                Set<PropertyDefinition> pds = PropertyDefinition.executeQuery('select distinct type from SurveyResult')
+                detailsMap << ["${dc.shortName}": pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort()]
+                pds.each { PropertyDefinition pd ->
+                    usedPdList << pd.id
+                }
+                String query2 = "select p.type.id from SurveyResult p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
                 multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.org] ))
             }
         }
@@ -207,15 +217,11 @@ class PropertyService {
         log.debug("replacing: ${pdFrom} with: ${pdTo}")
         def count = 0
 
-        PropertyDefinition.executeUpdate(
-                "update PropertyDefinitionGroupItem set propDef = :pdTo where propDef = :pdFrom",
-                [pdTo: pdTo, pdFrom: pdFrom]
-        )
+        PropertyDefinition.executeUpdate("update PropertyDefinitionGroupItem set propDef = :pdTo where propDef = :pdFrom", [pdTo: pdTo, pdFrom: pdFrom])
 
-        def implClass = pdFrom.getImplClass('custom')
-        def customProps = Class.forName(implClass)?.findAllWhere(
-                type: pdFrom
-        )
+        def implClass = pdFrom.getImplClass()
+        def customPropDef = Class.forName(implClass)
+        Set customProps = customPropDef.findAllWhere(type: pdFrom)
         customProps.each{ cp ->
             log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
             cp.type = pdTo
