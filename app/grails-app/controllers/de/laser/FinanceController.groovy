@@ -3,7 +3,6 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.auth.User
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem

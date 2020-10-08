@@ -7,6 +7,7 @@ import de.laser.OrgRole
 import de.laser.PendingChange
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage

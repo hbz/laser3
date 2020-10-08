@@ -6,7 +6,7 @@ import de.laser.SurveyOrg
 import com.k_int.kbplus.Org
 import de.laser.RefdataValue
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionPackage
+import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation

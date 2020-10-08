@@ -7,6 +7,7 @@ import de.laser.OrgRole
 import de.laser.PendingChange
 import de.laser.PersonRole
 import de.laser.RefdataValue
+import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.IssueEntitlementCoverage

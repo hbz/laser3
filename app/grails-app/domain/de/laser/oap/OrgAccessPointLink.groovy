@@ -1,7 +1,7 @@
 package de.laser.oap
 
 import com.k_int.kbplus.Platform
-import com.k_int.kbplus.SubscriptionPackage
+import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 
 class OrgAccessPointLink extends AbstractBase {
