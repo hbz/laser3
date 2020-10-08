@@ -1,14 +1,17 @@
-package com.k_int.kbplus
+package de.laser.properties
 
+import com.k_int.kbplus.ContentItem
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.PendingChangeService
+import com.k_int.kbplus.Subscription
 import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.properties.PropertyDefinition
 import de.laser.interfaces.AuditableSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
-class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
+class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
 
     def genericOIDService
     def changeNotificationService
@@ -18,7 +21,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def auditService
 
     static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
     PropertyDefinition type
     boolean isPublic = false
@@ -32,33 +35,31 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     Date             dateValue
     Org              tenant
 
-    License owner
-    LicenseProperty instanceOf
-    String paragraph
+    Subscription owner
+    SubscriptionProperty instanceOf
 
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
     static mapping = {
-        id          column: 'lp_id'
-        version     column: 'lp_version'
-        stringValue column: 'lp_string_value', type: 'text'
-        intValue    column: 'lp_int_value'
-        decValue    column: 'lp_dec_value'
-        refValue    column: 'lp_ref_value_rv_fk'
-        urlValue    column: 'lp_url_value'
-        note        column: 'lp_note', type: 'text'
-        dateValue   column: 'lp_date_value'
-        instanceOf  column: 'lp_instance_of_fk', index: 'lp_instance_of_idx'
-        paragraph   column: 'lp_paragraph', type: 'text'
-        owner       column: 'lp_owner_fk', index:'lcp_owner_idx'
-        type        column: 'lp_type_fk', index: 'lp_type_idx'
-        tenant      column: 'lp_tenant_fk', index: 'lp_tenant_idx'
-        isPublic    column: 'lp_is_public'
-        dateCreated column: 'lp_date_created'
-        lastUpdated column: 'lp_last_updated'
-        lastUpdatedCascading column: 'lp_last_updated_cascading'
+        id          column: 'sp_id'
+        version     column: 'sp_version'
+        stringValue column: 'sp_string_value', type: 'text'
+        intValue    column: 'sp_int_value'
+        decValue    column: 'sp_dec_value'
+        refValue    column: 'sp_ref_value_rv_fk'
+        urlValue    column: 'sp_url_value'
+        note        column: 'sp_note', type: 'text'
+        dateValue   column: 'sp_date_value'
+        instanceOf  column: 'sp_instance_of_fk', index: 'sp_instance_of_idx'
+        owner       column: 'sp_owner_fk', index: 'sp_owner_idx'
+        type        column: 'sp_type_fk', index: 'sp_type_idx'
+        tenant      column: 'sp_tenant_fk', index: 'sp_tenant_idx'
+        isPublic    column: 'sp_is_public'
+        dateCreated column: 'sp_date_created'
+        lastUpdated column: 'sp_last_updated'
+        lastUpdatedCascading column: 'sp_last_updated_cascading'
     }
 
     static constraints = {
@@ -70,7 +71,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         note        (nullable: true)
         dateValue   (nullable: true)
         instanceOf  (nullable: true)
-        paragraph   (nullable: true)
 
         dateCreated (nullable: true)
         lastUpdated (nullable: true)
@@ -78,13 +78,13 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
 
     static belongsTo = [
-        type : PropertyDefinition,
-        owner: License
+        type:  PropertyDefinition,
+        owner: Subscription
     ]
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'note', 'dateValue' ]
     }
     @Override
     Collection<String> getLogExcluded() {
@@ -122,18 +122,11 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
     }
 
-    @Override
-    def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
-        newProp = super.copyInto(newProp)
-
-        newProp.paragraph = paragraph
-        newProp
-    }
-
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
-        if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
+        if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
+
             // legacy ++
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
@@ -148,27 +141,18 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     description = defaultMsg.content
             }
 
-            def propName
-            try {
-                // UGLY
-                propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
-
-            } catch(Exception e) {
-                propName = changeDocument.name ?: changeDocument.prop
-            }
-
             // legacy ++
 
             List<PendingChange> slavedPendingChanges = []
 
-            List<LicenseProperty> depedingProps = LicenseProperty.findAllByInstanceOf( this )
-            depedingProps.each{ lcp ->
+            List<SubscriptionProperty> depedingProps = SubscriptionProperty.findAllByInstanceOf( this )
+            depedingProps.each{ scp ->
 
                 String definedType = 'text'
-                if (lcp.type.isRefdataValueType()) {
+                if (scp.type.isRefdataValueType()) {
                     definedType = 'rdv'
                 }
-                else if (lcp.type.isDateType()) {
+                else if (scp.type.isDateType()) {
                     definedType = 'date'
                 }
 
@@ -177,33 +161,29 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     definedType = 'text'
                     description = '(NOTE)'
                 }
-                else if (changeDocument.prop == 'paragraph') {
-                    definedType = 'text'
-                    description = '(PARAGRAPH)'
-                }
 
                 def msgParams = [
                         definedType,
-                        "${lcp.type.class.name}:${lcp.type.id}",
-                        (changeDocument.prop in ['note', 'paragraph'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
-                        (changeDocument.prop in ['note', 'paragraph'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
+                        "${scp.type.class.name}:${scp.type.id}",
+                        (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
+                        (changeDocument.prop in ['note'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
                         "${description}"
                 ]
 
-                PendingChange newPendingChange =  changeNotificationService.registerPendingChange(
-                        PendingChange.PROP_LICENSE,
-                        lcp.owner,
-                        lcp.owner.getLicensee(),
+                PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_SUBSCRIPTION,
+                        scp.owner,
+                        scp.owner.getSubscriber(),
                         [
-                                changeTarget:"${License.class.name}:${lcp.owner.id}",
+                                changeTarget:"${Subscription.class.name}:${scp.owner.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                         ],
-                        PendingChange.MSG_LI02,
+                        PendingChange.MSG_SU02,
                         msgParams,
-                        "Das Merkmal <strong>${lcp.type.name}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Vertragsvorlage geändert. " + description
+                        "Das Merkmal <strong>${scp.type.name}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
                 )
-                if (newPendingChange && lcp.owner.isSlaved) {
+                if (newPendingChange && scp.owner.isSlaved) {
                     slavedPendingChanges << newPendingChange
                 }
             }
@@ -213,9 +193,9 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                 pendingChangeService.performAccept(spc)
             }
         }
-        else if (changeDocument.event.equalsIgnoreCase('LicenseProperty.deleted')) {
+        else if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.deleted')) {
 
-            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.oid = :objectID",
+            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.payload is not null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )
             openPD.each { pc ->
                 if (pc.payload) {
@@ -229,5 +209,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                 }
             }
         }
+
     }
 }

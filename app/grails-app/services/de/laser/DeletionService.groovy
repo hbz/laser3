@@ -11,9 +11,11 @@ import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
+import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemTicket
 import org.elasticsearch.action.delete.DeleteRequest

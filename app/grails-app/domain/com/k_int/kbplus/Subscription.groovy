@@ -24,6 +24,7 @@ import de.laser.interfaces.AuditableSupport
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.SubscriptionProperty
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.apache.commons.logging.Log

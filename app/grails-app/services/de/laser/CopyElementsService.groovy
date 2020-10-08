@@ -10,6 +10,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import grails.transaction.Transactional
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.FlashScope

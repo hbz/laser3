@@ -9,6 +9,7 @@ import de.laser.PersonRole
 import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
+import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
 import de.laser.Contact
