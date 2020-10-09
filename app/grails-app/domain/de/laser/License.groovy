@@ -1,15 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
+import com.k_int.kbplus.PendingChangeService
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
-import de.laser.Doc
-import de.laser.DocContext
-import de.laser.Identifier
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.Package
-import de.laser.PendingChange
-import de.laser.PersonRole
-import de.laser.RefdataValue
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding

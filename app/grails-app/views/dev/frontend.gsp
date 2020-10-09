@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
+<%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <!doctype html>
 <html>
 <head>
@@ -278,7 +278,7 @@
 &lt;tr&gt;
     &lt;th class="<strong>la-js-dont-hide-this-card</strong>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
     &lt;th&gt;${message(code:'property.table.value')}&lt;/th&gt;
-    &lt;g:if test="${ownobj instanceof com.k_int.kbplus.License}"&gt;
+    &lt;g:if test="${ownobj instanceof License}"&gt;
         &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
     &lt;/g:if&gt;
     &lt;th&gt;${message(code:'property.table.notes')}&lt;/th&gt;

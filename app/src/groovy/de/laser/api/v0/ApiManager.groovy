@@ -2,6 +2,7 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.*
 import de.laser.Doc
+import de.laser.License
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform

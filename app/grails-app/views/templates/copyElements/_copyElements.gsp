@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>

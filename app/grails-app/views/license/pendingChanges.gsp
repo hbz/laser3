@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License" %>
+<%@ page import="de.laser.License" %>
 <%@ page import="de.laser.RefdataValue" %>
 <laser:serviceInjection />
 

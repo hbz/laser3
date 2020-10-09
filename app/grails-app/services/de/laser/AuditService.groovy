@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.License
+
 import de.laser.properties.LicenseProperty
 import com.k_int.kbplus.Subscription
 import de.laser.properties.SubscriptionProperty

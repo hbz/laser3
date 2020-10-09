@@ -5,6 +5,7 @@ import de.laser.DocContext
 import de.laser.FTControl
 import de.laser.Identifier
 import de.laser.IssueEntitlement
+import de.laser.License
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Package
@@ -303,7 +304,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.License.class) { lic ->
+        updateES(License.class) { lic ->
             def result = [:]
 
             result._id = lic.globalUID

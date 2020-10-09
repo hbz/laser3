@@ -1,7 +1,7 @@
 package de.laser.properties
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.License
+import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import com.k_int.kbplus.Subscription

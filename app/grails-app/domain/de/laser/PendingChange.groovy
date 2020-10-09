@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.License
+
 import com.k_int.kbplus.Subscription
 import de.laser.finance.CostItem
 import de.laser.exceptions.ChangeAcceptException

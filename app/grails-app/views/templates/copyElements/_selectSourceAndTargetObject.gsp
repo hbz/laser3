@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.RefdataCategory; com.k_int.kbplus.License" %>
+<%@ page import="com.k_int.kbplus.Subscription; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.License" %>
 <laser:serviceInjection/>
 <g:if test="${! (sourceObject && targetObject)}">
     <% if (params){

@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />

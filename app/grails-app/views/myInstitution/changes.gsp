@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.License;de.laser.finance.CostItem;de.laser.PendingChange" %>
+<%@page import="com.k_int.kbplus.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

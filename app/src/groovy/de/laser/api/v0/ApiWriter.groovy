@@ -1,6 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.License
 import de.laser.Org
 import de.laser.Person
 import de.laser.RefdataValue

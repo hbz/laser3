@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<g:set var="license" value="${com.k_int.kbplus.License.get(params.id)}"/>
+<g:set var="license" value="${de.laser.License.get(params.id)}"/>
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="license" action="show" params="${[id:params.id]}" message="license.nav.details" />
