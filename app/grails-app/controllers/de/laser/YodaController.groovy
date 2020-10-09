@@ -27,6 +27,7 @@ import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
 
 import javax.servlet.ServletOutputStream
+import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.sql.Timestamp
@@ -486,17 +487,17 @@ class YodaController {
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('com.k_int.kbplus') || controllerClass.name.startsWith('de.laser')) {
-                def mList = [:]
+            if (controllerClass.name.startsWith('de.laser')) {
+                Map<String, Object> mList = [:]
 
                 controllerClass.methods.each { Method method ->
                     if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
-                        def mKey = "${method.name}"
+                        String mKey = "${method.name}"
                         if (method.getAnnotation(Deprecated)) {
                             mKey = "${method.name} <em>*</em>"
                         }
 
-                        def da = method.getAnnotation(DebugAnnotation)
+                        Annotation da = method.getAnnotation(DebugAnnotation)
                         if (da) {
                             mList << ["${mKey}": [perm: da.perm(),
                                                   type: da.type(),
@@ -510,14 +511,14 @@ class YodaController {
                     }
                 }
 
-                def cKey = "${controllerClass.name}"
+                String cKey = "${controllerClass.simpleName}"
                 if (controllerClass.getAnnotation(Deprecated)) {
-                    cKey ="${controllerClass.name} <em>*</em>"
+                    cKey ="${controllerClass.simpleName} <em>*</em>"
                 }
                 cList<< ["${cKey}": [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
                         'methods': mList.sort{it.key}
-                ]
+                        ]
                 ]
             }
         }

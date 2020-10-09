@@ -17,7 +17,7 @@ class LaserFilters {
                 if (params.id?.contains(':')) {
                     try {
                         def objName  = params.id.split(':')[0]
-                        def objClass = Class.forName("com.k_int.kbplus.${objName.capitalize()}")
+                        def objClass = Class.forName("de.laser.${objName.capitalize()}")
 
                         if (objClass) {
                             def match = objClass.findByGlobalUID(params.id)
