@@ -159,7 +159,7 @@
                                             </g:else>
                                         </g:if>
 
-                                        <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SUR_PROP, null)}">
+                                        <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SRV_PROP, null)}">
                                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
                                                 <g:link class="ui icon button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
                                                     <i class="copy icon"></i>

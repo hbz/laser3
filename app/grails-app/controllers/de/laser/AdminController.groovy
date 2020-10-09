@@ -1661,7 +1661,7 @@ SELECT * FROM (
 
         PropertyDefinition propertyDefinition = PropertyDefinition.get(params.propertyDefinition)
 
-        if(!PropertyDefinition.findByNameAndDescrAndTenant(propertyDefinition.name, PropertyDefinition.SUR_PROP, null)){
+        if(!PropertyDefinition.findByNameAndDescrAndTenant(propertyDefinition.name, PropertyDefinition.SRV_PROP, null)){
             PropertyDefinition surveyProperty = new PropertyDefinition(
                     name: propertyDefinition.name,
                     name_de: propertyDefinition.name_de,
@@ -1670,7 +1670,7 @@ SELECT * FROM (
                     expl_en: propertyDefinition.expl_en,
                     type: propertyDefinition.type,
                     refdataCategory: propertyDefinition.refdataCategory,
-                    descr: PropertyDefinition.SUR_PROP
+                    descr: PropertyDefinition.SRV_PROP
             )
 
             if (surveyProperty.save(flush: true)) {
