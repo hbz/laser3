@@ -121,8 +121,8 @@ class SubscriptionsQueryService {
         }
 
         if(params.license) {
-            base_qry += " and concat('${Subscription.class.name}:',s.id) in (select l.destination from Links l where l.source = :lic and l.linkType = :linkType)"
-            qry_params.put('lic',"${License.class.name}:${params.license}")
+            base_qry += " and exists (select l from Links l where l.sourceLicense = :lic and l.linkType = :linkType and l.destinationSubscription = s)"
+            qry_params.put('lic',License.get(params.license))
             qry_params.put('linkType',RDStore.LINKTYPE_LICENSE)
         }
 

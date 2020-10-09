@@ -56,7 +56,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def getLicensePropertiesForSubscription() {
-        License loadFor = (License) genericOIDService.resolveOID(params.loadFor)
+        License loadFor = License.get(params.loadFor)
         if (loadFor) {
             Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]

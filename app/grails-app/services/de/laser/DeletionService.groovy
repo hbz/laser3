@@ -50,7 +50,7 @@ class DeletionService {
 
         // gathering references
 
-        List links = Links.where { source == genericOIDService.getOID(lic) || destination == genericOIDService.getOID(lic) }.findAll()
+        List links = Links.where { sourceLicense == lic || destinationLicense == lic }.findAll()
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -223,7 +223,7 @@ class DeletionService {
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
-        List links = Links.where { source == genericOIDService.getOID(sub) || destination == genericOIDService.getOID(sub) }.findAll()
+        List links = Links.where { sourceSubscription == sub || destinationSubscription == sub }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
@@ -481,7 +481,7 @@ class DeletionService {
 
         // gathering references
 
-        List links = Links.where { source == genericOIDService.getOID(org) || destination == genericOIDService.getOID(org) }.findAll()
+        //List links = Links.where { source == genericOIDService.getOID(org) || destination == genericOIDService.getOID(org) }.findAll()
 
         List ids            = new ArrayList(org.ids)
         List outgoingCombos = new ArrayList(org.outgoingCombos)
@@ -534,7 +534,7 @@ class DeletionService {
 
         result.info = []
 
-        result.info << ['Links: Orgs', links, FLAG_BLOCKER]
+        //result.info << ['Links: Orgs', links, FLAG_BLOCKER]
 
         result.info << ['Identifikatoren', ids]
         result.info << ['Combos (out)', outgoingCombos]

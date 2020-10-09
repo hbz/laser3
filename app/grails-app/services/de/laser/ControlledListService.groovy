@@ -456,6 +456,7 @@ class ControlledListService {
         result
     }
 
+    /*
     Map getLinkedObjects(Map params) {
         Map result = [results:[]]
         Org contextOrg = contextService.org
@@ -500,6 +501,7 @@ class ControlledListService {
         }
         result
     }
+     */
 
     Map getElements(Map params) {
         Map result = [results:[]]

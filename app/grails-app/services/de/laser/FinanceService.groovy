@@ -1206,7 +1206,7 @@ class FinanceService {
             result.subscription = Subscription.get(subId)
             if(!(result.subscription instanceof Subscription))
                 throw new FinancialDataException("Invalid or no subscription found!")
-            Map navigation = linksGenerationService.generateNavigation(genericOIDService.getOID(result.subscription))
+            Map navigation = linksGenerationService.generateNavigation(result.subscription)
             result.navNextSubscription = navigation.nextLink
             result.navPrevSubscription = navigation.prevLink
         }

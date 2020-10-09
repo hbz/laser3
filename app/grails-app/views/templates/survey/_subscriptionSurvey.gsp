@@ -1122,7 +1122,7 @@
         $.ajax({
             url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
                   data: {
-                       loadFor: "${link.source}",
+                       loadFor: "${link.sourceLicense.id}",
                        linkId: ${link.id}
         }
        }).done(function(response) {

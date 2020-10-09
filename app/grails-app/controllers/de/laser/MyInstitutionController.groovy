@@ -324,16 +324,13 @@ class MyInstitutionController extends AbstractDebugController {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        Set<String> subscriptionOIDs
-        if(params.subKind || params.subStatus || (params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || !params.filterSubmit) {
+        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
             Set<String> subscrQueryFilter = ["oo.org = :context"]
-            String subscrQuery = "select concat('${Subscription.class.name}:',s.id) from Subscription s join s.orgRelations oo "
-            Map<String,Object> subscrQueryParams = [context:result.institution]
+            qry_params.context = result.institution
 
+            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
             if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
                 subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-                subscrQueryParams.name_filter = params['keyword-search']
-                result.keyWord = params['keyword-search']
             }
 
             if(params.subStatus || !params.filterSubmit) {
@@ -342,7 +339,7 @@ class MyInstitutionController extends AbstractDebugController {
                     params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                     result.filterSet = true
                 }
-                subscrQueryParams.subStatus = params.subStatus as Long
+                qry_params.subStatus = params.subStatus as Long
             }
 
             if(params.subKind) {
@@ -352,37 +349,27 @@ class MyInstitutionController extends AbstractDebugController {
                 selKinds.each { String sel ->
                     subKinds << Long.parseLong(sel)
                 }
-                subscrQueryParams.subKinds = subKinds
+                qry_params.subKinds = subKinds
             }
 
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            if(subscrQueryFilter)
-                subscrQuery += " where "+subscrQueryFilter.join(" and ")
-
-            subscriptionOIDs = Subscription.executeQuery(subscrQuery,subscrQueryParams)
-            String subscrFilter = ""
-            if(subscriptionOIDs) {
-                subscrFilter = " or exists ( select li from Links li where li.source = concat('${License.class.name}:',l.id) and li.linkType = :linkType and li.destination in (:subscriptions) ) "
-                qry_params.subscriptions = subscriptionOIDs
-                qry_params.linkType = RDStore.LINKTYPE_LICENSE
-            }
-            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
-            if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0) || subscriptionOIDs) {
-                base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-                        + subscrFilter //filter by subscription
-                        + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-                        + "   orgR.roleType in (:licRoleTypes) and ( "
-                        + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                        + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                        + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                        + " ) ) ) ) ")
-                qry_params += [name_filter:"${params['keyword-search']}"]
-                qry_params += [licRoleTypes: [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]]
-                result.keyWord = params['keyword-search']
-            }
+            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+        }
+        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+                    + "   orgR.roleType in (:licRoleTypes) and ( "
+                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                    + " ) ) ) ) ")
+            qry_params.name_filter = params['keyword-search']
+            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
+            result.keyWord = params['keyword-search']
         }
 
         if(params.consortium) {
@@ -453,17 +440,10 @@ class MyInstitutionController extends AbstractDebugController {
         result.licenseCount = totalLicenses.size()
         pu.setBenchmark('get subscriptions')
 
-        List<String> licenseOIDs = totalLicenses.collect { License l -> genericOIDService.getOID(l) }
-
-        if (licenseOIDs && subscriptionOIDs) {
-            result.allLinkedSubscriptions = Links.findAllBySourceInListAndDestinationInListAndLinkType(licenseOIDs, subscriptionOIDs, RDStore.LINKTYPE_LICENSE)
-        } else if (licenseOIDs) {
-            result.allLinkedSubscriptions = Links.findAllBySourceInListAndLinkType(licenseOIDs, RDStore.LINKTYPE_LICENSE)
-        } else {
-            result.allLinkedSubscriptions = []
-        }
-
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
+        if(result.licenses)
+            result.allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status",[licenses:result.licenses,linkType:RDStore.LINKTYPE_LICENSE,status:qry_params.subStatus])
+
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
         orgRoles.each { OrgRole oo ->
@@ -1229,12 +1209,12 @@ join sub.orgRelations or_sub where
                 RefdataValue linkType = (RefdataValue) genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
                 if(perspectiveIndex == 0) {
-                    configMap.source = params.context
-                    configMap.destination = params["pair_${configMap.link.id}"]
+                    configMap.source = genericOIDService.resolveOID(params.context)
+                    configMap.destination = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
                 }
                 else if(perspectiveIndex == 1) {
-                    configMap.source = params["pair_${configMap.link.id}"]
-                    configMap.destination = params.context
+                    configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
+                    configMap.destination = genericOIDService.resolveOID(params.context)
                 }
                 configMap.linkType = linkType
             }
@@ -1249,12 +1229,12 @@ join sub.orgRelations or_sub where
                 configMap.linkType = genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params.linkComment_new
                 if(perspectiveIndex == 0) {
-                    configMap.source = params.context
-                    configMap.destination = params.pair_new
+                    configMap.source = genericOIDService.resolveOID(params.context)
+                    configMap.destination = genericOIDService.resolveOID(params.pair_new)
                 }
                 else if(perspectiveIndex == 1) {
-                    configMap.source = params.pair_new
-                    configMap.destination = params.context
+                    configMap.source = genericOIDService.resolveOID(params.pair_new)
+                    configMap.destination = genericOIDService.resolveOID(params.context)
                 }
                 def currentObject = genericOIDService.resolveOID(params.context)
                 List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
@@ -1267,8 +1247,8 @@ join sub.orgRelations or_sub where
             else if(params["linkType_sl_new"]) {
                 configMap.linkType = RDStore.LINKTYPE_LICENSE
                 configMap.commentContent = params.linkComment_sl_new
-                configMap.source = params.pair_sl_new
-                configMap.destination = params.context
+                configMap.source = genericOIDService.resolveOID(params.pair_sl_new)
+                configMap.destination = genericOIDService.resolveOID(params.context)
             }
             else if(!params["linkType_new"] && !params["linkType_sl_new"]) {
                 flash.error = message(code:'default.linking.linkTypeError')
@@ -3615,9 +3595,7 @@ join sub.orgRelations or_sub where
                         privatePropDef.save(flush:true)
 
                         // delete inbetween created mandatories
-                        Class.forName(
-                                privatePropDef.getImplClass('private')
-                        )?.findAllByType(privatePropDef)?.each { it ->
+                        Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { it ->
                             it.delete(flush:true)
                         }
                     }

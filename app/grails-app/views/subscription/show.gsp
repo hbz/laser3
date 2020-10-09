@@ -218,7 +218,7 @@
                                         <g:each in="${linkTypes.getValue()}" var="link">
                                             <tr>
                                                 <%
-                                                    int perspectiveIndex = genericOIDService.getOID(subscriptionInstance) == link.source ? 0 : 1
+                                                    int perspectiveIndex = subscriptionInstance == link.sourceSubscription ? 0 : 1
                                                 %>
                                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
                                                 <td>
@@ -479,7 +479,7 @@
                                                         <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                                 data-confirm-term-how="unlink"
-                                                                action="unlinkLicense" params="${[licenseOID: link.source, id:subscription.id]}">
+                                                                action="unlinkLicense" params="${[licenseOID: link.sourceLicense.id, id:subscription.id]}">
                                                             <i class="unlink icon"></i>
                                                         </g:link>
                                                     </span>
@@ -726,7 +726,7 @@
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
                   data: {
-                       loadFor: "${link.source}",
+                       loadFor: "${link.sourceLicense.id}",
                        linkId: ${link.id}
                   }
               }).done(function(response) {

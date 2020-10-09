@@ -1361,7 +1361,7 @@ class SubscriptionController
             response.sendError(401)
             return
         }
-        subscriptionService.setOrgLicRole(result.subscription,genericOIDService.resolveOID(params.licenseOID),true)
+        subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
         redirect(url: request.getHeader('referer'))
     }
 
@@ -2437,8 +2437,7 @@ class SubscriptionController
             }
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
-        String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:genericOIDService.getOID(result.subscriptionInstance), linkType:RDStore.LINKTYPE_LICENSE])
+        result.memberLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType",[subscription:result.subscriptionInstance, linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -4664,9 +4663,9 @@ class SubscriptionController
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
         result.contextOrg = contextService.getOrg()
-        result.licenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect { Links li -> genericOIDService.resolveOID(li.source)}
+        result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription,RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
 
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.subscription))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 

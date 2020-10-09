@@ -156,7 +156,7 @@
                                             <g:each in="${linkTypes.getValue()}" var="link">
                                                 <tr>
                                                     <%
-                                                        int perspectiveIndex = genericOIDService.getOID(license) == link.source ? 0 : 1
+                                                        int perspectiveIndex = license == link.sourceLicense ? 0 : 1
                                                     %>
                                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
                                                     <td>

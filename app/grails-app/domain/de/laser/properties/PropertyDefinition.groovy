@@ -7,6 +7,7 @@ import de.laser.RefdataValue
 import com.k_int.kbplus.Subscription
 import de.laser.ContextService
 import de.laser.I10nTranslation
+import de.laser.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
 import de.laser.helper.SwissKnife
@@ -376,41 +377,20 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         result
     }
 
-    @Deprecated
-    String getImplClass(String customOrPrivate) {
-        getImplClass(this.descr, customOrPrivate)
-    }
-
-    @Deprecated
-    static String getImplClass(String descr, String customOrPrivate) {
-        String result
-        String[] parts = descr.split(" ")
-
-        if (parts.size() >= 2) {
-            if (parts[0] == "Organisation") {
-                parts[0] = "Org"
-            }
-            String cp = 'com.k_int.kbplus.' + parts[0] + 'CustomProperty'
-            String pp = 'com.k_int.kbplus.' + parts[0] + 'PrivateProperty'
-
-            try {
-                if (customOrPrivate.equalsIgnoreCase('custom') && Class.forName(cp)) {
-                    result = cp
-                }
-                if (customOrPrivate.equalsIgnoreCase('private') && Class.forName(pp)) {
-                    result = pp
-                }
-            } catch (Exception e) {
-
-            }
-        }
-        result
+    String getImplClass() {
+        if(descr.contains("Organisation"))
+            OrgProperty.class.name
+        else if (descr.contains("Survey"))
+            SurveyResult.class.name
+        else 'de.laser.'+descr.replace(" ","")
     }
 
     int countUsages() {
         String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
         if(this.descr == "Organisation Property")
             table = "OrgProperty"
+        else if(this.descr == "Survey Property")
+            table = "SurveyResult"
 
         if (table) {
             int[] c = executeQuery("select count(c) from " + table + " as c where c.type.id = :type", [type:this.id])
@@ -426,6 +406,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         if(this.descr == "Organisation Property")
             table = "OrgProperty"
         else if(this.descr == "Survey Property") {
+            table = "SurveyResult"
             tenantFilter = ''
             filterParams.remove("ctx")
         }
