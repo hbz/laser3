@@ -11,7 +11,6 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.transaction.Transactional
-import javafx.beans.property.Property
 
 @Transactional
 class PropertyService {

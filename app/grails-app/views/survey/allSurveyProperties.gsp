@@ -145,7 +145,7 @@
                 <label class="property-label">${message(code: 'propertyDefinition.descr.label')}</label>
                 <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                 <select name="pd_descr" id="pd_descr" class="ui dropdown">
-                    <g:each in="${[PropertyDefinition.SUR_PROP]}" var="pd">
+                    <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">
                         <option value="${pd}"><g:message code="propertyDefinition.${pd}.label"
                                                          default="${pd}"/></option>
                     </g:each>

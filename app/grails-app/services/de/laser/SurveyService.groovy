@@ -963,13 +963,13 @@ class SurveyService {
         List props = []
 
         //private Property
-        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, contextOrg).each { it ->
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, contextOrg).each { it ->
             props << it
 
         }
 
         //global Property
-        PropertyDefinition.getAllByDescr(PropertyDefinition.SUR_PROP).each { it ->
+        PropertyDefinition.getAllByDescr(PropertyDefinition.SVY_PROP).each { it ->
             props << it
 
         }

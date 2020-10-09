@@ -526,7 +526,7 @@ class DeletionService {
         List orgAccessPoints    = OrgAccessPoint.findAllByOrg(org)
 
         List surveyInfos        = SurveyInfo.findAllByOwner(org)
-        List surveyProperties   = PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SUR_PROP, org)
+        List surveyProperties   = PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, org)
         List surveyResults      = SurveyResult.findAllByOwner(org)
         List surveyResultsParts = SurveyResult.findAllByParticipant(org)
 

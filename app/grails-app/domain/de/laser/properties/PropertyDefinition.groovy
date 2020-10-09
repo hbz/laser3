@@ -39,7 +39,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     final static String PRS_PROP    = 'Person Property'
     final static String PLA_PROP    = 'Platform Property'
     final static String SUB_PROP    = 'Subscription Property'
-    final static String SUR_PROP    = 'Survey Property'
+    final static String SVY_PROP    = 'Survey Property'
 
     //sorting is for German terms for the next three arrays; I10n is todo for later
 
@@ -49,7 +49,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             SUB_PROP,
             ORG_PROP,
             PLA_PROP,
-            SUR_PROP,
+            SVY_PROP,
             LIC_PROP
     ]
     @Transient
@@ -58,7 +58,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             SUB_PROP,
             ORG_PROP,
             PLA_PROP,
-            SUR_PROP,
+            SVY_PROP,
             LIC_PROP
     ]
 
@@ -116,7 +116,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             propDefGroupItems: 'propDef'
     ]
 
-    static transients = ['descrClass', 'bigDecimalType', 'dateType', 'integerType', 'refdataValueType', 'stringType', 'URLType', 'implClassValueProperty'] // mark read-only accessor methods
+    static transients = ['descrClass', 'bigDecimalType', 'dateType', 'integerType', 'refdataValueType', 'stringType', 'URLType', 'implClass', 'implClassValueProperty'] // mark read-only accessor methods
 
     static mapping = {
                     cache  true
@@ -195,7 +195,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             if (!pd) {
                 static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}), tenant: ${tenant}")
 
-                boolean multipleOccurrence = (category == PropertyDefinition.SUR_PROP) ? false : multiple
+                boolean multipleOccurrence = (category == PropertyDefinition.SVY_PROP) ? false : multiple
 
                 pd = new PropertyDefinition(
                         name: token,
@@ -387,9 +387,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     int countUsages() {
         String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
-        if(this.descr == "Organisation Property")
+        if(this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
-        else if(this.descr == "Survey Property")
+        } else if(this.descr == PropertyDefinition.SVY_PROP)
             table = "SurveyResult"
 
         if (table) {
@@ -403,9 +403,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
         Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
-        if(this.descr == "Organisation Property")
+        if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
-        else if(this.descr == "Survey Property") {
+        } else if(this.descr == PropertyDefinition.SVY_PROP) {
             table = "SurveyResult"
             tenantFilter = ''
             filterParams.remove("ctx")

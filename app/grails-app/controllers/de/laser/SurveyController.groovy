@@ -95,7 +95,7 @@ class SurveyController {
         params.offset = result.offset
         params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUR_PROP], result.institution)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], result.institution)
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
@@ -575,7 +575,7 @@ class SurveyController {
             //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
             if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SUR_PROP),
+                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SVY_PROP),
                             surveyConfig: surveyConfig)
 
                     if (configProperty.save()) {
@@ -1955,7 +1955,7 @@ class SurveyController {
                 name: params.pd_name,
                 type: params.pd_type,
                 tenant: result.institution,
-                descr: PropertyDefinition.SUR_PROP
+                descr: PropertyDefinition.SVY_PROP
         )
 
         if ((!surveyProperty) && params.pd_name && params.pd_type) {
@@ -1966,7 +1966,7 @@ class SurveyController {
 
             Map<String, Object> map = [
                     token       : params.pd_name,
-                    category    : PropertyDefinition.SUR_PROP,
+                    category    : PropertyDefinition.SVY_PROP,
                     type        : params.pd_type,
                     rdc         : rdc ? rdc.getDesc() : null,
                     tenant      : result.institution.globalUID,
