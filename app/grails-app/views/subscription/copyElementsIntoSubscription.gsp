@@ -89,6 +89,8 @@
                     <div class="description">
                         <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
+                        <br>
+                        <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
             </div>
@@ -170,6 +172,8 @@
                     <div class="description">
                         <i class="gift icon"></i>${message(code: 'package.label')}
                         <i class="book icon"></i>${message(code: 'title')}
+                        <br>
+                        <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
             </semui:complexSubNavItem>

@@ -75,7 +75,7 @@ class SemanticUiRefdataTagLib {
 
         out << "<script>"
         out << "    \$('#${nameRdc}').on('change', function(e) {"
-        out << "        \$.ajax({ url: \"${g.createLink(controller:"ajax", action:"refdataSearchByOID")}?oid=\" + \$(this).find(':selected').val() + \"&format=json\""
+        out << "        \$.ajax({ url: \"${g.createLink(controller:"ajax", action:"refdataSearchByCategory")}?oid=\" + \$(this).find(':selected').val() + \"&format=json\""
         out << "            ,"
         out << "            success: function(data){ "
         out << "                var result = [];"

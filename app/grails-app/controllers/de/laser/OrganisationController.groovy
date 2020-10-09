@@ -98,18 +98,18 @@ class OrganisationController extends AbstractDebugController {
             result.settings.addAll(allSettings.findAll { it.key in accessSet })
             result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
         }
-        else if (inContextOrg) {
+        else if (result.inContextOrg) {
             log.debug( 'settings for own org')
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
 
-            if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+            if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }
-            else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+            else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
-            else if (['FAKE'].contains(org.getCustomerType())) {
+            else if (['FAKE'].contains(result.institution.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
         }
@@ -933,45 +933,42 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def users() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Org orgInstance = Org.get(params.id)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
 
-        if (! orgInstance) {
+        if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
-        result.editable = checkIsEditable(result.user, orgInstance)
+        result.editable = checkIsEditable(result.user, result.orgInstance)
 
         if (! result.editable) {
-            boolean instAdminExists = orgInstance.getAllValidInstAdmins().size() > 0
-            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, orgInstance, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
+            boolean instAdminExists = result.orgInstance.getAllValidInstAdmins().size() > 0
+            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, result.orgInstance, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
 
             result.editable = comboCheck && ! instAdminExists
         }
 
         if (! result.editable) {
-            redirect controller: 'organisation', action: 'show', id: orgInstance.id
+            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
         }
 
-        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
-        result.orgInstance = orgInstance
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.orgInstance, [sort:'dateRequested', order:'desc'])
 
         Map filterParams = params
         filterParams.status = UserOrg.STATUS_APPROVED
-        filterParams.org = orgInstance
+        filterParams.org = result.orgInstance
 
         result.users = userService.getUserSet(filterParams)
         result.breadcrumb = 'breadcrumb'
-        result.titleMessage = "${orgInstance.name} - ${message(code:'org.nav.users')}"
+        result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
         result.navPath = "nav"
-        result.navConfiguration = [orgInstance: orgInstance, inContextOrg: false]
+        result.navConfiguration = [orgInstance: result.orgInstance, inContextOrg: false]
         result.multipleAffiliationsWarning = true
-        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:orgInstance])
-        availableComboOrgs.add(orgInstance)
+        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:result.orgInstance])
+        availableComboOrgs.add(result.orgInstance)
         result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
         result.tableConfig = [
                 editable: result.editable,
@@ -1044,10 +1041,7 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def _delete() {
-        Map<String, Object> result = [:]
-
-        result.orgInstance = Org.get(params.id)
-        result.editable = checkIsEditable(User.get(springSecurityService.principal.id), orgInstance)
+        Map<String, Object> result = setResultGenericsAndCheckAccess()
 
         if (result.orgInstance) {
             if (params.process  && result.editable) {

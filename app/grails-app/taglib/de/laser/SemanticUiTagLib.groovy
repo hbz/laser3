@@ -840,7 +840,7 @@ class SemanticUiTagLib {
         def next
 
         if(surveyConfig.subSurveyUseForTransfer){
-            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(surveyConfig.subscription))
+            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(surveyConfig.subscription)
             prev = links.prevLink ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(links.prevLink[0], true) ?: null) : null
             next = links.nextLink ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(links.nextLink[0], true) ?: null) : null
         }

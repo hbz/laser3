@@ -1361,7 +1361,7 @@ class SubscriptionController
             response.sendError(401)
             return
         }
-        subscriptionService.setOrgLicRole(result.subscription,genericOIDService.resolveOID(params.licenseOID),true)
+        subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1567,8 +1567,9 @@ class SubscriptionController
 
         result.contextOrg = contextService.getOrg()
 
-        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.status not in (:invalidStatuses)",
+        result.surveys = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                 [sub: result.subscription.instanceOf,
+                 org: result.contextOrg,
                  invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
 
        result
@@ -2437,8 +2438,7 @@ class SubscriptionController
             }
         }
         result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
-        String memberLicensesQuery = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-        result.memberLicenses = License.executeQuery(memberLicensesQuery,[subscription:genericOIDService.getOID(result.subscriptionInstance), linkType:RDStore.LINKTYPE_LICENSE])
+        result.memberLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType",[subscription:result.subscriptionInstance, linkType:RDStore.LINKTYPE_LICENSE])
 
         result
     }
@@ -4205,8 +4205,13 @@ class SubscriptionController
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                 if(result.targetObject) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                 }
+                result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                break
+            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
+                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
+                params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
@@ -4664,9 +4669,9 @@ class SubscriptionController
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
         result.contextOrg = contextService.getOrg()
-        result.licenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(result.subscription),RDStore.LINKTYPE_LICENSE).collect { Links li -> genericOIDService.resolveOID(li.source)}
+        result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription,RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
 
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(result.subscription))
+        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 

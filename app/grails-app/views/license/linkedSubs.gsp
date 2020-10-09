@@ -137,9 +137,9 @@
                 <g:set var="sub" value="${row}"/>
             </g:else>
             <%
-                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(genericOIDService.getOID(sub))
-                Subscription navPrevSubscription = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
-                Subscription navNextSubscription = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(sub)
+                Subscription navPrevSubscription = (links.prevLink.size() > 0) ? links.prevLink[0] : null
+                Subscription navNextSubscription = (links.nextLink.size() > 0) ? links.nextLink[0] : null
             %>
             <tr>
                 <td>${i + 1}</td>

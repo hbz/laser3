@@ -466,19 +466,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     Subscription _getCalculatedPrevious() {
-        Links match = Links.findWhere(
-                source: genericOIDService.getOID(this),
-                linkType: RDStore.LINKTYPE_FOLLOWS
-        )
-        return match ? (Subscription) genericOIDService.resolveOID(match.destination) : null
+        Links match = Links.findBySourceSubscriptionAndLinkType(this, RDStore.LINKTYPE_FOLLOWS)
+        return match ? match.destinationSubscription : null
     }
 
     Subscription _getCalculatedSuccessor() {
-        Links match = Links.findWhere(
-                destination: genericOIDService.getOID(this),
-                linkType: RDStore.LINKTYPE_FOLLOWS
-        )
-        return match ? (Subscription) genericOIDService.resolveOID(match.source) : null
+        Links match = Links.findByDestinationSubscriptionAndLinkType(this,RDStore.LINKTYPE_FOLLOWS)
+        return match ? match.sourceSubscription : null
     }
 
     boolean isMultiYearSubscription() {
