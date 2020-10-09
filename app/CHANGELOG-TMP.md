@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2919    09.10.2020  rc1.6               Andreas Bug         Vollnutzer hatten keinen Zugriff auf "Meine Lizenzen"
+
 2914    07.10.2020  rc1.6               Andreas Bug         Organisationen konnten nicht gelöscht werden
 
 2913    07.10.2020  rc1.6               Andreas Bug         Vererbung wird korrekt in die Ziellizenz übertragen
