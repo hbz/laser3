@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.Org" %>
 <g:if test="${editmode}">
     <a role="button" class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>

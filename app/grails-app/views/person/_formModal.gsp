@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.helper.RDConstants; com.k_int.kbplus.Org; de.laser.Contact" %>
+<%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.RefdataCategory; de.laser.Person; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.Contact" %>
 <laser:serviceInjection/>
 
 <g:set var="modalId" value="${modalId ?: 'personFormModal'}"/>

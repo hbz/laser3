@@ -1,6 +1,6 @@
 package de.laser.oap
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import com.k_int.kbplus.Subscription
 import de.laser.AccessPointData
 import de.laser.RefdataCategory

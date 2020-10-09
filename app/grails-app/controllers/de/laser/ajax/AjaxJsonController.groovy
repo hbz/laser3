@@ -1,9 +1,8 @@
 package de.laser.ajax
 
 import de.laser.IssueEntitlement
-import com.k_int.kbplus.License
 import de.laser.properties.LicenseProperty
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import com.k_int.kbplus.Platform

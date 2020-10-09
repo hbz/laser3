@@ -1,7 +1,7 @@
 package de.laser.finance
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.Org
+import de.laser.Org
 import grails.util.Holders
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 

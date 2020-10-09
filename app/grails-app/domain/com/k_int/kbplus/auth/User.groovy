@@ -1,6 +1,6 @@
 package com.k_int.kbplus.auth
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
 import javax.persistence.Transient

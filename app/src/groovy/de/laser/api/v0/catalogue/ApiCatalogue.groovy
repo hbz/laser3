@@ -1,6 +1,6 @@
 package de.laser.api.v0.catalogue
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.RefdataCategory
 import de.laser.properties.PropertyDefinition
 import de.laser.CacheService

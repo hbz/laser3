@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.Org;com.k_int.kbplus.auth.UserOrg;" %>
+<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.UserOrg;" %>
 <laser:serviceInjection />
 
 <div class="column wide sixteen">

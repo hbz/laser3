@@ -1,9 +1,8 @@
 package de.laser.properties
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.properties.PropertyDefinition
 
 /**Org custom properties are used to store Org related settings and options**/
 class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {

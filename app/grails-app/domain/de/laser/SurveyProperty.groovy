@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Org
+
 import de.laser.traits.I10nTrait
 import groovy.util.logging.Log4j
 import org.springframework.context.i18n.LocaleContextHolder

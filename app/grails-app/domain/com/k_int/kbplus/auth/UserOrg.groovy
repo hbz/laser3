@@ -1,6 +1,6 @@
 package com.k_int.kbplus.auth
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import org.apache.commons.lang.builder.HashCodeBuilder
 import javax.persistence.Transient
 

@@ -1,7 +1,7 @@
 package de.laser.properties
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.CacheService
 import de.laser.I10nTranslation
 import de.laser.helper.EhcacheWrapper

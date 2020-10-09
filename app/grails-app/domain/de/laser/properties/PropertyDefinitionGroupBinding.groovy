@@ -1,9 +1,8 @@
 package de.laser.properties
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
+import de.laser.Org
 import com.k_int.kbplus.Subscription
-import de.laser.properties.PropertyDefinitionGroup
 import groovy.util.logging.Log4j
 
 @Log4j

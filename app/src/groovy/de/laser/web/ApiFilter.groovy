@@ -1,6 +1,6 @@
 package de.laser.web
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; de.laser.IdentifierNamespace" %>
+<%@ page import="de.laser.Org; de.laser.IdentifierNamespace" %>
 <semui:modal id="modalCreateIdentifier"
              text="${identifier? message(code:'default.identifier.edit') : message(code:'default.identifier.create')}"
              isEditModal="true"

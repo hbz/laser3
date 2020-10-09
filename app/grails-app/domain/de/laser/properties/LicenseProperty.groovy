@@ -2,7 +2,7 @@ package de.laser.properties
 
 import de.laser.ContentItem
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
+import de.laser.Org
 import com.k_int.kbplus.PendingChangeService
 import de.laser.PendingChange
 import de.laser.RefdataValue

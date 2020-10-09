@@ -1,7 +1,7 @@
 package de.laser.ajax
 
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
+import de.laser.Org
 import com.k_int.kbplus.Subscription
 import de.laser.Address
 import de.laser.Doc

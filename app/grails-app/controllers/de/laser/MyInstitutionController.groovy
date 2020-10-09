@@ -5,7 +5,6 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.License
 import de.laser.properties.LicenseProperty
-import com.k_int.kbplus.Org
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChangeService

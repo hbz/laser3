@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; com.k_int.kbplus.Subscription; com.k_int.kbplus.Org; com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.Org; de.laser.finance.CostItem; com.k_int.kbplus.Subscription; com.k_int.kbplus.Platform" %>
 <!doctype html>
 
 <html>

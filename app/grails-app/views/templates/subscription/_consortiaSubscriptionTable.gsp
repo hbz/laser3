@@ -1,8 +1,8 @@
-<%@ page import="de.laser.OrgRole; de.laser.FormService; de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <g:if test="${params.member}">
-    <g:set var="chosenOrg" value="${com.k_int.kbplus.Org.findById(params.member)}" />
+    <g:set var="chosenOrg" value="${Org.findById(params.member)}" />
     <g:set var="chosenOrgCPAs" value="${chosenOrg?.getGeneralContactPersons(false)}" />
 
     <table class="ui table la-table compact">
@@ -79,7 +79,7 @@
             <%
                 CostItem ci
                 com.k_int.kbplus.Subscription subCons
-                com.k_int.kbplus.Org subscr
+                Org subscr
                 if('withCostItems' in tableConfig) {
                     ci = entry[0] ?: new CostItem()
                     subCons = entry[1]

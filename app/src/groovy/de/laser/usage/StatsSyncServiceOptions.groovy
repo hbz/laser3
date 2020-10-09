@@ -2,6 +2,7 @@ package de.laser.usage
 
 import com.k_int.kbplus.*
 import de.laser.Identifier
+import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants

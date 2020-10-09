@@ -7,6 +7,7 @@ import de.laser.ContentItem
 import de.laser.ContextService
 import de.laser.Doc
 import de.laser.IssueEntitlement
+import de.laser.Org
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.RefdataValue

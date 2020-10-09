@@ -1,11 +1,10 @@
 package de.laser
 
-import com.k_int.kbplus.Org
+
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 

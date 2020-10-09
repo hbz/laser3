@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.Address;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Address;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataValue;de.laser.Org" %>
 
 <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
 	<label for="type">
@@ -26,7 +26,7 @@
         <g:message code="address.org.label" />
 
     </label>
-    <g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${addressInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
+    <g:select id="org" name="org.id" from="${Org.list()}" optionKey="id" value="${addressInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <hr />

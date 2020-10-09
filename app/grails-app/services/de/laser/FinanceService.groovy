@@ -7,7 +7,6 @@ import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.Invoice
 import de.laser.finance.Order
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance

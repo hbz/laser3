@@ -2,7 +2,7 @@ package de.laser.api.v0.entities
 
 import de.laser.Identifier
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.OrgRole
 import de.laser.api.v0.*
 import de.laser.helper.Constants

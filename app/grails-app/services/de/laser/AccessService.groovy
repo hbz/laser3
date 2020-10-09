@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.*
 import de.laser.helper.RDConstants
 import grails.transaction.Transactional

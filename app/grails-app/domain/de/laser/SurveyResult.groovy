@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Org
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
 import de.laser.helper.RDStore

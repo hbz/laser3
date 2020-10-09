@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.Org" %>
 <!doctype html>
 <html>
 <head>

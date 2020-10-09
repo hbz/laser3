@@ -1,7 +1,7 @@
 package de.laser.api.v0.entities
 
 import de.laser.IssueEntitlement
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.api.v0.*
 import groovy.util.logging.Log4j
 

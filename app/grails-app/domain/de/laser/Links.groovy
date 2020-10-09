@@ -1,8 +1,7 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
 import de.laser.exceptions.CreationException
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil

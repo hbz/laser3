@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.properties.PlatformProperty

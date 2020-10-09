@@ -5,6 +5,7 @@ import de.laser.DocContext
 import de.laser.FTControl
 import de.laser.Identifier
 import de.laser.IssueEntitlement
+import de.laser.Org
 import de.laser.OrgRole
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
@@ -111,7 +112,7 @@ class DataloadService {
 
         def start_time = System.currentTimeMillis();
 
-        updateES(com.k_int.kbplus.Org.class) { org ->
+        updateES(Org.class) { org ->
             def result = [:]
 
                 result._id = org.globalUID

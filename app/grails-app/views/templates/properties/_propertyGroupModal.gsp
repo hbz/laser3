@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; de.laser.FormService"%>
+<%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; de.laser.FormService"%>
 <laser:serviceInjection />
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">

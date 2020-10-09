@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;" %>
+<%@ page import="de.laser.Org" %>
 
 <g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig.orgs.org.id) ?: null}" />
 

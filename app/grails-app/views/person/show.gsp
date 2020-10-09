@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.Person; de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
