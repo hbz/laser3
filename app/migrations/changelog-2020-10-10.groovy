@@ -3,7 +3,7 @@ databaseChangeLog = {
 	changeSet(author: "djebeniani (generated)", id: "1602248955428-1") {
 		addColumn(schemaName: "public", tableName: "org") {
 			column(name: "org_e_invoice", type: "bool") {
-				constraints(nullable: "false")
+				constraints(nullable: "true")
 			}
 		}
 	}
