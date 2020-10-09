@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.OrgSetting
+import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
 import de.laser.api.v0.*
@@ -54,7 +55,7 @@ class ApiStatistic {
         List<Org> orgs = getAccessibleOrgs()
 
         if (orgs) {
-            packages = com.k_int.kbplus.Package.executeQuery(
+            packages = Package.executeQuery(
                     "select distinct(pkg) from SubscriptionPackage sp " +
                             "join sp.pkg pkg join sp.subscription s join s.orgRelations ogr join ogr.org o " +
                             "where o in (:orgs) and (pkg.packageStatus is null or pkg.packageStatus != :deleted)", [

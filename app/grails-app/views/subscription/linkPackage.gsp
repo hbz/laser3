@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.finance.CostItem; com.k_int.kbplus.Subscription; de.laser.Platform" %>
+<%@ page import="de.laser.Org; de.laser.finance.CostItem; com.k_int.kbplus.Subscription; de.laser.Platform; de.laser.Package" %>
 <!doctype html>
 
 <html>
@@ -97,8 +97,8 @@
                         <g:each in="${hits}" var="hit">
                             <tr>
                                 <td>
-                                    <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
-                                        <g:link controller="package" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
+                                    <g:if test="${Package.findByGokbId(hit.uuid)}">
+                                        <g:link controller="package" target="_blank" action="show" id="${Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
                                     </g:if>
                                     <g:else>
                                         ${hit.name}
@@ -151,7 +151,7 @@
                                             <g:if test="${editable && !hasCostItems}">
                                                 <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
-                                                            onclick="unlinkPackage(${com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.id})">
+                                                            onclick="unlinkPackage(${Package.findByGokbId(hit.uuid)?.id})">
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>

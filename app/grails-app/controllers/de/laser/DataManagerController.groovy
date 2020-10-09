@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.Role
@@ -471,8 +470,8 @@ class DataManagerController extends AbstractDebugController {
         /*if(params.onlyNotEqual) {
           result.tippsNotEqual = []
           result.records.each { hit ->
-            if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
-              if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
+            if (de.laser.Package.findByGokbId(hit.uuid)) {
+              if (de.laser.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
                 result.tippsNotEqual << hit
               }
             }

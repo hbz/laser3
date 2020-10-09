@@ -1,20 +1,9 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.DocContext
-import de.laser.Identifier
-import de.laser.IssueEntitlement
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.PendingChange
-import de.laser.PersonRole
-import de.laser.Platform
-import de.laser.RefdataValue
-import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
+import com.k_int.kbplus.License
+import com.k_int.kbplus.Subscription
 import de.laser.finance.CostItem
-import de.laser.IssueEntitlementCoverage
 import de.laser.oap.OrgAccessPointLink
-import de.laser.PendingChangeConfiguration
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

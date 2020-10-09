@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.Package; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
 
 <%-- r:require module="annotations" --%>
 

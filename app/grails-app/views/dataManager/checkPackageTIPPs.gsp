@@ -1,3 +1,4 @@
+<%@ page import="de.laser.Package" %>
 <!doctype html>
 <html>
 <head>
@@ -38,10 +39,10 @@
                                 ${hit.name} <a target="_blank" href="${hit.url ? hit.url+'/gokb/public/packageContent/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
                             </td>
 
-                            <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
-                                <g:set var="style" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.name != hit.name) ? "style=background-color:red;":''}"/>
+                            <g:if test="${Package.findByGokbId(hit.uuid)}">
+                                <g:set var="style" value="${(Package.findByGokbId(hit.uuid)?.name != hit.name) ? "style=background-color:red;":''}"/>
                                 <td ${style}>
-                                    <g:link controller="package" target="_blank" action="current" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${com.k_int.kbplus.Package.findByGokbId(hit.uuid).name}</g:link>
+                                    <g:link controller="package" target="_blank" action="current" id="${Package.findByGokbId(hit.uuid).id}">${Package.findByGokbId(hit.uuid).name}</g:link>
                                 </td>
                             </g:if>
                             <g:else>
@@ -52,8 +53,8 @@
                             <td>
                                 <strong>${hit.titleCount?:'0'} </strong>
                             </td>
-                            <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
-                                <g:set var="laserTipps" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.findAll {it.status.value == 'Current'}.size().toString())}" />
+                            <g:if test="${Package.findByGokbId(hit.uuid)}">
+                                <g:set var="laserTipps" value="${(Package.findByGokbId(hit.uuid)?.tipps?.findAll {it.status.value == 'Current'}.size().toString())}" />
                                 <g:set var="style" value="${(laserTipps != hit.titleCount && hit.titleCount != '0') ? "style=background-color:red;":''}"/>
                                 <td ${style}>
                                     <strong>${laserTipps ?:'0'} </strong>

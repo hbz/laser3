@@ -295,7 +295,7 @@ class FilterService {
                     case License.class.name: targetQuery << "dc.license in (:licenses)"
                         licenses << target
                         break
-                    case com.k_int.kbplus.Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
+                    case Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
                         pkgs << target
                         break
                     default: log.debug(target.class.name)

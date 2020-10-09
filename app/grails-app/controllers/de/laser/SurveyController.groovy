@@ -6,7 +6,6 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
 import com.k_int.kbplus.License
-import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.properties.SubscriptionProperty
 import com.k_int.kbplus.auth.User

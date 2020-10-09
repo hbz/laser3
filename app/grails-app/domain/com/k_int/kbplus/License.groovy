@@ -6,6 +6,7 @@ import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Package
 import de.laser.PendingChange
 import de.laser.PersonRole
 import de.laser.RefdataValue
