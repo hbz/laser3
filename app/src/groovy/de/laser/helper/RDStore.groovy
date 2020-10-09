@@ -257,10 +257,10 @@ class RDStore {
     }
 
     static PropertyDefinition getSurveyProperty(String name) {
-        PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SRV_PROP, null)
+        PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SVY_PROP, null)
 
         if (! result) {
-            println "WARNING: No PropertyDefinition found by RDStore for name:'${name}', descr:'${PropertyDefinition.SRV_PROP}'"
+            println "WARNING: No PropertyDefinition found by RDStore for name:'${name}', descr:'${PropertyDefinition.SVY_PROP}'"
         }
 
         (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy(result)
