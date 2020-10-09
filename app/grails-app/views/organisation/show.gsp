@@ -329,7 +329,7 @@
                             <dd>
                             <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]"/>
 
-                            <g:if test="${isProviderOrAgency && (accessService.checkPermX('ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR())}">
+                            <g:if test="${isProviderOrAgency && (accessService.checkConstraint_ORG_COM_EDITOR())}">
                                 <div class="ui list">
 
                                     <div class="item">

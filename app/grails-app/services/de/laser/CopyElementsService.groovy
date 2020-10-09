@@ -730,7 +730,19 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
+            if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject)) {
+                List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
+                copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
+
+            }
+
+            if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject)) {
+                List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
+                deleteIssueEntitlementGroupItem(deleteTitleGroups)
+
+            }
+
+            /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect { genericOIDService.resolveOID(it) }
                 deleteEntitlements(entitlementsToDelete, targetObject, flash)
                 isTargetSubChanged = true
@@ -739,7 +751,7 @@ class CopyElementsService {
                 List<IssueEntitlement> entitlementsToTake = params.list('subscription.takeEntitlementIds').collect { genericOIDService.resolveOID(it) }
                 copyEntitlements(entitlementsToTake, targetObject, flash)
                 isTargetSubChanged = true
-            }
+            }*/
 
             if (isTargetSubChanged) {
                 targetObject = targetObject.refresh()
@@ -891,7 +903,7 @@ class CopyElementsService {
                 targetProp.isPublic = sourceProp.isPublic
                 //provisoric, should be moved into copyInto once migration is complete
                 save(targetProp, flash)
-                if (((sourceProp.id.toString() in auditProperties)) && targetProp.isPublic) {
+                if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
 
@@ -1282,6 +1294,43 @@ class CopyElementsService {
         HttpServletRequest request = grailsWebRequest.getCurrentRequest()
 
         grailsWebRequest.attributes.getFlashScope(request)
+    }
+
+    boolean copyIssueEntitlementGroupItem(List<IssueEntitlementGroup> ieGroups, Object targetObject) {
+
+            ieGroups.each { ieGroup ->
+
+                IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
+                        name: ieGroup.name,
+                        description: ieGroup.description,
+                        sub: targetObject
+                )
+                if (issueEntitlementGroup.save()) {
+
+                    ieGroup.items.each { ieGroupItem ->
+                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(targetObject, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                        if (ie) {
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                    ie: ie,
+                                    ieGroup: issueEntitlementGroup)
+
+                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
+    boolean deleteIssueEntitlementGroupItem(List<IssueEntitlementGroup> ieGroups) {
+
+        ieGroups.each { ieGroup ->
+                ieGroup.items.each { ieGroupItem ->
+                    ieGroupItem.delete()
+                }
+            ieGroup.delete()
+        }
     }
 }
 

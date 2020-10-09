@@ -233,32 +233,37 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
-                                <g:set var="surveysSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s.instanceOf ,true)}" />
-                                <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) }">
-                                    <g:link controller="subscription" action="surveys" id="${s.id}"
-                                            class="ui icon button">
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
-                                            <i class="ui icon envelope open"></i>
-                                        </span>
-                                    </g:link>
-                                </g:if>
-                                <g:if test="${contextService.org?.getCustomerType()  == 'ORG_CONSORTIUM' && surveysConsortiaSub }">
-                                    <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                            class="ui icon button">
-                                        <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                                  data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                <i class="ui icon envelope green"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:else>
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                                  data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
+                                <g:if test="${contextService.org.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                                            [sub: s.instanceOf, org: contextService.org, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
+                                    <g:if test="${surveysSub}">
+                                        <g:link controller="subscription" action="surveys" id="${s.id}"
+                                                class="ui icon button">
+                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
                                                 <i class="ui icon envelope open"></i>
                                             </span>
-                                        </g:else>
-                                    </g:link>
+                                        </g:link>
+                                    </g:if>
+                                </g:if>
+                                <g:if test="${contextService.org.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
+                                    <g:if test="${surveysConsortiaSub}">
+                                        <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
+                                                class="ui icon button">
+                                            <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                      data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
+                                                    <i class="ui icon envelope green"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:else>
+                                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                      data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
+                                                    <i class="ui icon envelope open"></i>
+                                                </span>
+                                            </g:else>
+                                        </g:link>
+                                    </g:if>
                                 </g:if>
                                 <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
                                     <laser:statsLink class="ui icon button"

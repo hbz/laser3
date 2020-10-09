@@ -144,7 +144,7 @@
 <%-- for that one day, we may move away from that ... --%>
     <r:script>
     $(document).ready(function(){
-       console.log("${lookupName}");
+       //console.log("${lookupName}");
         $("#${selectPair}").dropdown({
             apiSettings: {
                 url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",

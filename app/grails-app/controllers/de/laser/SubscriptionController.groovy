@@ -1567,8 +1567,9 @@ class SubscriptionController
 
         result.contextOrg = contextService.getOrg()
 
-        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.status not in (:invalidStatuses)",
+        result.surveys = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                 [sub: result.subscription.instanceOf,
+                 org: result.contextOrg,
                  invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
 
        result
@@ -4204,8 +4205,13 @@ class SubscriptionController
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                 if(result.targetObject) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                 }
+                result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                break
+            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
+                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
+                params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
