@@ -233,7 +233,7 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${contextService.org.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                                <g:if test="${contextService.org.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
                                     <g:set var="surveysSub" value="${SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                                             [sub: s.instanceOf, org: contextService.org, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
                                     <g:if test="${surveysSub}">
