@@ -1,6 +1,6 @@
 package de.laser.oap
 
-import com.k_int.kbplus.Platform
+import de.laser.Platform
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 

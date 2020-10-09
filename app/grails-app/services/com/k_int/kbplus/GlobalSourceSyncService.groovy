@@ -6,6 +6,7 @@ import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PendingChange
+import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage

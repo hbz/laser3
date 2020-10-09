@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Platform;de.laser.PlatformAccessMethod;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Platform;de.laser.PlatformAccessMethod;de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
     <head>

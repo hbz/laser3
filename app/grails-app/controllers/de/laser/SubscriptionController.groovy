@@ -6,7 +6,6 @@ import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.titles.JournalInstance
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.Platform
 import de.laser.properties.PlatformProperty
 import com.k_int.kbplus.Subscription
 import de.laser.properties.SubscriptionProperty

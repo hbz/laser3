@@ -3,7 +3,6 @@ package de.laser
 
 import com.k_int.kbplus.License
 import de.laser.properties.OrgProperty
-import com.k_int.kbplus.Platform
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User

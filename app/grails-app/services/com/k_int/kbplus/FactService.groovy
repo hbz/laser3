@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.Fact
 import de.laser.Org
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.finance.CostItem
 import de.laser.properties.PlatformProperty

@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Platform
 import de.laser.helper.RefdataAnnotation
 
 class CustomerIdentifier {

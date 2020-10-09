@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Platform
 import de.laser.properties.PlatformProperty
 import com.k_int.kbplus.auth.User
 import de.laser.properties.PropertyDefinition

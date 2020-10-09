@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.Platform" %>
 <!doctype html>
 <html>
 	<head>

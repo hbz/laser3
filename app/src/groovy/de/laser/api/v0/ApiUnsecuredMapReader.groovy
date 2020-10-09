@@ -2,6 +2,7 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.*
 import de.laser.Org
+import de.laser.Platform
 import de.laser.finance.Invoice
 import de.laser.IssueEntitlementCoverage
 import de.laser.oap.OrgAccessPoint

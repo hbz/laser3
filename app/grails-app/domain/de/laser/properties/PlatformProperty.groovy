@@ -1,7 +1,7 @@
 package de.laser.properties
 
 import de.laser.Org
-import com.k_int.kbplus.Platform
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 

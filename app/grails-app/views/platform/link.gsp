@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Platform" %>
+<%@ page import="de.laser.Platform" %>
 <%-- r:require module="annotations" / --%>
 <!doctype html>
 <html>

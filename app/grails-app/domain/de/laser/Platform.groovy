@@ -1,8 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.Org
-import de.laser.RefdataValue
-import de.laser.TitleInstancePackagePlatform
+import com.k_int.kbplus.GenericOIDService
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
