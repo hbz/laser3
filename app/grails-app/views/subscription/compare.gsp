@@ -1,4 +1,4 @@
-<%@ page import ="com.k_int.kbplus.Subscription" %>
+<%@ page import ="de.laser.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>

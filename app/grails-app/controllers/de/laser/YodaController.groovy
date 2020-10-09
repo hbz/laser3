@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.*
+
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg

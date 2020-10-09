@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.*
+
 import grails.transaction.Transactional
 
 @Transactional

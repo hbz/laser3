@@ -2,7 +2,6 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants

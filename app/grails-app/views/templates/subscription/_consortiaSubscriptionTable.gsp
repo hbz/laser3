@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.Subscription; de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <g:if test="${params.member}">
@@ -78,7 +78,7 @@
         <g:each in="${entries}" var="entry" status="jj">
             <%
                 CostItem ci
-                com.k_int.kbplus.Subscription subCons
+                Subscription subCons
                 Org subscr
                 if('withCostItems' in tableConfig) {
                     ci = entry[0] ?: new CostItem()

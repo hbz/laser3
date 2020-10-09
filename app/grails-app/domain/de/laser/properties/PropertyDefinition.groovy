@@ -4,7 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.SurveyResult

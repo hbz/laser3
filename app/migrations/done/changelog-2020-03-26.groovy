@@ -3,7 +3,7 @@ import de.laser.titles.TitleInstance
 import de.laser.TitleInstancePackagePlatform
 import de.laser.YodaService
 import de.laser.Package
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 import grails.util.Holders
 
 YodaService yodaService = Holders.grailsApplication.mainContext.getBean('yodaService')

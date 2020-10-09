@@ -1,10 +1,11 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.*
+
 import de.laser.License
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Subscription
 import de.laser.finance.Invoice
 import de.laser.IssueEntitlementCoverage
 import de.laser.oap.OrgAccessPoint

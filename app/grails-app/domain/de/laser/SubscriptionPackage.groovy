@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Subscription
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import de.laser.helper.RDStore

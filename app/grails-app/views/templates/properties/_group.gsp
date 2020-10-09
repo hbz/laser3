@@ -1,5 +1,5 @@
 <!-- _groups.gsp -->
-<%@ page import="de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />

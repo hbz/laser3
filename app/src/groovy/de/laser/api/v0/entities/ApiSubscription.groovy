@@ -1,9 +1,10 @@
 package de.laser.api.v0.entities
 
-import com.k_int.kbplus.*
+
 import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.api.v0.*
 import de.laser.helper.Constants

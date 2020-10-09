@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Subscription
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait

@@ -9,7 +9,6 @@ import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
-import com.k_int.kbplus.Subscription
 import de.laser.properties.SubscriptionProperty
 import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.Role

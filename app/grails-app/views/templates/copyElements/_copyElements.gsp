@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.helper.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -355,7 +355,7 @@
                 </tr>
             </g:if>
 
-            <g:if test="${sourceObject instanceof com.k_int.kbplus.Subscription}">
+            <g:if test="${sourceObject instanceof Subscription}">
                 <tr>
                     <td name="subscription.takeSpecificSubscriptionEditors.source">
                         <div>

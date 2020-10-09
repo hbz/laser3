@@ -85,23 +85,23 @@ ${de.laser.RefdataValue.executeQuery('select st from RefdataValue rdv, SystemTic
 <br />
 <br />
 
-com.k_int.kbplus.Subscription.findAll() <br />
-${com.k_int.kbplus.Subscription.findAll()}
+de.laser.Subscription.findAll() <br />
+${de.laser.Subscription.findAll()}
 
 <hr />
 
-com.k_int.kbplus.Subscription.executeQuery('select sub.id from Subscription sub join sub.status ') <br />
-${com.k_int.kbplus.Subscription.executeQuery('select sub.id from Subscription sub join sub.status ') }
+de.laser.Subscription.executeQuery('select sub.id from Subscription sub join sub.status ') <br />
+${de.laser.Subscription.executeQuery('select sub.id from Subscription sub join sub.status ') }
 
 <hr />
 
-com.k_int.kbplus.Subscription.executeQuery('select sub.id from Subscription sub join sub.ids ') <br />
-${com.k_int.kbplus.Subscription.executeQuery('select sub.id from Subscription sub join sub.ids ') }
+de.laser.Subscription.executeQuery('select sub.id from Subscription sub join sub.ids ') <br />
+${de.laser.Subscription.executeQuery('select sub.id from Subscription sub join sub.ids ') }
 
 <hr />
 
-com.k_int.kbplus.Subscription.executeQuery('select io.id from Subscription subsc join subsc.ids io ') <br />
-${com.k_int.kbplus.Subscription.executeQuery('select io.id from Subscription subsc join subsc.ids io ') }
+de.laser.Subscription.executeQuery('select io.id from Subscription subsc join subsc.ids io ') <br />
+${de.laser.Subscription.executeQuery('select io.id from Subscription subsc join subsc.ids io ') }
 --%>
 
 <%--

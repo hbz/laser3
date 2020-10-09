@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated

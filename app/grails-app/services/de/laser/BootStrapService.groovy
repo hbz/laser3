@@ -1,7 +1,6 @@
 package de.laser
 
 import au.com.bytecode.opencsv.CSVReader
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.*
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition

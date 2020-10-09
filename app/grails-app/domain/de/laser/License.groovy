@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.PendingChangeService
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinitionGroup

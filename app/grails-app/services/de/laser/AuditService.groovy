@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.properties.LicenseProperty
-import com.k_int.kbplus.Subscription
 import de.laser.properties.SubscriptionProperty
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.interfaces.AuditableSupport

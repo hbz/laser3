@@ -3,7 +3,7 @@ package de.laser.properties
 import de.laser.ContentItem
 import de.laser.Org
 import com.k_int.kbplus.PendingChangeService
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

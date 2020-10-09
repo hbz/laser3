@@ -1,5 +1,5 @@
 import de.laser.License
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 
 databaseChangeLog = {
 

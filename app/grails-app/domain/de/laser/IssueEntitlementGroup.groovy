@@ -1,8 +1,5 @@
 package de.laser
 
-
-import com.k_int.kbplus.Subscription
-
 class IssueEntitlementGroup {
 
     Date dateCreated

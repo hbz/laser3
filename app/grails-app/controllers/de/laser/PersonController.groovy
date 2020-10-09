@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.properties.PersonProperty
-import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController

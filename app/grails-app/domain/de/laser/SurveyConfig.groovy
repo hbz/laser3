@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Subscription
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore

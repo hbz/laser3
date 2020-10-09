@@ -2,7 +2,7 @@ package de.laser.properties
 
 import de.laser.License
 import de.laser.Org
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 import groovy.util.logging.Log4j
 
 @Log4j

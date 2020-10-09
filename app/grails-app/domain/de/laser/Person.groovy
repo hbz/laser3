@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.properties.PersonProperty
-import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
