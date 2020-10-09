@@ -1,5 +1,5 @@
 <!-- _licPropGroup.gsp -->
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.License; de.laser.AuditConfig" %>
 
 <table class="ui table compact la-table-inCard la-ignore-fixed">
     <g:if test="${propList}">

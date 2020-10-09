@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; com.k_int.kbplus.Platform; de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.ApiSource; de.laser.Platform; de.laser.titles.BookInstance" %>
 
 <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
     <thead>

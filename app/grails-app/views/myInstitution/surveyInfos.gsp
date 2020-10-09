@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -56,7 +56,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 </g:if>
 
 <g:if test="${ownerId}">
-    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(ownerId)}"/>
+    <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
     <semui:form>

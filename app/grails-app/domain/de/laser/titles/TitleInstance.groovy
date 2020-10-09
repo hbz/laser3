@@ -1,7 +1,7 @@
 package de.laser.titles
 
 import de.laser.IssueEntitlement
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.TitleInstancePackagePlatform
 import de.laser.Identifier
 import de.laser.OrgRole

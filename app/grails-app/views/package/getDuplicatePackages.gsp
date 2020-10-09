@@ -4,7 +4,7 @@
   Date: 01.07.2019
   Time: 13:10
 --%>
-<%@ page contentType="text/html;charset=UTF-8" import="de.laser.IssueEntitlement; com.k_int.kbplus.Subscription; grails.converters.JSON" %>
+<%@ page contentType="text/html;charset=UTF-8" import="de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
 <html>
     <laser:serviceInjection/>
     <head>

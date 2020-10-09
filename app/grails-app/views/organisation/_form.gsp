@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.Org;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
 
 <% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">

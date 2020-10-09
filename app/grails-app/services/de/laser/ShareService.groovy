@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.*
+
 import de.laser.interfaces.ShareSupport
 import de.laser.titles.TitleInstance
 import grails.transaction.Transactional

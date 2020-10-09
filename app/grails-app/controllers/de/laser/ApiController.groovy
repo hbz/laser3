@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit

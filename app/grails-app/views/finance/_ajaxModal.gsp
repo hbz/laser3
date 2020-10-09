@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; com.k_int.kbplus.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">

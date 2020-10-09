@@ -1,10 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.Subscription
 import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
@@ -83,7 +79,7 @@ class DataManagerController extends AbstractDebugController {
         if ( params.licenses=="Y" ) types_to_include.add( License.class.name )
         if ( params.titles=="Y" ) types_to_include.add( TitleInstance.class.name )
         if ( params.tipps=="Y" ) types_to_include.add( TitleInstancePackagePlatform.class.name )
-        // com.k_int.kbplus.Subscription                 |
+        // de.laser.Subscription                 |
 
         def events_to_include=[]
         if ( params.creates=="Y" ) events_to_include.add('INSERT');
@@ -472,8 +468,8 @@ class DataManagerController extends AbstractDebugController {
         /*if(params.onlyNotEqual) {
           result.tippsNotEqual = []
           result.records.each { hit ->
-            if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
-              if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
+            if (de.laser.Package.findByGokbId(hit.uuid)) {
+              if (de.laser.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
                 result.tippsNotEqual << hit
               }
             }

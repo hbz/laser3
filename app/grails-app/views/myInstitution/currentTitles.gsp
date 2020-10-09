@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.titles.BookInstance; de.laser.Platform" %>
 <!doctype html>
 <html>
 <head>
@@ -277,7 +277,7 @@
                                     <g:set var="platforms" value="${ti?.tipps?.sort { it?.platform?.name }}"/>
                                     <g:each in="${platforms.groupBy{it.platform?.id}}" var="platformID">
 
-                                        <g:set var="platform" value="${com.k_int.kbplus.Platform.get(platformID.key)}"/>
+                                        <g:set var="platform" value="${Platform.get(platformID.key)}"/>
 
                                         <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
                                             <g:if test="${platform?.name}">

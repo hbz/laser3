@@ -1,8 +1,10 @@
 package de.laser.api.v0.special
 
-import com.k_int.kbplus.*
+
+import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.finance.CostItem
 import de.laser.OrgSetting

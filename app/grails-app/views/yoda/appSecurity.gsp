@@ -89,10 +89,7 @@
                     <div class="ui divided list">
                         <g:each in="${c.value.methods}" var="method">
                             <div class="item">
-                                <% def controllerName = c.key.substring(17)
-                                controllerName = controllerName.split('Controller') %>
-                                <g:link controller="${controllerName[0]}"
-                                        action="${method.key}">${method.key}</g:link>
+                                <g:link controller="${c.key.split('Controller')[0]}" action="${method.key}">${method.key}</g:link>
 
                                 <g:each in="${method.value}" var="v">
                                     <g:if test="${v instanceof String}">

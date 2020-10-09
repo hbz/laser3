@@ -1,10 +1,9 @@
 package de.laser.properties
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.Person
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.properties.PropertyDefinition
 
 /**Person private properties are used to store Person related settings and options only for specific memberships**/
 class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {

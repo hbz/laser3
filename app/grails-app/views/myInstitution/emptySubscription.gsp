@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="de.laser.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Combo;de.laser.RefdataValue" %>
+<%@ page import="de.laser.RefdataCategory;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
 <!doctype html>
 <html>
     <head>
@@ -42,7 +42,7 @@
                                   class="ui select dropdown"/>
                 </div>
 
-                <g:if test="${(institution.globalUID == com.k_int.kbplus.Org.findByName('LAS:eR Backoffice').globalUID)}">
+                <g:if test="${(institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID)}">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
                         subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL

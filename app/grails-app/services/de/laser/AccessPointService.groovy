@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.Org
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint

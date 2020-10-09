@@ -1,8 +1,8 @@
 package de.laser.api.v0.entities
 
 import de.laser.Identifier
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Package
+import de.laser.Org
+import de.laser.Package
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -59,7 +59,7 @@ class ApiPkg {
 	/**
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getPackageMap(com.k_int.kbplus.Package pkg, Org context) {
+	static Map<String, Object> getPackageMap(Package pkg, Org context) {
 		Map<String, Object> result = [:]
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)

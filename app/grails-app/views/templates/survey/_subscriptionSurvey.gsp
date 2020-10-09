@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; com.k_int.kbplus.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>

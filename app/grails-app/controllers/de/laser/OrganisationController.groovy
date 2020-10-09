@@ -1,11 +1,7 @@
 package de.laser
 
 
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
 import de.laser.properties.OrgProperty
-import com.k_int.kbplus.Platform
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -277,7 +273,7 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == com.k_int.kbplus.Org.class.name || nsType == null)}
+        //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == de.laser.Org.class.name || nsType == null)}
         List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns')
                 .sort { a, b ->

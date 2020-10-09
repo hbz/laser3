@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform; de.laser.Subscription; de.laser.RefdataValue" %>
 
 
 
@@ -7,7 +7,7 @@
 		<g:message code="issueEntitlement.status.label" default="Status" />
 		
 	</label>
-	<g:select id="status" name="status.id" from="${de.laser.RefdataValue.list()}" optionKey="id" value="${issueEntitlementInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="status" name="status.id" from="${RefdataValue.list()}" optionKey="id" value="${issueEntitlementInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: issueEntitlementInstance, field: 'subscription', 'error')} ">
@@ -15,7 +15,7 @@
 		<g:message code="issueEntitlement.subscription.label" default="Subscription" />
 		
 	</label>
-	<g:select id="subscription" name="subscription.id" from="${com.k_int.kbplus.Subscription.list()}" optionKey="id" value="${issueEntitlementInstance?.subscription?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="subscription" name="subscription.id" from="${Subscription.list()}" optionKey="id" value="${issueEntitlementInstance?.subscription?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: issueEntitlementInstance, field: 'tipp', 'error')} ">

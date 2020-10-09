@@ -1,7 +1,9 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.*
+
 import de.laser.Identifier
+import de.laser.License
+import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
 import de.laser.RefdataValue

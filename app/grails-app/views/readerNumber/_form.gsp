@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ReaderNumber" %>
+<%@ page import="de.laser.ReaderNumber;de.laser.Org" %>
 
 
 
@@ -43,7 +43,7 @@
 		<g:message code="numbers.org.label" default="Org" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" required="" value="${numbersInstance?.org?.id}" class="many-to-one"/>
+	<g:select id="org" name="org.id" from="${Org.list()}" optionKey="id" required="" value="${numbersInstance?.org?.id}" class="many-to-one"/>
 
 </div>
 

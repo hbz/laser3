@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.IssueEntitlement
+import de.laser.Package
 import de.laser.PendingChange
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

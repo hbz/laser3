@@ -3,9 +3,9 @@ package de.laser.finance
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
 import de.laser.SurveyOrg
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.RefdataValue
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants

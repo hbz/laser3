@@ -1,10 +1,10 @@
 package de.laser.properties
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
+import de.laser.License
+import de.laser.Org
 import de.laser.RefdataValue
-import com.k_int.kbplus.Subscription
+import de.laser.Subscription
 import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.SurveyResult
@@ -364,14 +364,9 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             if (parts[0] == "Organisation") {
                 parts[0] = "Org"
             }
-            List<String> fq = ['de.laser.', 'com.k_int.kbplus.']
-            fq.each {
-                try {
-                    if (! result) {
-                        result = Class.forName(it + parts[0])?.name
-                    }
-                } catch(Exception e) {
-                }
+            try {
+                result = Class.forName('de.laser.' + parts[0])?.name
+            } catch(Exception e) {
             }
         }
         result
@@ -386,7 +381,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     int countUsages() {
-        String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
+        String table = this.descr.replace(" ","")
         if(this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
         } else if(this.descr == PropertyDefinition.SVY_PROP)
@@ -400,7 +395,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     int countOwnUsages() {
-        String table = this.descr.minus('com.k_int.kbplus.').minus('de.laser.').replace(" ","")
+        String table = this.descr.replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
         Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
         if (this.descr == PropertyDefinition.ORG_PROP) {

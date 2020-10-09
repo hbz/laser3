@@ -1,7 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Subscription
+
 import de.laser.helper.RDStore
 
 class SurveyOrg {

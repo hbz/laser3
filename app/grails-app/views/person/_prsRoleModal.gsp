@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.RefdataCategory; com.k_int.kbplus.Org; de.laser.Person; de.laser.PersonRole" %>
+<%@ page import="de.laser.Org; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.Person; de.laser.PersonRole" %>
 <laser:serviceInjection />
 
 <semui:modal id="${tmplId}" message="${message}">

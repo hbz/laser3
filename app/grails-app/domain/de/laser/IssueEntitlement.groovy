@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Subscription
+
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.exceptions.EntitlementCreationException

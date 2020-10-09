@@ -3,16 +3,12 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
-import com.k_int.kbplus.License
 import de.laser.properties.LicenseProperty
-import com.k_int.kbplus.Org
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
-import com.k_int.kbplus.Platform
 import de.laser.properties.PlatformProperty
-import com.k_int.kbplus.Subscription
 import de.laser.properties.SubscriptionProperty
 import de.laser.titles.TitleInstance
 import com.k_int.kbplus.auth.Role

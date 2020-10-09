@@ -2,8 +2,8 @@ package de.laser.api.v0.entities
 
 import de.laser.Doc
 import de.laser.DocContext
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
+import de.laser.License
+import de.laser.Org
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore

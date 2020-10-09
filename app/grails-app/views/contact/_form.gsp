@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Contact;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.Contact;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataCategory;de.laser.Org" %>
 
 
 
@@ -52,7 +52,7 @@
 		<g:message code="contact.org.label" />
 		
 	</label>
-	<g:select id="org" name="org.id" from="${com.k_int.kbplus.Org.list()}" optionKey="id" value="${contactInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
+	<g:select id="org" name="org.id" from="${Org.list()}" optionKey="id" value="${contactInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
 
 </div>
 

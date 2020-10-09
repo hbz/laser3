@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.License
+
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 

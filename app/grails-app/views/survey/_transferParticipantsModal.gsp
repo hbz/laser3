@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; com.k_int.kbplus.License" %>
+<%@ page import="de.laser.RefdataValue; de.laser.License" %>
 <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
 
 <semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"

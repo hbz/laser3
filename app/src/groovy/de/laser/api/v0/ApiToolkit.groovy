@@ -1,6 +1,6 @@
 package de.laser.api.v0
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j

@@ -1,8 +1,7 @@
 package de.laser
 
-import com.k_int.kbplus.*
+
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.transaction.Transactional
@@ -296,7 +295,7 @@ class FilterService {
                     case License.class.name: targetQuery << "dc.license in (:licenses)"
                         licenses << target
                         break
-                    case com.k_int.kbplus.Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
+                    case Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
                         pkgs << target
                         break
                     default: log.debug(target.class.name)

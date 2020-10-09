@@ -1,13 +1,10 @@
 package de.laser
 
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Subscription
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import grails.util.Holders
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
 

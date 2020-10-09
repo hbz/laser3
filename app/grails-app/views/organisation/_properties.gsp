@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 

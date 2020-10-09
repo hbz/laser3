@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.Org
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User

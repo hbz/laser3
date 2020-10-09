@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.Package;com.k_int.kbplus.Org;com.k_int.kbplus.Platform" %>
+<%@page import="de.laser.Org; de.laser.Package; de.laser.Platform" %>
 <!doctype html>
 
 <html>

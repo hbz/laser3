@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.License; com.k_int.kbplus.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting" %>
+<%@ page import="de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -161,7 +161,7 @@
 
         <g:if test="${controllerName in ["survey"]}">
             <g:set var="existSubforOrg"
-                   value="${com.k_int.kbplus.Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
+                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
 
             <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
         </g:if>

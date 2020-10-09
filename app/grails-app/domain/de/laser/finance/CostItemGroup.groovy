@@ -1,6 +1,6 @@
 package de.laser.finance
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient

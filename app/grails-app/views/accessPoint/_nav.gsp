@@ -1,7 +1,7 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue;de.laser.Org" %>
 <laser:serviceInjection/>
 
-<g:set var="org" value="${com.k_int.kbplus.Org.get(orgId)}"/>
+<g:set var="org" value="${Org.get(orgId)}"/>
 <g:if test="${orgInstance}">
     <semui:subNav actionName="${actionName}">
         <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}"

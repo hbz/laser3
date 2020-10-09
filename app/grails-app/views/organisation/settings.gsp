@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 

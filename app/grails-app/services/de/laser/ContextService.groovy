@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Org
+
 import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SessionCacheWrapper

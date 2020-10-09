@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; com.k_int.kbplus.Org; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 
 <!doctype html>
 <html>

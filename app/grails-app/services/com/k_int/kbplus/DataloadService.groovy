@@ -5,7 +5,12 @@ import de.laser.DocContext
 import de.laser.FTControl
 import de.laser.Identifier
 import de.laser.IssueEntitlement
+import de.laser.License
+import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Package
+import de.laser.Platform
+import de.laser.Subscription
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.properties.LicenseProperty
@@ -111,7 +116,7 @@ class DataloadService {
 
         def start_time = System.currentTimeMillis();
 
-        updateES(com.k_int.kbplus.Org.class) { org ->
+        updateES(Org.class) { org ->
             def result = [:]
 
                 result._id = org.globalUID
@@ -212,7 +217,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.Package.class) { pkg ->
+        updateES(Package.class) { pkg ->
             def result = [:]
 
                 result._id = pkg.globalUID
@@ -274,7 +279,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.Platform.class) { plat ->
+        updateES(Platform.class) { plat ->
             def result = [:]
 
                 result._id = plat.globalUID
@@ -300,7 +305,7 @@ class DataloadService {
             result
         }
 
-        updateES(com.k_int.kbplus.License.class) { lic ->
+        updateES(License.class) { lic ->
             def result = [:]
 
             result._id = lic.globalUID
@@ -369,7 +374,7 @@ class DataloadService {
             result
         }
 
-        updateES( com.k_int.kbplus.Subscription.class) { sub ->
+        updateES( Subscription.class) { sub ->
             def result = [:]
 
                 result._id = sub.globalUID

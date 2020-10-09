@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import de.laser.Doc
 import de.laser.DocContext
+import de.laser.License
+import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.properties.LicenseProperty

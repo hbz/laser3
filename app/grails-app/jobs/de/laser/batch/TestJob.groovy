@@ -1,6 +1,6 @@
 package de.laser.batch
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
 import org.codehaus.groovy.grails.commons.GrailsApplication

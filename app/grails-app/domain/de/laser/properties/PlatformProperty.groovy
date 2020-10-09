@@ -1,10 +1,9 @@
 package de.laser.properties
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Platform
+import de.laser.Org
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.properties.PropertyDefinition
 
 class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
 

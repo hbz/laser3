@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.SurveyInfo; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;com.k_int.kbplus.Subscription;de.laser.finance.CostItem;com.k_int.kbplus.Org;de.laser.SurveyResult" %>
+<%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.SurveyInfo; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>

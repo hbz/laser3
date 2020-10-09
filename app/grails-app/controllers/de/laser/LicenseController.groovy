@@ -2,10 +2,7 @@ package de.laser
 
 
 import com.k_int.kbplus.InstitutionsService
-import com.k_int.kbplus.License
 import de.laser.properties.LicenseProperty
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
@@ -547,7 +544,7 @@ class LicenseController
 
     /**
      * this is very ugly and should be subject of refactor - - but unfortunately, the
-     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object, com.k_int.kbplus.Org)}
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object, de.laser.Org)}
      * requires the {@link org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap} as parameter.
      * @return validOn and defaultSet-parameters of the filter
      */
