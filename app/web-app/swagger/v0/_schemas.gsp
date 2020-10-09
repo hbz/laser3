@@ -416,6 +416,13 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.COUNTRY}"
           enum: <% printRefdataEnum(RDConstants.COUNTRY, 12) %>
+        eInvoice:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+        eInvoicePortal:
+          type: string
+          description: Mapping RefdataCategory "${RDConstants.E_INVOICE_PORTAL}"
+          enum: <% printRefdataEnum(RDConstants.E_INVOICE_PORTAL, 12) %>
         region:
           type: string
           description: Mapping RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}"

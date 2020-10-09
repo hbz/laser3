@@ -44,9 +44,28 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
+<g:if test="${inContextOrg && orgInstance.eInvoice && (!orgInstance.eInvoicePortal || !orgInstance.getLeitID()?.value)}">
+    <div class="ui icon message warning">
+        <i class="info icon"></i>
+        <div class="content">
+            <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
+            ${message(code: 'org.eInvoice.info.text')}
+            <div class="ui bulleted list">
+            <g:if test="${!orgInstance.eInvoicePortal}">
+                <div class="item">${message(code: 'org.eInvoice.info.missing.eInvoicePortal')}</div>
+            </g:if>
+            <g:if test="${!orgInstance.getLeitID()?.value}">
+                <div class="item">${message(code: 'org.eInvoice.info.missing.leitID')}</div>
+            </g:if>
+        </div>
+        </div>
+    </div>
+</g:if>
+
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+
 
 %{--<g:if test="${departmentalView == false}">
     <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
@@ -134,6 +153,37 @@
                     </g:if>
                 </div>
             </div><!-- .card -->
+
+            <g:if test="${!isProviderOrAgency}">
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt>
+                                <g:message code="org.eInvoice.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.eInvoice.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableBoolean owner="${orgInstance}" field="eInvoice"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.eInvoicePortal.label" />
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.eInvoicePortal.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData owner="${orgInstance}" field="eInvoicePortal" config="${RDConstants.E_INVOICE_PORTAL}"/>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
 
             <g:if test="${isGrantedOrgRoleAdmin}">
                 <div class="ui card">

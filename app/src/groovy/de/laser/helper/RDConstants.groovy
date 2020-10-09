@@ -41,6 +41,7 @@ class RDConstants {
     public static final String DOCUMENT_CONTEXT_STATUS    = 'document.context.status'
     public static final String DOCUMENT_TYPE          = 'document.type'
 
+    public static final String E_INVOICE_PORTAL       = 'e.invoice.portal'
     public static final String EXISTENCE              = 'existence'
 
     public static final String FACT_METRIC            = 'fact.metric'
