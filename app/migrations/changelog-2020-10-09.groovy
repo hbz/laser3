@@ -142,4 +142,13 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "galffy (generated)", id: "1602225499103-12") {
+		dropForeignKeyConstraint(baseTableName: "subscription", baseTableSchemaName: "public", constraintName: "fk1456591d93740d18")
+	}
+
+	changeSet(author: "galffy (generated)", id: "1602225499103-13") {
+		dropColumn(columnName: "sub_previous_subscription_fk", tableName: "subscription")
+	}
+
 }

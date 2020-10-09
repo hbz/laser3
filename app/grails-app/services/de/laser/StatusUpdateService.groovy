@@ -272,33 +272,6 @@ class StatusUpdateService extends AbstractLockableService {
 
     /**
      * Triggered from the Yoda menu
-     * Refactors the preceding/following subscriptions to the new link model
-     */
-    int updateLinks() {
-        int affected = 0
-        List<Map<String,Subscription>> subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { Subscription it -> [source:it,destination:it.previousSubscription] }
-        subsWithPrevious.each { Map<String,Subscription> sub ->
-            List<Links> linkList = Links.executeQuery('select l from Links as l where l.source = :source and l.destination = :destination and l.linkType = :linkType',[source:genericOIDService.getOID(sub.source), destination:genericOIDService.getOID(sub.destination), linkType:RDStore.LINKTYPE_FOLLOWS])
-            if(linkList.size() == 0) {
-                log.debug(sub.source+" follows "+sub.destination+", is being refactored")
-                Links link = new Links()
-                link.source = genericOIDService.getOID(sub.source)
-                link.destination = genericOIDService.getOID(sub.destination)
-                link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [sub.source,sub.destination]]).get(0)
-                link.linkType = RDStore.LINKTYPE_FOLLOWS
-                if(!link.save(flush:true))
-                    log.error("error with refactoring subscription link: ${link.errors}")
-                affected++
-            }
-            else if(linkList.size() > 0) {
-                log.debug("Link already exists: ${sub.source} follows ${sub.destination} is/are link/s ##${linkList}")
-            }
-        }
-        affected
-    }
-
-    /**
-     * Triggered from the Yoda menu
      * Sets the status of every subscription without start date to null as of ERMS-847
      */
     boolean startDateCheck() {

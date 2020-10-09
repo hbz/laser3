@@ -481,8 +481,6 @@ class DeletionService {
 
         // gathering references
 
-        //List links = Links.where { source == genericOIDService.getOID(org) || destination == genericOIDService.getOID(org) }.findAll()
-
         List ids            = new ArrayList(org.ids)
         List outgoingCombos = new ArrayList(org.outgoingCombos)
         List incomingCombos = new ArrayList(org.incomingCombos)

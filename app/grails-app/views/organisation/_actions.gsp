@@ -70,10 +70,14 @@
         </semui:actionsDropdown>
     </g:if>
 </g:elseif>
-<g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
-    <g:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
-    <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
+<%-- secure against listInstitution, where no orgId is given --%>
+<g:if test="${orgInstance}">
+    <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+        <g:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
+        <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
+    </g:if>
+    <g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
+        <g:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
+    </g:if>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
-    <g:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
-</g:if>
+

@@ -33,12 +33,6 @@ class Links {
         destinationSubscription column: 'l_dest_sub_fk', index: 'l_dest_sub_idx'
         sourceLicense           column: 'l_source_lic_fk', index: 'l_source_lic_idx'
         destinationLicense      column: 'l_dest_lic_fk', index: 'l_dest_lic_idx'
-        /*
-        source           column: 'l_source_fk',      index: 'l_source_idx'
-        destination      column: 'l_destination_fk', index: 'l_dest_idx'
-        sourceType       column: 'l_source_type'
-        destinationType  column: 'l_destination_type'
-         */
         linkType         column: 'l_link_type_rv_fk'
         owner            column: 'l_owner_fk'
         dateCreated      column: 'l_date_created'
@@ -50,12 +44,6 @@ class Links {
         destinationSubscription (nullable: true)
         sourceLicense           (nullable: true)
         destinationLicense      (nullable: true)
-        /*
-        source             (blank: false)
-        destination        (blank: false)
-        sourceType         (blank: false)
-        destinationType    (blank: false)
-        */
         // Nullable is true, because values are already in the database
         dateCreated             (nullable: true)
 
@@ -104,10 +92,10 @@ class Links {
         }
 
         if(context) {
-            if(context in [sourceSubscription,sourceLicense]) {
+            if(genericOIDService.getOID(context) == genericOIDService.getOID(sourceSubscription) || genericOIDService.getOID(context) == genericOIDService.getOID(sourceLicense)) {
                 determineDestination()
             }
-            else if(context in [destinationSubscription,destinationLicense]) {
+            else if(genericOIDService.getOID(context) == genericOIDService.getOID(destinationSubscription) || genericOIDService.getOID(context) == genericOIDService.getOID(destinationLicense)) {
                 determineSource()
             }
         }
