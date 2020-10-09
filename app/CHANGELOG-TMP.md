@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2766    09.10.2020  hbz-dev             Andreas Feature     Auflösung der oid:oid-Struktur in ObjectSource/ObjectDestination
+
 2919    09.10.2020  rc1.6               Andreas Bug         Vollnutzer hatten keinen Zugriff auf "Meine Lizenzen"
 
 2914    07.10.2020  rc1.6               Andreas Bug         Organisationen konnten nicht gelöscht werden

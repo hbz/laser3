@@ -2564,8 +2564,8 @@ class SurveyController {
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
-            String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-            result.memberLicenses = License.executeQuery(query, [subscription: genericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+            String query = "select li.sourceLicense.instanceOf from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+            result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
 
         result.properties = []
@@ -2911,8 +2911,8 @@ class SurveyController {
         }
 
         if(result.surveyConfig.subscription) {
-            String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
-            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: genericOIDService.getOID(result.surveyConfig.subscription), linkType: RDStore.LINKTYPE_LICENSE])
+            String sourceLicensesQuery = "select li.sourceLicense from Links li where li.destinationSubscription = :sub and li.linkType = :linkType order by li.sourceLicense.sortableReference asc"
+            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: result.surveyConfig.subscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
         
         result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }): null
@@ -3080,7 +3080,7 @@ class SurveyController {
 
         Subscription baseSub = Subscription.get(params.parentSub ?: null)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(baseSub), RDStore.LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(baseSub, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
@@ -3143,8 +3143,8 @@ class SurveyController {
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: genericOIDService.getOID(newSub), destination: genericOIDService.getOID(baseSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-                if (!prevLink.save(flush:true)) {
+                Links prevLink = Links.construct([source: newSub, destination: baseSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                if (!prevLink) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
                 result.newSub = newSub
@@ -3477,8 +3477,8 @@ class SurveyController {
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.surveyConfig.subSurveyUseForTransfer && result.parentSuccessorSubscription) {
-            String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-            result.memberLicenses = License.executeQuery(query, [subscription: genericOIDService.getOID(result.parentSuccessorSubscription), linkType: RDStore.LINKTYPE_LICENSE])
+            String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+            result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
 
         result
@@ -4078,8 +4078,8 @@ class SurveyController {
                     }
                 }
                 if(params.generateSlavedLics == "all") {
-                    String query = "select l from License l where concat('${License.class.name}:',l.instanceOf.id) in (select li.source from Links li where li.destination = :subscription and li.linkType = :linkType)"
-                    licensesToProcess.addAll(License.executeQuery(query, [subscription:genericOIDService.getOID(newParentSub), linkType:RDStore.LINKTYPE_LICENSE]))
+                    String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+                    licensesToProcess.addAll(License.executeQuery(query, [subscription:newParentSub, linkType:RDStore.LINKTYPE_LICENSE]))
                 }
                 else if(params.generateSlavedLics == "partial") {
                     List<String> licenseKeys = params.list("generateSlavedLicsReference")

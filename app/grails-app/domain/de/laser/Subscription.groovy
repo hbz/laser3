@@ -81,7 +81,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   String comment
 
   Subscription instanceOf
-  Subscription previousSubscription //deleted as ERMS-800
+  //Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
   boolean administrative = false
 
@@ -150,7 +150,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate  column:'sub_manual_cancellation_date'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
-        previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
+        //previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
@@ -193,7 +193,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate  (nullable:true)
         instanceOf              (nullable:true)
         comment(nullable: true, blank: true)
-        previousSubscription    (nullable:true) //-> see Links, deleted as ERMS-800
+        //previousSubscription    (nullable:true) //-> see Links, deleted as ERMS-800
         noticePeriod(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)

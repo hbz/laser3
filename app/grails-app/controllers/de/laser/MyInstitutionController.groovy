@@ -780,7 +780,7 @@ join sub.orgRelations or_sub where
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = Identifier.findAllBySubIsNotNull()
-        List allLicenses = Links.executeQuery("select li from Links li where li.destination in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions.collect{ Subscription sub -> genericOIDService.getOID(sub) }, linkType:RDStore.LINKTYPE_LICENSE])
+        List allLicenses = Links.executeQuery("select li from Links li where li.destinationSubscription in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions, linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { OrgRole provider ->
             Set subProviders = providers.get(provider.sub)
@@ -809,8 +809,8 @@ join sub.orgRelations or_sub where
             costItemCounts.put(row[1],row[0])
         }
         allLicenses.each { Links row ->
-            Subscription s = genericOIDService.resolveOID(row.destination)
-            License l = genericOIDService.resolveOID(row.source)
+            Subscription s = row.destinationSubscription
+            License l = row.sourceLicense
             Set subLicenses = licenseReferences.get(s)
             if(!subLicenses)
                 subLicenses = new TreeSet()
@@ -2654,8 +2654,8 @@ join sub.orgRelations or_sub where
         BidiMap subLinks = new DualHashBidiMap()
         if(params.format || params.exportXLS) {
             Links.findAllByLinkType(RDStore.LINKTYPE_FOLLOWS).each { Links link ->
-                if(link.source.contains(Subscription.class.name) && link.destination.contains(Subscription.class.name))
-                subLinks.put(link.source,link.destination)
+                if(link.sourceSubscription && link.destinationSubscription)
+                subLinks.put(link.sourceSubscription,link.destinationSubscription)
             }
             OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
                 List<Org> orgs = providers.get(it.sub)
@@ -2669,7 +2669,7 @@ join sub.orgRelations or_sub where
                     [ctx: result.institution,
                      roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
                      email: RDStore.CCT_EMAIL])
-            persons.each { personRow ->
+            persons.each {  personRow ->
                 Person person = (Person) personRow[1]
                 PersonRole pr = person.roleLinks.find{ p -> p.org != result.institution}
                 if(pr) {

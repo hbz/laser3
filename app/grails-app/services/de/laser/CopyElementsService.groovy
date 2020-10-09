@@ -98,11 +98,9 @@ class CopyElementsService {
         }
 
         if (sourceObject instanceof Subscription) {
-            String sourceLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
-            result.sourceLicenses = License.executeQuery(sourceLicensesQuery, [sub: genericOIDService.getOID(sourceObject), linkType: RDStore.LINKTYPE_LICENSE])
+            result.sourceLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :sub and li.linkType = :linkType order by li.sourceLicense.sortableReference asc", [sub: sourceObject, linkType: RDStore.LINKTYPE_LICENSE])
             if (targetObject) {
-                String targetLicensesQuery = "select l from License l where concat('${License.class.name}:',l.id) in (select li.source from Links li where li.destination = :sub and li.linkType = :linkType) order by l.sortableReference asc"
-                result.targetLicenses = License.executeQuery(targetLicensesQuery, [sub: genericOIDService.getOID(targetObject), linkType: RDStore.LINKTYPE_LICENSE])
+                result.targetLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :sub and li.linkType = :linkType order by li.sourceLicense.sortableReference asc", [sub: targetObject, linkType: RDStore.LINKTYPE_LICENSE])
             }
 
             // restrict visible for templates/links/orgLinksAsList
@@ -265,10 +263,10 @@ class CopyElementsService {
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
                     try {
-                        Links.construct([source: genericOIDService.getOID(newSubscription), destination: genericOIDService.getOID(subMember), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
-                        Set<Links> precedingLicenses = Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subMember), RDStore.LINKTYPE_LICENSE)
+                        Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                        Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subMember, RDStore.LINKTYPE_LICENSE)
                         precedingLicenses.each { Links link ->
-                            Map<String, Object> successorLink = [source: link.source, destination: genericOIDService.getOID(newSubscription), linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org]
+                            Map<String, Object> successorLink = [source: link.sourceLicense, destination: newSubscription, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org]
                             Links.construct(successorLink)
                         }
                     }
