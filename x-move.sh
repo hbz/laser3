@@ -100,7 +100,14 @@ git mv ./grails2/app/src/groovy/de/laser/traits       ./src/main/groovy/de/laser
 git mv ./grails2/app/src/groovy/de/laser/usage        ./src/main/groovy/de/laser
 git mv ./grails2/app/src/groovy/de/laser/web          ./src/main/groovy/de/laser
 
-git mv ./grails2/app/src/java/* ./src/main/java
+mkdir -p ./src/main/java/de/uni_freiburg/ub/Exception
+
+git mv ./grails2/app/src/java/de/uni_freiburg/ub/Exception  ./src/main/java/de/uni_freiburg/ub
+git mv ./grails2/app/src/java/de/uni_freiburg/ub/IpAddress.java  ./src/main/java/de/uni_freiburg/ub
+git mv ./grails2/app/src/java/de/uni_freiburg/ub/IpRange.java  ./src/main/java/de/uni_freiburg/ub
+git mv ./grails2/app/src/java/de/uni_freiburg/ub/IpRangeCollection.java  ./src/main/java/de/uni_freiburg/ub
+git mv ./grails2/app/src/java/de/uni_freiburg/ub/Ipv4Address.java  ./src/main/java/de/uni_freiburg/ub
+git mv ./grails2/app/src/java/de/uni_freiburg/ub/Ipv6Address.java  ./src/main/java/de/uni_freiburg/ub
 
 mkdir ./src/main/webapp/files
 
@@ -110,12 +117,10 @@ git mv ./grails2/app/web-app/swagger              ./src/main/webapp/
 
 git mv ./grails2/app/web-app/css/jquery-editable.css  ./grails-app/assets/stylesheets
 git mv ./grails2/app/web-app/css/tmp_semui.css        ./grails-app/assets/stylesheets
-git mv ./grails2/app/web-app/images/gasco         ./grails-app/assets/images
-git mv ./grails2/app/web-app/images/landingpage   ./grails-app/assets/images
-#git mv -f ./grails2/app/web-app/images/*            ./grails-app/assets/images
-git mv    ./grails2/app/web-app/js/libs             ./grails-app/assets/javascripts
-git mv    ./grails2/app/web-app/js/submodules       ./grails-app/assets/javascripts
-git mv    ./grails2/app/web-app/js/*.js             ./grails-app/assets/javascripts
+git mv ./grails2/app/web-app/images/*                 ./grails-app/assets/images
+git mv ./grails2/app/web-app/js/libs                  ./grails-app/assets/javascripts
+git mv ./grails2/app/web-app/js/submodules            ./grails-app/assets/javascripts
+git mv ./grails2/app/web-app/js/*.js                  ./grails-app/assets/javascripts
 
 mkdir ./grails-app/assets/vendor
 
@@ -132,8 +137,5 @@ currentDate=`date +"%Y-%m-%d %T"`
 
 echo ""
 echo "> finished: $currentDate"
-echo ""
-echo "> known issues:"
-echo ""
-echo "./grails2/app/web-app/images/* (move manually)"
+
 
