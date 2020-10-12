@@ -57,6 +57,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Org legallyObligedBy
     String categoryId
 
+    boolean eInvoice = false
+
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
@@ -90,6 +92,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
     RefdataValue costConfigurationPreset
+
+    @RefdataAnnotation(cat = RDConstants.E_INVOICE_PORTAL)
+    RefdataValue eInvoicePortal
 
     Set ids = []
 
@@ -150,6 +155,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
              scope          column:'org_scope'
         categoryId          column:'org_cat'
+        eInvoice            column:'org_e_invoice'
+        eInvoicePortal      column:'org_e_invoice_portal_fk'
         gokbId              column:'org_gokb_id', type:'text'
             sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
@@ -209,6 +216,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
           membership(nullable:true)
              country(nullable:true)
               region(nullable:true)
+            eInvoice(nullable:true)
+            eInvoicePortal(nullable:true)
 //        , validator: {RefdataValue val, Org obj, errors ->
 //                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
 //                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
@@ -620,4 +629,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
         result
     }
+
+    Identifier getLeitID() {
+        return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
+    }
+
 }

@@ -353,4 +353,26 @@ class Identifier implements CalculatedLastUpdated {
 
         result
     }
+    Map getLeitID(){
+        String leitID1
+        String leitID2
+        String leitID3
+        if(this.value){
+            List leitID = this.value.split('-')
+
+            if(leitID.size() == 2){
+                leitID1 = leitID[0]
+                leitID3 = leitID[1]
+            }
+
+            if(leitID.size() == 3){
+                leitID1 = leitID[0]
+                leitID2 = leitID[1]
+                leitID3 = leitID[2]
+            }
+
+        }
+
+        return [leitID1: leitID1, leitID2: leitID2, leitID3: leitID3]
+    }
 }

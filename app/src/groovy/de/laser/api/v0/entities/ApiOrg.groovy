@@ -77,12 +77,14 @@ class ApiOrg {
         result.country      = org.country?.value
         result.libraryType  = org.libraryType?.value
         result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
+        result.eInvoice  = org.eInvoice ? 'Yes' : 'No'
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
 
         // RefdataValues
 
+        result.eInvoicePortal = org.eInvoicePortal?.value
         result.sector       = org.sector?.value
         result.type         = org.orgType?.collect{ it.value }
         result.status       = org.status?.value
