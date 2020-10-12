@@ -156,7 +156,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             catch (Exception e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
                 log.error("sync job has failed, please consult stacktrace as follows: ")
-                log.error(e.getStackTrace())
+                log.error(e.printStackTrace())
             }
         }
         running = false
@@ -463,7 +463,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             catch (Exception e) {
                 log.error("Error on updating package ${result.id} ... rollback!")
-                log.error(e.getStackTrace())
+                log.error(e.printStackTrace())
                 stat.setRollbackOnly()
             }
         }
@@ -1266,7 +1266,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             record
         }
         catch(HttpResponseException e) {
-            log.error(e.getStackTrace())
+            log.error(e.printStackTrace())
             null
         }
     }

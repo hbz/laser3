@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2921    12.10.2020  hbz-dev             Andreas Bug         Debug-Ausgabe im GlobalDataSync angepasst
+
 2855    12.10.2020  hbz-dev             David               Namensraum der Domainklassen vereinheitlichen
 
 2766    09.10.2020  hbz-dev             Andreas Feature     Auflösung der oid:oid-Struktur in ObjectSource/ObjectDestination
