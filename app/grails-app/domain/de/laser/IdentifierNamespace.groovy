@@ -31,6 +31,8 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String GRID_ID    = "GRID ID"
     public static final String DBS_ID     = "DBS-ID"
     public static final String VAT        = "VAT"
+    public static final String LEIT_ID   = "Leit-ID"
+    public static final String LEIT_KR   = "Internes Leitkriterium"
 
     //title identifier namespaces
     public static final String ZDB        = 'zdb'
@@ -54,7 +56,9 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             EZB_ORG_ID,
             GRID_ID,
             DBS_ID,
-            VAT
+            VAT,
+            LEIT_ID,
+            LEIT_KR
     ]
 
     final static List<String> CORE_TITLE_NS = [

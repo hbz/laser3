@@ -285,7 +285,7 @@ class OrganisationController extends AbstractDebugController {
             aVal.compareToIgnoreCase bVal
         }
         .collect{ it }
-
+        nsList = nsList - [IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID), IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)]
         render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList]
     }
 
@@ -374,11 +374,45 @@ class OrganisationController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
+
+        if(identifier.ns.ns == IdentifierNamespace.LEIT_ID && params.leitID1 && params.leitID3){
+            String leitID1
+            String leitID2
+            String leitID3
+
+            if(params.leitID1 ==~ /[0-9]{2,12}/) {
+                leitID1 = params.leitID1
+            }else{
+                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID1.info')])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            if(params.leitID2 ==~ /[a-z0-9]{0,30}/) {
+                leitID2 = params.leitID2
+            }else{
+                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID2.info')])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            if(params.leitID3 ==~ /[0-9]{2,2}/) {
+                leitID3 = params.leitID3
+            }else{
+                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID3.info')])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            params.value = leitID1 + '-' + (leitID2 ? leitID2 + '-' : '') + leitID3
+        }
+
         if ( ! params.value){
             flash.error = message(code: 'identifier.edit.err.missingvalue', args: [identifier.ns?.getI10n('name') ?: identifier.ns?.ns])
             redirect(url: request.getHeader('referer'))
             return
         }
+
         identifier.value = params.value.trim()
         identifier.note = params.note?.trim()
         identifier.save(flush:true)

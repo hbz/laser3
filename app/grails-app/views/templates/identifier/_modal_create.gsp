@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Org; de.laser.IdentifierNamespace" %>
-<semui:modal id="modalCreateIdentifier"
+<semui:modal id="modalCreateIdentifier" formID="identifier"
              text="${identifier? message(code:'default.identifier.edit') : message(code:'default.identifier.create')}"
              isEditModal="true"
              msgSave="${identifier ? message(code:'default.button.save.label') : message(code:'default.button.create.label')}">
@@ -26,10 +26,23 @@
             </g:else>
        </div>
 
-        <div class="field fieldcontain">
+        <div class="field fieldcontain ${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID ? 'required' : ''}">
             <label for="value">${message(code: 'default.identifier.label')}:</label>
 
-            <input type="text" id="value" name="value" value="${identifier?.value}" required/>
+            <g:if test="${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID}">
+
+                <g:set var="leitID" value="${identifier.getLeitID()}"/>
+                <div class="ui right labeled input">
+                    <input type="text" name="leitID1" value="${leitID.leitID1}" placeholder="${message(code: 'identifier.leitID.leitID1.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="12" pattern="[0-9]{2,12}" required>
+                    <div class="ui basic label">-</div>
+                    <input type="text" name="leitID2" value="${leitID.leitID2}" placeholder="${message(code: 'identifier.leitID.leitID2.info')}" minlength="0" maxlength="30" pattern="[a-z0-9]{0,30}">
+                    <div class="ui basic label">-</div>
+                    <input type="text" name="leitID3" value="${leitID.leitID3}" placeholder="${message(code: 'identifier.leitID.leitID3.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="2" pattern="[0-9]{2,2}" required>
+                </div>
+            </g:if>
+            <g:else>
+                <input type="text" id="value" name="value" value="${identifier?.value}" required/>
+            </g:else>
         </div>
 
         <div class="field fieldcontain">
