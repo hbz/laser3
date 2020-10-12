@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.*;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants;de.laser.FormService" %>
+<%@ page import="de.laser.*;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants;de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <!doctype html>

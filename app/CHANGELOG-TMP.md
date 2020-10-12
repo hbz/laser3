@@ -9,6 +9,8 @@
 
 2921    12.10.2020  hbz-dev             Andreas Bug         Debug-Ausgabe im GlobalDataSync angepasst
 
+2855    12.10.2020  hbz-dev             David               Namensraum der Domainklassen vereinheitlichen
+
 2766    09.10.2020  hbz-dev             Andreas Feature     Auflösung der oid:oid-Struktur in ObjectSource/ObjectDestination
 
 2919    09.10.2020  rc1.6               Andreas Bug         Vollnutzer hatten keinen Zugriff auf "Meine Lizenzen"
