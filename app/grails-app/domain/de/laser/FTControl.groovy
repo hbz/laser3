@@ -8,7 +8,7 @@ class FTControl {
     Integer esElements
     Integer dbElements
 
-    boolean active = true
+    boolean active
 
     Date dateCreated
     Date lastUpdated

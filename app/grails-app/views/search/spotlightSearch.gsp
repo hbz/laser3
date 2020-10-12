@@ -1,14 +1,15 @@
-<%@ page import="de.laser.DocContext; de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.DocContext; de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat" %>
 <%
     def result = []
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
     hits.each { hit ->
 
         String period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime'))  : ''
         period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime'))  : ''
         period = period ? '('+period+')' : ''
-        String statusString = hit.getSourceAsMap().statusId ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status
+        String statusString = hit.getSourceAsMap().status?.getAt('value_'+languageSuffix)
 
         if (hit.getSourceAsMap().rectype == 'License') {
             result << [
@@ -18,11 +19,11 @@
                 "description": "${statusString + ' ' +period}"
             ]
         }
-        else if (hit.getSourceAsMap().rectype == 'Organisation') {
+        else if (hit.getSourceAsMap().rectype == 'Org') {
             result << [
                 "title": "${hit.getSourceAsMap().name}",
                 "url":   g.createLink(controller:"organisation", action:"show", id:"${hit.getSourceAsMap().dbId}"),
-                "category": (hit.getSourceAsMap().sector == 'Publisher') ? "${message(code: 'spotlight.provideragency')}" : "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
+                "category": (RDStore.OT_PROVIDER.value in hit.getSourceAsMap().type?.value || RDStore.OT_AGENCY.value in hit.getSourceAsMap().type?.value ) ? "${message(code: 'spotlight.provideragency')}" : "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
                 "description": ""
             ]
         }

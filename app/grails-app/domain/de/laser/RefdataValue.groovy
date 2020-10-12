@@ -211,4 +211,11 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         }
         return false
     }
+
+    Map getMapForES(){
+            return ['id':    this.id,
+                    'value':    this.value,
+                    'value_de': this.value_de,
+                    'value_en': this.value_en]
+    }
 }
