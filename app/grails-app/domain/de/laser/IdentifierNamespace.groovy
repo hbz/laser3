@@ -31,7 +31,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String GRID_ID    = "GRID ID"
     public static final String DBS_ID     = "DBS-ID"
     public static final String VAT        = "VAT"
-    public static final String LEIT_ID   = "Leit-ID"
+    public static final String LEIT_ID   = "Leitweg-ID"
     public static final String LEIT_KR   = "Internes Leitkriterium"
 
     //title identifier namespaces
