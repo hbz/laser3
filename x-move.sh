@@ -129,7 +129,12 @@ git mv ./grails2/app/web-app/vendor/*             ./grails-app/assets/vendor
 
 git mv ./grails2/app/grails-app/conf/UrlMappings.groovy  ./grails-app/controllers/de/laser/UrlMappings.groovy
 
-git mv ./grails2/app/migrations       ./grails-app/migrations
+mkdir -p ./files/sql
+
+git mv ./grails2/app/migrations/helper/*          ./files/sql
+git mv ./grails2/app/migrations                   ./grails-app/migrations
+
+git mv ./grails2/server                           ./files
 
 # issues
 
