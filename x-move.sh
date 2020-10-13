@@ -131,8 +131,10 @@ git mv ./grails2/app/grails-app/conf/UrlMappings.groovy  ./grails-app/controller
 
 mkdir -p ./files/sql
 
+git mv ./grails2/app/grails-app/conf/elasticsearch/es_mapping.json    ./grails-app/conf
+
 git mv ./grails2/app/migrations/helper/*          ./files/sql
-git mv ./grails2/app/migrations                   ./grails-app/migrations
+git mv ./grails2/app/migrations                   ./grails-app
 
 git mv ./grails2/server                           ./files
 
