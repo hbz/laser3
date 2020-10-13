@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2924    13.10.2020  rc1.6               Moe     Bug         RC 1.6: Zugangkonfiguration anlegen/bearbeiten läuft in Fehler
+
 2921    12.10.2020  hbz-dev             Andreas Bug         Debug-Ausgabe im GlobalDataSync angepasst
 
 2855    12.10.2020  hbz-dev             David               Namensraum der Domainklassen vereinheitlichen

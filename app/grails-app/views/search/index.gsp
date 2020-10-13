@@ -1,10 +1,11 @@
-<%@ page import="de.laser.RefdataValue; de.laser.DocContext; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
 <% SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
 String period
+String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 %>
 
 <!doctype html>
@@ -209,6 +210,7 @@ String period
                                                     ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
                                                 </g:if>
                                                 <g:elseif test="${facet.key == 'status'}">
+                                                    ${v.display}
                                                     ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display} (${v.count})
                                                 </g:elseif>
                                                 <g:else>
@@ -271,11 +273,12 @@ String period
                     </thead>
                     <g:each in="${hits}" var="hit">
                         <tr>
-                            <g:if test="${hit.getSourceAsMap().rectype == 'Organisation'}">
+                            <g:if test="${hit.getSourceAsMap().rectype == 'Org'}">
+                                <g:set var="providerAgency" value="${RDStore.OT_PROVIDER.value in hit.getSourceAsMap().type?.value || RDStore.OT_AGENCY.value in hit.getSourceAsMap().type?.value }"/>
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${(hit.getSourceAsMap().sector == 'Publisher') ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+hit.getSourceAsMap().rectype.toLowerCase())}">
-                                        <i class="circular icon la-${hit.getSourceAsMap().rectype.toLowerCase()}"></i>
+                                          data-content="${(providerAgency) ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+hit.getSourceAsMap().rectype.toLowerCase())}">
+                                        <i class="circular icon la-organisation"></i>
                                     </span>
 
                                     <g:link controller="organisation" action="show"
@@ -283,16 +286,31 @@ String period
 
                                 </td>
                                 <td>
+                                    <strong><g:message code="org.orgType.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().type?.sort { it.getAt('value_'+languageSuffix) }}" var="type">
+                                            <div class="item">
+                                            ${type.getAt('value_'+languageSuffix)}
+                                            </div>
+                                        </g:each>
+                                    </div>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                        ${id.type}: ${id.value} &nbsp;
-                                    </g:each>
-                                    <br>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
                                     <strong><g:message code="org.platforms.label"/></strong>:
-                                    <g:each in="${hit.getSourceAsMap().platforms?.sort { it.name }}" var="platform">
-                                        <g:link controller="platform" action="show"
-                                                id="${platform.id}">${platform.name}</g:link>
-                                    </g:each>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().platforms?.sort { it.name }}" var="platform">
+                                            <div class="item">
+                                            <g:link controller="platform" action="show"
+                                                    id="${platform.id}">${platform.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
@@ -300,8 +318,8 @@ String period
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle?.toLowerCase()}")}">
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle?.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -309,9 +327,13 @@ String period
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                        ${id.type}: ${id.value} &nbsp;
-                                    </g:each>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
@@ -319,8 +341,8 @@ String period
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle?.toLowerCase()}")}">
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle?.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -328,9 +350,13 @@ String period
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                    ${id.type}: ${id.value} &nbsp;
-                                </g:each>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
@@ -338,8 +364,8 @@ String period
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle?.toLowerCase()}")}">
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle?.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -347,9 +373,13 @@ String period
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                    ${id.type}: ${id.value} &nbsp;
-                                </g:each>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
@@ -357,8 +387,8 @@ String period
                                 <td>
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle.toLowerCase()}")}">
-                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle.toLowerCase()}"></i>
+                                          data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().typTitle?.toLowerCase()}")}">
+                                        <i class="circular icon la-${hit.getSourceAsMap().typTitle?.toLowerCase()}"></i>
                                     </span>
 
                                     <g:link controller="title" action="show"
@@ -366,9 +396,13 @@ String period
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                    ${id.type}: ${id.value} &nbsp;
-                                </g:each>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
@@ -385,10 +419,13 @@ String period
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                        ${id.type}: ${id.value} &nbsp;
-                                    </g:each>
-                                    <br>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
                                     <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
                                     <g:link controller="package" action="index"
                                         id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().titleCountCurrent}</g:link>
@@ -412,7 +449,11 @@ String period
                                         <g:link controller="platform" action="platformTipps"
                                         id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().titleCountCurrent}</g:link>
                                     <br>
-                                    <strong>${message(code: 'platform.primaryURL')}</strong>: ${hit.getSourceAsMap().primaryUrl}
+                                    <strong>${message(code: 'platform.primaryURL')}</strong>:
+                                        <g:if test="${hit.getSourceAsMap().primaryUrl}">
+                                            ${hit.getSourceAsMap().primaryUrl}
+                                            <semui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
+                                        </g:if>
                                     <br>
                                     <strong>${message(code: 'platform.org')}</strong>:
                                 <g:link controller="organisation" action="show"
@@ -449,14 +490,17 @@ String period
                                         period = period ? period : ''
                                     %>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                        ${id.type}: ${id.value} &nbsp;
-                                    </g:each>
-                                    <br>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
 
-                                    <strong>${message(code: 'subscription.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'subscription.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br>
-                                    <strong>${message(code: 'default.type.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
+                                    <strong>${message(code: 'default.type.label')}</strong>: ${hit.getSourceAsMap().type?.getAt('value_'+languageSuffix) }
                                     <br>
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br>
@@ -475,9 +519,19 @@ String period
                                         </article>
                                     </g:if>
                                     <br>
-                                    <g:if test="${hit.getSourceAsMap().typeId == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in hit.getSourceAsMap().type?.value && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                     <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
+
+                                    <strong><g:message code="subscription.packages.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().packages?.sort { it.pkgname }}" var="pkg">
+                                            <div class="item">
+                                                <g:link controller="package" action="show"
+                                                    id="${pkg.pkgid}">${pkg.pkgname} ${pkg.providerName ? '('+pkg.providerName+')' : ''}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
                             <g:if test="${hit.getSourceAsMap().rectype == 'License'}">
@@ -509,13 +563,16 @@ String period
                                     %>
 
                                     <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
-                                        ${id.type}: ${id.value} &nbsp;
-                                    </g:each>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${hit.getSourceAsMap().identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br>
-                                    <strong>${message(code: 'default.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
-                                    <br>
-                                    <strong>${message(code: 'default.type.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().typeId) ? RefdataValue.get(hit.getSourceAsMap().typeId).getI10n('value') : ''}
+                                    <strong>${message(code: 'default.type.label')}</strong>: ${hit.getSourceAsMap().type?.getAt('value_'+languageSuffix) }
                                     <br>
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br>
@@ -571,7 +628,7 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <strong>${message(code: 'default.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br>
                                     <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
                                     <br>
@@ -610,7 +667,7 @@ String period
                                         period = period ? period : ''
                                     %>
 
-                                    <strong>${message(code: 'default.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br>
                                     <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
                                 </td>
@@ -646,7 +703,7 @@ String period
                                         ${message(code: 'task.general')}
                                     </g:else>
                                     <br>
-                                    <strong>${message(code: 'task.status.label')}</strong>: ${RefdataValue.get(hit.getSourceAsMap().statusId) ? RefdataValue.get(hit.getSourceAsMap().statusId).getI10n('value') : hit.getSourceAsMap().status}
+                                    <strong>${message(code: 'task.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br>
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
