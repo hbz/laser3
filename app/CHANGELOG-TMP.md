@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2924    13.10.2020  rc1.6               Moe     Bug         RC 1.6: Zugangkonfiguration anlegen/bearbeiten läuft in Fehler
+
 2917    09.10.2020  rc1.6               Moe     Feature     Vorbereitung zur eRechnung
 
 2919    09.10.2020  rc1.6               Andreas Bug         Vollnutzer hatten keinen Zugriff auf "Meine Lizenzen"

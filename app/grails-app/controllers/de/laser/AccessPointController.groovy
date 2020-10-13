@@ -461,7 +461,8 @@ class AccessPointController extends AbstractDebugController {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        boolean inContextOrg = (orgId == contextService.org.id)
+        Org contextOrg = contextService.org
+        boolean inContextOrg = (orgId == contextOrg.id)
 
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -537,6 +538,7 @@ class AccessPointController extends AbstractDebugController {
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
                     activeSubsOnly                    : activeChecksOnly,
+                    institution                       : contextOrg
             ]
         }
     }
@@ -570,7 +572,8 @@ class AccessPointController extends AbstractDebugController {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        boolean inContextOrg = (orgId == contextService.org.id)
+        Org contextOrg = contextService.org
+        boolean inContextOrg = (orgId == contextOrg.id)
 
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -647,6 +650,7 @@ class AccessPointController extends AbstractDebugController {
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
                     activeSubsOnly                    : activeChecksOnly,
+                    institution                       : contextOrg
             ]
         }
     }
