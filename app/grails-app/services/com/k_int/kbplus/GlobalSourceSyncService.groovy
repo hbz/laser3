@@ -140,8 +140,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     log.info("Endloop")
                 }
-                if(maxTimestamp > oldDate.time) {
-                    source.haveUpTo = new Date(maxTimestamp+1) // +1 because otherwise, the last record is always dumped in list
+                if(maxTimestamp+1000 > oldDate.time) { // +1000 (i.e. 1 sec) because otherwise, the last record is always dumped in list
+                    source.haveUpTo = new Date(maxTimestamp+1000)
                     source.save()
                     log.info("all OAI info fetched, local records updated, notifying dependent entitlements ...")
                 }
@@ -156,7 +156,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             catch (Exception e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
                 log.error("sync job has failed, please consult stacktrace as follows: ")
-                log.error(e.printStackTrace())
+                e.printStackTrace()
             }
         }
         running = false
@@ -463,7 +463,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             catch (Exception e) {
                 log.error("Error on updating package ${result.id} ... rollback!")
-                log.error(e.printStackTrace())
+                e.printStackTrace()
                 stat.setRollbackOnly()
             }
         }
@@ -1266,7 +1266,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             record
         }
         catch(HttpResponseException e) {
-            log.error(e.printStackTrace())
+            e.printStackTrace()
             null
         }
     }
