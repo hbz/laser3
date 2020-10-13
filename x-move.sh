@@ -18,8 +18,6 @@ git mv ./grails2/app/grails-app/controllers/de/laser/*      ./grails-app/control
 
 mkdir -p ./grails-app/domain/com/k_int/kbplus
 
-git mv ./grails2/app/grails-app/domain/com/k_int/kbplus/*.groovy    ./grails-app/domain/com/k_int/kbplus
-
 git mv ./grails2/app/grails-app/domain/de/laser/finance     ./grails-app/domain/de/laser
 git mv ./grails2/app/grails-app/domain/de/laser/oap         ./grails-app/domain/de/laser
 git mv ./grails2/app/grails-app/domain/de/laser/properties  ./grails-app/domain/de/laser
@@ -100,7 +98,7 @@ git mv ./grails2/app/src/groovy/de/laser/traits       ./src/main/groovy/de/laser
 git mv ./grails2/app/src/groovy/de/laser/usage        ./src/main/groovy/de/laser
 git mv ./grails2/app/src/groovy/de/laser/web          ./src/main/groovy/de/laser
 
-mkdir -p ./src/main/java/de/uni_freiburg/ub/Exception
+mkdir -p ./src/main/java/de/uni_freiburg/ub
 
 git mv ./grails2/app/src/java/de/uni_freiburg/ub/Exception  ./src/main/java/de/uni_freiburg/ub
 git mv ./grails2/app/src/java/de/uni_freiburg/ub/IpAddress.java  ./src/main/java/de/uni_freiburg/ub
@@ -117,7 +115,7 @@ git mv ./grails2/app/web-app/swagger              ./src/main/webapp/
 
 git mv ./grails2/app/web-app/css/jquery-editable.css  ./grails-app/assets/stylesheets
 git mv ./grails2/app/web-app/css/tmp_semui.css        ./grails-app/assets/stylesheets
-git mv ./grails2/app/web-app/images/*                 ./grails-app/assets/images
+git mv ./grails2/app/web-app/images                   ./grails-app/assets
 git mv ./grails2/app/web-app/js/libs                  ./grails-app/assets/javascripts
 git mv ./grails2/app/web-app/js/submodules            ./grails-app/assets/javascripts
 git mv ./grails2/app/web-app/js/*.js                  ./grails-app/assets/javascripts
