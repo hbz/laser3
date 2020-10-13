@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.helper.ConfigUtils
+import de.laser.system.SystemEvent
 import grails.transaction.Transactional
 import org.apache.http.HttpHost
+import org.apache.http.conn.ConnectTimeoutException
 import org.codehaus.groovy.grails.web.json.parser.JSONParser
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
@@ -82,6 +84,29 @@ class ESWrapperService {
         jsonParser.parse()
     }
 
+    boolean testConnection() {
+
+        try {
+            boolean response = esclient.ping(RequestOptions.DEFAULT)
+
+            if(!response){
+                log.error("Problem with ElasticSearch: Ping Fail")
+                SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Ping Fail": "Ping Fail"])
+            }
+            return response
+        } catch (ConnectTimeoutException e) {
+            log.error("Problem with ElasticSearch: Connect Timeout")
+            SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connect Timeout": "Connect Timeout"])
+            return false
+        }
+        catch (ConnectException e) {
+            log.error("Problem with ElasticSearch: Connection Fail")
+            SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connection Fail": "Connection Fail"])
+            return false
+        }
+
+    }
+
     void clusterHealth(){
 
         RestHighLevelClient esclient = this.getClient()
@@ -111,6 +136,5 @@ class ESWrapperService {
         println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, indexStatus: ${indexStatus}")
 
         esclient.close()
-        println("Close")
     }
 }
