@@ -926,7 +926,7 @@ class DeletionService {
         try {
             if(ESWrapperService.testConnection()) {
                 DeleteRequest request = new DeleteRequest(es_index, id)
-                DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT);
+                DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT)
             }
             esclient.close()
         }

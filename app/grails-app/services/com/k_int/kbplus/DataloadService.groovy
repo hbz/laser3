@@ -589,7 +589,7 @@ class DataloadService {
             result.priority = 40
             result.dbId = docCon.id
             result.name = docCon.owner?.title ?: ''
-            result.status= docCon.status?.getMapForES() ?: ''
+            result.status= docCon.status?.getMapForES()
             result.visible = 'Private'
             result.rectype = (docCon.owner?.contentType == Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
 
@@ -1051,7 +1051,7 @@ class DataloadService {
                             latest_ft_record.esElements = latest_ft_record.esElements ?: 0
                             latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
                             latest_ft_record.save()
-                            cleanUpGorm();
+                            //cleanUpGorm();
                         }
                     }
                     results.close();

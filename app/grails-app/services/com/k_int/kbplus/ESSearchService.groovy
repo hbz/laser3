@@ -176,7 +176,7 @@ class ESSearchService{
 
     StringWriter sw = new StringWriter()
 
-    if ( params?.q != null ){
+    if ( params.q != null ){
       params.query = "${params.query}"
       //GOKBID, GUUID
       if(params.q.length() >= 37){
@@ -207,7 +207,7 @@ class ESSearchService{
       }
     }
       
-    /*if(params?.rectype){
+    /*if(params.rectype){
       if(sw.toString()) sw.write(" AND ")
       sw.write(" rectype:'${params.rectype}' ")
     }*/
@@ -237,10 +237,10 @@ class ESSearchService{
 
             if(mapping.value == 'availableToOrgs')
             {
-              if(params?.consortiaGUID){
+              if(params.consortiaGUID){
                 if(sw.toString()) sw.write(" OR ")
 
-                sw.write(" consortiaGUID:\"${params?.consortiaGUID}\"")
+                sw.write(" consortiaGUID:\"${params.consortiaGUID}\"")
               }
             }
             sw.write(" ) ")
@@ -283,7 +283,7 @@ class ESSearchService{
       }
     }
 
-    if(params?.searchObjects && params?.searchObjects != 'allObjects'){
+    if(params.searchObjects && params.searchObjects != 'allObjects'){
       if(sw.toString()) sw.write(" AND ")
 
         sw.write(" visible:'Private' ")
