@@ -1,395 +1,308 @@
 {
   "properties": {
-    "rectype": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "visible": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "endDate": {
-      "type": "date"
-    },
-    "dateCreated": {
-      "type": "date"
-    },
-    "lastUpdated": {
-      "type": "date"
-    },
-    "dbId": {
-      "type": "long",
-      "index": false
-    },
-    "typeId": {
-      "type": "long",
-      "index": false
-    },
-    "name": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "guid": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
     "availableToOrgs": {
       "type": "long"
     },
     "availableToUser": {
       "type": "long"
     },
-    "priority": {
-      "type": "long"
-    },
-    "startDate": {
-      "type": "date"
-    },
-    "status": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "statusId": {
-      "type": "long",
-      "index": false
-    },
-    "startYear": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "endYear": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "normname": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "gokbId": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "primaryUrl": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "consortiaName": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "packages": {
-      "properties": {
-        "providerId": {
-          "type": "long",
-          "index": false
-        },
-        "pkgname": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
-        },
-        "pkgid": {
-          "type": "long",
-          "index": false
-        },
-        "providerName": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
-        }
-      }
-    },
     "consortiaGUID": {
       "type": "text"
     },
-    "sortname": {
-      "type": "text",
+    "consortiaName": {
       "fields": {
         "keyword": {
           "ignore_above": 256,
           "type": "keyword"
         }
-      }
+      },
+      "type": "text"
     },
-    "shortname": {
-      "type": "text",
+    "dateCreated": {
+      "type": "date"
+    },
+    "dbId": {
+      "index": false,
+      "type": "long"
+    },
+    "endDate": {
+      "type": "date"
+    },
+    "endYear": {
       "fields": {
         "keyword": {
           "ignore_above": 256,
           "type": "keyword"
         }
-      }
+      },
+      "type": "text"
+    },
+    "gokbId": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "guid": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
     },
     "identifiers": {
       "properties": {
         "type": {
-          "type": "text",
           "fields": {
             "keyword": {
               "ignore_above": 256,
               "type": "keyword"
             }
-          }
+          },
+          "type": "text"
         },
         "value": {
-          "type": "text",
           "fields": {
             "keyword": {
               "ignore_above": 256,
               "type": "keyword"
             }
-          }
+          },
+          "type": "text"
         }
       }
-    },
-    "sortTitle": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "publisher": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "titleCount": {
-      "type": "long",
-      "index": false
-    },
-    "titleCountCurrent": {
-      "type": "long",
-      "index": false
-    },
-    "providerId": {
-      "type": "long",
-      "index": false
-    },
-    "nominalPlatformId": {
-      "type": "long",
-      "index": false
     },
     "isPublic": {
-      "type": "text",
       "fields": {
         "keyword": {
           "ignore_above": 256,
           "type": "keyword"
         }
+      },
+      "type": "text"
+    },
+    "lastUpdated": {
+      "type": "date"
+    },
+    "members": {
+      "properties": {
+        "dbId": {
+          "index": false,
+          "type": "long"
+        },
+        "name": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "shortname": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "sortname": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        }
       }
     },
-    "lastModified": {
-      "type": "text",
+    "membersCount": {
+      "index": false,
+      "type": "long"
+    },
+    "name": {
       "fields": {
         "keyword": {
           "ignore_above": 256,
           "type": "keyword"
         }
-      }
+      },
+      "type": "text"
     },
-    "providerName": {
-      "type": "text",
+    "objectClassName": {
+      "index": false,
+      "type": "text"
+    },
+    "objectId": {
+      "index": false,
+      "type": "long"
+    },
+    "objectName": {
+      "index": false,
+      "type": "text"
+    },
+    "objectTypeId": {
+      "index": false,
+      "type": "long"
+    },
+    "orgId": {
+      "index": false,
+      "type": "long"
+    },
+    "orgName": {
       "fields": {
         "keyword": {
           "ignore_above": 256,
           "type": "keyword"
         }
-      }
+      },
+      "type": "text"
     },
-    "nominalPlatformName": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "typTitle": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
-        }
-      }
-    },
-    "subId": {
-        "type": "long",
-        "index": false
-    },
-    "subName": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
+    "packages": {
+      "properties": {
+        "pkgid": {
+          "index": false,
+          "type": "long"
+        },
+        "pkgname": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "providerId": {
+          "index": false,
+          "type": "long"
+        },
+        "providerName": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
         }
       }
     },
     "platforms": {
       "properties": {
         "dbId": {
-          "type": "long",
-          "index": false
+          "index": false,
+          "type": "long"
         },
         "name": {
-          "type": "text",
           "fields": {
             "keyword": {
               "ignore_above": 256,
               "type": "keyword"
             }
-          }
-        }
-      }
-    },
-    "orgId": {
-      "type": "long",
-      "index": false
-    },
-    "orgName": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "ignore_above": 256,
-          "type": "keyword"
+          },
+          "type": "text"
         }
       }
     },
     "primaryUrl": {
-      "type": "text",
       "fields": {
         "keyword": {
           "ignore_above": 256,
           "type": "keyword"
         }
-      }
+      },
+      "type": "text"
     },
-    "membersCount": {
-      "type": "long",
-      "index": false
+    "priority": {
+      "type": "long"
     },
-    "members": {
-      "properties": {
-        "dbId": {
-          "type": "long",
-          "index": false
-        },
-        "name": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
-        },
-        "shortname": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
-        },
-        "sortname": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
+    "providerName": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
         }
+      },
+      "type": "text"
+    },
+    "rectype": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "shortname": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "sortname": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "startDate": {
+      "type": "date"
+    },
+    "startYear": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "status": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "value": { "type": "keyword" },
+        "value_de": { "type": "text" },
+        "value_en": { "type": "text" }
       }
     },
-    "objectId": {
-      "type": "long",
-      "index": false
+    "titleCountCurrent": {
+      "index": false,
+      "type": "long"
     },
-    "objectName": {
-      "type": "text",
-      "index": false
+    "type": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "value": { "type": "keyword" },
+        "value_de": { "type": "text" },
+        "value_en": { "type": "text" }
+      }
     },
-    "objectClassName": {
-      "type": "text",
-      "index": false
-    },
-    "objectTypeId": {
-      "type": "long",
-      "index": false
+    "visible": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
     }
   }
 }
