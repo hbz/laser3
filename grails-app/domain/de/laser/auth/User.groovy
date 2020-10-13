@@ -1,6 +1,6 @@
 package de.laser.auth
 
-import com.k_int.kbplus.Org
+import de.laser.Org
 import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
 

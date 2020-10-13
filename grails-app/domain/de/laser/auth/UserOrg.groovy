@@ -1,9 +1,7 @@
 package de.laser.auth
 
-import com.k_int.kbplus.Org
-
+import de.laser.Org
 import org.codehaus.groovy.util.HashCodeHelper
-
 import javax.persistence.Transient
 
 class UserOrg implements Comparable {
