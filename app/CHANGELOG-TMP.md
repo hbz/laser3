@@ -11,6 +11,16 @@
 
 2052    14.10.2020  hbz-dev             Andreas Bug         Controller und Action bei Ajax-generierten Template-Fragmenten durchgereicht
 
+2932    14.10.2020  rc1.6               Moe     Bug         Verträge vergleichen - keine Auswahl
+
+2933    14.10.2020  rc1.6               Andreas Bug         Anzeige der Nutzerrollen im Filterdropdown korrigiert 
+
+2929    14.10.2020  rc1.6               Andreas Bug         Ansichten der Finanzen korrigiert
+
+2928    14.10.2020  rc1.6               Andreas Bug         Fachbereiche konnten in Fremdeinrichtungen nicht bearbeitet werden
+
+2927    14.10.2020  rc1.6               Andreas Bug         Zugangskonfigurationen konnten nicht erstellt werden
+
 2925    13.10.2020  hbz-dev             Andreas Feature     Minimal- und Maximaldatum bei Datepicker festgelegt
 
 2924    13.10.2020  rc1.6               Moe     Bug         RC 1.6: Zugangkonfiguration anlegen/bearbeiten läuft in Fehler

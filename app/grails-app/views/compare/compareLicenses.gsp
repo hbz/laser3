@@ -42,19 +42,11 @@
             <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="adjustDropdown()"/>
             <label for="show.connectedLicenses">${message(code:'default.compare.show.connectedLicenses.name')}</label>
         </div>--}%
-            <br id="element-vor-target-dropdown"/>
+        <br>
+        <select id="selectedObjects" name="selectedObjects" multiple="" class="ui search selection fluid dropdown">
+            <option value="">${message(code: 'default.select.choose.label')}</option>
+        </select>
 
-            <select id="selectedLicenses" name="selectedObjects" multiple=""
-                    class="ui search selection multiple dropdown">
-                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                <g:each in="${availableLicenses.sort { it.dropdownNamingConvention() }}" var="lic">
-                    <option <%=(lic in objects) ? 'selected="selected"' : ''%>
-                    value="${lic.id}" ">
-                    ${lic.dropdownNamingConvention()}
-                    </option>
-                </g:each>
-            </select>
         </div>
 
         <div class="field">
@@ -93,44 +85,30 @@
         var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
         var url = '<g:createLink controller="ajax" action="adjustCompareLicenseList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics+'&format=json'
 
+
+        var dropdownSelectedObjects = $('#selectedObjects');
+        var selectedObjects = ${raw(objects?.id as String)};
+
+        dropdownSelectedObjects.empty();
+        dropdownSelectedObjects.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
+        dropdownSelectedObjects.prop('selectedIndex', 0);
+
         $.ajax({
-            url: url,
-            success: function (data) {
-                var select = '';
-                for (var index = 0; index < data.length; index++) {
-                    var option = data[index];
-                    var optionText = option.text;
-                    var optionValue = option.value;
-                    var count = index + 1
-                    // console.log(optionValue +'-'+optionText)
-
-                    select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(jQuery.inArray(entry.value, selectedObjects) >=0 ){
+                            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        }else{
+                            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                        }
+                     });
                 }
-
-                select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
-'   <i class="dropdown icon"></i>' +
-'   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
-'   <div class="menu">'
-+ select +
-'</div>' +
-'</div>';
-
-                $('#element-vor-target-dropdown').next().replaceWith(select);
-
-                $('.la-filterProp').dropdown({
-                    duration: 150,
-                    transition: 'fade',
-                    clearable: true,
-                    forceSelection: false,
-                    selectOnKeydown: false,
-                    onChange: function (value, text, $selectedItem) {
-                        value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
-                    }
-                });
-            }, async: false
         });
+
     }
 </g:javascript>
+
 
 </body>
 </html>
