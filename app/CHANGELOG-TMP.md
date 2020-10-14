@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2933    14.10.2020  rc1.6               Andreas Bug         Anzeige der Nutzerrollen im Filterdropdown korrigiert 
+
 2929    14.10.2020  rc1.6               Andreas Bug         Ansichten der Finanzen korrigiert
 
 2928    14.10.2020  rc1.6               Andreas Bug         Fachbereiche konnten in Fremdeinrichtungen nicht bearbeitet werden
