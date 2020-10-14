@@ -20,9 +20,6 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def deletionService
     def auditService
 
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
-
     PropertyDefinition type
     boolean isPublic = false
 

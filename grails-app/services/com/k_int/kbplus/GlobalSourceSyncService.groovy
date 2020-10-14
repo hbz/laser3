@@ -942,7 +942,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String,Object>> result = []
         Set<String> controlledProperties = ['name','packageStatus','listVerifiedDate','packageScope','packageListStatus','breakable','consistent','fixed']
 
-        getLogIncluded().each { prop ->
+        controlledProperties.each { prop ->
             if(pkgA[prop] != pkgB[prop]) {
                 if(prop in PendingChange.REFDATA_FIELDS)
                     result.add([prop: prop, newValue: pkgB[prop]?.id, oldValue: pkgA[prop]?.id])

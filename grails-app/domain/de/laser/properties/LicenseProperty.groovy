@@ -20,9 +20,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def deletionService
     def auditService
 
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading'] ]
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
-
     PropertyDefinition type
     boolean isPublic = false
 

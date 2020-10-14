@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
-    def grailsApplication
     def contextService
     def accessService
     def genericOIDService
@@ -39,9 +38,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     def auditService
 
     static Log static_logger = LogFactory.getLog(License)
-
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
 
     License instanceOf
 

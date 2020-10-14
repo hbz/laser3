@@ -38,7 +38,7 @@ abstract class AbstractCoverage {
 
     Set<Map<String,Object>> compareWith(Map<String,Object> covB) {
         Set<Map<String,Object>> diffs = []
-        getLogIncluded().each { cp ->
+        controlledProperties.each { cp ->
             if(cp in ['startDate','endDate']) {
                 Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
                 if(this[cp] != null && covB[cp] != null) {

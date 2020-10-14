@@ -160,7 +160,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     log.debug("onChange Tipp")
 
-    getLogIncluded().each { cp ->
+    controlledProperties.each { cp ->
       log.debug("checking ${cp}")
         if(cp != 'coverages') {
             if ( oldMap[cp] != newMap[cp] ) {
@@ -471,7 +471,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   int compare(TitleInstancePackagePlatform tippB){
       if(!tippB) return -1;
       boolean noChange = true
-      getLogIncluded().each{ noChange &= this."${it}" == tippB."${it}" }
+      controlledProperties.each{ noChange &= this."${it}" == tippB."${it}" }
       
       if( noChange ) return 0;      
       return 1;

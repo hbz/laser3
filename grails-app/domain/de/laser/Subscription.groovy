@@ -35,16 +35,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def messageSource
     def pendingChangeService
     def changeNotificationService
-    def springSecurityService
     def accessService
     def propertyService
     def deletionService
-    def subscriptionService
     def auditService
     def genericOIDService
-
-    static auditable            = [ ignore: ['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
-    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
 
     static Log static_logger = LogFactory.getLog(Subscription)
 
