@@ -28,7 +28,7 @@
     </g:form>
 </semui:modal>
 
-<g:javascript>
+<asset:script type="text/javascript">
     var oOrTable;
 
     $(document).ready(function(){
@@ -91,4 +91,4 @@
       return true;
     }
 
-</g:javascript>
+</asset:script>

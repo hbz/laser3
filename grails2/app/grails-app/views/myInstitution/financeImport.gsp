@@ -22,7 +22,7 @@
               </g:link>
           </g:if>
           <g:else>
-              <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
+              <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
                   <p>${message(code:'myinst.financeImport.template')}</p>
               </a>
           </g:else>

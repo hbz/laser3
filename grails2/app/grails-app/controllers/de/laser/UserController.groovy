@@ -1,17 +1,17 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
+ 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UserController extends AbstractDebugController {
+class UserController  {
 
     def springSecurityService
     def genericOIDService
@@ -29,8 +29,8 @@ class UserController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
-                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') ||
+                principal.user?.hasAffiliation("INST_ADM")
     })
     def _delete() {
         Map<String, Object> result = userService.setResultGenerics(params)
@@ -154,8 +154,8 @@ class UserController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
-                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') ||
+                principal.user?.hasAffiliation("INST_ADM")
     })
     def show() {
         Map<String, Object> result = userService.setResultGenerics(params)
@@ -164,8 +164,8 @@ class UserController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
-                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') ||
+                principal.user?.hasAffiliation("INST_ADM")
     })
     def newPassword() {
         Map<String, Object> result = userService.setResultGenerics(params)

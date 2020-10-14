@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])

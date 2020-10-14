@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.exceptions.CreationException
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class Links {
 

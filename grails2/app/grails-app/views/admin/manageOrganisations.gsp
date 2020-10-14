@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -230,13 +230,13 @@
             </div>
         </g:form>
 
-        <r:script>
+        <asset:script type="text/javascript">
             dcbStore.modal.show.gascoEntryModal = function(trigger) {
                 $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
                 $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
                 $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
             }
-        </r:script>
+        </asset:script>
 
     </semui:modal>
 
@@ -275,7 +275,7 @@
             </div>
         </g:form>
 
-        <r:script>
+        <asset:script type="text/javascript">
             dcbStore.modal.show.legalInformationModal = function(trigger) {
                 $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
                 $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
@@ -293,7 +293,7 @@
                     $('#legalInformationModal select[name=legallyObligedBy]').dropdown('clear')
                 }
             }
-        </r:script>
+        </asset:script>
 
     </semui:modal>
 
@@ -327,7 +327,7 @@
             <input type="hidden" name="target" value=""/>
         </g:form>
 
-        <r:script>
+        <asset:script type="text/javascript">
             dcbStore.modal.show.customerTypeModal = function(trigger) {
                 $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
                 $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
@@ -339,7 +339,7 @@
                     $('#customerTypeModal select[name=customerType]').dropdown('clear')
                 }
             }
-        </r:script>
+        </asset:script>
 
     </semui:modal>
 
@@ -365,7 +365,7 @@
             </div>
         </g:form>
 
-        <r:script>
+        <asset:script type="text/javascript">
             dcbStore.modal.show.apiLevelModal = function(trigger) {
                 $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
                 $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
@@ -377,7 +377,7 @@
                     $('#apiLevelModal select[name=apiLevel]').dropdown('clear')
                 }
             }
-        </r:script>
+        </asset:script>
 
     </semui:modal>
 

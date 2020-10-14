@@ -1,14 +1,14 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional

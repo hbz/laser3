@@ -66,7 +66,7 @@
 
     </g:form>
 
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function() {
             $(".referenceGroup").dropdown({
                 allowAdditions: true,
@@ -109,6 +109,6 @@
             });
         });
 
-    </r:script>
+    </asset:script>
 
 </semui:modal>

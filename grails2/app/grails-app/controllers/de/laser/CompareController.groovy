@@ -1,15 +1,15 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class CompareController extends AbstractDebugController {
+class CompareController  {
 
     SpringSecurityService springSecurityService
     ContextService contextService

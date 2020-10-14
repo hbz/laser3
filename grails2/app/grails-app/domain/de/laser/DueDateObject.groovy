@@ -1,9 +1,9 @@
 package de.laser
 
 
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class DueDateObject {
 
     String attribute_name

@@ -135,11 +135,11 @@
 
 </semui:subNav>
 
-<g:javascript>
+<asset:script type="text/javascript">
     $(document).ready(function(){
         $(document).on('click','.dropdown .item',function(e){
             $('.ui .item').removeClass('active');
             $(this).addClass('active');
         });
     });
-</g:javascript>
+</asset:script>

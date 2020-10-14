@@ -1,15 +1,15 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsHttpSession
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import grails.web.servlet.mvc.GrailsHttpSession
+import org.grails.web.util.WebUtils
 
 @CompileStatic
 @Transactional

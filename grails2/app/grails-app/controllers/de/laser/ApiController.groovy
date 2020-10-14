@@ -8,7 +8,7 @@ import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.GPathResult
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 
 @Secured(['permitAll']) // TODO
 class ApiController {

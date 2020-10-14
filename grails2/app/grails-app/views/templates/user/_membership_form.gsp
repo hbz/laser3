@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.*" %>
+<%@ page import="de.laser.auth.*" %>
 
 <g:if test="${tmplProfile}"><%-- /profile/index --%>
     <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">

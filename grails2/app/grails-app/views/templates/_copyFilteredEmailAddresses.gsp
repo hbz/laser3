@@ -20,7 +20,7 @@
         <br>
     </div>
 
-    <g:javascript>
+    <asset:script type="text/javascript">
         function copyToEmailProgram() {
             var emailAdresses = $("#filteredEmailAddressesTextArea").val();
             window.location.href = "mailto:"+emailAdresses;
@@ -30,7 +30,7 @@
             $("#filteredEmailAddressesTextArea").select();
             document.execCommand("copy");
         }
-    </g:javascript>
+    </asset:script>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->

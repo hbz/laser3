@@ -4,7 +4,7 @@ package de.laser
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.system.SystemEvent
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class SurveyUpdateService extends AbstractLockableService {

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.User; de.laser.DeletionService" %>
+<%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
 <g:set var="deletionService" bean="deletionService" />
 <laser:serviceInjection />
 <!doctype html>

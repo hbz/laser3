@@ -449,7 +449,7 @@
                                                     <g:if test="${pair.propertySet}">
                                                         <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
                                                             <i class="ui angle double down icon"></i></button>
-                                                        <r:script>
+                                                        <asset:script type="text/javascript">
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
@@ -460,7 +460,7 @@
                                                             $(this).html('<i class="ui angle double up icon"></i>')
                                                         }
                                                     })
-                                                        </r:script>
+                                                        </asset:script>
                                                     </g:if>
                                                 </td>
                                             </tr>
@@ -1096,7 +1096,7 @@
     <br>
 </g:if>
 
-<r:script>
+<asset:script type="text/javascript">
                                    $('body #participation').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
@@ -1132,4 +1132,4 @@
        </g:each>
     </g:if>
 
-</r:script>
+</asset:script>

@@ -2,10 +2,10 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -16,7 +16,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DataManagerController extends AbstractDebugController {
+class DataManagerController  {
 
     def springSecurityService
     def GOKbService

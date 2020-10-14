@@ -5,7 +5,7 @@
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
     <title>${message(code: 'laser')} : <g:message code="platform.details"/></title>
-    <g:javascript src="properties.js"/>
+    <asset:javascript src="properties.js"/>
 </head>
 
 <body>

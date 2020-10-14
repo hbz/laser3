@@ -3,14 +3,14 @@ package de.laser.api.v0
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.helper.Constants
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.apache.commons.lang.RandomStringUtils
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
 
-@Log4j
+@Slf4j
 class ApiToolkit {
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'

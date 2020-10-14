@@ -1,10 +1,10 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.helper.EhcacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
@@ -27,10 +27,10 @@ class CacheService implements ApplicationContextAware {
 
     CacheManager getCacheManager() {
 
-        // return CacheManager.newInstance() // grails 3
+        return CacheManager.newInstance()
 
         // http://www.ehcache.org/generated/2.10.4/pdf/Integrations.pdf
-        return CacheManager.getCacheManager('__DEFAULT__')
+        //return CacheManager.getCacheManager('__DEFAULT__')
 
         // http://grails-plugins.github.io/grails-cache/
         // return applicationContext.grailsCacheManager

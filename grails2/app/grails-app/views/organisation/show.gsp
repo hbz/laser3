@@ -22,7 +22,7 @@
     </g:else>
     <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
 
-    <g:javascript src="properties.js"/>
+    <asset:javascript src="properties.js"/>
 </head>
 
 <body>
@@ -520,7 +520,7 @@
 </div>
 </body>
 </html>
-<r:script>
+<asset:script type="text/javascript">
     $('#country').on('save', function(e, params) {
         showRegionsdropdown(params.newValue);
     });
@@ -539,8 +539,8 @@
         var country = $("#country").editable('getValue', true);
         showRegionsdropdown(country);
     });
-</r:script>
-<g:javascript>
+</asset:script>
+<asset:script type="text/javascript">
         function addresscreate_org(orgId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
@@ -569,9 +569,9 @@
                 }
             });
         }
-</g:javascript>
+</asset:script>
 <g:if test="${isProviderOrAgency}">
-<g:javascript>
+<asset:script type="text/javascript">
     function personCreate(contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml"
                                  action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
@@ -594,5 +594,5 @@
             }
         });
     }
-</g:javascript>
+</asset:script>
 </g:if>

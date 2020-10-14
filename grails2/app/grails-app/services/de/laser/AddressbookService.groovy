@@ -1,10 +1,10 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.syntax.Numbers
 import de.laser.helper.RDStore
 

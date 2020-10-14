@@ -643,7 +643,7 @@
 </semui:form>
 
 <g:if test="${!copyObject}">
-    <r:script>
+    <asset:script type="text/javascript">
 
         var subCopyController = {
 
@@ -826,7 +826,7 @@
 
         subCopyController.init()
 
-    </r:script>
+    </asset:script>
 </g:if>
 
 

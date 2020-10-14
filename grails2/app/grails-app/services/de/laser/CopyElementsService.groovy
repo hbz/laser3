@@ -11,11 +11,11 @@ import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.servlet.FlashScope
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
-import org.codehaus.groovy.grails.web.util.WebUtils
+import grails.web.mvc.FlashScope
+import org.grails.web.servlet.mvc.GrailsWebRequest
+import org.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 

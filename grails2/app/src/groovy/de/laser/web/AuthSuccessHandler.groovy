@@ -1,10 +1,10 @@
 package de.laser.web
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.web.authentication.AjaxAwareAuthenticationSuccessHandler
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import org.springframework.security.core.Authentication
 

@@ -1,8 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
+import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -17,9 +17,9 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 

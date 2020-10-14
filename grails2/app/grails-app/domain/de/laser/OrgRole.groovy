@@ -5,7 +5,7 @@ import de.laser.titles.TitleInstance
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
-import org.hibernate.event.PostUpdateEvent
+import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 import javax.persistence.Transient
 

@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.*; com.k_int.kbplus.auth.Role; de.laser.helper.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.helper.RDConstants; de.laser.RefdataValue" %>
 
 <%
     String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
@@ -228,7 +228,7 @@
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
             <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="formFilter(event)" />
-            <r:script>
+            <asset:script type="text/javascript">
                 formFilter = function(e) {
                     e.preventDefault()
 
@@ -239,7 +239,7 @@
 
                     form.submit()
                 }
-            </r:script>
+            </asset:script>
         </g:if>
         <g:else>
             <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>

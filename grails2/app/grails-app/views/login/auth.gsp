@@ -50,7 +50,7 @@
     </semui:card>
     </div>
 </div>
-<r:script>
+<asset:script type="text/javascript">
     (function () {
         document.forms['loginForm'].elements['j_username'].focus();
     })();
@@ -64,6 +64,6 @@
             $("#forgottenPassword").submit();
         }
     });
-</r:script>
+</asset:script>
 </body>
 </html>

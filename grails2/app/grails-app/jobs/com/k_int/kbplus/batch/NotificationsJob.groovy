@@ -2,7 +2,7 @@ package com.k_int.kbplus.batch
 
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 
 class NotificationsJob extends AbstractJob {
 

@@ -1,12 +1,12 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.helper.*
-import org.codehaus.groovy.grails.support.encoding.CodecLookup
-import org.codehaus.groovy.grails.support.encoding.Encoder
-import org.codehaus.groovy.grails.web.pages.GroovyPage
-import org.codehaus.groovy.grails.web.pages.TagLibraryLookup
+import org.grails.encoder.CodecLookup
+import org.grails.encoder.Encoder
+import org.grails.gsp.GroovyPage
+import org.grails.taglib.TagLibraryLookup
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
@@ -224,7 +224,7 @@ class SemanticUiTagLib {
                 def obj = attrs.auditable[0]
                 def objAttr = attrs.auditable[1]
 
-                if (obj?.getClass().controlledProperties?.contains(objAttr)) {
+                if (obj?.getLogIncluded()?.contains(objAttr)) {
 
                     // inherited (to)
                     if (obj.instanceOf) {
@@ -293,7 +293,7 @@ class SemanticUiTagLib {
                 def obj = attrs.auditable[0]
                 def objAttr = attrs.auditable[1]
 
-                if (obj?.getClass().controlledProperties?.contains(objAttr)) {
+                if (obj?.getLogIncluded()?.contains(objAttr)) {
 
                     // inherited (to)
                     if (obj.instanceOf) {

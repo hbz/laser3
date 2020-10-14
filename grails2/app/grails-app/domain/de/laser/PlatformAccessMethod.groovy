@@ -4,9 +4,9 @@ package de.laser
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class PlatformAccessMethod extends AbstractBase {
 
     Date validFrom

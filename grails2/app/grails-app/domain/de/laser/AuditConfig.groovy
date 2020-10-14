@@ -1,10 +1,10 @@
 package de.laser
 
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
 
-@Log4j
+@Slf4j
 class AuditConfig {
 
     def grailsApplication
@@ -77,7 +77,7 @@ class AuditConfig {
 
         List<AuditConfig> configs = []
 
-        obj.getClass().controlledProperties.each{ prop ->
+        obj.getLogIncluded().each{ prop ->
             def config = getConfig(obj, prop)
             if(config){
                 configs << config

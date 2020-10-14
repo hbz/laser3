@@ -81,9 +81,9 @@
 
 
   <g:if test="${userRoles}">
-      <r:script>
+      <asset:script type="text/javascript">
       $('#user_merge_modal').modal('show');
-    </r:script>
+    </asset:script>
   </g:if>
   </body>
 </html>

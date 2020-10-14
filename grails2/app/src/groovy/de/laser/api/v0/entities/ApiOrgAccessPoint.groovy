@@ -5,7 +5,7 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import grails.converters.JSON
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class ApiOrgAccessPoint {
 

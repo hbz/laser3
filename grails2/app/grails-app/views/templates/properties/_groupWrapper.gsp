@@ -34,10 +34,10 @@
     </div>
 <%--</div><!--.card-->--%>
 
-<r:script>
+<asset:script type="text/javascript">
         $(document).ready(function(){
             c3po.initGroupedProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${custom_props_div}");
         });
-</r:script>
+</asset:script>
 
 <!-- _groupWrapper -->

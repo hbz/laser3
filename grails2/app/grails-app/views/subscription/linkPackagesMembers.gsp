@@ -342,7 +342,7 @@
 
 <div id="magicArea"></div>
 
-<r:script>
+<asset:script type="text/javascript">
         $('#membersListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
@@ -366,7 +366,7 @@
         });
       }
 
-</r:script>
+</asset:script>
 
 </body>
 </html>

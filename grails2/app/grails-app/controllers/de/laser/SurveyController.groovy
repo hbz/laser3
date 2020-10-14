@@ -6,7 +6,7 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.properties.SubscriptionProperty
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
 import de.laser.helper.*
@@ -2397,7 +2397,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> editSurveyCostItem() {
         Map<String,Object> result = setResultGenericsAndCheckAccess()
         result.putAll(financeService.setEditVars(result.institution))
@@ -2425,7 +2425,7 @@ class SurveyController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> addForAllSurveyCostItem() {
         Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -3161,7 +3161,7 @@ class SurveyController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
      Map<String,Object> exportSurCostItems() {
         Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
@@ -3195,7 +3195,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
      Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
         result.modalID = params.targetId
@@ -3211,7 +3211,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> newSurveyCostItem() {
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 

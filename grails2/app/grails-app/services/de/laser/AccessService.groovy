@@ -1,9 +1,9 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.*
+import de.laser.auth.*
 import de.laser.helper.RDConstants
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class AccessService {

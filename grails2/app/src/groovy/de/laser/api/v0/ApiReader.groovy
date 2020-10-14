@@ -2,9 +2,9 @@ package de.laser.api.v0
 //import com.k_int.kbplus.OnixplLicense
 
 import de.laser.helper.Constants
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiReader {
 
     static SUPPORTED_FORMATS = [

@@ -194,7 +194,7 @@
     </g:form>
 </semui:filter>
 
-<r:script>
+<asset:script type="text/javascript">
 $(document).ready(function(){
     let subStatus;
     if($("#status").length > 0) {
@@ -218,4 +218,4 @@ $(document).ready(function(){
         minCharacters: 1
     });
 });
-</r:script>
+</asset:script>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; de.laser.UserSetting.KEYS" %>
+<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrg; de.laser.UserSetting.KEYS" %>
 <%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
@@ -87,10 +87,10 @@
                 </div>
 
             </g:form>
-            <r:script>
+            <asset:script type="text/javascript">
 
 
-            </r:script>
+            </asset:script>
         </div><!-- .segment -->
 
     </div><!-- .column -->
@@ -512,7 +512,7 @@
 
 </div><!-- .grid -->
 
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function () {
                     $('.updateProfile')
                             .form({
@@ -641,7 +641,7 @@
             type.append('<option value="' + i + '">' + i + '</option>');
         }
     }
-</r:script>
+</asset:script>
 
 </body>
 </html>

@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.PendingChangeService
-import com.k_int.kbplus.auth.Role
+import de.laser.auth.Role
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
@@ -10,14 +10,14 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.AuditableSupport
+import grails.plugins.orm.auditable.Auditable
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -25,7 +25,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class License extends AbstractBaseWithCalculatedLastUpdated
-        implements AuditableSupport, CalculatedType, Permissions, ShareSupport, Comparable<License> {
+        implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
     def grailsApplication
     def contextService
@@ -117,7 +117,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
               openEnded column:'lic_open_ended_rv_fk'
-              documents sort:'owner.id', order:'desc', batchSize: 10
+              documents batchSize: 10
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'

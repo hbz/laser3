@@ -12,9 +12,9 @@ import de.laser.helper.RefdataAnnotation
 import de.uni_freiburg.ub.IpRange
 import de.uni_freiburg.ub.IpRangeCollection
 import groovy.json.JsonSlurper
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class OrgAccessPoint extends AbstractBase {
 
     String name

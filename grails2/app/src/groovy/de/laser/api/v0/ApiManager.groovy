@@ -15,12 +15,12 @@ import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
 
-@Log4j
+@Slf4j
 class ApiManager {
 
     static final VERSION = '0.121'

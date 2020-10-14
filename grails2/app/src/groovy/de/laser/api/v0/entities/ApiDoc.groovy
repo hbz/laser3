@@ -7,9 +7,9 @@ import de.laser.Org
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiDoc {
 
     /**

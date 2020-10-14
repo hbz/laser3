@@ -3,7 +3,7 @@ package de.laser.finance
 import com.k_int.kbplus.GenericOIDService
 import de.laser.Org
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 

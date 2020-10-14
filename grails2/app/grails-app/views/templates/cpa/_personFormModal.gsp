@@ -317,7 +317,7 @@
     </g:form>
 
     <g:if test="${personInstance && !contactPersonForProviderAgencyPublic}">
-        <g:javascript src="properties.js"/>
+        <asset:javascript src="properties.js"/>
         <div class="ui grid">
             <div class="sixteen wide column">
                 <div class="la-inline-lists">

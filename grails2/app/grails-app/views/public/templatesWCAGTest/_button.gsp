@@ -24,23 +24,23 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <r:script>
+                        <asset:script type="text/javascript">
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
                             $('.la-js-editmode-icon').addClass('thumbtack');
                             $('.meinToggleButton').attr('data-content','Wert wird vererbt');
-                        </r:script>
+                        </asset:script>
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <r:script>
+                            <asset:script type="text/javascript">
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');
                                 $('.la-js-editmode-icon').removeClass('thumbtack');
                                 $('.meinToggleButton').attr('data-content','Wert wird nicht vererbt');
-                            </r:script>
+                            </asset:script>
                         </g:if>
                     </g:else>
                     <g:set var="test" value='true' />
@@ -81,23 +81,23 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <r:script>
+                        <asset:script type="text/javascript">
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
                             $('.la-js-editmode-icon').addClass('thumbtack');
                             $('.meinToggleButton').attr('data-content','Wert wird vererbt');
-                        </r:script>
+                        </asset:script>
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <r:script>
+                            <asset:script type="text/javascript">
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');
                                 $('.la-js-editmode-icon').removeClass('thumbtack');
                                 $('.meinToggleButton').attr('data-content','Wert nicht wird vererbt');
-                            </r:script>
+                            </asset:script>
                         </g:if>
                     </g:else>
                     <g:set var="test" value='true' />

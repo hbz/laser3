@@ -2,11 +2,11 @@ package de.laser
 
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.helper.SqlDateUtils
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class DashboardDueDate {
 
     User responsibleUser

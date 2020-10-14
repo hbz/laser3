@@ -222,7 +222,7 @@
 
             </g:form>
 
-            <r:script>
+            <asset:script type="text/javascript">
                         $('button[data-xcg-pd]').on('click', function(){
 
                             var pd = $(this).attr('data-xcg-pd');
@@ -254,7 +254,7 @@
                                 }, async: false
                             });
                         })
-            </r:script>
+            </asset:script>
 
         </semui:modal>
 
@@ -310,7 +310,7 @@
 
         </semui:modal>
 
-		<g:javascript>
+		<asset:script type="text/javascript">
 
 			   if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.CLASS}") {
 					$("#cust_prop_ref_data_name").show();
@@ -356,7 +356,7 @@
 				}
 			});
 
-		</g:javascript>
+		</asset:script>
 
 	</body>
 </html>

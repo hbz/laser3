@@ -126,7 +126,7 @@
                         </div>
                     </div>
                 </g:form>
-                <r:script>
+                <asset:script type="text/javascript">
                     $('.action .icon.button').click(function () {
                         $(this).parent('.action').find('input:file').click();
                     });
@@ -135,7 +135,7 @@
                         var name = e.target.files[0].name;
                         $('input:text', $(e.target).parent()).val(name);
                     });
-                </r:script>
+                </asset:script>
             </div>
         </div>
         </div>
@@ -534,7 +534,7 @@
 </div>
 
 
-<r:script>
+<asset:script type="text/javascript">
       function hideModal(){
         $("[name='coreAssertionEdit']").modal('hide');
       }
@@ -609,6 +609,6 @@
                 }).modal('show');
             })
         })
-</r:script>
+</asset:script>
 </body>
 </html>

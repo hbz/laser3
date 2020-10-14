@@ -5,9 +5,9 @@ import de.laser.base.AbstractBase
 import de.laser.oap.OrgAccessPoint
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class AccessPointData extends AbstractBase {
     
     OrgAccessPoint orgAccessPoint

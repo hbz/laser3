@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.ServerUtils; org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.ServerUtils; org.grails.exceptions.ExceptionUtils" %>
 <laser:serviceInjection />
 <%
     Throwable exception = (Throwable) exception

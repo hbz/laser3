@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class CascadingUpdateService {

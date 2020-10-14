@@ -11,9 +11,9 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
 import de.laser.titles.TitleInstance
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiUnsecuredMapReader {
 
     // -------------------- STUBS --------------------

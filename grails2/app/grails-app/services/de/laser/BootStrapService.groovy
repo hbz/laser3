@@ -1,7 +1,7 @@
 package de.laser
 
-import au.com.bytecode.opencsv.CSVReader
-import com.k_int.kbplus.auth.*
+import com.opencsv.CSVReader
+import de.laser.auth.*
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
@@ -9,7 +9,7 @@ import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.hibernate.type.TextType
 

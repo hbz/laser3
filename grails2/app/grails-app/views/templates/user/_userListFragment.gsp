@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserRole;de.laser.UserSetting" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role;de.laser.auth.UserRole;de.laser.UserSetting" %>
 <laser:serviceInjection/>
 
 <table class="ui sortable celled la-table compact table">

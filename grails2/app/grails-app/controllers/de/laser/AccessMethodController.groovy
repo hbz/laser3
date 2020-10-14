@@ -1,15 +1,15 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DateUtil
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 
-class AccessMethodController extends AbstractDebugController {
+class AccessMethodController  {
 
     def springSecurityService
     def contextService

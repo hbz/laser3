@@ -260,7 +260,7 @@
         </g:form>
     </semui:modal>
 
-    <g:javascript>
+    <asset:script type="text/javascript">
 
     $('#pd_descr').change(function() {
         $('#cust_prop_modal_select').trigger('change');
@@ -313,7 +313,7 @@
         }
     });
 
-    </g:javascript>
+    </asset:script>
 
   </body>
 </html>

@@ -538,7 +538,7 @@
     </div>
 </div>
 
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function () {
         $('.tabular.menu .item').tab()
     });
@@ -550,7 +550,7 @@
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
         }
     })
-</r:script>
+</asset:script>
 
 </body>
 </html>

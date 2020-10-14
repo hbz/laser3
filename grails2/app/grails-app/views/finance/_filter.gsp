@@ -268,7 +268,7 @@
 
 <!-- _filter.gsp -->
 
-<r:script>
+<asset:script type="text/javascript">
     $.fn.dropdown.settings.message = {
         noResults: "<g:message code="select2.noMatchesFound" />"
     };
@@ -353,4 +353,4 @@
                 $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",false);
         });
     });
-</r:script>
+</asset:script>

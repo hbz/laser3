@@ -3,7 +3,7 @@ package com.k_int.kbplus.auth
 import com.k_int.kbplus.GenericOIDService
 import de.laser.traits.I10nTrait
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 
 class Role implements I10nTrait {
 

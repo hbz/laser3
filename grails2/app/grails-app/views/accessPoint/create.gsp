@@ -5,11 +5,11 @@
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'accessPoint.label')}" />
 		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
-    <g:javascript>
+    <asset:script type="text/javascript">
       $(function() {
         $('body').attr('class', 'organisation_accessPoint_create');
      });
-    </g:javascript>
+    </asset:script>
 	</head>
 
 <body>

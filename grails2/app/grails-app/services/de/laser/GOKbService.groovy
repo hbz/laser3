@@ -1,7 +1,7 @@
 package de.laser
 
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 

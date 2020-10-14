@@ -229,7 +229,7 @@
 
 <div id="magicArea"></div>
 
-<r:script>
+<asset:script type="text/javascript">
 
       function unlinkPackage(pkg_id){
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscriptionInstance.id])}&package="+pkg_id
@@ -272,7 +272,7 @@
             $('#durationAlert').toggle();
         }
       });
-</r:script>
+</asset:script>
 <!-- ES Query String: ${es_query} -->
 </body>
 </html>

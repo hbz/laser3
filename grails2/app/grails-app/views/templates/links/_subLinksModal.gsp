@@ -142,7 +142,7 @@
 </semui:modal>
 <g:if test="${!link}">
 <%-- for that one day, we may move away from that ... --%>
-    <r:script>
+    <asset:script type="text/javascript">
     $(document).ready(function(){
        //console.log("${lookupName}");
         $("#${selectPair}").dropdown({
@@ -154,5 +154,5 @@
             minCharacters: 1
         });
     });
-    </r:script>
+    </asset:script>
 </g:if>

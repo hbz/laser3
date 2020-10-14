@@ -1,9 +1,9 @@
 package de.laser.ajax
 
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserRole
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserRole
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -16,8 +16,8 @@ import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import org.codehaus.groovy.grails.commons.GrailsClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import grails.core.GrailsClass
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
@@ -1037,7 +1037,7 @@ class AjaxController {
             def owner = genericOIDService.resolveOID(params.owner)
             if (owner) {
                 def members = owner.getClass().findAllByInstanceOf(owner)
-                def objProps = owner.getClass().controlledProperties
+                def objProps = owner.getLogIncluded()
                 def prop = params.property
 
                 if (prop in objProps) {

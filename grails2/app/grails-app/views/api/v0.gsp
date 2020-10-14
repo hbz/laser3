@@ -81,9 +81,9 @@
         }
     </style>
 
-    <r:require module="swaggerApi" />
+    <asset:stylesheet src="swagger.css"/><asset:javascript src="swagger.js"/>
 
-    <r:layoutResources/> <%-- grails-3-fix : remove --%>
+    <asset:deferredScripts/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body>
@@ -278,7 +278,7 @@ console.log('(http-header) x-authorization: ' + authorization)
         }
     </script>
 
-    <r:layoutResources/>
+    <asset:deferredScripts/>
 
 </body>
 </html>

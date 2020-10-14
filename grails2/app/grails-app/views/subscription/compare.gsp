@@ -230,7 +230,7 @@
 		 model="[subA:subAIE,subB:subBIE,currentTitle:currentTitle, subAName:subInsts.get(0).name, subBName:subInsts.get(1).name]"/>
 </g:each>
 
-		<r:script>
+		<asset:script type="text/javascript">
 $(document).ready(function(){
 			$("div.dropdown").dropdown({
 				apiSettings: {
@@ -240,6 +240,6 @@ $(document).ready(function(){
 				clearable: true
 			});
 			});
-		</r:script>
+		</asset:script>
 	</body>
 </html>

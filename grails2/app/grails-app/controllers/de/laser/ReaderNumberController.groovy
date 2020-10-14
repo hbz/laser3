@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
@@ -9,13 +9,13 @@ import grails.plugin.springsecurity.annotation.Secured
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ReaderNumberController extends AbstractDebugController {
+class ReaderNumberController  {
 
 	def springSecurityService
 	def contextService
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
 		SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 		if (params.dueDate)
@@ -32,7 +32,7 @@ class ReaderNumberController extends AbstractDebugController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		ReaderNumber numbersInstance = ReaderNumber.get(params.id)
 		if (! numbersInstance) {
@@ -51,7 +51,7 @@ class ReaderNumberController extends AbstractDebugController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         List<Long> numbersToDelete = []
 		Org org = Org.get(params.org)

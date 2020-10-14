@@ -1,8 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.ExecutorWrapperService
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -21,7 +21,7 @@ import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PackageController extends AbstractDebugController {
+class PackageController  {
 
     def springSecurityService
     def genericOIDService
@@ -810,7 +810,7 @@ class PackageController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addToSub() {
         Package pkg = Package.get(params.id)
         Subscription sub = Subscription.get(params.subid)

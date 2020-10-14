@@ -10,7 +10,7 @@
     <head>
         <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser')} : ${message(code:'subscription.details.label')}</title>
-        <g:javascript src="properties.js"/>
+        <asset:javascript src="properties.js"/>
         <style>
             .ui.table tr th {
                 border-top: 1px solid #d3dae3;
@@ -448,7 +448,7 @@
                                                         <i class="ui angle double down icon"></i>
                                                     </button>
                                                 </span>
-                                                <r:script>
+                                                <asset:script type="text/javascript">
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
@@ -459,7 +459,7 @@
                                                             $(this).html('<i class="ui angle double up icon"></i>');
                                                         }
                                                     })
-                                                </r:script>
+                                                </asset:script>
                                             </g:if>
                                             <g:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText:message(code:'subscription.details.editLink'),
@@ -680,7 +680,7 @@
 
     <div id="magicArea"></div>
 
-    <r:script>
+    <asset:script type="text/javascript">
       $(document).ready(function() {
 
           function unlinkPackage(pkg_id){
@@ -737,6 +737,6 @@
 
         });
 
-    </r:script>
+    </asset:script>
   </body>
 </html>

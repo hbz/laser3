@@ -1,6 +1,6 @@
 package de.laser
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.StringUtils
 import org.springframework.context.i18n.LocaleContextHolder
 

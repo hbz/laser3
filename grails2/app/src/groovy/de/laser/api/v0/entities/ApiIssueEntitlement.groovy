@@ -3,9 +3,9 @@ package de.laser.api.v0.entities
 import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.api.v0.*
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiIssueEntitlement {
 
     /**

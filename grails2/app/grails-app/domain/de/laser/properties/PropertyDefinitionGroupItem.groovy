@@ -2,9 +2,9 @@ package de.laser.properties
 
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class PropertyDefinitionGroupItem {
 
     Date dateCreated

@@ -1,5 +1,5 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import org.springframework.dao.DataIntegrityViolationException
 
 class ${className}Controller {

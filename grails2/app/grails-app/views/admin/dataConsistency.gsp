@@ -79,7 +79,7 @@
     </form>
 </semui:modal>
 
-<r:script>
+<asset:script type="text/javascript">
     $('.x button').on('click', function(){
 
         var key = $(this).attr('data-key')
@@ -136,7 +136,7 @@
             }
         });
     })
-</r:script>
+</asset:script>
 
 </body>
 </html>

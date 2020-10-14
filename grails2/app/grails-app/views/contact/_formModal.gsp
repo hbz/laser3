@@ -72,7 +72,7 @@
 
     </g:form>
 </semui:modal>
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function(){
         $("#newContact").form({
             on: 'blur',
@@ -90,4 +90,4 @@
             }
         });
     });
-</r:script>
+</asset:script>

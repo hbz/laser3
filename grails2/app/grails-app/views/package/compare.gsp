@@ -258,7 +258,7 @@
 		 pkgBName:pkgInsts.get(1).name ]"/>
 </g:each>
 
-<r:script>
+<asset:script type="text/javascript">
     function applySelect2(filter) {
       var pkgA = {id:'${pkgInsts?.get(0)?.id}',text:"${pkgInsts?.get(0)?.name}"};
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};
@@ -321,7 +321,7 @@
     });
 
 
-</r:script>
+</asset:script>
 
   </body>
 </html>

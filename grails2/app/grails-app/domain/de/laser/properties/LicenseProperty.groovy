@@ -7,11 +7,11 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.interfaces.AuditableSupport
+import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONElement
+import org.grails.web.json.JSONElement
 
-class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements AuditableSupport {
+class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements Auditable {
 
     def genericOIDService
     def changeNotificationService

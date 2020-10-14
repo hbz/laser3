@@ -52,7 +52,7 @@
                 </div>
             </div>
         </form>
-        <r:script>
+        <asset:script type="text/javascript">
             $('#filterButton').on('click', function() {
 
                 var fCat = $('#filter_category').val()
@@ -73,7 +73,7 @@
             })
 
             $('#filterButton').trigger('click')
-        </r:script>
+        </asset:script>
     </semui:filter>
 
 <div>

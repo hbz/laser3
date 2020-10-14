@@ -7,10 +7,10 @@ import de.laser.titles.JournalInstance
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -30,7 +30,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController
-        extends AbstractDebugController
+        
         implements PendingChangeControllerTrait {
 
     def springSecurityService
@@ -103,7 +103,7 @@ class SubscriptionController
                     'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def index() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -362,7 +362,7 @@ class SubscriptionController
 
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addCoverage() {
         IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
         if(base) {
@@ -375,7 +375,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def removeCoverage() {
         IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
         Long subId = ieCoverage.issueEntitlement.subscription.id
@@ -388,7 +388,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
@@ -410,7 +410,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         log.debug("unlinkPackage :: ${params}")
         Map<String, Object> result = [:]
@@ -633,7 +633,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
 
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
@@ -720,7 +720,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def addEntitlements() {
         log.debug("addEntitlements .. params: ${params}")
 
@@ -1116,7 +1116,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def manageEntitlementGroup() {
         log.debug("ManageEntitlementGroup .. params: ${params}")
 
@@ -1132,7 +1132,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     Map<String,Object> editEntitlementGroupItem() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
         if (!result.editable) {
@@ -1178,7 +1178,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def processCreateEntitlementGroup() {
         log.debug("processCreateEntitlementGroup .. params: ${params}")
 
@@ -1213,7 +1213,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -1295,7 +1295,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def showEntitlementsRenewWithSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -1349,7 +1349,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if(!result) {
@@ -1400,7 +1400,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def members() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1551,7 +1551,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def surveys() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -2410,7 +2410,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addMembers() {
         log.debug("addMembers ..")
 
@@ -2439,7 +2439,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug( params.toMapString() )
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
@@ -2617,7 +2617,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def pendingChanges() {
         log.debug("subscription id:${params.id}");
 
@@ -2655,7 +2655,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def expected() {
         previousAndExpected(params, 'expected');
     }
@@ -2704,7 +2704,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
@@ -2772,7 +2772,7 @@ class SubscriptionController
         redirect action: 'addEntitlements', id: result.subscriptionInstance?.id
     }
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddIssueEntitlementsSurvey() {
         log.debug("processAddIssueEntitlementsSurvey....");
 
@@ -2814,7 +2814,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
@@ -2825,7 +2825,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def removeEntitlementGroup() {
         log.debug("removeEntitlementGroup....");
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
@@ -2842,7 +2842,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
         log.debug("processRemoveEntitlements....");
 
@@ -2862,7 +2862,7 @@ class SubscriptionController
 
     }
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRemoveIssueEntitlementsSurvey() {
         log.debug("processRemoveIssueEntitlementsSurvey....");
 
@@ -2888,7 +2888,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlements() {
         log.debug("processRenewEntitlements ...")
         params.id = Long.parseLong(params.id)
@@ -2933,7 +2933,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         log.debug("processRenewEntitlementsWithSurvey ...")
         Map<String, Object> result = [:]
@@ -2986,7 +2986,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addEmptyPriceItem() {
         if(params.ieid) {
             IssueEntitlement ie = IssueEntitlement.get(params.ieid)
@@ -3009,7 +3009,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def notes() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3040,7 +3040,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map result = [user:springSecurityService.getCurrentUser(),institution:contextService.org]
         result.ownobj = Subscription.get(params.instanceId)
@@ -3095,7 +3095,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         def ctxlist = []
 
@@ -3107,7 +3107,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def permissionInfo() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3119,14 +3119,14 @@ class SubscriptionController
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def acceptChange() {
         processAcceptChange(params, Subscription.get(params.id), genericOIDService)
         redirect controller: 'subscription', action: 'index', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def rejectChange() {
         processRejectChange(params, Subscription.get(params.id))
         redirect controller: 'subscription', action: 'index', id: params.id
@@ -3134,7 +3134,7 @@ class SubscriptionController
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def possibleLicensesForSubscription() {
         List result = []
 
@@ -3186,7 +3186,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
         log.debug("Link package, params: ${params} ")
 
@@ -3392,7 +3392,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def setupPendingChangeConfiguration() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
@@ -3435,7 +3435,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def history() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3459,7 +3459,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def changes() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3489,7 +3489,7 @@ class SubscriptionController
 
     // TODO Cost per use tab, still needed?
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def costPerUse() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3548,7 +3548,7 @@ class SubscriptionController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
 
         ProfilerUtils pu = new ProfilerUtils()

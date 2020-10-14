@@ -33,10 +33,10 @@ import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.SessionFactory
-import org.hibernate.classic.Session
+import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
@@ -52,7 +52,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     ExecutorService executorService
     ChangeNotificationService changeNotificationService
     def genericOIDService
-    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalRecordSource source
 
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
@@ -942,7 +942,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String,Object>> result = []
         Set<String> controlledProperties = ['name','packageStatus','listVerifiedDate','packageScope','packageListStatus','breakable','consistent','fixed']
 
-        controlledProperties.each { prop ->
+        getLogIncluded().each { prop ->
             if(pkgA[prop] != pkgB[prop]) {
                 if(prop in PendingChange.REFDATA_FIELDS)
                     result.add([prop: prop, newValue: pkgB[prop]?.id, oldValue: pkgA[prop]?.id])
@@ -1299,7 +1299,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Session session = sessionFactory.currentSession
         session.flush()
         session.clear()
-        propertyInstanceMap.get().clear()
+         //propertyInstanceMap.get().clear()
     }
 
 }

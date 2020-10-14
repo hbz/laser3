@@ -10,7 +10,7 @@ import de.laser.properties.PlatformProperty
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.properties.SubscriptionProperty
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.I10nTranslation
 import de.laser.Contact
 import de.laser.Person
@@ -27,9 +27,9 @@ import de.laser.properties.PropertyDefinition
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import org.codehaus.groovy.grails.commons.GrailsClass
+import grails.core.GrailsClass
 import org.springframework.context.i18n.LocaleContextHolder
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll'])
 class AjaxJsonController {
@@ -445,7 +445,7 @@ class AjaxJsonController {
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM") })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
 

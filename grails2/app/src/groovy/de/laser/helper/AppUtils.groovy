@@ -1,7 +1,7 @@
 package de.laser.helper
 
 import grails.util.Holders
-import org.codehaus.groovy.grails.commons.GrailsClass
+import grails.core.GrailsClass
 
 class AppUtils {
 

@@ -288,7 +288,7 @@
 
     </g:form>
 
-    <r:script>
+    <asset:script type="text/javascript">
 
         $('#create_person')
                 .form({
@@ -345,6 +345,6 @@
         }
 
         changeForm(false) // init
-    </r:script>
+    </asset:script>
 
 </semui:modal>

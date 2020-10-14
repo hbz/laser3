@@ -13,11 +13,11 @@ import de.laser.base.AbstractI10n
 import de.laser.helper.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.util.Holders
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -25,7 +25,7 @@ import javax.validation.UnexpectedTypeException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-@Log4j
+@Slf4j
 class PropertyDefinition extends AbstractI10n implements Serializable, Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)

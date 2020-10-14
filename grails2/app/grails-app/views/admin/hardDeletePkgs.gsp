@@ -60,12 +60,12 @@
 
         <div id="packageDetails_div"></div>
 
-        <g:javascript>
+        <asset:script type="text/javascript">
         function showDetails(id){
           jQuery.ajax({type:'get', url:"${createLink(controller:'admin', action:'hardDeletePkgs')}"+"/"+id,success:function(data,textStatus){jQuery('#packageDetails_div').html(data);$("#pkg_details_modal").modal("show")},error:function(XMLHttpRequest,textStatus,errorThrown){}
         });
         }
-        </g:javascript>
+        </asset:script>
 
   </body>
 </html>     

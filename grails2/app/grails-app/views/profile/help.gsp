@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="de.laser.RefdataValue;de.laser.auth.Role;de.laser.auth.UserOrg" %>
 <!doctype html>
 <html>
 <head>
@@ -91,8 +91,8 @@
 
 </body>
 </html>
-<g:javascript>
+<asset:script type="text/javascript">
     $(document).ready(function() {
             $('.ui.accordion').accordion('exclusive', false);
     });
-</g:javascript>
+</asset:script>

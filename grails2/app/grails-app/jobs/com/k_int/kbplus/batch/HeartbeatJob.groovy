@@ -2,7 +2,7 @@ package com.k_int.kbplus.batch
 
 import de.laser.system.SystemActivityProfiler
 import de.laser.quartz.AbstractJob
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 
 class HeartbeatJob extends AbstractJob {
 

@@ -1,8 +1,8 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.oap.OrgAccessPoint
@@ -11,7 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PlatformController extends AbstractDebugController {
+class PlatformController  {
 
     def springSecurityService
     def contextService
@@ -114,7 +114,7 @@ class PlatformController extends AbstractDebugController {
     }
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    //@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
     def delete() {
         Platform platformInstance = Platform.get(params.id)
@@ -153,7 +153,7 @@ class PlatformController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
@@ -186,7 +186,7 @@ class PlatformController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)

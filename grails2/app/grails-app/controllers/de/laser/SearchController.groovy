@@ -1,10 +1,10 @@
 package de.laser
 
-import de.laser.controller.AbstractDebugController
+ 
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SearchController extends AbstractDebugController {
+class SearchController  {
     def ESSearchService
     def springSecurityService
     def contextService

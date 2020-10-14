@@ -1,7 +1,7 @@
 package de.laser.system
 
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.ConfigUtils

@@ -265,7 +265,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:form>
 
 </body>
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function () {
         var iesToAdd = [];
 
@@ -298,5 +298,5 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         });
 
     });
-</r:script>
+</asset:script>
 </html>

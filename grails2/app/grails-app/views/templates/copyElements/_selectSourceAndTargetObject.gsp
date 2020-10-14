@@ -81,7 +81,7 @@
 
     </g:form>
 </g:if>
-<g:javascript>
+<asset:script type="text/javascript">
     // $(document).ready(function(){
     //     alert("Geladen")
     //     $("input[name='show.activeSubscriptions'").prop('checked', true);
@@ -136,4 +136,4 @@
             }, async: false
         });
     }
-</g:javascript>
+</asset:script>

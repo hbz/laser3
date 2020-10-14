@@ -34,11 +34,11 @@
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
-                            <r:script>
+                            <asset:script type="text/javascript">
                                 $('a[data-name=contactType]').on('save', function(e, params) {
                                     window.location.reload()
                                 });
-                            </r:script>
+                            </asset:script>
                         </dd>
                     </dl>
 
@@ -349,7 +349,7 @@
                 </div><!-- .card -->
             </g:if>
 
-            <g:javascript src="properties.js"/>
+            <asset:javascript src="properties.js"/>
             <div class="ui grid">
                 <div class="sixteen wide column">
                     <div class="la-inline-lists">
@@ -362,11 +362,11 @@
                                             ownobj: personInstance,
                                             custom_props_div: "custom_props_div_${institution.id}",
                                             tenant: institution]}"/>
-                                    <r:script>
+                                    <asset:script type="text/javascript">
                                         $(document).ready(function(){
                                             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                                         });
-                                    </r:script>
+                                    </asset:script>
                                 </div>
                             </div>
                         </div><!-- .card -->
@@ -448,7 +448,7 @@
 
 </body>
 </html>
-<g:javascript>
+<asset:script type="text/javascript">
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
@@ -480,4 +480,4 @@
                 }
             });
         }
-</g:javascript>
+</asset:script>

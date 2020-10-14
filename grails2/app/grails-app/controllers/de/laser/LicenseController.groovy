@@ -3,12 +3,12 @@ package de.laser
 
 import com.k_int.kbplus.InstitutionsService
 import de.laser.properties.LicenseProperty
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import de.laser.properties.PropertyDefinition
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.ProfilerUtils
@@ -16,7 +16,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 import de.laser.helper.ConfigUtils
@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController
-        extends AbstractDebugController
+        
         implements PendingChangeControllerTrait {
 
     def springSecurityService
@@ -52,7 +52,7 @@ class LicenseController
     LicenseService licenseService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
 
         ProfilerUtils pu = new ProfilerUtils()
@@ -251,7 +251,7 @@ class LicenseController
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
 
@@ -266,7 +266,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug( params.toMapString() )
 
@@ -347,7 +347,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
         log.debug("linkToSubscription :: ${params}")
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
@@ -389,7 +389,7 @@ class LicenseController
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Map<String,Object> linkLicenseToSubs() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -399,7 +399,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def linkedSubs() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -483,7 +483,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def members() {
         log.debug("license id:${params.id}");
 
@@ -533,7 +533,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
@@ -590,7 +590,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def pendingChanges() {
         log.debug("license id:${params.id}");
 
@@ -624,7 +624,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def history() {
         log.debug("license::history : ${params}");
 
@@ -673,7 +673,7 @@ class LicenseController
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def changes() {
         log.debug("license::changes : ${params}")
 
@@ -700,7 +700,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def notes() {
         log.debug("license id:${params.id}");
 
@@ -713,7 +713,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def tasks() {
         log.debug("license id:${params.id}")
 
@@ -765,7 +765,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}")
 
@@ -775,21 +775,21 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
   def acceptChange() {
     processAcceptChange(params, License.get(params.id), genericOIDService)
     redirect controller: 'license', action:'show',id:params.id
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
   def rejectChange() {
     processRejectChange(params, License.get(params.id))
     redirect controller: 'license', action:'show',id:params.id
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def permissionInfo() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -800,7 +800,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
   def create() {
     Map<String, Object> result = [:]
     result.user = User.get(springSecurityService.principal.id)
@@ -810,7 +810,7 @@ class LicenseController
     /*
     @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
   def unlinkLicense() {
       log.debug("unlinkLicense :: ${params}")
       License license = License.get(params.license_id);
@@ -1087,7 +1087,7 @@ class LicenseController
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoLicense() {
         def result             = [:]
         result.user            = User.get(springSecurityService.principal.id)

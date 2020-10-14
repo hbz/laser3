@@ -2,13 +2,13 @@ package de.laser
 
 
 import de.laser.traits.I10nTrait
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
-@Log4j
+@Slf4j
 class SurveyProperty implements I10nTrait {
 
     String name

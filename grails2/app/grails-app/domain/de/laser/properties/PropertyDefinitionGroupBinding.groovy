@@ -3,9 +3,9 @@ package de.laser.properties
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class PropertyDefinitionGroupBinding {
 
     boolean isVisible = false // default value: will overwrite existing groups

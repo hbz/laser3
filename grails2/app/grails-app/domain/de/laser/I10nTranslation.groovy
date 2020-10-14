@@ -1,6 +1,6 @@
 package de.laser
 
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Transient
 

@@ -1,4 +1,4 @@
-<r:script>
+<asset:script type="text/javascript">
     function taskcreate() {
 
         $.ajax({
@@ -16,4 +16,4 @@
             }
         });
     }
-</r:script>
+</asset:script>

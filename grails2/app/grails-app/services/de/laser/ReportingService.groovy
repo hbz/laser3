@@ -3,7 +3,7 @@ package de.laser
 import de.laser.finance.CostItem
 import de.laser.helper.RDStore
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 import java.math.RoundingMode
 import java.time.Year

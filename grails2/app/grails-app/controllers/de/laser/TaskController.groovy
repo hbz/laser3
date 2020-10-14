@@ -1,8 +1,8 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
@@ -11,7 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class TaskController extends AbstractDebugController {
+class TaskController  {
 
 	def springSecurityService
     def contextService
@@ -34,7 +34,7 @@ class TaskController extends AbstractDebugController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
         def contextOrg  = contextService.getOrg()
 //		def result      = taskService.getPreconditions(contextOrg)
@@ -93,7 +93,7 @@ class TaskController extends AbstractDebugController {
 		}
     }
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
@@ -118,7 +118,7 @@ class TaskController extends AbstractDebugController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		Org contextOrg = contextService.getOrg()
         def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
@@ -208,7 +208,7 @@ class TaskController extends AbstractDebugController {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         def taskInstance = Task.get(params.id)
 		def tasktitel = taskInstance.title

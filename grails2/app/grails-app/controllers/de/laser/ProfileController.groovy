@@ -1,9 +1,9 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import de.laser.UserSetting.KEYS
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

@@ -118,7 +118,7 @@
     </g:if>
     </div><!-- .la-flex-list -->
 </g:if>
-<g:javascript>
+<asset:script type="text/javascript">
 function editPerson(id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
             person_editModal(url)
@@ -140,5 +140,5 @@ function editPerson(id) {
                 }
             });
         }
-</g:javascript>
+</asset:script>
 							

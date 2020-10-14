@@ -1,15 +1,15 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
+import de.laser.auth.UserRole
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.servlet.FlashScope
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.gorm.transactions.Transactional
+import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 

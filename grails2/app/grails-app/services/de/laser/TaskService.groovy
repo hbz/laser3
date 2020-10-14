@@ -1,12 +1,12 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import de.laser.helper.RDStore
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.grails.web.util.WebUtils
+import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.web.util.WebUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional

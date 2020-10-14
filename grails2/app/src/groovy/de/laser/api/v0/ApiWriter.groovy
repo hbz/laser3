@@ -8,11 +8,11 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
-import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.web.json.JSONObject
+import groovy.util.logging.Slf4j
+import org.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 
-@Log4j
+@Slf4j
 class ApiWriter {
 
     /**

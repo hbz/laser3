@@ -212,7 +212,7 @@
     </g:form>
 </semui:modal>
 
-<g:javascript>
+<asset:script type="text/javascript">
 
 $('#pd_descr').change(function() {
 $('#cust_prop_modal_select').trigger('change');
@@ -266,4 +266,4 @@ return {results: data.values};
 });
 $(".la-popup").popup({
 });
-</g:javascript>
+</asset:script>

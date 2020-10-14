@@ -23,7 +23,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import grails.converters.JSON
 import groovy.json.JsonOutput
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
@@ -62,7 +62,7 @@ class DataloadService {
     ExecutorService executorService
     def ESWrapperService
     def sessionFactory
-    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
     def genericOIDService
 
@@ -1189,7 +1189,7 @@ class DataloadService {
         def session = sessionFactory.currentSession
         session.flush()
         session.clear()
-        propertyInstanceMap.get().clear()
+         //propertyInstanceMap.get().clear()
     }
 
     def clearDownAndInitES() {

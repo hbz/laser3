@@ -1,13 +1,13 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.finance.Invoice
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
 import de.laser.finance.Order
@@ -40,7 +40,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class FinanceController extends AbstractDebugController {
+class FinanceController  {
 
     def springSecurityService
     def accessService
@@ -51,7 +51,7 @@ class FinanceController extends AbstractDebugController {
     def exportService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def index() {
         log.debug("FinanceController::index() ${params}")
         try {
@@ -69,7 +69,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
@@ -87,7 +87,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeService.setResultGenerics(params+[forExport:true])
@@ -705,7 +705,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
         Map<String, Object> result = financeService.setResultGenerics(params)
         result.putAll(financeService.setAdditionalGenericEditResults(result))
@@ -722,7 +722,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Object editCostItem() {
         Map<String, Object> result = financeService.setResultGenerics(params)
         result.costItem = CostItem.get(params.id)
@@ -738,7 +738,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Object copyCostItem() {
         Map<String, Object> result = financeService.setResultGenerics(params)
         result.costItem = CostItem.get(params.id)
@@ -753,7 +753,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
         Map<String, Object> result = [showView:params.showView]
 
@@ -783,7 +783,7 @@ class FinanceController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def createOrUpdateCostItem() {
 
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
@@ -1185,7 +1185,7 @@ class FinanceController extends AbstractDebugController {
 
     @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
         def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def  institution       = contextService.getOrg()
@@ -1203,7 +1203,7 @@ class FinanceController extends AbstractDebugController {
 
     @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         log.debug("FinanceController::delete() ${params}");
 

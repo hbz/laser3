@@ -132,7 +132,7 @@
     </div>
   </body>
 
-  <r:script>
+  <asset:script type="text/javascript">
 
     function filtersUpdated() {
       $('#newInvoiceNumber').val($('#filterInvoiceNumber').val());
@@ -198,5 +198,5 @@
 
 
 
-  </r:script>
+  </asset:script>
 </html>

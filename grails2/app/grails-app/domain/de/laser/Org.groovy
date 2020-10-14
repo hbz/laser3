@@ -1,11 +1,11 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.auth.Perm
-import com.k_int.kbplus.auth.PermGrant
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.Perm
+import de.laser.auth.PermGrant
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinitionGroup
@@ -17,13 +17,13 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import grails.util.Holders
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 
-@Log4j
+@Slf4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 

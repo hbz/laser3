@@ -1,5 +1,5 @@
-<%@ page import="de.laser.system.SystemTicket; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ServerUtils; com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.UserOrg; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
+<%@ page import="de.laser.system.SystemTicket; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ServerUtils; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
+<%@ page import="org.grails.web.util.GrailsApplicationAttributes;org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
 
 <laser:serviceInjection />
 

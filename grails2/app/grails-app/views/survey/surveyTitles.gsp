@@ -224,11 +224,11 @@
     </g:if>
 
     <div id="magicArea"></div>
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function () {
             $('#finishProcess').progress();
         });
-    </r:script>
+    </asset:script>
 
     </body>
     </html>

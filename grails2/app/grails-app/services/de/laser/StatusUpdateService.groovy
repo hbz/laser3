@@ -5,8 +5,8 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.interfaces.CalculatedType
 import de.laser.system.SystemEvent
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import grails.gorm.transactions.Transactional
+import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.Session
 
 @Transactional
@@ -16,7 +16,7 @@ class StatusUpdateService extends AbstractLockableService {
     def changeNotificationService
     def genericOIDService
     def contextService
-    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Cronjob-triggered.
@@ -376,7 +376,7 @@ class StatusUpdateService extends AbstractLockableService {
                 }
                 sess.flush()
                 //sess.clear()
-                //propertyInstanceMap.get().clear()
+                // //propertyInstanceMap.get().clear()
             }
         }
     }

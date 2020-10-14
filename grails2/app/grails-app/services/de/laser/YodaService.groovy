@@ -16,8 +16,8 @@ import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import grails.core.GrailsApplication
+import grails.web.mapping.LinkGenerator
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic

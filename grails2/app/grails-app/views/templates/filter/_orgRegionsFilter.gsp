@@ -22,7 +22,7 @@
 </div>
 
 
-<g:javascript>
+<asset:script type="text/javascript">
          $(document).ready(function () {
             if($("#filterCountry").val()) updateDropdown();
         });
@@ -52,4 +52,4 @@
                 }
             });
         }
-</g:javascript>
+</asset:script>

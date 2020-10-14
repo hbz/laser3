@@ -6,11 +6,11 @@
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
     <title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]"/></title>
-    <g:javascript>
+    <asset:script type="text/javascript">
         $(function() {
             $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
         });
-    </g:javascript>
+    </asset:script>
 </head>
 
 <body>
@@ -211,8 +211,8 @@
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
 </div>
 
-<g:javascript>
+<asset:script type="text/javascript">
     $('.menu .item').tab();
-</g:javascript>
+</asset:script>
 </body>
 </html>

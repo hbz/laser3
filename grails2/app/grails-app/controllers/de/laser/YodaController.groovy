@@ -1,10 +1,10 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
+import de.laser.auth.UserRole
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
@@ -191,17 +191,17 @@ class YodaController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def demo2() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationOR("INST_USER", "ROLE_XY")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliationOR("INST_USER", "ROLE_XY") })
+    @Secured(closure = { principal.user?.hasAffiliationOR("INST_USER", "ROLE_XY") })
     def demo3() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationAND("INST_USER", "ROLE_XY")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliationAND("INST_USER", "ROLE_XY") })
+    @Secured(closure = { principal.user?.hasAffiliationAND("INST_USER", "ROLE_XY") })
     def demo4() {
         redirect action: 'demo'
     }

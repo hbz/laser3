@@ -1,13 +1,13 @@
 package de.laser
 
 
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PendingChangeController extends AbstractDebugController {
+class PendingChangeController  {
 
     def genericOIDService
     def pendingChangeService
@@ -16,7 +16,7 @@ class PendingChangeController extends AbstractDebugController {
     def springSecurityService
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def accept() {
         log.debug("Accept")
         //distinct between legacy accept and new accept!
@@ -31,7 +31,7 @@ class PendingChangeController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def reject() {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
@@ -46,7 +46,7 @@ class PendingChangeController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAll() {
         log.debug("processAll - ${params}")
         List<String> concernedPackage = params.list("acceptChangesForPackages")
@@ -91,7 +91,7 @@ class PendingChangeController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def acceptAll() {
         log.debug("acceptAll - ${params}")
         if(params.OID) {
@@ -109,7 +109,7 @@ class PendingChangeController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def rejectAll() {
         log.debug("rejectAll ${params}")
         if(params.OID) {

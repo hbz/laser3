@@ -10,7 +10,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class PropertyService {

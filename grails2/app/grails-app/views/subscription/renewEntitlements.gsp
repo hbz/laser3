@@ -43,7 +43,7 @@
 </g:form>
 
 </body>
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function() {
         var tippsToAdd = [], tippsToDelete = [];
 
@@ -112,5 +112,5 @@
         });
 
     });
-</r:script>
+</asset:script>
 </html>

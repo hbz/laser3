@@ -132,7 +132,7 @@
             </div>
         </div>
     </body>
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function() {
             $(".ui.checkbox").checkbox('uncheck');
             let expanded = true;
@@ -323,5 +323,5 @@
                 });
             }
         });
-    </r:script>
+    </asset:script>
 </html>

@@ -72,7 +72,7 @@
         </div>
 	</div>
 </g:if>
-<g:javascript>
+<asset:script type="text/javascript">
     function editAddress(id) {
         var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
         private_address_modal(url)
@@ -96,4 +96,4 @@
             }
         });
     }
-</g:javascript>
+</asset:script>

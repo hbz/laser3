@@ -1,13 +1,13 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class AnnouncementController extends AbstractDebugController {
+class AnnouncementController  {
 
     def springSecurityService
     def contextService

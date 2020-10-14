@@ -1,7 +1,7 @@
 package de.laser.finance
 
 import de.laser.Org
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 

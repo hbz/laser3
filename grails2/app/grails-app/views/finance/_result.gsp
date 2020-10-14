@@ -73,7 +73,7 @@
         </div>
 
     </div>
-    <r:script>
+    <asset:script type="text/javascript">
             $(document).ready(function() {
                 var tab = "${showView}";
                 var rawHref = $(".exportCSV").attr("href");
@@ -162,4 +162,4 @@
                     })
                 });
             });
-        </r:script>
+        </asset:script>

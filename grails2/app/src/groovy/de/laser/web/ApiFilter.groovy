@@ -5,7 +5,7 @@ import de.laser.OrgSetting
 import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.io.IOUtils
 import org.springframework.web.filter.GenericFilterBean
 

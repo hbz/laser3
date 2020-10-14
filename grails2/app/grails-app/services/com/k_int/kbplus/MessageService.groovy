@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.ContentItem
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class MessageService {

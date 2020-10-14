@@ -154,7 +154,7 @@
     </semui:modal>
 </g:if>
 
-<g:javascript>
+<asset:script type="text/javascript">
 
 $('.trigger-modal').on('click', function(e) {
     e.preventDefault();
@@ -198,4 +198,4 @@ $('.trigger-modal').on('click', function(e) {
     }
 })
 
-</g:javascript>
+</asset:script>

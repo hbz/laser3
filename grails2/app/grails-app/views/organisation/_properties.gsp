@@ -90,11 +90,11 @@
     </div>
     <%--</div>--%>
 
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
         });
-    </r:script>
+    </asset:script>
 
 </div><!-- .card -->
 
@@ -115,11 +115,11 @@
                             tenant: authOrg
                     ]}"/>
 
-                    <r:script>
+                    <asset:script type="text/javascript">
                             $(document).ready(function(){
                                 c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                             });
-                    </r:script>
+                    </asset:script>
                 </div>
             </div>
         </div><!--.card-->

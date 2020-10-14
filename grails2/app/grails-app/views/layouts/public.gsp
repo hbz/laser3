@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
+<%@ page import="org.grails.web.util.GrailsApplicationAttributes" %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="de"> <![endif]-->
@@ -19,7 +19,7 @@
       <g:render template="/templates/javascript/dict.js" />
     </script>
 
-    <r:require module="semanticUI" />
+    <asset:stylesheet src="laser.css"/><asset:javascript src="laser.js"/>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
     <![endif]-->
 
     <g:layoutHead/>
-    <r:layoutResources/> <%-- grails-3-fix : remove --%>
+    <asset:deferredScripts/> <%-- grails-3-fix : remove --%>
 
     <tmpl:/layouts/favicon />
 
@@ -41,7 +41,7 @@
          <div class="clearfix"></div>
     </div>
 
-    <r:layoutResources/>
+    <asset:deferredScripts/>
 
     </body>
 </html>

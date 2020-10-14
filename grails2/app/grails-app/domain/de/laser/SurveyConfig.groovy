@@ -5,7 +5,7 @@ import de.laser.finance.CostItem
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import org.codehaus.groovy.grails.web.json.JSONElement
+import org.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient

@@ -17,9 +17,9 @@ import de.laser.Person
 import de.laser.api.v0.entities.ApiOrg
 import de.laser.helper.Constants
 import de.laser.helper.RDConstants
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiWriterHelper {
 
     // ##### HELPER #####

@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService

@@ -2,7 +2,7 @@ package de.laser.helper
 
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //@CompileStatic
 class RDStore {

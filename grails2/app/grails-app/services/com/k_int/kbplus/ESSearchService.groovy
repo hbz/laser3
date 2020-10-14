@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DateUtil
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions

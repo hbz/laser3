@@ -27,11 +27,11 @@
                         ownobj: license,
                         custom_props_div: "member_props_div"]}"/>
 
-                <%--<r:script>
+                <%--<asset:script type="text/javascript">
                     $(document).ready(function(){
                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
                     });
-                </r:script>--%>
+                </asset:script>--%>
             </div>
         </div>
     </div>
@@ -126,11 +126,11 @@
     </div>
     <%--</div>--%>
 
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${license.class.simpleName}:${license.id}"]'/>", "#custom_props_div_props");
         });
-    </r:script>
+    </asset:script>
 
 </div><!-- .card -->
 
@@ -150,11 +150,11 @@
                             custom_props_div: "custom_props_div_${authOrg.id}",
                             tenant: authOrg]}"/>
 
-                    <r:script>
+                    <asset:script type="text/javascript">
                             $(document).ready(function(){
                                 c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
                             });
-                    </r:script>
+                    </asset:script>
                 </div>
             </div>
         </div><!--.card-->

@@ -1,4 +1,4 @@
-<g:javascript>
+<asset:script type="text/javascript">
     function jsConfirmation() {
         if ($("td input[data-action='delete']").is(":checked")) {
             return confirm("${g.message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}")
@@ -16,10 +16,10 @@
             }
         }
     }
-</g:javascript>
+</asset:script>
 
 <g:if test="${!copyObject}">
-    <g:javascript>
+    <asset:script type="text/javascript">
         // ONLY FOR PROPERIES
         var takeProperty = $('input[name="copyObject.takeProperty"]');
         var deleteProperty = $('input[name="copyObject.deleteProperty"]');
@@ -126,5 +126,5 @@
                 markAffectedTake(elem)
             }
         });
-    </g:javascript>
+    </asset:script>
 </g:if>

@@ -7,7 +7,7 @@
         <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : ${message(code:'org.nav.accessPoints')}</title>
 
-        <g:javascript src="properties.js"/>
+        <asset:javascript src="properties.js"/>
     </head>
     <body>
     <semui:controlButtons>

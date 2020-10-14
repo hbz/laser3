@@ -8,7 +8,7 @@
     </div>
 </g:form>
 
-<r:script>
+<asset:script type="text/javascript">
         $(document).ready(function(){
               // initialize the form and fields
               $('.ui.form')
@@ -30,4 +30,4 @@
                 $(".dateBefore").addClass("hidden");
             }
         })
-</r:script>
+</asset:script>

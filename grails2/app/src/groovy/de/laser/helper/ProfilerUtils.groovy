@@ -2,8 +2,8 @@ package de.laser.helper
 
 import de.laser.ContextService
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.servlet.mvc.GrailsWebRequest
+import org.grails.web.util.WebUtils
 
 //@CompileStatic
 class ProfilerUtils {

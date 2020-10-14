@@ -5,9 +5,9 @@ import de.laser.helper.AppUtils
 import de.laser.helper.DateUtil
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 

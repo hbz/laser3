@@ -145,7 +145,7 @@
     </g:form>
 
     <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
-    <g:javascript>
+    <asset:script type="text/javascript">
          $(document).ready(function () {
             if($("#country").val()) updateDropdown();
         });
@@ -175,6 +175,6 @@
                 }
             });
         }
-    </g:javascript>
+    </asset:script>
 
 </semui:modal>

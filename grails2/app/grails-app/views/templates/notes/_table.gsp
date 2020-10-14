@@ -70,7 +70,7 @@
 </g:form>
 
 
-<r:script>
+<asset:script type="text/javascript">
     function noteedit(id) {
 
         $.ajax({
@@ -84,4 +84,4 @@
             }
         });
     }
-</r:script>
+</asset:script>

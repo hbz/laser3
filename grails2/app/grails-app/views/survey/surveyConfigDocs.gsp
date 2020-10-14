@@ -154,11 +154,11 @@
 </g:if>
 
 
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function () {
         $('.tabular.menu .item').tab()
     });
-</r:script>
+</asset:script>
 
 </body>
 </html>

@@ -3,10 +3,10 @@ package de.laser
 
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.apache.commons.logging.LogFactory
 
-@Log4j
+@Slf4j
 class Address {
 
     String street_1

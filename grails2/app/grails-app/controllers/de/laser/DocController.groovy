@@ -1,18 +1,18 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
-import org.codehaus.groovy.grails.commons.GrailsClass
+import grails.core.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocController extends AbstractDebugController {
+class DocController  {
 
 	def springSecurityService
 	def contextService
@@ -37,14 +37,14 @@ class DocController extends AbstractDebugController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
 		redirect controller: 'doc', action: 'show', params: params
 		return // ----- deprecated
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
 		Doc docInstance = Doc.get(params.id)
         if (!docInstance) {
@@ -57,7 +57,7 @@ class DocController extends AbstractDebugController {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		redirect controller: 'doc', action: 'show', params: params
 		return // ----- deprecated
@@ -102,7 +102,7 @@ class DocController extends AbstractDebugController {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
 		switch (request.method) {
 			case 'POST':
@@ -144,7 +144,7 @@ class DocController extends AbstractDebugController {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Doc docInstance = Doc.get(params.id)
         if (!docInstance) {

@@ -64,7 +64,7 @@
         <br>
     </div>
 
-    <g:javascript>
+    <asset:script type="text/javascript">
             var jsonOrgIdList
         // modals
         $("*[data-semui='modal']").click(function() {
@@ -126,7 +126,7 @@
             });
 
         }
-    </g:javascript>
+    </asset:script>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->

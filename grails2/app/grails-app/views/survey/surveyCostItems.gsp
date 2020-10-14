@@ -396,7 +396,7 @@
     <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
 </g:else>
 
-<g:javascript>
+<asset:script type="text/javascript">
 
 var isClicked = false;
 
@@ -441,7 +441,7 @@ function addForAllSurveyCostItem(orgsIDs) {
                         }
                     }
 
-</g:javascript>
+</asset:script>
 
 <script>
 

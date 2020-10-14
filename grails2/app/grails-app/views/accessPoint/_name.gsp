@@ -32,7 +32,7 @@
     </div>
     <g:field readonly="${name != ''}" type="text" name="name" value="${name}"/>
 </div>
-<r:script>
+<asset:script type="text/javascript">
     function fillNameField(name) {
         $('#name').val(name);
         if (name !== '') {
@@ -41,4 +41,4 @@
             document.getElementById('name').readOnly = false;
         }
     }
-</r:script>
+</asset:script>

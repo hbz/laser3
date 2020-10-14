@@ -3,8 +3,8 @@ package de.laser
 
 import de.laser.properties.PersonProperty
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -15,7 +15,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PersonController extends AbstractDebugController {
+class PersonController  {
 
     def springSecurityService
     def addressbookService
@@ -31,7 +31,7 @@ class PersonController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
         Org contextOrg = contextService.getOrg()
         List userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
@@ -230,7 +230,7 @@ class PersonController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
         //return // ----- deprecated
@@ -389,7 +389,7 @@ class PersonController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def _delete() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {

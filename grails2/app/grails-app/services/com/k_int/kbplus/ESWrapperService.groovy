@@ -2,10 +2,10 @@ package com.k_int.kbplus
 
 import de.laser.helper.ConfigUtils
 import de.laser.system.SystemEvent
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.http.HttpHost
 import org.apache.http.conn.ConnectTimeoutException
-import org.codehaus.groovy.grails.web.json.parser.JSONParser
+import org.grails.web.json.parser.JSONParser
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
 import org.elasticsearch.client.RequestOptions

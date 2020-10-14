@@ -7,12 +7,12 @@ import de.laser.helper.RDStore
 import de.laser.titles.TitleInstance
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.grails.plugins.domain.DomainClassGrailsPlugin
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -30,7 +30,7 @@ class StatsSyncService {
     ExecutorService executorService
     def sessionFactory
     def factService
-    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
     Map<String,List> availableReportCache = [:]
@@ -728,7 +728,7 @@ class StatsSyncService {
         def session = sessionFactory.currentSession
         session.flush()
         session.clear()
-        propertyInstanceMap.get().clear()
+         //propertyInstanceMap.get().clear()
     }
 
     static synchronized void incrementActivityHistogram() {

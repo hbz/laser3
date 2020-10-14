@@ -1,12 +1,12 @@
 package de.laser.usage
 
 import de.laser.helper.ConfigUtils
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
 import groovyx.net.http.ContentType
 
-@Log4j
+@Slf4j
 class SushiClient {
 
     def grailsApplication

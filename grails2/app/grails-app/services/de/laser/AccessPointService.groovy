@@ -5,7 +5,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 

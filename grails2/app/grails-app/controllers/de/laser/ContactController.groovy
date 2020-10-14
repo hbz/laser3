@@ -1,14 +1,14 @@
 package de.laser
 
 
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ContactController extends AbstractDebugController {
+class ContactController  {
 
 	def springSecurityService
 	def addressbookService
@@ -23,7 +23,7 @@ class ContactController extends AbstractDebugController {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -76,14 +76,14 @@ class ContactController extends AbstractDebugController {
 
 	@Deprecated
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		redirect controller: 'contact', action: 'show', params: params
 		return // ----- deprecated
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Contact contactInstance = Contact.get(params.id)
         if (! contactInstance) {

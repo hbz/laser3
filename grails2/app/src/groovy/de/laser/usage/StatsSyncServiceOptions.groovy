@@ -9,9 +9,9 @@ import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.properties.PlatformProperty
 import de.laser.titles.TitleInstance
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class StatsSyncServiceOptions {
 
     // Report specific options

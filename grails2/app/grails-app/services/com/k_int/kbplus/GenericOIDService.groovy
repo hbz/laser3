@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.helper.AppUtils
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import grails.gorm.transactions.Transactional
+import org.grails.core.artefact.DomainClassArtefactHandler
+import grails.core.GrailsClass
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Transactional
 class GenericOIDService {

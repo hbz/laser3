@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.Role" %>
+<%@ page import="de.laser.auth.Role" %>
 <laser:serviceInjection/>
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">

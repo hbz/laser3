@@ -6,7 +6,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-     <g:javascript src="properties.js"/>
+     <asset:javascript src="properties.js"/>
     <title>${message(code:'laser')} : ${message(code:'license.details.label')}</title>
   </head>
 

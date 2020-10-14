@@ -78,7 +78,7 @@
         </g:form>
     </semui:form>
 
-<r:script>
+<asset:script type="text/javascript">
     $('.license-results input[type="radio"]').click(function () {
         $('.license-options').slideDown('fast');
     });
@@ -150,7 +150,7 @@
                             }
                          }
                     });
-</r:script>
+</asset:script>
 
 </body>
 </html>

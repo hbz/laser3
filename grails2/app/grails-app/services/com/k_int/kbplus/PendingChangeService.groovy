@@ -20,11 +20,11 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.commons.GrailsClass
-import org.codehaus.groovy.grails.web.binding.DataBindingUtils
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import grails.gorm.transactions.Transactional
+import grails.core.GrailsClass
+import grails.web.databinding.DataBindingUtils
+import org.grails.web.json.JSONElement
+import grails.web.mapping.LinkGenerator
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 

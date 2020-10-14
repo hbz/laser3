@@ -5,7 +5,7 @@
 
             <dd>
                 <a href="#" class="myXeditable"   id="status" data-type="select" data-pk="1" data-url="" data-title="Select status"></a>
-                <r:script>
+                <asset:script type="text/javascript">
                     $(function(){
                         $('#status').editable({
                             value: 2,
@@ -20,7 +20,7 @@
                         });
                     });
 
-                </r:script>
+                </asset:script>
             </dd>
         </dl>
     </div>

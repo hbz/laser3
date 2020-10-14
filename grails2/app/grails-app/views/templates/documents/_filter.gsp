@@ -34,7 +34,7 @@
         </div>
     </g:form>
 </semui:filter>
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function(){
         var org = false, license = false, subscription = false, pkg = false;
 
@@ -81,4 +81,4 @@
             }
         });
     });
-</r:script>
+</asset:script>

@@ -71,7 +71,7 @@
     <g:render template="/templates/orgLinksModal"
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
-    <r:script>
+    <asset:script type="text/javascript">
       $(function(){
         $.fn.editable.defaults.mode = 'inline';
         $('.xEditableValue').editable();
@@ -90,7 +90,7 @@
         }
       }
 
-    </r:script>
+    </asset:script>
 
   </body>
 </html>

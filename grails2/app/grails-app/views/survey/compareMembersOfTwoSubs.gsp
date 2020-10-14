@@ -416,7 +416,7 @@ ${surveyInfo.name}
     </g:link>
 </div>
 
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function() {
 
         $("#parentSubscription .titleCell").each(function(k) {
@@ -430,7 +430,7 @@ ${surveyInfo.name}
         });
 
     });
-</r:script>
+</asset:script>
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer && parentSuccessorSubscription}">
 

@@ -83,7 +83,7 @@
     </g:if>
 </g:if>
 
-<g:javascript>
+<asset:script type="text/javascript">
  $(document).ready(function(){
        adjustDropdown()
     });
@@ -130,7 +130,7 @@
             }, async: false
         });
     }
-</g:javascript>
+</asset:script>
 
 </body>
 </html>

@@ -8,7 +8,7 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.Invoice
 import de.laser.finance.Order
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
@@ -18,8 +18,8 @@ import de.laser.helper.RDConstants
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 

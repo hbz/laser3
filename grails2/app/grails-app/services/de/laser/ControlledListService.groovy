@@ -9,7 +9,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat

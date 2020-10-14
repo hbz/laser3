@@ -89,7 +89,7 @@
             <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
         </div>
     </div>
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function() {
 
             function toggleFilterPart() {
@@ -118,7 +118,7 @@
             $('.ui secondary button').on('click', toggleTableHeading)
 
         });
-    </r:script>
+    </asset:script>
     <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">

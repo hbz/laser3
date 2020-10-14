@@ -1,8 +1,8 @@
 package de.laser.oap
 
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class OrgAccessPointVpn extends OrgAccessPoint{
 
     String url

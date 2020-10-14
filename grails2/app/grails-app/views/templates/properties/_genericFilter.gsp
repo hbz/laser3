@@ -8,10 +8,10 @@
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
         </span>
     </label>
-    <r:script>
+    <asset:script type="text/javascript">
         $(".la-popup").popup({
         });
-    </r:script>
+    </asset:script>
     <%-- value="${params.filterPropDef}" --%>
     <semui:dropdown id="filterPropDef" name="filterPropDef"
 
@@ -25,7 +25,7 @@
                     }}"
                     optionValue="${{ it.getI10n('name') }}"
                     noSelection="${message(code: 'default.select.choose.label')}"/>
-    <r:script>
+    <asset:script type="text/javascript">
         $(function() {
             $.each($(".la-filterPropDef"), function(i, dropdown) {
                 var val = $(dropdown).find(".item.active").data("value");
@@ -37,7 +37,7 @@
                 }
             });
         });
-    </r:script>
+    </asset:script>
 </div>
 
 <g:if test="${!hideFilterProp}">

@@ -18,7 +18,7 @@
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>
 
           <g:message code="myinst.subscriptionImport.headline"/>
-          <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_subscription_records_template_01.csv')}" download="template_bulk_load_subscription_records.csv">
+          <a href="${resource(dir: 'files', file: 'bulk_load_subscription_records_template_01.csv')}" download="template_bulk_load_subscription_records.csv">
             <p><g:message code="myinst.subscriptionImport.template"/></p>
           </a>
          <table class="ui celled striped table la-table">

@@ -4,9 +4,9 @@ package de.laser
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.interfaces.AuditableSupport
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.plugins.orm.auditable.Auditable
+import grails.gorm.transactions.Transactional
+import grails.core.GrailsApplication
 
 import javax.persistence.Transient
 
@@ -18,16 +18,16 @@ class AuditService {
 
     def changeNotificationService
 
-    def getWatchedProperties(AuditableSupport obj) {
+    def getWatchedProperties(Auditable obj) {
         def result = []
 
         if (getAuditConfig(obj, AuditConfig.COMPLETE_OBJECT)) {
-            obj.controlledProperties.each { cp ->
+            obj.getLogIncluded().each { cp ->
                 result << cp
             }
         }
         else {
-            obj.controlledProperties.each { cp ->
+            obj.getLogIncluded().each { cp ->
                 if (getAuditConfig(obj, cp.toString())) {
                     result << cp
                 }
@@ -37,16 +37,16 @@ class AuditService {
         result
     }
 
-    AuditConfig getAuditConfig(AuditableSupport obj) {
+    AuditConfig getAuditConfig(Auditable obj) {
         AuditConfig.getConfig(obj)
     }
 
-    AuditConfig getAuditConfig(AuditableSupport obj, String field) {
+    AuditConfig getAuditConfig(Auditable obj, String field) {
         AuditConfig.getConfig(obj, field)
     }
 
     @Transient
-    def beforeDeleteHandler(AuditableSupport obj) {
+    def beforeDeleteHandler(Auditable obj) {
 
         obj.withNewSession {
             log.debug("beforeDeleteHandler() ${obj}")
@@ -80,7 +80,7 @@ class AuditService {
     }
 
     @Transient
-    def beforeSaveHandler(AuditableSupport obj) {
+    def beforeSaveHandler(Auditable obj) {
 
         obj.withNewSession {
             log.debug("beforeSaveHandler() ${obj}")
@@ -88,7 +88,7 @@ class AuditService {
     }
 
     @Transient
-    def beforeUpdateHandler(AuditableSupport obj, def oldMap, def newMap) {
+    def beforeUpdateHandler(Auditable obj, def oldMap, def newMap) {
 
         obj.withNewSession {
             log.debug("beforeUpdateHandler() ${obj} : ${oldMap} => ${newMap}")

@@ -14,10 +14,10 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.titles.TitleInstance
 import grails.converters.JSON
-import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import groovy.util.logging.Slf4j
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-@Log4j
+@Slf4j
 class ApiOAMonitor {
 
     /**

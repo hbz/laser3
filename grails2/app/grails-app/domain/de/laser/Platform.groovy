@@ -13,8 +13,8 @@ import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import grails.web.servlet.mvc.GrailsParameterMap
 
 class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
@@ -73,7 +73,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   softwareProvider column:'plat_softprov_rv_fk'
               org  column: 'plat_org_fk', index: 'plat_org_idx'
     lastUpdatedCascading column: 'plat_last_updated_cascading'
-             tipps sort: 'title.title', order: 'asc', batchSize: 10
+             tipps batchSize: 10
             oapp batchSize: 10
     propertySet sort:'type', order:'desc', batchSize: 10
   }

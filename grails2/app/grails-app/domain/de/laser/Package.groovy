@@ -13,7 +13,7 @@ import de.laser.traits.ShareableTrait
 import grails.converters.JSON
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.Session
 
 import javax.persistence.Transient
@@ -114,7 +114,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                vendorURL column:'pkg_vendor_url'
   cancellationAllowances column:'pkg_cancellation_allowances', type:'text'
                  forumId column:'pkg_forum_id'
-                     tipps sort:'title.title', order: 'asc', batchSize: 10
+                     tipps batchSize: 10
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
             listVerifiedDate column: 'pkg_list_verified_date'

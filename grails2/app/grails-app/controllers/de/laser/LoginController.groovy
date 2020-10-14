@@ -1,9 +1,9 @@
 package de.laser
 
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException

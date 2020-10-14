@@ -2,22 +2,22 @@ package de.laser
 
 
 import de.laser.properties.OrgProperty
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.helper.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OrganisationController extends AbstractDebugController {
+class OrganisationController  {
 
     def springSecurityService
     def accessService
@@ -878,7 +878,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         if(!result) {
@@ -896,7 +896,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -907,7 +907,7 @@ class OrganisationController extends AbstractDebugController {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER")
+        principal.user?.hasAffiliation("INST_USER")
     })
     def notes() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
@@ -961,7 +961,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def users() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
 
@@ -1098,7 +1098,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
       Map<String, Object> result = [:]
       result.user = User.get(springSecurityService.principal.id)
@@ -1437,7 +1437,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
 

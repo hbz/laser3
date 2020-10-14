@@ -20,9 +20,9 @@ import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage
 import de.laser.helper.RDStore
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiCollectionReader {
 
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {

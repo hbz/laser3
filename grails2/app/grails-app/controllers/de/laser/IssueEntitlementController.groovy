@@ -2,9 +2,9 @@ package de.laser
 
 
 import de.laser.properties.PlatformProperty
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -14,7 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class IssueEntitlementController extends AbstractDebugController {
+class IssueEntitlementController  {
 
     def factService
     def contextService
@@ -23,27 +23,27 @@ class IssueEntitlementController extends AbstractDebugController {
    def springSecurityService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def index() {
         redirect action: 'list', params: params
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
         return // ----- deprecated
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
       Map<String, Object> result = [:]
 
@@ -132,14 +132,14 @@ class IssueEntitlementController extends AbstractDebugController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
         return // ----- deprecated
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
   def delete() {
         IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
     if (!issueEntitlementInstance) {

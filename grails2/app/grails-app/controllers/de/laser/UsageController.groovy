@@ -1,14 +1,14 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import grails.plugin.springsecurity.annotation.Secured
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UsageController extends AbstractDebugController {
+class UsageController  {
 
     def statsSyncService
     def factService

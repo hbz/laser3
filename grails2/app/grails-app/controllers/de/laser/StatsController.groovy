@@ -1,11 +1,11 @@
 package de.laser
 
 
-import de.laser.controller.AbstractDebugController
+ 
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class StatsController extends AbstractDebugController {
+class StatsController  {
 
     def springSecurityService
     def contextService

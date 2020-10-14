@@ -1,8 +1,8 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import de.laser.auth.User
+import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtil
@@ -10,10 +10,10 @@ import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
-import grails.plugin.mail.MailService
-import grails.transaction.Transactional
+import grails.plugins.mail.MailService
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat

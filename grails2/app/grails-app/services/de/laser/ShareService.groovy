@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.interfaces.ShareSupport
 import de.laser.titles.TitleInstance
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 //@CompileStatic
 @Transactional

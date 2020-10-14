@@ -1,7 +1,7 @@
 package de.laser.helper
 
 import grails.util.Holders
-import org.codehaus.groovy.grails.web.servlet.FlashScope
+import grails.web.mvc.FlashScope
 import org.springframework.context.i18n.LocaleContextHolder
 
 

@@ -21,11 +21,11 @@
             %{--</g:else>--}%
 
     </g:if>
-<r:script>
+<asset:script type="text/javascript">
     $('#noData')
             .popup()
     ;
-</r:script>
+</asset:script>
 
     <g:if test="${dueDates}">
         <div id="container-table">

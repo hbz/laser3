@@ -156,7 +156,7 @@
 </body>
 
 
-<g:javascript>
+<asset:script type="text/javascript">
     function personCreate(contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
         createPersonModal(url)
@@ -178,6 +178,6 @@
             }
         });
     }
-</g:javascript>
+</asset:script>
 
 </html>

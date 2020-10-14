@@ -23,7 +23,7 @@
     %{--</g:else>--}%
     <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
 
-    <g:javascript src="properties.js"/>
+    <asset:javascript src="properties.js"/>
 </head>
 
 <body>
@@ -163,7 +163,7 @@
 </body>
 </html>
 <g:if test="${actionName == 'ids'}">
-    <g:javascript>
+    <asset:script type="text/javascript">
         IdContoller =  {
             createIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;
@@ -202,5 +202,5 @@
                 });
             }
         }
-    </g:javascript>
+    </asset:script>
 </g:if>

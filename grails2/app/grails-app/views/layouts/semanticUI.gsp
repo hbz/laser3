@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;de.laser.Org;com.k_int.kbplus.auth.User;de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -33,13 +33,13 @@
         <g:render template="/templates/javascript/dict.js" />
     </script>
 
-    <r:require module="${currentTheme}" />
+    <asset:stylesheet src="laser.css"/><asset:javascript src="laser.js"/>
 
     <g:layoutHead/>
 
     <tmpl:/layouts/favicon />
 
-    <r:layoutResources/> <%-- grails-3-fix : remove --%>
+    <asset:deferredScripts/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
@@ -248,7 +248,7 @@
 
                             <g:link class="item" role="menuitem" controller="admin" action="manageAffiliationRequests">
                                 ${message(code: "menu.institutions.affiliation_requests")}
-                                <%--<g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />--%>
+                                <%--<g:set var="newAffiliationRequests" value="${de.laser.auth.UserOrg.findAllByStatus(0).size()}" />--%>
                                 <%
                                     Object organisationService = grailsApplication.mainContext.getBean("organisationService")
                                     Map affilRequestMap = organisationService.getPendingRequests(contextUser, contextOrg)
@@ -577,7 +577,7 @@
 
                         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
 
-                            <r:script>
+                            <asset:script type="text/javascript">
                                 $(function(){
                                     <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                                         <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
@@ -607,7 +607,7 @@
                                          })
                                     });
                                 })
-                            </r:script>
+                            </asset:script>
                         </g:if>
                         <g:if test="${(params.mode)}">
                             <div class="item">
@@ -706,9 +706,9 @@
 
         <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
-        <r:script>
+        <asset:script type="text/javascript">
 
-        </r:script>
+        </asset:script>
 
         <%-- maintenance --%>
 
@@ -723,7 +723,7 @@
             </div>
         </g:if>
 
-        <r:layoutResources/>
+        <asset:deferredScripts/>
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
 

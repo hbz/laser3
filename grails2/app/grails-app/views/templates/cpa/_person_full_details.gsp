@@ -216,7 +216,7 @@
     </g:if>
 </g:if>
 
-<g:javascript>
+<asset:script type="text/javascript">
         function addresscreate_prs(prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
@@ -263,6 +263,6 @@
                 }
             });
         }
-</g:javascript>
+</asset:script>
 
 							

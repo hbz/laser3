@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.helper.AppUtils
 import de.laser.helper.RefdataAnnotation
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class RefdataService {

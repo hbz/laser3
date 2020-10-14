@@ -129,7 +129,7 @@
         </div>
     </g:form>
 
-    <r:script>
+    <asset:script type="text/javascript">
         dcbStore.modal.show.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))
@@ -138,7 +138,7 @@
             $('#editMailTemplate select[name=type]').dropdown('set selected', $(trigger).attr('data-mailTemplateType'))
             $('#editMailTemplate select[name=language]').dropdown('set selected', $(trigger).attr('data-mailTemplateLanguage'))
         }
-    </r:script>
+    </asset:script>
 
 </semui:modal>
 

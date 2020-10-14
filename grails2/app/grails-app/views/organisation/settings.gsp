@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; com.k_int.kbplus.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
@@ -7,7 +7,7 @@
     <head>
         <meta name="layout" content="semanticUI">
             <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
-            <g:javascript src="properties.js"/>
+            <asset:javascript src="properties.js"/>
     </head>
     <body>
 
@@ -47,7 +47,7 @@
                                 </thead>
                                 <tbody>
                                 <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
-                                <r:script>
+                                <asset:script type="text/javascript">
 
                                     $('body #oamonitor_server_access').editable({
                                         validate: function (value) {
@@ -73,7 +73,7 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
-                                </r:script>
+                                </asset:script>
 
                                 <g:each in="${settings}" var="os">
                                     <tr>
@@ -151,11 +151,11 @@
                         </div><!-- .content -->
                     </div><!-- .card -->
 
-                    <r:script>
+                    <asset:script type="text/javascript">
                                 $(document).ready(function(){
                                     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
                                 });
-                    </r:script>
+                    </asset:script>
 
                 </div><!-- .la-inline-lists -->
 

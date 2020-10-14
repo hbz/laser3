@@ -3,16 +3,16 @@ package de.laser
 import de.laser.titles.BookInstance
 import com.k_int.kbplus.PendingChangeService
 import de.laser.titles.TitleInstance
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
+import de.laser.auth.Role
+import de.laser.auth.User
+import de.laser.auth.UserOrg
+import de.laser.auth.UserRole
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
-import de.laser.controller.AbstractDebugController
+ 
 import de.laser.exceptions.CleanupException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -28,8 +28,8 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
-import org.hibernate.impl.SQLQueryImpl
+import org.grails.plugins.domain.DomainClassGrailsPlugin
+import org.hibernate.internal.SQLQueryImpl
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigUtils
@@ -39,7 +39,7 @@ import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class AdminController extends AbstractDebugController {
+class AdminController  {
 
     def springSecurityService
     def dataloadService
@@ -60,7 +60,7 @@ class AdminController extends AbstractDebugController {
     def organisationService
     def apiService
 
-    def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     @Secured(['ROLE_ADMIN'])
     def index() { }
@@ -183,8 +183,8 @@ class AdminController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
-                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') ||
+                principal.user?.hasAffiliation("INST_ADM")
     })
     def manageAffiliationRequests() {
         Map<String, Object> result = [:]
@@ -1355,7 +1355,7 @@ class AdminController extends AbstractDebugController {
         def session = sessionFactory.currentSession
         session.flush()
         session.clear()
-        propertyInstanceMap.get().clear()
+         //propertyInstanceMap.get().clear()
     }
 
     @Secured(['ROLE_ADMIN'])

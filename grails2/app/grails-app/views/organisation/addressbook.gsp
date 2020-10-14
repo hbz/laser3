@@ -119,7 +119,7 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 </body>
 
-<g:javascript>
+<asset:script type="text/javascript">
     function personCreate(contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml"
                                  action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
@@ -142,5 +142,5 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
             }
         });
     }
-</g:javascript>
+</asset:script>
 </html>

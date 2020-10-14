@@ -16,7 +16,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell

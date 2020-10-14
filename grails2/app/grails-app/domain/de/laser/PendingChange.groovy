@@ -9,7 +9,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONElement
+import org.grails.web.json.JSONElement
 
 import java.text.SimpleDateFormat
 

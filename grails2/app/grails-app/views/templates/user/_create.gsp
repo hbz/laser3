@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.*;com.k_int.kbplus.auth.Role" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.*;de.laser.auth.Role" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -66,7 +66,7 @@
         </g:if>
     </body>
 </html>
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function() {
         $("#username").keyup(function() {
             checkUsername();
@@ -126,4 +126,4 @@
                 $("#userSubmit").removeAttr("disabled");
         }
     });
-</r:script>
+</asset:script>

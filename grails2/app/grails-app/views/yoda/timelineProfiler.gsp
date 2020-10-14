@@ -3,7 +3,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.timelineProfiler')}</title>
-    <r:require module="chartist" />
+    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>
 </head>
 <body>
 

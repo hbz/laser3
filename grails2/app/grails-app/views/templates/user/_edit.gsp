@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.UserRole;de.laser.Org;com.k_int.kbplus.auth.Role" %>
+<%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role" %>
 <!doctype html>
 <html>
   <head>
@@ -175,7 +175,7 @@
             </g:if>
           </table>
 
-                  <r:script>
+                  <asset:script type="text/javascript">
 
                     $(function(){
                       $.fn.editable.defaults.mode = 'inline';
@@ -204,7 +204,7 @@
                       });
                     });
 
-                  </r:script>
+                  </asset:script>
 </sec:ifAnyGranted>
 </body>
 </html>

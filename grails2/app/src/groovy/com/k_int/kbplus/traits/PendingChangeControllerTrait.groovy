@@ -3,7 +3,7 @@ package com.k_int.kbplus.traits
 import de.laser.DocContext
 import de.laser.PendingChange
 import de.laser.Subscription
-import com.k_int.kbplus.auth.User
+import de.laser.auth.User
 
 trait PendingChangeControllerTrait {
 

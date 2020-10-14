@@ -10,7 +10,7 @@ import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -19,7 +19,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
-@Log4j
+@Slf4j
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
     def grailsApplication

@@ -43,11 +43,11 @@
     </div>
     <%--</div>--%>
 
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
         });
-    </r:script>
+    </asset:script>
 
 </div><!-- .card -->
 <!-- _properties -->

@@ -113,7 +113,7 @@
 
 
 
-<r:script>
+<asset:script type="text/javascript">
         function chooseRequiredDropdown(opt) {
             $(document).ready(function () {
                 $('#create_task')
@@ -154,4 +154,4 @@
             })
         }
         chooseRequiredDropdown('status.id');
-</r:script>
+</asset:script>

@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.DocContext
 import de.laser.helper.RDStore
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.io.IOUtils
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream

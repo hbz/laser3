@@ -1,8 +1,8 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.User
-import de.laser.controller.AbstractDebugController
+import de.laser.auth.User
+ 
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -11,7 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class TippController extends AbstractDebugController {
+class TippController  {
 
   def springSecurityService
   def contextService

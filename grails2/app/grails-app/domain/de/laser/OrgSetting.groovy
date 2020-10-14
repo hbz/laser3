@@ -1,7 +1,7 @@
 package de.laser
 
 
-import com.k_int.kbplus.auth.Role
+import de.laser.auth.Role
 import de.laser.helper.RDConstants
 import de.laser.helper.RefdataAnnotation
 

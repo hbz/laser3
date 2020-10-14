@@ -3,8 +3,8 @@ package de.laser
 
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
-import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
 

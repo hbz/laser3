@@ -71,7 +71,7 @@
         </semui:form>
 
     <hr>
-        <r:script>
+        <asset:script type="text/javascript">
             function formatDate(input) {
                 if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
                     var inArr = input.split(/[\.\/-]/g);
@@ -132,6 +132,6 @@
                             }
                          }
                     });
-        </r:script>
+        </asset:script>
     </body>
 </html>

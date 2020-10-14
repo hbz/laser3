@@ -5,7 +5,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <title>${message(code:'laser')} : ${message(code:'package.details')}</title>
-        <r:require module="datatables" />
+        <asset:stylesheet src="datatables.css"/><asset:javascript src="datatables.js"/>
     </head>
     <body>
 

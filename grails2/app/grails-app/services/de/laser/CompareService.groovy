@@ -4,7 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class CompareService {

@@ -136,7 +136,7 @@
     </g:form>
 </semui:form>
 
-<r:script>
+<asset:script type="text/javascript">
     $(document).ready(function () {
 
         $("#firstTable .titleCell").each(function (k) {
@@ -150,7 +150,7 @@
         });
 
     });
-</r:script>
+</asset:script>
 
 <style>
 table {

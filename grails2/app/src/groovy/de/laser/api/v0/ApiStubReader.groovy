@@ -11,9 +11,9 @@ import de.laser.api.v0.entities.ApiLicense
 import de.laser.api.v0.entities.ApiOrgAccessPoint
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class ApiStubReader {
 
     // ################### HELPER ###################

@@ -7,11 +7,11 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-@Log4j
+@Slf4j
 class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(Person)

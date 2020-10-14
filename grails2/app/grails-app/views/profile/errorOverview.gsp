@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="de.laser.RefdataValue;de.laser.auth.Role;de.laser.auth.UserOrg" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -134,13 +134,13 @@
             </tbody>
         </table>
 
-        <r:script>
+        <asset:script type="text/javascript">
             $(function(){
                 $('tr[class*=ticket-row] .button').click( function(){
                     $('.' + $(this).attr('data-target')).toggle()
                 })
             })
-        </r:script>
+        </asset:script>
     </div>
 </div>
 

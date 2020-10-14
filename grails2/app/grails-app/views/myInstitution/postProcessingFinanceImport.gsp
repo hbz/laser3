@@ -110,7 +110,7 @@
             </table>
         </g:form>
     </body>
-    <r:script>
+    <asset:script type="text/javascript">
         $(document).ready(function() {
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
@@ -121,5 +121,5 @@
                 }
             });
         });
-    </r:script>
+    </asset:script>
 </html>

@@ -123,7 +123,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
     </div>
 </g:form>
-<r:script>
+<asset:script type="text/javascript">
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });
@@ -132,7 +132,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         var name = e.target.files[0].name;
         $('input:text', $(e.target).parent()).val(name);
     });
-</r:script>
+</asset:script>
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscriptionInstance.id}"/>
     <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
@@ -416,7 +416,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 </g:form>
 
-<r:script>
+<asset:script type="text/javascript">
 
      $(document).ready(function() {
       $("simpleHiddenRefdata").editable({
@@ -475,7 +475,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             console.log("error occurred, consult logs!");
         });
     }
-</r:script>
+</asset:script>
 
 </body>
 </html>

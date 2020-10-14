@@ -436,7 +436,7 @@
                     <g:render template="surveys"/>
         </div>
 
-    <g:javascript>
+    <asset:script type="text/javascript">
         function taskcreate() {
 
             $.ajax({
@@ -477,8 +477,8 @@
                 }
             });
         }
-    </g:javascript>
-        <r:script>
+    </asset:script>
+        <asset:script type="text/javascript">
             $(document).ready( function(){
                 $('.tabular.menu .item').tab();
                 /* $('.item .widget-content').readmore({
@@ -495,6 +495,6 @@
 
 
             })
-        </r:script>
+        </asset:script>
     </body>
 </html>
