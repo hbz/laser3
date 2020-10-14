@@ -68,7 +68,7 @@
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true]"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true]"/>
-                <%--<g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true]"/>--%>
+                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true]"/>
                 <th>${message(code:'financials.amountFinal')}</th>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true]"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true]"/>
@@ -87,7 +87,7 @@
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <%--<g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>--%>
+                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <th>${message(code:'financials.amountFinal')}</th>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
@@ -103,24 +103,24 @@
                 <g:if test="${showView == "cons"}">
                     <th colspan="4"></th>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
-                    <th colspan="5"></th>
+                    <th colspan="6"></th>
                 </g:if>
                 <g:elseif test="${showView == "subscr"}">
                     <th colspan="2"></th>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
-                    <th colspan="5"></th>
+                    <th colspan="6"></th>
                 </g:elseif>
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]"/>
             </g:if>
             <g:else>
                 <g:if test="${showView == "cons"}">
-                    <th colspan="9"></th>
+                    <th colspan="10"></th>
                 </g:if>
                 <g:elseif test="${showView == "consAtSubscr"}">
-                    <th colspan="8"></th>
+                    <th colspan="9"></th>
                 </g:elseif>
                 <g:elseif test="${showView == "subscr"}">
-                    <th colspan="7"></th>
+                    <th colspan="8"></th>
                 </g:elseif>
                 <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
             </g:else>
@@ -220,7 +220,7 @@
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
-                    <%--<td>
+                    <td>
                         <g:if test="${ci.taxKey && ci.taxKey.display}">
                             ${ci.taxKey.taxRate+'%'}
                         </g:if>
@@ -230,7 +230,7 @@
                         <g:elseif test="${!ci.taxKey}">
                             <g:message code="financials.taxRate.notSet"/>
                         </g:elseif>
-                    </td>--%>
+                    </td>
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
