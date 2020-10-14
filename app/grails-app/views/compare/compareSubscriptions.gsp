@@ -117,43 +117,6 @@
                      });
                 }
         });
-
-        $.ajax({
-            url: url,
-            success: function (data) {
-                var select = '';
-                for (var index = 0; index < data.length; index++) {
-                    var option = data[index];
-                    var optionText = option.text;
-                    var optionValue = option.value;
-                    var count = index + 1
-                    // console.log(optionValue +'-'+optionText)
-
-                    select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
-                }
-
-                select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
-'   <i class="dropdown icon"></i>' +
-'   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
-'   <div class="menu">'
-+ select +
-'</div>' +
-'</div>';
-
-                $('#element-vor-target-dropdown').next().replaceWith(select);
-
-                $('.la-filterProp').dropdown({
-                    duration: 150,
-                    transition: 'fade',
-                    clearable: true,
-                    forceSelection: false,
-                    selectOnKeydown: false,
-                    onChange: function (value, text, $selectedItem) {
-                        value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
-                    }
-                });
-            }, async: false
-        });
     }
 </g:javascript>
 
