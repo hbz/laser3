@@ -65,9 +65,9 @@
             </span>
         </td>
         <td>
-            <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
+            <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencySymbol="EUR" />
             <br />
-            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
+            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
             <g:if test="${ci.taxKey && ci.taxKey.display}">
                 (${ci.taxRate ?: 0}%)
             </g:if>
