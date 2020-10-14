@@ -46,8 +46,9 @@
                 <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
             </div>
             <br>
-            <br id="element-vor-target-dropdown" />
-            <br>
+            <select id="selectedObjects" name="selectedObjects" multiple="" class="ui search selection fluid dropdown">
+                <option value="">${message(code: 'default.select.choose.label')}</option>
+            </select>
         </div>
 
         <div class="field">
@@ -96,6 +97,26 @@
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
         var url = '<g:createLink controller="ajax" action="adjustCompareSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
+
+        var dropdownSelectedObjects = $('#selectedObjects');
+        var selectedObjects = ${raw(objects?.id as String)};
+
+        dropdownSelectedObjects.empty();
+        dropdownSelectedObjects.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
+        dropdownSelectedObjects.prop('selectedIndex', 0);
+
+        $.ajax({
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(jQuery.inArray(entry.value, selectedObjects) >=0 ){
+                            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        }else{
+                            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                        }
+                     });
+                }
+        });
 
         $.ajax({
             url: url,
