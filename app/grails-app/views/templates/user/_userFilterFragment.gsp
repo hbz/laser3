@@ -15,7 +15,7 @@
                 <g:select from="${filterableRoles}"
                           noSelection="${['' : message(code:'accessMethod.all')]}"
                           class="ui dropdown"
-                          value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
+                          value="${params.authority}" optionKey="id" optionValue="${{message(code:'cv.roles.'+it.authority)}}" id="authority" name="authority" />
             </div>
 
             <g:if test="${orgField}">

@@ -4,8 +4,7 @@
     </a>
 
     <semui:modal id="subjectGroup" message="org.subjectGroup.add.label">
-        <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup']" method="post">
-            <input type="hidden" name="id" value="${org.id}"/>
+        <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup',id:org.id]" method="post">
             <div class="field fieldcontain">
             <label><g:message code="org.subjectGroup.label"/>:</label>
 
