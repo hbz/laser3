@@ -586,7 +586,9 @@
 
             function setupCalendar() {
                 $("[name='newFinancialYear']").parents(".datepicker").calendar({
-                    type: 'year'
+                    type: 'year',
+                    minDate: new Date('1582-10-15'),
+                    maxDate: new Date('2099-12-31')
                 });
             }
 

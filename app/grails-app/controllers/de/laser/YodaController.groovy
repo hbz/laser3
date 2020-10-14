@@ -46,7 +46,7 @@ class YodaController {
     def contextService
     def dashboardDueDatesService
     StatusUpdateService statusUpdateService
-    def costItemUpdateService
+    FinanceService financeService
     def documentUpdateService
     def quartzScheduler
     def identifierService
@@ -1027,7 +1027,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def updateTaxRates(){
         flash.message = "Kosten werden in das neue Steuermodell überführt ..."
-        costItemUpdateService.updateTaxRates()
+        financeServicd.updateTaxRates()
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1623,7 +1623,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def correctCostsInLocalCurrency() {
-        Map<String, Object> result = ["costItems":costItemUpdateService.correctCostsInLocalCurrency(Boolean.valueOf(params.dryRun))]
+        Map<String, Object> result = ["costItems":financeService.correctCostsInLocalCurrency(Boolean.valueOf(params.dryRun))]
         result
     }
 

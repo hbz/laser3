@@ -27,6 +27,7 @@ class AjaxHtmlController {
     def financeService
     def genericOIDService
     def taskService
+    def reportingService
 
     def test() {
         String result = '<p data-status="ok">OK'
@@ -38,6 +39,22 @@ class AjaxHtmlController {
     }
 
     @Secured(['ROLE_USER'])
+    def loadGeneralFilter() {
+        Map<String,Object> result = [entry:params.entry,queried:params.queried]
+        render view: '/myInstitution/_displayConfigurations', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getGraphsForGeneral() {
+        Map<String,Object> result = [:]
+        def options = JSON.parse(params.requestOptions)
+        options.institution = contextService.org
+        result.putAll(reportingService.generateGrowth(options))
+        log.debug(result)
+        render view: '/reporting/_generalGraphs', model: result
+    }
+
+    @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
         Map<String, Object> result = [institution:contextService.org]
         def options = JSON.parse(params.requestOptions)
@@ -45,13 +62,12 @@ class AjaxHtmlController {
         if (params.costItem) {
             Subscription entry = (Subscription) genericOIDService.resolveOID(params.subscription)
             //get cost item groupings
-            result.putAll(financeService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
+            result.putAll(reportingService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
             result.entry = entry
             result.displayConfig = options.displayConfiguration
         }
         log.debug(result)
-
-        render view: '/myInstitution/_graphs', model: result
+        render view: '/reporting/_subscriptionGraphs', model: result
     }
 
     @Secured(['ROLE_USER'])

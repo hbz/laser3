@@ -17,6 +17,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.RDConstants
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
@@ -1051,88 +1052,6 @@ class FinanceService {
         result
     }
 
-    Map<String,Object> groupCostItemsBySubscription(Map<String,Object> configMap) {
-        Map<String,Object> options = configMap.options, result = [:]
-        Set<Subscription> precedingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'source'),
-                          followingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'destination'),
-                          allYearRings = []
-        allYearRings.addAll(precedingYearRings)
-        allYearRings.add(configMap.entry)
-        allYearRings.addAll(followingYearRings)
-        Set<Org> allTimeSubscribers = subscriptionService.getAllTimeSubscribersForConsortiaSubscription(allYearRings)
-        Map<String,Object> queryParams = [:]
-        queryParams.subs = allYearRings
-        queryParams.context = configMap.institution
-        Set costItemRows = CostItem.executeQuery("select ci.sub,ci.costItemElementConfiguration,ci.costInBillingCurrency,ci.costItemElement from CostItem ci where ci.sub.instanceOf in (:subs) and ci.owner = :context",queryParams)
-        Set<RefdataValue> allElements = RefdataValue.executeQuery("select ci.costItemElement from CostItem ci where ci.sub.instanceOf in (:subs) and ci.owner = :context",queryParams)
-        options.displayConfiguration.each { String config ->
-            Map<String,Object> yearRings = [:]
-            if('subscriber' in options.group) {
-                //the option subscriber as grouping option is only available for consortia
-                allYearRings.each { Subscription parentSub ->
-                    //level 1: Map<Subscription,Map>, subscription represents sub year ring
-                    Set currentRingRows = costItemRows.findAll { row -> row[0].instanceOf.id == parentSub.id }
-                    Map<String,Object> currentRing = [:]
-                    allTimeSubscribers.each { Org subscriber ->
-                        //calculate by: subscriber, subscription start date, element sign
-                        String subSortName = subscriber.sortname
-                        if(config == 'costItemDevelopment') {
-                            def row = currentRingRows.find { row -> row[0].getSubscriber().id == subscriber.id }
-                            BigDecimal costItemsSubscriber = currentRing.get(subSortName)
-                            if(!costItemsSubscriber) {
-                                costItemsSubscriber = new BigDecimal(0)
-                                costItemsSubscriber.setScale(2, RoundingMode.HALF_EVEN)
-                            }
-                            if(row) {
-                                switch(row[1]) {
-                                    case RDStore.CIEC_POSITIVE: costItemsSubscriber += row[2]
-                                        break
-                                    case RDStore.CIEC_NEGATIVE: costItemsSubscriber -= row[2]
-                                        break
-                                    default: log.debug(row[1])
-                                        break
-                                }
-                            }
-                            currentRing.put(subSortName,costItemsSubscriber)
-                        }
-                        else if(config == 'costItemDivision') {
-                            allElements.each { RefdataValue element ->
-                                def row = currentRingRows.find { row -> row[0].getSubscriber().id == subscriber.id && row[3].id == element.id }
-                                String elementName = element.getI10n("value")
-                                Map costsForElement = currentRing.get(elementName)
-                                if(!costsForElement)
-                                    costsForElement = [:]
-                                BigDecimal costForSubscriberWithElement = new BigDecimal(0)
-                                costForSubscriberWithElement.setScale(2, RoundingMode.HALF_EVEN)
-                                if(row) {
-                                    costForSubscriberWithElement = row[2]
-                                }
-                                costsForElement.put(subSortName,costForSubscriberWithElement)
-                                currentRing.put(elementName,costsForElement)
-                            }
-                        }
-                    }
-                    yearRings.put(parentSub.dropdownNamingConvention(configMap.institution),currentRing)
-                }
-            }
-            result[config] = yearRings as JSON
-        }
-        result
-    }
-
-    BigDecimal calculateSum(Collection<CostItem> allCIs) {
-        BigDecimal result = 0.0
-        allCIs.each { CostItem ci ->
-            switch(ci.costItemElementConfiguration) {
-                case RDStore.CIEC_POSITIVE: result += ci.costInBillingCurrency
-                    break
-                case RDStore.CIEC_NEGATIVE: result -= ci.costInBillingCurrency
-                    break
-            }
-        }
-        result
-    }
-
     /**
      * Orders the currencies available in the database
      * @return the ordered list of currencies
@@ -1336,4 +1255,27 @@ class FinanceService {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    void updateTaxRates() {
+        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 7 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_7])
+        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 19 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_19])
+        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_EXEMPT,value: RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE)])
+        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_NOT_TAXABLE,value: RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE)])
+        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_NOT_APPLICABLE,value: RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE)])
+    }
+
+    @Secured(['ROLE_YODA'])
+    Map correctCostsInLocalCurrency(boolean dryRun) {
+        Map<CostItem,Double> result = [:]
+        List res = CostItem.executeQuery('select ci, (ci.costInBillingCurrency * ci.currencyRate) as costInLocalCurrency from CostItem ci where ci.costInLocalCurrency = 0 and ci.costInBillingCurrency != 0')
+        res.each { row ->
+            result.put((CostItem) row[0],(Double) row[1])
+        }
+        if(!dryRun) {
+            //CostItem.executeUpdate('update CostItem ci set ci.costInLocalCurrency = ci.costInBillingCurrency * ci.currencyRate where ci.costInBillingCurrency = 0 and ci.costInLocalCurrency != 0')
+        }
+        result
+    }
+
 }
+

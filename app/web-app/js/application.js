@@ -29,6 +29,8 @@ r2d2 = {
             },
             firstDayOfWeek: 1,
             monthFirst: false,
+            minDate: new Date('1582-10-15'), //this is the start of the gregorian calendar
+            maxDate: new Date('2099-12-31'), //our grand-grandchildren may update this date ...
             formatter: {
                 date: function (date, settings) {
                     if (!date) return '';
