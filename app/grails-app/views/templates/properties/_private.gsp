@@ -14,7 +14,7 @@
 </g:if>
 
 <table class="ui compact la-table-inCard table">
-    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id && cp.isPublic == false }}"/>
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
             <col style="width: 129px;">
