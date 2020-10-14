@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2501    14.10.2020  hbz-dev             Andreas Feature     Verantwortlichkeit einer neuen Aufgabe muss jetzt explizit definiert werden
+
 2052    14.10.2020  hbz-dev             Andreas Bug         Controller und Action bei Ajax-generierten Template-Fragmenten durchgereicht
 
 2925    13.10.2020  hbz-dev             Andreas Feature     Minimal- und Maximaldatum bei Datepicker festgelegt
