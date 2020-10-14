@@ -420,7 +420,7 @@ class CopyElementsService {
         if (formService.validateToken(params)) {
 
             List<String> allowedProperties = allowedProperties(sourceObject)
-            List takeProperties = params.list('copyObject.take') //never filled?
+            List takeProperties = params.list('copyObject.take')
             List takeAudit = params.list('copyObject.toggleAudit')
 
             takeProperties.each { takeProperty ->
@@ -430,14 +430,13 @@ class CopyElementsService {
             }
 
             allowedProperties.each { String allowedProperty ->
-                //if (allowedProperty in takeProperties) { the list is always empty?
+                if (allowedProperty in takeProperties || params.isRenewSub) {
                     if (allowedProperty in takeAudit) {
                         toggleAuditObjectProperty(sourceObject, targetObject, flash, allowedProperty)
                     } else {
                         removeToggleAuditObjectProperty(targetObject, flash, allowedProperty)
                     }
-                //}
-
+                }
             }
 
             if (params.list('copyObject.deleteLicenses') && isBothObjectsSet(sourceObject, targetObject)) {
