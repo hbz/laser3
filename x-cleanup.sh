@@ -14,7 +14,7 @@ KB=com/k_int/kbplus
 
 echo "> cleanup: [ $DST ]"
 
-rm -rv ./grails-app/assets/images/*             #rollback: some files
+rm -rv ./grails-app/assets/images
 rm -rv ./grails-app/assets/javascripts/deprecated
 rm -rv ./grails-app/assets/javascripts/libs
 rm -rv ./grails-app/assets/javascripts/submodules
