@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2932    14.10.2020  rc1.6               Moe     Bug         Verträge vergleichen - keine Auswahl
+
 2933    14.10.2020  rc1.6               Andreas Bug         Anzeige der Nutzerrollen im Filterdropdown korrigiert 
 
 2929    14.10.2020  rc1.6               Andreas Bug         Ansichten der Finanzen korrigiert
