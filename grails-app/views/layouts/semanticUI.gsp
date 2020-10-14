@@ -38,8 +38,6 @@
     <g:layoutHead/>
 
     <tmpl:/layouts/favicon />
-
-    <asset:deferredScripts/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">

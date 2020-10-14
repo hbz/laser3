@@ -27,7 +27,6 @@
     <![endif]-->
 
     <g:layoutHead/>
-    <asset:deferredScripts/> <%-- grails-3-fix : remove --%>
 
     <tmpl:/layouts/favicon />
 

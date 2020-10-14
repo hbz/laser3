@@ -1,8 +1,10 @@
 package de.laser.base
 
+import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtil
 import de.laser.interfaces.CalculatedLastUpdated
+import de.laser.properties.PropertyDefinition
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -16,7 +18,6 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 
-    /* grails-3-fix
     abstract PropertyDefinition type
 
     abstract String           stringValue
@@ -33,7 +34,6 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     abstract Date dateCreated
     abstract Date lastUpdated
     abstract Date lastUpdatedCascading
-    */
 
     protected void beforeInsertHandler() {
         static_logger.debug("beforeInsertHandler()")

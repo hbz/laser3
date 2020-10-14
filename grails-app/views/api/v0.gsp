@@ -82,8 +82,6 @@
     </style>
 
     <asset:stylesheet src="swagger.css"/><asset:javascript src="swagger.js"/>
-
-    <asset:deferredScripts/> <%-- grails-3-fix : remove --%>
 </head>
 
 <body>

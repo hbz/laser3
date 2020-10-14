@@ -1241,8 +1241,8 @@ class SemanticUiTagLib {
     }
 
     private callLink(Map attrs, Object body) {
-        GroovyPage.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, webRequest)
-        //TagOutput.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, OutputContextLookupHelper.lookupOutputContext()) // grails-3-fix
+        //GroovyPage.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, webRequest)
+        TagOutput.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, OutputContextLookupHelper.lookupOutputContext()) // grails-3-fix
     }
 
     def showPropertyValue = { attrs, body ->
