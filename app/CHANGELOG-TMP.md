@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2052    14.10.2020  hbz-dev             Andreas Bug         Controller und Action bei Ajax-generierten Template-Fragmenten durchgereicht
+
 2925    13.10.2020  hbz-dev             Andreas Feature     Minimal- und Maximaldatum bei Datepicker festgelegt
 
 2924    13.10.2020  rc1.6               Moe     Bug         RC 1.6: Zugangkonfiguration anlegen/bearbeiten läuft in Fehler
