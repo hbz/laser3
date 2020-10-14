@@ -1,0 +1,177 @@
+/*******************************
+         Theme Overrides
+*******************************/
+
+@font-face {
+  font-family: 'Checkbox';
+  src:
+          url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBD8AAAC8AAAAYGNtYXAYVtCJAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5Zn4huwUAAAF4AAABYGhlYWQGPe1ZAAAC2AAAADZoaGVhB30DyAAAAxAAAAAkaG10eBBKAEUAAAM0AAAAHGxvY2EAmgESAAADUAAAABBtYXhwAAkALwAAA2AAAAAgbmFtZSC8IugAAAOAAAABknBvc3QAAwAAAAAFFAAAACAAAwMTAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADoAgPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAADAAAAAwAAABwAAQADAAAAHAADAAEAAAAcAAQAOAAAAAoACAACAAIAAQAg6AL//f//AAAAAAAg6AD//f//AAH/4xgEAAMAAQAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAABAEUAUQO7AvgAGgAAARQHAQYjIicBJjU0PwE2MzIfAQE2MzIfARYVA7sQ/hQQFhcQ/uMQEE4QFxcQqAF2EBcXEE4QAnMWEP4UEBABHRAXFhBOEBCoAXcQEE4QFwAAAAABAAABbgMlAkkAFAAAARUUBwYjISInJj0BNDc2MyEyFxYVAyUQEBf9SRcQEBAQFwK3FxAQAhJtFxAQEBAXbRcQEBAQFwAAAAABAAAASQMlA24ALAAAARUUBwYrARUUBwYrASInJj0BIyInJj0BNDc2OwE1NDc2OwEyFxYdATMyFxYVAyUQEBfuEBAXbhYQEO4XEBAQEBfuEBAWbhcQEO4XEBACEm0XEBDuFxAQEBAX7hAQF20XEBDuFxAQEBAX7hAQFwAAAQAAAAIAAHRSzT9fDzz1AAsEAAAAAADRsdR3AAAAANGx1HcAAAAAA7sDbgAAAAgAAgAAAAAAAAABAAADwP/AAAAEAAAAAAADuwABAAAAAAAAAAAAAAAAAAAABwQAAAAAAAAAAAAAAAIAAAAEAABFAyUAAAMlAAAAAAAAAAoAFAAeAE4AcgCwAAEAAAAHAC0AAQAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAOAK4AAQAAAAAAAQAIAAAAAQAAAAAAAgAHAGkAAQAAAAAAAwAIADkAAQAAAAAABAAIAH4AAQAAAAAABQALABgAAQAAAAAABgAIAFEAAQAAAAAACgAaAJYAAwABBAkAAQAQAAgAAwABBAkAAgAOAHAAAwABBAkAAwAQAEEAAwABBAkABAAQAIYAAwABBAkABQAWACMAAwABBAkABgAQAFkAAwABBAkACgA0ALBDaGVja2JveABDAGgAZQBjAGsAYgBvAHhWZXJzaW9uIDIuMABWAGUAcgBzAGkAbwBuACAAMgAuADBDaGVja2JveABDAGgAZQBjAGsAYgBvAHhDaGVja2JveABDAGgAZQBjAGsAYgBvAHhSZWd1bGFyAFIAZQBnAHUAbABhAHJDaGVja2JveABDAGgAZQBjAGsAYgBvAHhGb250IGdlbmVyYXRlZCBieSBJY29Nb29uLgBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('truetype')
+;
+}
+
+/* Checkmark */
+.ui.checkbox label:after,
+.ui.checkbox .box:after {
+  font-family: 'Checkbox';
+}
+
+/* Checked */
+.ui.checkbox input:checked ~ .box:after,
+.ui.checkbox input:checked ~ label:after {
+  content: '\e800';
+  //color: @grey;
+  //background-color: @laFilterChosen !important;
+}
+
+/* Indeterminate */
+.ui.checkbox input:indeterminate ~ .box:after,
+.ui.checkbox input:indeterminate ~ label:after {
+  font-size: 12px;
+  content: '\e801';
+}
+
+
+/*---------------------------------------------
+        Laser 3 State Toggle Icon Buttons
+----------------------------------------------*/
+
+.radio, .checkbox.la-toggle-radio {
+  padding:0;
+}
+/* BEFORE */
+.ui.checkbox.la-toggle-radio label{
+  font-size: 1.7em;
+  width: 40px;
+  height: 40px;
+  color: @textColor;
+}
+
+.ui.checkbox.la-toggle-radio label:before {
+
+  //border: none;
+  //font-size: 25px;
+
+  border: none;
+  width: 40px;
+  height: 40px;
+  padding-top: 11px;
+  text-align: center;
+  background-color:@backgroundColor;
+  border-radius: 500rem;
+}
+.ui.checkbox.la-toggle-radio input:checked ~ label:before {
+  background-color:@backgroundColor;
+}
+
+/* AFTER */
+.ui.checkbox.la-toggle-radio input:checked~label:after,
+.ui.radio.checkbox.la-toggle-radio input:checked~label:after {
+  color: @green !important;
+  top: 25px !important;
+  left: 25px !important;
+  background-color: white !important;
+  border-radius: 500rem;
+  box-shadow: 0 2px 3px 0 #d3dae3;
+ /*
+  content: "\f00c" !important;
+  font-family: Icons !important;
+  transform: scale(1.5);
+  */
+}
+/* REPLACE */
+.ui.checkbox.la-toggle-radio.la-replace {
+  label:before {
+    font-family: Icons;
+    content: "\f061";
+  }
+}
+/* TRASH*/
+.ui.checkbox.la-toggle-radio.la-noChange {
+  label:before {
+    font-family: Icons;
+    content: "\f2ed";
+  }
+}
+/* INHERITY*/
+.ui.checkbox.la-toggle-radio.la-inherit {
+  label:before {
+    font-family: Icons;
+    content: "\f08d";
+  }
+
+}
+.ui.checkbox.la-toggle-radio.la-inherit input:checked ~ label:before {
+   font-family: Icons;
+   content: "\f08d";
+   background-color: #D4E096;
+ }
+/* SHARE*/
+.ui.checkbox.la-toggle-radio.la-share {
+  label:before {
+    font-family: Icons;
+    content: "\f1e0";
+  }
+}
+/* COPY LICENCE WITH PACKAGES, TITELS ETC */
+ table tr td div.willStay {
+   background-color: #D4E096;
+ }
+table tr td div.willBeReplaced {
+  background-color: #EDC0BA;
+  text-decoration: line-through;
+}
+table tr td div.willBeReplacedStrong {
+  background-color: #EDC0BA !important;
+  text-decoration: line-through !important;
+}
+.la-element {
+  padding: 4px 0;
+  .checkbox {
+    padding-left: 0;
+  }
+}
+.la-copyElements-flex-container{
+  display: flex;
+  align-items:center;
+  justify-content:space-evenly;
+}
+.la-copyElements-flex-item {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.la-copyElements-th-flex-container{
+  display: flex;
+  align-items:center;
+  justify-content:space-evenly;
+}
+.la-copyElements-th-flex-item {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+.la-copyPack-container {
+  display: flex;
+  justify-content:space-between;
+}
+.la-copyPack-item{
+  flex-grow: 1;
+}
+// Legend to the will stay stuff
+.la-legend {
+  .la-added {
+    padding: 5px;
+    background-color: #D4E096;
+  }
+  .la-removed{
+    padding: 5px;
+    background-color: #EDC0BA;
+    text-decoration: line-through;
+  }
+}
+
+.la-multi-sources:nth-child(n+2) {
+  margin-top: 30px;
+}
+

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2015-10-23T16:01:37 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="expected_issues" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cac26577-7c58-4fd6-8e92-8b28886ba96c">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="KBPLUS"/>
+	<parameter name="search_sub_id" class="com.k_int.kbplus.Subscription">
+		<parameterDescription><![CDATA[Subscription]]></parameterDescription>
+	</parameter>
+	<parameter name="compare_date" class="java.sql.Date">
+		<parameterDescription><![CDATA[Previous or Expected date]]></parameterDescription>
+	</parameter>
+	<parameter name="select&amp;Expected&amp;Previous" class="java.lang.String">
+		<parameterDescription><![CDATA[Search for Expected/Previous titles]]></parameterDescription>
+	</parameter>
+	<parameter name="query" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[$P{select&Expected&Previous}.equals("Expected")
+? "select sub_name, ie_id, ti_title from issue_entitlement, title_instance_package_platform, subscription, title_instance where sub_id = $P!{search_sub_id} AND ie_subscription_fk = $P!{search_sub_id} AND ie_tipp_fk = tipp_id AND tipp_ti_fk = ti_id AND ifnull(ie_access_start_date, tipp_access_start_date ) >= '$P{compare_date}'"
+: "select sub_name, ie_id, ti_title from issue_entitlement, title_instance_package_platform, subscription, title_instance where sub_id = $P!{search_sub_id} AND ie_subscription_fk = $P!{search_sub_id} AND ie_tipp_fk = tipp_id AND tipp_ti_fk = ti_id AND ifnull(ie_access_end_date, tipp_access_end_date ) <= '$P{compare_date}'"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="report_description" class="java.lang.String">
+		<parameterDescription><![CDATA[List all the Previous or Expected titles for the given subscription]]></parameterDescription>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[$P!{query}]]>
+	</queryString>
+	<field name="ie_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ti_title" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sub_name" class="java.lang.String"/>
+	<group name="Group1">
+		<groupHeader>
+			<band height="18">
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="84" height="18" forecolor="#007A5E" backcolor="#E1E6E5" uuid="b68ac5e2-d77b-433d-ab42-ac0762b5fbb0">
+						<property name="local_mesure_unitheight" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="15"/>
+						<paragraph leftIndent="15"/>
+					</textElement>
+					<text><![CDATA[IE ID]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="84" y="0" width="471" height="18" forecolor="#007A5E" backcolor="#E1E6E5" uuid="3271dd5a-3f12-49bf-9e1e-d49f4ddf0441">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="15"/>
+						<paragraph leftIndent="15"/>
+					</textElement>
+					<text><![CDATA[Title]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Group2"/>
+	<group name="Group3"/>
+	<group name="Group4"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#007A5E" uuid="3f9c1786-af1d-4391-8150-5bc20e819737"/>
+				<staticText>
+					<reportElement x="140" y="20" width="310" height="30" forecolor="#FFFFFF" uuid="a512676b-6229-49c0-9fd4-d1d5fef3a607"/>
+					<textElement>
+						<font size="20" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Issue Entitlements]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="19" y="20" width="121" height="30" forecolor="#FFFFFF" uuid="963278c8-e301-48eb-a6d6-452e874f890f"/>
+					<textElement>
+						<font size="20"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{select&Expected&Previous}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="220" y="50" width="90" height="20" forecolor="#FFFFFF" uuid="e0344541-290e-43c0-9ddb-2041107800d8"/>
+					<text><![CDATA[Subscription Title:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="310" y="50" width="264" height="30" forecolor="#FFFFFF" uuid="c09fd3d1-08ea-448e-906f-d464cebce1b7"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sub_name}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="14" y="57" width="90" height="21" forecolor="#FFFFFF" uuid="1230e3f8-d13b-4111-bdbd-be0db11b409e"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<text><![CDATA[Results Count: ]]></text>
+				</staticText>
+				<textField evaluationTime="Report">
+					<reportElement x="104" y="57" width="122" height="21" forecolor="#FFFFFF" uuid="22e2b419-b20b-478e-961e-8909b6035c79">
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="13"/>
+	</pageHeader>
+	<detail>
+		<band height="20">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1" uuid="37864285-068c-41e2-83db-9392ad4d5fed">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="0" width="50" height="20" uuid="2d37952a-a831-4ee4-9787-890325f86f2c">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{ie_id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="0" width="474" height="20" uuid="4904daf8-9d74-4f5e-ba0d-c5aba908645d">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{ti_title}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="4" width="515" height="13" backcolor="#E6E6E6" uuid="06d47321-42af-4a9b-8381-df64a9d9e1dd"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement mode="Opaque" x="515" y="4" width="40" height="13" backcolor="#E6E6E6" uuid="dffae562-5074-48bc-8c39-90668e35f054"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="4" width="100" height="13" uuid="a6436ff8-08f1-4432-bea2-c41c2ef8c528"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+	<noData>
+		<band height="281">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="10" width="595" height="92" backcolor="#007A5E" uuid="122dcf26-a0a9-449d-b74c-86420113ab56"/>
+				<staticText>
+					<reportElement x="140" y="20" width="310" height="30" forecolor="#FFFFFF" uuid="7cd50f89-29fa-4356-96e1-3e2098de19f9"/>
+					<textElement>
+						<font size="20" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ Issue Entitlements]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="19" y="20" width="121" height="30" forecolor="#FFFFFF" uuid="d69fb5ee-ab77-4c3f-93cc-d3f58854400c"/>
+					<textElement>
+						<font size="20"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{select&Expected&Previous}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<staticText>
+				<reportElement mode="Opaque" x="80" y="112" width="476" height="30" forecolor="#007A5E" backcolor="#E1E6E5" uuid="6bf4e684-6f26-4a65-b067-22d642d17d8e"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="15"/>
+					<paragraph leftIndent="15"/>
+				</textElement>
+				<text><![CDATA[Title]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="-1" y="112" width="81" height="30" forecolor="#007A5E" backcolor="#E1E6E5" uuid="9704fd5f-45cb-4af6-86dc-69fbe2e6a73f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="15"/>
+					<paragraph leftIndent="15"/>
+				</textElement>
+				<text><![CDATA[IE Id]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="169" width="555" height="1" uuid="d63ea5e9-e562-4e0b-898d-3dc3a2ad4495"/>
+			</line>
+			<staticText>
+				<reportElement x="1" y="153" width="499" height="30" uuid="0bc1e71b-6271-4be2-a082-b64b1008bd5a"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No results found]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>
