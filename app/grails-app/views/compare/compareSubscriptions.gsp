@@ -24,14 +24,13 @@
 
             <div class="field fieldcontain">
                 <label>${message(code: 'filter.status')}</label>
-                <laser:select class="ui dropdown" name="status" id="status"
-                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
-                              optionKey="id"
-                              optionValue="value"
-                              multiple="true"
-                              value="${RDStore.SUBSCRIPTION_CURRENT.id}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              onchange="adjustDropdown()"/>
+                <select id="status" name="status" multiple="" class="ui search selection fluid multiple dropdown" onchange="adjustDropdown()">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }" var="status">
+                        <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
+                    </g:each>
+                </select>
+
             </div>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
