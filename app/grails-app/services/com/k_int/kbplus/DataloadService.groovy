@@ -1012,7 +1012,7 @@ class DataloadService {
                         //String jsonString = JsonOutput.toJson(idx_record)
                         //println(jsonString)
                         request.source(jsonString, XContentType.JSON)
-                        println(request)
+                        //println(request)
                         IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
 
                         String index = indexResponse.getIndex();
