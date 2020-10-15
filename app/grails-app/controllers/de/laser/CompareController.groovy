@@ -28,8 +28,7 @@ class CompareController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
-        params.status = RDStore.LICENSE_CURRENT.id
-        result.availableLicenses = compareService.getMyLicenses(params)
+        params.status = params.status ?: [RDStore.LICENSE_CURRENT.id.toString()]
 
         result.objects = []
 
@@ -55,8 +54,8 @@ class CompareController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        result.availableSubscriptions = compareService.getMySubscriptions(params)
+        params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+
 
         result.objects = []
 
