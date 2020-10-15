@@ -75,7 +75,7 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
+                                            <g:each in="${ies?.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
                                                 <div class="item">
                                                     <semui:listIcon hideTooltip="true"
                                                                     type="${ie.tipp.title.class.name}"/>
@@ -165,7 +165,7 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
+                                            <g:each in="${ies?.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
                                                 <div class="item">
                                                     <semui:listIcon hideTooltip="true"
                                                                     type="${ie.tipp.title.class.name}"/>
@@ -239,7 +239,7 @@
                 <td name="subscription.takeTitleGroups.source">
                     <strong>${message(code: 'subscription.details.ieGroups')}: ${sourceObject.ieGroups.size()}</strong>
 
-                    <g:each in="${sourceObject.ieGroups.sort { it.name }}" var="titleGroup">
+                    <g:each in="${sourceObject.ieGroups?.sort { it.name }}" var="titleGroup">
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
                                 <g:link action="index" controller="subscription" id="${sourceObject.id}"
@@ -255,7 +255,7 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${titleGroup.items.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                            <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
                                                     var="item">
                                                 <div class="item">
                                                     <semui:listIcon hideTooltip="true"
@@ -284,7 +284,7 @@
                 <td name="subscription.takeTitleGroups.target">
                     <strong>${message(code: 'subscription.details.ieGroups')}: ${targetObject.ieGroups.size()}</strong>
 
-                    <g:each in="${targetObject.ieGroups.sort { it.name }}" var="titleGroup">
+                    <g:each in="${targetObject.ieGroups?.sort { it.name }}" var="titleGroup">
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
                                 <g:link action="index" controller="subscription" id="${targetObject.id}"
@@ -300,7 +300,7 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${titleGroup.items.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                            <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
                                                     var="item">
                                                 <div class="item">
                                                     <semui:listIcon hideTooltip="true"
