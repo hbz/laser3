@@ -49,7 +49,9 @@ class AjaxHtmlController {
         Map<String,Object> result = [:]
         def options = JSON.parse(params.requestOptions)
         options.institution = contextService.org
-        result.putAll(reportingService.generateGrowth(options))
+        options.groupOptions = options.groupOptions.contains(",") ? options.groupOptions.split(",") : [options.groupOptions]
+        result.growth = reportingService.generateGrowth(options)
+        result.requestObject = options.requestParam
         log.debug(result)
         render view: '/reporting/_generalGraphs', model: result
     }
