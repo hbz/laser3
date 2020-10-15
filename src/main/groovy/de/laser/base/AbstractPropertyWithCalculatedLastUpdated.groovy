@@ -18,6 +18,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 
+    /*
     abstract PropertyDefinition type
 
     abstract String           stringValue
@@ -34,7 +35,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     abstract Date dateCreated
     abstract Date lastUpdated
     abstract Date lastUpdatedCascading
-
+    */
     protected void beforeInsertHandler() {
         static_logger.debug("beforeInsertHandler()")
     }

@@ -36,10 +36,6 @@
     git merge -s ours --no-commit --allow-unrelated-histories grails2/grails-upgrade-source
     git read-tree --prefix=grails2/ -u grails2/grails-upgrade-source
     git commit -m '--- imported laser (grails2) ---'
-    
-    ./x-cleanup.sh
-    ./x-migrate.sh
-    ./x-move.sh
 
 ##### Docs
 

@@ -5,8 +5,9 @@ import de.laser.auth.User
 import de.laser.helper.*
 import org.grails.encoder.CodecLookup
 import org.grails.encoder.Encoder
-import org.grails.gsp.GroovyPage
 import org.grails.taglib.TagLibraryLookup
+import org.grails.taglib.TagOutput
+import org.grails.taglib.encoder.OutputContextLookupHelper
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
@@ -1241,8 +1242,7 @@ class SemanticUiTagLib {
     }
 
     private callLink(Map attrs, Object body) {
-        //GroovyPage.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, webRequest)
-        TagOutput.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, OutputContextLookupHelper.lookupOutputContext()) // grails-3-fix
+        TagOutput.captureTagOutput(gspTagLibraryLookup, 'g', 'link', attrs, body, OutputContextLookupHelper.lookupOutputContext())
     }
 
     def showPropertyValue = { attrs, body ->
