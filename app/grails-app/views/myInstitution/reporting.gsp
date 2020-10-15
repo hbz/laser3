@@ -206,7 +206,8 @@
                     genGrouping.push($(this).attr("data-display"));
                 }
                 else genGrouping.splice(index,1);
-                updateGeneral({groupOptions: genGrouping,requestParam: $(this).attr("data-requestParam")});
+                if(genGrouping.length > 0)
+                    updateGeneral({groupOptions: genGrouping.join(","),requestParam: $(this).attr("data-requestParam")});
             });
             $("#clickMe").on('change','[name="general"]',function(){
                 loadFilter({entry:"general",queried:$(this).attr("id")});
@@ -272,8 +273,12 @@
                         requestOptions: JSON.stringify(requestOptions)
                     },
                     method: 'POST'
-                }).done(function(data){
-
+                }).done(function(response){
+                    let testContainer = $('div .generalChartContainer');
+                    if(testContainer.length === 0)
+                        $("#selection").after('<div class="result">'+response+'</div>');
+                    else
+                        testContainer.parents(".result").html(response).show();
                 }).fail(function(xhr,status,message){
                     console.log("error occurred, consult logs!");
                 });
