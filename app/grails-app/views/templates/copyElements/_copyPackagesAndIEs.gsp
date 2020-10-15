@@ -242,92 +242,95 @@
             <tr>
                 <td name="subscription.takeTitleGroups.source">
                     <strong>${message(code: 'subscription.details.ieGroups')}: ${sourceObject.ieGroups.size()}</strong>
+                    <g:if test="${sourceObject.ieGroups}">
+                        <g:each in="${sourceObject.ieGroups.sort { it.name }}" var="titleGroup">
+                            <div class="la-copyPack-container la-element">
+                                <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
+                                    <g:link action="index" controller="subscription" id="${sourceObject.id}"
+                                            params="[titleGroup: titleGroup.id]">
+                                        <i class="grey icon object group la-popup-tooltip la-delay"
+                                           data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
+                                    </g:link>
+                                    <div class="ui accordion">
+                                        <div class="title"><i
+                                                class="dropdown icon"></i>
+                                            ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
+                                        </div>
 
-                    <g:each in="${sourceObject.ieGroups?.sort { it.name }}" var="titleGroup">
-                        <div class="la-copyPack-container la-element">
-                            <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
-                                <g:link action="index" controller="subscription" id="${sourceObject.id}"
-                                        params="[titleGroup: titleGroup.id]">
-                                    <i class="grey icon object group la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
-                                </g:link>
-                                <div class="ui accordion">
-                                    <div class="title"><i
-                                            class="dropdown icon"></i>
-                                        ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
-                                    </div>
-
-                                    <div class="content">
-                                        <div class="ui list">
-                                            <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
-                                                    var="item">
-                                                <div class="item">
-                                                    <semui:listIcon hideTooltip="true"
-                                                                    type="${item.ie.tipp.title.class.name}"/>
-                                                    <strong><g:link controller="title" action="show"
-                                                                    id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
-                                                </div>
-                                            </g:each>
+                                        <div class="content">
+                                            <div class="ui list">
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                                        var="item">
+                                                    <div class="item">
+                                                        <semui:listIcon hideTooltip="true"
+                                                                        type="${item.ie.tipp.title.class.name}"/>
+                                                        <strong><g:link controller="title" action="show"
+                                                                        id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
+                                                    </div>
+                                                </g:each>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
-                                <div class="ui checkbox la-toggle-radio la-replace">
-                                    <g:checkBox name="subscription.takeTitleGroups"
-                                                value="${genericOIDService.getOID(titleGroup)}"
-                                                data-action="copy"
-                                                checked="${true}"/>
+                                <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
+                                    <div class="ui checkbox la-toggle-radio la-replace">
+                                        <g:checkBox name="subscription.takeTitleGroups"
+                                                    value="${genericOIDService.getOID(titleGroup)}"
+                                                    data-action="copy"
+                                                    checked="${true}"/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </g:each>
+                        </g:each>
+                    </g:if>
                 </td>
                 <g:if test="${!copyObject}">
                 <td name="subscription.takeTitleGroups.target">
                     <strong>${message(code: 'subscription.details.ieGroups')}: ${targetObject.ieGroups.size()}</strong>
 
-                    <g:each in="${targetObject.ieGroups?.sort { it.name }}" var="titleGroup">
-                        <div class="la-copyPack-container la-element">
-                            <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
-                                <g:link action="index" controller="subscription" id="${targetObject.id}"
-                                        params="[titleGroup: titleGroup.id]">
-                                    <i class="grey icon object group la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
-                                </g:link>
-                                <div class="ui accordion">
-                                    <div class="title"><i
-                                            class="dropdown icon"></i>
-                                        ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
-                                    </div>
+                    <g:if test="${targetObject.ieGroups}">
+                        <g:each in="${targetObject.ieGroups.sort { it.name }}" var="titleGroup">
+                            <div class="la-copyPack-container la-element">
+                                <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
+                                    <g:link action="index" controller="subscription" id="${targetObject.id}"
+                                            params="[titleGroup: titleGroup.id]">
+                                        <i class="grey icon object group la-popup-tooltip la-delay"
+                                           data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
+                                    </g:link>
+                                    <div class="ui accordion">
+                                        <div class="title"><i
+                                                class="dropdown icon"></i>
+                                            ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
+                                        </div>
 
-                                    <div class="content">
-                                        <div class="ui list">
-                                            <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
-                                                    var="item">
-                                                <div class="item">
-                                                    <semui:listIcon hideTooltip="true"
-                                                                    type="${item.ie.tipp.title.class.name}"/>
-                                                    <strong><g:link controller="title" action="show"
-                                                                    id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
-                                                </div>
-                                            </g:each>
+                                        <div class="content">
+                                            <div class="ui list">
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                                        var="item">
+                                                    <div class="item">
+                                                        <semui:listIcon hideTooltip="true"
+                                                                        type="${item.ie.tipp.title.class.name}"/>
+                                                        <strong><g:link controller="title" action="show"
+                                                                        id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
+                                                    </div>
+                                                </g:each>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
-                                <div class="ui checkbox la-toggle-radio la-noChange">
-                                    <g:checkBox name="subscription.deleteTitleGroups"
-                                                value="${genericOIDService.getOID(titleGroup)}"
-                                                data-action="delete"
-                                                checked="${false}"/>
+                                <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
+                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                        <g:checkBox name="subscription.deleteTitleGroups"
+                                                    value="${genericOIDService.getOID(titleGroup)}"
+                                                    data-action="delete"
+                                                    checked="${false}"/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </g:each>
+                        </g:each>
+                    </g:if>  
                 </div>
                 </td>
             </g:if>
