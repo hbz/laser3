@@ -197,7 +197,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                 <td class="center aligned">
-                    ${(params.int('offset') ?: 0) + i + 1}<br>
+                    ${(params.int('offset') ?: 0) + i + 1}<br />
                 </td>
             </g:if>
 
@@ -225,7 +225,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <td class="la-main-object">
                     <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                        ${fieldValue(bean: org, field: "name")} <br>
+                        ${fieldValue(bean: org, field: "name")} <br />
                         <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
                             (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
@@ -234,7 +234,7 @@
                         <g:link controller="organisation" action="show" id="${org.id}">
                             ${fieldValue(bean: org, field: "name")}
                             <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                <br>
+                                <br />
                                 (${fieldValue(bean: org, field: "shortname")})
                             </g:if>
                         </g:link>
@@ -264,7 +264,7 @@
                                     <i class="address card icon"></i>
                                 </g:else>
                                 --%>
-                                ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()} <br/>
+                                ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
                                         personRole.getPrs(),
@@ -275,7 +275,7 @@
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
                                         <a class="js-copyTopic" href="mailto:${email?.content}">${email?.content}</a>
-                                    </span><br>
+                                    </span><br />
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
                                         personRole.getPrs(),
@@ -284,7 +284,7 @@
                                     <i class="ui icon phone"></i>
                                     <span data-position="right center">
                                         ${telNr?.content}
-                                    </span><br>
+                                    </span><br />
                                 </g:each>
 
                             </div>
@@ -301,7 +301,7 @@
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
                     <g:if test="${contextService.user.hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
-                        <br><g:link controller="organisation" action="users"
+                        <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
                     <g:else>
@@ -395,7 +395,7 @@
                         it.type?.getI10n("value")
                     }}" var="fte">
                         <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
-                            ${fte.type?.getI10n("value")} : ${fte.number} <br>
+                            ${fte.type?.getI10n("value")} : ${fte.number} <br />
                         </g:if>
                     </g:each>
                 </td>
@@ -497,7 +497,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('consortia')}">
                 <td>
                     <g:each in="${org.outgoingCombos}" var="combo">
-                        ${combo.toOrg.name}<br><br>
+                        ${combo.toOrg.name}<br /><br />
                     </g:each>
                 </td>
             </g:if>
@@ -537,13 +537,13 @@
                         <g:checkBox type="text" id="selectedPackage_${org.id + it.pkg.id}"
                                     name="selectedPackage_${org.id + it.pkg.id}" value="1"
                                     checked="false"
-                                    onclick="checkselectedPackage(${org.id + it.pkg.id});"/> ${it.pkg.name}<br>
+                                    onclick="checkselectedPackage(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
                     </g:each>
                     </td>
                     <td><g:each in="${subInstance?.packages}">
                         <g:checkBox type="text" id="selectedIssueEntitlement_${org.id + it.pkg.id}"
                                     name="selectedIssueEntitlement_${org.id + it.pkg.id}" value="1" checked="false"
-                                    onclick="checkselectedIssueEntitlement(${org.id + it.pkg.id});"/> ${it.pkg.name}<br>
+                                    onclick="checkselectedIssueEntitlement(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
                     </g:each>
                     </td>
                 </g:if><g:else>
@@ -558,7 +558,7 @@
 
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br>
+                            <br />
                             <g:link controller="subscription" action="show"
                                     id="${orgSub.id}">
                                 ${orgSub.name}
@@ -581,11 +581,11 @@
                     <g:if test="${existSubforOrg}">
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br>
+                            <br />
                             <g:link controller="subscription" action="show"
                                     id="${orgSub.id}">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br>
+                                              date="${orgSub.startDate}"/><br />
                                 <g:formatDate formatName="default.date.format.notime"
                                               date="${orgSub.endDate}"/>
                             </g:link>
@@ -594,7 +594,7 @@
                             <g:link controller="subscription" action="show"
                                     id="${orgSub.id}">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br>
+                                              date="${orgSub.startDate}"/><br />
                                 <g:formatDate formatName="default.date.format.notime"
                                               date="${orgSub.endDate}"/>
                             </g:link>
@@ -610,7 +610,7 @@
                     <g:if test="${existSubforOrg}">
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br>
+                            <br />
                             <g:link controller="subscription" action="show"
                                     id="${orgSub.id}">
                                 ${orgSub.status.getI10n('value')}
@@ -692,7 +692,7 @@
                                    value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
 
                             <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                <br><strong><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
+                                <br /><strong><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
                                                        minFractionDigits="2"
                                                        maxFractionDigits="2" type="number"/>%</strong>
 
@@ -700,7 +700,7 @@
                                                  maxFractionDigits="2" type="number"/>%)
                             </g:if>
 
-                            <br>
+                            <br />
                             <g:if test="${costItem.startDate || costItem.endDate}">
                                 (${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notimeShort'))})
                             </g:if>
@@ -762,7 +762,7 @@
                                      maxFractionDigits="2" type="number"/>)
 
                     <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                        <br><strong><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                        <br /><strong><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
                                                minFractionDigits="2"
                                                maxFractionDigits="2" type="number"/>%</strong>
 

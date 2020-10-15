@@ -13,7 +13,7 @@
     </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
-    <br>
+    <br />
     <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
 
     <semui:form>
@@ -39,7 +39,7 @@
       <div class="ui divided relaxed list">
         <g:each in="${recentAnnouncements}" var="ra">
           <div class="item">
-            <strong>${ra.title}</strong> <br/>
+            <strong>${ra.title}</strong> <br />
             <div class="ann-content">
               <% print ra.content; /* avoid auto encodeAsHTML() */ %>
             </div>

@@ -10,7 +10,7 @@
       <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
       <semui:crumb text="${message(code:'datamanager.titleView.label')}" class="active"/>
     </semui:breadcrumbs>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="datamanager.titleView.label"/>
       <semui:totalNumber total="${totalHits}"/>
     </h1>

@@ -14,7 +14,7 @@
             <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
             <g:else> ${message(code:'onix.import.unspec')}</g:else>
             </h1>
-            <br>
+            <br />
         </g:unless>
 
 
@@ -53,7 +53,7 @@
                 <strong>${validationResult.license.reference}.</strong>
             </g:if>
             <g:else>
-                <br/>
+                <br />
                 ${message(code:'onix.import.existing_licenses', default:'Existing associations with LAS:eR licenses were maintained.')}
             </g:else>
         </g:if>
@@ -72,8 +72,8 @@
                         </g:link>
                     </div>
                     ${message(code:'onix.import.replace', default:'Would you like to replace the existing ONIX-PL license or create a new record?')}
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
                     <button name="replace_opl" id="replace_opl" value="replace"
                             type="submit" class="ui negative button">${message(code:'default.button.replace.label')}</button>
                     <button name="replace_opl" id="replace_opl" value="create"
@@ -91,10 +91,10 @@
             <%-- Show  default options is there is no existing OPL and one has not been created --%>
                 <g:else>
                 <%--Upload File:--%>
-                    <br/>
+                    <br />
                     <input type="file" id="import_file" name="import_file" value="${import_file}"/>
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
                     <button type="submit" class="ui button">${message(code:'onix.import.import')}</button>
                 </g:else>
             </g:form>
@@ -110,7 +110,7 @@
             </ul>
         </g:if>
 
-        <br/>
+        <br />
         <g:if test="${validationResult.onixpl_license}">
 
             <%-- Show link to ONIX-PL display if no associated license specified, or multiple ones --%>

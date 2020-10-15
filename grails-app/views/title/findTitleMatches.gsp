@@ -24,7 +24,7 @@
               </div>
             </semui:searchSegment>
 
-            <br/>
+            <br />
 
             <g:if test="${titleMatches != null}">
               <g:if test="${titleMatches.size()>0}">

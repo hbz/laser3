@@ -54,7 +54,7 @@
                     <g:if test="${tipp.hostPlatformURL}">
                         <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                     </g:if>
-                    <br>
+                    <br />
 
                     <div class="la-icon-list">
                         <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
@@ -207,10 +207,10 @@
                     <g:if test="${targetIE?.priceItem}">
                         <g:formatNumber number="${ie?.priceItem?.listPrice}" type="currency"
                                         currencySymbol="${ie?.priceItem?.listCurrency}"
-                                        currencyCode="${ie?.priceItem?.listCurrency}"/><br>
+                                        currencyCode="${ie?.priceItem?.listCurrency}"/><br />
                         <g:formatNumber number="${ie?.priceItem?.localPrice}" type="currency"
                                         currencySymbol="${ie?.priceItem?.localCurrency}"
-                                        currencyCode="${ie?.priceItem?.localCurrency}"/><br>
+                                        currencyCode="${ie?.priceItem?.localCurrency}"/><br />
                     %{--<semui:datepicker class="ieOverwrite" name="priceDate" value="${ie?.priceItem?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>--}%
 
                         <g:set var="sumlistPrice" value="${sumlistPrice + (ie?.priceItem?.listPrice ?: 0)}"/>
@@ -221,10 +221,10 @@
                         <g:if test="${ie?.priceItem}">
                             <g:formatNumber number="${ie?.priceItem?.listPrice}" type="currency"
                                             currencySymbol="${ie?.priceItem?.listCurrency}"
-                                            currencyCode="${ie?.priceItem?.listCurrency}"/><br>
+                                            currencyCode="${ie?.priceItem?.listCurrency}"/><br />
                             <g:formatNumber number="${ie?.priceItem?.localPrice}" type="currency"
                                             currencySymbol="${ie?.priceItem?.localCurrency}"
-                                            currencyCode="${ie?.priceItem?.localCurrency}"/><br>
+                                            currencyCode="${ie?.priceItem?.localCurrency}"/><br />
                         %{--<semui:datepicker class="ieOverwrite" name="priceDate" value="${ie?.priceItem?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>--}%
 
                             <g:set var="sumlistPrice" value="${sumlistPrice + (ie?.priceItem?.listPrice ?: 0)}"/>
@@ -260,8 +260,8 @@
             <th></th>
             <th></th>
             <th></th>
-            <th><g:message code="financials.export.sums"/> <br>
-                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br>
+            <th><g:message code="financials.export.sums"/> <br />
+                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
                 %{--<g:message code="tipp.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
             </th>
             <th></th>

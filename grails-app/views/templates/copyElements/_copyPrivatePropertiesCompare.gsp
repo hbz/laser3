@@ -40,7 +40,7 @@
         </g:if>
         <g:else>
             <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
-            <br><br>
+            <br /><br />
 
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitButtonText" value="${isRenewSub ?

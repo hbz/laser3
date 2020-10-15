@@ -10,15 +10,15 @@
 			<td style="white-space: nowrap">
 			  ${message(code:'default.date.label')}:
 			  <g:if test="${obj.startDate != null}">
-			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.startDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.startDate}"/> <br />
 			  </g:if> <g:else>
-			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.tipp.startDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.tipp.startDate}"/> <br />
 			  </g:else>
   			  ${message(code:'tipp.volume')}:
   			  <g:if test="${obj.startVolume != null}">
-  			  	 ${obj.startVolume} <br/>
+  			  	 ${obj.startVolume} <br />
   			  </g:if> <g:else>
-  			  	 ${obj.tipp.startVolume} <br/>
+  			  	 ${obj.tipp.startVolume} <br />
   			  </g:else>
 			  ${message(code:'tipp.issue')}:
 			  <g:if test="${obj.startIssue != null}">
@@ -32,15 +32,15 @@
 			<td style="white-space: nowrap"> 
 				${message(code:'default.date.label')}:
 			  <g:if test="${obj.endDate != null}">
-			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/> <br />
 			  </g:if> <g:else>
-			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.tipp.endDate}"/> <br/>
+			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.tipp.endDate}"/> <br />
 			  </g:else>
 			  ${message(code:'tipp.volume')}:
   			  <g:if test="${obj.endVolume != null}">
-  			  	${obj.endVolume} <br/>
+  			  	${obj.endVolume} <br />
   			  </g:if> <g:else>
-  			  	${obj.tipp.endVolume} <br/>
+  			  	${obj.tipp.endVolume} <br />
   			  </g:else>
   			  ${message(code:'tipp.issue')}:
 			  <g:if test="${obj.endIssue != null}">

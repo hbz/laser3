@@ -68,8 +68,8 @@
 
                     <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
 
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
 
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
                               optionKey="id"
@@ -86,7 +86,7 @@
                             <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
                             <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
                         </div>
-                        <br>
+                        <br />
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
                             <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
@@ -94,13 +94,13 @@
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code:'myinst.separate_lics_all.expl')}">
                             <i class="question circle icon la-popup"></i>
                         </span>
-                        <br>
+                        <br />
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial">
                             <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_partial')}</label>
                         </div>
                         <div class="generateSlavedLicsReference-wrapper hidden">
-                            <br>
+                            <br />
                             <g:select from="${memberLicenses}"
                                       class="ui fluid search multiple dropdown hide"
                                       optionKey="${{ License.class.name + ':' + it.id }}"
@@ -160,7 +160,7 @@
             </div>
         </g:if>
 
-        <br/>
+        <br />
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
                 <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
@@ -170,7 +170,7 @@
     </g:form>
 
     <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
-        <hr/>
+        <hr />
 
         <div class="ui info message">
             <div class="header">

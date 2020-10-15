@@ -1,4 +1,4 @@
-<br>
+<br />
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
@@ -26,8 +26,8 @@
         </a>
     </g:if>
     </div>
-    <br>
-    <br>
+    <br />
+    <br />
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyParticipantsHasAccess,
@@ -49,8 +49,8 @@
     </g:if>
     </div>
 
-    <br>
-    <br>
+    <br />
+    <br />
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyParticipantsHasNotAccess,
@@ -58,7 +58,7 @@
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType']
               ]"/>
 
-    <br/>
+    <br />
 
     <g:if test="${selectedParticipants && editable}">
         <input type="submit" class="ui negative button"

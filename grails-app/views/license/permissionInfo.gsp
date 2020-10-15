@@ -8,7 +8,7 @@
 <body>
 
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
@@ -28,8 +28,8 @@
             <td>${ol.org.name}</td>
             <td>
               ${message(code:'subscription.license.connection', args:["${ol.roleType?.getI10n('value')}"])}
-              <br/>
-              <%--${message(code:'subscription.details.permissionInfo.role.info')}<br/>
+              <br />
+              <%--${message(code:'subscription.details.permissionInfo.role.info')}<br />
               <ul>
                 <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                   <li>${message(code:"default.perm.${sp.perm.code}", default:"${sp.perm.code}")}

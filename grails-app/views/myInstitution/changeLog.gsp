@@ -21,10 +21,10 @@
   </semui:controlButtons>
 
     <div class="home-page">
-      <br>
+      <br />
       <div>
-        ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br/>
-        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br/>
+        ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br />
+        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br />
         <g:form method="get" action="changeLog" params="${params}">
           ${message(code:'myinst.changeLog.restrictTo')}:
           <select class="ui dropdown" name="restrict" onchange="this.form.submit()">

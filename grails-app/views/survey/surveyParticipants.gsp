@@ -33,7 +33,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
@@ -48,7 +48,7 @@
     : ${message(code: 'surveyParticipants.label')}
 </h2>
 
-<br>
+<br />
 
 <g:if test="${surveyConfig}">
     <div class="ui grid">

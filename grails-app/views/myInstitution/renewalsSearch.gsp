@@ -41,7 +41,7 @@
         <p>${message(code: 'myinst.renewalSearch.workflow', default: '')}</p>
     </div>
 
-<hr/>
+<hr />
 
 <g:if test="${basket.size() <= 1}">
 
@@ -50,7 +50,7 @@
 
         <p>${message(code: 'myinst.renewalSearch.auswahl', default: 'In your selection at least one package must be deposited!')}</p>
     </div>
-    <hr/>
+    <hr />
 </g:if>
 
 <div class="field">
@@ -64,7 +64,7 @@
             action="renewalsUpload">${message(code: 'menu.institutions.imp_renew', default: 'Import Renewals')}</g:link>
 
 </div>
-<hr/>
+<hr />
 
 <g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
     <div class="ui grid">
@@ -123,7 +123,7 @@
                             %{--<td>${hit.getSource().consortiaName}</td>--}%
                             <td>
                                 <button type="submit" class="ui button" name="addBtn"
-                                        value="${hit.getSource().dbId}">${message(code: 'myinst.renewalSearch.addBtn', default: 'Add to<br/>basket')}</button>
+                                        value="${hit.getSource().dbId}">${message(code: 'myinst.renewalSearch.addBtn', default: 'Add to<br />basket')}</button>
                             </td>
                         </tr>
                     </g:each>
@@ -159,7 +159,7 @@
             <g:if test="${basket}">
 
                 <button class="ui button" type="submit" name="generate"
-                        value="yes">${message(code: 'myinst.renewalSearch.generate', default: 'Generate Comparison Sheet')}</button><br><br>
+                        value="yes">${message(code: 'myinst.renewalSearch.generate', default: 'Generate Comparison Sheet')}</button><br /><br />
             %{--<button class="ui button" type="button" name=""--}%
             %{--value="">${message(code: 'myinst.renewalSearch.generateonline', default: 'Generate Comparison Sheet Online')}</button>--}%
 
@@ -182,7 +182,7 @@
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <i class="gift icon"></i>${itm.name}
                     </g:if><g:else>
-                        <i class="folder open outline icon"></i>${itm.name}<hr/>
+                        <i class="folder open outline icon"></i>${itm.name}<hr />
                     </g:else>
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">

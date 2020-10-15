@@ -15,7 +15,7 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="createGeneralSurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>${message(code: 'createGeneralSurvey.label')}</h1>
 
 <semui:messages data="${flash}"/>
@@ -49,7 +49,7 @@
             <textarea name="comment">${params.comment}</textarea>
         </div>
 
-        <br/>
+        <br />
 
 
         <input type="submit" class="ui button"

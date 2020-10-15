@@ -8,14 +8,14 @@
 	<tbody>
 		<tr>
 			<td style="white-space: nowrap;border:1px solid #dddddd;">
-			  ${message(code:'default.date.label')}: <g:formatDate formatName="default.date.format.notime" date="${obj.startDate}"/> <br/>
-			  ${message(code:'tipp.volume')}: ${obj.startVolume} <br/>
+			  ${message(code:'default.date.label')}: <g:formatDate formatName="default.date.format.notime" date="${obj.startDate}"/> <br />
+			  ${message(code:'tipp.volume')}: ${obj.startVolume} <br />
 			  ${message(code:'tipp.issue')}: ${obj.startIssue}
 			</td>	
 
 			<td style="white-space: nowrap;border:1px solid #dddddd;"> 
-			   ${message(code:'default.date.label')}: <g:formatDate formatName="default.date.format.notime" date="${obj.endDate}"/> <br/>
-			   ${message(code:'tipp.volume')}: ${obj.endVolume} <br/>
+			   ${message(code:'default.date.label')}: <g:formatDate formatName="default.date.format.notime" date="${obj.endDate}"/> <br />
+			   ${message(code:'tipp.volume')}: ${obj.endVolume} <br />
 			   ${message(code:'tipp.issue')}: ${obj.endIssue}
 			</td>
 		</tr>

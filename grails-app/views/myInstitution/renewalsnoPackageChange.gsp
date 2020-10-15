@@ -30,9 +30,9 @@
 <g:form action="processRenewal" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
-        <hr/>
+        <hr />
         <g:if test="${entitlements}">
-            ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br/>
+            ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br />
             <table class="ui celled la-table table">
                 <tbody>
                 <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
@@ -69,7 +69,7 @@
                             class="ui button">${message(code: 'myinst.renewalUpload.accept')}</button>
                 </g:if>
             </div>
-            <br><hr/>
+            <br /><hr />
             <table class="ui celled la-table table">
                 <thead>
                 <tr>

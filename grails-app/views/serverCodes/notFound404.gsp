@@ -18,7 +18,7 @@
         <g:if test="${!flash.error}">
             <div>
                 <p>${message(code: 'serverCode.notFound.message2')}</p>
-                <br/>
+                <br />
 
                 <p>
                     <button class="ui button"

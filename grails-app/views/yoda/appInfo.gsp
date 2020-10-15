@@ -53,7 +53,7 @@
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>
         <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
         <g:each in="${esinfos}" var="es">
-            <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
+            <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
         </g:each>
     </table>
 
@@ -95,7 +95,7 @@
         <tr><td>Activity Histogram</td>
             <td>
                 <g:each in="${statsSyncService.activityHistogram}" var="ah">
-                    ${ah.key}:${ah.value}<br/>
+                    ${ah.key}:${ah.value}<br />
                 </g:each>
             </td></tr>
     </table>

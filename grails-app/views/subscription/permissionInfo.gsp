@@ -36,9 +36,9 @@
                     <td>${ol.org.name}</td>
                     <td>
                         <g:message code="subscription.license.connection" args="${[ol.roleType?.value?:'']}"/>
-                        <br/>
+                        <br />
                         <%--${message(code:'subscription.details.permissionInfo.role.info')}
-                        <br/>
+                        <br />
                         <ul>
                         <g:each in="${ol.roleType?.sharedPermissions}" var="sp">
                             <li><g:message code="default.perm.${sp.perm.code}" />

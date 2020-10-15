@@ -46,9 +46,9 @@
                         <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
 						<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/>
-						<br/>
+						<br />
 						${message(code:'package.compare.select.first', default:'Now select first package to compare (filtered by dates above). Use \'%\' as wildcard.')}
-						<br/>
+						<br />
                         <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/>
 					</td>
 					<td> 
@@ -56,9 +56,9 @@
                         <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
 						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
                         <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/>
-						<br/>
+						<br />
 						${message(code:'package.compare.select.second', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}
-						<br/>
+						<br />
                         <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}"/>
 					</td>
 				</tr>
@@ -212,7 +212,7 @@
                           <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
-                              <br>${id.ns.ns}: ${id.value}
+                              <br />${id.ns.ns}: ${id.value}
                           </g:each>
 			</td>
 			

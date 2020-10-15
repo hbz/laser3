@@ -136,7 +136,7 @@
                                                 value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
                                                 data-action="copy" checked="${true}"/>
                                 </div>
-                                <br/>
+                                <br />
                             </div>
                         </div>
                     </g:each>
@@ -155,7 +155,7 @@
                                         id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                 <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
                                 <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
-                                <br>
+                                <br />
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
 
                                 <div class="ui accordion">
@@ -330,7 +330,7 @@
             </tr>
             %{--<tr>
                 <td name="subscription.takeEntitlements.source">
-                    <strong>${message(code: 'issueEntitlement.countSubscription')} </strong>${sourceObject? sourceIEs?.size() : ""}<br>
+                    <strong>${message(code: 'issueEntitlement.countSubscription')} </strong>${sourceObject? sourceIEs?.size() : ""}<br />
                     <g:each in="${sourceIEs}" var="ie">
                         <div class="la-copyPack-container la-element">
                             <div  data-ieoid="${genericOIDService.getOID(ie)}" class="la-copyPack-item">

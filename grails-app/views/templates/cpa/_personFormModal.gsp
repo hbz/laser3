@@ -214,7 +214,7 @@
 
         <g:if test="${showContacts}">
             <div class="field">
-                <br>
+                <br />
                 <label for="contacts">
                     <g:message code="person.contacts.label"/>:
                 </label>
@@ -247,8 +247,8 @@
                     <i class="question circle icon"></i>
                 </span>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <div class="three fields">
                     <div class="field three wide fieldcontain">
@@ -278,7 +278,7 @@
 
         <g:if test="${showAddresses}">
             <div class="field">
-                <br>
+                <br />
                 <label for="addresses">
                     <g:message code="person.addresses.label"/>:
                 </label>
@@ -306,8 +306,8 @@
                     <i class="question circle icon"></i>
                 </span>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <div id="addressElements"></div>
             </g:if>

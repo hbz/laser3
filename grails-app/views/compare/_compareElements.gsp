@@ -70,7 +70,7 @@
                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                 ${license.dropdownNamingConvention()}
                             </g:link>
-                            <br>
+                            <br />
                             </g:if>
                         </g:each>
                         </article>
@@ -95,7 +95,7 @@
                             <g:link controller="subscription" action="show" target="_blank" id="${subscription.id}">
                                 ${subscription.dropdownNamingConvention()}
                             </g:link>
-                            <br>
+                            <br />
                             </g:if>
                         </g:each>
                         </article>
@@ -139,7 +139,7 @@
 
                                     </div>
                                 </g:if>
-                                <br>
+                                <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -178,7 +178,7 @@
                                     <g:link controller="organisation" action="show" target="_blank"
                                             id="${role.org.id}">${role.org.name}</g:link>)
                                             </div>
-                                    <br/>
+                                    <br />
                                 </g:each>
                             <%-- public --%>
                             <%-- private --%>
@@ -196,7 +196,7 @@
                                     <g:link controller="organisation" action="show" target="_blank"
                                             id="${role.org.id}">${role.org.name}</g:link>)
                                             </div>
-                                    <br/>
+                                    <br />
                                 </g:each><%-- private --%>
                             </g:if>
                         </g:if>
@@ -210,12 +210,12 @@
             <tr>
                 <td name="copyObject.takeIdentifier.source">
                     <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:
-                    </strong><br/>
+                    </strong><br />
                 </td>
                 <g:each in="${objects}" var="object">
                     <td class="center aligned">
                         <g:each in="${object.ids?.sort{it.ns.ns}}" var="ident">
-                            <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
+                            <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
                         </g:each>
                     </td>
                 </g:each>

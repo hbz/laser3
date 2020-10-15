@@ -19,7 +19,7 @@
     sessionCache.put("test", "${System.currentTimeSeconds()}")
     sessionCache.get("test")
 %>
-<br>
+<br />
 <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h2>
 
 
@@ -139,7 +139,7 @@
 
 <div class="ui segment">
     <g:each in="${hibernateSession.statistics}" var="hst">
-        ${hst} <br/>
+        ${hst} <br />
     </g:each>
 </div>
 

@@ -11,7 +11,7 @@
           <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
           <semui:crumb text="IE Transfer" class="active"/>
       </semui:breadcrumbs>
-        <br>
+        <br />
       <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />IE Transfer</h1>
 
       <semui:messages data="${flash}" />
@@ -51,13 +51,13 @@
 			      	<td>${targetTIPPObj.pkg.name}</td>
 			      </tr>
 			      <tr>
-			      	<td><strong>Start Date</strong> <br/><strong> End Date</strong></td>
+			      	<td><strong>Start Date</strong> <br /><strong> End Date</strong></td>
 			      	<td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sourceTIPPObj.startDate}"/><br>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sourceTIPPObj.startDate}"/><br />
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sourceTIPPObj.endDate}"/>
                     </td>
   			      	<td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${targetTIPPObj.startDate}"/><br>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${targetTIPPObj.startDate}"/><br />
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${targetTIPPObj.endDate}"/>
                     </td>
 			      </tr>

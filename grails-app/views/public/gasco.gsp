@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <br>
+    <br />
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">
@@ -170,7 +170,7 @@
                     </td>
                     <td>
                         <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)}" var="role">
-                            ${role.org?.name}<br>
+                            ${role.org?.name}<br />
                         </g:each>
                     </td>
                     %{--Task ERMS-587: Temporäres Ausblenden dieser Spalte--}%
@@ -180,7 +180,7 @@
                     <td>
 
                     ${gasco_verhandlername ?: sub.getConsortia()?.name}
-                    <br>
+                    <br />
                     <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
                         <g:set var="person" value="${personRole.getPrs()}" />
                         <g:if test="${person.isPublic}">

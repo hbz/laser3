@@ -12,7 +12,7 @@
         <semui:breadcrumbs>
             <semui:crumb message="myinst.pendingChanges.label" class="active" />
         </semui:breadcrumbs>
-        <br>
+        <br />
         <h1 class="ui icon header la-clear-before"><semui:headerIcon />
             ${message(code:'myinst.pendingChanges.label')}
             <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>

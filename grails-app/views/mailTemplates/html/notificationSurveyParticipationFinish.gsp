@@ -20,20 +20,20 @@
 <g:set var="surveyUrl" value="${survey.surveyConfigs[0].pickAndChoose ? "/survey/surveyTitlesSubscriber/${survey.surveyConfigs[0].id}?participant=${org.id}" : "/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
 
 ${message(code: 'email.text.title', locale: language)} ${userName},
-<br>
-<br>
+<br />
+<br />
 ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
-<br>
-<br>
+<br />
+<br />
 ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.name} </strong>
 
-<br>
+<br />
 (<g:formatDate format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"
                               date="${survey.startDate}"/> - <g:formatDate
         format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}" date="${survey.endDate}"/>)
 
-<br>
-<br>
+<br />
+<br />
 
 <g:if test="${surveyResults}">
     <table>
@@ -69,7 +69,7 @@ ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.na
                                 <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                             </g:if>
                         </g:each>
-                        <br>
+                        <br />
                         (${refdataValues.join('/')})
                     </g:if>
                 </td>
@@ -86,20 +86,20 @@ ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.na
         </g:each>
     </table>
 </g:if>
-<br>
-<br>
+<br />
+<br />
 ${message(code: 'email.survey.text2', locale: language)}
 ${grailsApplication.config.grails.serverURL + surveyUrl}
-<br>
-<br>
+<br />
+<br />
 --
-<br>
-<br>
+<br />
+<br />
 Mit freundlichen Grüßen,
-<br>
+<br />
 der LAS:eR-Support
-<br>
-<br>
+<br />
+<br />
 (Diese Nachricht wurde automatisch vom LAS:eR System generiert)
 </body>
 </html>

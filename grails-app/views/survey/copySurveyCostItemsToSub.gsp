@@ -31,7 +31,7 @@
     </semui:actionsDropdown>
 </semui:controlButtons>--}%
 
-<br>
+<br />
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo.name}
@@ -55,7 +55,7 @@ ${surveyInfo.name}
                     <g:if test="${parentSubscription}">
                         <g:link controller="subscription" action="show"
                                 id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
-                        <br>
+                        <br />
                         <g:link controller="subscription" action="members"
                                 id="${parentSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
@@ -119,7 +119,7 @@ ${surveyInfo.name}
                                 id="${participant.id}">
                             ${participant.sortname}
                         </g:link>
-                        <br>
+                        <br />
                         <g:link controller="organisation" action="show"
                                 id="${participant.id}">(${participant.name})</g:link>
                         <g:if test="${participant.newSub}">
@@ -140,7 +140,7 @@ ${surveyInfo.name}
                     <td>
 
                         <g:if test="${participant.surveyCostItem}">
-                            ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br>
+                            ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br />
                             <strong><g:formatNumber number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
                                                minFractionDigits="2"
                                                maxFractionDigits="2" type="number"/></strong>
@@ -164,7 +164,7 @@ ${surveyInfo.name}
                             <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSub">
 
-                                ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
+                                ${costItemParticipantSub.costItemElement?.getI10n('value')}<br />
                                 <strong><g:formatNumber
                                         number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
                                         minFractionDigits="2"
@@ -225,8 +225,8 @@ ${surveyInfo.name}
 
             <div class="eight wide field" style="text-align: right;">
                 <button class="ui button positive" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
-                <br>
-                <br>
+                <br />
+                <br />
                 <button class="ui button positive" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
             </div>
         </div>

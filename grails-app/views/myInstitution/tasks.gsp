@@ -11,7 +11,7 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.tasks" class="active"/>
         </semui:breadcrumbs>
-        <br>
+        <br />
         <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'task.plural')}</h1>
 
         <g:if test="${editable}">

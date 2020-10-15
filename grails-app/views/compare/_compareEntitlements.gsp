@@ -35,7 +35,7 @@
                         <semui:linkIcon
                                 href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                     </g:if>
-                    <br>
+                    <br />
 
                     <div class="la-icon-list">
                         <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
@@ -220,10 +220,10 @@
                                     <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ieValue.priceItem.listPrice}" type="currency"
                                                     currencySymbol="${ieValue.priceItem.listCurrency}"
                                                     currencyCode="${ieValue.priceItem.listCurrency}"/>
-                                    <br>
+                                    <br />
                                     <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ieValue.priceItem.localPrice}" type="currency"
                                                     currencySymbol="${ieValue.priceItem.localCurrency}"
-                                                    currencyCode="${ieValue.priceItem.localCurrency}"/><br>
+                                                    currencyCode="${ieValue.priceItem.localCurrency}"/><br />
                                     (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ieValue.priceItem.priceDate}"/>)
 
                                 </g:if>

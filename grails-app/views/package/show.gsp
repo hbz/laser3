@@ -209,8 +209,8 @@
                                     </g:each>
                                 </select>
 
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
                                 <div class="ui checkbox">
                                     <label>${message(code:'package.show.addEnt')}</label>
                                     <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>

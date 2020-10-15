@@ -1,5 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.FinanceService; de.laser.RefdataCategory; org.springframework.context.i18n.LocaleContextHolder;" %>
-<br>
+<br />
 <semui:form>
 
 <g:set var="financeService" bean="financeService"/>

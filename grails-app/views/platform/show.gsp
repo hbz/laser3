@@ -14,7 +14,7 @@
     <semui:crumb controller="platform" action="index" message="platform.show.all"/>
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
 

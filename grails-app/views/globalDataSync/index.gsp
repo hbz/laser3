@@ -75,11 +75,11 @@
         <tbody>
         <g:each in="${items}" var="item" status="k">
             <tr>
-                <td><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "identifier")}</a><br/>
+                <td><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "identifier")}</a><br />
                     <g:message code="globalDataSync.updated.brackets"
                                args="[formatDate(date: item.ts, format: 'dd.MM.yyyy HH:mm')]"/></td>
                 <td><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "name")}</a>
-                <hr><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "desc")}</a>
+                <hr /><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "desc")}</a>
                 </td>
                 <td><a href="${item.source.editUri}?verb=getRecord&amp;identifier=${item.identifier}&amp;metadataPrefix=${item.source.fullPrefix}">
                     ${item.source.name}</a></td>
@@ -91,7 +91,7 @@
                     <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
                                 class="ui negative button"
                                 onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted')}')">
-                        ${message(code: 'globalDataSync.track_new')}</g:link><hr>
+                        ${message(code: 'globalDataSync.track_new')}</g:link><hr />
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui negative button"
                             onclick="return confirm('${message(code: 'globalDataSync.trackingDeleted')}')">
@@ -100,7 +100,7 @@
                 </g:if>
                 <g:else>
                     <td><g:link action="newCleanTracker" controller="globalDataSync" id="${item.id}"
-                                class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link><hr>
+                                class="ui positive button">${message(code: 'globalDataSync.track_new')}</g:link><hr />
                     <g:link action="selectLocalPackage" controller="globalDataSync" id="${item.id}"
                             class="ui positive button">${message(code: 'globalDataSync.track_merge')}</g:link>
                     </td>

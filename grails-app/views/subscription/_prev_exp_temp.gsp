@@ -65,7 +65,7 @@
                             <td>
                                 <g:link controller="issueEntitlement" id="${ie.id}" action="show">${ie.tipp.title.title}</g:link>
                                 <g:if test="${ie.tipp?.hostPlatformURL}">( <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL')}</a>
-                                    <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br/>
+                                    <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br />
                                 ${message(code:'default.access.label')}: ${ie.availabilityStatus?.value}
                                 <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                                     ${message(code:'default.on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
@@ -73,23 +73,23 @@
                                 <g:if test="${ie.availabilityStatus?.value=='Expired'}">
                                     ${message(code:'default.on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                                 </g:if>
-                                <br/> ${message(code:'subscription.details.record_status')}: ${ie.status}
-                                <br/> ${message(code:'subscription.details.access_start')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
-                                <br/> ${message(code:'subscription.details.access_end')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
+                                <br /> ${message(code:'subscription.details.record_status')}: ${ie.status}
+                                <br /> ${message(code:'subscription.details.access_start')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
+                                <br /> ${message(code:'subscription.details.access_end')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
 
                             </td>
                             <td>
-                                ${ie?.tipp?.title?.getIdentifierValue('ISSN')}<br/>
+                                ${ie?.tipp?.title?.getIdentifierValue('ISSN')}<br />
                                 ${ie?.tipp?.title?.getIdentifierValue('eISSN')}
                             </td>
                             <td>
                                 ${ie.coreStatus}
                             <td>
-                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.startDate}"/> <br/>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.startDate}"/> <br />
                                 <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.endDate}"/>
                             </td>
                             <td>
-                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.coreStatusStart}"/> <br/>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.coreStatusStart}"/> <br />
                                 <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.coreStatusEnd}"/>
                             </td>
                             <td>

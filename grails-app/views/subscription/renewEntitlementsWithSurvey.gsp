@@ -32,7 +32,7 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<br>
+<br />
 
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
@@ -40,7 +40,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 <semui:surveyStatus object="${surveyConfig.surveyInfo}"/>
 </h1>
 
-<br>
+<br />
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>
@@ -209,8 +209,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     <semui:form>
                         <g:message code="subscription"/>: <strong><g:link action="show"
                                                                      id="${newSub.id}">${newSub.name}</g:link></strong>
-                        <br>
-                        <br>
+                        <br />
+                        <br />
                         <g:message code="package"/>:
 
                         <div class="ui list">

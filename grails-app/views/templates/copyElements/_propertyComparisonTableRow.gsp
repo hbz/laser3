@@ -157,10 +157,10 @@
 
                                         <g:if test="${sourceObject instanceof License && propValue.paragraph}">
                                             <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
-                                                 data-content="${propValue.paragraph}">§</div><br>
+                                                 data-content="${propValue.paragraph}">§</div><br />
                                         </g:if>
 
-                                        <g:if test="${propValues.get(sourceObject)?.size() > 1}"><br></g:if>
+                                        <g:if test="${propValues.get(sourceObject)?.size() > 1}"><br /></g:if>
                                     </g:if>
                                     <g:else>
                                         <span data-position="top left" class="la-popup-tooltip la-delay"
@@ -189,7 +189,7 @@
                                         <input type="checkbox" name="auditProperties"
                                                value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked'}/>
                                     </div>
-                                    <br>
+                                    <br />
                                 </g:if>
                             </g:each>
                         </g:if>
@@ -212,7 +212,7 @@
                                                        value="${refdataValues + refdataValue.getI10n('value')}"/>
                                             </g:if>
                                         </g:each>
-                                        <br>
+                                        <br />
                                         (${refdataValues.join('/')})
                                     </g:if>
                                 </div>
@@ -238,7 +238,7 @@
                                             data-multipleOccurrence="${propKey.multipleOccurrence}"
                                             value="${genericOIDService.getOID(propValue)}" checked="${true}"/>
                             </div>
-                            <br>
+                            <br />
                         </g:if>
                     </g:each>
                 </g:if>
@@ -295,9 +295,9 @@
 
                                             <g:if test="${targetObject instanceof License && propValue.paragraph}">
                                                 <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
-                                                     data-content="${propValue.paragraph}">§</div><br>
+                                                     data-content="${propValue.paragraph}">§</div><br />
                                             </g:if>
-                                            <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>
+                                            <g:if test="${propValues.get(targetObject)?.size() > 1}"><br /></g:if>
                                         </g:if>
                                         <g:else>
                                             <span data-position="top left" class="la-popup-tooltip la-delay"
@@ -341,7 +341,7 @@
 
                                         </g:if>
                                     </g:if>
-                                    <g:if test="${propValues.get(targetObject)?.size() > 1}"><br></g:if>
+                                    <g:if test="${propValues.get(targetObject)?.size() > 1}"><br /></g:if>
                                 </div>
                             </g:each>
                         </g:if>
@@ -370,7 +370,7 @@
                                                            value="${refdataValues + refdataValue.getI10n('value')}"/>
                                                 </g:if>
                                             </g:each>
-                                            <br>
+                                            <br />
                                             (${refdataValues.join('/')})
                                         </g:if>
                                     </div>
@@ -396,7 +396,7 @@
                                             value="${genericOIDService.getOID(propValue)}" data-action="delete"
                                             checked="${false}"/>
                             </div>
-                            <br>
+                            <br />
                         </g:each>
                     </g:if>
                 </td>

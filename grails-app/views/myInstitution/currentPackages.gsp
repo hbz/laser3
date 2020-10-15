@@ -10,7 +10,7 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.packages" class="active" />
 </semui:breadcrumbs>
-<br>
+<br />
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.packages')}
     <semui:totalNumber total="${packagesTotal}"/>
 </h1>

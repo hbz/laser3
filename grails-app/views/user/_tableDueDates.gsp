@@ -169,7 +169,7 @@
                         %{--/>--}%
                     </laser:remoteLink>
                 </g:else>
-                    %{--<hr>--}%
+                    %{--<hr />--}%
                     %{--<semui:xEditableBoolean owner="${dashDueDate.dueDateObject}" field="isDone" />--}%
                     %{--<div class="ui checkbox">--}%
                         %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%

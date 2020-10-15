@@ -17,7 +17,7 @@
         <g:if test="${!flash.error}">
             <div>
                 <p>Die angefragte Funktion steht zur Zeit nicht zur Verfügung. Bitte versuchen Sie es später erneut.</p>
-                    <br/>
+                    <br />
 
                 <p>
                     <button class="ui button"

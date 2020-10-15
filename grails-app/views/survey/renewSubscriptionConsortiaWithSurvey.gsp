@@ -46,7 +46,7 @@ ${surveyInfo.name}
 <g:form action="processRenewalWithSurvey" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
-        <hr/>
+        <hr />
 
         <table class="ui celled la-table table">
             <tbody>

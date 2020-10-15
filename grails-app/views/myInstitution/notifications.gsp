@@ -11,7 +11,7 @@
         <semui:breadcrumbs>
             <semui:crumb message="myinst.acceptedChanges.label" class="active" />
         </semui:breadcrumbs>
-        <br>
+        <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
             ${message(code:'myinst.acceptedChanges.label')}
             <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>
@@ -40,17 +40,17 @@
                             <strong>
                                 <g:if test="${change instanceof Subscription}">
                                     <strong>${message(code:'subscription')}</strong>
-                                    <br>
+                                    <br />
                                     <g:link controller="subscription" action="changes" id="${change.id}"> ${change.toString()}</g:link>
                                 </g:if>
                                 <g:if test="${change instanceof License}">
                                     <strong>${message(code:'license.label')}</strong>
-                                    <br>
+                                    <br />
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
                                 <g:if test="${change instanceof PendingChange && change.costItem}">
                                     <strong>${message(code:'financials.costItem')}</strong>
-                                    <br>
+                                    <br />
                                     ${raw(change.desc)}
                                     <g:link class="ui green button" controller="finance" action="acknowledgeChange" id="${change.id}"><g:message code="pendingChange.acknowledge"/></g:link>
                                 </g:if>

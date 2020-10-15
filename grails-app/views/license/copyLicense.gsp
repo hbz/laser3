@@ -17,7 +17,7 @@
         <semui:crumb class="active" message="myinst.copyLicense" />
     </g:if>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}</h1>
 
@@ -39,13 +39,13 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             <div class="description">
                 <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                 <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
-                <br>
+                <br />
                 <i class="image outline icon"></i>${message(code: 'license.type.label')}
                 <i class="cloud icon"></i>${message(code: 'license.licenseUrl.label')}
                 <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
-                <br>
+                <br />
                 <i class="shipping fast icon"></i>${message(code: 'license.isPublicForApi.label')}
-                <br>
+                <br />
                 <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                 <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 

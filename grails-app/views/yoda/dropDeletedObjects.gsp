@@ -10,7 +10,7 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb text="Datenbereinigung" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h2>
 
     <br />
@@ -18,8 +18,8 @@
     <h3 class="ui header">Lizenzen - ${subscriptions.size()}</h3>
 
     <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
-    <br/>
-    <br/>
+    <br />
+    <br />
 
     <g:each in="${subscriptions}" var="sub">
         <a href="<g:createLink controller="subscription" action="delete" params="${[id: sub.id]}"/>" target="_blank">
@@ -31,7 +31,7 @@
             </g:else>
         </a>
         > ${sub} > ${sub.status.getI10n('value')}
-        <br/>
+        <br />
     </g:each>
 
     <br />
@@ -55,7 +55,7 @@
                 <span class="ui label green">${lic.id}</span>
             </g:else>
         </a>
-        > ${lic} <br/>
+        > ${lic} <br />
     </g:each>
 
     <br />

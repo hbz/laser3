@@ -104,7 +104,7 @@
 
                     </dl>
 
-                    <br>
+                    <br />
 
                     <div class="ui form">
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
@@ -301,7 +301,7 @@
                                     <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                                 </g:if>
                             </g:each>
-                            <br>
+                            <br />
                             (${refdataValues.join('/')})
                         </g:if>
 
@@ -425,7 +425,7 @@
                                 <g:set var="refdataValues"
                                        value="${refdataValues + refdataValue.getI10n('value')}"/>
                             </g:each>
-                            <br>
+                            <br />
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>

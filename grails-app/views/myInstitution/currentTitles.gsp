@@ -213,16 +213,16 @@
                                     </div>
                                     <div class="eight wide column">
                                         ${message(code: 'subscription.details.coverage_dates')}
-                                        <br>
+                                        <br />
                                         ${message(code: 'default.from')}
-                                        <br>
+                                        <br />
                                         ${message(code: 'default.to')}
                                     </div>
                                     <div class="eight wide column">
                                         ${message(code: 'subscription.details.access_dates')}
-                                        <br>
+                                        <br />
                                         ${message(code: 'default.from')}
-                                        <br>
+                                        <br />
                                         ${message(code: 'default.to')}
                                     </div>
                                     <div class="sixteen wide column">
@@ -245,13 +245,13 @@
                                 </g:if>
 
                                 <g:if test="${ti instanceof BookInstance && (ti.firstAuthor || ti.firstEditor)}">
-                                    <br><strong>${ti?.getEbookFirstAutorOrFirstEditor()}</strong>
+                                    <br /><strong>${ti?.getEbookFirstAutorOrFirstEditor()}</strong>
                                 </g:if>
 
                                 <g:if test="${ti instanceof BookInstance && ti.editionStatement}">
                                     <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${ti.editionStatement}
                                     </div>
-                                    <br/>
+                                    <br />
                                 </g:if>
 
 
@@ -270,7 +270,7 @@
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>
-                                <br/>
+                                <br />
 
                                 <div class="ui list">
 
@@ -319,10 +319,10 @@
                                             <g:link controller="subscription" action="index"
                                                     id="${ie.subscription.id}">${ie.subscription.name}</g:link>
                                             &nbsp;
-                                            <br/>
+                                            <br />
                                             <g:link controller="issueEntitlement" action="show"
                                                     id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                            <br/>
+                                            <br />
                                         </div>
 
                                         <div class="eight wide centered column">
@@ -344,11 +344,11 @@
                                                 <!-- von --->
                                                 <g:each in="${ie.coverages}" var="coverage" status="i">
 
-                                                    <semui:xEditable owner="${coverage}" type="date" field="startDate"/><br>
+                                                    <semui:xEditable owner="${coverage}" type="date" field="startDate"/><br />
 
                                                     <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                        data-content="${message(code: 'tipp.volume')}"></i>
-                                                    <semui:xEditable owner="${coverage}" field="startVolume"/><br>
+                                                    <semui:xEditable owner="${coverage}" field="startVolume"/><br />
 
                                                     <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
                                                        data-content="${message(code: 'tipp.issue')}"></i>
@@ -356,10 +356,10 @@
 
                                                     <semui:dateDevider/>
                                                     <!-- bis -->
-                                                    <semui:xEditable owner="${coverage}" type="date" field="endDate"/><br>
+                                                    <semui:xEditable owner="${coverage}" type="date" field="endDate"/><br />
                                                     <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                        data-content="${message(code: 'tipp.volume')}"></i>
-                                                    <semui:xEditable owner="${coverage}" field="endVolume"/><br>
+                                                    <semui:xEditable owner="${coverage}" field="endVolume"/><br />
 
                                                     <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
                                                        data-content="${message(code: 'tipp.issue')}"></i>
@@ -395,7 +395,7 @@
                                         </div>
                                         <div class="sixteen wide column">
                                             <g:if test="${ie.priceItem}">
-                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/><br>
+                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/><br />
                                                 <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency?.value}" currencySymbol="${ie.priceItem.localCurrency?.value}"/>
                                                 (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
                                             </g:if>
@@ -411,10 +411,10 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br><strong><g:message code="result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
                 </g:else>
             </g:else>
         </div>

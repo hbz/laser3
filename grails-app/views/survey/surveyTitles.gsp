@@ -48,7 +48,7 @@
 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
 <g:message code="showSurveyInfo.pickAndChoose.Package"/>
 </p>
-<br>
+<br />
 <g:link controller="subscription" class="ui button" action="index" target="_blank" id="${surveyConfig.subscription.id}">
     ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
 </g:link>
@@ -126,7 +126,7 @@
                         <g:if test="${ie.tipp.hostPlatformURL}">
                             <semui:linkIcon href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
                         </g:if>
-                        <br>
+                        <br />
                         <!-- START TEMPLATE -->
 
                         <g:render template="/templates/title"
@@ -186,7 +186,7 @@
                         %{--<semui:xEditableRefData
                                     field="listCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
                                     config="Currency"/> --}%
-                        <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br>
+                        <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br />
                             <strong> <g:message code="tipp.localPrice"/>:</strong>
                             <semui:xEditable field="localPrice"
                                                                                   owner="${ie.priceItem}"

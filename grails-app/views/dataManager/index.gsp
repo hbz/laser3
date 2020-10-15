@@ -10,13 +10,13 @@
     <semui:breadcrumbs>
       <semui:crumb message="menu.datamanager.dash" class="active"/>
     </semui:breadcrumbs>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.dash')}</h1>
 
   <semui:messages data="${flash}" />
 
     <g:if test="${pendingChanges?.size() > 0}">
-        <br>
+        <br />
         <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code:'datamanager.pending.label')}</h2>
         <table class="ui celled la-table table">
           <thead>
@@ -29,7 +29,7 @@
             <g:each in="${pendingChanges}" var="pc">
               <tr>
                 <td>
-                  <g:link controller="package" action="show" id="${pc.pkg.id}">${pc.pkg.name}</g:link> <br/>${pc.desc}
+                  <g:link controller="package" action="show" id="${pc.pkg.id}">${pc.pkg.name}</g:link> <br />${pc.desc}
                 </td>
                 <td class="x">
                   <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui positive button">${message(code:'datamanager.accept.label')}</g:link>

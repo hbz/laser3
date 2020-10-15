@@ -19,7 +19,7 @@
     <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="ui button negative">
         <i class="icon trash alternate"></i> &nbsp;  Delete all</g:link>
 
-    <br/>
+    <br />
 
     <table class="ui table compact">
         <tbody>

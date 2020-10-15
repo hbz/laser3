@@ -122,7 +122,7 @@
                     </div>
                 </div>
             </div>
-            <hr/>
+            <hr />
         </g:else>
 
         <g:if test="${!tmplHideContacts}">

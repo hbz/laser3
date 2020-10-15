@@ -16,7 +16,7 @@
 <body>
 <div>
     <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
-    <br>
+    <br />
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
         <semui:controlButtons>
@@ -207,7 +207,7 @@
     </g:if>
 </div>
 
-<br>
+<br />
 
 <div class="la-inline-lists">
     <g:render template="link"

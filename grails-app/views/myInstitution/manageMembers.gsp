@@ -108,10 +108,10 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br><strong><g:message code="filter.result.empty.object" args="${[memberPlural]}"/></strong>
+        <br /><strong><g:message code="filter.result.empty.object" args="${[memberPlural]}"/></strong>
     </g:if>
     <g:else>
-        <br><strong><g:message code="result.empty.object" args="${[memberPlural]}"/></strong>
+        <br /><strong><g:message code="result.empty.object" args="${[memberPlural]}"/></strong>
     </g:else>
 </g:else>
 

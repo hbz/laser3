@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.fileConsistency" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h2 class="ui header la-noMargin-top">${message(code: "menu.admin.fileConsistency")}</h2>
 
@@ -128,9 +128,9 @@
             </tbody>
          </table>
 
-        <br/>
-        <br/>
-        <br/>
+        <br />
+        <br />
+        <br />
 
         <h3 class="ui headerline"><i class="ui tasks icon"></i> ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</h3>
 

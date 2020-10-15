@@ -24,7 +24,7 @@
                   <td>${mpg.colname}</td>
                   <td>${mpg.desc}
                       <g:if test="${mpg.type=='vocab'}">
-                        <br/>Must be one of : <ul>
+                        <br />Must be one of : <ul>
                           <g:each in="${mpg.mapping}" var="m,k">
                             <li>${m}</li>
                           </g:each>

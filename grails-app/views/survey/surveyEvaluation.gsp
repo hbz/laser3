@@ -51,7 +51,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
     <div class="ui segment">
@@ -70,7 +70,7 @@
             ${surveyConfig.getConfigNameShort()}
         </g:else>: ${message(code: 'surveyEvaluation.label')}
     </h2>
-    <br>
+    <br />
 
     <div class="ui grid">
 

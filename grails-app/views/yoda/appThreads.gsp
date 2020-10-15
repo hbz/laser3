@@ -12,7 +12,7 @@
         <semui:crumb message="menu.yoda.dash" />
         <semui:crumb message="menu.yoda.appThreads" class="active"/>
     </semui:breadcrumbs>
-    <br>
+    <br />
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.appThreads')}</h2>
 
     <h4 class="ui header">Anzahl gefundener Threads: ${Thread.getAllStackTraces().keySet().size()}</h4>

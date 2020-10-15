@@ -98,7 +98,7 @@
 
     <g:if test="${hiddenPropertiesMessages.size() > 0}">
         <div class="content">
-            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br />')}" />
         </div>
     </g:if>
 

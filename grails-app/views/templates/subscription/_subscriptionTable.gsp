@@ -110,7 +110,7 @@
                                         }).done(function(data) {
                                                 let link = "<g:createLink controller="license" action="show"/>";
                                                 $.each(data.results,function(k,v) {
-                                                    $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br>');
+                                                    $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br />');
                                                 });
                                             });
                                     </script>
@@ -120,7 +120,7 @@
                                         <g:set var="license" value="${row.sourceLicense}"/>
                                         <div class="la-flexbox">
                                             <i class="icon balance scale la-list-icon"></i>
-                                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                         </div>
                                     </g:if>
                                 </g:each>
@@ -188,7 +188,7 @@
                             </td>
                         --%>
                         <td>
-                            <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
+                            <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
                             <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
@@ -302,17 +302,17 @@
     </g:if>
     <g:else>
         <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+            <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
         </g:if>
         <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+            <br /><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
         </g:else>
     </g:else>
 
 </div>
 
     <g:if test="${compare}">
-        <br>
+        <br />
         <input type="submit" class="ui button" value="${message(code:'menu.my.comp_sub')}" />
     </g:if>
 

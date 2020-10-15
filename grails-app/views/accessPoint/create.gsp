@@ -19,7 +19,7 @@
     <semui:crumb controller="organisation" action="accessPoints" id="${orgInstance.id}" message="org.nav.accessPoints"/>
     <semui:crumb message="accessPoint.new" class="active"/>
   </semui:breadcrumbs>
-  <br>
+  <br />
 
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
   ${orgInstance.name}

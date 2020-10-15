@@ -1,5 +1,5 @@
 <%@ page import="de.laser.SurveyConfig;" %>
-<br>
+<br />
 %{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
     <h3 class="ui icon header"><semui:headerIcon/>
     <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
@@ -17,8 +17,8 @@
                 class="ui icon button right floated">
             <g:message code="surveyParticipants.addSubMembersToSurvey"/>
         </g:link>
-    <br>
-    <br>
+    <br />
+    <br />
 
 
 </div>
@@ -54,8 +54,8 @@
 
     </g:if>
     </div>
-    <br>
-    <br>
+    <br />
+    <br />
 
 
     <g:render template="/templates/filter/orgFilterTable"
@@ -79,15 +79,15 @@
     </g:if>
     </div>
 
-    <br>
-    <br>
+    <br />
+    <br />
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyParticipantsHasNotAccess,
                       tmplShowCheckbox: editable,
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
-    <br/>
+    <br />
 
     <g:if test="${selectedSubParticipants && editable}">
         <input type="submit" class="ui negative button"

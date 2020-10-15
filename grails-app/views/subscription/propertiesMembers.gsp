@@ -18,7 +18,7 @@
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
@@ -31,7 +31,7 @@
 
 <h4>
     <g:message code="subscription"/>:
-    <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link><br><br>
+    <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link><br /><br />
 
 </h4>
 
@@ -99,7 +99,7 @@
 %{--<div class="ui segment">
 
     <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
-    <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+    <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.isRefdataValueType()}">
         <g:set var="refdataValues" value="${[]}"/>
         <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
@@ -107,7 +107,7 @@
             <g:set var="refdataValues"
                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
         </g:each>
-        <br>
+        <br />
         (${refdataValues.join('/')})
     </g:if>
 
@@ -672,7 +672,7 @@
 </g:if>
 <g:else>
 
-    <br>
+    <br />
 
     <g:if test="${!filteredSubChilds}">
         <strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>

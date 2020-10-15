@@ -177,7 +177,7 @@
 
             </g:else>
 
-            <br>
+            <br />
             <g:if test="${surveyConfig}">
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
@@ -214,8 +214,8 @@
             </g:else>
         </div>
 
-        <br>
-        <br>
+        <br />
+        <br />
 
         <g:form action="surveyConfigFinish" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">

@@ -33,7 +33,7 @@
                 <g:if test="${tipp.hostPlatformURL}">
                     <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
-                <br>
+                <br />
                 <div class="la-icon-list">
                     <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
                         <div class="item">
@@ -192,24 +192,24 @@
                                 <div class="content">
                                     <div class="la-card-column">
                                         <!-- von -->
-                                        <g:formatDate date="${coverage.startDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                        <g:formatDate date="${coverage.startDate}" format="${message(code:'default.date.format.notime')}"/><br />
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                                        ${coverage.startVolume}<br>
+                                        ${coverage.startVolume}<br />
                                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
                                         ${coverage.startIssue}
                                         <semui:dateDevider/>
                                         <!-- bis -->
-                                        <g:formatDate date="${coverage.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                        <g:formatDate date="${coverage.endDate}" format="${message(code:'default.date.format.notime')}"/><br />
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                                        ${coverage.endVolume}<br>
+                                        ${coverage.endVolume}<br />
                                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
                                         ${coverage.endIssue}
                                     </div>
                                     <div class="la-card-column-with-row">
                                         <div class="la-card-row">
-                                            <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br>
-                                            <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br>
-                                            <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br>
+                                            <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br />
+                                            <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br />
+                                            <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br />
                                         </div>
                                     </div>
                                 </div>

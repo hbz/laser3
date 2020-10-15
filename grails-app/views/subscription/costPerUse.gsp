@@ -10,7 +10,7 @@
   <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
-    <br>
+    <br />
     <semui:messages data="${flash}" />
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />

@@ -201,7 +201,7 @@
                                         <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         ${license.reference}
-                                        <br>
+                                        <br />
                                     </div>
                                 </g:link>
                             </g:each>
@@ -232,7 +232,7 @@
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                             ${license.reference}
                                         </g:link>
-                                        <br>
+                                        <br />
                                     </div>
                                 </g:each>
                             </div>
@@ -266,7 +266,7 @@
                                 ${source_role.org.name}
                             </g:link>
 
-                            <br>
+                            <br />
                         </div>
                     </g:if>
                 </g:each>
@@ -280,7 +280,7 @@
                                     <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles"
                                            value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
                                 </div>
-                                <br>
+                                <br />
                             </g:if>
                         </g:each>
 
@@ -296,7 +296,7 @@
                                 <g:checkBox name="copyObject.takeOrgRelations" data-action="copy"
                                             value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
-                            <br/>
+                            <br />
                         </g:if>
                     </g:each>
                 </td>
@@ -335,7 +335,7 @@
                                             </div>
                                         </g:if>
                                     </div>
-                                    <br>
+                                    <br />
                                 </g:if>
                             </g:each>
                         </div>
@@ -347,7 +347,7 @@
                                     <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete"
                                                 value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                                 </div>
-                                <br/>
+                                <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -386,7 +386,7 @@
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
                                             </div>
-                                            <br/>
+                                            <br />
                                         </g:each>
                                     <%-- public --%>
                                     <%-- private --%>
@@ -406,7 +406,7 @@
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
                                             </div>
-                                            <br/>
+                                            <br />
                                         </g:each><%-- private --%>
                                     </g:if>
                                 </g:if>
@@ -433,7 +433,7 @@
                                                         value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
-                                        <br/>
+                                        <br />
                                     </g:each>
                                 </g:if><%-- public --%>
                             <%-- private --%>
@@ -446,7 +446,7 @@
                                                         value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
-                                        <br/>
+                                        <br />
                                     </g:each>
                                 </g:if><%-- private --%>
                             </g:if>
@@ -481,7 +481,7 @@
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
                                                 </div>
-                                                <br/>
+                                                <br />
                                             </g:each>
                                         <%-- public --%>
                                         <%-- private --%>
@@ -502,7 +502,7 @@
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
                                                 </div>
-                                                <br/>
+                                                <br />
                                             </g:each>
                                         <%-- private --%>
                                         </g:if>
@@ -524,7 +524,7 @@
                                                             value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
-                                            <br/>
+                                            <br />
                                         </g:each>
                                     </g:if><%-- public --%>
                                 <%-- private --%>
@@ -537,7 +537,7 @@
                                                             value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
-                                            <br/>
+                                            <br />
                                         </g:each>
                                     </g:if><%-- private --%>
 
@@ -552,10 +552,10 @@
                 <tr>
                     <td name="copyObject.takeIdentifier.source">
                         <div>
-                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
+                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${sourceIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
-                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
+                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -574,16 +574,16 @@
                                                 data-action="copy"/>
                                 </div>
                             </div>
-                            <br/>
+                            <br />
                         </g:each>
                     </td>
                     <g:if test="${!copyObject}">
                         <td name="copyObject.takeIdentifier.target">
                             <div>
-                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br/>
+                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${targetIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
-                                    <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br/>
+                                    <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
                                 </div>
                             </g:each>
                             </div>
@@ -597,7 +597,7 @@
                                                     data-action="delete" checked="${false}"/>
                                     </div>
                                 </div>
-                                <br/>
+                                <br />
                             </g:each>
                         </td>
                     </g:if>

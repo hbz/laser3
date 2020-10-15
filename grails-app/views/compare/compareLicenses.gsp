@@ -12,7 +12,7 @@
     <semui:crumb text="${message(code: 'menu.my.licenses')}" controller="myInstitution" action="currentLicenses"/>
     <semui:crumb class="active" message="menu.my.comp_lic"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.my.comp_lic')}</h1>
 
@@ -30,13 +30,13 @@
                       value="${RDStore.LICENSE_CURRENT.id}"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       onchange="adjustDropdown()"/>
-        </div<br/>
+        </div<br />
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
                                 onchange="adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
-                </div><br/>
+                </div><br />
             </g:if>
         %{--<div class="ui checkbox">
             <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="adjustDropdown()"/>
@@ -71,8 +71,8 @@
 
 <g:if test="${objects}">
     <g:render template="nav"/>
-    <br>
-    <br>
+    <br />
+    <br />
 
     <g:if test="${params.tab == 'compareProperties'}">
         <g:render template="compareProperties"/>

@@ -12,7 +12,7 @@
           <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
-  <br>
+  <br />
   <h1 class="ui icon header la-clear-before la-noMargin-top">
             <semui:headerTitleIcon type="${ti.printTitleType()}"/>
             ${ti.title}
@@ -190,14 +190,14 @@
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='from'}">
-                          <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
+                          <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br />
                         </g:if>
                       </g:each>
                     </td>
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='to'}">
-                          <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
+                          <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br />
                         </g:if>
                       </g:each>
                     </td>
@@ -254,7 +254,7 @@
                          href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}"
                          target="_blank">
                           <i class="cloud icon"></i>
-                      </a><br>
+                      </a><br />
                   </g:if>
 
                   <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
@@ -323,17 +323,17 @@
                   <g:each in="${t.coverages}" var="covStmt">
                       <p>
                           <!-- von -->
-                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/><br>
-                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.startVolume}<br>
-                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.startIssue}<br>
+                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/><br />
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.startVolume}<br />
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.startIssue}<br />
                           <semui:dateDevider/>
                           <!-- bis -->
-                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br>
-                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.endVolume}<br>
-                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.endIssue}<br>
-                          <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${covStmt.coverageNote}<br>
-                          <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${covStmt.coverageDepth}<br>
-                          <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${covStmt.embargo}<br>
+                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br />
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.endVolume}<br />
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.endIssue}<br />
+                          <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${covStmt.coverageNote}<br />
+                          <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${covStmt.coverageDepth}<br />
+                          <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${covStmt.embargo}<br />
                       </p>
                   </g:each>
               </td>
@@ -352,7 +352,7 @@
 
   </table>
 
-            <br><br>
+            <br /><br />
 
   </body>
 </html>

@@ -15,7 +15,7 @@
 
     <semui:form>
       <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
-          <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br/><br/>
+          <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br /><br />
         <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload')}</button>
       </g:form>
     </semui:form>
@@ -37,9 +37,9 @@
 
 
         <div>
-        <hr/>
+        <hr />
             <g:if test="${entitlements}">
-                ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br/>
+                ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br />
                 <table class="ui celled la-table table">
                     <tbody>
                     <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
@@ -74,7 +74,7 @@
                         <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
                     </g:if>
                 </div>
-                <br><hr/>
+                <br /><hr />
                 <table class="ui celled la-table table">
                     <thead>
                     <tr>

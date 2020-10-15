@@ -19,7 +19,7 @@
     <semui:crumb class="active" id="${issueEntitlementInstance.id}"
                  text="${issueEntitlementInstance.tipp.title.title}"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="${issueEntitlementInstance.tipp.title.printTitleType()}"/>
@@ -48,7 +48,7 @@
                 <semui:linkIcon
                         href="${issueEntitlementInstance.tipp.hostPlatformURL.startsWith('http') ? issueEntitlementInstance.tipp.hostPlatformURL : 'http://' + issueEntitlementInstance.tipp.hostPlatformURL}"/>
             </g:if>
-            <br>
+            <br />
 
         <!-- START TEMPLATE -->
 
@@ -57,7 +57,7 @@
         <!-- END TEMPLATE -->
 
             <g:if test="${issueEntitlementInstance.tipp.title instanceof BookInstance}">
-                <br>
+                <br />
 
                 <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
 
@@ -79,7 +79,7 @@
 
             </g:if>
 
-            <br>
+            <br />
 
             <div class="la-title">${message(code: 'subscription.details.access_dates')}</div>
 
@@ -113,7 +113,7 @@
             </div>
 
             <g:if test="${issueEntitlementInstance.priceItem}">
-                <br>
+                <br />
 
                 <div class="la-title">${message(code: 'subscription.details.prices')}</div>
 
@@ -140,7 +140,7 @@
             </g:if>
 
             <g:if test="${issueEntitlementInstance.ieGroups}">
-                <br>
+                <br />
 
                 <div class="la-title">${message(code: 'subscription.details.ieGroups')}</div>
 
@@ -274,7 +274,7 @@
 
 
     <g:if test="${(institutional_usage_identifier) && (usage != null) && (usage.size() > 0)}">
-        <br/>
+        <br />
 
         <div class="ui card">
             <div class="content">
@@ -368,7 +368,7 @@
 
 
     <g:if test="${issueEntitlementInstance.tipp.title instanceof JournalInstance}">
-        <br/>
+        <br />
 
         <div class="ui card">
             <div class="content">
@@ -422,7 +422,7 @@
 
 
     <g:if test="${issueEntitlementInstance.tipp.title.tipps}">
-        <br/>
+        <br />
 
         <div class="ui card">
         <div class="content">

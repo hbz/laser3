@@ -18,7 +18,7 @@
                 <tr>
                     <th>${message(code:'package.label')}</th>
                     <th>${message(code:'financials.newCosts.singleEntitlement')}</th>
-                    <th>${message(code:'financials.invoice_total')} /<br/>${message(code:'financials.costInLocalCurrency')}</th>
+                    <th>${message(code:'financials.invoice_total')} /<br />${message(code:'financials.costInLocalCurrency')}</th>
                     <th>Zuletzt aktualisiert</th>
                 </tr>
             </thead>

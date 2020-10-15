@@ -13,7 +13,7 @@
     </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
-        <br>
+        <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Affiliations</h1>
 
         <table class="ui celled la-table table">

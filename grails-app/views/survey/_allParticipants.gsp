@@ -9,4 +9,4 @@ ${surveyConfigSubOrgs?.id}
                       surveyConfig: surveyConfig
               ]"/>
 
-    <br/>
+    <br />

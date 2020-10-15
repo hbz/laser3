@@ -72,17 +72,17 @@
                           tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType']
                   ]"/>
 
-        <br/>
+        <br />
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
     </g:form>
     </g:if>
     <g:else>
         <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+            <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
         </g:if>
         <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
+            <br /><strong><g:message code="result.empty.object" args="${[message(code:"myinst.consortiaSubscriptions.consortia")]}"/></strong>
         </g:else>
     </g:else>
 

@@ -127,7 +127,7 @@
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox">
                             <i class="icon balance scale la-list-icon"></i>
-                            <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br>
+                            <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br />
                         </div>
                     </g:each>
                 </td>
@@ -141,7 +141,7 @@
                 </td>
                 <td>
                     <g:each in="${subCons.providers}" var="p">
-                        <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br/>
+                        <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br />
                     </g:each>
                 </td>
                 <g:if test="${'withCostItems' in tableConfig}">
@@ -251,7 +251,7 @@
             <g:each in="${finances}" var="entry">
                 <tr>
                     <td colspan="6">
-                        ${message(code:'financials.sum.billing')} ${entry.key}<br>
+                        ${message(code:'financials.sum.billing')} ${entry.key}<br />
                     </td>
                     <td class="la-exposed-bg">
                         <g:formatNumber number="${entry.value}" type="currency" currencySymbol="${entry.key}"/>
@@ -268,10 +268,10 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br><strong><g:message code="filter.result.empty"/></strong>
+        <br /><strong><g:message code="filter.result.empty"/></strong>
     </g:if>
     <g:else>
-        <br><strong><g:message code="result.empty"/></strong>
+        <br /><strong><g:message code="result.empty"/></strong>
     </g:else>
 </g:else>
 

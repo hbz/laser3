@@ -44,29 +44,29 @@
                             ${address.name}
                         </g:if>
                         <g:if test="${address.additionFirst}">
-                            <br/>
+                            <br />
                             ${address.additionFirst}
                         </g:if>
                         <g:if test="${address.additionSecond}">
-                            <br/>
+                            <br />
                             ${address.additionSecond}
                         </g:if>
                         <g:if test="${address.street_1 || address.street_2}">
-                            <br/>
+                            <br />
                             ${address.street_1} ${address.street_2}
                         </g:if>
                         <g:if test="${address.zipcode || address.city}">
-                            <br/>
+                            <br />
                             ${address.zipcode} ${address.city}
                         </g:if>
                         <g:if test="${address.region || address.country}">
-                            <br/>
+                            <br />
                             ${address.region?.getI10n('value')}
                             <g:if test="${address.region && address.country}">,</g:if>
                             ${address.country?.getI10n('value')}
                         </g:if>
                         <g:if test="${address.pob || address.pobZipcode || address.pobCity}">
-                            <br/>
+                            <br />
                             <g:message code="address.pob.label"/>
                             ${address.pob}
                             <g:if test="${address.pobZipcode || address.pobCity}">,</g:if>

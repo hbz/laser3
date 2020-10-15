@@ -9,7 +9,7 @@
 
 <body>
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         ${orgInstance?.name}
     </h1>

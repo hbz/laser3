@@ -45,13 +45,13 @@
                 <h4 class="ui header">${message(code: 'serverCode.error.message')}</h4>
                 <p>${request.forwardURI}</p>
                 <p>${exception.message}</p>
-                <br/>
+                <br />
                 <p>
                     <a href="mailto:laser@hbz-nrw.de?${mailString}">
                         <g:message code="serverCode.error.sendSupportMail"/>
                     </a>
                 </p>
-                <br/>
+                <br />
                 <p>
                     <button class="ui button" onclick="window.history.back()">${message(code: 'default.button.back')}</button>
                 </p>

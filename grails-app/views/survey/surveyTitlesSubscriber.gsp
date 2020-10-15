@@ -100,7 +100,7 @@
     </semui:form>
 </g:if>
 
-<br>
+<br />
 
 
 <div class="la-inline-lists">
@@ -160,13 +160,13 @@
 
 </div><!-- .grid -->
 
-<br>
-<br>
+<br />
+<br />
 
 
 
-<br>
-<br>
+<br />
+<br />
 
 </body>
 </html>

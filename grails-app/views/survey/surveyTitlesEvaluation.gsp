@@ -37,7 +37,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <div class="ui grid">
 
@@ -71,8 +71,8 @@
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
                                 </g:link>
                 </g:if>
-                <br>
-                <br>
+                <br />
+                <br />
                 <semui:form>
 
                     <h4><g:message code="surveyParticipants.hasAccess"/></h4>
@@ -90,8 +90,8 @@
                     </g:if>
                     </div>
 
-                    <br>
-                    <br>
+                    <br />
+                    <br />
 
                     <table class="ui celled sortable table la-table">
                         <thead>
@@ -171,8 +171,8 @@
                     </g:if>
                     </div>
 
-                    <br>
-                    <br>
+                    <br />
+                    <br />
 
                     <table class="ui celled sortable table la-table">
                         <thead>
@@ -243,7 +243,7 @@
 
             <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                     total="${participantsNotFinish?.size()}"/></h2>
-            <br>
+            <br />
 
             <semui:form>
 
@@ -262,8 +262,8 @@
                 </g:if>
                 </div>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <table class="ui celled sortable table la-table">
                     <thead>
@@ -342,8 +342,8 @@
                 </g:if>
                 </div>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <table class="ui celled sortable table la-table">
                     <thead>
@@ -414,7 +414,7 @@
 
             <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                     total="${participants?.size()}"/></h2>
-            <br>
+            <br />
 
             <semui:form>
 
@@ -433,8 +433,8 @@
                 </g:if>
                 </div>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <table class="ui celled sortable table la-table">
                     <thead>
@@ -513,8 +513,8 @@
                 </g:if>
                 </div>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <table class="ui celled sortable table la-table">
                     <thead>

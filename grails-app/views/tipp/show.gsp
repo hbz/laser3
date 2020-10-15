@@ -14,7 +14,7 @@
                  text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
     <semui:crumb text="${tipp.title.title} [${message(code: 'title.label')}]" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 <g:message code="tipp.show.label" args="${[titleInstanceInstance?.title, tipp.pkg.name, tipp.platform.name]}"/>
 </h1>
@@ -63,20 +63,20 @@
                             <div class="la-card-column">
                                 <!-- von -->
                                 <g:formatDate date="${coverage.startDate}"
-                                              format="${message(code: 'default.date.format.notime')}"/><br>
+                                              format="${message(code: 'default.date.format.notime')}"/><br />
                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'tipp.volume')}"></i>
-                                ${coverage.startVolume}<br>
+                                ${coverage.startVolume}<br />
                                 <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'tipp.issue')}"></i>
                                 ${coverage.startIssue}
                                 <semui:dateDevider/>
                                 <!-- bis -->
                                 <g:formatDate date="${coverage.endDate}"
-                                              format="${message(code: 'default.date.format.notime')}"/><br>
+                                              format="${message(code: 'default.date.format.notime')}"/><br />
                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'tipp.volume')}"></i>
-                                ${coverage.endVolume}<br>
+                                ${coverage.endVolume}<br />
                                 <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'tipp.issue')}"></i>
                                 ${coverage.endIssue}
@@ -85,11 +85,11 @@
                             <div class="la-card-column-with-row">
                                 <div class="la-card-row">
                                     <i class="grey icon file alternate right la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br>
+                                       data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br />
                                     <i class="grey icon quote right la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br>
+                                       data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br />
                                     <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br>
+                                       data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br />
                                 </div>
                             </div>
                         </div>
@@ -160,13 +160,13 @@
                 </g:else>
             </div>
         </div>
-        <br>
+        <br />
         <g:if test="${tipp.hostPlatformURL}">
             <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
         </g:if>
 
         <%--
-        <br>
+        <br />
         <dl>
             <dt style="margin-top:10px"><g:message code="tipp.additionalPlatforms"/></dt>
             <dd>
@@ -192,7 +192,7 @@
     </div>
 </semui:form>
 
-<br>
+<br />
 <semui:form>
 
     <h4><g:message code="titleInstance.tipps.label"

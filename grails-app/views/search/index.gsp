@@ -184,7 +184,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 
 
 
-        <br>
+        <br />
         <div class="ui stackable grid">
             <div class="four wide column">
                 <div class="ui la-filter segment">
@@ -448,13 +448,13 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
                                         <g:link controller="platform" action="platformTipps"
                                         id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().titleCountCurrent}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'platform.primaryURL')}</strong>:
                                         <g:if test="${hit.getSourceAsMap().primaryUrl}">
                                             ${hit.getSourceAsMap().primaryUrl}
                                             <semui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
                                         </g:if>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'platform.org')}</strong>:
                                 <g:link controller="organisation" action="show"
                                         id="${hit.getSourceAsMap().orgId}">${hit.getSourceAsMap().orgName}</g:link>
@@ -499,11 +499,11 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     </div>
 
                                     <strong>${message(code: 'subscription.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.type.label')}</strong>: ${hit.getSourceAsMap().type?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
-                                    <br>
+                                    <br />
                                     <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members"
@@ -518,7 +518,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                         </g:each>
                                         </article>
                                     </g:if>
-                                    <br>
+                                    <br />
                                     <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in hit.getSourceAsMap().type?.value && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                     <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
@@ -571,11 +571,11 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                         </g:each>
                                     </div>
                                     <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.type.label')}</strong>: ${hit.getSourceAsMap().type?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
-                                    <br>
+                                    <br />
                                     <g:if test="${hit.getSourceAsMap().membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="license" action="members"
@@ -590,7 +590,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                         </g:each>
                                         </article>
                                     </g:if>
-                                    <br>
+                                    <br />
                                     <g:if test="${!(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
                                         <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${hit.getSourceAsMap().consortiaName}
                                     </g:if>
@@ -629,9 +629,9 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     %>
 
                                     <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
-                                    <br>
+                                    <br />
                                     <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <strong>${message(code: 'surveyParticipants.label')}</strong>: ${hit.getSourceAsMap().membersCount}
                                     </g:if>
@@ -668,7 +668,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     %>
 
                                     <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
                                 </td>
                             </g:if>
@@ -702,14 +702,14 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     <g:else>
                                         ${message(code: 'task.general')}
                                     </g:else>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'task.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
                                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
@@ -736,7 +736,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
@@ -766,7 +766,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'license.docs.table.type')}</strong>: ${docContext ? docContext.owner?.type?.getI10n('value'): ""}
 
                                 </td>
@@ -794,7 +794,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
 
                                 </td>
                             </g:if>
@@ -821,7 +821,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
@@ -848,7 +848,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>--%>
@@ -875,7 +875,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
@@ -903,7 +903,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <strong>${message(code: 'search.object.'+hit.getSourceAsMap().objectClassName)}</strong>:
                                 <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().objectName}</g:link>
-                                    <br>
+                                    <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>

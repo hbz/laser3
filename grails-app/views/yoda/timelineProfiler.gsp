@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.timelineProfiler" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
     <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.timelineProfiler')}</h2>
 
     <table class="ui celled la-table compact table">
@@ -26,7 +26,7 @@
 
                 <tr>
                     <td>
-                        <strong>${ik}</strong> (${iv}) <br/>
+                        <strong>${ik}</strong> (${iv}) <br />
 
                         <div id="ct-chart-${index}"></div>
 

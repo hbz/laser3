@@ -43,7 +43,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
@@ -59,7 +59,7 @@
     : ${message(code: 'surveyCostItems.label')}
 </h2>
 
-<br>
+<br />
 
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
@@ -121,8 +121,8 @@
                 </g:if>
             </div>
 
-            <br>
-            <br>
+            <br />
+            <br />
 
             <semui:filter>
             <g:form action="surveyCostItems" method="post" class="ui form"
@@ -271,8 +271,8 @@
                         </a>
                     </g:if>
 
-                        <br>
-                        <br>
+                        <br />
+                        <br />
 
                         <g:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
@@ -295,8 +295,8 @@
                         </a>
                     </g:if>
 
-                        <br>
-                        <br>
+                        <br />
+                        <br />
 
                         <g:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
@@ -327,8 +327,8 @@
 
                     </div>
 
-                    <br>
-                    <br>
+                    <br />
+                    <br />
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasAccess,
@@ -352,8 +352,8 @@
                     </div>
 
 
-                    <br>
-                    <br>
+                    <br />
+                    <br />
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList         : surveyParticipantsHasNotAccess,
@@ -366,15 +366,15 @@
 
                 </g:if>
 
-                <br>
-                <br>
+                <br />
+                <br />
                 <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')">
                     <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>
-            <br>
-            <br>
+            <br />
+            <br />
 
             <g:form action="surveyCostItemsFinish" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">

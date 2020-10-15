@@ -225,7 +225,7 @@
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                                     <g:link controller="subscription" action="show" id="${pair.id}">
                                                         ${pair.name}
-                                                    </g:link><br>
+                                                    </g:link><br />
                                                     <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>–<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
                                                     <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">

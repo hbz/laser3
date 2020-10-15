@@ -116,7 +116,7 @@
             </g:if>
             <g:else>
                 <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
-                <br><br>
+                <br /><br />
                 <g:set var="submitButtonText" value="${isRenewSub ?
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepbySurvey') :
                         message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
@@ -128,7 +128,7 @@
             </g:if>
             <g:else>
                 <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
-                <br><br>
+                <br /><br />
                 <g:set var="submitButtonText" value="${message(code: 'default.button.copy.label')}"/>
             </g:else>
         </g:elseif>
@@ -140,7 +140,7 @@
             </g:if>
             <g:else>
                 <strong>${message(code: 'copyElementsIntoObject.copyProperties.empty')}</strong>
-                <br><br>
+                <br /><br />
                 <g:set var="submitButtonText" value="${isRenewSub ?
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
                         message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>

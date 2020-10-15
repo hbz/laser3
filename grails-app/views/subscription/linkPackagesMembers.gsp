@@ -20,7 +20,7 @@
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
@@ -34,7 +34,7 @@
 <h4>
     <g:message code="subscription"/>: <g:link
         controller="subscription" action="show"
-        id="${parentSub.id}">${parentSub.name}</g:link><br><br>
+        id="${parentSub.id}">${parentSub.name}</g:link><br /><br />
 
 
 <g:message code="subscription.linkPackagesMembers.package.label"
@@ -263,7 +263,7 @@
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
-                                                <br/>
+                                                <br />
                                             </g:if>
                                             <g:elseif test="${editable && childPkgHasCostItems}">
                                                 <div class="ui icon negative buttons">
@@ -271,17 +271,17 @@
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
-                                                <br/>
+                                                <br />
                                             </g:elseif>--}%
                                         </div>
 
                                         <div class="content">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg?.id]">
-                                                ${sp?.pkg?.name}<br>${raw(sp.getIEandPackageSize())}
+                                                ${sp?.pkg?.name}<br />${raw(sp.getIEandPackageSize())}
                                             </g:link>
                                             <g:if test="${editable && childPkgHasCostItems}">
-                                                <br><g:message code="subscription.delete.existingCostItems"/>
+                                                <br /><g:message code="subscription.delete.existingCostItems"/>
                                             </g:if>
                                         </div>
                                     </div>
@@ -337,7 +337,7 @@
     </g:form>
 </g:if>
 <g:else>
-    <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
+    <br /><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
 <div id="magicArea"></div>

@@ -11,7 +11,7 @@
         <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
         <semui:crumb text="Migrate Collective Subscriptions" class="active"/>
     </semui:breadcrumbs>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Migrate Collective Subscriptions</h1>
 
     <h4>Gefunden (OrgRole=Subscriber): ${subRoles.size()}</h4>

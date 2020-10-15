@@ -10,12 +10,12 @@
 <semui:breadcrumbs>
     <semui:crumb message="privacyNotice" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'privacyNotice')}</h1>
 
-<br>
-<br>
+<br />
+<br />
 
 <semui:form>
 
@@ -24,8 +24,8 @@
     ${message(code:'dse')}
 </a>
 
-<br>
-<br>
+<br />
+<br />
 
 <a href="${resource(dir: 'files', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LASeR_V1.1o.pdf')}" class="ui button" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
     <i class="file pdf icon"></i>

@@ -22,7 +22,7 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
-<br>
+<br />
 <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.details.linkPackage.heading')}</h2>
 
 <semui:filter>
@@ -106,7 +106,7 @@
                                             <i title="GOKB Link" class="external alternate icon"></i>
                                         </a>
                                     </g:else>
-                                        <br><strong>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</strong>
+                                        <br /><strong>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</strong>
                                 </td>
                                 <td>
                                     <div class="ui bulleted list">
@@ -137,7 +137,7 @@
                                                     id="${params.id}"
                                                     params="${[addUUID: hit.uuid, source: hit.url, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents')}</g:link>
-                                            <br/><br/>
+                                            <br /><br />
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
                                                     params="${[addUUID: hit.uuid, source: hit.url, addType: 'With']}"
@@ -147,7 +147,7 @@
                                             <span><strong>${message(code: 'subscription.details.linkPackage.currentPackage')}</strong>
                                             </span>
                                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscriptionInstance])}" />
-                                            <br>
+                                            <br />
                                             <g:if test="${editable && !hasCostItems}">
                                                 <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
@@ -163,7 +163,7 @@
                                                     </button>
                                                 </div>
                                             </g:elseif>
-                                            <br/>
+                                            <br />
                                         </g:else>
                                 </td>
                             </tr>
@@ -203,7 +203,7 @@
                     <div class="item"><g:link controller="package" action="show"
                                           id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscriptionInstance,sp:sp])}"/>
-                        <br>
+                        <br />
                         <g:if test="${editable && !hasCostItems}">
                             <div class="ui mini icon buttons">
                                 <button class="ui button la-selectable-button"
@@ -219,7 +219,7 @@
                                 </button>
                             </div>
                         </g:elseif>
-                        <br/>
+                        <br />
                     </div>
                 </div>
             </g:each>

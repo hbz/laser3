@@ -17,7 +17,7 @@
         <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copySubscription')}: ${sourceObject.name}</h1>
 
@@ -40,14 +40,14 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
                     <i class="dolly icon"></i>${message(code:'subscription.form.label')}
                     <i class="box icon"></i>${message(code:'subscription.resource.label')}
-                    <br>
+                    <br />
                     <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
                     <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
-                    <br>
+                    <br />
                     <i class="balance scale icon"></i>${message(code: 'license.label')}
                     <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                     <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
-                    <br>
+                    <br />
                     <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 
                 </div>
@@ -59,7 +59,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             <div class="description">
                 <i class="gift icon"></i>${message(code: 'package.label')}
                 <i class="book icon"></i>${message(code: 'title')}
-                <br>
+                <br />
                 <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
             </div>
         </div>

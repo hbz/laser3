@@ -37,7 +37,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
@@ -51,10 +51,10 @@
         ${surveyConfig?.getConfigNameShort()}
     </g:else>: ${message(code: 'surveyConfigDocs.label')}
 </h2>
-<br>
+<br />
 
 %{--<p><strong>${message(code: 'surveyConfigDocs.info')}</strong></p>
-<br>--}%
+<br />--}%
 
 
 <g:if test="${surveyConfig}">
@@ -88,7 +88,7 @@
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
             </div>
-            <br><br>
+            <br /><br />
 
 
             <table class="ui celled la-table table license-documents">

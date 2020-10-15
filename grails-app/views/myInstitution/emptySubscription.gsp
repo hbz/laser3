@@ -15,7 +15,7 @@
         </semui:breadcrumbs>
 
         <g:render template="actions" />
-        <br>
+        <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.emptySubscription.label')}</h1>
 
         <semui:messages data="${flash}"/>
@@ -59,7 +59,7 @@
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
 
-                <br/>
+                <br />
                 <div id="dynHiddenValues"></div>
 
                 <%--<g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
@@ -70,7 +70,7 @@
             </g:form>
         </semui:form>
 
-    <hr>
+    <hr />
         <asset:script type="text/javascript">
             function formatDate(input) {
                 if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.helper.RDStore;" %>
-<br>
+<br />
 
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
@@ -24,7 +24,7 @@
                       tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? 'surveySubInfo' : '')]
               ]"/>
 
-    <br/>
+    <br />
     <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
         <input type="submit" class="ui button" value="${message(code: 'default.button.add.label')}"/>
     </g:if>

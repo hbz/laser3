@@ -42,7 +42,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
@@ -62,7 +62,7 @@
         ${message(code: 'openParticipantsAgain.reminder')}
     </g:else>
 </h2>
-<br>
+<br />
 
 <div class="ui grid">
 
@@ -114,8 +114,8 @@
                     </g:if>
                 </div>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <table class="ui celled sortable table la-table">
                     <thead>
@@ -163,7 +163,7 @@
                                         id="${participant.id}">
                                     ${participant.sortname}
                                 </g:link>
-                                <br>
+                                <br />
                                 <g:link controller="organisation" action="show" id="${participant.id}">
                                     (${fieldValue(bean: participant, field: "name")})
                                 </g:link>
@@ -315,8 +315,8 @@
                     </g:if>
                 </div>
 
-                <br>
-                <br>
+                <br />
+                <br />
 
                 <table class="ui celled sortable table la-table">
                     <thead>
@@ -364,7 +364,7 @@
                                         id="${participant.id}">
                                     ${participant.sortname}
                                 </g:link>
-                                <br>
+                                <br />
                                 <g:link controller="organisation" action="show" id="${participant.id}">
                                     (${fieldValue(bean: participant, field: "name")})
                                 </g:link>
@@ -501,7 +501,7 @@
                     </tbody>
                 </table>
 
-                <br>
+                <br />
 
                 <div class="content">
                     <div class="ui form twelve wide column">

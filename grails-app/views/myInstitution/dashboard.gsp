@@ -14,7 +14,7 @@
         <semui:breadcrumbs>
             <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
         </semui:breadcrumbs>
-        <br>
+        <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name}</h1>
 
         <div class="ui equal width grid la-clear-before">

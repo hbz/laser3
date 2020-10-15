@@ -136,7 +136,7 @@
                 <li>versehen mit Label, das mit Extra-Inputdfeld verbunden ist </li>
                 <li><g:link controller="myInstitution" action="currentSubscriptions">zum Beispiel hier verwendet (Merkmal innerhalb Filter)</g:link></li>
             </ui>
-            <br>
+            <br />
             <div class="field">
                 <label for="filterPropDef">
                     Merkmal
@@ -264,7 +264,7 @@
                 </li>
                 <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
             </ui>
-            <br>
+            <br />
 
             <div class="ui top attached label">Cards müssen "ausgeschaltet" werden, wenn es keinen Inhalt gibt
 
@@ -329,7 +329,7 @@
         <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="4 5 6">
             <i  class="icon thumbtack la-js-editmode-icon"></i>
         </a>
-    </dd><br>
+    </dd><br />
 
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
     <div class="html ui top attached segment example">
@@ -346,7 +346,7 @@
 
     <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
         <i  class="icon thumbtack la-js-editmode-icon"></i>
-    </a><br><br>
+    </a><br /><br />
     <h4 class="ui header">Funktions-Button, der NICHT ausgeschaltet werden kann, Icon und Button verschwinden NICHT</h4>
     <div class="html ui top attached segment example">
         <ul>
@@ -363,7 +363,7 @@
 
     <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
         <i  class="icon thumbtack"></i>
-    </a><br><br>
+    </a><br /><br />
 
     <h2 class="ui dividing header">Modale<a class="anchor" id="icons"></a></h2>
     <h4 class="ui header">Mehrere Modale auf einer Seite-Values in Formularfeldern werden mit Data-Attributen übertrage</h4>

@@ -48,7 +48,7 @@
                                     </g:else>
                                 </a>
                             </g:else>
-                            <br/>
+                            <br />
                             ${message(code:'template.notes.created')}
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>
                         </div>

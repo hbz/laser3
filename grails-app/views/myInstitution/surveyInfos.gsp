@@ -33,11 +33,11 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<br>
+<br />
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
@@ -101,7 +101,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     </semui:form>
 </g:if>
 
-<br>
+<br />
 
 <div class="ui stackable grid">
     <div class="sixteen wide column">
@@ -127,7 +127,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     </div>
 </div>
 
-<br>
+<br />
 
 <g:if test="${editable}">
     <g:link class="ui button green js-open-confirm-modal"
@@ -141,7 +141,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
                 code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
     </g:link>
 </g:if>
-<br>
-<br>
+<br />
+<br />
 </body>
 </html>

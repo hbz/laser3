@@ -285,7 +285,7 @@
                     <td>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${surveyInfo.startDate}"/>
-                        <br>
+                        <br />
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${surveyInfo.endDate}"/>
                     </td>
@@ -414,11 +414,11 @@
     </g:if>
     <g:else>
         <g:if test="${filterSet}">
-            <br><strong><g:message code="filter.result.empty.object"
+            <br /><strong><g:message code="filter.result.empty.object"
                                    args="${[message(code: "survey.plural")]}"/></strong>
         </g:if>
         <g:else>
-            <br><strong><g:message code="result.empty.object" args="${[message(code: "survey.plural")]}"/></strong>
+            <br /><strong><g:message code="result.empty.object" args="${[message(code: "survey.plural")]}"/></strong>
         </g:else>
     </g:else>
 

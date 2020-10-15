@@ -69,10 +69,10 @@
                                                            ])}"/>
                                             <g:if test="${existSubforOrg}">
 
-                                                <br><br>
+                                                <br /><br />
                                                 <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
-                                                    <br>
+                                                    <br />
                                                     <g:link controller="subscription" action="show"
                                                             class="ui icon button"
                                                             id="${existSubforOrg[0].id}">
@@ -159,10 +159,10 @@
                                                            ])}"/>
                                             <g:if test="${existSubforOrg}">
 
-                                                <br><br>
+                                                <br /><br />
                                                 <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
-                                                    <br>
+                                                    <br />
                                                     <g:link controller="subscription" action="show"
                                                             class="ui icon button"
                                                             id="${existSubforOrg[0].id}">

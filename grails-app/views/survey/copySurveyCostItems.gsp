@@ -219,11 +219,11 @@ ${surveyInfo.name}
                         <g:message code="renewalWithSurvey.parentSubscription"/>:
                     </g:if><g:else>
                         <g:message code="copyElementsIntoObject.sourceObject.name" args="[message(code: 'subscription.label')]"/>:
-                    </g:else><br>
+                    </g:else><br />
                     <g:if test="${parentSubscription}">
                         <g:link controller="subscription" action="show"
                                 id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
-                        <br>
+                        <br />
                         <g:link controller="subscription" action="members"
                                 id="${parentSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
@@ -237,11 +237,11 @@ ${surveyInfo.name}
                         <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
                     </g:if><g:else>
                         <g:message code="copyElementsIntoObject.targetObject.name" args="[message(code: 'subscription.label')]"/>:
-                    </g:else><br>
+                    </g:else><br />
                     <g:if test="${parentSuccessorSubscription}">
                         <g:link controller="subscription" action="show"
                                 id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
-                        <br>
+                        <br />
                         <g:link controller="subscription" action="members"
                                 id="${parentSuccessorSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSuccessorSubscription.getDerivedSubscribers().size() ?: 0}"/>
@@ -311,7 +311,7 @@ ${surveyInfo.name}
                                 id="${participant.id}">
                             ${participant.sortname}
                         </g:link>
-                        <br>
+                        <br />
                         <g:link controller="organisation" action="show"
                                 id="${participant.id}">(${participant.name})</g:link>
                         <g:if test="${participant.newSub}">
@@ -333,7 +333,7 @@ ${surveyInfo.name}
                             <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSub">
 
-                                ${costItemParticipantSub.costItemElement?.getI10n('value')}<br>
+                                ${costItemParticipantSub.costItemElement?.getI10n('value')}<br />
                                 <strong><g:formatNumber number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
                                                    minFractionDigits="2"
                                                    maxFractionDigits="2" type="number"/></strong>
@@ -357,7 +357,7 @@ ${surveyInfo.name}
                     <td>
 
                         <g:if test="${participant.surveyCostItem}">
-                            ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br>
+                            ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br />
                             <strong><g:formatNumber number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
                                                minFractionDigits="2"
                                                maxFractionDigits="2" type="number"/></strong>
@@ -373,7 +373,7 @@ ${surveyInfo.name}
                                    value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax?:0}"/>
 
                             <g:if test="${OldCostItem || OldCostItemAfterTax}">
-                                <br><strong><g:formatNumber number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax-OldCostItemAfterTax)/OldCostItemAfterTax)*100}"
+                                <br /><strong><g:formatNumber number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax-OldCostItemAfterTax)/OldCostItemAfterTax)*100}"
                                                    minFractionDigits="2"
                                                    maxFractionDigits="2" type="number"/>%</strong>
 
@@ -389,7 +389,7 @@ ${surveyInfo.name}
                             <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
                                     var="costItemParticipantSuccessorSub">
 
-                                ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br>
+                                ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br />
                                 <strong><g:formatNumber
                                         number="${costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax}"
                                         minFractionDigits="2"
@@ -406,7 +406,7 @@ ${surveyInfo.name}
                                        value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax?:0}"/>
 
                                 <g:if test="${OldCostItem || OldCostItemAfterTax}">
-                                    <br><strong><g:formatNumber number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax-OldCostItemAfterTax)/OldCostItemAfterTax)*100}"
+                                    <br /><strong><g:formatNumber number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax-OldCostItemAfterTax)/OldCostItemAfterTax)*100}"
                                                            minFractionDigits="2"
                                                            maxFractionDigits="2" type="number"/>%</strong>
 
@@ -443,7 +443,7 @@ ${surveyInfo.name}
                                      maxFractionDigits="2" type="number"/>)
 
                     <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                        <br><strong><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                        <br /><strong><g:formatNumber number="${((sumSurveyCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
                                                minFractionDigits="2"
                                                maxFractionDigits="2" type="number"/>%</strong>
 
@@ -458,7 +458,7 @@ ${surveyInfo.name}
                                     maxFractionDigits="2" type="number"/>)
 
                     <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                        <br><strong><g:formatNumber number="${((sumNewCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
+                        <br /><strong><g:formatNumber number="${((sumNewCostItemAfterTax-sumOldCostItemAfterTax)/sumOldCostItemAfterTax)*100}"
                                                minFractionDigits="2"
                                                maxFractionDigits="2" type="number"/>%</strong>
 
@@ -478,8 +478,8 @@ ${surveyInfo.name}
 
             <div class="eight wide field" style="text-align: right;">
                 <button class="ui button positive" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
-                <br>
-                <br>
+                <br />
+                <br />
                 <button class="ui button positive" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
             </div>
         </div>

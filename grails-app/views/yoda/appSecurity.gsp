@@ -10,7 +10,7 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.security" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.security')}</h2>
 
 <h3 class="ui header">Hierarchical Global Roles</h3>

@@ -90,7 +90,7 @@
   <semui:messages data="${flash}" />
 
   <semui:errors bean="${packageInstance}" />
-    <br><br>
+    <br /><br />
     <div class="ui grid">
         <div class="row">
             <div class="column">

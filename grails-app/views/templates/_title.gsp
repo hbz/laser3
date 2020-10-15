@@ -59,10 +59,10 @@
       ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
     </span>
 </g:each>
-<br/>
+<br />
 
 <!--                  ISSN:<strong>${item.tipp.title.getIdentifierValue('ISSN') ?: ' - '}</strong>,
-                  eISSN:<strong>${item.tipp.title.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
+                  eISSN:<strong>${item.tipp.title.getIdentifierValue('eISSN') ?: ' - '}</strong><br />-->
 
 
 <div class="la-icon-list">

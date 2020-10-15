@@ -16,7 +16,7 @@
                      params="[surveyConfigID: sourceObject.id]" text="${sourceObject.surveyInfo.name}" />
     </g:if>
 </semui:breadcrumbs>
-    <br>
+    <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])} </h1>
     <semui:messages data="${flash}"/>
 
@@ -66,7 +66,7 @@
                 </div>
             </semui:complexSubNavItem>
         </semui:subNav>
-    <br>
+    <br />
     <div class="la-legend">
         <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}: </strong></span>
         <span class="la-added">${message(code: 'copyElementsIntoObject.legend.willStay')}</span>

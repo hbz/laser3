@@ -223,11 +223,11 @@ ${surveyInfo.name}
                                     <g:message code="renewalWithSurvey.parentSubscription"/>:
                     </g:if><g:else>
                         <g:message code="copyElementsIntoObject.sourceObject.name" args="[message(code: 'subscription.label')]"/>:
-                    </g:else><br>
+                    </g:else><br />
                     <g:if test="${parentSubscription}">
                         <g:link controller="subscription" action="show"
                                 id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
-                        <br>
+                        <br />
                         <g:link controller="subscription" action="members"
                                 id="${parentSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
@@ -241,11 +241,11 @@ ${surveyInfo.name}
                         <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
                     </g:if><g:else>
                         <g:message code="copyElementsIntoObject.targetObject.name" args="[message(code: 'subscription.label')]"/>:
-                    </g:else><br>
+                    </g:else><br />
                     <g:if test="${parentSuccessorSubscription}">
                         <g:link controller="subscription" action="show"
                                 id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
-                        <br>
+                        <br />
                         <g:link controller="subscription" action="members"
                                 id="${parentSuccessorSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSuccessorSubscription.getDerivedSubscribers().size() ?: 0}"/>
@@ -253,7 +253,7 @@ ${surveyInfo.name}
                     </g:if>
                     <g:else>
                         <g:message code="renewalWithSurvey.noParentSuccessorSubscription"/>
-                    %{--<br>
+                    %{--<br />
                     <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey"
                             id="${surveyInfo.id}"
                             params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
@@ -302,7 +302,7 @@ ${surveyInfo.name}
                                                 id="${participant.id}">
                                             ${participant.sortname}
                                         </g:link>
-                                        <br>
+                                        <br />
                                         <g:link controller="organisation" action="show"
                                                 id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
                                         <g:if test="${participantSub}">
@@ -367,7 +367,7 @@ ${surveyInfo.name}
                                                 id="${participant.id}">
                                             ${participant.sortname}
                                         </g:link>
-                                        <br>
+                                        <br />
                                         <g:link controller="organisation" action="show"
                                                 id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
 

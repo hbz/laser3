@@ -91,7 +91,7 @@
                                     <g:checkBox name="copyObject.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
                                 </div>
                                 %{--</div>--}%
-                                <br>
+                                <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -132,7 +132,7 @@
 
                                                 </div>
                                             </g:if>
-                                            <br>
+                                            <br />
                                         </g:if>
                                     </g:each>
                                 </g:if>
@@ -314,7 +314,7 @@
                                             </div>
                                             %{--</div>--}%
                                         </g:if>
-                                        <g:else><br></g:else>
+                                        <g:else><br /></g:else>
                                     </g:each>
                                 </td>
                     </g:if>

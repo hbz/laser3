@@ -67,7 +67,7 @@
                                         outputWithoutGOKb += "<ul><li>${subscriptionHolders.join('</li><li>')}</li></ul>"
                                     }
                                     else {
-                                        outputWithoutGOKb += "no entitlements<br>"
+                                        outputWithoutGOKb += "no entitlements<br />"
                                     }
                                 }
                             %>
@@ -88,7 +88,7 @@
                                         outputWithGOKb += "<ul><li>${subscriptionHolders.join('</li><li>')}</li></ul>"
                                     }
                                      else {
-                                        outputWithGOKb += "no entitlements<br>"
+                                        outputWithGOKb += "no entitlements<br />"
                                     }
                                     String action = "actions to be taken: "
                                      switch(v.action) {

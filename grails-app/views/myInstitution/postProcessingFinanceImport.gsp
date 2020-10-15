@@ -18,7 +18,7 @@
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.financeImport" class="active"/>
         </semui:breadcrumbs>
-        <br>
+        <br />
         <semui:messages data="${flash}" />
         <h2>${message(code:'myinst.financeImport.post.header2')}</h2>
         <h3>${message(code:'myinst.financeImport.post.header3')}</h3>
@@ -87,7 +87,7 @@
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                 <td>
                                     <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
-                                        ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" type="radio" value="true"><br>${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" type="radio" value="false" checked>
+                                        ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" type="radio" value="false" checked>
                                     </g:if>
                                 </td>
                             </g:if>

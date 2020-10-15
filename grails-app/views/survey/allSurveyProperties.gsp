@@ -22,7 +22,7 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
-<br>
+<br />
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
@@ -106,7 +106,7 @@
                                 <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                             </g:if>
                         </g:each>
-                        <br>
+                        <br />
                         (${refdataValues.join('/')})
                     </g:if>
                 </td>
@@ -165,7 +165,7 @@
                 <label class="property-label">Optionen</label>
 
                 <g:checkBox type="text" name="pd_mandatory"/> ${message(code: 'default.mandatory.tooltip')}
-                <br/>
+                <br />
                 <g:checkBox type="text"
                             name="pd_multiple_occurrence"/> ${message(code: 'default.multipleOccurrence.tooltip')}
             </div>--}%
@@ -184,7 +184,7 @@
                         <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
 
                             <p class="hidden" data-prop-def-desc="${cat.key}">
-                                Häufig verwendete Kategorien: <br/>
+                                Häufig verwendete Kategorien: <br />
 
                                 <%
                                     List catList = cat.value?.take(3)
@@ -199,10 +199,10 @@
                     </div>
 
                     <div class="six wide column">
-                        <br/>
+                        <br />
                         <a href="<g:createLink controller="profile" action="properties"/>" target="_blank">
                             <i class="icon external alternate"></i>
-                            Alle Kategorien und Referenzwerte<br/>als Übersicht öffnen
+                            Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
                         </a>
                     </div>
                 </div><!-- .grid -->

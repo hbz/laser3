@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.recoveryDoc" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h2 class="ui header la-noMargin-top">${message(code: "menu.admin.recoveryDoc")}</h2>
 

@@ -16,7 +16,7 @@
         <g:if test="${!flash.error}">
             <div>
                 <p>${message(code: 'serverCode.forbidden.message')}</p>
-                <br/>
+                <br />
 
                 <p>
                     <button class="ui button"

@@ -10,7 +10,7 @@
 
 <body>
 <g:render template="breadcrumb" model="${[params: params]}"/>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'subscription.details.copyMyElements.label')}</h1>
 
@@ -50,7 +50,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     </semui:complexSubNavItem>
 </semui:subNav>
 
-<br>
+<br />
 
 <div class="la-legend">
     <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}:</strong>

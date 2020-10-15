@@ -10,7 +10,7 @@
 
 <body>
     <g:render template="breadcrumb" model="${[ user:user, params:params ]}"/>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         ${user?.username} : ${user?.displayName?:'Nutzer unbekannt'}
     </h1>
@@ -51,7 +51,7 @@
                             <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
                                    onclick="return confirm('${message(code:'user.delete.confirm')}')" />
 
-                            <br/><br/>${message(code:'user.delete.moveToNewUser')}<br/>
+                            <br /><br />${message(code:'user.delete.moveToNewUser')}<br />
 
                             <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
                                       from="${substituteList.sort()}"

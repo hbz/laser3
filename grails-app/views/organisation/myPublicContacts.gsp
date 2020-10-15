@@ -58,7 +58,7 @@
     </semui:controlButtons>
 
     <g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
-    <br>
+    <br />
 
 
     <semui:filter>
@@ -201,7 +201,7 @@
 
         </semui:actionsDropdown>
     </semui:controlButtons>
-    <br>
+    <br />
 
 
     <g:render template="/templates/cpa/address_table" model="${[

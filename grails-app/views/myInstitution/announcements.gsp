@@ -11,7 +11,7 @@
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.datamanager.ann" class="active" />
         </semui:breadcrumbs>
-        <br>
+        <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
             ${message(code:'menu.datamanager.ann')}
         </h1>
@@ -26,7 +26,7 @@
               <g:each in="${recentAnnouncements}" var="ra">
                 <tr>
                   <td>
-                      <strong>${ra.title}</strong> <br/>
+                      <strong>${ra.title}</strong> <br />
                     <% print ra.content; /* avoid auto encodeAsHTML() */ %>
                     <span class="la-float-right">${message(code:'announcement.posted_by.label')}
                     <em><g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>

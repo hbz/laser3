@@ -52,7 +52,7 @@
           <tr>
               <td>
                   <h3 class="ui header">Cost date and status</h3>
-                  <input type="date" name="newDatePaid" value="${params.newDatePaid}"/><br/>
+                  <input type="date" name="newDatePaid" value="${params.newDatePaid}"/><br />
 
                   <g:select name="newCostItemStatus"
                             from="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc = :desc', [desc: RDConstants.COST_ITEM_STATUS])}"
@@ -81,15 +81,15 @@
               </td>
               <td>
                   <h3 class="ui header">Cost values and tax</h3>
-                  <input type="number" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" step="0.01"/> <br/>
-                  <input type="number" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" step="0.01"/> <br/>
+                  <input type="number" name="newCostInBillingCurrency" placeholder="New Cost Ex-Tax - Billing Currency" id="newCostInBillingCurrency" step="0.01"/> <br />
+                  <input type="number" name="newCostCurrencyRate" placeholder="Exchange Rate" id="newCostCurrencyRate" step="0.01"/> <br />
                   <input type="number" name="newCostInLocalCurrency" placeholder="New Cost Ex-Tax - Local Currency" id="newCostInLocalCurrency" step="0.01"/>
                   <input type="number" name="newCostTaxRate" placeholder="New Cost Tax Rate" id="newCostTaxRate" step="0.01"/>
                   <input type="number" name="newCostTaxAmount" placeholder="New Cost Tax Amount" id="newCostTaxAmount" step="0.01"/>
               </td>
               <td>
                   <h3 class="ui header">Reference</h3>
-                  <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/><br/>
+                  <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/><br />
                   <input type="text" name="newBudgetCode" placeholder="New Item Budget Code" id="newBudgetCode" ></td>
               <td colspan="2">
                   <h3 class="ui header">Description</h3>
@@ -102,7 +102,7 @@
           <tbody>
            <tr><td colspan="9">&nbsp;</td></tr>
             <g:if test="${cost_item_count==0}">
-              <tr><td colspan="7" style="text-align:center">&nbsp;<br/>No Cost Items Found<br/>&nbsp;</td></tr>
+              <tr><td colspan="7" style="text-align:center">&nbsp;<br />No Cost Items Found<br />&nbsp;</td></tr>
             </g:if>
             <g:else>
               <g:each in="${cost_items}" var="ci">

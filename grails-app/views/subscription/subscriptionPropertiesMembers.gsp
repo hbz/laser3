@@ -20,7 +20,7 @@
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
@@ -34,7 +34,7 @@
 <h4>
     <g:message code="subscription"/>: <g:link controller="subscription" action="show"
                                               id="${parentSub.id}">${parentSub.name}</g:link>
-    <br><br>
+    <br /><br />
 
 </h4>
 
@@ -688,7 +688,7 @@
 </g:if>
 <g:else>
 
-    <br>
+    <br />
 
     <g:if test="${!filteredSubChilds}">
         <strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>

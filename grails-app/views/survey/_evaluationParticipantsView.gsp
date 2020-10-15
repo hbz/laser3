@@ -81,8 +81,8 @@
             </g:if>
         </div>
 
-        <br>
-        <br>
+        <br />
+        <br />
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -139,7 +139,7 @@
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant.id}">
                             ${participant.sortname}
                         </g:link>
-                        <br>
+                        <br />
                         <g:link controller="organisation" action="show" id="${participant.id}">
                             (${fieldValue(bean: participant, field: "name")})
                         </g:link>
@@ -292,8 +292,8 @@
             </g:if>
         </div>
 
-        <br>
-        <br>
+        <br />
+        <br />
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -337,7 +337,7 @@
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant.id}">
                             ${participant.sortname}
                         </g:link>
-                        <br>
+                        <br />
                         <g:link controller="organisation" action="show" id="${participant.id}">
                             (${fieldValue(bean: participant, field: "name")})
                         </g:link>
@@ -476,8 +476,8 @@
         </table>
 
         <g:if test="${showTransferFields}">
-            <br>
-            <br>
+            <br />
+            <br />
 
             <div class="ui form">
                 <div class="two fields">
@@ -495,9 +495,9 @@
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           onchange="adjustDropdown()"/>
                         </div>
-                        <br>
+                        <br />
                         <br id="element-vor-target-dropdown" />
-                        <br>
+                        <br />
 
                     </div>
 

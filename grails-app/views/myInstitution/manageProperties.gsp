@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.manage_props" class="active" />
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
@@ -39,7 +39,7 @@
 %{--<div class="ui segment">
 
     <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
-    <br>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
+    <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.isRefdataValueType()}">
         <g:set var="refdataValues" value="${[]}"/>
         <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
@@ -47,7 +47,7 @@
             <g:set var="refdataValues"
                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
         </g:each>
-        <br>
+        <br />
         (${refdataValues.join('/')})
     </g:if>
 
@@ -104,12 +104,12 @@
                     </tr>
                     <tr>
                         <th>
-                            <g:message code="property.manageProperties.markForAdd"/><br>
+                            <g:message code="property.manageProperties.markForAdd"/><br />
                             <g:checkBox name="membersAddListToggler" id="membersAddListToggler" checked="false"/>
                         </th>
                         <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && auditable}">
                             <th>
-                                <span data-tooltip="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br>
+                                <span data-tooltip="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>
@@ -518,7 +518,7 @@
 </g:if>
 
 <g:else>
-    <br>
+    <br />
     <g:if test="${!filterPropDef}">
         <strong><g:message code="property.manageProperties.noPropertySelected"/></strong>
     </g:if>

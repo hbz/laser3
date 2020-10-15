@@ -20,7 +20,7 @@
     </g:if>
     <semui:crumb message="copySurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${surveyConfig.getConfigNameShort()}</h1>
@@ -60,9 +60,9 @@
                 </div>
             </g:if>
 
-            <br>
+            <br />
 
-            <hr>
+            <hr />
             <table class="ui celled table">
                 <tbody>
 
@@ -193,7 +193,7 @@
                                                            value="${refdataValues + refdataValue.getI10n('value')}"/>
                                                 </g:if>
                                             </g:each>
-                                            <br>
+                                            <br />
                                             (${refdataValues.join('/')})
                                         </g:if>
                                     </td>
@@ -223,7 +223,7 @@
                                         </g:else>
                                     </g:else>
 
-                                </g:link>(${docctx.owner.type.getI10n("value")}) <br>
+                                </g:link>(${docctx.owner.type.getI10n("value")}) <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -245,7 +245,7 @@
                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                               date="${docctx.owner.dateCreated}"/>)
 
-                                <br>
+                                <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -259,7 +259,7 @@
                             <strong>${tsk.title}</strong> (${message(code: 'task.endDate.label')}
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                           date="${tsk.endDate}"/>)
-                            <br>
+                            <br />
                         </g:each>
                     </td>
                 </tr>
@@ -483,7 +483,7 @@
                                                     <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
                                                     </strong>
                                                     ${license.reference}
-                                                    <br>
+                                                    <br />
                                                 </div>
                                             </g:link>
                                         </g:each>
@@ -518,15 +518,15 @@
                                 <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                                     <g:each in="${s.providers}" var="org">
                                         <g:link controller="organisation" action="show"
-                                                id="${org.id}">${org.name}</g:link><br/>
+                                                id="${org.id}">${org.name}</g:link><br />
                                     </g:each>
                                     <g:each in="${s.agencies}" var="org">
                                         <g:link controller="organisation" action="show"
-                                                id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
+                                                id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
                                     </g:each>
                                 </td>
                                 <td>
-                                    <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
+                                    <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
                                     <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                                 </td>
 
@@ -559,17 +559,17 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br><strong><g:message code="filter.result.empty.object"
+                    <br /><strong><g:message code="filter.result.empty.object"
                                            args="${[message(code: "subscription.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br><strong><g:message code="result.empty.object"
+                    <br /><strong><g:message code="result.empty.object"
                                            args="${[message(code: "subscription.plural")]}"/></strong>
                 </g:else>
             </g:else>
         </div>
 
-        <br>
+        <br />
 
         <div class="paginateButtons" style="text-align:center">
             <input type="submit"

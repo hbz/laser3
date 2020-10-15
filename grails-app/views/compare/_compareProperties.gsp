@@ -17,7 +17,7 @@
                 </table>
 
                 <div class="ui divider"></div>
-                <br>
+                <br />
             </g:if>
         </g:each>
     </g:if>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="ui divider"></div>
-        <br>
+        <br />
     </g:if>
     <g:if test="${privateProperties?.size() > 0}">
 
@@ -58,7 +58,7 @@
 
     <g:if test="${!orphanedProperties && !privateProperties && !groupedProperties}">
         <strong>${message(code: 'default.compare.noProperties')}</strong>
-        <br><br>
+        <br /><br />
     </g:if>
 
 </semui:form>

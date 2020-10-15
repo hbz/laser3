@@ -143,7 +143,7 @@
 
                     </dl>
 
-                    <br>
+                    <br />
 
                     <div class="ui form">
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
@@ -265,7 +265,7 @@
                     </div>
                 </g:else>
 
-                <br>
+                <br />
 
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
@@ -405,7 +405,7 @@
                         </div>
 
 
-                        <br>
+                        <br />
 
                            <div class="ui form">
 
@@ -439,7 +439,7 @@
                                                     <g:link controller="license" action="show" id="${pair.id}">
                                                         ${pair.reference} (${pair.status.getI10n("value")})
                                                     </g:link>
-                                                    <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                                    <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br />
                                                     <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                     <g:if test="${comment}">
                                                         <em>${comment.owner.content}</em>
@@ -623,7 +623,7 @@
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
 
                                     <g:if test="${costItem.startDate || costItem.endDate}">
-                                        <br>(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
+                                        <br />(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
                                     </g:if>
                                 </td>
 
@@ -684,11 +684,11 @@
 
 
                                         <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                            <br>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
+                                            <br />(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
                                         </g:if>
 
                                         <g:if test="${costItemSurvey.costDescription}">
-                                            <br>
+                                            <br />
 
                                             <div class="ui icon la-popup-tooltip la-delay"
                                                  data-position="right center"
@@ -719,7 +719,7 @@
                                         <strong><g:formatNumber
                                                 number="${(newCostItem - oldCostItem)}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/>
-                                            <br>
+                                            <br />
                                             (<g:formatNumber
                                                     number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
                                                     minFractionDigits="2"
@@ -798,11 +798,11 @@
                                        value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
 
                                 <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                    <br>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
+                                    <br />(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
                                 </g:if>
 
                                 <g:if test="${costItemSurvey.costDescription}">
-                                    <br>
+                                    <br />
 
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-position="right center"
@@ -897,7 +897,7 @@
                                 <g:set var="refdataValues"
                                        value="${refdataValues + refdataValue?.getI10n('value')}"/>
                             </g:each>
-                            <br>
+                            <br />
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
@@ -1023,7 +1023,7 @@
                                            value="${refdataValues + refdataValue.getI10n('value')}"/>
                                 </g:if>
                             </g:each>
-                            <br>
+                            <br />
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
@@ -1093,7 +1093,7 @@
             </g:each>
         </table>
     </semui:form>
-    <br>
+    <br />
 </g:if>
 
 <asset:script type="text/javascript">

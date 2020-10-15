@@ -17,7 +17,7 @@
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 %{--<semui:controlButtons>
     <semui:exportDropdown>
@@ -35,11 +35,11 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<br>
+<br />
 
 <semui:messages data="${flash}"/>
 
-<br>
+<br />
 
 <g:if test="${de.laser.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
@@ -103,7 +103,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
     </semui:form>
 </g:if>
 
-<br>
+<br />
 
 
     <div class="la-inline-lists">
@@ -194,13 +194,13 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
 </div><!-- .grid -->
 
-<br>
-<br>
+<br />
+<br />
 
 
 
-<br>
-<br>
+<br />
+<br />
 
 </body>
 </html>

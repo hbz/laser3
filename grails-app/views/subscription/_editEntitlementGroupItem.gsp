@@ -9,8 +9,8 @@
                 <div class="field" style="width:100%">
                     <label><g:message code="subscription.details.ieGroupsforIE" args="[ie.tipp.title.title]"/></label>
 
-                    <br>
-                    <br>
+                    <br />
+                    <br />
                     <div class="scrollWrapper">
 
                             <table class="ui table la-table scrollContent" >

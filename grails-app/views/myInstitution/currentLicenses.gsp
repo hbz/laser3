@@ -183,7 +183,7 @@
                                       <g:set var="sub" value="${row.destinationSubscription}"></g:set>
                                       <div class="la-flexbox">
                                           <i class="icon clipboard outline outline la-list-icon"></i>
-                                          <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                          <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                       </div>
                                   </g:if>
                               </g:each>
@@ -195,7 +195,7 @@
                                       <g:link controller="license" action="show" id="${lChild.id}">
                                           ${lChild}
                                       </g:link>
-                                      <br/>
+                                      <br />
 
                                   </g:each>
                               </td>
@@ -208,7 +208,7 @@
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
                           </g:if>
-                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
+                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br /><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(accessService.checkPerm("ORG_INST") && l._getCalculatedType() == License.TYPE_LOCAL) || (accessService.checkPerm("ORG_CONSORTIUM") && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
@@ -227,16 +227,16 @@
         </g:if>
         <g:else>
             <g:if test="${filterSet}">
-                <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
+                <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:if>
             <g:else>
-                <br><strong><g:message code="result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
+                <br /><strong><g:message code="result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:else>
         </g:else>
     </div>
 
   <g:if test="${licenses && compare}">
-      <br>
+      <br />
       <input type="submit" class="ui button" value="${message(code:'menu.my.comp_lic')}" />
   </g:if>
 

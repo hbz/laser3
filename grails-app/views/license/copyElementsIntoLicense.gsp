@@ -17,7 +17,7 @@
         <semui:crumb class="active" controller="license" id="${sourceObject.id}" action="show" text="${sourceObject.dropdownNamingConvention()}" />
     </g:if>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</h1>
 
@@ -38,13 +38,13 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             <div class="description">
                 <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                 <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
-                <br>
+                <br />
                 <i class="image outline icon"></i>${message(code: 'license.type.label')}
                 <i class="cloud icon"></i>${message(code: 'license.licenseUrl.label')}
                 <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
-                <br>
+                <br />
                 <i class="shipping fast icon"></i>${message(code: 'license.isPublicForApi.label')}
-                <br>
+                <br />
                 <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                 <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
 
@@ -97,7 +97,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     </semui:complexSubNavItem>
 </semui:subNav>
 
-<br>
+<br />
 
 <div class="la-legend">
     <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}:</strong></span>

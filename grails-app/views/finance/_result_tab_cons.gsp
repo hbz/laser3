@@ -201,7 +201,7 @@
                                     </g:if>
                                 </g:if>
                             </g:each>
-                            <br>
+                            <br />
                         </g:if>
                         <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                     </td>
@@ -241,7 +241,7 @@
                     </td>
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" />
-                        <br>
+                        <br />
                         <semui:xEditable owner="${ci}" type="date" field="endDate" />
                     </td>
                     <td>
@@ -315,7 +315,7 @@
 
                     </td>
                     <td>
-                        ${message(code:'financials.sum.billing')} ${entry.currency}<br>
+                        ${message(code:'financials.sum.billing')} ${entry.currency}<br />
                     </td>
                     <td class="la-exposed-bg">
                         <g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol="${entry.currency}"/>
@@ -336,11 +336,11 @@
 
                 </td>
                 <td>
-                    ${message(code:'financials.sum.local')}<br>
+                    ${message(code:'financials.sum.local')}<br />
                     ${message(code:'financials.sum.localAfterTax')}
                 </td>
                 <td class="la-exposed-bg">
-                    <g:formatNumber number="${data.sums.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br>
+                    <g:formatNumber number="${data.sums.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br />
                     <g:formatNumber number="${data.sums.localSums.localSumAfterTax}" type="currency" currencySymbol="" currencyCode="EUR"/>
                 </td>
                 <td colspan="3">

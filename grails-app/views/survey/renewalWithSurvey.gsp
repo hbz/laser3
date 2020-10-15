@@ -88,8 +88,8 @@ ${surveyInfo.name}
                     id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
         </g:if>
 
-        <br>
-        <br>
+        <br />
+        <br />
         <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
         <g:if test="${parentSuccessorSubscription}">
             <g:link controller="subscription" action="show"
@@ -244,7 +244,7 @@ ${surveyInfo.name}
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
                                 ${subscriberOrg.sortname}
-                                <br>
+                                <br />
 
                                 <g:link controller="organisation" action="show"
                                         id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
@@ -258,7 +258,7 @@ ${surveyInfo.name}
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedSuccessor()}">
-                                    <br>
+                                    <br />
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
@@ -297,7 +297,7 @@ ${surveyInfo.name}
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
                                 ${subscriberOrg.sortname}
-                                <br>
+                                <br />
                                 <g:link controller="organisation" action="show"
                                         id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
                             </td>
@@ -310,7 +310,7 @@ ${surveyInfo.name}
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedSuccessor()}">
-                                    <br>
+                                    <br />
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>

@@ -67,9 +67,9 @@
                         <label for="show.connectedObjects">${message(code:'copyElementsIntoObject.show.connectedObjects.lic')}</label>
                     </div>
                 </g:if>
-                <br>
+                <br />
                 <br id="element-vor-target-dropdown" />
-                <br>
+                <br />
 
             </div>
         </div>

@@ -17,7 +17,7 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br>
+<br />
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
 
@@ -192,7 +192,7 @@
                             <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                                    <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                 </div>
                             </g:each>
                         </td>
@@ -224,16 +224,16 @@
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
+                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show"
-                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br/>
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
                             </g:each>
                         </td>
 
                         <td>
-                            <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
+                            <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
                             <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                         </td>
                             <td>
@@ -268,10 +268,10 @@
         </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"subscription.plural")]}"/></strong>
                 </g:else>
             </g:else>
     </div>

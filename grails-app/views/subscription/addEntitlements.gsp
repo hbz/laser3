@@ -203,10 +203,10 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             </g:if>
 
             <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
-                <br><strong>${tipp.title.getEbookFirstAutorOrFirstEditor()}</strong>
+                <br /><strong>${tipp.title.getEbookFirstAutorOrFirstEditor()}</strong>
             </g:if>
 
-            <br>
+            <br />
                 <g:if test="${tipp?.id}">
                     <div class="la-title">${message(code: 'default.details.label')}</div>
                     <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
@@ -229,7 +229,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                         </a>
                     </g:if>
                 </g:each>
-            <br>
+            <br />
 
             <g:if test="${tipp.title instanceof BookInstance}">
                 <g:if test="${tipp.title.editionStatement}">
@@ -264,7 +264,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <g:if test="${tipp.hostPlatformURL}">
                 <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
-            <br>
+            <br />
             <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
                 <span class="ui small blue image label">
                     ${id.ns.ns}: <div class="detail">${id.value}</div>
@@ -336,29 +336,29 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                     <g:each in="${coverageStatements}" var="covStmt" status="key">
                         <!-- von -->
                         <semui:datepicker class="ieOverwrite coverage" name="startDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
-                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br>
+                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br />
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                         <input data-coverage="true" name="startVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.volume')}">
-                        <%--${tipp?.startVolume}--%><br>
+                        <%--${tipp?.startVolume}--%><br />
                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
                         <input data-coverage="true" name="startIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.issue')}">
                         <%--${tipp?.startIssue}--%>
                         <semui:dateDevider/>
                         <!-- bis -->
                         <semui:datepicker class="ieOverwrite coverage" name="endDate${key}" value="${covStmt.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
-                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br>--%>
+                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br />--%>
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                         <input data-coverage="true" name="endVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.volume')}">
-                        <%--${tipp?.endVolume}--%><br>
+                        <%--${tipp?.endVolume}--%><br />
                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
                         <input data-coverage="true" name="endIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.issue')}">
-                        <%--${tipp?.endIssue}--%><br>
+                        <%--${tipp?.endIssue}--%><br />
                         <%--${tipp.coverageDepth}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br>
+                        <input data-coverage="true" class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br />
                         <%--${tipp.embargo}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br>
+                        <input data-coverage="true" class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br />
                         <%--${tipp.coverageNote}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${covStmt.coverageNote}"><br>
+                        <input data-coverage="true" class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${covStmt.coverageNote}"><br />
                     </g:each>
                 </g:else>
             </td>

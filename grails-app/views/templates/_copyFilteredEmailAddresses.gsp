@@ -17,7 +17,7 @@
         <button class="ui icon button right floated" onclick="copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
-        <br>
+        <br />
     </div>
 
     <asset:script type="text/javascript">

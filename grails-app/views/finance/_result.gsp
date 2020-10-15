@@ -34,7 +34,7 @@
                 <g:if test="${view in ['cons','consAtSubscr']}">
                     <div data-tab="cons" class="ui bottom attached tab">
 
-                        <br>
+                        <br />
                         <g:if test="${editable}">
                             <div class="field" style="text-align: right;">
                                 <button id="bulkCostItems-toggle"

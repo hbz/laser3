@@ -13,7 +13,7 @@
         <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
         <semui:crumb message="menu.admin.manageOrganisations" class="active" />
     </semui:breadcrumbs>
-    <br>
+    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageOrganisations" />
         <semui:totalNumber total="${orgListTotal}"/>
     </h1>
@@ -53,7 +53,7 @@
             <g:each in="${orgList}" var="org" status="i">
                 <tr>
                     <td class="center aligned">
-                        ${ (params.int('offset') ?: 0)  + i + 1 }<br>
+                        ${ (params.int('offset') ?: 0)  + i + 1 }<br />
                     </td>
 
                     <td>
@@ -68,7 +68,7 @@
 
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}">
-                            ${fieldValue(bean: org, field: "name")} <br>
+                            ${fieldValue(bean: org, field: "name")} <br />
                             <g:if test="${org.shortname}">
                                 (${fieldValue(bean: org, field: "shortname")})
                             </g:if>
@@ -150,15 +150,15 @@
                         <g:set var="accessUserList" value="${org?.hasAccessOrgListUser()}"/>
 
                         <g:if test="${accessUserList?.instAdms?.size() > 0}">
-                            Inst_Admins: ${accessUserList?.instAdms?.size()}<br>
+                            Inst_Admins: ${accessUserList?.instAdms?.size()}<br />
                         </g:if>
 
                         <g:if test="${accessUserList?.instEditors?.size() > 0}">
-                            Inst_Editors: ${accessUserList?.instEditors?.size()}<br>
+                            Inst_Editors: ${accessUserList?.instEditors?.size()}<br />
                         </g:if>
 
                         <g:if test="${accessUserList?.instUsers?.size() > 0}">
-                            Inst_Users: ${accessUserList?.instUsers?.size()}<br>
+                            Inst_Users: ${accessUserList?.instUsers?.size()}<br />
                         </g:if>
 
                     </td>

@@ -12,7 +12,7 @@
       <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
     <semui:crumb message="menu.institutions.subscriptionImport" class="active"/>
   </semui:breadcrumbs>
-  <br>
+  <br />
     <semui:messages data="${flash}" />
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>

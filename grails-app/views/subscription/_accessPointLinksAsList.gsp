@@ -82,7 +82,7 @@
                         <i class="unlink icon"></i>
                       </g:link>
                     </g:if>
-                    <br/>
+                    <br />
                   </g:each>
                   <g:if test="${!platform.usesPlatformAccessPoints(contextOrg, sp)}">
                     <g:render template="/templates/links/accessPointLinksModal"

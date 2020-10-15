@@ -135,7 +135,7 @@
                                 </div>
                             </g:else>
 
-                            <g:if test="${propValues.get(object)?.size() > 1}"><br></g:if>
+                            <g:if test="${propValues.get(object)?.size() > 1}"><br /></g:if>
                         </g:if>
                         <g:else>
                                 <span data-position="top left" class="la-popup-tooltip la-delay"
@@ -154,7 +154,7 @@
                             &nbsp;
                             <span data-position="top left"
                                   class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
-                                  data-content="${propValue.paragraph}">§</span><br>
+                                  data-content="${propValue.paragraph}">§</span><br />
                         </g:if>
 
                         <g:if test="${object._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_PARTICIPATION]}">
@@ -192,7 +192,7 @@
 
                             </g:if>
                         </g:if>
-                        <g:if test="${propValues.get(object)?.size() > 1}"><br></g:if>
+                        <g:if test="${propValues.get(object)?.size() > 1}"><br /></g:if>
                         </div>
                     </g:each>
                 </td>

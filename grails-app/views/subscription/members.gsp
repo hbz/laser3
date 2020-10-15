@@ -341,10 +341,10 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscriptionDetails.members.members")]}"/></strong>
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"subscriptionDetails.members.members")]}"/></strong>
                 </g:if>
                 <g:else>
-                <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
+                <br /><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
                 </g:else>
             </g:else>
 

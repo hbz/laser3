@@ -20,7 +20,7 @@
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
 
@@ -34,7 +34,7 @@
 <h4>
     <g:message code="subscription"/>: <g:link
         controller="subscription" action="show"
-        id="${parentSub.id}">${parentSub.name}</g:link><br><br>
+        id="${parentSub.id}">${parentSub.name}</g:link><br /><br />
 
     <g:if test="${parentLicense}">
         <g:message code="subscription.linkLicenseMembers.license" args="${args.superOrgType}"/>: <g:link
@@ -166,7 +166,7 @@
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
                         <g:each in="${License.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:sub,linkType:RDStore.LINKTYPE_LICENSE])}" var="license">
-                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br>
+                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                         </g:each>
                     </td>
                     <td>
@@ -192,7 +192,7 @@
     </g:form>
 </g:if>
 <g:else>
-    <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
+    <br /><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
 <asset:script type="text/javascript">

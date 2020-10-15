@@ -13,7 +13,7 @@
                  action="currentSubscriptions"/>
     <semui:crumb class="active" message="menu.my.comp_sub"/>
 </semui:breadcrumbs>
-<br>
+<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.my.comp_sub')}</h1>
 
@@ -38,16 +38,16 @@
                     <g:checkBox name="show.subscriber" value="true" checked="false"
                                 onchange="adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
-                </div><br/>
+                </div><br />
             </g:if>
             <div class="ui checkbox">
                 <g:checkBox name="show.connectedObjects" value="true" checked="false"
                             onchange="adjustDropdown()"/>
                 <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
             </div>
-            <br>
+            <br />
             <br id="element-vor-target-dropdown" />
-            <br>
+            <br />
         </div>
 
         <div class="field">
@@ -64,8 +64,8 @@
 
 <g:if test="${objects}">
     <g:render template="nav"/>
-    <br>
-    <br>
+    <br />
+    <br />
 
 
     <div style="overflow-y: scroll;">

@@ -44,7 +44,7 @@
     Click here @ div#test123
 </laser:remoteLink>
 
-<br/><br/>
+<br /><br />
 
 <div id="test123"> div#test123 </div>
 

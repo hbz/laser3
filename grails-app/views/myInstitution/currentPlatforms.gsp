@@ -10,7 +10,7 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
-<br>
+<br />
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>
@@ -73,7 +73,7 @@
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}<br/></g:link>
+                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}<br /></g:link>
 
                     <g:if test="${sub.packages}">
                         <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">

@@ -60,7 +60,7 @@
             class="ui button">
         <g:message code="surveyInfo.backToSurvey"/>
     </g:link>
-    <br>
+    <br />
 
     <h2 class="ui header left aligned aligned"><g:message
             code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size() ?: 0})</h2>
@@ -98,7 +98,7 @@
                         <g:if test="${tipp.hostPlatformURL}">
                             <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
-                        <br>
+                        <br />
 
                         <div class="la-icon-list">
                             <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
@@ -251,7 +251,7 @@
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                           date="${tipp.title.dateFirstInPrint}"/>
-                            <br>
+                            <br />
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                           date="${tipp.title.dateFirstOnline}"/>
@@ -264,10 +264,10 @@
                         <g:if test="${ie.priceItem}">
                             <g:formatNumber number="${ie?.priceItem?.listPrice}" type="currency"
                                             currencySymbol="${ie?.priceItem?.listCurrency}"
-                                            currencyCode="${ie?.priceItem?.listCurrency}"/><br>
+                                            currencyCode="${ie?.priceItem?.listCurrency}"/><br />
                             <g:formatNumber number="${ie?.priceItem?.localPrice}" type="currency"
                                             currencySymbol="${ie?.priceItem?.localCurrency}"
-                                            currencyCode="${ie?.priceItem?.localCurrency}"/><br>
+                                            currencyCode="${ie?.priceItem?.localCurrency}"/><br />
                         %{--<semui:datepicker class="ieOverwrite" name="priceDate" value="${ie?.priceItem?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>--}%
 
                             <g:set var="sumlistPrice" value="${sumlistPrice + (ie?.priceItem?.listPrice ?: 0)}"/>
@@ -283,9 +283,9 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th><g:message code="financials.export.sums"/> <br>
+                    <th><g:message code="financials.export.sums"/> <br />
                         <g:message code="tipp.listPrice"/>: <g:formatNumber number="${sumlistPrice}"
-                                                                            type="currency"/><br>
+                                                                            type="currency"/><br />
                         %{--<g:message code="tipp.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                     </th>
                     <th></th>
@@ -295,7 +295,7 @@
         </div>
 
     </div>
-    <br>
+    <br />
     <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
             id="${surveyConfig?.id}"
             class="ui button">

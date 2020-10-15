@@ -39,7 +39,7 @@
 								<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
 									<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
-									<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
+									<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br />
 									<div class="ui search selection dropdown">
 										<input type="hidden" name="subA" id="subSelectA" value="${subA}">
 										<i class="dropdown icon"></i>
@@ -51,7 +51,7 @@
 									${message(code:'default.compare.restrict.after', args:[subs_message] )}
 									<semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
 									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
-									<semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
+									<semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br />
 									<div class="ui search selection dropdown">
 										<input type="hidden" name="subB" id="subSelectB" value="${subB}">
 										<i class="dropdown icon"></i>
@@ -195,7 +195,7 @@
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle?.ids?.sort{it?.ns?.ns}}" var="id">
-				                    <br>${id.ns.ns}: ${id.value}
+				                    <br />${id.ns.ns}: ${id.value}
 				                </g:each>
 								</td>
 							
