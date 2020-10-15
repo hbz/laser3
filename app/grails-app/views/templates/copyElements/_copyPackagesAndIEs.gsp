@@ -75,15 +75,17 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${ies?.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
-                                                <div class="item">
-                                                    <semui:listIcon hideTooltip="true"
-                                                                    type="${ie.tipp.title.class.name}"/>
-                                                    <strong><g:link controller="title" action="show"
-                                                                    id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                                    <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                                                </div>
-                                            </g:each>
+                                            <g:if test="${ies}">
+                                                <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
+                                                    <div class="item">
+                                                        <semui:listIcon hideTooltip="true"
+                                                                        type="${ie.tipp.title.class.name}"/>
+                                                        <strong><g:link controller="title" action="show"
+                                                                        id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                                        <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                                                    </div>
+                                                </g:each>
+                                            </g:if>
                                         </div>
                                     </div>
                                 </div>
@@ -165,15 +167,17 @@
 
                                     <div class="content">
                                         <div class="ui list">
-                                            <g:each in="${ies?.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
-                                                <div class="item">
-                                                    <semui:listIcon hideTooltip="true"
-                                                                    type="${ie.tipp.title.class.name}"/>
-                                                    <strong><g:link controller="title" action="show"
-                                                                    id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                                    <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                                                </div>
-                                            </g:each>
+                                            <g:if test="${ies}">
+                                                <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
+                                                    <div class="item">
+                                                        <semui:listIcon hideTooltip="true"
+                                                                        type="${ie.tipp.title.class.name}"/>
+                                                        <strong><g:link controller="title" action="show"
+                                                                        id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                                        <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                                                    </div>
+                                                </g:each>
+                                            </g:if>
                                         </div>
                                     </div>
                                 </div>
