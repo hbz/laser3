@@ -19,7 +19,7 @@ grails.gorm.default.mapping = {
 
 // database migration plugin
 
-grails.plugin.databasemigration.updateOnStart                       = false
+grails.plugin.databasemigration.updateOnStart       = true
 
 // audit-logging-plugin
 

@@ -1,4 +1,4 @@
-//import de.laser.dbm.MigrationCallbacks
+import de.laser.dbm.MigrationCallbacks
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -6,9 +6,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 beans = {
 
-    //migrationCallbacks(MigrationCallbacks) {
-    //    grailsApplication = ref('grailsApplication')
-    //}
+    migrationCallbacks(MigrationCallbacks) {
+        grailsApplication = ref('grailsApplication')
+    }
 
     // [ user counter ..
     sessionRegistry(org.springframework.security.core.session.SessionRegistryImpl)
