@@ -1006,10 +1006,10 @@ class AjaxController {
 
         if (params.tmpl) {
             if (params.tmpl == 'documents') {
-                render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+                render(template: '/templates/documents/card', model: [ownobj: owner, editable: true, ajaxCallController: params.ajaxCallController, ajaxCallAction: params.ajaxCallAction]) // TODO editable from owner
             }
             else if (params.tmpl == 'notes') {
-                render(template: '/templates/notes/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+                render(template: '/templates/notes/card', model: [ownobj: owner, editable: true, ajaxCallController: params.ajaxCallController, ajaxCallAction: params.ajaxCallAction]) // TODO editable from owner
             }
         }
         else {

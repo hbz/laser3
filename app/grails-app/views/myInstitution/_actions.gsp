@@ -55,6 +55,14 @@
     <g:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
 </g:if>
 
+<g:if test="${actionName == 'tasks'}">
+    <g:if test="${editable}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
+        </semui:actionsDropdown>
+    </g:if>
+</g:if>
+
 <g:if test="${actionName == 'managePrivatePropertyDefinitions'}">
     <g:if test="${editable}">
         <semui:actionsDropdown>

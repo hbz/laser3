@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2501    14.10.2020  hbz-dev             Andreas Feature     Verantwortlichkeit einer neuen Aufgabe muss jetzt explizit definiert werden
+
+2052    14.10.2020  hbz-dev             Andreas Bug         Controller und Action bei Ajax-generierten Template-Fragmenten durchgereicht
+
 2932    14.10.2020  rc1.6               Moe     Bug         Verträge vergleichen - keine Auswahl
 
 2933    14.10.2020  rc1.6               Andreas Bug         Anzeige der Nutzerrollen im Filterdropdown korrigiert 
