@@ -22,15 +22,15 @@
             <label for="selectedLicenses">${message(code: 'default.compare.licenses')}</label>
 
         <label>${message(code: 'filter.status')}</label>
-        <laser:select class="ui dropdown" name="status" id="status"
-                      from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
-                      optionKey="id"
-                      optionValue="value"
-                      multiple="true"
-                      value="${RDStore.LICENSE_CURRENT.id}"
-                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      onchange="adjustDropdown()"/>
-        </div<br/>
+
+        <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="adjustDropdown()">
+            <option value=""><g:message code="default.select.choose.label"/></option>
+            <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }" var="status">
+                <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
+            </g:each>
+        </select>
+
+        </div>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"

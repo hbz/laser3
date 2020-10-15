@@ -80,7 +80,7 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_IN_EVALUATION.id}">
-                    <semui:actionsDropdownItem controller="survey" action="setCompleteSurvey" params="[id: params.id]"
+                    <semui:actionsDropdownItem controller="survey" action="setCompleted" params="[id: params.id]"
                                                message="completeSurvey.button" tooltip=""/>
                     <div class="ui divider"></div>
 
@@ -88,8 +88,8 @@
             </g:if>
             %{-- Only for Survey with Renewal End --}%
 
-            <g:if test="${(!surveyInfo.isSubscriptionSurvey) && surveyInfo && surveyInfo.status?.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
-                <semui:actionsDropdownItem controller="survey" action="setCompleteSurvey" params="[id: params.id]"
+            <g:if test="${(!surveyConfig.subSurveyUseForTransfer) && surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+                <semui:actionsDropdownItem controller="survey" action="setCompleted" params="[id: params.id]"
                                            message="completeSurvey.button" tooltip=""/>
                 <div class="ui divider"></div>
 
