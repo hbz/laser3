@@ -13,6 +13,16 @@
 
 2932    14.10.2020  rc1.6               Moe     Bug         Verträge vergleichen - keine Auswahl
 
+2939    14.10.2020  rc1.6   1.6.1       Andreas Bug         fehlerhafter Import behoben
+
+2936    14.10.2020  rc1.6   1.6.1       Andreas Bug         private Merkmale wurden verborgen
+
+2932    14.10.2020  rc1.6   1.6.1       Moe     Bug         Verträge vergleichen - keine Auswahl
+
+2874    14.10.2020  rc1.6               Moe     Bug         Umfrage: Übertrag Option für Teilnehmer in Lizenz ermöglichen
+
+2685    14.10.2020  rc1.6               Moe     Bug         Umfrage Elemente von einer Umfrage in einer anderen Umfrage kopieren
+
 2933    14.10.2020  rc1.6               Andreas Bug         Anzeige der Nutzerrollen im Filterdropdown korrigiert 
 
 2929    14.10.2020  rc1.6               Andreas Bug         Ansichten der Finanzen korrigiert

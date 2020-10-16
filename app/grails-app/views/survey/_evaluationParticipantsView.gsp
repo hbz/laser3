@@ -89,7 +89,7 @@
             <tr>
                 <g:if test="${showCheckbox}">
                     <th>
-                        <g:if test="${orgList}">
+                        <g:if test="${surveyResult}">
                             <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </g:if>
                     </th>
@@ -330,6 +330,11 @@
 
                 <g:set var="participant" value="${Org.get(result.key)}"/>
                 <tr>
+                    <g:if test="${showCheckbox}">
+                        <td>
+                            <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
+                        </td>
+                    </g:if>
                     <td>
                         ${i + 1}
                     </td>
@@ -478,13 +483,12 @@
         <g:if test="${showTransferFields}">
             <br>
             <br>
-
+            <semui:form>
             <div class="ui form">
+            <h3>${message(code: 'surveyTransfer.info.label')}:</h3>
                 <div class="two fields">
                     <div class="ui field">
-                        <label for="subscription">${message(code: 'surveyTransfer.info.label')}</label>
-
-                        <div class="field fieldcontain">
+                         <div class="field">
                             <label>${message(code: 'filter.status')}</label>
                             <laser:select class="ui dropdown" name="status" id="status"
                                           from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
@@ -495,12 +499,10 @@
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           onchange="adjustDropdown()"/>
                         </div>
-                        <br>
                         <br id="element-vor-target-dropdown" />
                         <br>
 
                     </div>
-
                     <div class="field">
                         <semui:datepicker label="subscription.startDate.label" id="startDate" name="startDate" value=""/>
 
@@ -509,6 +511,7 @@
                 </div>
 
                 <input class="ui button" type="submit" value="${message(code: 'surveyTransfer.button')}">
+            </semui:form>
             </div>
 
         </g:if>
@@ -538,8 +541,6 @@
 
     function adjustDropdown() {
         var status = $("#status").val();
-        var showActiveSubs = $("input[name='show.activeSubscriptions'").prop('checked');
-        var showIntendedSubs = $("input[name='show.intendedSubscriptions'").prop('checked');
         var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&format=json'
 
         $.ajax({

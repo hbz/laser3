@@ -37,9 +37,9 @@
             <semui:actionsDropdownItem controller="survey" action="renewalWithSurvey" params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                        message="surveyInfo.renewalOverView"/>
 
-        <semui:actionsDropdownItem controller="survey" action="setCompleted"
+        %{--<semui:actionsDropdownItem controller="survey" action="setCompleted"
                                    params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                   message="surveyInfo.completed.action"/>
+                                   message="surveyInfo.completed.action"/>--}%
     </semui:actionsDropdown>
     </g:if>
 </semui:controlButtons>
