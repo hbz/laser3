@@ -1739,7 +1739,7 @@ class AjaxController {
         User user = resolveOID2(params.user)
         Role role = resolveOID2(params.role)
         if (user && role) {
-            UserRole.remove(user,role,true)
+            UserRole.remove(user, role)
         }
         redirect(url: request.getHeader('referer'))
     }

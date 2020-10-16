@@ -146,10 +146,6 @@
                     <g:if test="${doc.owner}">
                         (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)
                     </g:if>
-                    <g:elseif test="${doc.user}">
-                        (User: <g:link action="show" controller="user" id="${doc.user.id}">${doc.user.username} (${doc.user.display})</g:link>)
-                    </g:elseif>
-
                 <%
                     print "&nbsp;&nbsp;"
                     print link(action: 'recoveryDoc', controller: 'admin', params:['docID': doc.id], target: '_blank') { '<i class="ui large icon paste yellow"></i>' }

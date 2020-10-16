@@ -1440,6 +1440,7 @@ class AdminController  {
                 oss.roleValue = customerType
                 oss.save(flush:true)
 
+                params.remove('customerType') // unwanted parameter for filter query
             }
             else {
                 OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)

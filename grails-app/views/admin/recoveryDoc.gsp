@@ -34,10 +34,6 @@
                         (Owner: <g:link action="show" controller="org"
                                         id="${doc.owner.id}">${doc.owner.name}</g:link>)
                     </g:if>
-                    <g:elseif test="${doc.user}">
-                        (User: <g:link action="show" controller="user"
-                                       id="${doc.user.id}">${doc.user.username} (${doc.user.display})</g:link>)
-                    </g:elseif>
 
                     </li>
 
@@ -111,10 +107,6 @@
                                 (Owner: <g:link action="show" controller="org"
                                                 id="${docRecovery.owner.id}">${docRecovery.owner.name}</g:link>)
                             </g:if>
-                            <g:elseif test="${docRecovery.user}">
-                                (User: <g:link action="show" controller="user"
-                                               id="${docRecovery.user.id}">${docRecovery.user.username} (${docRecovery.user.display})</g:link>)
-                            </g:elseif>
 
                             <g:link class="ui mini button" action="processRecoveryDoc"
                                     params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
