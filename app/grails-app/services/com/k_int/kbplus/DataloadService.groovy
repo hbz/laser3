@@ -334,7 +334,6 @@ class DataloadService {
             }
 
             result.type = lic.type?.getMapForES()
-            result.typeId = lic.type?.id
 
             result.identifiers = []
             lic.ids?.each { ident ->
@@ -417,8 +416,6 @@ class DataloadService {
                         result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
                         break
                 }
-
-                result.typeId = sub.type?.id
 
                 result.identifiers = []
                 sub.ids?.each { ident ->
@@ -713,7 +710,8 @@ class DataloadService {
                 result.description = subProp.urlValue
             }
             else if(subProp.type.isRefdataValueType()){
-                result.description = subProp.refValue?.getMapForES()
+                //result.description = subProp.refValue?.getMapForES()
+                result.description = subProp.refValue?.value
             }
 
             if(subProp.isPublic) {
@@ -827,7 +825,8 @@ class DataloadService {
                 result.description = licProp.urlValue
             }
             else if(licProp.type.isRefdataValueType()){
-                result.description = licProp.refValue?.getMapForES()
+                //result.description = licProp.refValue?.getMapForES()
+                result.description = licProp.refValue?.value
             }
 
             if(licProp.isPublic) {
@@ -1013,7 +1012,7 @@ class DataloadService {
                         //String jsonString = JsonOutput.toJson(idx_record)
                         //println(jsonString)
                         request.source(jsonString, XContentType.JSON)
-
+                        //println(request)
                         IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
 
                         String index = indexResponse.getIndex();
