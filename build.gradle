@@ -102,6 +102,12 @@ dependencies {
     runtime 'org.postgresql:postgresql:42.2.5.jre6'
 }
 
+buildProperties {
+    inputs.property("info.app.build.date", new Date().format('dd.MM.yyyy HH:mm'))
+    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
+    inputs.property("info.app.build.javaVersion", System.getProperty('java.version'))
+}
+
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true

@@ -100,7 +100,7 @@
                 <div class="ui inverted link list">
 
                     <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">
-                        Version: ${grailsApplication.metadata['app.version']}
+                        Version: ${grailsApplication.metadata['info.app.version']}
                     </a>
 
                     <g:if test="${grailsApplication.metadata['repository.revision.number']}">
@@ -112,20 +112,18 @@
                     <div class="item">
                         <g:if test="${grailsApplication.metadata['repository.revision.number']}">
                             <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.revision.number']}">
-                                Build: ${grailsApplication.metadata['app.buildDate']}
+                                Build: ${grailsApplication.metadata['info.app.build.date']}
                             </a>
                         </g:if>
                         <g:else>
-                            Build: ${grailsApplication.metadata['app.buildDate']}
+                            Build: ${grailsApplication.metadata['info.app.build.date']}
                         </g:else>
                     </div>
 
-                    <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                    <!-- (${grailsApplication.metadata['build.DateTimeStamp']}) -->
+                    <!-- (${grailsApplication.metadata['info']}) -->
                 </div>
             </div>
 
         </div>
-
     </div>
 </footer>

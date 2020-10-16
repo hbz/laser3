@@ -14,17 +14,17 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
     @Override
     void setEnvironment(Environment environment) {
-        //String infoAppName = grailsApplication.metadata.get('info.app.name')
-        String infoAppName = 'laser2'
+        String infoAppName = (environment.properties.get('systemProperties')?.get('info.app.name')) ?: 'laser2'
+
         File externalConfig = new File("${System.getProperty('user.home')}/.grails/${infoAppName}-config.groovy")
 
         if (externalConfig.exists()) {
-            log.info("Loading external configuration from: ${externalConfig.absolutePath}")
+            log.info("Loading local configuration file: ${externalConfig.absolutePath}")
             ConfigObject config = new ConfigSlurper().parse(externalConfig.toURL())
             environment.propertySources.addFirst(new MapPropertySource("externalGroovyConfig", config))
         }
         else {
-            log.warn("External config could not be found, checked ${externalConfig.absolutePath}")
+            log.warn("Local configuration file not found: ${externalConfig.absolutePath}")
         }
     }
 }
