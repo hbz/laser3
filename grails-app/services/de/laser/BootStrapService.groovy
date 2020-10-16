@@ -124,11 +124,12 @@ class BootStrapService {
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
 
-        log.debug(" _                                               ")
-        log.debug("| |_ ___ ___ ___    _ _ _ ___    ___ ___         ")
-        log.debug("|   | -_|  _| -_|  | | | | -_|  | . | . |  _ _   ")
-        log.debug("|_|_|___|_| |___|  |_____|___|  |_  |___| |_|_|  ")
-        log.debug("                                |___|            ")
+        log.debug(" .__                            .________ ")
+        log.debug(" |  | _____    ______ ___________\\_____  \\ ~ grails3")
+        log.debug(" |  | \\__  \\  /  ___// __ \\_  __ \\/  ____/ ")
+        log.debug(" |  |__/ __ \\_\\___ \\\\  ___/|  | \\/       \\ ")
+        log.debug(" |____(____  /____  >\\___  >__|  \\_______ \\  ")
+        log.debug("           \\/     \\/     \\/              \\/ ")
     }
 
     void destroy() {}

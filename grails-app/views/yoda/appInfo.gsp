@@ -17,61 +17,70 @@
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">Application Info</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">App</h3></th></tr>
         </thead>
-        <tr><td>App version</td><td> <g:meta name="app.version"/></td></tr>
-        <tr><td>Build Date</td><td> <g:meta name="app.buildDate"/></td></tr>
-        <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>
-        <tr><td>Build Profile</td><td> <g:meta name="app.buildProfile"/></td></tr>
-        <tr><td>Grails version</td><td> <g:meta name="app.grails.version"/></td></tr>
-        <tr><td>Groovy version</td><td> ${GroovySystem.getVersion()}</td></tr>
-        <tr><td>JVM version</td><td> ${System.getProperty('java.version')}</td></tr>
-        <tr><td>Reloading active</td><td> ${grails.util.Environment.reloadingAgentEnabled}</td></tr>
+        <tbody>
+        <tr><td>App name</td><td> <g:meta name="info.app.name"/></td></tr>
+        <tr><td>App version</td><td> <g:meta name="info.app.version"/></td></tr>
+        <tr><td>Grails version</td><td> <g:meta name="info.app.grailsVersion"/></td></tr>
+        <tr><td>Groovy (currently running)</td><td> ${GroovySystem.getVersion()}</td></tr>
+        <tr><td>Java (currently running)</td><td> ${System.getProperty('java.version')}</td></tr>
         <tr><td>Session Timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
+        <tr><td>Reloading active</td><td> ${grails.util.Environment.reloadingAgentEnabled}</td></tr>
         <tr><td>Last Quartz Heartbeat</td><td>${ConfigUtils.getQuartzHeartbeat()}</td></tr>
+        </tbody>
     </table>
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">Database</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">Build</h3></th></tr>
         </thead>
+        <tbody>
+        <tr><td>Build Date</td><td> <g:meta name="info.app.build.date"/></td></tr>
+        <tr><td>Build Host</td><td> <g:meta name="info.app.build.host"/></td></tr>
+        <tr><td>Build Profile</td><td> <g:meta name="info.app.build.profile"/></td></tr>
+        <tr><td>Build Java Version</td><td> <g:meta name="info.app.build.javaVersion"/></td></tr>
+        </tbody>
+    </table>
+
+    <table class="ui celled la-table table">
+        <thead>
+            <tr><th colspan="2"><h3 class="ui header">Database</h3></th></tr>
+        </thead>
+        <tbody>
         <tr><td>DBM version</td><td> ${dbmVersion[0]} : ${dbmVersion[1]} </td></tr>
         <tr><td>DBM updateOnStart</td><td> ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}</td></tr>
         <tr><td>DataSource.dbCreate</td><td> ${grailsApplication.config.dataSource.dbCreate}</td></tr>
+        <tbody>
     </table>
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">ES Index Update</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">ES Index Update</h3></th></tr>
         </thead>
+        <tbody>
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>
         <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
         <g:each in="${esinfos}" var="es">
             <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
         </g:each>
+        </tbody>
     </table>
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">Global Data Sync</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">Global Data Sync</h3></th></tr>
         </thead>
-        <tr><td>Currently Running</td><td>${globalSourceSyncService.running}</td></tr>
+        <tbody>
+            <tr><td>Currently Running</td><td>${globalSourceSyncService.running}</td></tr>
+        </tbody>
     </table>
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">STATS Sync Service</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">STATS Sync Service</h3></th></tr>
         </thead>
+        <tbody>
         <tr><td>Currently Running</td><td>${statsSyncService.running}</td></tr>
         <tr><td>Completed Count</td><td>${statsSyncService.completedCount}</td></tr>
         <tr><td>New Fact Count</td><td>${statsSyncService.newFactCount}</td></tr>
@@ -98,14 +107,14 @@
                     ${ah.key}:${ah.value}<br />
                 </g:each>
             </td></tr>
+        </tbody>
     </table>
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">HttpServletRequest.getAttributeNames()</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">HttpServletRequest.getAttributeNames()</h3></th></tr>
         </thead>
+        <tbody>
         <tr>
             <td>
                 <div class="ui relaxed divided list">
@@ -115,14 +124,14 @@
                 </div>
             </td>
         </tr>
+        </tbody>
     </table>
 
     <table class="ui celled la-table table">
         <thead>
-        <tr>
-            <th colspan="2"><h3 class="ui header">HttpServletRequest</h3></th>
-        </tr>
+            <tr><th colspan="2"><h3 class="ui header">HttpServletRequest</h3></th></tr>
         </thead>
+        <tbody>
         <tr>
             <td>
 
@@ -152,6 +161,7 @@
     </div>
             </td>
         </tr>
+        </tbody>
     </table>
 
 </body>

@@ -38,7 +38,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     Date endDate
 
     SurveyConfig surveyConfig
-    ArrayList resultValues
 
     Date dateCreated
     Date lastUpdated
@@ -55,7 +54,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         tenant      (nullable: true)
         finishDate  (nullable:true)
         comment (nullable:true, blank:false)
-        resultValues (nullable:true, blank:false)
         startDate   (nullable:true)
         endDate     (nullable:true)
         participantComment (nullable:true, blank:false)
@@ -83,7 +81,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         urlValue    column: 'surre_url_value'
         note        column: 'surre_note', type: 'text'
         dateValue   column: 'surre_date_value'
-        resultValues column: 'surre_result_values'
 
         startDate column: 'surre_start_date'
         endDate column: 'surre_end_date'

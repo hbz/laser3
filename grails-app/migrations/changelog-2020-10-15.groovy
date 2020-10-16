@@ -8,4 +8,8 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
+
+	changeSet(author: "klober (generated)", id: "1602753960593-2") {
+		dropColumn(columnName: "surre_result_values", tableName: "survey_result")
+	}
 }
