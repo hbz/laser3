@@ -43,9 +43,3 @@
 - https://robertoschwald.github.io/grails-audit-logging-plugin/3.0.x/plugin.html
 - http://logback.qos.ch/
 - http://www.asset-pipeline.com/manual/
-
-
-
-
-
-

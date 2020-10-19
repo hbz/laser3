@@ -13,7 +13,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 @Secured(['permitAll']) // TODO
 class ApiController {
 
-    def springSecurityService
     ContextService contextService
     ApiService apiService
 
@@ -21,7 +20,6 @@ class ApiController {
         super()
     }
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         log.debug("API")
         Map<String, Object> result = fillRequestMap(params)
@@ -66,11 +64,7 @@ class ApiController {
 
     private Map<String, Object> fillRequestMap (GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        Org org
-
-        if (springSecurityService.isLoggedIn()) {
-            org = contextService.getOrg()
-        }
+        Org org = contextService.getOrg()
 
         def apiKey = OrgSetting.get(org, OrgSetting.KEYS.API_KEY)
         def apiPass = OrgSetting.get(org, OrgSetting.KEYS.API_PASSWORD)
@@ -145,12 +139,6 @@ class ApiController {
         render xml
     }
 
-    /**
-     * API endpoint
-     *
-     * @return
-     */
-    @Secured(['permitAll']) // TODO
     def v0() {
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
         boolean debugMode = request.getAttribute('debugMode')

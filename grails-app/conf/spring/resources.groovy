@@ -48,8 +48,4 @@ beans = {
 
     securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){}
 
-    // [ controls api access via hmac ..
-    apiFilter(de.laser.web.ApiFilter){}
-    // .. ]
-
 }

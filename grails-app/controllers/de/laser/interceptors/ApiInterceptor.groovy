@@ -1,37 +1,27 @@
-package de.laser.web
+package de.laser.interceptors
 
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
-import grails.gorm.transactions.Transactional
 import org.apache.commons.io.IOUtils
-import org.springframework.web.filter.GenericFilterBean
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.servlet.FilterChain
-import javax.servlet.ServletException
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
-import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import java.security.SignatureException
 
-class ApiFilter extends GenericFilterBean {
+class ApiInterceptor implements grails.artefact.Interceptor {
 
-    @Transactional
-    @Override
-    void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    ApiInterceptor() {
+        match(controller: 'api')
+    }
 
-        // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
+    boolean before() {
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest
-        HttpServletResponse response = (HttpServletResponse) servletResponse
-
-        // ignore non api calls
         String servletPath = request.getServletPath()
+        // ignore non api calls
         if (servletPath.startsWith('/api/v')) {
             // ignore api meta calls
             if (! (servletPath.endsWith('/specs.yaml') || servletPath.endsWith('/changelog.md')) ) {
@@ -72,13 +62,13 @@ class ApiFilter extends GenericFilterBean {
                             String apiSecret = OrgSetting.get(apiOrg, OrgSetting.KEYS.API_PASSWORD)?.getValue()
 
                             checksum = hmac(
-                                        method +    // http-method
-                                        path +      // uri
-                                        timestamp + // timestamp
-                                        nounce +    // nounce
-                                        (query ? URLDecoder.decode(query) : '') + // parameter
-                                        body,         // body
-                                        apiSecret)
+                                    method +    // http-method
+                                    path +      // uri
+                                    timestamp + // timestamp
+                                    nounce +    // nounce
+                                    (query ? URLDecoder.decode(query) : '') + // parameter
+                                    body,       // body
+                                    apiSecret)
 
                             isAuthorized = (checksum == digest)
                             if (isAuthorized) {
@@ -94,12 +84,10 @@ class ApiFilter extends GenericFilterBean {
                 }
 
                 if (isAuthorized) {
-                    //println "VALID authorization: " + authorization
-                    request.getRequestDispatcher(path).forward(servletRequest, servletResponse)
-                    return
+
+                    return true
                 }
                 else {
-                    //println "INVALID authorization: " + authorization + " < " + checksum
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
                     response.setContentType(Constants.MIME_APPLICATION_JSON)
                     response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
@@ -111,15 +99,22 @@ class ApiFilter extends GenericFilterBean {
                             "query"        : query,
                             "method"       : method
                     ])
-                    response.getWriter().print(result.toString(true))
-                    return
+                    response.getOutputStream().print(result.toString(true))
+
+                    return false
                 }
             }
         }
-        filterChain.doFilter(servletRequest, servletResponse)
+
+        true
     }
 
-    String hmac(String data, String secret) throws SignatureException {
+    boolean after() {
+
+        true
+    }
+
+    private String hmac(String data, String secret) throws SignatureException {
         String result
         try {
             SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256")

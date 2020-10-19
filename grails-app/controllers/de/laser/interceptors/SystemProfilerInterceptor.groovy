@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.interceptors
 
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.SessionCacheWrapper
