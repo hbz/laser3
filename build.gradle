@@ -102,12 +102,6 @@ dependencies {
     runtime 'org.postgresql:postgresql:42.2.5.jre6'
 }
 
-buildProperties {
-    inputs.property("info.app.build.date", new Date().format('dd.MM.yyyy HH:mm'))
-    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
-    inputs.property("info.app.build.javaVersion", System.getProperty('java.version'))
-}
-
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true
@@ -115,6 +109,14 @@ bootRun {
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
 
+// war-file creation
+buildProperties {
+    inputs.property("info.app.build.date", new Date().format('dd.MM.yyyy HH:mm'))
+    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
+    inputs.property("info.app.build.javaVersion", System.getProperty('java.version'))
+}
+
+// war-file creation
 war {
     baseName = 'laser2'
     archiveName 'laser2.war'
@@ -127,6 +129,7 @@ tasks.withType(Test) {
     systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
 }
 
+// asset-pipeline
 assets {
     minifyJs = false
     minifyCss = false
@@ -134,6 +137,7 @@ assets {
     from '/themes'
 }
 
+// database-migration
 sourceSets {
     main {
         resources {

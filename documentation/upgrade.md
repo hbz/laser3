@@ -1,7 +1,7 @@
 
-#### Upgrade from Grails 2.5.6 to 3.3.11
+## Upgrade from Grails 2.5.6 to 3.3.11
 
-##### Dependencies
+#### Updated Dependencies
 
 - Hibernate 5.1.5 (4 supported)
 - Spring Framework 4.3.9
@@ -10,20 +10,23 @@
 - Spock 1.1
 - GORM 6.1
 
-##### Important Files
+#### Important Files
 
-- build.gradle
+- build.gradle (info.app.version)
+- gradle.properties (info.app.grailsVersion)
+- settings.gradle (info.app.name)
 - conf/application.yml
 - conf/application.groovy
 
-#### Setup
+### Setup
 
     sdk i grails 3.3.11  
     sdk i groovy 2.4.17
-
-    git init  
-    git add \*     
-    git commit  
+    
+- Java OpenJDK 1.8+
+- PostgreSQL 11/12
+- Elasticsearch 7.5.0
+- Apache Tomcat 9.0.0
 
 #### Migration
 
@@ -37,9 +40,10 @@
     git read-tree --prefix=grails2/ -u grails2/grails-upgrade-source
     git commit -m '--- imported laser (grails2) ---'
 
-##### Docs
+### Docs
 
 - https://grails-plugins.github.io/grails-spring-security-core/3.2.x/
+- https://docs.gradle.org/3.5/userguide/userguide.html
 - https://robertoschwald.github.io/grails-audit-logging-plugin/3.0.x/plugin.html
 - http://logback.qos.ch/
 - http://www.asset-pipeline.com/manual/
