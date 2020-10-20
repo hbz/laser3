@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: galffy
-  Date: 07.02.2019
-  Time: 08:56
---%>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/html">
     <head>

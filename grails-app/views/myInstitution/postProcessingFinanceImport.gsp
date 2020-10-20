@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: galffy
-  Date: 07.06.2019
-  Time: 12:27
---%>
-
 <%@ page import="de.laser.OrgRole; grails.converters.JSON;de.laser.helper.RDStore" contentType="text/html;charset=UTF-8" %>
 <laser:serviceInjection/>
 <html>

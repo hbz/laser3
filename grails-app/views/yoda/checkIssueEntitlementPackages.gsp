@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: galffy
-  Date: 12.08.2019
-  Time: 09:22
---%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
     <head>

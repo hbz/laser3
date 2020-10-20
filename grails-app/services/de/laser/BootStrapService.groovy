@@ -28,9 +28,9 @@ class BootStrapService {
 
     void init(def servletContext) {
 
-        log.info("--------------------------------------------------------------------------------")
-
         ConfigUtils.checkConfig()
+
+        log.info("--------------------------------------------------------------------------------")
 
         log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
         log.info("Database: ${grailsApplication.config.dataSource.url}")

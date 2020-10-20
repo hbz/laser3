@@ -6,123 +6,129 @@ class ConfigUtils {
 
     // -- comfortable --
 
-    static boolean getActivateTestJob() {
-        readConfig('activateTestJob')
+    static boolean getActivateTestJob(boolean validate = false) {
+        readConfig('activateTestJob', validate)
     }
-    static String getAggrEsCluster() {
-        readConfig('aggr_es_cluster')
+    static String getAggrEsCluster(boolean validate = false) {
+        readConfig('aggr_es_cluster', validate)
     }
-    static String getAggrEsHostname() {
-        readConfig('aggr_es_hostname')
+    static String getAggrEsHostname(boolean validate = false) {
+        readConfig('aggr_es_hostname', validate)
     }
-    static String getAggrEsIndex() {
-        readConfig('aggr_es_index')
+    static String getAggrEsIndex(boolean validate = false) {
+        readConfig('aggr_es_index', validate)
     }
-    static Object getAppDefaultPrefs() {
-        readConfig('appDefaultPrefs')
+    static Object getAppDefaultPrefs(boolean validate = false) {
+        readConfig('appDefaultPrefs', validate)
     }
-    static String getBasicDataFileName() {
-        readConfig('basicDataFileName')
+    static String getBasicDataFileName(boolean validate = false) {
+        readConfig('basicDataFileName', validate)
     }
-    static String getBasicDataPath() {
-        readConfig('basicDataPath')
+    static String getBasicDataPath(boolean validate = false) {
+        readConfig('basicDataPath', validate)
     }
-    static String getDeployBackupLocation() {
-        readConfig('deployBackupLocation')
+    static String getDeployBackupLocation(boolean validate = false) {
+        readConfig('deployBackupLocation', validate)
     }
-    static String getDocumentStorageLocation() {
-        readConfig('documentStorageLocation')
+    static String getDocumentStorageLocation(boolean validate = false) {
+        readConfig('documentStorageLocation', validate)
     }
-    static String getFinancialsCurrency() {
-        readConfig('financials.currency')
+    static String getFinancialsCurrency(boolean validate = false) {
+        readConfig('financials.currency', validate)
     }
-    static boolean getGlobalDataSyncJobActiv() {
-        readConfig('globalDataSyncJobActiv')
+    static boolean getGlobalDataSyncJobActiv(boolean validate = false) {
+        readConfig('globalDataSyncJobActiv', validate)
     }
-    static String getQuartzHeartbeat() {
-        readConfig('quartzHeartbeat')
+    static String getQuartzHeartbeat(boolean validate = false) {
+        readConfig('quartzHeartbeat', validate)
     }
-    static boolean getIsSendEmailsForDueDatesOfAllUsers() {
-        readConfig('isSendEmailsForDueDatesOfAllUsers')
+    static boolean getIsSendEmailsForDueDatesOfAllUsers(boolean validate = false) {
+        readConfig('isSendEmailsForDueDatesOfAllUsers', validate)
     }
-    static boolean getIsUpdateDashboardTableInDatabase() {
-        readConfig('isUpdateDashboardTableInDatabase')
+    static boolean getIsUpdateDashboardTableInDatabase(boolean validate = false) {
+        readConfig('isUpdateDashboardTableInDatabase', validate)
     }
-    static String getLaserSystemId() {
-        readConfig('laserSystemId')
+    static String getLaserSystemId(boolean validate = false) {
+        readConfig('laserSystemId', validate)
     }
-    static String getNotificationsEmailFrom() {
-        readConfig('notifications.email.from')
+    static String getNotificationsEmailFrom(boolean validate = false) {
+        readConfig('notifications.email.from', validate)
     }
-    static boolean getNotificationsEmailGenericTemplate() {
-        readConfig('notifications.email.genericTemplate')
+    static boolean getNotificationsEmailGenericTemplate(boolean validate = false) {
+        readConfig('notifications.email.genericTemplate', validate)
     }
-    static String getNotificationsEmailReplyTo() {
-        readConfig('notifications.email.replyTo')
+    static String getNotificationsEmailReplyTo(boolean validate = false) {
+        readConfig('notifications.email.replyTo', validate)
     }
-    static boolean getNotificationsJobActive() {
-        readConfig('notificationsJobActive')
+    static boolean getNotificationsJobActive(boolean validate = false) {
+        readConfig('notificationsJobActive', validate)
     }
-    static String getOrgDumpFileExtension() {
-        readConfig('orgDumpFileExtension')
+    static String getOrgDumpFileExtension(boolean validate = false) {
+        readConfig('orgDumpFileExtension', validate)
     }
-    static String getOrgDumpFileNamePattern() {
-        readConfig('orgDumpFileNamePattern')
+    static String getOrgDumpFileNamePattern(boolean validate = false) {
+        readConfig('orgDumpFileNamePattern', validate)
     }
-    static String getSchemaSpyScriptFile() {
-        readConfig('schemaSpyScriptFile')
+    static String getSchemaSpyScriptFile(boolean validate = false) {
+        readConfig('schemaSpyScriptFile', validate)
     }
-    static boolean getShowDebugInfo() {
-        readConfig('showDebugInfo')
+    static boolean getShowDebugInfo(boolean validate = false) {
+        readConfig('showDebugInfo', validate)
     }
-    static boolean getShowSystemInfo() {
-        readConfig('showSystemInfo')
+    static boolean getShowSystemInfo(boolean validate = false) {
+        readConfig('showSystemInfo', validate)
     }
-    static String getStatsApiUrl() {
-        readConfig('statsApiUrl')
+    static String getStatsApiUrl(boolean validate = false) {
+        readConfig('statsApiUrl', validate)
     }
-    static boolean getStatsSyncJobActiv() {
-        readConfig('StatsSyncJobActiv')
+    static boolean getStatsSyncJobActiv(boolean validate = false) {
+        readConfig('StatsSyncJobActiv', validate)
     }
-    static String getSystemEmail() {
-        readConfig('systemEmail')
+    static String getSystemEmail(boolean validate = false) {
+        readConfig('systemEmail', validate)
     }
 
     // -- check --
 
     static void checkConfig() {
-        getActivateTestJob()
-        getAggrEsCluster()
-        getAggrEsHostname()
-        getAggrEsIndex()
-        getAppDefaultPrefs()
-        getBasicDataFileName()
-        getBasicDataPath()
-        getDeployBackupLocation()
-        getDocumentStorageLocation()
-        getFinancialsCurrency()
-        getGlobalDataSyncJobActiv()
-        getQuartzHeartbeat()
-        getIsSendEmailsForDueDatesOfAllUsers()
-        getIsUpdateDashboardTableInDatabase()
-        getLaserSystemId()
-        getNotificationsEmailFrom()
-        getNotificationsEmailGenericTemplate()
-        getNotificationsEmailReplyTo()
-        getNotificationsJobActive()
-        getOrgDumpFileExtension()
-        getOrgDumpFileNamePattern()
-        getSchemaSpyScriptFile() // QA only
-        getShowDebugInfo()
-        getShowSystemInfo()
-        getStatsApiUrl()
-        getStatsSyncJobActiv()
-        getSystemEmail()
+        println ": --------------------------------------------->"
+        println ": ConfigUtils.checkConfig()"
+        println ": --------------------------------------------->"
+
+        getActivateTestJob(true)
+        getAggrEsCluster(true)
+        getAggrEsHostname(true)
+        getAggrEsIndex(true)
+        getAppDefaultPrefs(true)
+        getBasicDataFileName(true)
+        getBasicDataPath(true)
+        getDeployBackupLocation(true)
+        getDocumentStorageLocation(true)
+        getFinancialsCurrency(true)
+        getGlobalDataSyncJobActiv(true)
+        getQuartzHeartbeat(true)
+        getIsSendEmailsForDueDatesOfAllUsers(true)
+        getIsUpdateDashboardTableInDatabase(true)
+        getLaserSystemId(true)
+        getNotificationsEmailFrom(true)
+        getNotificationsEmailGenericTemplate(true)
+        getNotificationsEmailReplyTo(true)
+        getNotificationsJobActive(true)
+        getOrgDumpFileExtension(true)
+        getOrgDumpFileNamePattern(true)
+        getSchemaSpyScriptFile(true) // QA only
+        getShowDebugInfo(true)
+        getShowSystemInfo(true)
+        getStatsApiUrl(true)
+        getStatsSyncJobActiv(true)
+        getSystemEmail(true)
+
+        println ": --------------------------------------------->"
     }
 
     // -- raw --
 
-    static def readConfig(String key) {
+    static def readConfig(String key, boolean validate) {
         def result
 
         if (key) {
@@ -131,12 +137,15 @@ class ConfigUtils {
             key.split('\\.').each { lvl ->
                 result = result ? result.get(lvl) : cfg.get(lvl)
             }
-            if (result == null) {
-                println("WARNING: ConfigUtils > configuration '${key}' not found")
+            if (validate) {
+                if (result == null) {
+                    println(": ${key} not found : WARNING")
+                }
+                else {
+                    println(": ${key} found")
+                }
             }
         }
-        //println "ConfigUtils -> ${key} : ${result} > ${result?.getClass()}"
-
         result
     }
 }

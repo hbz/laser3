@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: agalffy
-  Date: 07.05.2020
-  Time: 11:48
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
     <head>

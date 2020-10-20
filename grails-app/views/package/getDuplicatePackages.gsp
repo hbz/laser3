@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: galffy
-  Date: 01.07.2019
-  Time: 13:10
---%>
 <%@ page contentType="text/html;charset=UTF-8" import="de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
 <html>
     <laser:serviceInjection/>

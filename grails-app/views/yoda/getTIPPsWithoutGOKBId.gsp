@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: galffy
-  Date: 03.07.2019
-  Time: 15:33
---%>
 <laser:serviceInjection/>
 <%@ page import="de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>

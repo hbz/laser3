@@ -28,22 +28,14 @@
 - Elasticsearch 7.5.0
 - Apache Tomcat 9.0.0
 
-#### Migration
+#### Configuration
 
-    git remote add grails2 https://github.com/hbz/laser
-    git remote set-url --push grails2 DISABLED
-    git fetch grails2 grails-upgrade-source:grails2
+[laser2-config.groovy.example](../files/server/laser2-config.groovy.example)
     
-    git checkout -b migration
-    
-    git merge -s ours --no-commit --allow-unrelated-histories grails2/grails-upgrade-source
-    git read-tree --prefix=grails2/ -u grails2/grails-upgrade-source
-    git commit -m '--- imported laser (grails2) ---'
-
 ### Docs
 
 - https://grails-plugins.github.io/grails-spring-security-core/3.2.x/
 - https://docs.gradle.org/3.5/userguide/userguide.html
 - https://robertoschwald.github.io/grails-audit-logging-plugin/3.0.x/plugin.html
-- http://logback.qos.ch/
 - http://www.asset-pipeline.com/manual/
+- http://logback.qos.ch/

@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: galffy
-  Date: 02.05.2019
-  Time: 08:45
---%>
-
 <%@ page import="de.laser.RefdataValue" contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
