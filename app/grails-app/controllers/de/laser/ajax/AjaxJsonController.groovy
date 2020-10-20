@@ -137,7 +137,7 @@ class AjaxJsonController {
                 }
                 else {
                     switch (propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
                             break
@@ -145,15 +145,15 @@ class AjaxJsonController {
                         break
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
                             break
                     }
                 }
                 if (values) {
+                    //very ugly, needs a more elegant solution
                     if (propDef.isIntegerType()) {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if (v.intValue != null)
-                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+                        values.intValue.findAll().unique().each { v ->
+                            result.add([value:v,text:v])
                         }
                         result = result.sort { x, y -> x.text.compareTo(y.text) }
                     }
@@ -171,9 +171,8 @@ class AjaxJsonController {
                         result = result.sort { x, y -> x.text.compareToIgnoreCase(y.text) }
                     }
                     else {
-                        values.each { AbstractPropertyWithCalculatedLastUpdated v ->
-                            if (v.getValue() != null)
-                                result.add([value:v.getValue(),text:v.getValue()])
+                        values.value?.findAll()?.unique()?.each { v ->
+                            result.add([value:v,text:v])
                         }
                         result = result.sort { x, y -> x.text.compareToIgnoreCase(y.text) }
                     }

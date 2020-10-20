@@ -1,11 +1,17 @@
-<%@page import="grails.converters.JSON; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants;" %>
+<%@page import="grails.converters.JSON; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.ReportingService" %>
 <laser:serviceInjection/>
 
 <g:each in="${growth}" var="row">
     <g:set var="key" value="${row.getKey()}"/>
     <g:set var="graph" value="${row.getValue()}"/>
-    <div class="ui top attached segment generalChartContainer" id="${key}">
-        <h2><g:message code="myinst.reporting.graphHeader" args="${[message(code:'myinst.reporting.graphHeader.'+requestObject),message(code:'org.'+key+'.label')]}"/></h2>
+    <div class="ui top attached segment generalChartContainer" id="${requestObject}${key}">
+        <g:if test="${key.contains(ReportingService.CONFIG_ORG_PROPERTY)}">
+            <g:set var="groupingText" value="${propDef}"/>
+        </g:if>
+        <g:else>
+            <g:set var="groupingText" value="${message(code:'org.'+key+'.label')}"/>
+        </g:else>
+        <h2><g:message code="myinst.reporting.graphHeader" args="${[message(code:'myinst.reporting.graphHeader.'+requestObject),groupingText]}"/></h2>
         <a class="closeSegment">
             <i class="ui icon times"></i>
         </a>
@@ -36,7 +42,7 @@
                         series.push({name:k,data:seriesObj[k]});
                     }
                 }
-                new Chartist.Bar('#${key}',{labels:labels,series:series},{
+                new Chartist.Bar('#${requestObject}${key}',{labels:labels,series:series},{
                     plugins: [
                         Chartist.plugins.legend()
                     ],
@@ -44,7 +50,8 @@
                     height: '500px'
                 });
                 $(".generalChartContainer").on('click','.closeSegment',function() {
-                    $(this).parent("div").remove();
+                    $(this).parent("div").hide();
+                    $('.generalLoadingParam[data-display="${key}"]').removeClass('red');
                 });
             });
         </script>
