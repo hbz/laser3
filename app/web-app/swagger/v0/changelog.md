@@ -4,7 +4,10 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 #### 0.123
 
--   fixed CustomPropertyCollection
+- fixed attribute: `License.properties`
+- fixed attribute: `Org.properties`
+- fixed attribute: `Platform.properties`
+- fixed attribute: `Subscription.properties`
 
 #### 0.122
 
