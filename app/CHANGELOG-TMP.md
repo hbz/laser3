@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-2946    14.10.2020  rc1.6   1.6.2       Moe     Bug         Excel-Export von Lizenzteilnehmern funktioniert nicht
+2943    19.10.2020  rc1.6   1.6.1       Moe     Bug         Sortierung Mein Adressbuch noch nach Name statt Org: sortierbar machen
+
+2946    19.10.2020  rc1.6   1.6.2       Moe     Bug         Excel-Export von Lizenzteilnehmern funktioniert nicht
 
 2939    14.10.2020  rc1.6   1.6.1       Andreas Bug         fehlerhafter Import behoben
 
