@@ -1115,6 +1115,8 @@ class OrganisationController extends AbstractDebugController {
 
         params.org = result.orgInstance
 
+        params.sort = params.sort ?: 'p.last_name, p.first_name'
+
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
         result.propList =
@@ -1408,6 +1410,8 @@ class OrganisationController extends AbstractDebugController {
             result.rdvAllPersonPositions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
 
         }
+
+        params.sort = params.sort ?: 'p.last_name, p.first_name'
 
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
         result.num_visiblePersons = visiblePersons.size()
