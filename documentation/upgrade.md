@@ -30,8 +30,12 @@
 
 #### Configuration
 
-[laser2-config.groovy.example](../files/server/laser2-config.groovy.example)
+- [laser2-config.groovy.example](../files/server/laser2-config.groovy.example)
     
+#### Migration
+
+- [code-migration.md](./code-migration.md)
+
 ### Docs
 
 - https://grails-plugins.github.io/grails-spring-security-core/3.2.x/
