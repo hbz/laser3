@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2948    20.10.2020  rc1.6   1.6.2       Andreas Bug         Lizenzimport scheiterte am Zuordnen der Merkmalsdefinitionen
+
 R26     20.10.2020  rc1.6   1.6.2       Moe     Bug         Merkmale aus LAS:eR werden nach Deploy 1.6 doppelt in RT angezeigt
 
 2945    20.10.2020  rc1.6   1.6.2       Moe     Bug         Mein Adressbuch: Eingegebene Kontaktanschrift wird nicht angezeigt/gespeichert
