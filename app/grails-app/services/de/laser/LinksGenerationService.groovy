@@ -116,11 +116,11 @@ class LinksGenerationService {
 
     Set getSuccessionChain(startingPoint, String position) {
         Set chain = []
-        Set first = getRecursiveNext([genericOIDService.getOID(startingPoint)].toSet(),position)
+        Set first = getRecursiveNext([startingPoint].toSet(),position)
         Set next
         while(first.size() > 0) {
             first.each { row ->
-                chain << genericOIDService.resolveOID(row)
+                chain << row
             }
             next = getRecursiveNext(first,position)
             first = next
@@ -130,14 +130,13 @@ class LinksGenerationService {
         else chain
     }
 
-
-    private Set getRecursiveNext(Set points, String position) {
+    private Set<Subscription> getRecursiveNext(Set points, String position) {
         String pair
-        if(position == 'source')
-            pair = 'destination'
-        else if(position == 'destination')
-            pair = 'source'
-        Links.executeQuery('select li.'+pair+' from Links li where li.'+position+' in (:points) and li.linkType = :linkType',[points:points,linkType:RDStore.LINKTYPE_FOLLOWS])
+        if(position == 'sourceSubscription')
+            pair = 'destinationSubscription'
+        else if(position == 'destinationSubscription')
+            pair = 'sourceSubscription'
+        Subscription.executeQuery('select li.'+pair+' from Links li where li.'+position+' in (:points) and li.linkType = :linkType',[points:points,linkType:RDStore.LINKTYPE_FOLLOWS])
     }
 
     /**

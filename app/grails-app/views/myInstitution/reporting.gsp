@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition; de.laser.ReportingService" %>
 <laser:serviceInjection/>
 <!doctype html>
 <r:require module="chartist"/>
@@ -78,7 +78,7 @@
                                 <div class="content">
                                     <div class="accordion">
                                         <g:each in="${subProp}" var="propDef">
-                                            <div class="title propertyDefinition" id="sub${propDef.name}" data-value="${genericOIDService.getOID(propDef)}" data-objecttype="${PropertyDefinition.SUB_PROP}">
+                                            <div class="title subPropertyDefinition" id="sub${propDef.name}" <g:if test="${propDef.refdataCategory}">data-rdc="${propDef.refdataCategory}"</g:if> data-value="${genericOIDService.getOID(propDef)}" data-objecttype="${PropertyDefinition.SUB_PROP}">
                                                 <i class="dropdown icon"></i>
                                                 ${propDef.getI10n("name")}
                                             </div>
@@ -127,7 +127,9 @@
             <div class="twelve wide column">
                 <div class="ui grid" id="selectionPanel">
                     <div class="ui row" id="displayConfigurations"></div>
-                    <div class="ui row" id="selection"></div>
+                    <div class="ui row" id="selection">
+                        <div id="result"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -136,10 +138,12 @@
         $(document).ready(function() {
             $(".ui.checkbox").checkbox('uncheck');
             let expanded = true;
-            let genFilter = {};
-            let genGrouping = [];
             let subFilter = {status: [], propDef: "", propVal: [], form: [], resource: [], kind: []};
             let subGrouping = [];
+            let selPropDef;
+            const controlling = $("#controlling");
+            const selectionPanel = $("#selectionPanel");
+            const clickMe = $("#clickMe");
             <g:if test="${institution.getCustomerType() == "ORG_CONSORTIUM"}">
                 subGrouping.push("subscriber");
             </g:if>
@@ -147,7 +151,7 @@
                 subGrouping.push("consortia");
             </g:elseif>
             let dConfs = [];
-            $("#controlling").on('click','#collapse',function() {
+            controlling.on('click','#collapse',function() {
                 expanded = !expanded;
                 $("#clickMe").toggle();
                 if(expanded) {
@@ -157,17 +161,18 @@
                     $(this).find("i").removeClass("left").addClass("right");
                 }
             });
-            $("#controlling").on('click','#reset',function(){
+            controlling.on('click','#reset',function(){
                 $('.ui.checkbox').checkbox('uncheck');
                 $('#displayConfigurations').empty();
                 $('#selection').empty();
                 $('.result').remove();
+                selPropDef = null;
             });
-            $("#selectionPanel").on('click','.pickSubscription',function(){
+            selectionPanel.on('click','.pickSubscription',function(){
                 $(this).toggleClass('blue');
                 let subscription = $(this).attr("data-entry");
                 let subId = subscription.split(":")[1];
-                let subscriptionContainer = $('div[data-entry="'+subscription+'"]');
+                let subscriptionContainer = $('#'+subscription);
                 if(subscriptionContainer.length === 0 || (subscriptionContainer.find("#chart"+subId).is(":empty") && !subscriptionContainer.is(":visible"))) {
                     let requestOptions = JSON.stringify({ group: subGrouping, displayConfiguration: dConfs })
                     $.ajax({
@@ -180,7 +185,7 @@
                         method: 'POST'
                     }).done(function(response){
                         if(subscriptionContainer.length === 0)
-                            $("#selection").after('<div class="result" data-entry="'+subscription+'">'+response+'</div>');
+                            $("#result").append('<div data-entry="'+subscription+'">'+response+'</div>');
                         else if(subscriptionContainer.find("#chart"+subId).is(":empty"))
                             subscriptionContainer.html(response).show();
                     }).fail(function(xhr,status,message){
@@ -191,7 +196,7 @@
                     subscriptionContainer.hide();
                 }
             });
-            $("#selectionPanel").on('click','.display',function(){
+            selectionPanel.on('click','.display',function(){
                 $(this).toggleClass("red");
                 let index = dConfs.indexOf($(this).attr("data-display"));
                 if(index < 0) {
@@ -199,31 +204,63 @@
                 }
                 else dConfs.splice(index,1);
             });
-            $("#selectionPanel").on('click','.generalLoadingParam',function(){
-                $(this).toggleClass("red");
-                let index = genGrouping.indexOf($(this).attr("data-display"));
-                if(index < 0) {
-                    genGrouping.push($(this).attr("data-display"));
+            selectionPanel.on('click','.generalLoadingParam',function(){
+                if(!$(this).hasClass("red")) {
+                    $(this).addClass("red");
+                    let genGrouping = collectGenGrouping();
+                    if(genGrouping.length > 0) {
+                        let requestParams = {groupOptions: genGrouping.join(","),requestParam: $(this).attr("data-requestParam")};
+                        if(genGrouping.indexOf('${ReportingService.CONFIG_ORG_PROPERTY}') > -1)
+                            requestParams.propDef = selPropDef;
+                        updateGeneral(requestParams);
+                    }
                 }
-                else genGrouping.splice(index,1);
-                if(genGrouping.length > 0)
-                    updateGeneral({groupOptions: genGrouping.join(","),requestParam: $(this).attr("data-requestParam")});
+                else {
+                    $(this).removeClass("red");
+                    $("#"+$(this).attr("data-display")).hide();
+                }
             });
-            $("#clickMe").on('change','[name="general"]',function(){
+            selectionPanel.on('change','.la-filterPropDef',function() {
+                let groupOptions = collectGenGrouping();
+                //console.log(groupOptions);
+                if(groupOptions.length > 0) {
+                    let requestParams = {groupOptions: groupOptions.join(","),requestParam: $(this).attr("data-requestParam"),propDef: selPropDef};
+                    updateGeneral(requestParams);
+                }
+            });
+            selectionPanel.on('click','#orgProperty',function(){
+                const orgPropertySelection = $('#orgPropertySelection');
+                if(!$(this).hasClass("red")) {
+                    $(this).addClass("red");
+                    if(orgPropertySelection.length === 0) {
+                        loadThirdLevel({secondLevel: "orgProperty", queried: $(this).attr("data-requestParam")});
+                    }
+                    else {
+                        orgPropertySelection.show();
+                    }
+                }
+                else {
+                    $(this).removeClass("red");
+                    orgPropertySelection.hide();
+                    selPropDef = null;
+                    $("#property").hide();
+                }
+            });
+            clickMe.on('change','[name="general"]',function(){
                 loadFilter({entry:"general",queried:$(this).attr("id")});
             });
-            $("#clickMe").on('change','.subscriptionParam',function(){
+            clickMe.on('change','.subscriptionParam',function(){
                 let elem = $("[data-triggeredBy='"+$(this).attr("id")+"']");
                 elem.toggleClass("hidden");
                 if($(this).attr("id") === "subProp" && $(this).is(':checked') === false) {
-                    $(".propertyDefinition").each(function(k){
+                    $(".subPropertyDefinition").each(function(k){
                         $(this).parent().accordion("close",k);
                     });
                 }
             });
-            $("#clickMe").on('change','.subLoadingParam',function(){
-                //console.log($(".propertyDefinition.active").attr("data-value"));
-                if(typeof($(".propertyDefinition.active").attr("data-value")) === "undefined")
+            clickMe.on('change','.subLoadingParam',function(){
+                //console.log($(".subPropertyDefinition.active").attr("data-value"));
+                if(typeof($(".subPropertyDefinition.active").attr("data-value")) === "undefined")
                     subFilter.propDef = "";
                 subFilter.status = [];
                 subFilter.propVal = [];
@@ -235,22 +272,26 @@
                         subFilter[v.getAttribute("data-toArray")].push(v.value);
                     }
                 });
-                subFilter.propDef = $(".propertyDefinition.active").attr("data-value");
+                subFilter.propDef = $(".subPropertyDefinition.active").attr("data-value");
                 if(subFilter.status.length === 0)
                     subFilter.status.push(${RDStore.SUBSCRIPTION_CURRENT.id});
-                if($(":checked").length > 0){
+                if($(":checked").length > 0 || subFilter.propDef !== ""){
                     loadFilter({entry:"subscription"});
                     updateSubscriptions();
                 }
             });
-            $("#clickMe").on('click','.propertyDefinition',function(){
+            clickMe.on('click','.subPropertyDefinition',function(){
                 let propDefKey = $(this).attr('data-value');
                 subFilter.propDef = propDefKey;
+                subFilter.propVal = [];
                 loadFilter({entry:"subscription"});
                 updateSubscriptions();
                 let elemKey = $(this).attr("id");
                 if($("[data-triggeredBy='"+elemKey+"']").is(':empty')) {
-                    let params = {oid: propDefKey, elemKey: elemKey, format: "json"};
+                    let params = {elemKey: elemKey, format: "json"};
+                    if(typeof($(this).attr('data-rdc')) !== "undefined")
+                        params.cat = $(this).attr('data-rdc');
+                    else params.oid = propDefKey;
                     updatePropertyDefinitions(params);
                 }
             });
@@ -261,9 +302,29 @@
                     data: config
                 }).done(function(response){
                     $("#displayConfigurations").html(response);
+                    $("#orgPropertySelection").remove();
                 }).fail(function(xhr,status,message){
                     console.log("error occurred, consult logs!");
                 });
+            }
+
+            function collectGenGrouping() {
+                let genGrouping = [];
+                let elem = $('.la-filterPropDef');
+                $("#displayConfigurations .red").each(function(index){
+                    let chart = $("#"+$(this).attr("data-requestParam")+$(this).attr("data-display"));
+                    if(($(this).attr("data-display") !== "${ReportingService.CONFIG_ORG_PROPERTY}" && chart.length > 0) || ($(this).attr("data-display") === "${ReportingService.CONFIG_ORG_PROPERTY}" && elem.dropdown("get value") === selPropDef)) {
+                        //console.log(elem.dropdown("get value")+" vs. "+selPropDef);
+                        chart.show();
+                    }
+                    else {
+                        if($(this).attr("data-display") === "${ReportingService.CONFIG_ORG_PROPERTY}" && elem.dropdown("get value") !== selPropDef) {
+                            selPropDef = elem.dropdown("get value");
+                        }
+                        genGrouping.push($(this).attr("data-display"));
+                    }
+                });
+                return genGrouping;
             }
 
             function updateGeneral(requestOptions) {
@@ -274,11 +335,18 @@
                     },
                     method: 'POST'
                 }).done(function(response){
-                    let testContainer = $('div .generalChartContainer');
-                    if(testContainer.length === 0)
-                        $("#selection").after('<div class="result">'+response+'</div>');
-                    else
-                        testContainer.parents(".result").html(response).show();
+                    $("#result").append(response);
+                }).fail(function(xhr,status,message){
+                    console.log("error occurred, consult logs!");
+                });
+            }
+
+            function loadThirdLevel(requestParams) {
+                $.ajax({
+                    url: '<g:createLink controller="ajaxHtml" action="loadThirdLevel" />',
+                    data: requestParams
+                }).done(function(response){
+                    selectionPanel.append(response);
                 }).fail(function(xhr,status,message){
                     console.log("error occurred, consult logs!");
                 });
@@ -313,8 +381,12 @@
             }
 
             function updatePropertyDefinitions(params) {
+                let link;
+                if(params.cat)
+                    link = '<g:createLink controller="ajaxJson" action="refdataSearchByCategory"/>';
+                else link = '<g:createLink controller="ajaxJson" action="getPropValues"/>';
                 $.ajax({
-                    url: '<g:createLink controller="ajaxJson" action="getPropValues"/>',
+                    url: link,
                     data: params
                 }).done(function(data){
                     let elemContent = $("[data-triggeredBy='"+params.elemKey+"']");
