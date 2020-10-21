@@ -1679,7 +1679,7 @@ class SubscriptionController
             List selectedMembers = params.list("selectedMembers")
 
             List<GString> changeAccepted = []
-            validSubChilds.each { subChild ->
+            validSubChilds.each { Subscription subChild ->
                 if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
                     License newLicense = License.get(params.license_All)
                     if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
@@ -1715,14 +1715,13 @@ class SubscriptionController
 
             List selectedMembers = params.list("selectedMembers")
 
-            def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+            Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
-            def removeLic = []
-            validSubChilds.each { subChild ->
+            List<GString> removeLic = []
+            validSubChilds.each { Subscription subChild ->
                 if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                    Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subChild),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        License license = genericOIDService.resolveOID(li.source)
-                        if (subscriptionService.setOrgLicRole(subChild,license,true)) {
+                    Links.findAllByDestinationSubscriptionAndLinkType(subChild,RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        if (subscriptionService.setOrgLicRole(subChild,li.sourceLicense,true)) {
                             removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
                         }
                     }
