@@ -52,8 +52,8 @@ class CopyElementsService {
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
     }
 
-    List allowedProperties(Object obj) {
-        List result = []
+    List<String> allowedProperties(Object obj) {
+        List<String> result = []
         switch (obj.class.simpleName) {
             case License.class.simpleName:
                 result = ['startDate', 'endDate', 'status', 'licenseCategory', 'openEnded', 'isPublicForApi']
@@ -418,21 +418,24 @@ class CopyElementsService {
 
         if (formService.validateToken(params)) {
 
-            params.list('copyObject.take').each { takeProperty ->
-                if (takeProperty in allowedProperties(sourceObject)) {
+            List<String> allowedProperties = allowedProperties(sourceObject)
+            List takeProperties = params.list('copyObject.take')
+            List takeAudit = params.list('copyObject.toggleAudit')
+
+            takeProperties.each { takeProperty ->
+                if (takeProperty in allowedProperties) {
                     copyObjectProperty(sourceObject, targetObject, flash, takeProperty)
                 }
             }
 
-            allowedProperties(sourceObject).each { allowedProperty ->
-                if (allowedProperty in params.list('copyObject.take')) {
-                    if (allowedProperty in params.list('copyObject.toggleAudit')) {
+            allowedProperties.each { String allowedProperty ->
+                if (allowedProperty in takeProperties || params.isRenewSub) {
+                    if (allowedProperty in takeAudit) {
                         toggleAuditObjectProperty(sourceObject, targetObject, flash, allowedProperty)
                     } else {
                         removeToggleAuditObjectProperty(targetObject, flash, allowedProperty)
                     }
                 }
-
             }
 
             if (params.list('copyObject.deleteLicenses') && isBothObjectsSet(sourceObject, targetObject)) {

@@ -149,17 +149,17 @@
             </div>
         </div>
 
-        <div class="field" id="radioGroup">
+        <div class="field required" id="radioGroup">
+            <label for="radioGroup">
+                <g:message code="task.responsible.label" />
+            </label>
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
                     <fieldset>
-                        <legend>
-                            <g:message code="task.responsible.label" />
-                        </legend>
 
                         <div class="field">
                             <div class="ui radio checkbox">
-                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
+                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden">
                                 <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong> </label>
                             </div>
                         </div>
@@ -285,6 +285,15 @@
                                     }
                                 ]
                             },
+                            responsibleUser: {
+                                identifier: 'responsible',
+                                rules: [
+                                    {
+                                        type: 'checked',
+                                        prompt: '<g:message code="validation.responsibleMustBeChecked" />'
+                                    }
+                                ]
+                            }
                         }
                     });
             })

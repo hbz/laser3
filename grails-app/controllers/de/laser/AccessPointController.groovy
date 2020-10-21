@@ -192,6 +192,7 @@ class AccessPointController  {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        result.institution = contextService.org
         result.orgInstance = organisation
         result.inContextOrg = result.orgInstance.id == contextService.org.id
         result.availableOptions = availableOptions()
@@ -621,7 +622,9 @@ class AccessPointController  {
                 it['linkedSubs'] = linkedSubs
             }
 
-            String qry3 = """
+            ArrayList linkedPlatformSubscriptionPackages = []
+            if(currentSubIds) {
+                String qry3 = """
             Select p, sp, s from Platform p
             JOIN p.oapp as oapl
             JOIN oapl.subPkg as sp
@@ -632,7 +635,8 @@ class AccessPointController  {
                 where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
             AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}    
 """
-            ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
+                linkedPlatformSubscriptionPackages.addAll(Platform.executeQuery(qry3, [currentSubIds: currentSubIds]))
+            }
 
             return [
                     accessPoint                       : orgAccessPoint,

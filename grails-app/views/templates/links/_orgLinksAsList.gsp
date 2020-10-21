@@ -19,7 +19,7 @@
                                 <span class="la-js-editmode-container">
                                     <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay test"
                                             controller="ajax" action="toggleShare"
-                                            params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
+                                            params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
                                     >
                                         <i class="la-share icon la-js-editmode-icon"></i>
@@ -30,7 +30,7 @@
                                 <span class="la-js-editmode-container">
                                     <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay test "
                                             controller="ajax" action="toggleShare"
-                                            params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
+                                            params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
                                     >
                                         <i class="la-share slash icon la-js-editmode-icon"></i>

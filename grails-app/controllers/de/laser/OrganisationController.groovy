@@ -1521,10 +1521,6 @@ class OrganisationController  {
             case 'properties':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
                 break
-            case 'addSubjectGroup':
-            case 'deleteSubjectGroup':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-                break
             case 'users':
                 isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
@@ -1543,6 +1539,8 @@ class OrganisationController  {
             case 'ids':
             case 'readerNumber':
             case 'accessPoints':
+            case 'addSubjectGroup':
+            case 'deleteSubjectGroup':
             case 'addressbook':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights

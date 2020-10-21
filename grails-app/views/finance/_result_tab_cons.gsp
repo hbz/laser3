@@ -75,7 +75,7 @@
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true]"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
                 <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
-                    <th></th>
+                    <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:if>
             <g:else>
@@ -94,7 +94,7 @@
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
                 <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
-                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                    <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
         </tr>
@@ -235,9 +235,9 @@
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
                     <td>
-                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" currencySymbol="" />
+                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencySymbol="EUR" />
                         <br />
-                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" currencySymbol="" />
+                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
                     </td>
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" />

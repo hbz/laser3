@@ -1,25 +1,32 @@
 package de.laser
 
 import de.laser.finance.CostItem
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
 import java.time.Year
 
 @Transactional
 class ReportingService {
 
+    LinksGenerationService linksGenerationService
+    SubscriptionService subscriptionService
+
     final static String CONFIG_LIBRARY_TYPE = 'libraryType'
     final static String CONFIG_SUBJECT_GROUP = 'subjectGroup'
     final static String CONFIG_REGION = 'region'
     final static String CONFIG_LIBRARY_NETWORK = 'libraryNetwork'
+    final static String CONFIG_ORG_PROPERTY = 'property'
 
     //--------------------------------- general entry point -------------------------------------
 
     Map<String,Object> generateGrowth(Map<String,Object> configMap) {
-        Map result = [:], params = [context:configMap.institution]
+        Map<String,Object> result = [:], params = [context:configMap.institution]
         String instanceFilter = ""
         if(configMap.institution.getCustomerType() == "ORG_CONSORTIUM"){
             params.roleTypes = [RDStore.OR_SUBSCRIPTION_CONSORTIA]
@@ -29,8 +36,14 @@ class ReportingService {
             params.roleTypes = [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]
         }
         configMap.allSubscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.roleType in (:roleTypes) and oo.org = :context"+instanceFilter,params)
+        configMap.roleTypes = params.roleTypes
+        //log.debug(configMap.allSubscriptions.collect{ it.id })
         switch(configMap.requestParam) {
             case "members": result.putAll(generateGrowthForMembers(configMap))
+                break
+            case "costs": result.putAll(generateGrowthForCosts(configMap))
+                break
+            case "subscriptions": result.putAll(generateGrowthForSubscriptions(configMap))
                 break
             default: log.info("unimplemented general request param")
                 break
@@ -38,30 +51,127 @@ class ReportingService {
         result
     }
 
-    Map<Year,Map<String,Integer>> generateGrowthForMembers(Map<String,Object> configMap) {
+    Map<String,JSON> generateGrowthForMembers(Map<String,Object> configMap) {
         Map<String,Object> queryParams = [consortiaSubscriptions:configMap.allSubscriptions,roleType:RDStore.OR_SUBSCRIBER_CONS]
-        Map<Year,Map<String,Integer>> result = [:]
-        if(CONFIG_LIBRARY_TYPE in configMap.groupOptions) {
-
-        }
-        if(CONFIG_SUBJECT_GROUP in configMap.groupOptions) {
-
-        }
-        if(CONFIG_REGION in configMap.groupOptions) {
-            List rows = OrgRole.executeQuery("select year(sub.startDate),region,count(org) from OrgRole oo join oo.sub sub join oo.org org join org.region region where oo.roleType = :roleType and sub.instanceOf in (:consortiaSubscriptions) group by year(sub.startDate),region order by year(sub.startDate) asc",queryParams)
-            rows.each { row ->
-                Map<String,Integer> regionCols = result.get(row[0].toString())
-                if(!regionCols)
-                    regionCols = [:]
-                String region = row[1] ? row[1].getI10n("value") : "n/a"
-                Integer count = regionCols.get(region) ?: 0
-                count += row[2]
-                regionCols.put(region,count)
-                result.put(row[0].toString(),regionCols)
+        Map<String,JSON> result = [:]
+        configMap.groupOptions.each { String groupCol ->
+            List rows
+            PropertyDefinition propDef
+            if(groupCol == CONFIG_ORG_PROPERTY && configMap.propDef) {
+                propDef = (PropertyDefinition) configMap.propDef
+                queryParams.propDef = propDef
+                Map<String,String> propDefData = setPropDefData(propDef)
+                if(propDefData.containsKey("valueCol"))
+                    rows = OrgRole.executeQuery("select year(sub.startDate),"+propDefData.valueCol+",count(distinct org) from OrgRole oo join oo.sub sub join oo.org org join org.propertySet op join op.type propDef "+propDefData.joinRdv+" where oo.roleType = :roleType and sub.instanceOf in (:consortiaSubscriptions) and propDef = :propDef group by year(sub.startDate),"+propDefData.valueCol+" order by year(sub.startDate) asc", queryParams)
+            }
+            else if(groupCol != CONFIG_ORG_PROPERTY) {
+                rows = OrgRole.executeQuery("select year(sub.startDate)," + groupCol + ",count(distinct org) from OrgRole oo join oo.sub sub join oo.org org join org." + groupCol + " " + groupCol + " where oo.roleType = :roleType and sub.instanceOf in (:consortiaSubscriptions) group by year(sub.startDate)," + groupCol + " order by year(sub.startDate) asc", queryParams)
+            }
+            if(rows) {
+                String key = "members${groupCol}"
+                if(propDef)
+                    key += propDef.id
+                result.put(groupCol, collectCounts(rows))
             }
         }
-        if(CONFIG_LIBRARY_NETWORK in configMap.groupOptions) {
+        result
+    }
 
+    Map<String,JSON> generateGrowthForCosts(Map<String,Object> configMap) {
+        Map<String,Object> queryParams = [allSubscriptions:configMap.allSubscriptions,roleTypes:[],element:RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE]
+        Map<String,JSON> result = [:]
+        String subscriptionSet = ""
+        if(configMap.institution.getCustomerType() == "ORG_CONSORTIUM") {
+            subscriptionSet += "and sub.instanceOf in (:allSubscriptions)"
+            queryParams.roleTypes << RDStore.OR_SUBSCRIBER_CONS
+        }
+        else if(configMap.institution.getCustomerType() == "ORG_INST") {
+            subscriptionSet += "and sub in (:allSubscriptions)"
+            queryParams.roleTypes.addAll([RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS])
+        }
+        configMap.groupOptions.each { String groupCol ->
+            Map<String,Map<String,BigDecimal>> graph = [:]
+            List rows
+            PropertyDefinition propDef
+            //for this next batch, we should consider only consortial price. Other elements need different tables, otherwise, it would explode the whole view
+            if(groupCol == CONFIG_ORG_PROPERTY) {
+                propDef = (PropertyDefinition) configMap.propDef
+                queryParams.propDef = propDef
+                Map<String,String> propDefData = setPropDefData(propDef)
+                if(propDefData.containsKey("valueCol"))
+                    rows = CostItem.executeQuery("select year(sub.startDate),"+propDefData.valueCol+",sum(ci.costInLocalCurrency) from CostItem ci join ci.sub sub join sub.orgRelations oo join oo.org org join org.propertySet op join op.type propDef "+propDefData.joinRdv+" where oo.roleType in (:roleTypes) and ci.costItemElement = :element "+subscriptionSet+" and propDef = :propDef group by year(sub.startDate),"+propDefData.valueCol+" order by year(sub.startDate) asc",queryParams)
+            }
+            else {
+                rows = CostItem.executeQuery("select year(sub.startDate),"+groupCol+",sum(ci.costInLocalCurrency) from CostItem ci join ci.sub sub join sub.orgRelations oo join oo.org org join org."+groupCol+" "+groupCol+" where oo.roleType in (:roleTypes) and ci.costItemElement = :element "+subscriptionSet+" group by year(sub.startDate),"+groupCol+" order by year(sub.startDate) asc",queryParams)
+            }
+            if(rows) {
+                Set allGroups = []
+                rows.each { row ->
+                    if(row[1] instanceof RefdataValue) {
+                        RefdataValue rdv = (RefdataValue) row[1]
+                        allGroups << rdv
+                        Map<String,Integer> groupCounts = graph.get(row[0].toString())
+                        if(!groupCounts)
+                            groupCounts = [:]
+                        String group = rdv ? rdv.getI10n("value") : "n/a"
+                        BigDecimal count = groupCounts.get(group) ?: new BigDecimal(0)
+                        count.setScale(2,RoundingMode.HALF_EVEN)
+                        count += row[2]
+                        groupCounts.put(group,count)
+                        graph.put(row[0].toString(),groupCounts)
+                    }
+                    if(row[1] instanceof OrgSubjectGroup) {
+                        OrgSubjectGroup osg = (OrgSubjectGroup) row[1]
+                        allGroups << osg.subjectGroup
+                        Map<String,BigDecimal> groupCounts = graph.get(row[0].toString())
+                        if(!groupCounts)
+                            groupCounts = [:]
+                        String group = osg ? osg.subjectGroup.getI10n("value") : "n/a"
+                        BigDecimal count = groupCounts.get(group) ?: new BigDecimal(0)
+                        count.setScale(2,RoundingMode.HALF_EVEN)
+                        count += row[2]
+                        groupCounts.put(group,count)
+                        graph.put(row[0].toString(),groupCounts)
+                    }
+                }
+                //fill up null values
+                graph.each { String k, Map<String,Integer> v ->
+                    allGroups.each { group ->
+                        if(!v.containsKey(group.getI10n("value")))
+                            v.put(group.getI10n("value"),0)
+                    }
+                }
+                String key = "costs${groupCol}"
+                if(propDef)
+                    key += propDef.id
+                result.put(groupCol,graph as JSON)
+            }
+        }
+        result
+    }
+
+    Map<String,JSON> generateGrowthForSubscriptions(Map<String,Object> configMap) {
+        Map<String,Object> queryParams = [consortiaSubscriptions:configMap.allSubscriptions,roleType:RDStore.OR_SUBSCRIBER_CONS]
+        Map<String,JSON> result = [:]
+        List rows
+        PropertyDefinition propDef
+        configMap.groupOptions.each { String groupCol ->
+            if(groupCol == CONFIG_ORG_PROPERTY) {
+                propDef = (PropertyDefinition) configMap.propDef
+                queryParams.propDef = propDef
+                Map<String,String> propDefData = setPropDefData(propDef)
+                if(propDefData.containsKey("valueCol"))
+                    rows = OrgRole.executeQuery("select year(sub.startDate)," + propDefData.valueCol + ",count(sub) from OrgRole oo join oo.sub sub join oo.org org join org.propertySet op join op.type propDef " + propDefData.joinRdv + " where oo.roleType = :roleType and sub.instanceOf in (:consortiaSubscriptions) and propDef = :propDef group by year(sub.startDate)," + propDefData.valueCol + " order by year(sub.startDate) asc", queryParams)
+            }
+            else {
+                rows = OrgRole.executeQuery("select year(sub.startDate)," + groupCol + ",count(sub) from OrgRole oo join oo.sub sub join oo.org org join org." + groupCol + " " + groupCol + " where oo.roleType = :roleType and sub.instanceOf in (:consortiaSubscriptions) group by year(sub.startDate)," + groupCol + " order by year(sub.startDate) asc", queryParams)
+            }
+            if(rows) {
+                String key = "subs${groupCol}"
+                if(propDef)
+                    key += propDef.id
+                result.put(groupCol, collectCounts(rows))
+            }
         }
         result
     }
@@ -70,8 +180,8 @@ class ReportingService {
 
     Map<String,Object> groupCostItemsBySubscription(Map<String,Object> configMap) {
         Map<String,Object> options = configMap.options, result = [:]
-        Set<Subscription> precedingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'source'),
-                          followingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'destination'),
+        Set<Subscription> precedingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'sourceSubscription'),
+                          followingYearRings = linksGenerationService.getSuccessionChain(configMap.entry,'destinationSubscription'),
                           allYearRings = []
         allYearRings.addAll(precedingYearRings)
         allYearRings.add(configMap.entry)
@@ -137,6 +247,8 @@ class ReportingService {
         result
     }
 
+    //---------------------------------- helper section -------------------------------
+
     BigDecimal calculateSum(Collection<CostItem> allCIs) {
         BigDecimal result = 0.0
         allCIs.each { CostItem ci ->
@@ -148,5 +260,70 @@ class ReportingService {
             }
         }
         result
+    }
+
+    Map<String,String> setPropDefData(PropertyDefinition propDef) {
+        String valueCol, joinRdv = ""
+        if (propDef.isIntegerType()) {
+            valueCol = "op.intValue"
+        }
+        else if (propDef.isStringType()) {
+            valueCol = "op.stringValue"
+        }
+        else if (propDef.isBigDecimalType()) {
+            valueCol = "op.decValue"
+        }
+        else if (propDef.isDateType()) {
+            valueCol = "op.dateValue"
+        }
+        else if (propDef.isURLType()) {
+            valueCol = "op.urlValue"
+        }
+        else if (propDef.isRefdataValueType()) {
+            valueCol = "value"
+            joinRdv += "join op.refValue value"
+        }
+        if(valueCol)
+            [valueCol:valueCol,joinRdv:joinRdv]
+        else [:]
+    }
+
+    JSON collectCounts(List rows) {
+        Map<String,Map<String,Integer>> graph = [:]
+        Set allGroups = []
+        rows.each { row ->
+            if(row[1] instanceof RefdataValue) {
+                RefdataValue rdv = (RefdataValue) row[1]
+                allGroups << rdv
+                Map<String,Integer> groupCounts = graph.get(row[0].toString())
+                if(!groupCounts)
+                    groupCounts = [:]
+                String group = rdv ? rdv.getI10n("value") : "n/a"
+                Integer count = groupCounts.get(group) ?: 0
+                count += row[2]
+                groupCounts.put(group,count)
+                graph.put(row[0].toString(),groupCounts)
+            }
+            if(row[1] instanceof OrgSubjectGroup) {
+                OrgSubjectGroup osg = (OrgSubjectGroup) row[1]
+                allGroups << osg.subjectGroup
+                Map<String,Integer> groupCounts = graph.get(row[0].toString())
+                if(!groupCounts)
+                    groupCounts = [:]
+                String group = osg ? osg.subjectGroup.getI10n("value") : "n/a"
+                Integer count = groupCounts.get(group) ?: 0
+                count += row[2]
+                groupCounts.put(group,count)
+                graph.put(row[0].toString(),groupCounts)
+            }
+        }
+        //fill up null values
+        graph.each { String k, Map<String,Integer> v ->
+            allGroups.each { group ->
+                if (!v.containsKey(group.getI10n("value")))
+                    v.put(group.getI10n("value"), 0)
+            }
+        }
+        graph as JSON
     }
 }
