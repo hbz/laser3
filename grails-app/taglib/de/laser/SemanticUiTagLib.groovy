@@ -941,11 +941,12 @@ class SemanticUiTagLib {
         def optionKey = attrs.optionKey
         def optionValue = attrs.optionValue
         def iconWhich = attrs.iconWhich
-
+        def requestParam = attrs.requestParam
+        def display = attrs.display
 
         def noSelection = attrs.noSelection
 
-        out << "<div class='ui fluid search selection dropdown ${cssClass}'>"
+        out << "<div class='ui fluid search selection dropdown ${cssClass}' data-requestParam='"+requestParam+"' data-display='"+display+"'>"
 
         out << "<input type='hidden' name='${name}'>"
         out << ' <i aria-hidden="true" class="dropdown icon"></i>'

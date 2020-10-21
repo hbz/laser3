@@ -7,6 +7,32 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2956    21.10.2020  hbz-dev             Andreas Bug         Teilnehmervertrag entknüpfen war nicht auf neue Struktur umgestellt
+
+2501    14.10.2020  hbz-dev             Andreas Feature     Verantwortlichkeit einer neuen Aufgabe muss jetzt explizit definiert werden
+
+2052    14.10.2020  hbz-dev             Andreas Bug         Controller und Action bei Ajax-generierten Template-Fragmenten durchgereicht
+
+2932    14.10.2020  rc1.6               Moe     Bug         Verträge vergleichen - keine Auswahl
+
+2939    14.10.2020  rc1.6   1.6.1       Andreas Bug         fehlerhafter Import behoben
+
+2936    14.10.2020  rc1.6   1.6.1       Andreas Bug         private Merkmale wurden verborgen
+
+2932    14.10.2020  rc1.6   1.6.1       Moe     Bug         Verträge vergleichen - keine Auswahl
+
+2874    14.10.2020  rc1.6               Moe     Bug         Umfrage: Übertrag Option für Teilnehmer in Lizenz ermöglichen
+
+2685    14.10.2020  rc1.6               Moe     Bug         Umfrage Elemente von einer Umfrage in einer anderen Umfrage kopieren
+
+2933    14.10.2020  rc1.6               Andreas Bug         Anzeige der Nutzerrollen im Filterdropdown korrigiert 
+
+2929    14.10.2020  rc1.6               Andreas Bug         Ansichten der Finanzen korrigiert
+
+2928    14.10.2020  rc1.6               Andreas Bug         Fachbereiche konnten in Fremdeinrichtungen nicht bearbeitet werden
+
+2927    14.10.2020  rc1.6               Andreas Bug         Zugangskonfigurationen konnten nicht erstellt werden
+
 2925    13.10.2020  hbz-dev             Andreas Feature     Minimal- und Maximaldatum bei Datepicker festgelegt
 
 2924    13.10.2020  rc1.6               Moe     Bug         RC 1.6: Zugangkonfiguration anlegen/bearbeiten läuft in Fehler

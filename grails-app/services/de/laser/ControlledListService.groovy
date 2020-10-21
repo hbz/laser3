@@ -161,7 +161,10 @@ class ControlledListService {
                         filterPropVal << DateUtil.SDF_NoTime.parse(val)
                     }
                     else if(refFlag) {
-                        filterPropVal << RefdataValue.getByValueAndCategory(val,filterPropDef.refdataCategory)
+                        if(val.contains("de.laser."))
+                            filterPropVal << genericOIDService.resolveOID(val)
+                        else
+                            filterPropVal << RefdataValue.getByValueAndCategory(val,filterPropDef.refdataCategory)
                     }
                     else if(urlFlag) {
                         filterPropVal << new URL(val)

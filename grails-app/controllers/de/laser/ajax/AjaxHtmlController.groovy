@@ -10,6 +10,7 @@ import de.laser.PersonRole
 import de.laser.Task
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -41,15 +42,43 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
-        render view: '/myInstitution/_displayConfigurations', model: result
+        render view: '/reporting/_displayConfigurations', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def loadThirdLevel() {
+        Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.org,queried:params.queried]
+        switch(result.secondLevel) {
+            case 'orgProperty':
+                result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+                //rendering the prop list must be done from the other template fragment because of the service injection <-> r <-> accessibility issue conflict
+                break
+            case 'subscription': //move here the ajax loading the subscription cloud
+                break
+            default: log.info("unimplemented second level trigger")
+                break
+        }
+        render view: '/reporting/_selections', model: result
     }
 
     @Secured(['ROLE_USER'])
     def getGraphsForGeneral() {
-        Map<String,Object> result = [:]
         def options = JSON.parse(params.requestOptions)
-        options.institution = contextService.org
-        result.putAll(reportingService.generateGrowth(options))
+        Map<String,Object> result = [:], configMap = [institution: contextService.org,requestParam: options.requestParam]
+        if(options.groupOptions) {
+            def groupOptions = options.groupOptions
+            if(groupOptions.contains(","))
+                configMap.groupOptions = groupOptions.split(",")
+            else
+                configMap.groupOptions = [groupOptions]
+        }
+        if(options.propDef) {
+            configMap.propDef = genericOIDService.resolveOID(options.propDef)
+            result.propDef = configMap.propDef.getI10n("name")
+        }
+        if(configMap.groupOptions)
+            result.growth = reportingService.generateGrowth(configMap)
+        result.requestObject = configMap.requestParam
         log.debug(result)
         render view: '/reporting/_generalGraphs', model: result
     }
