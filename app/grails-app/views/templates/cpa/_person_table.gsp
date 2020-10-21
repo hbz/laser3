@@ -54,16 +54,19 @@
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
-        <semui:sortableColumn params="${params}" property="pr.functionType.${"value_" + languageSuffix}"
-                          title="${message(code: 'person.function.label')}"/>
+        <th>
+            ${message(code: 'person.function.label')}"/>
+        </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
-        <semui:sortableColumn params="${params}" property="pr.positionType.${"value_" + languageSuffix}"
-                          title="${message(code: 'person.position.label')}"/>
+        <th>
+            ${message(code: 'person.position.label')}"/>
+        </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
-        <semui:sortableColumn params="${params}" property="pr.functionType.${"value_" + languageSuffix}, pr.positionType.${"value_" + languageSuffix}"
-                          title="${message(code: 'person.function.label')} (${message(code: 'person.position.label')})"/>
+        <th>
+            ${message(code: 'person.function.label')} (${message(code: 'person.position.label')})
+        </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
             <th>${message(code: 'person.contacts.label')}</th>
