@@ -1,7 +1,9 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole" %>
+<%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 
-<table class="ui table la-table">
+<g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
+
+<table class="ui table sortable la-table">
     <colgroup>
         <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
@@ -39,28 +41,26 @@
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
         <g:if test="${controllerName == 'org' && actionName == 'myPublicContacts'}">
-            <g:sortableColumn params="${params}" property="p.last_name"
+            <semui:sortableColumn params="${params}" property="p.last_name"
                               title="${message(code: 'person.name.label')}"/>
         </g:if>
         <g:else>
-            <th>
-                ${message(code: 'person.name.label')}
-            </th>
+            <semui:sortableColumn params="${params}" property="p.last_name"
+                              title="${message(code: 'person.name.label')}"/>
         </g:else>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <th>
-            ${message(code: 'person.organisation.label')}
-        </th>
+        <semui:sortableColumn params="${params}" property="pr.org.name"
+                          title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
         <th>
-            ${message(code: 'person.function.label')}
+            ${message(code: 'person.function.label')}"/>
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
         <th>
-            ${message(code: 'person.position.label')}
+            ${message(code: 'person.position.label')}"/>
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">

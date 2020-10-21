@@ -414,7 +414,7 @@
 
             $('#addAddressElement').click(function () {
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="addressFields"/>",
+                    url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
                     type: "POST",
                     success: function (data) {
                         if (addressElementCount <= 3) {

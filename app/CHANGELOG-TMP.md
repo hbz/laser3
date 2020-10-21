@@ -7,7 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+--      21.10.2020  rc1.6   1.6.2       Moe     Bug         Falsche Url für Umfrage beim Dashboard (Fällig Termine)
+
+2954    21.10.2020  rc1.6   1.6.2       Moe     Bug         Fehler bei Linzenzverlängerung aus Umfrage heraus
+
+2958    21.10.2020  rc1.6   1.6.2       Andreas Bug         alte Seite zu Merkmalen und Referenzwerten reaktiviert
+
 2956    21.10.2020  hbz-dev             Andreas Bug         Teilnehmervertrag entknüpfen war nicht auf neue Struktur umgestellt
+
+2948    20.10.2020  rc1.6   1.6.2       Andreas Bug         Lizenzimport scheiterte am Zuordnen der Merkmalsdefinitionen
+
+R26     20.10.2020  rc1.6   1.6.2       Moe     Bug         Merkmale aus LAS:eR werden nach Deploy 1.6 doppelt in RT angezeigt
+
+2945    20.10.2020  rc1.6   1.6.2       Moe     Bug         Mein Adressbuch: Eingegebene Kontaktanschrift wird nicht angezeigt/gespeichert
+
+2943    19.10.2020  rc1.6   1.6.2       Moe     Bug         Sortierung Mein Adressbuch noch nach Name statt Org: sortierbar machen
+
+2946    19.10.2020  rc1.6   1.6.2       Moe     Bug         Excel-Export von Lizenzteilnehmern funktioniert nicht
 
 2501    14.10.2020  hbz-dev             Andreas Feature     Verantwortlichkeit einer neuen Aufgabe muss jetzt explizit definiert werden
 
