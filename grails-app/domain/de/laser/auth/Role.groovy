@@ -1,39 +1,44 @@
-package com.k_int.kbplus.auth
+package de.laser.auth
 
-import com.k_int.kbplus.GenericOIDService
 import de.laser.traits.I10nTrait
-import grails.util.Holders
-import grails.web.servlet.mvc.GrailsParameterMap
 
+//@GrailsCompileStatic
+//@EqualsAndHashCode(includes='authority')
+//@ToString(includes='authority', includeNames=true, includePackage=false)
 class Role implements I10nTrait {
 
-    String authority
-    String roleType
-    Set grantedPermissions = []
+	String authority
+	String roleType
+	Set grantedPermissions = []
 
-    static mapping = {
-        cache true
-    }
+	static mapping = {
+		cache 	true
+	}
 
-    static hasMany = [
-            grantedPermissions: PermGrant
-    ]
+	static hasMany = [
+			grantedPermissions: PermGrant
+	]
 
-    static mappedBy = [
-            grantedPermissions: "role"
-    ]
+	static mappedBy = [
+			grantedPermissions: "role"
+	]
 
-    static constraints = {
-        authority   blank: false, unique: true
-        roleType    blank: false, nullable: true
-    }
+	static constraints = {
+		authority 	blank: false, unique: true
+		roleType	blank: false, nullable: true
+	}
 
-    static def refdataFind(GrailsParameterMap params) {
-        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
+	static def refdataFind(params) {
+		def result = [];
+		def ql = null;
+		ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
 
-        genericOIDService.getOIDMapList(
-                Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params),
-                'authority'
-        )
-    }
+		if (ql) {
+			ql.each { id ->
+				result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
+			}
+		}
+
+		result
+	}
 }

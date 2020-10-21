@@ -1,4 +1,4 @@
-package com.k_int.kbplus.auth
+package de.laser.auth
 
 class PermGrant {
 
@@ -6,7 +6,7 @@ class PermGrant {
     Role role
 
     static mapping = {
-        cache true
+        cache   true
     }
 
     static constraints = {

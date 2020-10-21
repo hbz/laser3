@@ -1,45 +1,51 @@
-package com.k_int.kbplus.auth
+package de.laser.auth
 
 import de.laser.Org
 import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
+
 import javax.persistence.Transient
 
+//@GrailsCompileStatic
+//@EqualsAndHashCode(includes='username')
+//@ToString(includes='username', includeNames=true, includePackage=false)
 class User {
 
-    transient springSecurityService
+    def springSecurityService
+
     def contextService
+
     def yodaService
+
     def userService
+
     def instAdmService
+
     def grailsApplication
 
-  String username
-  String display
-  String password
-  String email
-  String shibbScope
-  Date dateCreated
-  Date lastUpdated
+    String username
+    String display
+    String password
+    String email
+    String shibbScope
+    Date dateCreated
+    Date lastUpdated
 
-  boolean enabled = false
-  boolean accountExpired = false
-  boolean accountLocked = false
-  boolean passwordExpired = false
+    boolean enabled = false
+    boolean accountExpired = false
+    boolean accountLocked = false
+    boolean passwordExpired = false
 
-  SortedSet<UserOrg> affiliations
-  SortedSet<UserRole> roles
+    static hasMany =  [ affiliations: UserOrg, roles: UserRole ]
+    static mappedBy = [ affiliations: 'user',  roles: 'user' ]
 
-  static hasMany = [ affiliations: UserOrg, roles: UserRole ]
-  static mappedBy = [ affiliations: 'user', roles: 'user' ]
-
-  static constraints = {
-    username    blank: false, unique: true
-    password    blank: false
-    display     blank: true, nullable: true
-    email       blank: true, nullable: true
-    shibbScope  blank: true, nullable: true
-  }
+    static constraints = {
+        username    blank: false, unique: true
+        password    blank: false, password: true
+        display     blank: true, nullable: true
+        email       blank: true, nullable: true
+        shibbScope  blank: true, nullable: true
+    }
 
     static transients = [
             'displayName', 'defaultPageSize', 'defaultPageSizeAsInteger',
@@ -47,18 +53,18 @@ class User {
             'admin', 'yoda', 'lastInstAdmin'
     ] // mark read-only accessor methods
 
-  static mapping = {
-      cache   true
-      table (name: '`user`')
-      password column: '`password`'
+    static mapping = {
+        cache           true
+	    table           name: '`user`'
+	    password        column: '`password`'
 
-      affiliations  batchSize: 10
-      roles         batchSize: 10
-  }
+        affiliations    batchSize: 10
+        roles           batchSize: 10
+    }
 
-  Set<Role> getAuthorities() {
-    UserRole.findAllByUser(this).collect { it.role } as Set
-  }
+    Set<Role> getAuthorities() {
+        (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
+    }
 
     void beforeInsert() {
         encodePassword()
@@ -109,14 +115,14 @@ class User {
         return value.intValue()
     }
 
-  @Transient
-  String getDisplayName() {
-      display ? display : username
-  }
+    @Transient
+    String getDisplayName() {
+        display ? display : username
+    }
 
-  protected void encodePassword() {
-    password = springSecurityService.encodePassword(password)
-  }
+    protected void encodePassword() {
+        password = springSecurityService.encodePassword(password)
+    }
 
     @Transient Set<UserOrg> getAuthorizedAffiliations() {
         affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }

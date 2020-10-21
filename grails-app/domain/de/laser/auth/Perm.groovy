@@ -1,4 +1,4 @@
-package com.k_int.kbplus.auth
+package de.laser.auth
 
 class Perm {
 
@@ -6,11 +6,11 @@ class Perm {
     Set grantedTo = []
 
     static mapping = {
-        cache true
+        cache   true
     }
 
     static constraints = {
-        code blank: false, unique: true
+        code    blank: false, unique: true
     }
 
     static hasMany = [

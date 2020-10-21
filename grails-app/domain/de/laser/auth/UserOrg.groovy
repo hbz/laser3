@@ -1,7 +1,7 @@
-package com.k_int.kbplus.auth
+package de.laser.auth
 
 import de.laser.Org
-import org.apache.commons.lang.builder.HashCodeBuilder
+import org.codehaus.groovy.util.HashCodeHelper
 import javax.persistence.Transient
 
 class UserOrg implements Comparable {
@@ -27,7 +27,7 @@ class UserOrg implements Comparable {
     static transients = ['sortString'] // mark read-only accessor methods
 
     static mapping = {
-        cache true
+        cache           true
         lastUpdated     column: 'uo_last_updated'
         dateCreated     column: 'uo_date_created'
     }
@@ -42,7 +42,7 @@ class UserOrg implements Comparable {
 
     @Transient
     String getSortString() {
-        return org?.name + ' ' + formalRole?.authority
+        return org.name + ' ' + formalRole.authority
     }
 
     @Transient
@@ -50,20 +50,19 @@ class UserOrg implements Comparable {
         sortString.compareTo(obj?.sortString)
     }
 
+    @Override
     int hashCode() {
-        HashCodeBuilder builder = new HashCodeBuilder()
-
+        int hashCode = HashCodeHelper.initHash()
         if (user) {
-            builder.append(user.id)
+            hashCode = HashCodeHelper.updateHash(hashCode, user.id)
         }
         if (org) {
-            builder.append(org.id)
+            hashCode = HashCodeHelper.updateHash(hashCode, org.id)
         }
         if (formalRole) {
-            builder.append(formalRole.id)
+            hashCode = HashCodeHelper.updateHash(hashCode, formalRole.id)
         }
-
-        builder.toHashCode()
+        hashCode
     }
 }
 
