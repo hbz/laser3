@@ -53,8 +53,23 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
                             <i class="icon chart pie la-list-icon"></i>
-                            <g:link controller="myInstitution" action="currentSurveys"
-                                    params="${[name: '"'+obj.name+'"']}">${obj.name}</g:link>
+                            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                                <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
+                                        id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${!obj.surveyConfigs[0].pickAndChoose}">
+                                    <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: obj.surveyConfigs[0].id]"
+                                            id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}</g:link>
+                                </g:if>
+                                <g:if test="${obj.surveyConfigs[0].pickAndChoose}">
+                                    <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${obj.surveyConfigs[0].id}"
+                                            params="${[targetObjectId: obj.surveyConfigs[0].subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
+                                        ${obj.surveyConfigs[0].getSurveyName()}
+                                    </g:link>
+                                </g:if>
+                            </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="Aufgabe">

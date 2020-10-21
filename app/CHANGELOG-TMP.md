@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.10.2020  rc1.6   1.6.2       Moe     Bug         Falsche Url für Umfrage beim Dashboard (Fällig Termine)
+
 2954    21.10.2020  rc1.6   1.6.2       Moe     Bug         Fehler bei Linzenzverlängerung aus Umfrage heraus
 
 R26     20.10.2020  rc1.6   1.6.2       Moe     Bug         Merkmale aus LAS:eR werden nach Deploy 1.6 doppelt in RT angezeigt
