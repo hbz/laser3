@@ -3,7 +3,7 @@
 
 <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
 
-<table class="ui table la-table">
+<table class="ui table sortable la-table">
     <colgroup>
         <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
@@ -41,29 +41,32 @@
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
         <g:if test="${controllerName == 'org' && actionName == 'myPublicContacts'}">
-            <g:sortableColumn params="${params}" property="p.last_name"
+            <semui:sortableColumn params="${params}" property="p.last_name"
                               title="${message(code: 'person.name.label')}"/>
         </g:if>
         <g:else>
-            <g:sortableColumn params="${params}" property="p.last_name"
+            <semui:sortableColumn params="${params}" property="p.last_name"
                               title="${message(code: 'person.name.label')}"/>
         </g:else>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <g:sortableColumn params="${params}" property="pr.org.name"
+        <semui:sortableColumn params="${params}" property="pr.org.name"
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
-        <g:sortableColumn params="${params}" property="pr.functionType.${"value_" + languageSuffix}"
-                          title="${message(code: 'person.function.label')}"/>
+        <th>
+            ${message(code: 'person.function.label')}"/>
+        </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
-        <g:sortableColumn params="${params}" property="pr.positionType.${"value_" + languageSuffix}"
-                          title="${message(code: 'person.position.label')}"/>
+        <th>
+            ${message(code: 'person.position.label')}"/>
+        </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
-        <g:sortableColumn params="${params}" property="pr.functionType.${"value_" + languageSuffix}, pr.positionType.${"value_" + languageSuffix}"
-                          title="${message(code: 'person.function.label')} (${message(code: 'person.position.label')})"/>
+        <th>
+            ${message(code: 'person.function.label')} (${message(code: 'person.position.label')})
+        </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
             <th>${message(code: 'person.contacts.label')}</th>

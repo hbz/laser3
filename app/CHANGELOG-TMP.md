@@ -7,6 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+--      21.10.2020  rc1.6   1.6.2       Moe     Bug         Falsche Url für Umfrage beim Dashboard (Fällig Termine)
+
+2954    21.10.2020  rc1.6   1.6.2       Moe     Bug         Fehler bei Linzenzverlängerung aus Umfrage heraus
+
 2958    21.10.2020  rc1.6   1.6.2       Andreas Bug         alte Seite zu Merkmalen und Referenzwerten reaktiviert
 
 2948    20.10.2020  rc1.6   1.6.2       Andreas Bug         Lizenzimport scheiterte am Zuordnen der Merkmalsdefinitionen

@@ -132,7 +132,7 @@ class AddressbookService {
 
         }
 
-        String query = "SELECT distinct(p), pr, ${params.sort} FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
+        String query = "SELECT distinct(p), ${params.sort} FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
             Map<String, Object> psq = propertyService.evalFilterQuery(params, query, 'p', qParams)

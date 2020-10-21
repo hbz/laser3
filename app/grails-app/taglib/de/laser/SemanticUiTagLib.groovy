@@ -1184,18 +1184,20 @@ class SemanticUiTagLib {
         if (params.offset) linkParams.offset = params.offset
 
         // determine and add sorting order for this column to link params
-        attrs['class'] = (attrs['class'] ? "${attrs['class']} sortable" : "sortable")
+        attrs['class'] = (attrs['class'] ? "${attrs['class']} " : "")
         if (property == sort) {
-            attrs['class'] = (attrs['class'] as String) + " sorted " + order
             if (order == "asc") {
                 linkParams.order = "desc"
+                attrs['class'] = (attrs['class'] as String) + " sorted ascending "
             }
             else {
                 linkParams.order = "asc"
+                attrs['class'] = (attrs['class'] as String) + " sorted descending "
             }
         }
         else {
             linkParams.order = defaultOrder
+            attrs['class'] = (attrs['class'] as String) + " sortable "
         }
 
         // determine column title
