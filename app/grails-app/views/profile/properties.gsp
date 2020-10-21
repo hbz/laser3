@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; com.k_int.properties.PropertyDefinition; de.laser.RefdataValue"  %>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue"  %>
 <!doctype html>
 <html>
 <head>
@@ -91,7 +91,7 @@
 
         <div class="title">
             <i class="dropdown icon"></i>
-            ${fieldValue(bean: rdc, field: "desc")}
+            ${fieldValue(bean: rdc, field: "desc_de")}
         </div>
         <div class="content">
 
