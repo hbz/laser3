@@ -72,8 +72,8 @@ class ConfigUtils {
     static String getQuartzHeartbeat(boolean validate = false) {
         readConfig('quartzHeartbeat', validate)
     }
-    static String getSchemaSpyScriptFile(boolean validate = false) {
-        readConfig('schemaSpyScriptFile', validate)
+    static String getSchemaSpyScripPath(boolean validate = false) {
+        readConfig('schemaSpyScriptPath', validate)
     }
     static boolean getShowDebugInfo(boolean validate = false) {
         readConfig('showDebugInfo', validate)
@@ -120,7 +120,7 @@ class ConfigUtils {
         getOrgDumpFileNamePattern(true)
         getPgDumpPath(true)
         getQuartzHeartbeat(true)
-        getSchemaSpyScriptFile(true) // QA only
+        getSchemaSpyScripPath(true) // QA only
         getShowDebugInfo(true)
         getShowSystemInfo(true)
         getStatsApiUrl(true)

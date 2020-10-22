@@ -51,12 +51,12 @@ class MigrationCallbacks {
 
 			println '-        done ..'
 
-			if (ConfigUtils.getSchemaSpyScriptFile()) {
+			if (ConfigUtils.getSchemaSpyScripPath()) {
 
 				println 'Executing post-migration scripts'
 
 				try {
-					String cmd = 'sh ' + ConfigUtils.getSchemaSpyScriptFile()
+					String cmd = 'sh ' + ConfigUtils.getSchemaSpyScripPath()
 					println '-        ' + cmd
 
 					cmd.execute()

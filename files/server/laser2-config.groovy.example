@@ -36,7 +36,7 @@ showDebugInfo                       = true
 showSystemInfo                      = true
 //globalDataSyncJobActiv
 //StatsSyncJobActiv
-//schemaSpyScriptFile = "pathTo/dbschema.sh" // QA only
+//schemaSpyScriptPath = "pathTo/dbschema.sh" // QA only
 
 quartzHeartbeat                     = 'Never'
 
