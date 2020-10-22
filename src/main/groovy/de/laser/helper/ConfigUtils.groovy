@@ -39,9 +39,6 @@ class ConfigUtils {
     static boolean getGlobalDataSyncJobActiv(boolean validate = false) {
         readConfig('globalDataSyncJobActiv', validate)
     }
-    static String getQuartzHeartbeat(boolean validate = false) {
-        readConfig('quartzHeartbeat', validate)
-    }
     static boolean getIsSendEmailsForDueDatesOfAllUsers(boolean validate = false) {
         readConfig('isSendEmailsForDueDatesOfAllUsers', validate)
     }
@@ -68,6 +65,12 @@ class ConfigUtils {
     }
     static String getOrgDumpFileNamePattern(boolean validate = false) {
         readConfig('orgDumpFileNamePattern', validate)
+    }
+    static String getPgDumpPath(boolean validate = false) {
+        readConfig('pgDumpPath', validate)
+    }
+    static String getQuartzHeartbeat(boolean validate = false) {
+        readConfig('quartzHeartbeat', validate)
     }
     static String getSchemaSpyScriptFile(boolean validate = false) {
         readConfig('schemaSpyScriptFile', validate)
@@ -106,7 +109,6 @@ class ConfigUtils {
         getDocumentStorageLocation(true)
         getFinancialsCurrency(true)
         getGlobalDataSyncJobActiv(true)
-        getQuartzHeartbeat(true)
         getIsSendEmailsForDueDatesOfAllUsers(true)
         getIsUpdateDashboardTableInDatabase(true)
         getLaserSystemId(true)
@@ -116,6 +118,8 @@ class ConfigUtils {
         getNotificationsJobActive(true)
         getOrgDumpFileExtension(true)
         getOrgDumpFileNamePattern(true)
+        getPgDumpPath(true)
+        getQuartzHeartbeat(true)
         getSchemaSpyScriptFile(true) // QA only
         getShowDebugInfo(true)
         getShowSystemInfo(true)

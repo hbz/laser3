@@ -13,6 +13,7 @@ dataSource.password     = 'laser'
 
 documentStorageLocation = '/tmp/laser' // uploaded documents
 deployBackupLocation    = documentStorageLocation + '/laserDeployBackups' // database backups (before deploys)
+pgDumpPath              = '/usr/bin/pg_dump'
 
 //basicDataPath = ''
 basicDataFileName       = 'basicDataDump.xml'
