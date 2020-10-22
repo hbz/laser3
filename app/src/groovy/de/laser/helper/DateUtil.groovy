@@ -71,10 +71,12 @@ class DateUtil {
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S"),
                 new SimpleDateFormat('yyyy-MM-dd'),
                 new SimpleDateFormat('yyyy/MM/dd'),
+                new SimpleDateFormat('dd.MM.yy'),
                 new SimpleDateFormat('dd.MM.yyyy'),
+                new SimpleDateFormat('MM.yy'),
                 new SimpleDateFormat('MM.yyyy'),
+                new SimpleDateFormat('dd/MM/yy'),//Parsing was wrong, needs to be under supervision
                 new SimpleDateFormat('dd/MM/yyyy'),
-                //Parsing Wrong new SimpleDateFormat('dd/MM/yy'),
                 new SimpleDateFormat('yyyy/MM'),
                 new SimpleDateFormat('yyyy')
         ]
