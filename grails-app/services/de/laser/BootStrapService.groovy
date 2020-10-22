@@ -475,11 +475,11 @@ class BootStrapService {
     void ensurePermGrant(Role role, Perm perm) {
         PermGrant existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
         if (! existingPermGrant) {
-            log.debug("create new perm grant for ${role}, ${perm}")
+            //log.debug("create new perm grant for ${role}, ${perm}")
             new PermGrant(role:role, perm:perm).save()
         }
         else {
-            log.debug("grant already exists ${role}, ${perm}")
+            //log.debug("grant already exists ${role}, ${perm}")
         }
     }
 

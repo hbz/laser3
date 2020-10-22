@@ -15,6 +15,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -156,38 +157,37 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def genericSetRel() {
         String result = ''
 
         try {
             String[] target_components = params.pk.split(":")
-            def target = genericOIDService.resolveOID(params.pk)
 
-            if ( target ) {
-                if ( params.value == '' ) {
+            def target = genericOIDService.resolveOID(params.pk)
+            if (target) {
+                if (params.value == '') {
                     // Allow user to set a rel to null be calling set rel ''
                     target[params.name] = null
-                    if ( ! target.save(flush: true)){
-                        Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+                    if (!target.save()) {
+                        Map r = [status: "error", msg: message(code: 'default.save.error.general.message')]
                         render r as JSON
                         return
                     }
-                }
-                else {
+                } else {
                     String[] value_components = params.value.split(":")
                     def value = genericOIDService.resolveOID(params.value)
 
-                    if ( target && value ) {
+                    if (target && value) {
                         if (target instanceof UserSetting) {
                             target.setValue(value)
-                        }
-                        else {
+                        } else {
                             def binding_properties = ["${params.name}": value]
                             bindData(target, binding_properties)
                         }
 
-                        if ( ! target.save(flush: true)){
-                            Map r = [status:"error", msg: message(code: 'default.save.error.general.message')]
+                        if (!target.save()) {
+                            Map r = [status: "error", msg: message(code: 'default.save.error.general.message')]
                             render r as JSON
                             return
                         }
@@ -196,25 +196,12 @@ class AjaxController {
 
                             //If Survey Owner set Value then set FinishDate
                             if (org?.id == target.owner?.id && target.finishDate == null) {
-                                String property = ""
-                                if (target.type.isIntegerType()) {
-                                    property = "intValue"
-                                } else if (target.type.isStringType()) {
-                                    property = "stringValue"
-                                } else if (target.type.isBigDecimalType()) {
-                                    property = "decValue"
-                                } else if (target.type.isDateType()) {
-                                    property = "dateValue"
-                                } else if (target.type.isURLType()) {
-                                    property = "urlValue"
-                                } else if (target.type.isRefdataValueType()) {
-                                    property = "refValue"
-                                }
+                                String property = target.type.getImplClassValueProperty()
 
                                 if (target[property] != null) {
                                     log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
                                     target.finishDate = new Date()
-                                    target.save(flush: true)
+                                    target.save()
                                 }
                             }
                         }
@@ -234,30 +221,27 @@ class AjaxController {
                             }
                         }
 
-                        if ( params.resultProp ) {
+                        if (params.resultProp) {
                             result = value[params.resultProp]
-                        }
-                        else {
-                            if ( value ) {
+                        } else {
+                            if (value) {
                                 result = renderObjectValue(value)
                             }
                         }
-                    }
-                    else {
+                    } else {
                         log.debug("no value (target=${target_components}, value=${value_components}");
                     }
                 }
-            }
-            else {
+            } else {
                 log.error("no target (target=${target_components}");
             }
 
         } catch (Exception e) {
             log.error("@ genericSetRel()")
-            log.error( e.toString() )
+            log.error(e.toString())
         }
 
-        def resp = [ newValue: result ]
+        def resp = [newValue: result]
         log.debug("genericSetRel() returns ${resp as JSON}")
         render resp as JSON
     }
@@ -1606,14 +1590,14 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def editableSetValue() {
-        log.debug("editableSetValue ${params}");
+        log.debug("editableSetValue ${params}")
+
         def result = null
+        def target_object = resolveOID2(params.pk)
 
         try {
-
-            def target_object = resolveOID2(params.pk)
-
             if (target_object) {
                 if (params.type == 'date') {
                     SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -1628,19 +1612,18 @@ class AjaxController {
                             // delete existing date
                             target_object."${params.name}" = null
                         }
-                        target_object.save(flush:true, failOnError: true)
+                        target_object.save(failOnError: true)
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup
-                        log.error( e.toString() )
+                        log.error(e.toString())
                     }
                     finally {
                         if (target_object."${params.name}") {
                             result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
                         }
                     }
-                }
-                else if (params.type == 'url') {
+                } else if (params.type == 'url') {
                     def backup = target_object."${params.name}"
 
                     try {
@@ -1650,20 +1633,19 @@ class AjaxController {
                             // delete existing url
                             target_object."${params.name}" = null
                         }
-                        target_object.save(flush:true, failOnError: true)
+                        target_object.save(failOnError: true)
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup
-                        log.error( e.toString() )
+                        log.error(e.toString())
                     }
                     finally {
                         if (target_object."${params.name}") {
                             result = target_object."${params.name}"
                         }
                     }
-                }
-                else {
-                    def binding_properties = [:]
+                } else {
+                    Map binding_properties = [:]
 
                     if (target_object."${params.name}" instanceof BigDecimal) {
                         params.value = escapeService.parseFinancialValue(params.value)
@@ -1679,7 +1661,7 @@ class AjaxController {
                     }
                     bindData(target_object, binding_properties)
 
-                    target_object.save(flush:true, failOnError: true)
+                    target_object.save(failOnError: true)
 
 
                     if (target_object."${params.name}" instanceof BigDecimal) {
@@ -1695,34 +1677,21 @@ class AjaxController {
                     Org org = contextService.getOrg()
                     //If Survey Owner set Value then set FinishDate
                     if (org?.id == target_object.owner?.id && target_object.finishDate == null) {
-                        String property = ""
-                        if (target_object.type.isIntegerType()) {
-                            property = "intValue"
-                        } else if (target_object.type.isStringType()) {
-                            property = "stringValue"
-                        } else if (target_object.type.isBigDecimalType()) {
-                            property = "decValue"
-                        } else if (target_object.type.isDateType()) {
-                            property = "dateValue"
-                        } else if (target_object.type.isURLType()) {
-                            property = "urlValue"
-                        } else if (target_object.type.isRefdataValueType()) {
-                            property = "refValue"
-                        }
+                        String property = target_object.type.getImplClassValueProperty()
 
                         if (target_object[property] != null) {
                             log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
                             target_object.finishDate = new Date()
-                            target_object.save(flush:true)
+                            target_object.save()
                         }
                     }
                 }
 
             }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("@ editableSetValue()")
-            log.error( e.toString() )
+            log.error(e.toString())
         }
 
         log.debug("editableSetValue() returns ${result}")

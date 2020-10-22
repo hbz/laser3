@@ -216,7 +216,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
           membership(nullable:true)
              country(nullable:true)
               region(nullable:true)
-            eInvoice(nullable:true)
             eInvoicePortal(nullable:true)
 //        , validator: {RefdataValue val, Org obj, errors ->
 //                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){

@@ -38,7 +38,6 @@ class PropertyDefinitionGroupBinding {
         lic                         (nullable: true, unique: ['propDefGroup'])
         org                         (nullable: true, unique: ['propDefGroup'])
         sub                         (nullable: true, unique: ['propDefGroup'])
-        propDefGroup                (blank: false)
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }
