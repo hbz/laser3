@@ -3448,9 +3448,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
-
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.superOrgType = []
@@ -3507,8 +3506,9 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
+
         }
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participantsList = []
@@ -3553,8 +3553,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
+        result.targetSubscription =  result.parentSuccessorSubscription
 
         Integer countNewCostItems = 0
         RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
@@ -3689,8 +3689,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.selectedProperty
@@ -3781,9 +3781,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
-
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         if(params.list('selectedSub')) {
@@ -3956,7 +3955,7 @@ class SurveyController {
             // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
             if(!(it.participant in result.parentSuccessortParticipantsList)){
 
-                List oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.parentSubscription,
                          participant: it.participant
                         ])[0]
