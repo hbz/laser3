@@ -265,12 +265,10 @@
                             </g:else>
 
                         </td>
-
-                        <td>
-                            <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
-                        </td>
                     </g:each>
-
+                    <td>
+                        <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                    </td>
                 </tr>
 
             </g:each>
@@ -468,12 +466,10 @@
                             </g:else>
 
                         </td>
-
-                        <td>
-                            <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
-                        </td>
-
                     </g:each>
+                    <td>
+                        <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                    </td>
                 </tr>
 
             </g:each>

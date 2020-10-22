@@ -1231,6 +1231,7 @@ class DataloadService {
 
                 CreateIndexResponse createIndexResponse = client.indices().create(createRequest, RequestOptions.DEFAULT)
                 boolean acknowledgedCreate = createIndexResponse.isAcknowledged()
+                client.close()
                 if (acknowledgedCreate) {
                     SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
                     log.debug("Create ES index completed OK")
@@ -1245,7 +1246,7 @@ class DataloadService {
                 }
 
                 //log.debug("Clear down and init ES completed...")
-                client.close()
+
             } else {
                 log.debug("!!!!Clear down and init ES is not possible because updateFTIndexes is currently in process!!!!");
             }

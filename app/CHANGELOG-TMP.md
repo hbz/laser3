@@ -7,6 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      22.10.2020  rc1.6   1.6.3       Moe     Bug         Umfrage: Kosten übertragen
+
+--      22.10.2020  rc1.6   1.6.3       Moe     Bug         Umfrage: Auswertung Bemerkungsspalte zuviel
+
+--      22.10.2020  rc1.6   1.6.3       Moe     Bug         Umfrage: Teilnehmer übertragen
 
 --      21.10.2020  rc1.6   1.6.2       Moe     Bug         Falsche Url für Umfrage beim Dashboard (Fällig Termine)
 
