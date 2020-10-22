@@ -122,6 +122,11 @@ war {
     archiveName 'laser2.war'
 }
 
+// windows: limitation of command line length
+grails {
+    pathingJar = true
+}
+
 tasks.withType(Test) {
     systemProperty "geb.env", System.getProperty('geb.env')
     systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
