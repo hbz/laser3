@@ -35,12 +35,12 @@ class MigrationCallbacks {
 					schema: "public",
 					file  : "${backupFile}"
 			]
-
-			println '-           source: ' + database
-			println '-           target: ' + backupFile
+			println '-           pg_dump: ' + ConfigUtils.getPgDumpPath()
+			println '-            source: ' + database
+			println '-            target: ' + backupFile
 
 			try {
-				String cmd = '/usr/bin/pg_dump -x ' + (config.collect { '--' + it.key + '=' + it.value }).join(' ')
+				String cmd = ConfigUtils.getPgDumpPath() + ' -x ' + (config.collect { '--' + it.key + '=' + it.value }).join(' ')
 
 				cmd.execute().waitForProcessOutput(System.out, System.err)
 
