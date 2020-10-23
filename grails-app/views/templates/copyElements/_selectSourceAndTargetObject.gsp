@@ -114,8 +114,8 @@
         var status = $("#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
-        var url = '<g:createLink controller="ajax"
-                                 action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'+'?valueAsOID=true&status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
+        var url = '<g:createLink controller="ajaxJson"
+                                 action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'+'?valueAsOID=true&status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs
 
         $.ajax({
             url: url,

@@ -8,6 +8,7 @@ import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.*
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -363,6 +364,7 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Transactional
     def processEditIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
         Identifier identifier   = Identifier.get(params.identifierId)
@@ -412,7 +414,7 @@ class OrganisationController  {
 
         identifier.value = params.value.trim()
         identifier.note = params.note?.trim()
-        identifier.save(flush:true)
+        identifier.save()
 
         redirect(url: request.getHeader('referer'))
     }

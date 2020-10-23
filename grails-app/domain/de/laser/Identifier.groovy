@@ -78,12 +78,15 @@ class Identifier implements CalculatedLastUpdated {
     }
 
     static FactoryResult constructWithFactoryResult(Map<String, Object> map) {
+
+        withTransaction {
+
         FactoryResult factoryResult = new FactoryResult()
 
-        String value        = map.get('value')
-        Object reference    = map.get('reference')
-        def namespace       = map.get('namespace')
-        String nsType       = map.get('nsType')
+        String value     = map.get('value')
+        Object reference = map.get('reference')
+        def namespace    = map.get('namespace')
+        String nsType    = map.get('nsType')
 
         IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
@@ -102,9 +105,9 @@ class Identifier implements CalculatedLastUpdated {
                 } else {
                     ns = new IdentifierNamespace(ns: namespace, isUnique: true, isHidden: false)
                 }
-				ns.save(flush:true)
-			}
-		}
+                ns.save()
+            }
+        }
 
         String attr = Identifier.getAttributeName(reference)
 
@@ -146,6 +149,7 @@ class Identifier implements CalculatedLastUpdated {
 
         factoryResult.result = ident
         factoryResult
+        } // withTransaction
     }
 
     void setReference(def owner) {

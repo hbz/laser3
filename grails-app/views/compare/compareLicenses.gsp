@@ -83,7 +83,7 @@
         var status = $("#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustCompareLicenseList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics+'&format=json'
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics
 
 
         var dropdownSelectedObjects = $('#selectedObjects');

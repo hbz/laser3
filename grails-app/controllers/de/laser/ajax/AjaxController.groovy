@@ -494,6 +494,7 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def addOrgRole() {
         def owner  = genericOIDService.resolveOID(params.parent)
         def rel    = RefdataValue.get(params.orm_orgRole)
@@ -517,14 +518,14 @@ class AjaxController {
             }
 
             if(! duplicateOrgRole) {
-                def new_link = new OrgRole(org: org_to_link, roleType: rel)
+                OrgRole new_link = new OrgRole(org: org_to_link, roleType: rel)
                 new_link[params.recip_prop] = owner
 
-                if (new_link.save(flush: true)) {
+                if (new_link.save()) {
                     // log.debug("Org link added")
                     if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
                         new_link.isShared = true
-                        new_link.save(flush:true)
+                        new_link.save()
 
                         owner.updateShare(new_link)
                     }
@@ -533,7 +534,6 @@ class AjaxController {
                     new_link.errors.each { e ->
                         log.error( e.toString() )
                     }
-                    //flash.error = message(code: 'default.error')
                 }
             }
         }
@@ -976,6 +976,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def toggleShare() {
         def owner = genericOIDService.resolveOID( params.owner )
         def sharedObject = genericOIDService.resolveOID( params.sharedObject )
@@ -985,7 +986,7 @@ class AjaxController {
         } else {
             sharedObject.isShared = false
         }
-        sharedObject.save(flush:true)
+        sharedObject.save()
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
@@ -1003,19 +1004,21 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def toggleOrgRole() {
         OrgRole oo = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub = :sub and oo.roleType in :roleTypes',[sub:Subscription.get(params.id),roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
-        if(oo) {
+        if (oo) {
             if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS)
                 oo.roleType = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
             else if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
                 oo.roleType = RDStore.OR_SUBSCRIBER_CONS
         }
-        oo.save(flush: true)
+        oo.save()
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def toggleAudit() {
         //String referer = request.getHeader('referer')
         if(formService.validateToken(params)) {
@@ -1031,7 +1034,7 @@ class AjaxController {
 
                         members.each { m ->
                             m.setProperty(prop, owner.getProperty(prop))
-                            m.save(flush:true)
+                            m.save()
                         }
                     }
                     else {
@@ -1042,7 +1045,7 @@ class AjaxController {
                                 if(m[prop] instanceof Boolean)
                                     m.setProperty(prop, false)
                                 else m.setProperty(prop, null)
-                                m.save(flush: true)
+                                m.save()
                             }
                         }
 
@@ -1058,7 +1061,7 @@ class AjaxController {
                                     def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
                                     def eventProp = payload.changeDoc?.prop
                                     if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
-                                        pc.delete(flush: true)
+                                        pc.delete()
                                     }
                                 }
                             }
@@ -1270,6 +1273,7 @@ class AjaxController {
     * @return
     */
   @Secured(['ROLE_USER'])
+  @Transactional
   def deletePrivateProperty(){
     def className = params.propClass.split(" ")[1]
     def propClass = Class.forName(className)
@@ -1279,7 +1283,7 @@ class AjaxController {
     def prop_desc = property.getType().getDescr()
 
     owner.propertySet.remove(property)
-    property.delete(flush:true)
+    property.delete()
 
     if(property.hasErrors()){
       log.error(property.errors.toString())
@@ -1465,6 +1469,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def deleteIdentifier() {
         log.debug("AjaxController::deleteIdentifier ${params}")
         def owner = genericOIDService.resolveOID(params.owner)
@@ -1476,7 +1481,7 @@ class AjaxController {
         if (owner && target) {
             if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
                 log.debug("Identifier deleted: ${params}")
-                target.delete(flush:true)
+                target.delete()
             }
         }
         redirect(url: request.getHeader('referer'))
@@ -1747,164 +1752,6 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
-
-
-
-    def adjustSubscriptionList(){
-        List<Subscription> data
-        List result = []
-        boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedObjs = params.showConnectedObjs == 'true'
-        Map queryParams = [:]
-        queryParams.status = []
-        if(params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
-
-        }
-
-        queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedObjs = showConnectedObjs
-
-        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
-
-
-        if(data) {
-            if(params.valueAsOID){
-                data.each { Subscription s ->
-                    result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
-                }
-            }else {
-                data.each { Subscription s ->
-                    result.add([value: s.id, text: s.dropdownNamingConvention()])
-                }
-            }
-        }
-        withFormat {
-            json {
-                render result as JSON
-            }
-        }
-    }
-
-    def adjustLicenseList(){
-        List<Subscription> data
-        List result = []
-        boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedObjs = params.showConnectedObjs == 'true'
-        Map queryParams = [:]
-        queryParams.status = []
-        if(params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
-
-        }
-
-        queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedObjs = showConnectedObjs
-
-        data =  licenseService.getMyLicenses_writeRights(queryParams)
-
-
-        if(data) {
-            if(params.valueAsOID){
-                data.each { License l ->
-                    result.add([value: genericOIDService.getOID(l), text: l.dropdownNamingConvention()])
-                }
-            }else {
-                data.each { License l ->
-                    result.add([value: l.id, text: l.dropdownNamingConvention()])
-                }
-            }
-        }
-        withFormat {
-            json {
-                render result as JSON
-            }
-        }
-    }
-
-    def adjustCompareSubscriptionList(){
-        List<Subscription> data
-        List result = []
-        boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedObjs = params.showConnectedObjs == 'true'
-        Map queryParams = [:]
-        if(params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
-
-        }
-
-        queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedObjs = showConnectedObjs
-
-        data = compareService.getMySubscriptions(queryParams)
-
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            if (showSubscriber) {
-                List parents = data.clone()
-                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-                data.addAll(Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc', [parents: parents, subscriberRoleTypes: subscriberRoleTypes]))
-            }
-        }
-
-        if (showConnectedObjs){
-            data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.user))
-        }
-
-        if(data) {
-            data.each { Subscription s ->
-                result.add([value: s.id, text: s.dropdownNamingConvention()])
-            }
-
-            result.sort{it.text}
-        }
-
-        withFormat {
-            json {
-                render result as JSON
-            }
-        }
-    }
-
-    def adjustCompareLicenseList(){
-        List<License> data
-        List result = []
-        boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedLics = params.showConnectedLics == 'true'
-        Map queryParams = [:]
-        if(params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
-
-        }
-
-        queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedLics = showConnectedLics
-
-        data = compareService.getMyLicenses(queryParams)
-
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            if (showSubscriber) {
-                List parents = data.clone()
-                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
-                data.addAll(License.executeQuery('select l from License l join l.orgRelations oo where l.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc', [parents: parents, subscriberRoleTypes: subscriberRoleTypes]))
-            }
-        }
-
-        if (showConnectedLics){
-
-        }
-
-        if(data) {
-            data.each { License l ->
-                result.add([value: l.id, text: l.dropdownNamingConvention()])
-            }
-            result.sort{it.text}
-        }
-        withFormat {
-            json {
-                render result as JSON
-            }
-        }
-    }
 
     def notifyProfiler() {
         Map<String, Object> result = [status: 'failed']

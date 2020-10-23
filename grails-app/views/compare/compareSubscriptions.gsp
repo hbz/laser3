@@ -95,7 +95,7 @@
         var status = $( "select#status").val();
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
-        var url = '<g:createLink controller="ajax" action="adjustCompareSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs+'&format=json'
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs
 
         var dropdownSelectedObjects = $('#selectedObjects');
         var selectedObjects = ${raw(objects?.id as String)};

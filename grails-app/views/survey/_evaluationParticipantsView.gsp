@@ -542,7 +542,7 @@
 
     function adjustDropdown() {
         var status = $("#status").val();
-        var url = '<g:createLink controller="ajax" action="adjustSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&format=json'
+        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'+'?status='+JSON.stringify(status)
 
         $.ajax({
             url: url,

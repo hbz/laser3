@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.IssueEntitlement
+import de.laser.License
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -39,17 +40,149 @@ class AjaxJsonController {
      * no object manipulation
      *
      */
-
+    def accessService
+    def compareService
     def contextService
     def controlledListService
     def dataConsistencyService
     def genericOIDService
+    def licenseService
+    def subscriptionService
 
     def test() {
         Map<String, Object> result = [status: 'ok']
         result.id = params.id
         render result as JSON
     }
+
+    @Secured(['ROLE_USER'])
+    def adjustSubscriptionList(){
+        List<Subscription> data
+        List result = []
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
+        Map queryParams = [:]
+        queryParams.status = []
+        if (params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedObjs = showConnectedObjs
+
+        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
+        if (data) {
+            if (params.valueAsOID){
+                data.each { Subscription s ->
+                    result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
+                }
+            } else {
+                data.each { Subscription s ->
+                    result.add([value: s.id, text: s.dropdownNamingConvention()])
+                }
+            }
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def adjustLicenseList(){
+        List<Subscription> data
+        List result = []
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
+        Map queryParams = [:]
+        queryParams.status = []
+        if (params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedObjs = showConnectedObjs
+
+        data =  licenseService.getMyLicenses_writeRights(queryParams)
+        if (data) {
+            if (params.valueAsOID){
+                data.each { License l ->
+                    result.add([value: genericOIDService.getOID(l), text: l.dropdownNamingConvention()])
+                }
+            } else {
+                data.each { License l ->
+                    result.add([value: l.id, text: l.dropdownNamingConvention()])
+                }
+            }
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def adjustCompareSubscriptionList(){
+        List<Subscription> data
+        List result = []
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedObjs = params.showConnectedObjs == 'true'
+        Map queryParams = [:]
+        if (params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedObjs = showConnectedObjs
+
+        data = compareService.getMySubscriptions(queryParams)
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (showSubscriber) {
+                List parents = data.clone()
+                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
+                data.addAll(Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc', [parents: parents, subscriberRoleTypes: subscriberRoleTypes]))
+            }
+        }
+
+        if (showConnectedObjs){
+            data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.user))
+        }
+
+        if (data) {
+            data.each { Subscription s ->
+                result.add([value: s.id, text: s.dropdownNamingConvention()])
+            }
+            result.sort{it.text}
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def adjustCompareLicenseList(){
+        List<License> data
+        List result = []
+        boolean showSubscriber = params.showSubscriber == 'true'
+        boolean showConnectedLics = params.showConnectedLics == 'true'
+        Map queryParams = [:]
+        if (params.status){
+            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        }
+
+        queryParams.showSubscriber = showSubscriber
+        queryParams.showConnectedLics = showConnectedLics
+
+        data = compareService.getMyLicenses(queryParams)
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (showSubscriber) {
+                List parents = data.clone()
+                Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
+                data.addAll(License.executeQuery('select l from License l join l.orgRelations oo where l.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc', [parents: parents, subscriberRoleTypes: subscriberRoleTypes]))
+            }
+        }
+
+        if (data) {
+            data.each { License l ->
+                result.add([value: l.id, text: l.dropdownNamingConvention()])
+            }
+            result.sort{it.text}
+        }
+        render result as JSON
+    }
+
 
     @Secured(['ROLE_USER'])
     def consistencyCheck() {
