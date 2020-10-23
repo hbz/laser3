@@ -293,6 +293,11 @@ ${surveyInfo.name}
                 <g:set var="costElement"
                        value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)}"/>
 
+                <g:if test="${participant.surveyCostItem}">
+                    <g:set var="costElement"
+                           value="${participant.surveyCostItem.costItemElement}"/>
+                </g:if>
+
                 <tr class="">
                     <td>
                         <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
@@ -418,7 +423,7 @@ ${surveyInfo.name}
                     </td>
                     <td>
                         <g:if test="${participant.newSub}">
-                            <g:link controller="subscription" action="show" id="${participant.newSub.id}"
+                            <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:participant.newSub.id]}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
                     </td>
