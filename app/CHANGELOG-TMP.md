@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-2963    22.10.2020  rc1.6   1.6.3       Moe     Bug         Fehler bei Linzenzverlängerung aus Umfrage heraus
+2965    23.10.2020  rc1.6   1.6.3       Moe     Bug         Löschen einer Anschriftin den Kontaktinformationen nicht möglich
+
+2963    23.10.2020  rc1.6   1.6.3       Moe     Bug         Fehler bei Linzenzverlängerung aus Umfrage heraus
 
 --      22.10.2020  rc1.6   1.6.3       Moe     Bug         Umfrage: Kosten übertragen
 
