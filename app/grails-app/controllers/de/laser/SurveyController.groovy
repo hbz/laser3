@@ -3557,12 +3557,12 @@ class SurveyController {
         result.targetSubscription =  result.parentSuccessorSubscription
 
         Integer countNewCostItems = 0
-        RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        //RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             CostItem costItem = CostItem.get(costItemId)
             Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
-            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
+            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
                 Map properties = costItem.properties
@@ -3570,7 +3570,7 @@ class SurveyController {
                 InvokerHelper.setProperties(copyCostItem, properties)
                 copyCostItem.globalUID = null
                 copyCostItem.surveyOrg = null
-                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                 copyCostItem.sub = participantSub
                 if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
                     copyCostItem.currencyRate = 1.0
@@ -3578,6 +3578,8 @@ class SurveyController {
                 }
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
+                }else {
+                    log.debug("Error by proccessCopySurveyCostItems: "+ copyCostItem.errors)
                 }
 
             }
@@ -3639,12 +3641,12 @@ class SurveyController {
 
 
         Integer countNewCostItems = 0
-        RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        //RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             CostItem costItem = CostItem.get(costItemId)
             Subscription participantSub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
-            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
+            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
                 Map properties = costItem.properties
@@ -3652,7 +3654,7 @@ class SurveyController {
                 InvokerHelper.setProperties(copyCostItem, properties)
                 copyCostItem.globalUID = null
                 copyCostItem.surveyOrg = null
-                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                 copyCostItem.sub = participantSub
                 if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
                     copyCostItem.currencyRate = 1.0
@@ -3661,6 +3663,8 @@ class SurveyController {
 
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
+                }else {
+                    log.debug("Error by proccessCopySurveyCostItems: "+ copyCostItem.errors)
                 }
 
             }
