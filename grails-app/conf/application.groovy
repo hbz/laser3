@@ -1,14 +1,14 @@
 
 // globals
 
-grails.cache.enabled = true
-grails.cache.config = {
-    // affects only cache-plugin caches
+grails {
     cache {
-        name = 'laser_static_pages'
-    }
-    cache {
-        name 'message'
+        enabled = true
+        config = { // affects only cache-plugin caches
+            cache {
+                name 'message'
+            }
+        }
     }
 }
 
@@ -19,7 +19,7 @@ grails.gorm.default.mapping = {
 
 // database migration plugin
 
-grails.plugin.databasemigration.updateOnStart       = true
+grails.plugin.databasemigration.updateOnStart = true
 
 // audit-logging-plugin
 

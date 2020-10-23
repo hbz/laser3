@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.helper.EhcacheWrapper
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
@@ -15,7 +14,6 @@ import org.springframework.context.ApplicationContextAware
 class CacheService implements ApplicationContextAware {
 
     ApplicationContext applicationContext
-    SpringSecurityService springSecurityService
 
     // global caches
 
@@ -28,12 +26,6 @@ class CacheService implements ApplicationContextAware {
     CacheManager getCacheManager() {
 
         return CacheManager.newInstance()
-
-        // http://www.ehcache.org/generated/2.10.4/pdf/Integrations.pdf
-        //return CacheManager.getCacheManager('__DEFAULT__')
-
-        // http://grails-plugins.github.io/grails-cache/
-        // return applicationContext.grailsCacheManager
     }
 
     Cache getCache(CacheManager cacheManager, String cacheName) {
@@ -127,30 +119,18 @@ class CacheService implements ApplicationContextAware {
     /* --- */
 
     def put(def cache, String key, def value) {
-
-        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-            cache.put(new Element(key, value))
-        //}
+        cache.put(new Element(key, value))
     }
 
     def get(def cache, String key) {
-
-        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-            cache.get(key)?.objectValue
-        //}
+        cache.get(key)?.objectValue
     }
 
     def remove(def cache, String key) {
-
-        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-            cache.remove(key)
-        //}
+        cache.remove(key)
     }
 
     def clear(def cache) {
-
-        //if (cache.getStatus() == Status.STATUS_ALIVE) { // TODO [ticket=2023] HOTFIX remove
-            cache.removeAll()
-        //}
+        cache.removeAll()
     }
 }
