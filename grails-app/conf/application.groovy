@@ -15,6 +15,7 @@ grails {
 grails.gorm.default.mapping = {
     autowire true            // service dependency injection enabled
     id generator: 'identity' // postgresql sequences for primary keys
+    //id generator: 'increment' // postgresql sequences for primary keys
 }
 
 // database migration plugin

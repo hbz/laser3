@@ -225,17 +225,17 @@
     </table>
 
     </g:if>
-<r:style>
+<style>
 .ui.table thead tr:first-child>th {
     top: 48px!important;
 }
-</r:style>
+</style>
 <sec:ifAnyGranted roles="ROLE_USER">
-    <r:style>
+    <style>
         .ui.table thead tr:first-child>th {
             top: 90px!important;
         }
-    </r:style>
+    </style>
 </sec:ifAnyGranted>
 </body>
 </html>
