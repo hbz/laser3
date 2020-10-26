@@ -10,8 +10,8 @@
     <body>
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />
-        <g:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />
+        %{--<g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
+        %{--<g:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />--}%
     </semui:debugInfo>
 
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
