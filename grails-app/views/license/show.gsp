@@ -14,8 +14,8 @@
 
         <semui:debugInfo>
             <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />
-            <g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />
+            %{--<g:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />--}%
+            %{--<g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />--}%
         </semui:debugInfo>
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
@@ -171,7 +171,9 @@
                                                                 ${pair.name}
                                                             </g:link>
                                                         </g:elseif><br />
-                                                        <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
+                                                        <g:if test="${pair}">
+                                                            <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
+                                                        </g:if>
                                                         <g:set var="comment" value="${DocContext.findByLink(link)}"/>
                                                         <g:if test="${comment}">
                                                             <p><em>${comment.owner.content}</em></p>

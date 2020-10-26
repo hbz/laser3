@@ -100,8 +100,8 @@ class YodaController {
 
         result.numberOfActiveUsers = yodaService.getNumberOfActiveUsers()
 
-        def userCache = cacheService.getSharedUserCache(contextService.getUser(), 'yoda/test1')
-        def orgCache  = cacheService.getSharedOrgCache(contextService.getOrg(), 'yoda/test2')
+        def userCache = contextService.getCache('yoda/test1', ContextService.USER_SCOPE)
+        def orgCache  = contextService.getCache('yoda/test2', ContextService.ORG_SCOPE)
 
         userCache.put('X', 123)
         userCache.put('Y', 456)
