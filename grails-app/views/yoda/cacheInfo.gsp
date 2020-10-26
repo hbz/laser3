@@ -92,7 +92,7 @@
 
                 <button class="ui button small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
 
-                <g:if test="${cache.getKeys().size() > 0}">
+                <g:if test="${cache.getKeysWithExpiryCheck().size() > 0}">
                     <button class="ui button small positive" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
 
                     <div class="cacheContent hidden">
@@ -101,8 +101,12 @@
                             <g:set var="cacheEntry" value="${cache.get(key)}" />
                             <g:if test="${cacheEntry}">
                                 <dt>
-                                    ${cacheEntry.getObjectKey() instanceof String ? cacheEntry.getObjectKey() : cacheEntry.getObjectKey().key}
-                                    [ version=${cacheEntry.version} : hitCount=${cacheEntry.hitCount} ]
+                                    ${cacheEntry.getObjectKey() instanceof String ? cacheEntry.getObjectKey() : cacheEntry.getObjectKey().id}
+                                    >
+                                    creation=${new Date(cacheEntry.getCreationTime()).format('HH:mm:ss')},
+                                    lastAccess=${new Date(cacheEntry.getLastAccessTime()).format('HH:mm:ss')},
+                                    version=${cacheEntry.version},
+                                    hitCount=${cacheEntry.hitCount}
                                 </dt>
                                 <dd>
                                     <g:set var="objectValue" value="${cacheEntry.getObjectValue()}" />

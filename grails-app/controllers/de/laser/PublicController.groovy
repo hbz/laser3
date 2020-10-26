@@ -16,7 +16,6 @@ class PublicController {
     def mailService
     EscapeService escapeService
 
-    @Cacheable('laser_static_pages')
     @Secured(['permitAll'])
     def wcagStatement() {
     }

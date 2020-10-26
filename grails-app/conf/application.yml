@@ -91,8 +91,9 @@ hibernate:
     cache:
         default_schema: 'public'
         queries: false
-        use_second_level_cache: false
+        use_second_level_cache: true
         use_query_cache: false
+        region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
 
 dataSource:
     pooled: true
@@ -102,6 +103,24 @@ dataSource:
     dialect: org.hibernate.dialect.PostgreSQLDialect
     username: laser
     password: laser
+    properties:
+        jmxEnabled: true
+        initialSize: 5
+        maxActive: 50
+        minIdle: 5
+        maxIdle: 25
+        maxWait: 10000
+        maxAge: 600000
+        timeBetweenEvictionRunsMillis: 5000
+        minEvictableIdleTimeMillis: 60000
+        validationQuery: SELECT 1
+        validationQueryTimeout: 3
+        validationInterval: 15000
+        testOnBorrow: true
+        testWhileIdle: true
+        testOnReturn: false
+        jdbcInterceptors: ConnectionState
+        defaultTransactionIsolation: java.sql.Connection.TRANSACTION_READ_COMMITTED
 
 environments:
     development:
@@ -116,21 +135,3 @@ environments:
         dataSource:
             dbCreate: none
             url: jdbc:postgresql://localhost:5432/laser_upgrade
-            properties:
-                jmxEnabled: true
-                initialSize: 5
-                maxActive: 50
-                minIdle: 5
-                maxIdle: 25
-                maxWait: 10000
-                maxAge: 600000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-                validationQuery: SELECT 1
-                validationQueryTimeout: 3
-                validationInterval: 15000
-                testOnBorrow: true
-                testWhileIdle: true
-                testOnReturn: false
-                jdbcInterceptors: ConnectionState
-                defaultTransactionIsolation: java.sql.Connection.TRANSACTION_READ_COMMITTED

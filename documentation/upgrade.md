@@ -41,5 +41,7 @@
 - https://grails-plugins.github.io/grails-spring-security-core/3.2.x/
 - https://docs.gradle.org/3.5/userguide/userguide.html
 - https://robertoschwald.github.io/grails-audit-logging-plugin/3.0.x/plugin.html
+- https://grails-plugins.github.io/grails-cache/4.0.x/guide/index.html
+- http://www.ehcache.org/generated/2.10.5/html/ehc-all/
 - http://www.asset-pipeline.com/manual/
 - http://logback.qos.ch/

@@ -11,17 +11,20 @@ import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
+import net.sf.ehcache.Cache
+import net.sf.ehcache.CacheManager
 import org.hibernate.type.TextType
 
 @Transactional
 class BootStrapService {
 
-    def grailsApplication
     def apiService
+    def cacheService
+    def dataSource
+    def grailsApplication
+    def organisationService
     def refdataReorderService
     def sessionFactory
-    def organisationService
-    def dataSource
     def userService
 
     final static BOOTSTRAP = true   // indicates this object is created via bootstrap
@@ -404,8 +407,7 @@ class BootStrapService {
             dir = new File(folder.file)
         }
         catch (Exception e) {
-            log.warn( e.toString() )
-            log.warn('fallback ..')
+            log.warn(e.toString() + ' .. trying fallback')
 
             String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
             dir = new File(dirPath)
@@ -438,6 +440,9 @@ class BootStrapService {
                     }
                 }
             }
+        }
+        else {
+            log.warn('.. failed')
         }
 
     }
