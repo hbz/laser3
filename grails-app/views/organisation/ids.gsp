@@ -30,8 +30,8 @@
 
 <semui:debugInfo>
     <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-    <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>
-    <g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>
+    %{--<g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>--}%
+    %{--<g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
 </semui:debugInfo>
 
 <g:render template="breadcrumb"
