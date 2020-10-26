@@ -61,7 +61,7 @@ module.exports = function(callback) {
     // 3.) Die gebauten CSS-Files werden in die entsprechenden 'dist' Folder gespeichert
     gulp.task('copy output css '+org, ['build css '+org], function() {
       return gulp.src('./temp/**/*.css')
-          .pipe(gulp.dest('../web-app/semantic/'+org));
+          .pipe(gulp.dest('../../../grails-app/assets/themes/'+org));
     });
 
     tasks.push('copy theme.config '+org);
@@ -72,14 +72,14 @@ module.exports = function(callback) {
   // 4.) Die gebauten Javascript-Files werden in die entsprechenden 'dist' Folder gespeichert
   gulp.task('copy output javascript', ['build-javascript','package compressed js','package uncompressed js'], function() {
     return gulp.src('./temp/**/*.js')
-        .pipe(gulp.dest('../web-app/semantic/javascript'));
+        .pipe(gulp.dest('../../../grails-app/assets/themes/javascript'));
   });
   //************************ ASSETS *************************
   // 5.) Nur die Assets-Files aus dem default-Theme werden in den entsprechenden 'dist' Folder gespeichert
   gulp.task('copy assets', function() {
     // copy assets
     return gulp.src('./src/themes/default/assets/**/*.*')
-        .pipe(gulp.dest('../web-app/semantic/assets'));
+        .pipe(gulp.dest('../../../grails-app/assets/themes/assets'));
   });
   tasks.push('copy output javascript');
   tasks.push('copy assets');
