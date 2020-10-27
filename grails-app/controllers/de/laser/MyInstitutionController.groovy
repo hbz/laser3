@@ -1593,13 +1593,12 @@ join sub.orgRelations or_sub where
 
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
 
-        if (ctrlResult.status == MyInstitutionControllerService.STATUS_OK) {
-            return ctrlResult.result
-        }
-        else {
-            flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page"
+        if (ctrlResult.status == MyInstitutionControllerService.STATUS_ERROR) {
+            flash.error = "You do not have permission to access ${ctrlResult.result.institution.name} pages. Please request access on the profile page"
             response.sendError(401)
         }
+
+        return ctrlResult.result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

@@ -23,8 +23,8 @@ class MyInstitutionControllerService {
     def springSecurityService
     def taskService
 
-    static final int STATUS_OK = 1
-    static final int STATUS_ERROR = 2
+    static final int STATUS_OK = 0
+    static final int STATUS_ERROR = 1
 
     Map<String, Object> dashboard (MyInstitutionController controller, GrailsParameterMap params) {
 
