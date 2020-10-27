@@ -3,9 +3,9 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
+import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
-import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
@@ -55,13 +55,15 @@ import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
+
+    def myInstitutionControllerService
+
     def dataSource
     def springSecurityService
     def userService
     def genericOIDService
     PendingChangeService pendingChangeService
     ExportService exportService
-    PackageService packageService
     def escapeService
     def institutionsService
     def docstoreService
@@ -78,7 +80,6 @@ class MyInstitutionController  {
     def financeService
     def surveyService
     def formService
-    def dashboardDueDatesService
     LinksGenerationService linksGenerationService
     ComparisonService comparisonService
 
@@ -1593,77 +1594,17 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def dashboard() {
-        Map<String, Object> result = setResultGenerics()
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
+        Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
+
+        if (ctrlResult.status == MyInstitutionControllerService.STATUS_ERROR) {
+            flash.error = "You do not have permission to access ${ctrlResult.result.institution.name} pages. Please request access on the profile page"
             response.sendError(401)
-            return;
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.pendingOffset = 0
-        result.acceptedOffset = 0
-        result.dashboardDueDatesOffset = 0
-        switch(params.view) {
-            case 'PendingChanges': result.pendingOffset = result.offset
-            break
-            case 'AcceptedChanges': result.acceptedOffset = result.offset
-            break
-            case 'dueDatesView': result.dashboardDueDatesOffset = result.offset
-            break
-        }
-
-        def periodInDays = contextService.getUser().getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-
-        // changes
-
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,pendingOffset:result.pendingOffset,acceptedOffset:result.acceptedOffset,pending:true,notifications:true]
-
-        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
-
-        // systemAnnouncements
-
-        result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
-
-        // tasks
-
-        SimpleDateFormat sdFormat    = DateUtil.getSDF_NoTime()
-        params.taskStatus = 'not done'
-        def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
-        Org contextOrg  = contextService.getOrg()
-        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
-        result.tasksCount    = result.tasks.size()
-        result.enableMyInstFormFields = true // enable special form fields
-
-
-        /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
-        result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
-
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
-
-        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
-                " order by surConfig.surveyInfo.endDate",
-                [org: result.institution,
-                 status: RDStore.SURVEY_SURVEY_STARTED])
-
-        if(accessService.checkPerm('ORG_CONSORTIUM')){
-            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
-                    " order by surConfig.surveyInfo.endDate",
-                    [org: result.institution,
-                     status: RDStore.SURVEY_SURVEY_STARTED])
-        }
-
-        result.surveys = activeSurveyConfigs.groupBy {it?.id}
-        result.countSurvey = result.surveys.size()
-
-        result
+        return ctrlResult.result
     }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def modal_create() {
@@ -2293,7 +2234,7 @@ join sub.orgRelations or_sub where
         ]
         result.total = result.users.size()
 
-        render view: '/templates/user/_list', model: result
+        render view: '/globals/user/list', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -2308,7 +2249,7 @@ join sub.orgRelations or_sub where
         else result.orgLabel = message(code:'default.institution')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/templates/user/_edit', model: result
+        render view: '/globals/user/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -2325,7 +2266,7 @@ join sub.orgRelations or_sub where
 
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/templates/user/_create', model: result
+        render view: '/globals/user/create', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')

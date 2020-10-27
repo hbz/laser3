@@ -11,17 +11,10 @@ import javax.persistence.Transient
 //@ToString(includes='username', includeNames=true, includePackage=false)
 class User {
 
-    def springSecurityService
-
     def contextService
-
-    def yodaService
-
-    def userService
-
     def instAdmService
-
-    def grailsApplication
+    def springSecurityService
+    def yodaService
 
     String username
     String display

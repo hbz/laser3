@@ -107,7 +107,7 @@ class UserController  {
         ]
         result.total = result.users.size()
 
-        render view: '/templates/user/_list', model: result
+        render view: '/globals/user/list', model: result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -149,7 +149,7 @@ class UserController  {
             result.manipulateAffiliations = true
             //}
         }
-        render view: '/templates/user/_edit', model: result
+        render view: '/globals/user/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
@@ -225,7 +225,7 @@ class UserController  {
         result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/templates/user/_create', model: result
+        render view: '/globals/user/create', model: result
     }
 
     @Secured(['ROLE_ADMIN'])

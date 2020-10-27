@@ -17,8 +17,8 @@ class UserRole implements Serializable, Comparable {
 	Date lastUpdated
 
 	static constraints = {
-		user nullable: false, blank: false
-		role nullable: false, blank: false, validator: { Role r, UserRole ur ->
+		user nullable: false
+		role nullable: false, validator: { Role r, UserRole ur ->
 			if (ur.user?.id) {
 				if (UserRole.exists(ur.user.id, r.id)) {
 					return ['userRole.exists']
