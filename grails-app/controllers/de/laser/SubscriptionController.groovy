@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.titles.BookInstance
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.GlobalSourceSyncService
@@ -62,7 +63,7 @@ class SubscriptionController
     def factService
     def docstoreService
     GlobalSourceSyncService globalSourceSyncService
-    def GOKbService
+    SubscriptionControllerService subscriptionControllerService
     def linksGenerationService
     def financeService
     def orgTypeService
@@ -358,9 +359,31 @@ class SubscriptionController
                 */
             }
         }
-
     }
 
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")})
+    def emptySubscription() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.emptySubscription(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = message(code: ctrlResult.messageToken)
+            redirect action: 'currentSubscriptions'
+        }
+        else
+            ctrlResult.result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
+    def processEmptySubscription() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processEmptySubscription(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.errorMessage
+            redirect controller: 'myInstitution', action: 'currentSubscriptions' //temp
+        } else {
+            redirect action: 'show', id: ctrlResult.result.newSub.id
+        }
+    }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
@@ -1379,8 +1402,8 @@ class SubscriptionController
 
         if(params.prev && prevMemberSub) {
 
-            Links prevLink = new Links(source: genericOIDService.getOID(memberSub), destination: genericOIDService.getOID(prevMemberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-            if (!prevLink.save(flush: true)) {
+            Links prevLink = Links.construct(source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            if (!prevLink) {
                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 redirect(url: request.getHeader('referer'))
             }else {
@@ -1390,8 +1413,8 @@ class SubscriptionController
 
         if(params.next && nextMemberSub) {
 
-            Links nextLink = new Links(source: genericOIDService.getOID(nextMemberSub), destination: genericOIDService.getOID(memberSub), linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-            if (!nextLink.save(flush: true)) {
+            Links nextLink = new Links(source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+            if (!nextLink) {
                 log.error("Problem linking to next subscription: ${nextLink.errors}")
                 redirect(url: request.getHeader('referer'))
             }else {
@@ -1403,149 +1426,55 @@ class SubscriptionController
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def members() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-//        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
-
-        //if (params.showDeleted == 'Y') {
-        Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-        result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscriptionInstance,subscriberRoleTypes:subscriberRoleTypes])
-        /*Sortieren --> an DB abgegeben
-        result.validSubChilds = validSubChilds.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }*/
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = []
-        result.validSubChilds.each { sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                if (params.subRunTimeMultiYear || params.subRunTime) {
-
-                    if (params.subRunTimeMultiYear && !params.subRunTime) {
-                        if(sub?.isMultiYear) {
-                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                        }
-                    }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                        if(!sub?.isMultiYear) {
-                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                        }
-                    }
-                    else {
-                        result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                    }
-                }
-                else {
-                    result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                }
-            }
-        }
-
-//        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
-//                result.subscriptionInstance,
-//                SUBSCRIPTION_DELETED
-//          )
-//        result.deletedSubChilds = deletedSubChilds
-        //}
-        //else {
-        //    result.subscriptionChildren = Subscription.executeQuery(
-        //           "select sub from Subscription as sub where sub.instanceOf = ? and sub.status.value != 'Deleted'",
-        //            [result.subscriptionInstance]
-        //    )
-        //}
-
-        result.filterSet = params.filterSet ? true : false
-
-        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd')
-        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        String filename = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
-        Set<Map<String,Object>> orgs = []
-        if (params.exportXLS || params.format) {
-            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person',result.institution)
-            Map publicContacts = allContacts.publicContacts
-            Map privateContacts = allContacts.privateContacts
-            result.filteredSubChilds.each { row ->
-                Subscription subChild = (Subscription) row.sub
-                row.orgs.each { Org subscr ->
-                    Map<String,Object> org = [:]
-                    org.name = subscr.name
-                    org.sortname = subscr.sortname
-                    org.shortname = subscr.shortname
-                    org.globalUID = subChild.globalUID
-                    org.libraryType = subscr.libraryType
-                    org.libraryNetwork = subscr.libraryNetwork
-                    org.funderType = subscr.funderType
-                    org.region = subscr.region
-                    org.country = subscr.country
-                    org.startDate = subChild.startDate ? subChild.startDate.format(g.message(code:'default.date.format.notime')) : ''
-                    org.endDate = subChild.endDate ? subChild.endDate.format(g.message(code:'default.date.format.notime')) : ''
-                    org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
-                    org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
-                    org.status = subChild.status
-                    org.customProperties = subscr.propertySet.findAll{ it.type.tenant == null && ((it.tenant?.id == result.institution.id && it.isPublic) || it.tenant == null) }
-                    org.privateProperties = subscr.propertySet.findAll{ it.type.tenant?.id == result.institution.id }
-                    Set generalContacts = []
-                    if (publicContacts.get(subscr))
-                        generalContacts.addAll(publicContacts.get(subscr))
-                    if (privateContacts.get(subscr))
-                        generalContacts.addAll(privateContacts.get(subscr))
-                    org.generalContacts = generalContacts.join("; ")
-                    orgs << org
-                }
-            }
-        }
-
-        if (params.exportXLS) {
-            exportOrg(orgs, filename, true, 'xlsx')
-            return
-        }else if (params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs){
-            SXSSFWorkbook wb
-            if (params.exportIPs) {
-                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportIPs.fileName'))
-                wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(result.filteredSubChilds.orgs.flatten())
-            }else if (params.exportProxys) {
-                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportProxys.fileName'))
-                wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(result.filteredSubChilds.orgs.flatten())
-            }else if (params.exportEZProxys) {
-                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportEZProxys.fileName'))
-                wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(result.filteredSubChilds.orgs.flatten())
-            }else if (params.exportShibboleths) {
-                filename = "${datetoday}_" + escapeService.escapeString(g.message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
-                wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(result.filteredSubChilds.orgs.flatten())
-            }
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
+        Map<String,Object> ctrlResult = subscriptionControllerService.members(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            response.sendError(401)
         }
         else {
-            withFormat {
-                html {
-                    result
+            SimpleDateFormat sdf = DateUtil.SDF_ymd
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
+            if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs) {
+                SXSSFWorkbook wb
+                if(params.exportXLS) {
+                    wb = (SXSSFWorkbook) exportService.exportOrg(ctrlResult.result.orgs, filename, true, 'xlsx')
                 }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) exportOrg(orgs, filename, true, "csv"))
+                else if (params.exportIPs) {
+                    filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportIPs.fileName'))
+                    wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                }else if (params.exportProxys) {
+                    filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportProxys.fileName'))
+                    wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                }else if (params.exportEZProxys) {
+                    filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportEZProxys.fileName'))
+                    wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                }else if (params.exportShibboleths) {
+                    filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
+                    wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                }
+                if(wb) {
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                }
+            }
+            else {
+                withFormat {
+                    html {
+                        ctrlResult.result
                     }
-                    out.close()
+                    csv {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                        response.contentType = "text/csv"
+                        ServletOutputStream out = response.outputStream
+                        out.withWriter { writer ->
+                            writer.write((String) exportService.exportOrg(ctrlResult.result.orgs, filename, true, "csv"))
+                        }
+                        out.close()
+                    }
                 }
             }
         }
@@ -2391,7 +2320,7 @@ class SubscriptionController
         redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
     }
 
-    private ArrayList<Long> getOrgIdsForFilter() {
+    ArrayList<Long> getOrgIdsForFilter() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
@@ -2539,7 +2468,7 @@ class SubscriptionController
                                 memberSub[attr.referenceField] = result.subscriptionInstance[attr.referenceField]
                             }
 
-                            if (!memberSub.save(flush:true)) {
+                            if (!memberSub.save()) {
                                 memberSub.errors.each { e ->
                                     log.debug("Problem creating new sub: ${e}")
                                 }
@@ -2573,14 +2502,14 @@ class SubscriptionController
                                             SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
                                             additionalProp = sp.copyInto(additionalProp)
                                             additionalProp.instanceOf = sp
-                                            additionalProp.save(flush: true)
+                                            additionalProp.save()
                                         }
                                         else {
                                             // no match found, creating new prop with backref
                                             SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
                                             newProp = sp.copyInto(newProp)
                                             newProp.instanceOf = sp
-                                            newProp.save(flush: true)
+                                            newProp.save()
                                         }
                                     }
                                 }
@@ -4660,21 +4589,47 @@ class SubscriptionController
         prop.save(flush:true)
     }
 
-    private Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
+    Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
         Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscriptionInstance = Subscription.get(params.id)
-        result.subscription = Subscription.get(params.id)
-        result.institution = result.subscription?.subscriber
+        result.subscription = result.subscriptionInstance //TODO temp, remove the duplicate
         result.contextOrg = contextService.getOrg()
-        result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription,RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
+        result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
+        if(result.subscription) {
+            result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
 
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
+            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
+            result.navPrevSubscription = links.prevLink
+            result.navNextSubscription = links.nextLink
 
-        result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
-        result.consortialView = result.showConsortiaFunctions
+            result.showConsortiaFunctions = showConsortiaFunctions(result.contextOrg, result.subscription)
+
+            if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+                if (!result.subscription.isVisibleBy(result.user)) {
+                    log.debug("--- NOT VISIBLE ---")
+                    return null
+                }
+            }
+            result.editable = result.subscription.isEditableBy(result.user)
+
+            if(params.orgBasicMemberView){
+                result.editable = false
+            }
+
+            if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+                if (!result.editable) {
+                    log.debug("--- NOT EDITABLE ---")
+                    return null
+                }
+            }
+        }
+        else {
+            if(checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+                result.editable = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")
+            }
+        }
+        result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.getCustomerType() == "ORG_CONSORTIUM"
 
         Map args = [:]
         if(result.consortialView) {
@@ -4685,299 +4640,12 @@ class SubscriptionController
         }
         result.args = args
 
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
-                log.debug("--- NOT VISIBLE ---")
-                return null
-            }
-        }
-        result.editable = result.subscriptionInstance?.isEditableBy(result.user)
-
-        if(params.orgBasicMemberView){
-            result.editable = false
-        }
-
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (!result.editable) {
-                log.debug("--- NOT EDITABLE ---")
-                return null
-            }
-        }
-
         result
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
-    }
-
-    private def exportOrg(orgs, message, addHigherEducationTitles, format) {
-        def titles = [g.message(code: 'org.sortname.label'), 'Name', g.message(code: 'org.shortname.label'),g.message(code:'globalUID.label')]
-
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education', RDConstants.ORG_SECTOR)
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
-
-
-        if (addHigherEducationTitles) {
-            titles.add(g.message(code: 'org.libraryType.label'))
-            titles.add(g.message(code: 'org.libraryNetwork.label'))
-            titles.add(g.message(code: 'org.funderType.label'))
-            titles.add(g.message(code: 'org.region.label'))
-            titles.add(g.message(code: 'org.country.label'))
-        }
-
-        titles.add(g.message(code: 'subscription.details.startDate'))
-        titles.add(g.message(code: 'subscription.details.endDate'))
-        titles.add(g.message(code: 'subscription.isPublicForApi.label'))
-        titles.add(g.message(code: 'subscription.hasPerpetualAccess.label'))
-        titles.add(g.message(code: 'default.status.label'))
-        titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
-        //titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
-
-        def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-        propList.sort { a, b -> a.name.compareToIgnoreCase b.name }
-
-        propList.each {
-            titles.add(it.name)
-        }
-
-        orgs.sort { it.sortname } //see ERMS-1196. If someone finds out how to put order clauses into GORM domain class mappings which include a join, then OK. Otherwise, we must do sorting here.
-        try {
-            if(format == "xlsx") {
-
-                XSSFWorkbook workbook = new XSSFWorkbook()
-                POIXMLProperties xmlProps = workbook.getProperties()
-                POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-                coreProps.setCreator(g.message(code:'laser'))
-                SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
-
-                Sheet sheet = wb.createSheet(message)
-
-                //the following three statements are required only for HSSF
-                sheet.setAutobreaks(true)
-
-                //the header row: centered text in 48pt font
-                Row headerRow = sheet.createRow(0)
-                headerRow.setHeightInPoints(16.75f)
-                titles.eachWithIndex { titlesName, index ->
-                    Cell cell = headerRow.createCell(index)
-                    cell.setCellValue(titlesName)
-                }
-
-                //freeze the first row
-                sheet.createFreezePane(0, 1)
-
-                Row row
-                Cell cell
-                int rownum = 1
-
-
-                orgs.each { org ->
-                    int cellnum = 0
-                    row = sheet.createRow(rownum)
-
-                    //Sortname
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.sortname ?: '')
-
-                    //Name
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.name ?: '')
-
-                    //Shortname
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.shortname ?: '')
-
-                    //subscription globalUID
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.globalUID)
-
-                    if (addHigherEducationTitles) {
-
-                        //libraryType
-                        cell = row.createCell(cellnum++)
-                        cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
-
-                        //libraryNetwork
-                        cell = row.createCell(cellnum++)
-                        cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
-
-                        //funderType
-                        cell = row.createCell(cellnum++)
-                        cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
-
-                        //region
-                        cell = row.createCell(cellnum++)
-                        cell.setCellValue(org.region?.getI10n('value') ?: ' ')
-
-                        //country
-                        cell = row.createCell(cellnum++)
-                        cell.setCellValue(org.country?.getI10n('value') ?: ' ')
-                    }
-
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.startDate) //null check done already in calling method
-
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.endDate) //null check done already in calling method
-
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.isPublicForApi)
-
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.hasPerpetualAccess)
-
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.status?.getI10n('value') ?: ' ')
-
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.generalContacts ?: '')
-
-                    /*cell = row.createCell(cellnum++)
-                    cell.setCellValue('')*/
-
-                    propList.each { pd ->
-                        def value = ''
-                        org.customProperties.each { prop ->
-                            if (prop.type.descr == pd.descr && prop.type == pd) {
-                                if (prop.type.isIntegerType()) {
-                                    value = prop.intValue.toString()
-                                } else if (prop.type.isStringType()) {
-                                    value = prop.stringValue ?: ''
-                                } else if (prop.type.isBigDecimalType()) {
-                                    value = prop.decValue.toString()
-                                } else if (prop.type.isDateType()) {
-                                    value = prop.dateValue.toString()
-                                } else if (prop.type.isRefdataValueType()) {
-                                    value = prop.refValue?.getI10n('value') ?: ''
-                                }
-                            }
-                        }
-
-                        org.privateProperties.each { prop ->
-                            if (prop.type.descr == pd.descr && prop.type == pd) {
-                                if (prop.type.isIntegerType()) {
-                                    value = prop.intValue.toString()
-                                } else if (prop.type.isStringType()) {
-                                    value = prop.stringValue ?: ''
-                                } else if (prop.type.isBigDecimalType()) {
-                                    value = prop.decValue.toString()
-                                } else if (prop.type.isDateType()) {
-                                    value = prop.dateValue.toString()
-                                } else if (prop.type.isRefdataValueType()) {
-                                    value = prop.refValue?.getI10n('value') ?: ''
-                                }
-
-                            }
-                        }
-                        cell = row.createCell(cellnum++)
-                        cell.setCellValue(value)
-                    }
-
-                    rownum++
-                }
-
-                for (int i = 0; i < titles.size(); i++) {
-                    sheet.autoSizeColumn(i)
-                }
-                // Write the output to a file
-                String file = message + ".xlsx"
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-            }
-            else if(format == 'csv') {
-                List orgData = []
-                orgs.each{  org ->
-                    List row = []
-                    //Sortname
-                    row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
-                    //Name
-                    row.add(org.name ? org.name.replaceAll(',','') : '')
-                    //Shortname
-                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
-                    //subscription globalUID
-                    row.add(org.globalUID)
-                    if(addHigherEducationTitles) {
-                        //libraryType
-                        row.add(org.libraryType?.getI10n('value') ?: ' ')
-                        //libraryNetwork
-                        row.add(org.libraryNetwork?.getI10n('value') ?: ' ')
-                        //funderType
-                        row.add(org.funderType?.getI10n('value') ?: ' ')
-                        //region
-                        row.add(org.region?.getI10n('value') ?: ' ')
-                        //country
-                        row.add(org.country?.getI10n('value') ?: ' ')
-                    }
-                    //startDate
-                    row.add(org.startDate) //null check already done in calling method
-                    //endDate
-                    row.add(org.endDate) //null check already done in calling method
-                    //isPublicForApi
-                    row.add(org.isPublicForApi) //null check already done in calling method
-                    //hasPerpetualAccess
-                    row.add(org.hasPerpetualAccess) //null check already done in calling method
-                    //status
-                    row.add(org.status?.getI10n('value') ?: ' ')
-                    //generalContacts
-                    row.add(org.generalContacts ?: '')
-                    propList.each { pd ->
-                        def value = ''
-                        org.customProperties.each{ prop ->
-                            if(prop.type.descr == pd.descr && prop.type == pd) {
-                                if(prop.type.isIntegerType()){
-                                    value = prop.intValue.toString()
-                                }
-                                else if (prop.type.isStringType()){
-                                    value = prop.stringValue ?: ''
-                                }
-                                else if (prop.type.isBigDecimalType()){
-                                    value = prop.decValue.toString()
-                                }
-                                else if (prop.type.isDateType()){
-                                    value = prop.dateValue.toString()
-                                }
-                                else if (prop.type.isRefdataValueType()) {
-                                    value = prop.refValue?.getI10n('value') ?: ''
-                                }
-                            }
-                        }
-                        org.privateProperties.each{ prop ->
-                            if(prop.type.descr == pd.descr && prop.type == pd) {
-                                if(prop.type.isIntegerType()){
-                                    value = prop.intValue.toString()
-                                }
-                                else if (prop.type.isStringType()){
-                                    value = prop.stringValue ?: ''
-                                }
-                                else if (prop.type.isBigDecimalType()){
-                                    value = prop.decValue.toString()
-                                }
-                                else if (prop.type.isDateType()){
-                                    value = prop.dateValue.toString()
-                                }
-                                else if (prop.type.isRefdataValueType()) {
-                                    value = prop.refValue?.getI10n('value') ?: ''
-                                }
-                            }
-                        }
-                        row.add(value.replaceAll(',',';'))
-                    }
-                    orgData.add(row)
-                }
-                return exportService.generateSeparatorTableString(titles,orgData,',')
-            }
-        }
-        catch (Exception e) {
-            log.error("Problem", e);
-            response.sendError(500)
-        }
     }
 
     private void updateProperty(def property, def value) {
