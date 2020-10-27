@@ -1013,7 +1013,7 @@ class OrganisationController  {
                 availableComboOrgs: availableComboOrgs
         ]
         result.total = result.users.size()
-        render view: '/templates/user/_list', model: result
+        render view: '/globals/user/list', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
@@ -1022,7 +1022,7 @@ class OrganisationController  {
         Map result = [user: User.get(params.id), editor: contextService.user, orgInstance: contextService.org, manipulateAffiliations: false]
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
-        render view: '/templates/user/_edit', model: result
+        render view: '/globals/user/edit', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
@@ -1034,7 +1034,7 @@ class OrganisationController  {
         result.editor = result.user
         result.breadcrumb = 'breadcrumb'
 
-        render view: '/templates/user/_create', model: result
+        render view: '/globals/user/create', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")

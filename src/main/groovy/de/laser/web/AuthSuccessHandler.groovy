@@ -20,7 +20,7 @@ class AuthSuccessHandler extends AjaxAwareAuthenticationSuccessHandler {
 
     @Override
     @Transactional
-    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
+    void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) throws ServletException, IOException {
 
         User user = springSecurityService.getCurrentUser()
