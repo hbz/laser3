@@ -43,6 +43,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import grails.core.GrailsClass
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -998,80 +999,83 @@ join sub.orgRelations or_sub where
             if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                 administrative = true
 
-            def new_sub = new Subscription(
-                    type: subType,
-                    kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
-                    name: params.newEmptySubName,
-                    startDate: startDate,
-                    endDate: endDate,
-                    status: status,
-                    administrative: administrative,
-                    identifier: java.util.UUID.randomUUID().toString()
-            )
+            //temp, because principal.X does not cope with @Transactional
+            Subscription.withTransaction { TransactionStatus ts ->
+                def new_sub = new Subscription(
+                        type: subType,
+                        kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
+                        name: params.newEmptySubName,
+                        startDate: startDate,
+                        endDate: endDate,
+                        status: status,
+                        administrative: administrative,
+                        identifier: java.util.UUID.randomUUID().toString()
+                )
 
-            if (new_sub.save(flush:true)) {
-                new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save(flush:true)
-                        
-                if (accessService.checkPerm('ORG_INST_COLLECTIVE') ||
-                        (accessService.checkPerm('ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL)
-                ){
-                    List<Org> cons_members = []
+                if (new_sub.save(flush:true)) {
+                    new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save(flush:true)
 
-                    params.list('selectedOrgs').each{ it ->
-                        Org fo =  Org.findById(Long.valueOf(it))
-                        cons_members << Combo.executeQuery(
-                                "select c.fromOrg from Combo as c where c.toOrg = :toOrg and c.fromOrg = :fromOrg",
-                                [toOrg: result.institution, fromOrg:fo] )
+                    if (accessService.checkPerm('ORG_INST_COLLECTIVE') ||
+                            (accessService.checkPerm('ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL)
+                    ){
+                        List<Org> cons_members = []
+
+                        params.list('selectedOrgs').each{ it ->
+                            Org fo =  Org.findById(Long.valueOf(it))
+                            cons_members << Combo.executeQuery(
+                                    "select c.fromOrg from Combo as c where c.toOrg = :toOrg and c.fromOrg = :fromOrg",
+                                    [toOrg: result.institution, fromOrg:fo] )
+                        }
+
+                        //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
+
+                        cons_members.each { cm ->
+
+                            if (params.generateSlavedSubs == "Y") {
+                                log.debug("Generating seperate slaved instances for consortia members")
+                                String postfix = cm.get(0).shortname ?: cm.get(0).name
+
+                                Subscription cons_sub = new Subscription(
+                                        type: subType,
+                                        kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
+                                        name: params.newEmptySubName,
+                                        // name: params.newEmptySubName + " (${postfix})",
+                                        startDate: startDate,
+                                        endDate: endDate,
+                                        identifier: java.util.UUID.randomUUID().toString(),
+                                        status: status,
+                                        administrative: administrative,
+                                        instanceOf: new_sub,
+                                        isSlaved: true)
+
+                                if (new_sub.administrative) {
+                                    new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save(flush:true)
+                                }
+                                else {
+                                    new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save(flush:true)
+                                }
+
+                                new OrgRole(org: result.institution, sub: cons_sub, roleType: orgRole).save(flush:true)
+                            }
+                            else {
+                                if(new_sub.administrative) {
+                                    new OrgRole(org: cm, sub: new_sub, roleType: role_sub_cons_hidden).save(flush:true)
+                                }
+                                else {
+                                    new OrgRole(org: cm, sub: new_sub, roleType: memberRole).save(flush:true)
+                                }
+                            }
+                        }
                     }
 
-                    //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
-
-                    cons_members.each { cm ->
-
-                    if (params.generateSlavedSubs == "Y") {
-                        log.debug("Generating seperate slaved instances for consortia members")
-                        String postfix = cm.get(0).shortname ?: cm.get(0).name
-
-                        Subscription cons_sub = new Subscription(
-                                          type: subType,
-                                          kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
-                                          name: params.newEmptySubName,
-                                          // name: params.newEmptySubName + " (${postfix})",
-                                          startDate: startDate,
-                                          endDate: endDate,
-                                          identifier: java.util.UUID.randomUUID().toString(),
-                                          status: status,
-                                          administrative: administrative,
-                                          instanceOf: new_sub,
-                                          isSlaved: true)
-
-                        if (new_sub.administrative) {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save(flush:true)
-                        }
-                        else {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save(flush:true)
-                        }
-
-                        new OrgRole(org: result.institution, sub: cons_sub, roleType: orgRole).save(flush:true)
+                    redirect controller: 'subscription', action: 'show', id: new_sub.id
+                } else {
+                    new_sub.errors.each { e ->
+                        log.debug("Problem creating new sub: ${e}");
                     }
-                    else {
-                        if(new_sub.administrative) {
-                            new OrgRole(org: cm, sub: new_sub, roleType: role_sub_cons_hidden).save(flush:true)
-                        }
-                        else {
-                            new OrgRole(org: cm, sub: new_sub, roleType: memberRole).save(flush:true)
-                        }
-                    }
-                  }
+                    flash.error = new_sub.errors
+                    redirect action: 'emptySubscription'
                 }
-
-                redirect controller: 'subscription', action: 'show', id: new_sub.id
-            } else {
-                new_sub.errors.each { e ->
-                    log.debug("Problem creating new sub: ${e}");
-                }
-                flash.error = new_sub.errors
-                redirect action: 'emptySubscription'
             }
         } else {
             redirect action: 'currentSubscriptions'

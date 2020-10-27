@@ -33,6 +33,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -2503,101 +2504,104 @@ class SubscriptionController
 
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
 
-                    members.each { Org cm ->
+                    Subscription.withTransaction { TransactionStatus ts ->
 
+                        members.each { Org cm ->
 
-                        //ERMS-1155
-                        //if (true) {
-                        log.debug("Generating seperate slaved instances for members")
+                            //ERMS-1155
+                            //if (true) {
+                            log.debug("Generating seperate slaved instances for members")
 
-                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                        Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                        Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                            Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                            Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
-                        Subscription memberSub = new Subscription(
-                                type: result.subscriptionInstance.type ?: null,
-                                kind: result.subscriptionInstance.kind ?: null,
-                                status: subStatus,
-                                name: result.subscriptionInstance.name,
-                                //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
-                                startDate: startDate,
-                                endDate: endDate,
-                                administrative: result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
-                                manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
-                                /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                                identifier: UUID.randomUUID().toString(),
-                                instanceOf: result.subscriptionInstance,
-                                isSlaved: true,
-                                resource: result.subscriptionInstance.resource ?: null,
-                                form: result.subscriptionInstance.form ?: null,
-                                isMultiYear: params.checkSubRunTimeMultiYear ?: false
-                        )
+                            Subscription memberSub = new Subscription(
+                                    type: result.subscriptionInstance.type ?: null,
+                                    kind: result.subscriptionInstance.kind ?: null,
+                                    status: subStatus,
+                                    name: result.subscriptionInstance.name,
+                                    //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    administrative: result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
+                                    manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
+                                    /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+                                    identifier: UUID.randomUUID().toString(),
+                                    instanceOf: result.subscriptionInstance,
+                                    isSlaved: true,
+                                    resource: result.subscriptionInstance.resource ?: null,
+                                    form: result.subscriptionInstance.form ?: null,
+                                    isMultiYear: params.checkSubRunTimeMultiYear ?: false
+                            )
 
-                        inheritedAttributes.each { attr ->
-                            memberSub[attr.referenceField] = result.subscriptionInstance[attr.referenceField]
-                        }
-
-                        if (!memberSub.save(flush:true)) {
-                            memberSub.errors.each { e ->
-                                log.debug("Problem creating new sub: ${e}")
+                            inheritedAttributes.each { attr ->
+                                memberSub[attr.referenceField] = result.subscriptionInstance[attr.referenceField]
                             }
-                            flash.error = memberSub.errors
-                        }
 
-
-                        if (memberSub) {
-                            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save(flush:true)
+                            if (!memberSub.save(flush:true)) {
+                                memberSub.errors.each { e ->
+                                    log.debug("Problem creating new sub: ${e}")
                                 }
-                                else {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save(flush:true)
-                                }
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save(flush:true)
-                            }
-                            else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save(flush:true)
-                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save(flush:true)
+                                flash.error = memberSub.errors
                             }
 
-                            synShareTargetList.add(memberSub)
 
-                            SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { SubscriptionProperty sp ->
-                                AuditConfig ac = AuditConfig.getConfig(sp)
-
-                                if (ac) {
-                                    // multi occurrence props; add one additional with backref
-                                    if (sp.type.multipleOccurrence) {
-                                        SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                        additionalProp = sp.copyInto(additionalProp)
-                                        additionalProp.instanceOf = sp
-                                        additionalProp.save(flush: true)
+                            if (memberSub) {
+                                if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                                    if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save(flush:true)
                                     }
                                     else {
-                                        // no match found, creating new prop with backref
-                                        SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                        newProp = sp.copyInto(newProp)
-                                        newProp.instanceOf = sp
-                                        newProp.save(flush: true)
+                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save(flush:true)
+                                    }
+                                    new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save(flush:true)
+                                }
+                                else {
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save(flush:true)
+                                    new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save(flush:true)
+                                }
+
+                                synShareTargetList.add(memberSub)
+
+                                SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { SubscriptionProperty sp ->
+                                    AuditConfig ac = AuditConfig.getConfig(sp)
+
+                                    if (ac) {
+                                        // multi occurrence props; add one additional with backref
+                                        if (sp.type.multipleOccurrence) {
+                                            SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                            additionalProp = sp.copyInto(additionalProp)
+                                            additionalProp.instanceOf = sp
+                                            additionalProp.save(flush: true)
+                                        }
+                                        else {
+                                            // no match found, creating new prop with backref
+                                            SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                            newProp = sp.copyInto(newProp)
+                                            newProp.instanceOf = sp
+                                            newProp.save(flush: true)
+                                        }
                                     }
                                 }
+
+                                memberSub.refresh()
+
+                                packagesToProcess.each { Package pkg ->
+                                    if(params.linkWithEntitlements)
+                                        pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
+                                    else
+                                        pkg.addToSubscription(memberSub, false)
+                                }
+
+                                licensesToProcess.each { License lic ->
+                                    subscriptionService.setOrgLicRole(memberSub,lic,false)
+                                }
+
                             }
-
-                            memberSub.refresh()
-
-                            packagesToProcess.each { Package pkg ->
-                                if(params.linkWithEntitlements)
-                                    pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
-                                else
-                                    pkg.addToSubscription(memberSub, false)
-                            }
-
-                            licensesToProcess.each { License lic ->
-                                subscriptionService.setOrgLicRole(memberSub,lic,false)
-                            }
-
+                            //}
                         }
-                        //}
+
                     }
 
                     result.subscriptionInstance.syncAllShares(synShareTargetList)

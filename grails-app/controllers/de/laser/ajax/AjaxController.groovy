@@ -1079,7 +1079,7 @@ class AjaxController {
         if(formService.validateToken(params)) {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
             property.isPublic = !property.isPublic
-            property.save(flush: true)
+            property.save()
             Org contextOrg = contextService.getOrg()
             request.setAttribute("editable", params.editable == "true")
             if(params.propDefGroup) {
