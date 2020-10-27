@@ -2230,7 +2230,7 @@ join sub.orgRelations or_sub where
         ]
         result.total = result.users.size()
 
-        render view: '/templates/user/_list', model: result
+        render view: '/globals/user/list', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -2245,7 +2245,7 @@ join sub.orgRelations or_sub where
         else result.orgLabel = message(code:'default.institution')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/templates/user/_edit', model: result
+        render view: '/globals/user/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -2262,7 +2262,7 @@ join sub.orgRelations or_sub where
 
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/templates/user/_create', model: result
+        render view: '/globals/user/create', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
