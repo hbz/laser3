@@ -36,10 +36,10 @@ class UrlMappings {
 
         // serverCodes
 
-        "500"       (view: '/serverCodes/error')
-        "401"       (view: '/serverCodes/forbidden')
-        "403"       (view: '/serverCodes/error')
-        "404"       (view: '/serverCodes/notFound404')
+        "500"       (controller: 'serverCodes', action: 'error')
+        "401"       (controller: 'serverCodes', action: 'forbidden')
+        "403"       (controller: 'serverCodes', action: 'error')
+        "404"       (controller: 'serverCodes', action: 'notFound')
 
         // default
 
