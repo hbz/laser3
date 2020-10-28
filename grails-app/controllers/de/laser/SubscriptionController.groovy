@@ -385,6 +385,35 @@ class SubscriptionController
         }
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def addMembers() {
+        log.debug("addMembers ..")
+        Map<String,Object> ctrlResult = subscriptionControllerService.addMembers(this,params)
+
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            response.sendError(401)
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def processAddMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(this,params)
+        if (ctrlResult.error == SubscriptionControllerService.STATUS_ERROR) {
+            if(ctrlResult.result)
+                redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.subscription.id]
+            else
+                response.sendError(401)
+        }
+        else {
+            redirect controller: 'subscription', action: 'members', params: [id: ctrlResult.result.subscription.id]
+        }
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addCoverage() {
@@ -2336,216 +2365,6 @@ class SubscriptionController
         }
         fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def addMembers() {
-        log.debug("addMembers ..")
-
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        result.superOrgType = []
-        result.memberType = []
-        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        result.superOrgType << message(code:'consortium.superOrgType')
-        result.memberType << message(code:'consortium.subscriber')
-        def fsq = filterService.getOrgComboQuery(params, result.institution)
-        result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.members_disabled = []
-        result.members.each { it ->
-            if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = :io and sor.org.id = :orgId", [io: result.subscriptionInstance, orgId: it.id])) {
-                result.members_disabled << it.id
-            }
-        }
-        result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
-        result.memberLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType",[subscription:result.subscriptionInstance, linkType:RDStore.LINKTYPE_LICENSE])
-
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def processAddMembers() {
-        log.debug( params.toMapString() )
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-        if(formService.validateToken(params)) {
-
-            List orgType = [RDStore.OT_INSTITUTION.id.toString()]
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                orgType = [RDStore.OT_CONSORTIUM.id.toString()]
-            }
-
-            RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
-
-            RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
-            RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-            RefdataValue role_coll      = RDStore.OR_SUBSCRIBER_COLLECTIVE
-            RefdataValue role_sub_coll  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
-            RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-            RefdataValue role_lic       = RDStore.OR_LICENSEE_CONS
-            RefdataValue role_lic_cons  = RDStore.OR_LICENSING_CONSORTIUM
-            RefdataValue role_provider  = RDStore.OR_PROVIDER
-            RefdataValue role_agency    = RDStore.OR_AGENCY
-
-            if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
-
-                if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                    List<Org> members = []
-                    License licenseCopy
-
-                    params.list('selectedOrgs').each { it ->
-                        members << Org.findById(Long.valueOf(it))
-                    }
-
-                    List<Subscription> synShareTargetList = []
-                    List<License> licensesToProcess = []
-                    Set<Package> packagesToProcess = []
-
-                    //copy package data
-                    if(params.linkAllPackages) {
-                        result.subscriptionInstance.packages.each { sp ->
-                            packagesToProcess << sp.pkg
-                        }
-                    }
-                    else if(params.packageSelection) {
-                        List packageIds = params.list("packageSelection")
-                        packageIds.each { spId ->
-                            packagesToProcess << SubscriptionPackage.get(spId).pkg
-                        }
-                    }
-                    if(params.generateSlavedLics == "all") {
-                        String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
-                        licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscriptionInstance, linkType:RDStore.LINKTYPE_LICENSE]))
-                    }
-                    else if(params.generateSlavedLics == "partial") {
-                        List<String> licenseKeys = params.list("generateSlavedLicsReference")
-                        licenseKeys.each { String licenseKey ->
-                            licensesToProcess << genericOIDService.resolveOID(licenseKey)
-                        }
-                    }
-
-                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscriptionInstance.id,PendingChangeConfiguration.SETTING_KEYS)
-
-                    Subscription.withTransaction { TransactionStatus ts ->
-
-                        members.each { Org cm ->
-
-                            //ERMS-1155
-                            //if (true) {
-                            log.debug("Generating seperate slaved instances for members")
-
-                            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                            Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                            Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
-
-                            Subscription memberSub = new Subscription(
-                                    type: result.subscriptionInstance.type ?: null,
-                                    kind: result.subscriptionInstance.kind ?: null,
-                                    status: subStatus,
-                                    name: result.subscriptionInstance.name,
-                                    //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    administrative: result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
-                                    manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
-                                    /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                                    identifier: UUID.randomUUID().toString(),
-                                    instanceOf: result.subscriptionInstance,
-                                    isSlaved: true,
-                                    resource: result.subscriptionInstance.resource ?: null,
-                                    form: result.subscriptionInstance.form ?: null,
-                                    isMultiYear: params.checkSubRunTimeMultiYear ?: false
-                            )
-
-                            inheritedAttributes.each { attr ->
-                                memberSub[attr.referenceField] = result.subscriptionInstance[attr.referenceField]
-                            }
-
-                            if (!memberSub.save()) {
-                                memberSub.errors.each { e ->
-                                    log.debug("Problem creating new sub: ${e}")
-                                }
-                                flash.error = memberSub.errors
-                            }
-
-
-                            if (memberSub) {
-                                if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                    if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save(flush:true)
-                                    }
-                                    else {
-                                        new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save(flush:true)
-                                    }
-                                    new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save(flush:true)
-                                }
-                                else {
-                                    new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save(flush:true)
-                                    new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save(flush:true)
-                                }
-
-                                synShareTargetList.add(memberSub)
-
-                                SubscriptionProperty.findAllByOwner(result.subscriptionInstance).each { SubscriptionProperty sp ->
-                                    AuditConfig ac = AuditConfig.getConfig(sp)
-
-                                    if (ac) {
-                                        // multi occurrence props; add one additional with backref
-                                        if (sp.type.multipleOccurrence) {
-                                            SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                            additionalProp = sp.copyInto(additionalProp)
-                                            additionalProp.instanceOf = sp
-                                            additionalProp.save()
-                                        }
-                                        else {
-                                            // no match found, creating new prop with backref
-                                            SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                            newProp = sp.copyInto(newProp)
-                                            newProp.instanceOf = sp
-                                            newProp.save()
-                                        }
-                                    }
-                                }
-
-                                memberSub.refresh()
-
-                                packagesToProcess.each { Package pkg ->
-                                    if(params.linkWithEntitlements)
-                                        pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
-                                    else
-                                        pkg.addToSubscription(memberSub, false)
-                                }
-
-                                licensesToProcess.each { License lic ->
-                                    subscriptionService.setOrgLicRole(memberSub,lic,false)
-                                }
-
-                            }
-                            //}
-                        }
-
-                    }
-
-                    result.subscriptionInstance.syncAllShares(synShareTargetList)
-
-                    redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
-                } else {
-                    redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
-                }
-            } else {
-                redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
-            }
-        }
-        else {
-            redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
-        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
