@@ -4,6 +4,7 @@ package de.laser
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PendingChangeService
@@ -43,6 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import grails.core.GrailsClass
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -55,7 +57,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
-    def myInstitutionControllerService
+    MyInstitutionControllerService myInstitutionControllerService
 
     def dataSource
     def springSecurityService
@@ -912,265 +914,98 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def emptySubscription() {
-        Map<String, Object> result = setResultGenerics()
-
-        if (result.editable) {
-            def cal = new java.util.GregorianCalendar()
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
-            cal.setTimeInMillis(System.currentTimeMillis())
-            cal.set(Calendar.MONTH, Calendar.JANUARY)
-            cal.set(Calendar.DAY_OF_MONTH, 1)
-            result.defaultStartYear = sdf.format(cal.getTime())
-            cal.set(Calendar.MONTH, Calendar.DECEMBER)
-            cal.set(Calendar.DAY_OF_MONTH, 31)
-            result.defaultEndYear = sdf.format(cal.getTime())
-
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-                    result.consortialView = true
-                }
-                else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    params.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
-                    result.departmentalView = true
-                }
-                def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            }
-
-            result
-        } else {
-            flash.message = "${message(code: 'default.notAutorized.message')}"
-            redirect action: 'currentSubscriptions'
-        }
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-    def processEmptySubscription() {
-        log.debug( params.toMapString() )
-        Map<String, Object> result = setResultGenerics()
-
-        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
-        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_sub_coll = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_coll = RDStore.OR_SUBSCRIPTION_COLLECTIVE
-
-        RefdataValue orgRole
-        RefdataValue memberRole
-        RefdataValue subType = RefdataValue.get(params.type)
-
-        switch(subType) {
-            case RDStore.SUBSCRIPTION_TYPE_CONSORTIAL:
-            case RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-				orgRole = role_cons
-                memberRole = role_sub_cons
-                break
-            default:
-                if (result.institution.getCustomerType() == 'ORG_INST_COLLECTIVE') {
-                    orgRole = role_coll
-                    memberRole = role_sub_coll
-                }
-                else {
-                    orgRole = role_sub
-                    if (! subType)
-                        subType = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                }
-                break
-        }
-
-        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
-
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-            Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-            Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
-            RefdataValue status = RefdataValue.get(params.status)
-
-            //beware: at this place, we cannot calculate the subscription type because essential data for the calculation is not persisted/available yet!
-            boolean administrative = false
-            if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
-                administrative = true
-
-            def new_sub = new Subscription(
-                    type: subType,
-                    kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
-                    name: params.newEmptySubName,
-                    startDate: startDate,
-                    endDate: endDate,
-                    status: status,
-                    administrative: administrative,
-                    identifier: java.util.UUID.randomUUID().toString()
-            )
-
-            if (new_sub.save(flush:true)) {
-                new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save(flush:true)
-                        
-                if (accessService.checkPerm('ORG_INST_COLLECTIVE') ||
-                        (accessService.checkPerm('ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL)
-                ){
-                    List<Org> cons_members = []
-
-                    params.list('selectedOrgs').each{ it ->
-                        Org fo =  Org.findById(Long.valueOf(it))
-                        cons_members << Combo.executeQuery(
-                                "select c.fromOrg from Combo as c where c.toOrg = :toOrg and c.fromOrg = :fromOrg",
-                                [toOrg: result.institution, fromOrg:fo] )
-                    }
-
-                    //def cons_members = Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ?", [result.institution])
-
-                    cons_members.each { cm ->
-
-                    if (params.generateSlavedSubs == "Y") {
-                        log.debug("Generating seperate slaved instances for consortia members")
-                        String postfix = cm.get(0).shortname ?: cm.get(0).name
-
-                        Subscription cons_sub = new Subscription(
-                                          type: subType,
-                                          kind: (subType == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL) ? RDStore.SUBSCRIPTION_KIND_CONSORTIAL : null,
-                                          name: params.newEmptySubName,
-                                          // name: params.newEmptySubName + " (${postfix})",
-                                          startDate: startDate,
-                                          endDate: endDate,
-                                          identifier: java.util.UUID.randomUUID().toString(),
-                                          status: status,
-                                          administrative: administrative,
-                                          instanceOf: new_sub,
-                                          isSlaved: true)
-
-                        if (new_sub.administrative) {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save(flush:true)
-                        }
-                        else {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save(flush:true)
-                        }
-
-                        new OrgRole(org: result.institution, sub: cons_sub, roleType: orgRole).save(flush:true)
-                    }
-                    else {
-                        if(new_sub.administrative) {
-                            new OrgRole(org: cm, sub: new_sub, roleType: role_sub_cons_hidden).save(flush:true)
-                        }
-                        else {
-                            new OrgRole(org: cm, sub: new_sub, roleType: memberRole).save(flush:true)
-                        }
-                    }
-                  }
-                }
-
-                redirect controller: 'subscription', action: 'show', id: new_sub.id
-            } else {
-                new_sub.errors.each { e ->
-                    log.debug("Problem creating new sub: ${e}");
-                }
-                flash.error = new_sub.errors
-                redirect action: 'emptySubscription'
-            }
-        } else {
-            redirect action: 'currentSubscriptions'
-        }
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.getOrg()
+        License.withTransaction { TransactionStatus ts ->
+            User user = User.get(springSecurityService.principal.id)
+            Org org = contextService.getOrg()
 
-        Set<RefdataValue> defaultOrgRoleType = []
-        if(accessService.checkPerm("ORG_CONSORTIUM"))
-            defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
-        else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
+            Set<RefdataValue> defaultOrgRoleType = []
+            if(accessService.checkPerm("ORG_CONSORTIUM"))
+                defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
+            else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
 
-        params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
+            params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
-        if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-            flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
-            response.sendError(401)
-            // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
-            return
-        }
-
-        def baseLicense = params.baselicense ? License.get(params.baselicense) : null
-        //Nur wenn von Vorlage ist
-        if (baseLicense) {
-            if (!baseLicense?.hasPerm("view", user)) {
-                log.debug("return 401....")
-                flash.error = message(code: 'myinst.newLicense.error')
+            if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
+                flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
                 response.sendError(401)
+                // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
+                return
             }
-            else {
-                def copyLicense = institutionsService.copyLicense(
-                        baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
+            def baseLicense = params.baselicense ? License.get(params.baselicense) : null
+            //Nur wenn von Vorlage ist
+            if (baseLicense) {
+                if (!baseLicense?.hasPerm("view", user)) {
+                    log.debug("return 401....")
+                    flash.error = message(code: 'myinst.newLicense.error')
+                    response.sendError(401)
+                }
+                else {
+                    def copyLicense = institutionsService.copyLicense(baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
 
-                if (copyLicense.hasErrors()) {
-                    log.error("Problem saving license ${copyLicense.errors}")
-                    render view: 'editLicense', model: [licenseInstance: copyLicense]
-                } else {
-                    copyLicense.reference = params.licenseName
-                    copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
-                    copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
+                    if (copyLicense.hasErrors()) {
+                        log.error("Problem saving license ${copyLicense.errors}")
+                        render view: 'editLicense', model: [licenseInstance: copyLicense]
+                    } else {
+                        copyLicense.reference = params.licenseName
+                        copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
+                        copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
 
-                    if (copyLicense.save(flush:true)) {
-                        flash.message = message(code: 'license.createdfromTemplate.message')
+                        if (copyLicense.save()) {
+                            flash.message = message(code: 'license.createdfromTemplate.message')
+                        }
+
+                        if( params.sub) {
+                            Subscription subInstance = Subscription.get(params.sub)
+                            subscriptionService.setOrgLicRole(subInstance,copyLicense,false)
+                            //subInstance.owner = copyLicense
+                            //subInstance.save(flush: true)
+                        }
+
+                        redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
+                        return
                     }
-
-                    if( params.sub) {
-                        Subscription subInstance = Subscription.get(params.sub)
-                        subscriptionService.setOrgLicRole(subInstance,copyLicense,false)
-                        //subInstance.owner = copyLicense
-                        //subInstance.save(flush: true)
-                    }
-
-                    redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
-                    return
                 }
             }
-        }
 
-        RefdataValue license_type = RDStore.LICENSE_TYPE_ACTUAL
+            RefdataValue license_type = RDStore.LICENSE_TYPE_ACTUAL
 
-        License licenseInstance = new License(type: license_type, reference: params.licenseName,
-                startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
-                endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
-                status: RefdataValue.get(params.status),
-                openEnded: RDStore.YNU_UNKNOWN
-        )
+            License licenseInstance = new License(type: license_type, reference: params.licenseName,
+                    startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
+                    endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
+                    status: RefdataValue.get(params.status),
+                    openEnded: RDStore.YNU_UNKNOWN
+            )
 
-        if (!licenseInstance.save(flush:true)) {
-            log.error(licenseInstance.errors.toString())
-            flash.error = message(code:'license.create.error')
-            redirect action: 'emptyLicense'
-        }
-        else {
-            log.debug("Save ok")
-            RefdataValue licensee_role = RDStore.OR_LICENSEE
-            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
-            log.debug("adding org link to new license")
-
-
-            OrgRole orgRole
-            if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
-                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: lic_cons_role)
-            } else {
-                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
+            if (!licenseInstance.save()) {
+                log.error(licenseInstance.errors.toString())
+                flash.error = message(code:'license.create.error')
+                redirect action: 'emptyLicense'
             }
+            else {
+                log.debug("Save ok")
+                RefdataValue licensee_role = RDStore.OR_LICENSEE
+                RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-            if (!orgRole.save(flush:true)) {
-                log.error("Problem saving org links to license ${orgRole.errors}");
+                log.debug("adding org link to new license")
+
+
+                OrgRole orgRole
+                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                    orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: lic_cons_role)
+                } else {
+                    orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
+                }
+
+                if (!orgRole.save()) {
+                    log.error("Problem saving org links to license ${orgRole.errors}");
+                }
+
+                redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
             }
-
-            redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }
 
@@ -3547,28 +3382,6 @@ join sub.orgRelations or_sub where
         messages
     }
 
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def ajaxEmptySubscription() {
-        Map<String, Object> result = setResultGenerics()
-
-        if (result.editable) {
-
-            if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
-                if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-                else(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                    params.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
-                def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            }
-
-            result
-        }
-        render (template: "/templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def copyLicense() {
@@ -3672,7 +3485,7 @@ join sub.orgRelations or_sub where
         return result
     }
 
-    private Map<String, Object> setResultGenerics() {
+    Map<String, Object> setResultGenerics() {
         Map<String, Object> result = [:]
         switch(params.action){
             case 'currentSurveys':
@@ -3694,11 +3507,11 @@ join sub.orgRelations or_sub where
     private boolean checkIsEditable(User user, Org org){
         boolean isEditable
         switch(params.action){
-            case 'ajaxEmptySubscription':
+            case 'processEmptyLicense': //to be moved to LicenseController
             case 'currentLicenses':
             case 'currentSurveys':
             case 'dashboard':
-            case 'emptySubscription':
+            case 'emptyLicense': //to be moved to LicenseController
             case 'surveyInfoFinish':
             case 'surveyResultFinish':
                 isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')

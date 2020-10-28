@@ -126,7 +126,8 @@ class SubscriptionService {
         }
         result.allSubscriptions = subscriptions
         pu.setBenchmark('fetch licenses')
-        result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(subscriptions,RDStore.LINKTYPE_LICENSE)
+        if(subscriptions)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(subscriptions,RDStore.LINKTYPE_LICENSE)
         pu.setBenchmark('after licenses')
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()

@@ -14,14 +14,13 @@
             <semui:crumb message="myinst.emptySubscription.label" class="active" />
         </semui:breadcrumbs>
 
-        <g:render template="actions" />
         <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.emptySubscription.label')}</h1>
 
         <semui:messages data="${flash}"/>
 
         <semui:form>
-            <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
+            <g:form action="processEmptySubscription" method="post" class="ui form">
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>
@@ -54,9 +53,6 @@
                 </g:if>
                 <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
-                </g:elseif>
-                <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
-                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
 
                 <br />

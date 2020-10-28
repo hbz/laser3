@@ -193,7 +193,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
-        isMultiYear(nullable: true)
     }
 
     @Override

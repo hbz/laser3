@@ -135,7 +135,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     static Map getPublicAndPrivateEmailByFunc(String func,Org contextOrg) {
         List allPersons = executeQuery('select p,pr from Person as p join p.roleLinks pr join p.contacts c where pr.functionType.value = :functionType',[functionType: func])
         Map publicContactMap = [:], privateContactMap = [:]
-        allPersons.each { Person row ->
+        allPersons.each { row ->
             Person p = (Person) row[0]
             PersonRole pr = (PersonRole) row[1]
             if(p.isPublic) {

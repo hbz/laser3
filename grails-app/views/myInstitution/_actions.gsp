@@ -5,7 +5,7 @@
 <g:if test="${actionName == 'currentSubscriptions'}">
     <semui:actionsDropdown>
         <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
-            <semui:actionsDropdownItem controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
+            <semui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <semui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
         </g:if>

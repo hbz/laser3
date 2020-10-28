@@ -7,6 +7,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
@@ -182,10 +183,276 @@ class ExportService {
         output
     }
 
+	def exportOrg(Collection orgs, String message, boolean addHigherEducationTitles, String format) {
+		Locale locale = LocaleContextHolder.getLocale()
+		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('org.shortname.label',null,locale),messageSource.getMessage('globalUID.label',null,locale)]
+
+
+		if (addHigherEducationTitles) {
+			titles.add(messageSource.getMessage('org.libraryType.label',null,locale))
+			titles.add(messageSource.getMessage('org.libraryNetwork.label',null,locale))
+			titles.add(messageSource.getMessage('org.funderType.label',null,locale))
+			titles.add(messageSource.getMessage('org.region.label',null,locale))
+			titles.add(messageSource.getMessage('org.country.label',null,locale))
+		}
+
+		titles.add(messageSource.getMessage('subscription.details.startDate',null,locale))
+		titles.add(messageSource.getMessage('subscription.details.endDate',null,locale))
+		titles.add(messageSource.getMessage('subscription.isPublicForApi.label',null,locale))
+		titles.add(messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale))
+		titles.add(messageSource.getMessage('default.status.label',null,locale))
+		titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
+		//titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
+
+		def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+
+		propList.sort { a, b -> a.name.compareToIgnoreCase b.name }
+
+		propList.each {
+			titles.add(it.name)
+		}
+
+		orgs.sort { it.sortname } //see ERMS-1196. If someone finds out how to put order clauses into GORM domain class mappings which include a join, then OK. Otherwise, we must do sorting here.
+		try {
+			if(format == "xlsx") {
+
+				XSSFWorkbook workbook = new XSSFWorkbook()
+				POIXMLProperties xmlProps = workbook.getProperties()
+				POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+				coreProps.setCreator(messageSource.getMessage('laser',null,locale))
+				SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
+
+				Sheet sheet = wb.createSheet(message)
+
+				//the following three statements are required only for HSSF
+				sheet.setAutobreaks(true)
+
+				//the header row: centered text in 48pt font
+				Row headerRow = sheet.createRow(0)
+				headerRow.setHeightInPoints(16.75f)
+				titles.eachWithIndex { titlesName, index ->
+					Cell cell = headerRow.createCell(index)
+					cell.setCellValue(titlesName)
+				}
+
+				//freeze the first row
+				sheet.createFreezePane(0, 1)
+
+				Row row
+				Cell cell
+				int rownum = 1
+
+
+				orgs.each { org ->
+					int cellnum = 0
+					row = sheet.createRow(rownum)
+
+					//Sortname
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.sortname ?: '')
+
+					//Name
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.name ?: '')
+
+					//Shortname
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.shortname ?: '')
+
+					//subscription globalUID
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.globalUID)
+
+					if (addHigherEducationTitles) {
+
+						//libraryType
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
+
+						//libraryNetwork
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
+
+						//funderType
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
+
+						//region
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(org.region?.getI10n('value') ?: ' ')
+
+						//country
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(org.country?.getI10n('value') ?: ' ')
+					}
+
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.startDate) //null check done already in calling method
+
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.endDate) //null check done already in calling method
+
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.isPublicForApi)
+
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.hasPerpetualAccess)
+
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.status?.getI10n('value') ?: ' ')
+
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(org.generalContacts ?: '')
+
+					/*cell = row.createCell(cellnum++)
+                    cell.setCellValue('')*/
+
+					propList.each { pd ->
+						def value = ''
+						org.customProperties.each { prop ->
+							if (prop.type.descr == pd.descr && prop.type == pd) {
+								if (prop.type.isIntegerType()) {
+									value = prop.intValue.toString()
+								} else if (prop.type.isStringType()) {
+									value = prop.stringValue ?: ''
+								} else if (prop.type.isBigDecimalType()) {
+									value = prop.decValue.toString()
+								} else if (prop.type.isDateType()) {
+									value = prop.dateValue.toString()
+								} else if (prop.type.isRefdataValueType()) {
+									value = prop.refValue?.getI10n('value') ?: ''
+								}
+							}
+						}
+
+						org.privateProperties.each { prop ->
+							if (prop.type.descr == pd.descr && prop.type == pd) {
+								if (prop.type.isIntegerType()) {
+									value = prop.intValue.toString()
+								} else if (prop.type.isStringType()) {
+									value = prop.stringValue ?: ''
+								} else if (prop.type.isBigDecimalType()) {
+									value = prop.decValue.toString()
+								} else if (prop.type.isDateType()) {
+									value = prop.dateValue.toString()
+								} else if (prop.type.isRefdataValueType()) {
+									value = prop.refValue?.getI10n('value') ?: ''
+								}
+
+							}
+						}
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(value)
+					}
+
+					rownum++
+				}
+
+				for (int i = 0; i < titles.size(); i++) {
+					sheet.autoSizeColumn(i)
+				}
+				// Write the output to a file
+				/* String file = message + ".xlsx"
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose() */
+				wb
+			}
+			else if(format == 'csv') {
+				List orgData = []
+				orgs.each{  org ->
+					List row = []
+					//Sortname
+					row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
+					//Name
+					row.add(org.name ? org.name.replaceAll(',','') : '')
+					//Shortname
+					row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
+					//subscription globalUID
+					row.add(org.globalUID)
+					if(addHigherEducationTitles) {
+						//libraryType
+						row.add(org.libraryType?.getI10n('value') ?: ' ')
+						//libraryNetwork
+						row.add(org.libraryNetwork?.getI10n('value') ?: ' ')
+						//funderType
+						row.add(org.funderType?.getI10n('value') ?: ' ')
+						//region
+						row.add(org.region?.getI10n('value') ?: ' ')
+						//country
+						row.add(org.country?.getI10n('value') ?: ' ')
+					}
+					//startDate
+					row.add(org.startDate) //null check already done in calling method
+					//endDate
+					row.add(org.endDate) //null check already done in calling method
+					//isPublicForApi
+					row.add(org.isPublicForApi) //null check already done in calling method
+					//hasPerpetualAccess
+					row.add(org.hasPerpetualAccess) //null check already done in calling method
+					//status
+					row.add(org.status?.getI10n('value') ?: ' ')
+					//generalContacts
+					row.add(org.generalContacts ?: '')
+					propList.each { pd ->
+						def value = ''
+						org.customProperties.each{ prop ->
+							if(prop.type.descr == pd.descr && prop.type == pd) {
+								if(prop.type.isIntegerType()){
+									value = prop.intValue.toString()
+								}
+								else if (prop.type.isStringType()){
+									value = prop.stringValue ?: ''
+								}
+								else if (prop.type.isBigDecimalType()){
+									value = prop.decValue.toString()
+								}
+								else if (prop.type.isDateType()){
+									value = prop.dateValue.toString()
+								}
+								else if (prop.type.isRefdataValueType()) {
+									value = prop.refValue?.getI10n('value') ?: ''
+								}
+							}
+						}
+						org.privateProperties.each{ prop ->
+							if(prop.type.descr == pd.descr && prop.type == pd) {
+								if(prop.type.isIntegerType()){
+									value = prop.intValue.toString()
+								}
+								else if (prop.type.isStringType()){
+									value = prop.stringValue ?: ''
+								}
+								else if (prop.type.isBigDecimalType()){
+									value = prop.decValue.toString()
+								}
+								else if (prop.type.isDateType()){
+									value = prop.dateValue.toString()
+								}
+								else if (prop.type.isRefdataValueType()) {
+									value = prop.refValue?.getI10n('value') ?: ''
+								}
+							}
+						}
+						row.add(value.replaceAll(',',';'))
+					}
+					orgData.add(row)
+				}
+				generateSeparatorTableString(titles,orgData,',')
+			}
+		}
+		catch (Exception e) {
+			log.error("Problem", e)
+		}
+	}
+
 	/**
 	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and privare properties
 	 * @param propDefConst - a {@link PropertyDefinition} constant which property definition type should be loaded
-	 * @param contextOrg - the context {@link Org}
+	 * @param contextOrg - the context {@link de.laser.Org}
 	 * @return a {@link List} of headers
 	 */
 	List<String> loadPropListHeaders(Set<PropertyDefinition> propSet) {
