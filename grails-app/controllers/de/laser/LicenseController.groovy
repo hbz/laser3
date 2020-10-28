@@ -1,12 +1,10 @@
 package de.laser
 
-
 import com.k_int.kbplus.InstitutionsService
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
-import com.k_int.kbplus.traits.PendingChangeControllerTrait
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtil
@@ -26,9 +24,7 @@ import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LicenseController
-        
-        implements PendingChangeControllerTrait {
+class LicenseController {
 
     def springSecurityService
     def taskService
@@ -774,31 +770,6 @@ class LicenseController
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-  def acceptChange() {
-    processAcceptChange(params, License.get(params.id), genericOIDService)
-    redirect controller: 'license', action:'show',id:params.id
-  }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-  def rejectChange() {
-    processRejectChange(params, License.get(params.id))
-    redirect controller: 'license', action:'show',id:params.id
-  }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-    def permissionInfo() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        result
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
   def create() {
@@ -807,48 +778,6 @@ class LicenseController
     result
   }
 
-    /*
-    @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-  def unlinkLicense() {
-      log.debug("unlinkLicense :: ${params}")
-      License license = License.get(params.license_id);
-      OnixplLicense opl = OnixplLicense.get(params.opl_id);
-      if(! (opl && license)){
-        log.error("Something has gone mysteriously wrong. Could not get License or OnixLicense. params:${params} license:${license} onix: ${opl}")
-        flash.message = message(code:'license.unlink.error.unknown');
-        redirect(action: 'show', id: license.id);
-      }
-
-      String oplTitle = opl?.title;
-      DocContext dc = DocContext.findByOwner(opl.doc);
-      Doc doc = opl.doc;
-      license.removeFromDocuments(dc);
-      opl.removeFromLicenses(license);
-      // If there are no more links to this ONIX-PL License then delete the license and
-      // associated data
-      if (opl.licenses.isEmpty()) {
-          opl.usageTerm.each{
-            it.usageTermLicenseText.each{
-              it.delete(flush:true)
-            }
-          }
-          opl.delete(flush: true)
-          dc.delete(flush: true)
-          doc.delete(flush: true)
-      }
-      if (license.hasErrors()) {
-          license.errors.each {
-              log.error("License error: " + it);
-          }
-          flash.message = message(code:'license.unlink.error.known', args:[oplTitle]);
-      } else {
-          flash.message = message(code:'license.unlink.success', args:[oplTitle]);
-      }
-      redirect(action: 'show', id: license.id);
-  }
-     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")

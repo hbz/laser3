@@ -168,7 +168,7 @@
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                                 </g:if>
                             </dl>
-                            <g:if test="${!params.orgBasicMemberView && subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
+                            <g:if test="${!params.orgBasicMemberView && subscriptionInstance.instanceOf && (contextOrg.id == subscriptionInstance.getConsortia().id)}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
@@ -176,14 +176,16 @@
                                     </dd>
                                 </dl>
 
-                                <dl>
-                                    <dt class="control-label">
-                                        ${message(code:'license.details.linktoLicense.pendingChange')}
-                                    </dt>
-                                    <dd>
-                                        <semui:xEditableBoolean owner="${subscriptionInstance}" field="isSlaved" />
-                                    </dd>
-                                </dl>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <dl>
+                                        <dt class="control-label">
+                                            ${message(code:'license.details.linktoLicense.pendingChange')}
+                                        </dt>
+                                        <dd>
+                                            <semui:xEditableBoolean owner="${subscriptionInstance}" field="isSlaved" />
+                                        </dd>
+                                    </dl>
+                                </sec:ifAnyGranted>
                             </g:if>
 
                             <dl>
