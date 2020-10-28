@@ -3,6 +3,7 @@ package de.laser.auth
 import de.laser.Org
 import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.apache.commons.lang.RandomStringUtils
 
 import javax.persistence.Transient
 
@@ -119,7 +120,7 @@ class User {
     }
 
     List<UserOrg> getAuthorizedAffiliations() {
-        UserOrg.findAllByStatus(UserOrg.STATUS_APPROVED)
+        UserOrg.findAllByUserAndStatus(this, UserOrg.STATUS_APPROVED)
     }
     List<Org> getAuthorizedOrgs() {
         String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status = :approved ) order by o.name"
@@ -170,12 +171,11 @@ class User {
     }
 
     static String generateRandomPassword() {
-        org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(24)
+        RandomStringUtils.randomAlphanumeric(24)
     }
 
     @Override
     String toString() {
         yodaService.showDebugInfo() ? display + ' (' + id + ')' : display
-        //display
     }
 }
