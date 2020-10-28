@@ -6,12 +6,8 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
-import groovy.transform.CompileStatic
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import grails.web.servlet.mvc.GrailsHttpSession
-import org.grails.web.util.WebUtils
 
-@CompileStatic
 @Transactional
 class ContextService {
 
@@ -23,43 +19,57 @@ class ContextService {
 
     void setOrg(Org context) {
         try {
-            GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
-            session.setAttribute('contextOrg', context)
+            SessionCacheWrapper scw = getSessionCache()
+            scw.put('contextOrg', context)
         }
         catch (Exception e) {
-            log.warn('accessing setOrg() without web request')
+            log.warn('setOrg() - ' + e.getMessage())
         }
     }
 
     Org getOrg() {
-        try {
-            GrailsHttpSession session  = WebUtils.retrieveGrailsWebRequest().getSession()
+        Org.withNewSession {
 
-            def context = session.getAttribute('contextOrg')
-            if (! context) {
-                context = getUser()?.getSettingsValue(UserSetting.KEYS.DASHBOARD)
+            try {
+                SessionCacheWrapper scw = getSessionCache()
+
+                def context = scw.get('contextOrg')
+                if (! context) {
+                    context = getUser()?.getSettingsValue(UserSetting.KEYS.DASHBOARD)
+
+                    if (context) {
+                        scw.put('contextOrg', context)
+                    }
+                }
 
                 if (context) {
-                    session.setAttribute('contextOrg', context)
+                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
                 }
             }
-
-            if (context) {
-                return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+            catch (Exception e) {
+                log.warn('getOrg() - ' + e.getMessage())
             }
+            return null
         }
-        catch (Exception e) {
-            log.warn('accessing getOrg() without web request')
-        }
-        return null
     }
 
     User getUser() {
-        (User) springSecurityService.getCurrentUser()
+        User.withNewSession {
+
+            try {
+                def user = springSecurityService.getCurrentUser()
+                return (User) GrailsHibernateUtil.unwrapIfProxy(user)
+            }
+            catch (Exception e) {
+                log.warn('getUser() - ' + e.getMessage())
+            }
+            return null
+        }
     }
 
     List<Org> getMemberships() {
-        getUser()?.authorizedOrgs
+        User user = getUser()
+        user ? user.authorizedOrgs : []
     }
 
     EhcacheWrapper getCache(String cacheKeyPrefix, String scope) {

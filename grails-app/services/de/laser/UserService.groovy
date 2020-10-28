@@ -8,6 +8,7 @@ import de.laser.auth.UserRole
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
@@ -28,7 +29,7 @@ class UserService {
 
         def uss = UserSetting.get(user, UserSetting.KEYS.DASHBOARD)
 
-        def userOrgMatches = user.getAuthorizedOrgsIds()
+        List<Long> userOrgMatches = user.getAuthorizedOrgsIds()
         if (userOrgMatches.size() > 0) {
             if (uss == UserSetting.SETTING_NOT_FOUND) {
                 user.getSetting(UserSetting.KEYS.DASHBOARD, Org.findById(userOrgMatches.first()))
@@ -138,13 +139,65 @@ class UserService {
         user
     }
 
-    def addAffiliation(user, orgId, formalRoleId, flash) {
+    def addAffiliation(User user, orgId, formalRoleId, flash) {
         Org org = Org.get(orgId)
         Role formalRole = Role.get(formalRoleId)
 
         if (user && org && formalRole) {
             instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
         }
+    }
+
+    boolean checkAffiliation(User user, String userRoleName, String globalRoleName, String mode, Org orgToCheck) {
+
+        boolean check = false
+
+        // TODO:
+
+        if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
+            check = true // may the force be with you
+        }
+        if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+            check = true // may the force be with you
+        }
+
+        if (mode == 'AND') {
+            if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                check = false // min restriction fail
+            }
+        }
+        else if (mode == 'OR') {
+            if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
+                check = true // min level granted
+            }
+        }
+
+        // TODO:
+
+        if (! check) {
+            List<String> rolesToCheck = [userRoleName]
+
+            // handling role hierarchy
+            if (userRoleName == "INST_USER") {
+                rolesToCheck << "INST_EDITOR"
+                rolesToCheck << "INST_ADM"
+            }
+            else if (userRoleName == "INST_EDITOR") {
+                rolesToCheck << "INST_ADM"
+            }
+
+            rolesToCheck.each { String rot ->
+                Role role = Role.findByAuthority(rot)
+                if (role) {
+                    UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
+                    check = check || (uo && user.getAuthorizedAffiliations().contains(uo))
+                }
+            }
+        }
+
+        //TODO: log.debug("affiliationCheck(): ${user} - ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck} -> ${check}")
+
+        check
     }
 
     void setupAdminAccounts(Map<String,Org> orgs) {

@@ -3,6 +3,7 @@ package de.laser.auth
 import de.laser.Org
 import de.laser.UserSetting
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.apache.commons.lang.RandomStringUtils
 
 import javax.persistence.Transient
 
@@ -14,6 +15,7 @@ class User {
     def contextService
     def instAdmService
     def springSecurityService
+    def userService
     def yodaService
 
     String username
@@ -29,8 +31,8 @@ class User {
     boolean accountLocked = false
     boolean passwordExpired = false
 
-    static hasMany =  [ affiliations: UserOrg, roles: UserRole ]
-    static mappedBy = [ affiliations: 'user',  roles: 'user' ]
+    static hasMany      = [ affiliations: UserOrg, roles: UserRole ]
+    static mappedBy     = [ affiliations: 'user',  roles: 'user' ]
 
     static constraints = {
         username    blank: false, unique: true
@@ -117,15 +119,14 @@ class User {
         password = springSecurityService.encodePassword(password)
     }
 
-    @Transient Set<UserOrg> getAuthorizedAffiliations() {
-        affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
+    List<UserOrg> getAuthorizedAffiliations() {
+        UserOrg.findAllByUserAndStatus(this, UserOrg.STATUS_APPROVED)
     }
-
-    @Transient List<Org> getAuthorizedOrgs() {
+    List<Org> getAuthorizedOrgs() {
         String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status = :approved ) order by o.name"
         Org.executeQuery(qry, [user: this, approved: UserOrg.STATUS_APPROVED])
     }
-    @Transient def getAuthorizedOrgsIds() {
+    List<Long> getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }
     }
 
@@ -148,61 +149,14 @@ class User {
     }
 
     boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
-        affiliationCheck(userRoleName, globalRoleName, 'AND', contextService.getOrg())
+        userService.checkAffiliation(this, userRoleName, globalRoleName, 'AND', contextService.getOrg())
     }
     boolean hasAffiliationOR(String userRoleName, String globalRoleName) {
-        affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
+        userService.checkAffiliation(this, userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
     boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
-    }
-
-    private boolean affiliationCheck(String userRoleName, String globalRoleName, String mode, Org orgToCheck) {
-        boolean result = false
-        List<String> rolesToCheck = [userRoleName]
-
-        //log.debug("USER.hasAffiliation(): ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck}")
-
-        // TODO:
-
-        if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
-            return true // may the force be with you
-        }
-        if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
-            return true // may the force be with you
-        }
-
-        if (mode == 'AND') {
-            if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-                return false // min restriction fail
-            }
-        }
-        else if (mode == 'OR') {
-            if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-                return true // min level granted
-            }
-        }
-
-        // TODO:
-
-        // sym. role hierarchy
-        if (userRoleName == "INST_USER") {
-            rolesToCheck << "INST_EDITOR"
-            rolesToCheck << "INST_ADM"
-        }
-        else if (userRoleName == "INST_EDITOR") {
-            rolesToCheck << "INST_ADM"
-        }
-
-        rolesToCheck.each{ rot ->
-            Role role = Role.findByAuthority(rot)
-            if (role) {
-                UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(this, orgToCheck, role)
-                result = result || (uo && getAuthorizedAffiliations()?.contains(uo))
-            }
-        }
-        result
+        userService.checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
     boolean isLastInstAdmin() {
@@ -217,12 +171,11 @@ class User {
     }
 
     static String generateRandomPassword() {
-        org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(24)
+        RandomStringUtils.randomAlphanumeric(24)
     }
 
     @Override
     String toString() {
         yodaService.showDebugInfo() ? display + ' (' + id + ')' : display
-        //display
     }
 }
