@@ -16,20 +16,18 @@
 <%
     // EXAMPLE:
     sessionCache = contextService.getSessionCache()
-    sessionCache.put("test", "${System.currentTimeSeconds()}")
+    sessionCache.put("test", "${new Date()}")
     sessionCache.get("test")
 %>
 <br />
 <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h2>
 
-
-<h3 class="ui header">Session <span class="ui label">${contextService.getSessionCache().class}</span></h3>
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
-
-<h4 class="ui header">${sessionCache.getSession().id}
-    <span class="ui label">${sessionCache.getSession().class}</span></h4>
+<h3 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h3>
 
 <div class="ui segment">
+    <p>${sessionCache.getSession().id}</p>
+
     <g:link class="ui button small"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 
@@ -37,7 +35,10 @@
         <dl>
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt>${entry.key}</dt>
-                <dd>${entry.value}</dd>
+                <dd>
+                    ${entry.value} <br />
+                    <em>${entry.value.class.name}</em>
+                </dd>
             </g:each>
         </dl>
     </g:if>

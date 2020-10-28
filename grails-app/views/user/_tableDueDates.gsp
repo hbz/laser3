@@ -17,7 +17,7 @@
         <g:if test="${obj}">
             <tr>
                 <td>
-                    <g:if test="${obj instanceof de.laser.base.AbstractPropertyWithCalculatedLastUpdated}">
+                    <g:if test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
                 %{--${dashDueDate.id} &nbsp--}%
@@ -62,7 +62,7 @@
                             </span>
                             <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
                         </g:elseif>
-                        <g:elseif test="${obj instanceof de.laser.base.AbstractPropertyWithCalculatedLastUpdated}">
+                        <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
                                 <i class="icon address book la-list-icon"></i>
                                 <${obj.owner.first_name}&nbsp;${obj.owner.last_name}
@@ -154,7 +154,7 @@
                     </laser:remoteLink>
                 </g:if>
                 <g:else>
-                    <laser:remoteLink class="ui button"
+                    <laser:remoteLink class="ui icon button"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
