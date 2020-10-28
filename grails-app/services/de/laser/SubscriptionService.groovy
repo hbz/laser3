@@ -161,7 +161,7 @@ class SubscriptionService {
         tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         tmpParams.sort = 'o.sortname'
 
-        Map fsq = filterService.getOrgComboQuery(tmpParams, contextOrg)
+        Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, contextOrg)
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
         pu.setBenchmark('filterSubTypes & filterPropList')

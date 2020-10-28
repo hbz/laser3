@@ -1,21 +1,30 @@
 package de.laser.ctrl
 
 import de.laser.AccessService
+import de.laser.AuditConfig
 import de.laser.FilterService
+import de.laser.FormService
+import de.laser.License
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Package
+import de.laser.PendingChangeConfiguration
 import de.laser.Person
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionController
+import de.laser.SubscriptionPackage
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 
@@ -27,6 +36,7 @@ class SubscriptionControllerService {
 
     AccessService accessService
     FilterService filterService
+    FormService formService
     MessageSource messageSource
 
     Map<String,Object> emptySubscription(SubscriptionController controller, GrailsParameterMap params) {
@@ -43,7 +53,7 @@ class SubscriptionControllerService {
             result.defaultEndYear = sdf.format(cal.getTime())
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
             [result:result,status:STATUS_OK]
@@ -157,7 +167,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
         Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-        result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscriptionInstance,subscriberRoleTypes:subscriberRoleTypes])
+        result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
 
         ArrayList<Long> filteredOrgIds = controller.getOrgIdsForFilter()
         result.filteredSubChilds = []
@@ -228,6 +238,161 @@ class SubscriptionControllerService {
             result.orgs = orgs
         }
         [result:result,status:STATUS_OK]
+    }
+
+    Map<String,Object> addMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            //the following two are arguments for a g.message-call on the view which expects an Object[]
+            result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
+            result.memberType = [messageSource.getMessage('consortium.subscriber',null,locale)]
+            Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
+            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
+            result.validPackages = result.subscription.packages?.sort { it.pkg.name }
+            result.memberLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
+
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> processAddMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            if(formService.validateToken(params)) {
+                RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
+                RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+                RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+
+                if (result.editable) {
+                    List<Org> members = []
+                    License licenseCopy
+                    params.list('selectedOrgs').each { it ->
+                        members << Org.findById(Long.valueOf(it))
+                    }
+                    List<Subscription> synShareTargetList = []
+                    List<License> licensesToProcess = []
+                    Set<Package> packagesToProcess = []
+                    //copy package data
+                    if(params.linkAllPackages) {
+                        result.subscription.packages.each { SubscriptionPackage sp ->
+                            packagesToProcess << sp.pkg
+                        }
+                    }
+                    else if(params.packageSelection) {
+                        List packageIds = params.list("packageSelection")
+                        packageIds.each { spId ->
+                            packagesToProcess << SubscriptionPackage.get(spId).pkg
+                        }
+                    }
+                    if(params.generateSlavedLics == "all") {
+                        String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+                        licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
+                    }
+                    else if(params.generateSlavedLics == "partial") {
+                        List<String> licenseKeys = params.list("generateSlavedLicsReference")
+                        licenseKeys.each { String licenseKey ->
+                            licensesToProcess << genericOIDService.resolveOID(licenseKey)
+                        }
+                    }
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS)
+                    members.each { Org cm ->
+                        log.debug("Generating separate slaved instances for members")
+                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                        Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                        Subscription memberSub = new Subscription(
+                                type: result.subscription.type ?: null,
+                                kind: result.subscription.kind ?: null,
+                                status: subStatus,
+                                name: result.subscription.name,
+                                //name: result.subscription.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
+                                startDate: startDate,
+                                endDate: endDate,
+                                administrative: result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
+                                manualRenewalDate: result.subscription.manualRenewalDate,
+                                /* manualCancellationDate: result.subscription.manualCancellationDate, */
+                                identifier: UUID.randomUUID().toString(),
+                                instanceOf: result.subscription,
+                                isSlaved: true,
+                                resource: result.subscription.resource ?: null,
+                                form: result.subscription.form ?: null,
+                                isMultiYear: params.checkSubRunTimeMultiYear ?: false
+                        )
+                        inheritedAttributes.each { attr ->
+                            memberSub[attr.referenceField] = result.subscription[attr.referenceField]
+                        }
+                        if (!memberSub.save()) {
+                            memberSub.errors.each { e ->
+                                log.debug("Problem creating new sub: ${e}")
+                            }
+                            flash.error = memberSub.errors
+                        }
+                        if (memberSub) {
+                            if(result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
+                            }
+                            else {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                            }
+                            new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                            synShareTargetList.add(memberSub)
+                            SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
+                                AuditConfig ac = AuditConfig.getConfig(sp)
+
+                                        if (ac) {
+                                            // multi occurrence props; add one additional with backref
+                                            if (sp.type.multipleOccurrence) {
+                                                SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                                additionalProp = sp.copyInto(additionalProp)
+                                                additionalProp.instanceOf = sp
+                                                additionalProp.save()
+                                            }
+                                            else {
+                                                // no match found, creating new prop with backref
+                                                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                                newProp = sp.copyInto(newProp)
+                                                newProp.instanceOf = sp
+                                                newProp.save()
+                                            }
+                                        }
+                                    }
+
+                                    memberSub.refresh()
+
+                                    packagesToProcess.each { Package pkg ->
+                                        if(params.linkWithEntitlements)
+                                            pkg.addToSubscriptionCurrentStock(memberSub, result.subscription)
+                                        else
+                                            pkg.addToSubscription(memberSub, false)
+                                    }
+
+                                    licensesToProcess.each { License lic ->
+                                        subscriptionService.setOrgLicRole(memberSub,lic,false)
+                                    }
+
+                                }
+                                //}
+                            }
+
+                        result.subscription.syncAllShares(synShareTargetList)
+                } else {
+                    [result:result,status:STATUS_ERROR]
+                }
+            }
+            else {
+                [result:result,status:STATUS_ERROR]
+            }
+            [result:result,status:STATUS_OK]
+        }
     }
 
 }
