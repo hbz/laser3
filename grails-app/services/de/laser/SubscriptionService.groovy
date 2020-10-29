@@ -1695,26 +1695,7 @@ class SubscriptionService {
 
     void updateProperty(AbstractPropertyWithCalculatedLastUpdated property, def value) {
 
-        String field
-
-        if(property.type.isIntegerType()) {
-            field = "intValue"
-        }
-        else if (property.type.isStringType())  {
-            field = "stringValue"
-        }
-        else if (property.type.isBigDecimalType())  {
-            field = "decValue"
-        }
-        else if (property.type.isDateType())  {
-            field = "dateValue"
-        }
-        else if (property.type.isURLType())  {
-            field = "urlValue"
-        }
-        else if (property.type.isRefdataValueType())  {
-            field = "refValue"
-        }
+        String field = PropertyDefinition.getImplClassValueProperty()
 
         //Wenn eine Vererbung vorhanden ist.
         if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
