@@ -2,6 +2,9 @@ package de.laser.ctrl
 
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.FactService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.GlobalSourceSyncService
+import com.k_int.kbplus.PackageService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
@@ -12,9 +15,14 @@ import de.laser.EscapeService
 import de.laser.FilterService
 import de.laser.FinanceService
 import de.laser.FormService
+import de.laser.GokbService
+import de.laser.GlobalRecordSource
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
+import de.laser.IssueEntitlementCoverage
+import de.laser.IssueEntitlementGroup
+import de.laser.IssueEntitlementGroupItem
 import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
@@ -32,8 +40,11 @@ import de.laser.Subscription
 import de.laser.SubscriptionController
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
+import de.laser.SurveyConfig
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
+import de.laser.exceptions.EntitlementCreationException
+import de.laser.finance.CostItem
 import de.laser.helper.DateUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
@@ -50,12 +61,14 @@ import de.laser.titles.TitleInstance
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.slurpersupport.GPathResult
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
 @Transactional
 class SubscriptionControllerService {
@@ -75,12 +88,17 @@ class SubscriptionControllerService {
     PropertyService propertyService
     ContextService contextService
     EscapeService escapeService
+    ExecutorService executorService
+    PackageService packageService
+    GokbService gokbService
+    GlobalSourceSyncService globalSourceSyncService
     LinksGenerationService linksGenerationService
     ExecutorWrapperService executorWrapperService
     PendingChangeService pendingChangeService
+    GenericOIDService genericOIDService
     MessageSource messageSource
 
-    //-------------------------------------- subscription landing page -------------------------------------------
+    //-------------------------------------- general or ungroupable section -------------------------------------------
 
     Map<String,Object> show(SubscriptionController controller, GrailsParameterMap params) {
         ProfilerUtils pu = new ProfilerUtils()
@@ -279,6 +297,23 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> tasks(SubscriptionController controller,GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            int offset = params.offset ? Integer.parseInt(params.offset) : 0
+            result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
+            result.taskInstanceCount = result.taskInstanceList.size()
+            result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
+            result.myTaskInstanceCount = result.myTaskInstanceList.size()
+            result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+            [result:result,status:STATUS_OK]
+        }
+    }
+
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
     Map<String,Object> emptySubscription(SubscriptionController controller, GrailsParameterMap params) {
@@ -309,12 +344,6 @@ class SubscriptionControllerService {
     Map<String,Object> processEmptySubscription(SubscriptionController controller, GrailsParameterMap params) {
         log.debug( params.toMapString() )
         Map<String, Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-
-        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
-        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_cons_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        RefdataValue role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
-
         RefdataValue orgRole
         RefdataValue memberRole
         RefdataValue subType = RefdataValue.get(params.type)
@@ -322,11 +351,11 @@ class SubscriptionControllerService {
         switch(subType) {
             case RDStore.SUBSCRIPTION_TYPE_CONSORTIAL:
             case RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE:
-                orgRole = role_cons
-                memberRole = role_sub_cons
+                orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                memberRole = RDStore.OR_SUBSCRIBER_CONS
                 break
             default:
-                orgRole = role_sub
+                orgRole = RDStore.OR_SUBSCRIBER
                 if (! subType)
                     subType = RDStore.SUBSCRIPTION_TYPE_LOCAL
                 break
@@ -380,7 +409,7 @@ class SubscriptionControllerService {
                                 instanceOf: new_sub,
                                 isSlaved: true)
                         if (new_sub.administrative) {
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_cons_hidden).save()
+                            new OrgRole(org: cm, sub: cons_sub, roleType: RDStore.OR_SUBSCRIBER_CONS_HIDDEN).save()
                         }
                         else {
                             new OrgRole(org: cm, sub: cons_sub, roleType: memberRole).save()
@@ -401,6 +430,22 @@ class SubscriptionControllerService {
         else {
             [result:result,status:STATUS_ERROR]
         }
+    }
+
+    //--------------------------------------------- document section ----------------------------------------------
+
+    Map<String,Object> notes(SubscriptionController controller) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else [result:result,status:STATUS_OK]
+    }
+
+    Map<String,Object> documents(SubscriptionController controller) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else [result:result,status:STATUS_OK]
     }
 
     //--------------------------------- consortia members section ----------------------------------------------
@@ -513,8 +558,6 @@ class SubscriptionControllerService {
             if(formService.validateToken(params)) {
                 RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
                 RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
-                RefdataValue role_sub_cons  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-                RefdataValue role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
                 if (result.editable) {
                     List<Org> members = []
                     License licenseCopy
@@ -581,12 +624,12 @@ class SubscriptionControllerService {
                         }
                         if (memberSub) {
                             if(result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE) {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
+                                new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS_HIDDEN).save()
                             }
                             else {
-                                new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                             }
-                            new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                            new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
                             synShareTargetList.add(memberSub)
                             SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
                                 AuditConfig ac = AuditConfig.getConfig(sp)
@@ -634,6 +677,180 @@ class SubscriptionControllerService {
             else {
                 [result:result,status:STATUS_ERROR]
             }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    //--------------------------------------- survey section -------------------------------------------
+
+    Map<String,Object> surveys(SubscriptionController controller) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.surveys = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                    [sub: result.subscription.instanceOf,
+                     org: result.contextOrg,
+                     invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> surveysConsortia(SubscriptionController controller) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.surveys = result.subscription ? SurveyConfig.findAllBySubscription(result.subscription) : null
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    //-------------------------------------- packages section ------------------------------------------
+
+    Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each { Thread thread ->
+                if (thread.name == 'PackageSync_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
+                }
+            }
+            params.sort = "name"
+            //to be deployed in parallel thread
+            if(params.addUUID) {
+                String pkgUUID = params.addUUID
+                GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/oai/packages")
+                log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
+                globalSourceSyncService.source = source
+                String addType = params.addType
+                GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord', metadataPrefix:'gokb', identifier:params.addUUID])
+                if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
+                    result.packageName = packageRecord.record.metadata.gokb.package.name
+                    if(!Package.findByGokbId(pkgUUID)) {
+                        executorService.execute({
+                            Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                            try {
+                                globalSourceSyncService.defineMapFields()
+                                globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
+                                globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                                Package pkgToLink = Package.findByGokbId(pkgUUID)
+                                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                                if (addType == 'With') {
+                                    pkgToLink.addToSubscription(result.subscription, true)
+                                }
+                                else if (addType == 'Without') {
+                                    pkgToLink.addToSubscription(result.subscription, false)
+                                }
+                            }
+                            catch (Exception e) {
+                                log.error("sync job has failed, please consult stacktrace as follows: ")
+                                e.printStackTrace()
+                            }
+                        })
+                    }
+                    else {
+                        Package pkgToLink = Package.findByGokbId(pkgUUID)
+                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                        if (addType == 'With') {
+                            pkgToLink.addToSubscription(result.subscriptionInstance, true)
+                        }
+                        else if (addType == 'Without') {
+                            pkgToLink.addToSubscription(result.subscriptionInstance, false)
+                        }
+                    }
+                }
+                else {
+                    result.error = messageSource.getMessage('subscription.details.link.packageNotFound',null,locale)
+                }
+            }
+            if (result.subscription.packages) {
+                result.pkgs = []
+                if (params.gokbApi) {
+                    result.subscription.packages.each { sp ->
+                        log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
+                        result.pkgs.add(sp.pkg.gokbId)
+                    }
+                }
+            } else {
+                log.debug("Subscription has no linked packages yet")
+            }
+            result.max = params.max ? params.int('max') : result.user.getDefaultPageSizeAsInteger()
+            List gokbRecords = []
+            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
+                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
+            }
+            result.sort = params.sort ?: 'name'
+            result.order = params.order ?: 'asc'
+            result.records = null
+            if(gokbRecords) {
+                Map filteredMap = [:]
+                gokbRecords.each { apiRes ->
+                    apiRes.each { rec ->
+                        filteredMap[rec.uuid] = rec
+                    }
+                }
+                result.records = filteredMap.values().toList().flatten()
+            }
+            if(result.records) {
+                result.records.sort { x, y ->
+                    if (result.order == 'desc') {
+                        y."${result.sort}".toString().compareToIgnoreCase x."${result.sort}".toString()
+                    } else {
+                        x."${result.sort}".toString().compareToIgnoreCase y."${result.sort}".toString()
+                    }
+                }
+                result.resultsTotal = result.records.size()
+                Integer start = params.offset ? params.int('offset') : 0
+                Integer end = params.offset ? result.max + params.int('offset') : result.max
+                end = (end > result.records.size()) ? result.records.size() : end
+                result.hits = result.records.subList(start, end)
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> unlinkPackage(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        result.package = Package.get(params.package)
+        Locale locale = LocaleContextHolder.getLocale()
+        if(params.confirmed) {
+            if(result.package.unlinkFromSubscription(result.subscription, true)){
+                result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
+                [result:result,status:STATUS_OK]
+            }else {
+                result.error = messageSource.getMessage('subscription.details.unlink.notSuccessfully',null,locale)
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+        else {
+            String query = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+            Map<String,Object> queryParams = [sub: result.subscription, pkg_id: result.package.id]
+            int numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
+            int numOfIEs = IssueEntitlement.executeQuery(query, queryParams).size()
+            int numOfCIs = CostItem.findAllBySubPkg(SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,result.package)).size()
+            List conflictsList = packageService.listConflicts(result.package,result.subscription,numOfPCs,numOfIEs,numOfCIs)
+            //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
+            if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]){
+                List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
+                if (childSubs) {
+                    List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
+                    String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                    Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+                    int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
+                    int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
+                    int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)).size()
+                    conflictsList.addAll(packageService.listConflicts(result.packages,childSubs,numOfPCsChildSubs,numOfIEsChildSubs,numOfCIsChildSubs))
+                }
+            }
+            result.conflict_list = conflictsList
             [result:result,status:STATUS_OK]
         }
     }
@@ -977,17 +1194,12 @@ class SubscriptionControllerService {
                     else {
                         //make checks ...
                         //is title in LAS:eR?
-                        //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
-                        //log.debug(idCandidates)
                         Identifier id = Identifier.findByValueAndNsInList(idCandidate.value,idCandidate.namespaces)
                         if(id && id.ti) {
                             //is title already added?
                             if(addedTipps.get(id.ti)) {
                                 errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded',null,locale)}")
                             }
-                            /*else if(!issueEntitlement) {
-                                errors += g.message([code:'subscription.details.addEntitlements.titleNotMatched',args:cols[0]])
-                            }*/
                         }
                         else if(!id) {
                             errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS',null,locale)}")
@@ -1123,9 +1335,156 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            RefdataValue ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
+            int addTitlesCount = 0
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscription.id}", contextService.USER_SCOPE)
+            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+            if(!params.singleTitle) {
+                Map checked = cache.get('checked')
+                if(checked) {
+                    checked.each { k,v ->
+                        if(v == 'checked') {
+                            try {
+                                if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
+                                    if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                                        log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
+                                }
+                                else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
+                                    log.debug("Added tipp ${k} to sub ${result.subscription.id}")
+                                }
+                                addTitlesCount++
+
+                            }
+                            catch (EntitlementCreationException e) {
+                                result.error = e.getMessage()
+                            }
+                        }
+                    }
+                    Object[] args = [addTitlesCount]
+                    result.message = messageSource.getMessage('subscription.details.addEntitlements.titlesAddToSub',args,locale)
+                }
+                else {
+                    log.error('cache error or no titles selected')
+                }
+            }
+            else if(params.singleTitle) {
+                try {
+                    Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title?.title]
+                    if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
+                        if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                            log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                        result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
+                    }
+                    else if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, null, false, ie_accept_status))
+                        log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
+                    result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
+                }
+                catch(EntitlementCreationException e) {
+                    result.error = e.getMessage()
+                }
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> subscriptionBatchUpdate(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
+            boolean error = false
+            params.each { Map.Entry<Object,Object> p ->
+                if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
+                    String ie_to_edit = p.key.substring(10)
+                    IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
+                    if (params.bulkOperation == "edit") {
+                        if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
+                            ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
+                        }
+                        if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
+                            ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
+                        }
+                        if (params.bulk_medium.trim().length() > 0) {
+                            RefdataValue selected_refdata = genericOIDService.resolveOID(params.bulk_medium.trim())
+                            log.debug("Selected medium is ${selected_refdata}");
+                            ie.medium = selected_refdata
+                        }
+                        if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
+                            IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
+                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie)){
+                                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                        ie: ie,
+                                        ieGroup: entitlementGroup)
+                                if (!issueEntitlementGroupItem.save()) {
+                                    log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                }
+                            }
+                        }
+                        if (!ie.save()) {
+                            log.error("Problem saving ${ie.errors}")
+                            error = true
+                        }
+                    } else if (params.bulkOperation == "remove") {
+                        log.debug("Updating ie ${ie.id} status to deleted")
+                        ie.status = RDStore.TIPP_STATUS_DELETED
+                        if (!ie.save()) {
+                            log.error("Problem saving ${ie.errors}")
+                            error = true
+                        }
+                    }
+                }
+            }
+            if(error)
+                [result:result,status:STATUS_ERROR]
+            else [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> addCoverage(GrailsParameterMap params) {
+        IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
+        if(base) {
+            Map<String,Object> result = [subId:base.subscription.id]
+            IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
+            if(ieCoverage.save()) {
+                [result: result, status: STATUS_OK]
+            }
+            else {
+                log.error("Error on creation new coverage statement: ${ieCoverage.errors}")
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+        else {
+            log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
+            [result:null,status:STATUS_ERROR]
+        }
+    }
+
+    Map<String,Object> removeCoverage(GrailsParameterMap params) {
+        IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
+        if(ieCoverage) {
+            Map<String,Object> result = [subId:ieCoverage.issueEntitlement.subscription.id]
+            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
+            ieCoverage.delete()
+            [result:result,status:STATUS_OK]
+        }
+        else {
+            log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
+            [result:null,status:STATUS_ERROR]
+        }
+    }
+
     //--------------------------------------------- admin section -------------------------------------------------
 
-    Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> pendingChanges(SubscriptionController controller) {
         Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]

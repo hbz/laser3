@@ -35,8 +35,6 @@ import java.time.Duration
 class PendingChangeService extends AbstractLockableService {
 
     def genericOIDService
-    def grailsApplication
-    def springSecurityService
     SubscriptionService subscriptionService
     LinkGenerator grailsLinkGenerator
     def messageSource

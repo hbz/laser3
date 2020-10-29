@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import de.laser.auth.Role
 import de.laser.auth.User
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -384,10 +385,6 @@ class SubscriptionService {
         result.benchMark = bm
 
         result
-    }
-
-    Set<Org> getAllTimeSubscribersForConsortiaSubscription(Subscription entryPoint) {
-        getAllTimeSubscribersForConsortiaSubscription([entryPoint].toSet())
     }
 
     Set<Org> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
@@ -1654,5 +1651,128 @@ class SubscriptionService {
         }
     }
 
+    void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value, String note) {
+        //check if private or custom property
+        AbstractPropertyWithCalculatedLastUpdated prop
+        if(propDef.tenant == contextOrg) {
+            //process private property
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, contextOrg)
+        }
+        else {
+            //process custom property
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextOrg)
+        }
+        if (propDef.isIntegerType()) {
+            int intVal = Integer.parseInt(value)
+            prop.setIntValue(intVal)
+        }
+        else if (propDef.isBigDecimalType()) {
+            BigDecimal decVal = new BigDecimal(value)
+            prop.setDecValue(decVal)
+        }
+        else if (propDef.isRefdataValueType()) {
+            RefdataValue rdv = (RefdataValue) genericOIDService.resolveOID(value)
+            if(rdv)
+                prop.setRefValue(rdv)
+        }
+        else if (propDef.isDateType()) {
+            Date date = DateUtil.parseDateGeneric(value)
+            if(date)
+                prop.setDateValue(date)
+        }
+        else if (propDef.isURLType()) {
+            URL url = new URL(value)
+            if(url)
+                prop.setUrlValue(url)
+        }
+        else {
+            prop.setStringValue(value)
+        }
+        if(note)
+            prop.note = note
+        prop.save()
+    }
+
+    void updateProperty(AbstractPropertyWithCalculatedLastUpdated property, def value) {
+
+        String field = PropertyDefinition.getImplClassValueProperty()
+
+        //Wenn eine Vererbung vorhanden ist.
+        if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
+            if(property.instanceOf."${field}" == '' || property.instanceOf."${field}" == null)
+            {
+                value = property.instanceOf."${field}" ?: ''
+            }else{
+                //
+                return
+            }
+        }
+
+        if (value == '' && field) {
+            // Allow user to set a rel to null be calling set rel ''
+            property[field] = null
+            property.save()
+        } else {
+
+            if (property && value && field){
+
+                if(field == "refValue") {
+                    def binding_properties = ["${field}": value]
+                    bindData(property, binding_properties)
+                    //property.save(flush:true)
+                    if(!property.save(failOnError: true))
+                    {
+                        println(property.error)
+                    }
+                } else if(field == "dateValue") {
+                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            // parse new date
+                            def parsed_date = sdf.parse(value)
+                            property."${field}" = parsed_date
+                        } else {
+                            // delete existing date
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true)
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error( e.toString() )
+                    }
+                } else if(field == "urlValue") {
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            property."${field}" = new URL(value)
+                        } else {
+                            // delete existing url
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true)
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error( e.toString() )
+                    }
+                } else {
+                    def binding_properties = [:]
+                    if (property."${field}" instanceof Double) {
+                        value = Double.parseDouble(value)
+                    }
+
+                    binding_properties["${field}"] = value
+                    bindData(property, binding_properties)
+
+                    property.save(failOnError: true)
+                }
+            }
+        }
+
+    }
 
 }

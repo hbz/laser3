@@ -15,7 +15,7 @@ class LaserInjectionTagLib {
         g.set( var:'filterService',     bean:'filterService' )
         g.set( var:'formService',       bean:'formService' )
         g.set( var:'genericOIDService', bean:'genericOIDService' )
-        g.set( var:'GOKbService',       bean:'GOKbService' )
+        g.set( var:'gokbService',       bean:'gokbService' )
         g.set( var:'instAdmService',    bean:'instAdmService' )
         g.set( var:'linksGenerationService',    bean:'linksGenerationService' )
         g.set( var:'orgDocumentService',        bean:'orgDocumentService' )

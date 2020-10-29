@@ -10,7 +10,7 @@
       Map<String,Object> packageMetadata = [:]
       String link
       ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-        packageMetadata = GOKbService.geElasticsearchFindings(api.baseUrl+api.fixToken, "&uuid=${sp.pkg.gokbId}", "Package", null, 1)
+        packageMetadata = gokbService.geElasticsearchFindings(api.baseUrl+api.fixToken, "&uuid=${sp.pkg.gokbId}", "Package", null, 1)
         link = api.editUrl+"/resource/show/"
         if(packageMetadata.warning)
           packageMetadata = packageMetadata.warning
