@@ -31,16 +31,6 @@
 
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
-    <%--
-        <semui:subNavItem controller="subscription" action="previous" params="${[id:params.id]}" message="subscription.details.previous.label" />
-        <semui:subNavItem controller="subscription" action="expected" params="${[id:params.id]}" message="subscription.details.expected.label" />
-    --%>
-    <%--
-        <g:if test="${grailsApplication.config.feature_finance}">
-            <semui:subNavItem controller="subscription" action="costPerUse" params="${[id:params.id]}" message="subscription.details.costPerUse.label" />
-        </g:if>
-    --%>
-
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <semui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" message="default.notes.label" />
 
@@ -52,6 +42,5 @@
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
         <semui:subNavItem controller="subscription" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
-        <semui:subNavItem controller="subscription" action="permissionInfo" params="${[id:params.id]}" class="la-role-admin" message="default.permissionInfo.label" />
     </sec:ifAnyGranted>
 </semui:subNav>
