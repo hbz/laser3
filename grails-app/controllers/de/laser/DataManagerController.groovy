@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat
 class DataManagerController  {
 
     def springSecurityService
-    def GOKbService
+    GokbService gokbService
     def contextService
     def genericOIDService
     YodaService yodaService
@@ -448,7 +448,7 @@ class DataManagerController  {
         def gokbRecords = []
 
         ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-            gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
+            gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
         }
 
 

@@ -21,7 +21,7 @@ class SemanticUiTagLib {
     def auditService
     def systemService
     def contextService
-    def GOKbService
+    def gokbService
     def genericOIDService
     CodecLookup codecLookup
     TagLibraryLookup gspTagLibraryLookup
@@ -1144,7 +1144,7 @@ class SemanticUiTagLib {
 
             ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             String gokbId = "${attrs.gokbId}"
-            def record = GOKbService.getPackageMapWithUUID(api, gokbId)
+            def record = gokbService.getPackageMapWithUUID(api, gokbId)
 
             if(record && record[attrs.field]){
                 out << ((record[attrs.field] instanceof List) ? record[attrs.field].join(', ') : record[attrs.field])

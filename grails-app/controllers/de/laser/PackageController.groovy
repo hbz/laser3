@@ -34,7 +34,7 @@ class PackageController  {
     def taskService
     def addressbookService
     def docstoreService
-    def GOKbService
+    def gokbService
     def globalSourceSyncService
     def filterService
     EscapeService escapeService
@@ -68,7 +68,7 @@ class PackageController  {
             def gokbRecords = []
 
             ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-                gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
+                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
             }
 
             params.sort = params.sort ?: 'name'

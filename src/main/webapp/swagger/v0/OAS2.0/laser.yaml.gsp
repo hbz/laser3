@@ -9,7 +9,7 @@ info:
     Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react).
     Please copy and paste
   contact:
-    email: david.klober@hbz-nrw.de
+    email: laser@hbz-nrw.de
 
 <g:if test="${grails.util.Environment.current == grails.util.Environment.PRODUCTION}">
 basePath: /api/v0 # production

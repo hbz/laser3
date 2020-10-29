@@ -6,7 +6,7 @@ import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
 @Transactional
-class GOKbService {
+class GokbService {
 
     Map<String, Object> getPackagesMap(ApiSource apiSource, def qterm = null, def suggest = true, def max = 2000) {
 

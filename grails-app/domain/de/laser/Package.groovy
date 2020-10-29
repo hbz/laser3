@@ -308,11 +308,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         subList.add(childSub.id)
                     }
                 }
-                String query = "from IssueEntitlement ie, Package pkg where ie.subscription.id in (:sub) and pkg.id = :pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                 Map<String,Object> queryParams = [sub: subList, pkg_id: this.id]
                 //delete matches
                 IssueEntitlement.withSession { Session session ->
-                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                    List deleteIdList = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie, Package pkg where ie.subscription.id in (:sub) and pkg.id = :pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) ", queryParams)
                     removePackagePendingChanges(subList,true)
                     if (deleteIdList) {
                         deleteIdList.collate(32766).each { List chunk ->
@@ -359,7 +358,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             return false
         }
     }
-    private def removePackagePendingChanges(List subIds, confirmed) {
+
+    def removePackagePendingChanges(List subIds, confirmed) {
         //log.debug("begin remove pending changes")
         String tipp_class = TitleInstancePackagePlatform.class.getName()
         List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery(

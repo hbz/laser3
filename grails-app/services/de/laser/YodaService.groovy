@@ -29,7 +29,7 @@ class YodaService {
     def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
     GlobalSourceSyncService globalSourceSyncService = Holders.grailsApplication.mainContext.getBean('globalSourceSyncService')
     DeletionService deletionService
-    GOKbService gokbService = Holders.grailsApplication.mainContext.getBean('GOKbService')
+    GokbService gokbService = Holders.grailsApplication.mainContext.getBean('gokbService')
     GenericOIDService genericOIDService = Holders.grailsApplication.mainContext.getBean('genericOIDService')
     ChangeNotificationService changeNotificationService = Holders.grailsApplication.mainContext.getBean('changeNotificationService')
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)

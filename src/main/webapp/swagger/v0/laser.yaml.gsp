@@ -13,7 +13,7 @@ info:
      [here]() you will get an example for the HMAC generation.
 
   contact:
-    email: david.klober@hbz-nrw.de
+    email: laser@hbz-nrw.de
   version: "<% print de.laser.api.v0.ApiManager.VERSION %>"
 
 <g:if test="${grails.util.Environment.current == grails.util.Environment.PRODUCTION}">
