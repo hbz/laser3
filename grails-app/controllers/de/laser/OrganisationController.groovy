@@ -1295,93 +1295,102 @@ class OrganisationController  {
         }
     }
 
-    def addOrgType()
-    {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Org orgInstance = Org.get(params.org)
+    def addOrgType() {
+        Org.withTransaction {
+            Map<String, Object> result = [:]
+            result.user = User.get(springSecurityService.principal.id)
+            Org orgInstance = Org.get(params.org)
 
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect action: 'list'
-            return
-        }
+            if (!orgInstance) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+                redirect action: 'list'
+                return
+            }
+            result.editable = checkIsEditable(result.user, orgInstance)
 
-        result.editable = checkIsEditable(result.user, orgInstance)
+            if (result.editable) {
+                orgInstance.addToOrgType(RefdataValue.get(params.orgType))
+                orgInstance.save()
+    //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            }
 
-        if(result.editable)
-        {
-            orgInstance.addToOrgType(RefdataValue.get(params.orgType))
-            orgInstance.save(flush: true)
-//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
-    def deleteOrgType()
-    {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        Org orgInstance = Org.get(params.org)
 
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect action: 'list'
-            return
-        }
+    def deleteOrgType() {
+        Org.withTransaction {
+            Map<String, Object> result = [:]
+            result.user = User.get(springSecurityService.principal.id)
+            Org orgInstance = Org.get(params.org)
 
-        result.editable = checkIsEditable(result.user, orgInstance)
+            if (!orgInstance) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+                redirect action: 'list'
+                return
+            }
 
-        if(result.editable)
-        {
-            orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
-            orgInstance.save(flush: true)
+            result.editable = checkIsEditable(result.user, orgInstance)
+
+            if (result.editable) {
+                orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
+                orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            }
+
             redirect action: 'show', id: orgInstance.id
         }
     }
+
     def addSubjectGroup() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Org.withTransaction {
+            Map<String, Object> result = setResultGenericsAndCheckAccess()
 
-        if (!result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        RefdataValue newSubjectGroup = RefdataValue.get(params.subjectGroup)
-        if (!newSubjectGroup) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup])
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if (result.orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
-            flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        result.editable = checkIsEditable(result.user, result.orgInstance)
+            if (!result.orgInstance) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            RefdataValue newSubjectGroup = RefdataValue.get(params.subjectGroup)
+            if (!newSubjectGroup) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            if (result.orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
+                flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            result.editable = checkIsEditable(result.user, result.orgInstance)
 
-        if (result.editable){
-            result.orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
-            result.orgInstance.save(flush: true)
+            if (result.editable) {
+                result.orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
+                result.orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            }
+
             redirect action: 'show', id: params.id
         }
     }
 
     def deleteSubjectGroup() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Org.withTransaction {
+            Map<String, Object> result = setResultGenericsAndCheckAccess()
 
-        if (!result.orgInstance) {
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if(result.editable) {
-            OrgSubjectGroup osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
-            result.orgInstance.removeFromSubjectGroup(osg)
-            result.orgInstance.save()
-            osg.delete()
+            if (!result.orgInstance) {
+                flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            if (result.editable) {
+                OrgSubjectGroup osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
+                result.orgInstance.removeFromSubjectGroup(osg)
+                result.orgInstance.save()
+                osg.delete()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
+            }
+
             redirect(url: request.getHeader('referer'))
         }
     }
