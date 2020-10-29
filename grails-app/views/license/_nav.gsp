@@ -19,11 +19,6 @@
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
         <semui:subNavItem controller="license" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
-        <semui:subNavItem controller="license" action="permissionInfo" params="${[id:params.id]}" class="la-role-admin" message="license.nav.permissionInfo" />
     </sec:ifAnyGranted>
 
-    <%--
-    <g:if test="${license.orgRelations?.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
-        <semui:subNavItem controller="license" action="consortia" params="${[id:params.id]}" message="consortium.plural" />
-    </g:if> --%>
 </semui:subNav>

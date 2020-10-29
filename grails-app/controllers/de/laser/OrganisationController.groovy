@@ -1295,8 +1295,8 @@ class OrganisationController  {
         }
     }
 
-    def addOrgType()
-    {
+    @Transactional
+    def addOrgType() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.org)
@@ -1306,19 +1306,19 @@ class OrganisationController  {
             redirect action: 'list'
             return
         }
-
         result.editable = checkIsEditable(result.user, orgInstance)
 
-        if(result.editable)
-        {
+        if (result.editable) {
             orgInstance.addToOrgType(RefdataValue.get(params.orgType))
-            orgInstance.save(flush: true)
+            orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-            redirect action: 'show', id: orgInstance.id
         }
+
+        redirect action: 'show', id: orgInstance.id
     }
-    def deleteOrgType()
-    {
+
+    @Transactional
+    def deleteOrgType() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         Org orgInstance = Org.get(params.org)
@@ -1331,14 +1331,16 @@ class OrganisationController  {
 
         result.editable = checkIsEditable(result.user, orgInstance)
 
-        if(result.editable)
-        {
+        if (result.editable) {
             orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
-            orgInstance.save(flush: true)
+            orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-            redirect action: 'show', id: orgInstance.id
         }
+
+        redirect action: 'show', id: orgInstance.id
     }
+
+    @Transactional
     def addSubjectGroup() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
 
@@ -1360,14 +1362,16 @@ class OrganisationController  {
         }
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
-        if (result.editable){
+        if (result.editable) {
             result.orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
-            result.orgInstance.save(flush: true)
+            result.orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-            redirect action: 'show', id: params.id
         }
+
+        redirect action: 'show', id: params.id
     }
 
+    @Transactional
     def deleteSubjectGroup() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
 
@@ -1376,14 +1380,15 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        if(result.editable) {
+        if (result.editable) {
             OrgSubjectGroup osg = OrgSubjectGroup.get(params.removeOrgSubjectGroup)
             result.orgInstance.removeFromSubjectGroup(osg)
             result.orgInstance.save()
             osg.delete()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-            redirect(url: request.getHeader('referer'))
         }
+
+        redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")

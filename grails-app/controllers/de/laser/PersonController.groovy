@@ -8,8 +8,8 @@ import de.laser.auth.User
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -532,168 +532,165 @@ class PersonController  {
         }
     }
 
+    @Transactional
     def addPersonRole() {
-        PersonRole.withTransaction {
-            PersonRole result
-            Person prs = Person.get(params.id)
+        PersonRole result
+        Person prs = Person.get(params.id)
 
-            if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
 
-                if (params.newPrsRoleOrg && params.newPrsRoleType) {
-                    Org org = Org.get(params.newPrsRoleOrg)
-                    RefdataValue rdv = RefdataValue.get(params.newPrsRoleType)
+            if (params.newPrsRoleOrg && params.newPrsRoleType) {
+                Org org = Org.get(params.newPrsRoleOrg)
+                RefdataValue rdv = RefdataValue.get(params.newPrsRoleType)
 
-                    def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
+                def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
 
-                    if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
+                if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
 
-                        String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}"
-                        if (PersonRole.find(query)) {
-                            log.debug("ignore adding PersonRole because of existing duplicate")
-                        }
-                        else {
-                            result = new PersonRole(prs: prs, org: org)
-                            result."${prAttr}" = rdv
-
-                            if (result.save()) {
-                                log.debug("adding PersonRole ${result}")
-                            }
-                            else {
-                                log.error("problem saving new PersonRole ${result}")
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (params.redirect) {
-                redirect(url: request.getHeader('referer'), params: params)
-            }
-            else {
-                redirect action: 'show', id: params.id
-            }
-        }
-    }
-
-    def deletePersonRole() {
-        PersonRole.withTransaction {
-            Person prs = Person.get(params.id)
-
-            if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
-
-                if (params.oid) {
-                    PersonRole pr = (PersonRole) genericOIDService.resolveOID(params.oid)
-
-                    if (pr && (pr.prs.id == prs.id) && pr.delete()) {
-                        log.debug("deleted PersonRole ${pr}")
+                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}"
+                    if (PersonRole.find(query)) {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
                     }
                     else {
-                        log.debug("problem deleting PersonRole ${pr}")
+                        result = new PersonRole(prs: prs, org: org)
+                        result."${prAttr}" = rdv
+
+                        if (result.save()) {
+                            log.debug("adding PersonRole ${result}")
+                        }
+                        else {
+                            log.error("problem saving new PersonRole ${result}")
+                        }
                     }
                 }
             }
+        }
+
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'), params: params)
+        }
+        else {
             redirect action: 'show', id: params.id
         }
     }
 
-    @Deprecated
-    private addPersonRoles(Person prs){
+    @Transactional
+    def deletePersonRole() {
+        Person prs = Person.get(params.id)
 
-        Person.withTransaction {
-            if (params.functionType) {
-                PersonRole result
+        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
 
-                RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
-                Org functionOrg = Org.get(params.functionOrg)
+            if (params.oid) {
+                PersonRole pr = (PersonRole) genericOIDService.resolveOID(params.oid)
 
-                if (functionRdv && functionOrg) {
-                    result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)
-
-                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}"
-                    if (PersonRole.find(query)) {
-                        log.debug("ignore adding PersonRole because of existing duplicate")
-                    }
-                    else if (result) {
-                        if (result.save()) {
-                            log.debug("adding PersonRole ${result}")
-                        }
-                        else {
-                            log.error("problem saving new PersonRole ${result}")
-                        }
-                    }
+                if (pr && (pr.prs.id == prs.id) && pr.delete()) {
+                    log.debug("deleted PersonRole ${pr}")
                 }
-
-                RefdataValue positionRdv = params.positionType ? RefdataValue.get(params.positionType) : null
-                Org positionOrg = Org.get(params.positionOrg)
-
-                if (positionRdv && positionOrg) {
-                    result = new PersonRole(prs: prs, positionType: positionRdv, org: positionOrg)
-
-                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}"
-                    if (PersonRole.find(query)) {
-                        log.debug("ignore adding PersonRole because of existing duplicate")
-                    }
-                    else if (result) {
-                        if (result.save()) {
-                            log.debug("adding PersonRole ${result}")
-                        }
-                        else {
-                            log.error("problem saving new PersonRole ${result}")
-                        }
-                    }
+                else {
+                    log.debug("problem deleting PersonRole ${pr}")
                 }
             }
+        }
+        redirect action: 'show', id: params.id
+    }
 
-            //@Deprecated
-            params?.responsibilityType?.each { key, value ->
-                PersonRole result
+    @Deprecated
+    @Transactional
+    private addPersonRoles(Person prs){
 
-                RefdataValue roleRdv = RefdataValue.get(params.responsibilityType[key])
-                Org org = Org.get(params.org[key])
+        if (params.functionType) {
+            PersonRole result
 
-                if (roleRdv && org) {
-                    def subject      // dynamic
-                    def subjectType = params.subjectType[key]
+            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            Org functionOrg = Org.get(params.functionOrg)
 
-                    switch (subjectType) {
-                        case "license":
-                            if (params.license) {
-                                subject = License.get(params.license[key])
-                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, lic: subject)
-                            }
-                            break;
-                        case "package":
-                            if (params.package) {
-                                subject = Package.get(params.package[key])
-                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, pkg: subject)
-                            }
-                            break;
-                        case "subscription":
-                            if (params.subscription) {
-                                subject = Subscription.get(params.subscription[key])
-                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
-                            }
-                            break;
-                        case "titleInstance":
-                            if (params.titleInstance) {
-                                subject = TitleInstance.get(params.titleInstance[key])
-                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
-                            }
-                            break;
-                    }
+            if (functionRdv && functionOrg) {
+                result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)
+
+                String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}"
+                if (PersonRole.find(query)) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
                 }
-
-                // TODO duplicate check
-                /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
-               log.debug("ignore adding PersonRole because of existing duplicate")
-           }
-           else */ if (result) {
+                else if (result) {
                     if (result.save()) {
                         log.debug("adding PersonRole ${result}")
                     }
                     else {
                         log.error("problem saving new PersonRole ${result}")
                     }
+                }
+            }
+
+            RefdataValue positionRdv = params.positionType ? RefdataValue.get(params.positionType) : null
+            Org positionOrg = Org.get(params.positionOrg)
+
+            if (positionRdv && positionOrg) {
+                result = new PersonRole(prs: prs, positionType: positionRdv, org: positionOrg)
+
+                String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}"
+                if (PersonRole.find(query)) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else if (result) {
+                    if (result.save()) {
+                        log.debug("adding PersonRole ${result}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${result}")
+                    }
+                }
+            }
+        }
+
+        //@Deprecated
+        params?.responsibilityType?.each { key, value ->
+            PersonRole result
+
+            RefdataValue roleRdv = RefdataValue.get(params.responsibilityType[key])
+            Org org = Org.get(params.org[key])
+
+            if (roleRdv && org) {
+                def subject      // dynamic
+                def subjectType = params.subjectType[key]
+
+                switch (subjectType) {
+                    case "license":
+                        if (params.license) {
+                            subject = License.get(params.license[key])
+                            result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, lic: subject)
+                        }
+                        break;
+                    case "package":
+                        if (params.package) {
+                            subject = Package.get(params.package[key])
+                            result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, pkg: subject)
+                        }
+                        break;
+                    case "subscription":
+                        if (params.subscription) {
+                            subject = Subscription.get(params.subscription[key])
+                            result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
+                        }
+                        break;
+                    case "titleInstance":
+                        if (params.titleInstance) {
+                            subject = TitleInstance.get(params.titleInstance[key])
+                            result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
+                        }
+                        break;
+                }
+            }
+
+            // TODO duplicate check
+            /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
+           log.debug("ignore adding PersonRole because of existing duplicate")
+       }
+       else */ if (result) {
+                if (result.save()) {
+                    log.debug("adding PersonRole ${result}")
+                }
+                else {
+                    log.error("problem saving new PersonRole ${result}")
                 }
             }
         }
