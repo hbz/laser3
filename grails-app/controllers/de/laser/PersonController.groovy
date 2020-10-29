@@ -33,132 +33,130 @@ class PersonController  {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
-        Org contextOrg = contextService.getOrg()
-        List userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
-        
-        switch (request.method) {
-		case 'GET':
-            def personInstance = new Person(params)
-            // processing dynamic form data
-            addPersonRoles(personInstance)
-            
-        	[personInstance: personInstance, userMemberships: userMemberships]
-			break
-		case 'POST':
-            if (formService.validateToken(params)) {
+        Person.withTransaction {
+            Org contextOrg = contextService.getOrg()
+            List userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
 
-                def personInstance = new Person(params)
-                if (!personInstance.save(flush: true)) {
-                    flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
-                    log.debug("Person could not be created: "+personInstance.errors )
-                    redirect(url: request.getHeader('referer'))
-                    //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
-                    return
-                }
-                // processing dynamic form data
-                //addPersonRoles(personInstance)
-                Org personRoleOrg
-                if(params.personRoleOrg)
-                {
-                    personRoleOrg = Org.get(params.personRoleOrg)
-                }else {
-                    personRoleOrg = contextOrg
-                }
+            switch (request.method) {
+                case 'GET':
+                    Person personInstance = new Person(params)
+                    // processing dynamic form data
+                    addPersonRoles(personInstance)
 
+                    [personInstance: personInstance, userMemberships: userMemberships]
+                    break
+                case 'POST':
+                    if (formService.validateToken(params)) {
 
-                if(params.functionType) {
-                    params.list('functionType').each {
-                        PersonRole personRole
-                        RefdataValue functionType = RefdataValue.get(it)
-                        personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
-
-                        if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, functionType: functionType)) {
-                            log.debug("ignore adding PersonRole because of existing duplicate")
+                        Person personInstance = new Person(params)
+                        if (!personInstance.save()) {
+                            flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
+                            log.debug("Person could not be created: " + personInstance.errors)
+                            redirect(url: request.getHeader('referer'))
+                            //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
+                            return
                         }
-                        else if (personRole) {
-                            if (personRole.save()) {
-                                log.debug("adding PersonRole ${personRole}")
-                            }
-                            else {
-                                log.error("problem saving new PersonRole ${personRole}")
-                            }
+                        // processing dynamic form data
+                        //addPersonRoles(personInstance)
+                        Org personRoleOrg
+                        if (params.personRoleOrg) {
+                            personRoleOrg = Org.get(params.personRoleOrg)
                         }
-                    }
-                }
-
-                if(params.positionType) {
-                    params.list('positionType').each {
-                        PersonRole personRole
-                        RefdataValue positionType = RefdataValue.get(it)
-                        personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
-
-                        if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, positionType: positionType)) {
-                            log.debug("ignore adding PersonRole because of existing duplicate")
+                        else {
+                            personRoleOrg = contextOrg
                         }
-                        else if (personRole) {
-                            if (personRole.save()) {
-                                log.debug("adding PersonRole ${personRole}")
-                            }
-                            else {
-                                log.error("problem saving new PersonRole ${personRole}")
+
+                        if (params.functionType) {
+                            params.list('functionType').each {
+                                PersonRole personRole
+                                RefdataValue functionType = RefdataValue.get(it)
+                                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
+
+                                if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
+                                    log.debug("ignore adding PersonRole because of existing duplicate")
+                                }
+                                else if (personRole) {
+                                    if (personRole.save()) {
+                                        log.debug("adding PersonRole ${personRole}")
+                                    }
+                                    else {
+                                        log.error("problem saving new PersonRole ${personRole}")
+                                    }
+                                }
                             }
                         }
-                    }
 
-                }
+                        if (params.positionType) {
+                            params.list('positionType').each {
+                                PersonRole personRole
+                                RefdataValue positionType = RefdataValue.get(it)
+                                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
 
-                if(params.content) {
-                    params.list('content').eachWithIndex { content, i->
-                        if (content) {
-                            RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-                            RefdataValue rdvTY = RDStore.CONTACT_TYPE_JOBRELATED
-
-                            if (RDStore.CCT_EMAIL == rdvCT) {
-                                if (!formService.validateEmailAddress(content)) {
-                                    flash.error = message(code: 'contact.create.email.error')
-                                    return
+                                if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
+                                    log.debug("ignore adding PersonRole because of existing duplicate")
+                                }
+                                else if (personRole) {
+                                    if (personRole.save()) {
+                                        log.debug("adding PersonRole ${personRole}")
+                                    }
+                                    else {
+                                        log.error("problem saving new PersonRole ${personRole}")
+                                    }
                                 }
                             }
 
-                            Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: content)
-                            contact.save()
                         }
-                    }
-                }
 
-                if(params.multipleAddresses) {
-                    params.list('multipleAddresses').eachWithIndex { name, i ->
-                        Address addressInstance = new Address(
-                                name: (1 == params.list('name').size()) ? params.name : params.name[i],
-                                additionFirst:  (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
-                                additionSecond:  (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
-                                street_1:  (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
-                                street_2:  (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
-                                zipcode:  (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
-                                city:  (1 == params.list('city').size()) ? params.city : params.city[i],
-                                region:  (1 == params.list('region').size()) ? params.region : params.region[i],
-                                country:  (1 ==params.list('country').size()) ? params.country : params.country[i],
-                                pob:  (1 == params.list('pob').size()) ? params.pob : params.pob[i],
-                                pobZipcode:  (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
-                                pobCity:  (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
-                                prs: personInstance)
+                        if (params.content) {
+                            params.list('content').eachWithIndex { content, i ->
+                                if (content) {
+                                    RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
 
-                        params.list('type').each {
-                            if(!(it in addressInstance.type))
-                            {
-                                addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                                    if (RDStore.CCT_EMAIL == rdvCT) {
+                                        if (!formService.validateEmailAddress(content)) {
+                                            flash.error = message(code: 'contact.create.email.error')
+                                            return
+                                        }
+                                    }
+
+                                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                                    contact.save()
+                                }
                             }
                         }
-                        if (!addressInstance.save()) {
-                            flash.error = message(code: 'default.save.error.general.message')
-                            log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                            redirect(url: request.getHeader('referer'), params: params)
-                            return
-                        }
-                    }
-                }
 
-                /*['contact1', 'contact2', 'contact3'].each { c ->
+                        if (params.multipleAddresses) {
+                            params.list('multipleAddresses').eachWithIndex { name, i ->
+                                Address addressInstance = new Address(
+                                        name: (1 == params.list('name').size()) ? params.name : params.name[i],
+                                        additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
+                                        additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
+                                        street_1: (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
+                                        street_2: (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
+                                        zipcode: (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
+                                        city: (1 == params.list('city').size()) ? params.city : params.city[i],
+                                        region: (1 == params.list('region').size()) ? params.region : params.region[i],
+                                        country: (1 == params.list('country').size()) ? params.country : params.country[i],
+                                        pob: (1 == params.list('pob').size()) ? params.pob : params.pob[i],
+                                        pobZipcode: (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
+                                        pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
+                                        prs: personInstance)
+
+                                params.list('type').each {
+                                    if (!(it in addressInstance.type)) {
+                                        addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                                    }
+                                }
+                                if (!addressInstance.save()) {
+                                    flash.error = message(code: 'default.save.error.general.message')
+                                    log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                                    redirect(url: request.getHeader('referer'), params: params)
+                                    return
+                                }
+                            }
+                        }
+
+                        /*['contact1', 'contact2', 'contact3'].each { c ->
                     if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
 
                         RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
@@ -176,17 +174,19 @@ class PersonController  {
                     }
                 }*/
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
+                    }
+                    redirect(url: request.getHeader('referer'))
+                    break
             }
-            redirect(url: request.getHeader('referer'))
-			break
-		}
+        }
     }
 
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Person personInstance = Person.get(params.id)
-        Org contextOrg      = contextService.org
+        Org contextOrg = contextService.org
+
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
             //redirect action: 'list'
@@ -200,10 +200,6 @@ class PersonController  {
                 return
             }
         }
-
-        //boolean myPublicContact = false
-        //if(personInstance.isPublic == RDStore.YN_YES && personInstance.tenant == contextService.org && !personInstance.roleLinks)
-        //    myPublicContact = true
 
         boolean myPublicContact = false // TODO: check
 
@@ -235,234 +231,200 @@ class PersonController  {
         //redirect controller: 'person', action: 'show', params: params
         //return // ----- deprecated
 
-        Org contextOrg = contextService.getOrg()
+        Person.withTransaction {
+            Org contextOrg = contextService.getOrg()
+            Person personInstance = Person.get(params.id)
 
-        Person personInstance = Person.get(params.id)
+            if (!personInstance) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            if (!addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
+                flash.error = message(code: 'default.notAutorized.message')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
 
-        if (! personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
-            flash.error = message(code: 'default.notAutorized.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
+            personInstance.properties = params
 
-	        personInstance.properties = params
-
-	        if (!personInstance.save()) {
+            if (!personInstance.save()) {
                 log.info(personInstance.errors)
                 flash.error = message(code: 'default.not.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
                 redirect(url: request.getHeader('referer'))
-	            return
-	        }
+                return
+            }
 
-        Org personRoleOrg
-        if(params.personRoleOrg)
-        {
-            personRoleOrg = Org.get(params.personRoleOrg)
-        }else {
-            personRoleOrg = contextOrg
-        }
+            Org personRoleOrg
+            if (params.personRoleOrg) {
+                personRoleOrg = Org.get(params.personRoleOrg)
+            }
+            else {
+                personRoleOrg = contextOrg
+            }
 
-        if(params.functionType) {
-            params.list('functionType').each {
-                PersonRole personRole
-                RefdataValue functionType = RefdataValue.get(it)
-                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
+            if (params.functionType) {
+                params.list('functionType').each {
+                    PersonRole personRole
+                    RefdataValue functionType = RefdataValue.get(it)
+                    personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
 
-                if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, functionType: functionType)) {
-                    log.debug("ignore adding PersonRole because of existing duplicate")
-                }
-                else if (personRole) {
-                    if (personRole.save()) {
-                        log.debug("adding PersonRole ${personRole}")
+                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
                     }
-                    else {
-                        log.error("problem saving new PersonRole ${personRole}")
-                    }
-                }
-            }
-
-            personInstance.getPersonRoleByOrg(contextOrg).each {psr ->
-                if(psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))){
-                    personInstance.removeFromRoleLinks(psr)
-                    psr.delete()
-                }
-            }
-
-        }
-
-        if(params.positionType) {
-            params.list('positionType').each {
-                PersonRole personRole
-                RefdataValue positionType = RefdataValue.get(it)
-                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
-
-                if (PersonRole.findWhere(prs: personInstance, org:  personRoleOrg, positionType: positionType)) {
-                    log.debug("ignore adding PersonRole because of existing duplicate")
-                }
-                else if (personRole) {
-                    if (personRole.save()) {
-                        log.debug("adding PersonRole ${personRole}")
-                    }
-                    else {
-                        log.error("problem saving new PersonRole ${personRole}")
-                    }
-                }
-            }
-
-            personInstance.getPersonRoleByOrg(contextOrg).each {psr ->
-                if(psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))){
-                    personInstance.removeFromRoleLinks(psr)
-                    psr.delete()
-                }
-            }
-
-        }
-
-        personInstance.contacts.each {contact ->
-            if(params."content${contact.id}"){
-
-                contact.content = params."content${contact.id}"
-                contact.save()
-            }
-        }
-
-        if(params.content) {
-            params.list('content').eachWithIndex { content, i->
-                if (content) {
-                    RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-                    RefdataValue rdvTY = RDStore.CONTACT_TYPE_JOBRELATED
-
-                    if (RDStore.CCT_EMAIL == rdvCT) {
-                        if (!formService.validateEmailAddress(content)) {
-                            flash.error = message(code: 'contact.create.email.error')
-                            return
+                    else if (personRole) {
+                        if (personRole.save()) {
+                            log.debug("adding PersonRole ${personRole}")
+                        }
+                        else {
+                            log.error("problem saving new PersonRole ${personRole}")
                         }
                     }
+                }
 
-                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: content)
+                personInstance.getPersonRoleByOrg(contextOrg).each { psr ->
+                    if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                }
+
+            }
+
+            if (params.positionType) {
+                params.list('positionType').each {
+                    PersonRole personRole
+                    RefdataValue positionType = RefdataValue.get(it)
+                    personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
+
+                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
+                    }
+                    else if (personRole) {
+                        if (personRole.save()) {
+                            log.debug("adding PersonRole ${personRole}")
+                        }
+                        else {
+                            log.error("problem saving new PersonRole ${personRole}")
+                        }
+                    }
+                }
+
+                personInstance.getPersonRoleByOrg(contextOrg).each { psr ->
+                    if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                }
+
+            }
+
+            personInstance.contacts.each { contact ->
+                if (params."content${contact.id}") {
+                    contact.content = params."content${contact.id}"
                     contact.save()
                 }
             }
-        }
 
-        if(params.multipleAddresses) {
-            params.list('multipleAddresses').eachWithIndex { name, i ->
-                Address addressInstance = new Address(
-                        name: (1 == params.list('name').size()) ? params.name : params.name[i],
-                        additionFirst:  (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
-                        additionSecond:  (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
-                        street_1:  (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
-                        street_2:  (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
-                        zipcode:  (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
-                        city:  (1 == params.list('city').size()) ? params.city : params.city[i],
-                        region:  (1 == params.list('region').size()) ? params.region : params.region[i],
-                        country:  (1 ==params.list('country').size()) ? params.country : params.country[i],
-                        pob:  (1 == params.list('pob').size()) ? params.pob : params.pob[i],
-                        pobZipcode:  (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
-                        pobCity:  (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
-                        prs: personInstance)
+            if (params.content) {
+                params.list('content').eachWithIndex { content, i ->
+                    if (content) {
+                        RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
 
-                params.list('type').each {
-                    if(!(it in addressInstance.type))
-                    {
-                        addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                        if (RDStore.CCT_EMAIL == rdvCT) {
+                            if (!formService.validateEmailAddress(content)) {
+                                flash.error = message(code: 'contact.create.email.error')
+                                return
+                            }
+                        }
+
+                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                        contact.save()
                     }
                 }
-                if (!addressInstance.save()) {
-                    flash.error = message(code: 'default.save.error.general.message')
-                    log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                    redirect(url: request.getHeader('referer'), params: params)
-                    return
+            }
+
+            if (params.multipleAddresses) {
+                params.list('multipleAddresses').eachWithIndex { name, i ->
+                    Address addressInstance = new Address(
+                            name: (1 == params.list('name').size()) ? params.name : params.name[i],
+                            additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
+                            additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
+                            street_1: (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
+                            street_2: (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
+                            zipcode: (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
+                            city: (1 == params.list('city').size()) ? params.city : params.city[i],
+                            region: (1 == params.list('region').size()) ? params.region : params.region[i],
+                            country: (1 == params.list('country').size()) ? params.country : params.country[i],
+                            pob: (1 == params.list('pob').size()) ? params.pob : params.pob[i],
+                            pobZipcode: (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
+                            pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
+                            prs: personInstance)
+
+                    params.list('type').each {
+                        if (!(it in addressInstance.type)) {
+                            addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                        }
+                    }
+                    if (!addressInstance.save()) {
+                        flash.error = message(code: 'default.save.error.general.message')
+                        log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                        redirect(url: request.getHeader('referer'), params: params)
+                        return
+                    }
                 }
             }
+
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
+            redirect(url: request.getHeader('referer'))
         }
-
-
-		flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
-        redirect(url: request.getHeader('referer'))
-
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def _delete() {
-        def personInstance = Person.get(params.id)
-        if (! personInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
-            String referer = request.getHeader('referer')
-            if (referer.endsWith('person/show/'+params.id)) {
-                if (params.previousReferer && ! params.previousReferer.endsWith('person/show/'+params.id)){
-                    redirect(url: params.previousReferer)
+        Person.withTransaction {
+            Person personInstance = Person.get(params.id)
+            if (!personInstance) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
+                String referer = request.getHeader('referer')
+                if (referer.endsWith('person/show/' + params.id)) {
+                    if (params.previousReferer && !params.previousReferer.endsWith('person/show/' + params.id)) {
+                        redirect(url: params.previousReferer)
+                    }
+                    else {
+                        redirect controller: 'myInstitution', action: 'addressbook'
+                    }
                 } else {
-                    redirect controller: 'myInstitution', action: 'addressbook'
+                    redirect(url: request.getHeader('referer'))
                 }
-            } else {
-                //redirect action: 'list'
-                redirect(url: request.getHeader('referer'))
+                return
             }
-            return
-        }
-        if (! addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
-            redirect action: 'show', id: params.id
-            return
-        }
-
-        try {
-            personInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id])
-            String referer = request.getHeader('referer')
-            if (referer.endsWith('person/show/'+params.id)) {
-                if (params.previousReferer && ! params.previousReferer.endsWith('person/show/'+params.id)){
-                    redirect(url: params.previousReferer)
-                } else {
-                    redirect controller: 'myInstitution', action: 'addressbook'
-                }
-            } else {
-//                redirect action: 'list'
-                redirect(url: referer)
+            if (!addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
+                redirect action: 'show', id: params.id
+                return
             }
-        } catch (DataIntegrityViolationException e) {
- 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id])
-            redirect action: 'show', id: params.id
-        }
-    }
-    
-    @Secured(['ROLE_USER'])
-    def properties() {
-        def personInstance = Person.get(params.id)
-        if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
-            //redirect action: 'list'
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        
-        Org org = contextService.getOrg()
 
-        boolean editable = true
-
-        // create mandatory PersonPrivateProperties if not existing
-
-        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.PRS_PROP, true, org)
-
-        mandatories.each{ PropertyDefinition pd ->
-            if (! PersonProperty.findWhere(owner: personInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd, org)
-
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors.toString())
+            try {
+                personInstance.delete()
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id])
+                String referer = request.getHeader('referer')
+                if (referer.endsWith('person/show/' + params.id)) {
+                    if (params.previousReferer && !params.previousReferer.endsWith('person/show/' + params.id)) {
+                        redirect(url: params.previousReferer)
+                    }
+                    else {
+                        redirect controller: 'myInstitution', action: 'addressbook'
+                    }
                 } else {
-                    log.debug("New person private property created via mandatory: " + newProp.type.name)
+                    redirect(url: referer)
                 }
             }
+            catch (DataIntegrityViolationException e) {
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id])
+                redirect action: 'show', id: params.id
+            }
         }
-
-        [personInstance: personInstance, editable: editable]
     }
 
     @Secured(['ROLE_USER'])
@@ -485,7 +447,7 @@ class PersonController  {
     @Deprecated
     @Secured(['ROLE_USER'])
     def ajax() {        
-        def person                  = Person.get(params.id)
+        Person person               = Person.get(params.id)
         def existingPrsLinks
         
         def allSubjects             // all subjects of given type
@@ -570,42 +532,109 @@ class PersonController  {
         }
     }
 
-    @Deprecated
-    private deletePersonRoles(Person prs){
+    def addPersonRole() {
+        PersonRole.withTransaction {
+            PersonRole result
+            Person prs = Person.get(params.id)
 
-        params?.personRoleDeleteIds?.each{ key, value ->
-             def prsRole = PersonRole.get(value)
-             if(prsRole) {
-                 log.debug("deleting PersonRole ${prsRole}")
-                 prsRole.delete(flush: true)
-             }
+            if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+
+                if (params.newPrsRoleOrg && params.newPrsRoleType) {
+                    Org org = Org.get(params.newPrsRoleOrg)
+                    RefdataValue rdv = RefdataValue.get(params.newPrsRoleType)
+
+                    def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
+
+                    if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
+
+                        String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}"
+                        if (PersonRole.find(query)) {
+                            log.debug("ignore adding PersonRole because of existing duplicate")
+                        }
+                        else {
+                            result = new PersonRole(prs: prs, org: org)
+                            result."${prAttr}" = rdv
+
+                            if (result.save()) {
+                                log.debug("adding PersonRole ${result}")
+                            }
+                            else {
+                                log.error("problem saving new PersonRole ${result}")
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (params.redirect) {
+                redirect(url: request.getHeader('referer'), params: params)
+            }
+            else {
+                redirect action: 'show', id: params.id
+            }
         }
     }
 
+    def deletePersonRole() {
+        PersonRole.withTransaction {
+            Person prs = Person.get(params.id)
 
-    def addPersonRole() {
-        PersonRole result
-        Person prs = Person.get(params.id)
+            if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
 
-        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+                if (params.oid) {
+                    PersonRole pr = (PersonRole) genericOIDService.resolveOID(params.oid)
 
-            if (params.newPrsRoleOrg && params.newPrsRoleType) {
-                Org org = Org.get(params.newPrsRoleOrg)
-                RefdataValue rdv = RefdataValue.get(params.newPrsRoleType)
-
-                def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
-
-                if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
-
-                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}"
-                    if (PersonRole.find( query )) {
-                        log.debug("ignore adding PersonRole because of existing duplicate")
+                    if (pr && (pr.prs.id == prs.id) && pr.delete()) {
+                        log.debug("deleted PersonRole ${pr}")
                     }
                     else {
-                        result = new PersonRole(prs: prs, org: org)
-                        result."${prAttr}" = rdv
+                        log.debug("problem deleting PersonRole ${pr}")
+                    }
+                }
+            }
+            redirect action: 'show', id: params.id
+        }
+    }
 
-                        if (result.save(flush: true)) {
+    @Deprecated
+    private addPersonRoles(Person prs){
+
+        Person.withTransaction {
+            if (params.functionType) {
+                PersonRole result
+
+                RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+                Org functionOrg = Org.get(params.functionOrg)
+
+                if (functionRdv && functionOrg) {
+                    result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)
+
+                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}"
+                    if (PersonRole.find(query)) {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
+                    }
+                    else if (result) {
+                        if (result.save()) {
+                            log.debug("adding PersonRole ${result}")
+                        }
+                        else {
+                            log.error("problem saving new PersonRole ${result}")
+                        }
+                    }
+                }
+
+                RefdataValue positionRdv = params.positionType ? RefdataValue.get(params.positionType) : null
+                Org positionOrg = Org.get(params.positionOrg)
+
+                if (positionRdv && positionOrg) {
+                    result = new PersonRole(prs: prs, positionType: positionRdv, org: positionOrg)
+
+                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}"
+                    if (PersonRole.find(query)) {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
+                    }
+                    else if (result) {
+                        if (result.save()) {
                             log.debug("adding PersonRole ${result}")
                         }
                         else {
@@ -614,50 +643,51 @@ class PersonController  {
                     }
                 }
             }
-        }
 
-        if (params.redirect) {
-            redirect(url: request.getHeader('referer'), params: params)
-        } else {
-            redirect action: 'show', id: params.id
-        }
-    }
+            //@Deprecated
+            params?.responsibilityType?.each { key, value ->
+                PersonRole result
 
-    def deletePersonRole() {
-        Person prs = Person.get(params.id)
+                RefdataValue roleRdv = RefdataValue.get(params.responsibilityType[key])
+                Org org = Org.get(params.org[key])
 
-        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+                if (roleRdv && org) {
+                    def subject      // dynamic
+                    def subjectType = params.subjectType[key]
 
-            if (params.oid) {
-                def pr = genericOIDService.resolveOID(params.oid)
-
-                if (pr && (pr.prs.id == prs.id) && pr.delete(flush: true)) {
-                    log.debug("deleted PersonRole ${pr}")
-                } else {
-                    log.debug("problem deleting PersonRole ${pr}")
+                    switch (subjectType) {
+                        case "license":
+                            if (params.license) {
+                                subject = License.get(params.license[key])
+                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, lic: subject)
+                            }
+                            break;
+                        case "package":
+                            if (params.package) {
+                                subject = Package.get(params.package[key])
+                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, pkg: subject)
+                            }
+                            break;
+                        case "subscription":
+                            if (params.subscription) {
+                                subject = Subscription.get(params.subscription[key])
+                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
+                            }
+                            break;
+                        case "titleInstance":
+                            if (params.titleInstance) {
+                                subject = TitleInstance.get(params.titleInstance[key])
+                                result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
+                            }
+                            break;
+                    }
                 }
-            }
-        }
-        redirect action: 'show', id: params.id
-    }
 
-    @Deprecated
-    private addPersonRoles(Person prs){
-
-        if (params.functionType) {
-            PersonRole result
-
-            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
-            Org functionOrg = Org.get(params.functionOrg)
-
-            if (functionRdv && functionOrg) {
-                result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)
-
-                String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}"
-                if (PersonRole.find( query )) {
-                    log.debug("ignore adding PersonRole because of existing duplicate")
-                }
-                else if (result) {
+                // TODO duplicate check
+                /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
+               log.debug("ignore adding PersonRole because of existing duplicate")
+           }
+           else */ if (result) {
                     if (result.save()) {
                         log.debug("adding PersonRole ${result}")
                     }
@@ -666,79 +696,6 @@ class PersonController  {
                     }
                 }
             }
-
-            def positionRdv = params.positionType ? RefdataValue.get(params.positionType) : null
-            def positionOrg = Org.get(params.positionOrg)
-
-            if (positionRdv && positionOrg) {
-                result = new PersonRole(prs: prs, positionType: positionRdv, org: positionOrg)
-
-                String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}"
-                if (PersonRole.find( query )) {
-                    log.debug("ignore adding PersonRole because of existing duplicate")
-                }
-                else if (result) {
-                    if (result.save(flush: true)) {
-                        log.debug("adding PersonRole ${result}")
-                    }
-                    else {
-                        log.error("problem saving new PersonRole ${result}")
-                    }
-                }
-            }
         }
-
-        //@Deprecated
-       params?.responsibilityType?.each{ key, value ->
-           PersonRole result
-
-           RefdataValue roleRdv = RefdataValue.get(params.responsibilityType[key])
-           Org org              = Org.get(params.org[key])
-
-           if (roleRdv && org) {
-               def subject      // dynamic
-               def subjectType = params.subjectType[key]
-
-               switch (subjectType) {
-                   case "license":
-                       if (params.license) {
-                           subject = License.get(params.license[key])
-                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, lic: subject)
-                       }
-                       break;
-                   case "package":
-                       if (params.package) {
-                           subject = Package.get(params.package[key])
-                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, pkg: subject)
-                       }
-                       break;
-                   case "subscription":
-                       if (params.subscription) {
-                           subject = Subscription.get(params.subscription[key])
-                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, sub: subject)
-                       }
-                       break;
-                   case "titleInstance":
-                       if (params.titleInstance) {
-                           subject = TitleInstance.get(params.titleInstance[key])
-                           result = new PersonRole(prs: prs, responsibilityType: roleRdv, org: org, title: subject)
-                       }
-                       break;
-               }
-           }
-
-           // TODO duplicate check
-           /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
-               log.debug("ignore adding PersonRole because of existing duplicate")
-           }
-           else */ if (result) {
-               if (result.save(flush:true)) {
-                   log.debug("adding PersonRole ${result}")
-               }
-               else {
-                   log.error("problem saving new PersonRole ${result}")
-               }
-           }
-       }
     }
 }

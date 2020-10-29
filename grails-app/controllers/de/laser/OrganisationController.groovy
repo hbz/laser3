@@ -550,12 +550,11 @@ class OrganisationController  {
     def createMember() {
         Org contextOrg = contextService.org
         //new institution = consortia member, implies combo type consortium
-        RefdataValue orgSector = RDStore.O_SECTOR_HIGHER_EDU
         Org orgInstance
         if(formService.validateToken(params)) {
             try {
                 // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, sector: orgSector, status: RDStore.O_STATUS_CURRENT)
+                orgInstance = new Org(name: params.institution, sector: RDStore.O_SECTOR_HIGHER_EDU, status: RDStore.O_STATUS_CURRENT)
                 orgInstance.save(flush:true)
 
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type: RDStore.COMBO_TYPE_CONSORTIUM)
@@ -583,9 +582,8 @@ class OrganisationController  {
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     Map findOrganisationMatches() {
         Map memberMap = [:]
-        RefdataValue comboType = RDStore.COMBO_TYPE_CONSORTIUM
 
-        Combo.findAllByType(comboType).each { lObj ->
+        Combo.findAllByType(RDStore.COMBO_TYPE_CONSORTIUM).each { lObj ->
             Combo link = (Combo) lObj
             List members = memberMap.get(link.fromOrg.id)
             if(!members) {
@@ -596,7 +594,7 @@ class OrganisationController  {
             memberMap.put(link.fromOrg.id,members)
         }
 
-        Map result = [institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
+        Map result = [institution:contextService.org, organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
             result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
@@ -712,12 +710,8 @@ class OrganisationController  {
 
         pu.setBenchmark('editable_identifier')
 
-
-        RefdataValue orgSector = RDStore.O_SECTOR_PUBLISHER
-        RefdataValue orgType = RDStore.OT_PROVIDER
-
         //IF ORG is a Provider
-        if(result.orgInstance?.sector == orgSector || orgType.id in result.orgInstance?.getAllOrgTypeIds()) {
+        if(result.orgInstance?.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.orgInstance?.getAllOrgTypeIds()) {
             pu.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")

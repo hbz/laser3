@@ -1,4 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore" %>
+<laser:serviceInjection/>
 <!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">

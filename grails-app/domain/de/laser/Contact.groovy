@@ -29,7 +29,6 @@ class Contact implements Comparable<Contact>{
     RefdataValue type
     
     static mapping = {
-        cache  true
         id          column:'ct_id'
         version     column:'ct_version'
         content     column:'ct_content'

@@ -286,10 +286,6 @@ class MyInstitutionController  {
         result.offset   = params.format? 0 : result.offset
         result.compare = params.compare ?: ''
 
-        RefdataValue licensee_role           = RDStore.OR_LICENSEE
-        RefdataValue licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        RefdataValue lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-
         String base_qry
         Map qry_params
 
@@ -304,21 +300,21 @@ class MyInstitutionController  {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution]
+            qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
         else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution]
+            qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
             if(result.editable)
                 licenseFilterTable << "action"
         }
         else {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where  o.roleType = :roleType AND o.org = :lic_org ) "
-            qry_params = [roleType:licensee_cons_role, lic_org:result.institution]
+            qry_params = [roleType:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "licensingConsortium"
         }
         result.licenseFilterTable = licenseFilterTable
@@ -378,7 +374,7 @@ class MyInstitutionController  {
             selCons.each { String sel ->
                 consortia << Long.parseLong(sel)
             }
-            qry_params += [licCons:lic_cons_role,cons:consortia]
+            qry_params += [licCons:RDStore.OR_LICENSING_CONSORTIUM, cons:consortia]
         }
 
         if (date_restriction) {
@@ -971,9 +967,7 @@ join sub.orgRelations or_sub where
                 }
             }
 
-            RefdataValue license_type = RDStore.LICENSE_TYPE_ACTUAL
-
-            License licenseInstance = new License(type: license_type, reference: params.licenseName,
+            License licenseInstance = new License(type: RDStore.LICENSE_TYPE_ACTUAL, reference: params.licenseName,
                     startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
                     endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
                     status: RefdataValue.get(params.status),
@@ -987,17 +981,13 @@ join sub.orgRelations or_sub where
             }
             else {
                 log.debug("Save ok")
-                RefdataValue licensee_role = RDStore.OR_LICENSEE
-                RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
                 log.debug("adding org link to new license")
-
-
                 OrgRole orgRole
                 if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
-                    orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: lic_cons_role)
+                    orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
                 } else {
-                    orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
+                    orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
                 }
 
                 if (!orgRole.save()) {
