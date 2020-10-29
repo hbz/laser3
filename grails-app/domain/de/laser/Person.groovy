@@ -39,7 +39,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     Date lastUpdatedCascading
 
     static mapping = {
-        cache  true
         id              column:'prs_id'
         globalUID       column:'prs_guid'
         version         column:'prs_version'
