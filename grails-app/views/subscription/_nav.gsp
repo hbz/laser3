@@ -11,15 +11,8 @@
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
     </g:else>
 
-    <g:if test="${(showConsortiaFunctions || showCollectiveFunctions ) && !subscriptionInstance.instanceOf}">
-        <%
-            String message
-            if(showConsortiaFunctions)
-                message = "subscription.details.consortiaMembers.label"
-            else if(showCollectiveFunctions)
-                message = "subscription.details.collectiveMembers.label"
-        %>
-        <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="${message}" />
+    <g:if test="${showConsortiaFunctions && !subscriptionInstance.instanceOf}">
+        <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="${"subscription.details.consortiaMembers.label"}" />
 
         <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveysConsortia" params="${[id:params.id]}" message="subscription.details.surveys.label" />
 
