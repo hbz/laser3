@@ -111,10 +111,6 @@ class CompareService {
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
 
-        RefdataValue licensee_role = RDStore.OR_LICENSEE
-        RefdataValue licensee_cons_role = RDStore.OR_LICENSEE_CONS
-        RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
         String base_qry
         Map qry_params
 
@@ -122,7 +118,7 @@ class CompareService {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType1: licensee_role, roleType2: licensee_cons_role, lic_org: result.institution]
+            qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
 
         } else if (accessService.checkPerm("ORG_CONSORTIUM")) {
             base_qry = """from License as l where (
@@ -135,12 +131,12 @@ class CompareService {
                     )
                 )
             )))"""
-            qry_params = [roleTypeC: lic_cons_role, roleTypeL: licensee_cons_role, lic_org: result.institution]
+            qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
         } else {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType: licensee_cons_role, lic_org: result.institution]
+            qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
         }
 
         if (params.status) {
@@ -168,25 +164,18 @@ class CompareService {
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
 
-        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
-        RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        RefdataValue role_subColl = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_collective = RDStore.OR_SUBSCRIPTION_COLLECTIVE
-
-
         String base_qry
         Map qry_params = [:]
 
         if (accessService.checkPerm(result.institution, 'ORG_CONSORTIUM')) {
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
-            qry_params << ['roleType': role_sub_consortia, 'activeInst': result.institution]
-        } else {
-
+            qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution]
+        }
+        else {
             base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-            qry_params << ['roleType1': role_sub, 'roleType2': [role_subCons, role_subColl], 'activeInst': result.institution, 'scRoleType': [role_sub_consortia, role_sub_collective]]
+            qry_params << ['roleType1': RDStore.OR_SUBSCRIBER, 'roleType2': [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE], 'activeInst': result.institution, 'scRoleType': [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE]]
         }
 
         if (params.status) {
