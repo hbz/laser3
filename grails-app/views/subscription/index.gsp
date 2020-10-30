@@ -24,14 +24,14 @@
         class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<semui:xEditable owner="${subscriptionInstance}" field="name"/>
+<semui:xEditable owner="${subscription}" field="name"/>
 </h1>
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="index"
+<semui:anualRings object="${subscription}" controller="subscription" action="index"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <g:render template="nav"/>
 
-<g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <g:render template="message"/>
 </g:if>
 
@@ -92,7 +92,7 @@
 
                 <semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
                 <g:form class="ui form" controller="subscription" action="index"
-                        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
+                        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                         method="post" enctype="multipart/form-data">
                     <div class="three fields">
                         <div class="field">
@@ -141,17 +141,17 @@
         </div>
     </g:if>
 
-    <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+    <g:if test="${subscription.ieGroups.size() > 0}">
             <div class="ui top attached tabular menu">
-                <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" class="item ${params.titleGroup ? '': 'active' }">
+                <g:link controller="subscription" action="index" id="${subscription.id}" class="item ${params.titleGroup ? '': 'active' }">
                     Alle
                     <span class="ui circular label">
                     ${num_ies}
                     </span>
                 </g:link>
 
-                <g:each in="${subscriptionInstance.ieGroups.sort{it.name}}" var="titleGroup">
-                    <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.id]" class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active': '' }">
+                <g:each in="${subscription.ieGroups.sort{it.name}}" var="titleGroup">
+                    <g:link controller="subscription" action="index" id="${subscription.id}" params="[titleGroup: titleGroup.id]" class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active': '' }">
                         ${titleGroup.name}
                         <span class="ui circular label">
                             ${titleGroup.items.size()}
@@ -183,7 +183,7 @@
                             <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
                             <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
                                 <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
-                                <g:each in="${subscriptionInstance.packages}" var="sp">
+                                <g:each in="${subscription.packages}" var="sp">
                                     <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
                                 </g:each>
                             </select>
@@ -243,7 +243,7 @@
     <div class="row">
         <div class="column">
 
-            <g:form action="subscriptionBatchUpdate" params="${[id: subscriptionInstance?.id]}" class="ui form">
+            <g:form action="subscriptionBatchUpdate" params="${[id: subscription.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
                 <g:hiddenField name="sort" value="${params.sort}"/>
                 <g:hiddenField name="order" value="${params.order}"/>
@@ -261,7 +261,7 @@
                         <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices" /></th>
-                        <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                        <g:if test="${subscription.ieGroups.size() > 0}">
                             <th class="two wide"><g:message code="subscription.details.ieGroups" /></th>
                         </g:if>
                         <th class="one wide"></th>
@@ -339,11 +339,11 @@
                             <th>
 
                             </th>
-                            <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                            <g:if test="${subscription.ieGroups.size() > 0}">
                                 <th class="two wide">
                                     <select class="ui dropdown" name="titleGroup" id="titleGroup">
                                         <option value="">${message(code: 'default.select.choose.label')}</option>
-                                        <g:each in="${subscriptionInstance.ieGroups.sort{it.name}}" var="titleGroup">
+                                        <g:each in="${subscription.ieGroups.sort{it.name}}" var="titleGroup">
                                             <option value="${titleGroup.id}">${titleGroup.name}</option>
                                         </g:each>
                                     </select>
@@ -360,7 +360,7 @@
                             </th>
                         </g:if>
                         <g:else>
-                            <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                            <g:if test="${subscription.ieGroups.size() > 0}">
                                 <th colspan="10"></th>
                             </g:if>
                             <g:else>
@@ -467,20 +467,20 @@
                                     </g:if>
                                     <g:elseif test="${editable}">
                                         <g:link action="addEmptyPriceItem" class="ui icon positive button"
-                                                params="${[ieid: ie.id, id: subscriptionInstance.id]}">
+                                                params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
                                         </g:link>
                                     </g:elseif>
                                 </td>
-                                <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+                                <g:if test="${subscription.ieGroups.size() > 0}">
                                     <td>
                                         <div class="la-icon-list">
                                         <g:each in="${ie.ieGroups.sort{it.ieGroup.name}}" var="titleGroup">
                                             <div class="item">
                                                 <i class="grey icon object group la-popup-tooltip la-delay" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                 <div class="content">
-                                                <g:link controller="subscription" action="index" id="${subscriptionInstance.id}" params="[titleGroup: titleGroup.ieGroup.id]" >${titleGroup.ieGroup.name}</g:link>
+                                                <g:link controller="subscription" action="index" id="${subscription.id}" params="[titleGroup: titleGroup.ieGroup.id]" >${titleGroup.ieGroup.name}</g:link>
                                                 </div>
                                             </div>
                                         </g:each>
@@ -488,7 +488,7 @@
                                         <g:if test="${editable}">
                                             <div class="ui grid">
                                                 <div class="right aligned wide column">
-                                                    <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscriptionInstance.id]}" class="ui icon button trigger-modal"
+                                                    <g:link action="editEntitlementGroupItem" params="${[cmd:'edit', ie:ie.id, id: subscription.id]}" class="ui icon button trigger-modal"
                                                             data-tooltip="${message(code:'subscription.details.ieGroups.edit')}">
                                                         <i class="object group icon"></i>
                                                     </g:link>
@@ -501,7 +501,7 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link action="removeEntitlement" class="ui icon negative button"
-                                                params="${[ieid: ie.id, sub: subscriptionInstance.id]}"
+                                                params="${[ieid: ie.id, sub: subscription.id]}"
                                                 onClick="return confirm('${message(code: 'subscription.details.removeEntitlement.confirm', default: 'Are you sure you wish to delete this entitlement?')}');">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
@@ -516,7 +516,7 @@
 
         </div>
     </div><!--.row-->
-    <g:if test="${subscriptionInstance.ieGroups.size() > 0}">
+    <g:if test="${subscription.ieGroups.size() > 0}">
         </div>
     </g:if>
 

@@ -7,9 +7,9 @@
 
   <body>
     <div>
-      ${message(code:'myinst.selectPackages.note', args:[subscriptionInstance,titles_in_this_sub])}
-      <ul><g:each in="${subscriptionInstance.packages}" var="p">
-        <li>${p?.pkg?.name}</li>
+      ${message(code:'myinst.selectPackages.note', args:[subscription,titles_in_this_sub])}
+      <ul><g:each in="${subscription.packages}" var="p">
+        <li>${p.pkg.name}</li>
       </g:each></ul>
        <table class="ui celled la-table table">
         <tr>

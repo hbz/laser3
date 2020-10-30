@@ -11,8 +11,8 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}"/>
+    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+                 text="${subscription.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.linkPackage.heading')}"/>
 </semui:breadcrumbs>
@@ -21,7 +21,7 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
 <br />
 <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.details.linkPackage.heading')}</h2>
 
@@ -146,7 +146,7 @@
                                         <g:else>
                                             <span><strong>${message(code: 'subscription.details.linkPackage.currentPackage')}</strong>
                                             </span>
-                                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscriptionInstance])}" />
+                                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscription])}" />
                                             <br />
                                             <g:if test="${editable && !hasCostItems}">
                                                 <div class="ui icon negative buttons">
@@ -196,13 +196,13 @@
     <div class="four wide column">
         <div class="ui card">
             <div class="content">
-                <div class="header">${message(code: 'subscription.details.linkPackage.current', args: [subscriptionInstance.name])}</div>
+                <div class="header">${message(code: 'subscription.details.linkPackage.current', args: [subscription.name])}</div>
             </div>
-            <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+            <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                 <div class="content">
                     <div class="item"><g:link controller="package" action="show"
                                           id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                        <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscriptionInstance,sp:sp])}"/>
+                        <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscription,sp:sp])}"/>
                         <br />
                         <g:if test="${editable && !hasCostItems}">
                             <div class="ui mini icon buttons">
@@ -232,7 +232,7 @@
 <asset:script type="text/javascript">
 
       function unlinkPackage(pkg_id){
-        var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscriptionInstance.id])}&package="+pkg_id
+        var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){

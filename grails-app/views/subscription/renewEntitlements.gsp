@@ -9,7 +9,7 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}"/>
+    <semui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
 </semui:breadcrumbs>
 <semui:controlButtons>

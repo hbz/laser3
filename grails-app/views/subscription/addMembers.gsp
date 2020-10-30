@@ -13,8 +13,8 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}"/>
+    <semui:crumb controller="subscription" action="show" id="${subscription.id}"
+                 text="${subscription.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.addMembers.label',args:memberType)}"/>
 </semui:breadcrumbs>
@@ -24,8 +24,8 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
-               class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+<g:inPlaceEdit domain="Subscription" pk="${subscription.id}" field="name" id="name"
+               class="newipe">${subscription.name}</g:inPlaceEdit>
 </h1>
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
@@ -48,7 +48,7 @@
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList          : members,
                           tmplDisableOrgIds: members_disabled,
-                          subInstance      : subscriptionInstance,
+                          subInstance      : subscription,
                           tmplShowCheckbox : true,
                           tmplConfigShow   : ['sortname', 'name', 'wibid', 'isil', 'region',
                                               'libraryNetwork', 'libraryType']

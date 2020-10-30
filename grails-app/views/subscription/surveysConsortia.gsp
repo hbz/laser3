@@ -17,10 +17,10 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<semui:xEditable owner="${subscriptionInstance}" field="name"/>
+<semui:xEditable owner="${subscription}" field="name"/>
 <semui:totalNumber total="${surveys.size() ?: 0}"/>
 </h1>
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="surveysConsortia"
+<semui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 

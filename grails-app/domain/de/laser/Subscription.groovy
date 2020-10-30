@@ -330,19 +330,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
-        if (getCollective() && getConsortia() && instanceOf) {
-            result = TYPE_PARTICIPATION_AS_COLLECTIVE
-        }
-        else if(getCollective() && !getAllSubscribers() && !instanceOf) {
-            result = TYPE_COLLECTIVE
-        }
-        else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
+        if(getConsortia() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL
         }
-        else if((getCollective() || getConsortia()) && instanceOf) {
+        else if(getConsortia() && instanceOf) {
             result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
@@ -432,16 +426,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             if ( or.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA )
                 result = or.org
             }
-        result
-    }
-
-    Org getCollective() {
-        Org result
-        orgRelations.each {OrgRole or ->
-            if ( or.roleType == RDStore.OR_SUBSCRIPTION_COLLECTIVE ) {
-                result = or.org
-            }
-        }
         result
     }
 

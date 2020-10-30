@@ -503,6 +503,19 @@ class SubscriptionController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def removeEntitlement() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlement(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
+            flash.error = message(code:'default.delete.error.general.message')
+        else {
+            Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
+            flash.message = message(code: 'default.deleted.message',args: args)
+        }
+        redirect action: 'index', id: params.sub
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -519,11 +532,23 @@ class SubscriptionController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def processRemoveEntitlements() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401)
+        }
+        if(subscriptionService.deleteEntitlement(result.subscription,params.singleTitle))
+            log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscription.id}")
+        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscription.id, packageId: params.packageId]
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddIssueEntitlementsSurvey() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        if (result.subscriptionInstance) {
+        if (result.subscription) {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
@@ -542,6 +567,17 @@ class SubscriptionController {
         redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig.id]
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def processRemoveIssueEntitlementsSurvey() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
+            log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
+        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig?.id]
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
@@ -557,6 +593,16 @@ class SubscriptionController {
         else {
             redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
         }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def addEmptyPriceItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
+        }
+        redirect action: 'index', id: params.id
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -607,6 +653,17 @@ class SubscriptionController {
         redirect action: 'manageEntitlementGroup', id: params.id
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def removeEntitlementGroup() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
+        Object[] args = [message(code:'issueEntitlementGroup.label'),params.titleGroup]
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
+            flash.error = message(code:'default.not.found.message',args)
+        else flash.message = message(code:'default.deleted.message',args)
+        redirect action: 'manageEntitlementGroup', id: params.sub
+    }
+
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetObjectId
@@ -614,6 +671,24 @@ class SubscriptionController {
         Map result = copyElementsService.loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def processRenewEntitlements() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlements(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+            else {
+                flash.error = ctrlResult.result.error
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        redirect action: 'index', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -735,7 +810,7 @@ class SubscriptionController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscription.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscription.instanceOf : result.subscription
 
         result.parentLicenses = Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:result.parentSub,linkType:RDStore.LINKTYPE_LICENSE])
 
@@ -798,10 +873,10 @@ class SubscriptionController {
             return
         }
         if(formService.validateToken(params)) {
-            result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            result.parentSub = result.subscription.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscription.instanceOf : result.subscription
 
             /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
-            if(result.subscriptionInstance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
+            if(result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
                 licenseeRoleType = OR_LICENSEE_COLL
 
             result.parentLicense = result.parentSub.owner*/
@@ -841,7 +916,7 @@ class SubscriptionController {
             redirect(url: request.getHeader('referer'))
         }
         if(formService.validateToken(params)) {
-            result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            result.parentSub = result.subscription.instanceOf ?: result.subscription
 
             //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
 
@@ -883,7 +958,7 @@ class SubscriptionController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscription.instanceOf ?: result.subscription
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
@@ -937,7 +1012,7 @@ class SubscriptionController {
         }
 
         if(formService.validateToken(params)) {
-            result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            result.parentSub = result.subscription.instanceOf ?: result.subscription
 
             //List changeAccepted = []
             //List changeAcceptedwithIE = []
@@ -1041,7 +1116,7 @@ class SubscriptionController {
         }
         flash.error = ""
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscription.instanceOf ?: result.subscription
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
@@ -1100,7 +1175,7 @@ class SubscriptionController {
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance
+        result.parentSub = result.subscription
 
         Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.parentSub,roleType:RDStore.OR_SUBSCRIBER_CONS])
         if(validSubChildren) {
@@ -1153,7 +1228,7 @@ class SubscriptionController {
 
         params.tab = params.tab ?: 'generalProperties'
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscription.instanceOf ?: result.subscription
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -1217,7 +1292,7 @@ class SubscriptionController {
         if(formService.validateToken(params)) {
             result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-            result.parentSub = result.subscriptionInstance.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+            result.parentSub = result.subscription.instanceOf ?: result.subscription
 
 
             if (params.filterPropDef && params.filterPropValue) {
@@ -1454,7 +1529,7 @@ class SubscriptionController {
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscription.instanceOf ?: result.subscription
 
         List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -1524,130 +1599,10 @@ class SubscriptionController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def removeEntitlement() {
-        log.debug("removeEntitlement....");
-        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = RDStore.TIPP_STATUS_DELETED
-        ie.status = deleted_ie;
-
-        redirect action: 'index', id: params.sub
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def removeEntitlementGroup() {
-        log.debug("removeEntitlementGroup....");
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
-
-        if(issueEntitlementGroup) {
-            IssueEntitlementGroupItem.findAllByIeGroup(issueEntitlementGroup).each {
-                it.delete(flush: true)
-            }
-
-            IssueEntitlementGroup.executeUpdate("delete from IssueEntitlementGroup ieg where ieg.id in (:issueEntitlementGroup)", [issueEntitlementGroup: issueEntitlementGroup.id])
-        }
-
-        redirect action: 'manageEntitlementGroup', id: params.sub
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def processRemoveEntitlements() {
-        log.debug("processRemoveEntitlements....");
-
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (result.subscriptionInstance && params.singleTitle) {
-            if(subscriptionService.deleteEntitlement(result.subscriptionInstance,params.singleTitle))
-                log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
-        } else {
-            log.error("Unable to locate subscription instance");
-        }
-
-        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscriptionInstance?.id, packageId: params.packageId]
-
-    }
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def processRemoveIssueEntitlementsSurvey() {
-        log.debug("processRemoveIssueEntitlementsSurvey....");
-
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.subscription = Subscription.get(params.id)
-        result.institution = result.subscription?.subscriber
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        if (result.subscriptionInstance && params.singleTitle) {
-            if(subscriptionService.deleteEntitlementbyID(result.subscriptionInstance,params.singleTitle))
-                log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
-        } else {
-            log.error("Unable to locate subscription instance");
-        }
-
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def processRenewEntitlements() {
-        log.debug("processRenewEntitlements ...")
-        params.id = Long.parseLong(params.id)
-        params.packageId = Long.parseLong(params.packageId)
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        List tippsToAdd = params."tippsToAdd".split(",")
-        List tippsToDelete = params."tippsToDelete".split(",")
-
-        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-
-        if(result.subscriptionInstance) {
-            tippsToAdd.each { tipp ->
-                try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null,false, ie_accept_status))
-                        log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
-                }
-                catch (EntitlementCreationException e) {
-                    flash.error = e.getMessage()
-                }
-            }
-            tippsToDelete.each { tipp ->
-                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
-                    log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
-            }
-            if(params.process == "finalise") {
-                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
-                sp.finishDate = new Date()
-                if(!sp.save(flush:true)) {
-                    flash.error = sp.errors
-                }
-                else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
-            }
-        }
-        else {
-            log.error("Unable to locate subscription instance")
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         log.debug("processRenewEntitlementsWithSurvey ...")
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
@@ -1663,7 +1618,7 @@ class SubscriptionController {
 
         Integer countIEsToAdd = 0
 
-        if(result.subscriptionInstance) {
+        if(result.subscription) {
             iesToAdd.each { ieID ->
                 IssueEntitlement ie = IssueEntitlement.findById(ieID)
                 def tipp = ie.tipp
@@ -1671,13 +1626,13 @@ class SubscriptionController {
 
                 if(tipp) {
                     try {
-                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem != null), ie_accept_status)) {
-                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null), ie_accept_status)) {
+                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                             countIEsToAdd++
                         }
                     }
                     catch (EntitlementCreationException e) {
-                        log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: " + e.getMessage())
+                        log.debug("Error: Added tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
                         flash.error = message(code: 'renewEntitlementsWithSurvey.noSelectedTipps')
                     }
                 }
@@ -1692,29 +1647,6 @@ class SubscriptionController {
             log.error("Unable to locate subscription instance")
         }
         redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: result.surveyConfig?.id]
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def addEmptyPriceItem() {
-        if(params.ieid) {
-            IssueEntitlement ie = IssueEntitlement.get(params.ieid)
-            if(ie && !ie.priceItem) {
-                PriceItem pi = new PriceItem(issueEntitlement: ie)
-                pi.setGlobalUID()
-                if(!pi.save(flush: true)) {
-                    log.error(pi.errors.toString())
-                    flash.error = message(code:'subscription.details.addEmptyPriceItem.priceItemNotSaved')
-                }
-            }
-            else {
-                flash.error = message(code:'subscription.details.addEmptyPriceItem.issueEntitlementNotFound')
-            }
-        }
-        else {
-            flash.error = message(code:'subscription.details.addEmptyPriceItem.noIssueEntitlement')
-        }
-        redirect action: 'index', id: params.id
     }
 
     def buildRenewalsQuery(params) {
@@ -2462,10 +2394,9 @@ class SubscriptionController {
     Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
         Map<String, Object> result = [:]
         result.user = contextService.user
-        result.subscriptionInstance = Subscription.get(params.id)
+        result.subscription = Subscription.get(params.id)
         if(!params.id && params.subscription)
-            result.subscriptionInstance = Subscription.get(params.subscription)
-        result.subscription = result.subscriptionInstance //TODO temp, remove the duplicate
+            result.subscription = Subscription.get(params.subscription)
         result.contextOrg = contextService.getOrg()
         result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
         if(result.subscription) {

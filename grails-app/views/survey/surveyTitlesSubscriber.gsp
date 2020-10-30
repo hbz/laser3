@@ -45,7 +45,7 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
 <g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
-                                                           id="${subscriptionInstance.id}">${surveyConfig.getConfigNameShort()}</g:link>
+                                                           id="${subscription.id}">${surveyConfig.getConfigNameShort()}</g:link>
 </h1>
 
 <g:render template="nav"/>
@@ -105,7 +105,7 @@
 
 <div class="la-inline-lists">
     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                      subscriptionInstance: subscriptionInstance,
+                                                                      subscription        : subscription,
                                                                       visibleOrgRelations : visibleOrgRelations,
                                                                       surveyResults       : surveyResults        ]"/>
 </div>

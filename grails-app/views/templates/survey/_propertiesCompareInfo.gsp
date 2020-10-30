@@ -36,7 +36,7 @@
                         <g:set var="propValues" value="${prop.getValue()}"/>
                         <g:each var="subProperty" in="${propValues}">
                         %{--SOURCE-SUBSCRIPTION--}%
-                            <g:if test="${subProperty.owner == subscriptionInstance}">
+                            <g:if test="${subProperty.owner == subscription}">
                                 <td class="center aligned">
                                     <g:if test="${subProperty.type.isIntegerType()}">
                                         <semui:xEditable owner="${subProperty}" type="text" field="intValue"
@@ -80,7 +80,7 @@
                             </g:if>
 
                         </g:each>
-                        <g:if test="${!(subscriptionInstance in propValues.owner)}">
+                        <g:if test="${!(subscription in propValues.owner)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message

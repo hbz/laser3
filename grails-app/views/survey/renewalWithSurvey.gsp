@@ -120,7 +120,7 @@ ${surveyInfo.name}
         <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">
-                <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
+                <g:link controller="subscription" action="members" id="${subscription.id}">
                     <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
                     <div class="ui circular label">
