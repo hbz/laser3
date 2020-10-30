@@ -97,6 +97,19 @@ class SubscriptionController {
         result
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def unlinkLicense() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result) {
+            response.sendError(401)
+        }
+        else {
+            subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
@@ -275,6 +288,23 @@ class SubscriptionController {
         }
         else {
             redirect controller: 'subscription', action: 'members', params: [id: ctrlResult.result.subscription.id]
+        }
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def linkNextPrevMemberSub() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.linkNextPrevMemberSub(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+            else redirect(url: request.getHeader('referer'))
+        }
+        else {
+            redirect(action: 'show', id: ctrlResult.redirect)
         }
     }
 
@@ -487,6 +517,31 @@ class SubscriptionController {
         redirect action: 'addEntitlements', id: ctrlResult.result.subscription.id
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def processAddIssueEntitlementsSurvey() {
+        Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        if (result.subscriptionInstance) {
+            if(params.singleTitle) {
+                IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
+                TitleInstancePackagePlatform tipp = ie.tipp
+                try {
+                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.title.title])
+                    }
+                }
+                catch(EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+            }
+        } else {
+            log.error("Unable to locate subscription instance")
+        }
+        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig.id]
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
@@ -520,220 +575,69 @@ class SubscriptionController {
             redirect action: 'index', id: ctrlResult.result.subId, params: params
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def manageEntitlementGroup() {
-        log.debug("ManageEntitlementGroup .. params: ${params}")
-
         Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        result.titleGroups = result.subscriptionInstance.ieGroups
-
+        result.titleGroups = result.subscription.ieGroups
         result
-
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-    Map<String,Object> editEntitlementGroupItem() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
-        if (!result.editable) {
-            response.sendError(401); return
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    def editEntitlementGroupItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.editEntitlementGroupItem(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            redirect action: 'index', id: params.id
         }
-
-        result.ie = IssueEntitlement.get(params.ie)
-
-        if (result.ie && params.cmd == 'edit') {
-            render template: 'editEntitlementGroupItem', model: result
-            return
+        else {
+            if(params.cmd == 'edit')
+                render template: 'editEntitlementGroupItem', model: ctrlResult.result
+            else redirect action: 'index', id: params.id
         }
-        else if (result.ie && params.cmd == 'processing') {
-            List deleteIssueEntitlementGroupItem = []
-            result.ie.ieGroups.each{
-
-                if(!(it.ieGroup.id.toString() in params.list('titleGroup'))){
-
-                    deleteIssueEntitlementGroupItem << it.id
-                }
-            }
-
-            if(deleteIssueEntitlementGroupItem){
-                IssueEntitlementGroupItem.executeUpdate("DELETE IssueEntitlementGroupItem iegi where iegi.id in (:iegiIDs)", [iegiIDs: deleteIssueEntitlementGroupItem])
-            }
-            params.list('titleGroup').each {
-                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
-
-                if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup))
-                {
-                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                            ie: result.ie,
-                            ieGroup: issueEntitlementGroup)
-
-                    if (!issueEntitlementGroupItem.save(flush: true)) {
-                        log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
-                    }
-                }
-            }
-
-        }
-        redirect action: 'index', id: params.id
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processCreateEntitlementGroup() {
-        log.debug("processCreateEntitlementGroup .. params: ${params}")
-
-        Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
-        if (!result.editable) {
-            response.sendError(401); return
+        Map<String, Object> ctrlResult = subscriptionControllerService.processCreateEntitlementGroup(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
         }
-
-        if(!IssueEntitlementGroup.findBySubAndName(result.subscriptionInstance, params.name)) {
-
-            IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(
-                    name: params.name,
-                    description: params.description ?: null,
-                    sub: result.subscriptionInstance
-            ).save(flush:true)
-        }else{
-             flash.error = g.message(code: "issueEntitlementGroup.create.fail")
-        }
-
-
         redirect action: 'manageEntitlementGroup', id: params.id
-
     }
 
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetObjectId
         params.sourceObjectId = genericOIDService.resolveOID(params.targetObjectId)?.instanceOf?.id
-        def result = loadDataFor_PackagesEntitlements()
+        Map result = copyElementsService.loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-    def renewEntitlementsWithSurvey() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
-
-        params.offset = 0
-        params.max = 5000
-        params.tab = params.tab ?: 'allIEs'
-
-        Subscription newSub = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : Subscription.get(params.id)
-        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
-        params.id = newSub.id
-        params.sourceObjectId = baseSub.id
-
-        List<IssueEntitlement> sourceIEs
-
-        if(params.tab == 'allIEs') {
-            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
-        }
-        if(params.tab == 'selectedIEs') {
-            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
-        }
-        List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
-
-        List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
-
-        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
-        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
-        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
-        result.countAllIEs = allIEs.size()
-        result.countAllSourceIEs = sourceIEs.size()
-        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-        result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
-        result.targetIEs = targetIEs
-        result.newSub = newSub
-        result.subscription = baseSub
-        result.subscriber = result.newSub.getSubscriber()
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-
-        params.offset = result.offset
-        params.max = result.max
-
-        String filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
-
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(sourceIEs)
-            out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-            }
-            out.flush()
-            out.close()
-        }else if(params.exportXLS) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(sourceIEs)
-            Map sheetData = [:]
-            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }
-        else {
-            withFormat {
-                html result
-            }
-        }
-
-        result
-
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.subscriptionInstance =  result.surveyConfig.subscription
-
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution))
-
-        String filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
-
+        result.subscription =  result.surveyConfig.subscription
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.contextOrg))
+        result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
             Map<String, List> tableData = exportService.generateTitleExportKBART(result.ies)
-            out.withWriter { writer ->
+            out.withWriter { Writer writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
             out.flush()
             out.close()
-        }else if(params.exportXLS) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
+        }
+        else if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             Map<String,List> export = exportService.generateTitleExportXLS(result.ies)
             Map sheetData = [:]
@@ -753,54 +657,66 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def unlinkLicense() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if(!result) {
-            response.sendError(401)
-            return
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    def renewEntitlementsWithSurvey() {
+        Map<String, Object> result = [:]
+        result.institution = contextService.org
+        result.user = contextService.user
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
+        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
+        params.id = newSub.id
+        params.sourceObjectId = baseSub.id
+        params.tab = params.tab ?: 'allIEs'
+        List<IssueEntitlement> sourceIEs
+        if(params.tab == 'allIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params+[max:5000,offset:0])
         }
-        subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def linkNextPrevMemberSub() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if(!result) {
-            response.sendError(401)
-            return
+        if(params.tab == 'selectedIEs') {
+            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
         }
-
-        Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
-        Org org = Org.get(Long.parseLong(params.memberOrg))
-        Subscription prevMemberSub = (result.navPrevSubscription?.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
-        Subscription nextMemberSub = (result.navNextSubscription?.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
-
-        if(params.prev && prevMemberSub) {
-
-            Links prevLink = Links.construct(source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-            if (!prevLink) {
-                log.error("Problem linking to previous subscription: ${prevLink.errors}")
-                redirect(url: request.getHeader('referer'))
-            }else {
-                redirect(action: 'show', id: prevMemberSub.id)
+        List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
+        List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
+        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
+        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
+        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
+        result.countAllIEs = allIEs.size()
+        result.countAllSourceIEs = sourceIEs.size()
+        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
+        result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
+        result.targetIEs = targetIEs
+        result.newSub = newSub
+        result.subscription = baseSub
+        result.subscriber = result.newSub.getSubscriber()
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        String filename = escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String, List> tableData = exportService.generateTitleExportKBART(sourceIEs)
+            out.withWriter { Writer writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
+            out.flush()
+            out.close()
+        }else if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(sourceIEs)
+            Map sheetData = [:]
+            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:export.titles,columnData:export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
         }
-
-        if(params.next && nextMemberSub) {
-
-            Links nextLink = new Links(source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-            if (!nextLink) {
-                log.error("Problem linking to next subscription: ${nextLink.errors}")
-                redirect(url: request.getHeader('referer'))
-            }else {
-                redirect(action: 'show', id: nextMemberSub.id)
-            }
+        else {
+            result
         }
     }
 
@@ -1604,48 +1520,6 @@ class SubscriptionController {
         def filterPropDef = params.filterPropDef
         def id = params.id
         redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def processAddIssueEntitlementsSurvey() {
-        log.debug("processAddIssueEntitlementsSurvey....");
-
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.subscription = Subscription.get(params.id)
-        result.institution = result.subscription?.subscriber
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-
-        def addTitlesCount = 0
-        if (result.subscriptionInstance) {
-            if(params.singleTitle) {
-                IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
-                def tipp = ie.tipp
-
-                try {
-
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem != null) , ie_accept_status)) {
-                          log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
-                          flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp?.title.title])
-                    }
-                }
-                catch(EntitlementCreationException e) {
-                    flash.error = e.getMessage()
-                }
-            }
-        } else {
-            log.error("Unable to locate subscription instance");
-        }
-
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
