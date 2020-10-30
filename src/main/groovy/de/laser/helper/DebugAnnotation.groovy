@@ -15,4 +15,9 @@ import java.lang.annotation.Target
     String type() default ''
     String affil() default ''
     String specRole() default ''
+
+    int ctrl() default 0
+    // 0: not transactional - no use of associated controllerService
+    // 1: in between        - logic is partially in controllerService
+    // 2: transactional     - full use of associated controllerService
 }

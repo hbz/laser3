@@ -47,7 +47,7 @@ class SubscriptionController {
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrl = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
         Map<String,Object> ctrlResult = subscriptionControllerService.show(this,params)
@@ -59,7 +59,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrl = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = subscriptionControllerService.tasks(this,params)
