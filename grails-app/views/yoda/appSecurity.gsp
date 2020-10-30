@@ -73,7 +73,7 @@
 <h3 class="ui header">Controller Security</h3>
 
 <g:each in="${controller}" var="c">
-    <a href="#jumpMark_${c.key}">${c.key}</a>
+    <a href="#jumpMark_${c.key}">${c.key.replace('Controller', '')}</a>
     &nbsp;&nbsp;
 </g:each>
 

@@ -9,13 +9,14 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessMethodController  {
 
     def springSecurityService
-    def contextService
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
 
@@ -56,7 +57,7 @@ class AccessMethodController  {
         //[personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
     
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def delete() {
         PlatformAccessMethod accessMethod = PlatformAccessMethod.get(params.id)
 
@@ -75,7 +76,7 @@ class AccessMethodController  {
     }
 
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit() {
         PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
         Platform platf = accessMethod.platf
@@ -84,7 +85,7 @@ class AccessMethodController  {
 
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def update() {
         PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
         Platform platf = accessMethod.platf

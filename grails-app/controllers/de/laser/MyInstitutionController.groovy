@@ -1412,7 +1412,7 @@ join sub.orgRelations or_sub where
         null
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrl = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def dashboard() {
 
