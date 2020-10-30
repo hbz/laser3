@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -10,16 +9,13 @@ import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.GPathResult
 import grails.web.servlet.mvc.GrailsParameterMap
 
-@Secured(['permitAll']) // TODO
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class ApiController {
 
     ContextService contextService
     ApiService apiService
 
-    ApiController(){
-        super()
-    }
-
+    @Secured(['permitAll'])
     def index() {
         log.debug("API")
         Map<String, Object> result = fillRequestMap(params)
@@ -32,6 +28,7 @@ class ApiController {
         }
     }
 
+    @Secured(['permitAll'])
     def loadSpecs() {
         Map<String, Object> result = fillRequestMap(params)
 
@@ -43,6 +40,7 @@ class ApiController {
         }
     }
 
+    @Secured(['permitAll'])
     def loadChangelog() {
         Map<String, Object> result = fillRequestMap(params)
 
@@ -54,6 +52,7 @@ class ApiController {
         }
     }
 
+    @Secured(['permitAll'])
     def dispatch() {
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -76,7 +75,7 @@ class ApiController {
         result
     }
 
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API'])
     def importInstitutions() {
         log.info("import institutions via xml .. ROLE_API required")
 
@@ -97,7 +96,7 @@ class ApiController {
         render xml
     }
 
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API'])
     def setupLaserData() {
         log.info("import institutions via xml .. ROLE_API required")
 
@@ -118,7 +117,7 @@ class ApiController {
         render xml
     }
 
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API'])
     def importSubscriptions() {
         log.info("import subscriptions via xml .. ROLE_API required")
         // TODO: in progress - erms-746
@@ -139,6 +138,7 @@ class ApiController {
         render xml
     }
 
+    @Secured(['permitAll'])
     def v0() {
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
         boolean debugMode = request.getAttribute('debugMode')

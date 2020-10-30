@@ -25,11 +25,11 @@ class AjaxHtmlController {
 
     def addressbookService
     def contextService
-    def financeService
     def genericOIDService
     def taskService
     def reportingService
 
+    @Secured(['ROLE_USER'])
     def test() {
         String result = '<p data-status="ok">OK'
         if (params.id) {
