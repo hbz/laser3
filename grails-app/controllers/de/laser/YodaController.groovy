@@ -18,6 +18,7 @@ import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.gorm.transactions.Transactional
 import grails.web.Action
 import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
@@ -487,27 +488,43 @@ class YodaController {
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('de.laser')) {
+            if (controllerClass.name.startsWith('de.laser.')) {
                 Map<String, Object> mList = [:]
 
                 controllerClass.methods.each { Method method ->
                     if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
-                        String mKey = "${method.name}"
-                        if (method.getAnnotation(Deprecated)) {
-                            mKey = "${method.name} <em>*</em>"
-                        }
+                        String mKey = method.name
+                        Map<String, Object> mInfo = [:]
 
                         Annotation da = method.getAnnotation(DebugAnnotation)
                         if (da) {
-                            mList << ["${mKey}": [perm: da.perm(),
-                                                  type: da.type(),
-                                                  affil: da.affil(),
-                                                  specRoles: da.specRole(),
-                                                  test: da.test()]]
+                            mInfo.debug = [
+                                    perm     : da.perm(),
+                                    type     : da.type(),
+                                    affil    : da.affil(),
+                                    specRoles: da.specRole(),
+                                    test     : da.test()
+                            ]
+                            if (da.ctrl()) {
+                                mInfo.ctrl = da.ctrl()
+                            }
+                        }
+
+                        if (method.getAnnotation(Secured)) {
+                            mInfo.secured = method.getAnnotation(Secured)?.value()
                         }
                         else {
-                            mList << ["${mKey}": method.getAnnotation(Secured)?.value()]
+                            mInfo.warning = 'not secured'
                         }
+
+                        if (method.getAnnotation(Transactional)) {
+                            mInfo.transactional = 'transactional'
+                        }
+                        if (method.getAnnotation(Deprecated)) {
+                            mInfo.deprecated = 'deprecated'
+                        }
+
+                        mList << ["${mKey}": mInfo]
                     }
                 }
 

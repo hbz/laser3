@@ -1075,6 +1075,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def togglePropertyIsPublic() {
         if(formService.validateToken(params)) {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
@@ -1111,6 +1112,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
@@ -1124,7 +1126,7 @@ class AjaxController {
             AuditConfig.removeAllConfigs(property)
 
             property.getClass().findAllByInstanceOf(property).each{ prop ->
-                prop.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                prop.delete() //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
             }
 
 
@@ -1156,7 +1158,7 @@ class AjaxController {
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.isPublic = true
-                        additionalProp.save(flush: true)
+                        additionalProp.save()
                     }
                     else {
                         List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
@@ -1165,7 +1167,7 @@ class AjaxController {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
                                 memberProp.instanceOf = property
                                 memberProp.isPublic = true
-                                memberProp.save(flush:true)
+                                memberProp.save()
                             }
                         }
                         else {
@@ -1174,7 +1176,7 @@ class AjaxController {
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
                             newProp.isPublic = true
-                            newProp.save(flush: true)
+                            newProp.save()
                         }
                     }
                 }
@@ -1212,6 +1214,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def deleteCustomProperty() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
@@ -1225,7 +1228,7 @@ class AjaxController {
         //owner.customProperties.remove(property)
 
         try {
-            property.delete(flush:true)
+            property.delete()
         } catch (Exception e) {
             log.error(" TODO: fix property.delete() when instanceOf ")
         }

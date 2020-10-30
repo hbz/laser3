@@ -460,7 +460,7 @@ class SubscriptionControllerService {
         Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
         result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
 
-        ArrayList<Long> filteredOrgIds = controller.getOrgIdsForFilter()
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter(controller, params)
         result.filteredSubChilds = []
         result.validSubChilds.each { Subscription sub ->
             List<Org> subscr = sub.getAllSubscribers()
