@@ -222,14 +222,14 @@
 
                                 <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
-                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
+                                            params="${[id: subscription.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="minus icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
-                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
+                                            params="${[id: subscription.id, singleTitle: tipp.gokbId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="plus icon"></i>
                                     </g:link>

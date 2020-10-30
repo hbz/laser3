@@ -10,8 +10,8 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}"/>
+    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+                 text="${subscription.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.addEntitlements.label')}"/>
 </semui:breadcrumbs>
@@ -21,7 +21,7 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="${Subscription.class.name}" pk="${subscriptionInstance.id}" field="name" id="name" class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+<g:inPlaceEdit domain="${Subscription.class.name}" pk="${subscription.id}" field="name" id="name" class="newipe">${subscription?.name}</g:inPlaceEdit>
 </h1>
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <g:render template="nav"/> --%>
@@ -48,10 +48,10 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                     <g:if test="${params.packageLinkPreselect}">
                         <option value="${params.packageLinkPreselect}" selected=selected>${params.preselectedName}</option>
                     </g:if>
-                    <%--<g:elseif test="${!subscriptionInstance.packages.find { sp -> sp.pkg.gokbId == params.pkgFilter}}">
+                    <%--<g:elseif test="${!subscription.packages.find { sp -> sp.pkg.gokbId == params.pkgFilter}}">
                         <option value="${params.pkgFilter}" selected=selected>${params.preselectedName}</option>
                     </g:elseif>--%>
-                    <g:each in="${subscriptionInstance.packages}" var="sp">
+                    <g:each in="${subscription.packages}" var="sp">
                         <option value="${sp.pkg.gokbId}" ${sp.pkg.gokbId == params.pkgfilter ? 'selected=selected' : ''}>${sp.pkg.name}</option>
                     </g:each>
                 </select>
@@ -85,7 +85,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
 <semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 <g:form class="ui form" controller="subscription" action="addEntitlements"
-        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
+        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
         method="post" enctype="multipart/form-data">
     <div class="three fields">
         <div class="field">
@@ -134,7 +134,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
     });
 </asset:script>
 <g:form action="processAddEntitlements" class="ui form">
-    <input type="hidden" name="id" value="${subscriptionInstance.id}"/>
+    <input type="hidden" name="id" value="${subscription.id}"/>
     <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
     <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
 
@@ -384,7 +384,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             </g:if>
             <td>
                 <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
-                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
+                        params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                         data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                     <i class="plus icon"></i>
                 </g:link>
@@ -439,7 +439,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateIssueEntitlementOverwrite" />",
             data: {
-                sub: ${subscriptionInstance.id},
+                sub: ${subscription.id},
                 key: $(this).parents("tr").attr("data-index"),
                 referer: "${actionName}",
                 coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
@@ -464,7 +464,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
             data: {
-                sub: ${subscriptionInstance.id},
+                sub: ${subscription.id},
                 index: index,
                 referer: "${actionName}",
                 checked: checked

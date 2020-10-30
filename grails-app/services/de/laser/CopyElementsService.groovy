@@ -237,7 +237,7 @@ class CopyElementsService {
 //                if (prevLinks.size() == 0) {
 
                 /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                        [result.subscriptionInstance, it.id])*/
+                        [result.subscription, it.id])*/
 
                 def newSubscription = new Subscription(
                         isMultiYear: subMember.isMultiYear,
@@ -248,7 +248,7 @@ class CopyElementsService {
                         startDate: subMember.isMultiYear ? subMember.startDate : targetObject.startDate,
                         endDate: subMember.isMultiYear ? subMember.endDate : targetObject.endDate,
                         manualRenewalDate: subMember.manualRenewalDate,
-                        /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+                        /* manualCancellationDate: result.subscription.manualCancellationDate, */
                         identifier: UUID.randomUUID().toString(),
                         instanceOf: targetObject,
                         //previousSubscription: subMember?.id,

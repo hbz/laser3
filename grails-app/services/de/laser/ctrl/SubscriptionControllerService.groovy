@@ -24,6 +24,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.IssueEntitlementGroup
 import de.laser.IssueEntitlementGroupItem
 import de.laser.License
+import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
@@ -43,8 +44,10 @@ import de.laser.SubscriptionService
 import de.laser.SurveyConfig
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.DateUtil
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
@@ -458,7 +461,7 @@ class SubscriptionControllerService {
         Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
         result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
 
-        ArrayList<Long> filteredOrgIds = controller.getOrgIdsForFilter()
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter(controller, params)
         result.filteredSubChilds = []
         result.validSubChilds.each { Subscription sub ->
             List<Org> subscr = sub.getAllSubscribers()
@@ -681,6 +684,37 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> linkNextPrevMemberSub(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            Subscription memberSub = Subscription.get(Long.parseLong(params.memberSubID))
+            Org org = Org.get(Long.parseLong(params.memberOrg))
+            Subscription prevMemberSub = (result.navPrevSubscription.size() > 0) ? result.navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+            Subscription nextMemberSub = (result.navNextSubscription.size() > 0) ? result.navNextSubscription[0].getDerivedSubscriptionBySubscribers(org) : null
+            try {
+                Links link
+                if(params.prev && prevMemberSub) {
+                    link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                }
+                if(params.next && nextMemberSub) {
+                    link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                }
+                if(link) {
+                    result.redirect = link.id
+                    [result:result,status:STATUS_OK]
+                }
+                else [result:result,status:STATUS_ERROR]
+            }
+            catch (CreationException e) {
+                log.error("Problem linking to subscription: ${e.getStackTrace()}")
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+    }
+
     //--------------------------------------- survey section -------------------------------------------
 
     Map<String,Object> surveys(SubscriptionController controller) {
@@ -760,10 +794,10 @@ class SubscriptionControllerService {
                         Package pkgToLink = Package.findByGokbId(pkgUUID)
                         log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                         if (addType == 'With') {
-                            pkgToLink.addToSubscription(result.subscriptionInstance, true)
+                            pkgToLink.addToSubscription(result.subscription, true)
                         }
                         else if (addType == 'Without') {
-                            pkgToLink.addToSubscription(result.subscriptionInstance, false)
+                            pkgToLink.addToSubscription(result.subscription, false)
                         }
                     }
                 }
@@ -1335,6 +1369,14 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> removeEntitlement(GrailsParameterMap params) {
+        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+        ie.status = RDStore.TIPP_STATUS_DELETED
+        if(ie.save())
+            [result:null,status:STATUS_OK]
+        else [result:null,status:STATUS_ERROR]
+    }
+
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
@@ -1378,12 +1420,12 @@ class SubscriptionControllerService {
                 try {
                     Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title?.title]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
-                            log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                            log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, null, false, ie_accept_status))
-                        log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, false, ie_accept_status))
+                        log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
                 catch(EntitlementCreationException e) {
@@ -1449,6 +1491,32 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> addEmptyPriceItem(GrailsParameterMap params) {
+        Map<String,Object> result = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        if(params.ieid) {
+            IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+            if(ie && !ie.priceItem) {
+                PriceItem pi = new PriceItem(issueEntitlement: ie)
+                pi.setGlobalUID()
+                if(!pi.save()) {
+                    log.error(pi.errors.toString())
+                    result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.priceItemNotSaved',null,locale)
+                    [result:result,status:STATUS_ERROR]
+                }
+            }
+            else {
+                result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.issueEntitlementNotFound',null,locale)
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+        else {
+            result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.noIssueEntitlement',null,locale)
+            [result:result,status:STATUS_ERROR]
+        }
+        [result:result,status:STATUS_OK]
+    }
+
     Map<String,Object> addCoverage(GrailsParameterMap params) {
         IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
         if(base) {
@@ -1479,6 +1547,106 @@ class SubscriptionControllerService {
         else {
             log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
             [result:null,status:STATUS_ERROR]
+        }
+    }
+
+    Map<String,Object> editEntitlementGroupItem(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = controller.setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        result.ie = IssueEntitlement.get(params.ie)
+        if(result.ie) {
+            switch (params.cmd) {
+                case 'edit': [result:result,status:STATUS_OK]
+                    break
+                case 'processing': List deleteIssueEntitlementGroupItem = []
+                    result.ie.ieGroups.each{
+                        if(!(it.ieGroup.id.toString() in params.list('titleGroup'))){
+                            deleteIssueEntitlementGroupItem << it.id
+                        }
+                    }
+                    if(deleteIssueEntitlementGroupItem){
+                        IssueEntitlementGroupItem.executeUpdate("DELETE IssueEntitlementGroupItem iegi where iegi.id in (:iegiIDs)", [iegiIDs: deleteIssueEntitlementGroupItem])
+                    }
+                    params.list('titleGroup').each {
+                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
+                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup)) {
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: result.ie, ieGroup: issueEntitlementGroup)
+                            if (!issueEntitlementGroupItem.save()) {
+                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                            }
+                        }
+                    }
+                    break
+            }
+            [result:result,status:STATUS_OK]
+        }
+        else [result:result,status:STATUS_ERROR]
+    }
+
+    Map<String,Object> processCreateEntitlementGroup(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        Locale locale = LocaleContextHolder.getLocale()
+        if(!IssueEntitlementGroup.findBySubAndName(result.subscription, params.name)) {
+            IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(name: params.name,
+                    description: params.description ?: null,
+                    sub: result.subscription)
+            if(issueEntitlementGroup.save()) {
+                [result:result,status:STATUS_OK]
+            }
+            else{
+                result.error = messageSource.getMessage("issueEntitlementGroup.create.fail",null,locale)
+            }
+        }
+        else {
+            result.error = messageSource.getMessage('issueEntitlementGroup.create.alreadyExists',null,locale)
+        }
+        [result:result,status:STATUS_ERROR]
+    }
+
+    Map<String,Object> removeEntitlementGroup(GrailsParameterMap params) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
+        if(issueEntitlementGroup) {
+            Map<String,Object> queryParams = [issueEntitlementGroup: issueEntitlementGroup]
+            IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ieGroup = :issueEntitlementGroup", queryParams)
+            IssueEntitlementGroup.executeUpdate("delete from IssueEntitlementGroup ieg where ieg = :issueEntitlementGroup", queryParams)
+            [result:null,status:STATUS_OK]
+        }
+        else [result:null,status:STATUS_ERROR]
+    }
+
+    Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            List tippsToAdd = params."tippsToAdd".split(",")
+            List tippsToDelete = params."tippsToDelete".split(",")
+            tippsToAdd.each { tipp ->
+                try {
+                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false, RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))
+                        log.debug("Added tipp ${tipp} to sub ${result.subscription.id}")
+                }
+                catch (EntitlementCreationException e) {
+                    result.error = e.getStackTrace()
+                    [result:result,status:STATUS_ERROR]
+                }
+            }
+            tippsToDelete.each { tipp ->
+                if(subscriptionService.deleteEntitlement(result.subscription,tipp))
+                    log.debug("Deleted tipp ${tipp} from sub ${result.subscription.id}")
+            }
+            if(params.process == "finalise") {
+                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.get(params.packageId))
+                sp.finishDate = new Date()
+                if(!sp.save()) {
+                    result.error = sp.errors
+                    [result:result,status:STATUS_ERROR]
+                }
+                else {
+                    Object[] args = [sp.pkg.name]
+                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args,LocaleContextHolder.getLocale())
+                }
+            }
+            [result:result,status:STATUS_OK]
         }
     }
 

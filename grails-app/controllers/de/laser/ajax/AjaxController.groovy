@@ -28,21 +28,15 @@ import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
 @Secured(['permitAll']) // TODO
 class AjaxController {
 
     def genericOIDService
-    def subscriptionService
     def contextService
     def accessService
     def escapeService
     def formService
     def dashboardDueDatesService
-    CompareService compareService
-    LinksGenerationService linksGenerationService
-    LicenseService licenseService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -541,20 +535,22 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def delOrgRole() {
-        def or = OrgRole.get(params.id)
+        OrgRole or = OrgRole.get(params.id)
 
         def owner = or.getOwner()
         if (owner instanceof ShareSupport && or.isShared) {
             or.isShared = false
             owner.updateShare(or)
         }
-        or.delete(flush:true)
+        or.delete()
 
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def addPrsRole() {
         Org org             = (Org) genericOIDService.resolveOID(params.org)
         def parent          = genericOIDService.resolveOID(params.parent)
@@ -579,7 +575,7 @@ class AjaxController {
             }
         }
 
-        if (! existingPrsRole && newPrsRole && newPrsRole.save(flush:true)) {
+        if (! existingPrsRole && newPrsRole && newPrsRole.save()) {
             //flash.message = message(code: 'default.success')
         }
         else {
@@ -591,10 +587,11 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def delPrsRole() {
         PersonRole prsRole = PersonRole.get(params.id)
 
-        if (prsRole && prsRole.delete(flush: true)) {
+        if (prsRole && prsRole.delete()) {
         }
         else {
             log.error("Problem deleting person role ..")
@@ -1075,6 +1072,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def togglePropertyIsPublic() {
         if(formService.validateToken(params)) {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
@@ -1111,6 +1109,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
@@ -1124,24 +1123,8 @@ class AjaxController {
             AuditConfig.removeAllConfigs(property)
 
             property.getClass().findAllByInstanceOf(property).each{ prop ->
-                prop.delete(flush: true) //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                prop.delete() //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
             }
-
-
-            // delete pending changes
-
-            /*def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
-            openPD.each { pc ->
-                if (pc.payload) {
-                    def payload = JSON.parse(pc.payload)
-                    if (payload.changeDoc) {
-                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
-                        if (scp?.id == property.id) {
-                            pc.delete(flush:true)
-                        }
-                    }
-                }
-            }*/
         }
         else {
 
@@ -1156,7 +1139,7 @@ class AjaxController {
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.isPublic = true
-                        additionalProp.save(flush: true)
+                        additionalProp.save()
                     }
                     else {
                         List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
@@ -1165,7 +1148,7 @@ class AjaxController {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
                                 memberProp.instanceOf = property
                                 memberProp.isPublic = true
-                                memberProp.save(flush:true)
+                                memberProp.save()
                             }
                         }
                         else {
@@ -1174,7 +1157,7 @@ class AjaxController {
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
                             newProp.isPublic = true
-                            newProp.save(flush: true)
+                            newProp.save()
                         }
                     }
                 }
@@ -1212,6 +1195,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def deleteCustomProperty() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
@@ -1225,7 +1209,7 @@ class AjaxController {
         //owner.customProperties.remove(property)
 
         try {
-            property.delete(flush:true)
+            property.delete()
         } catch (Exception e) {
             log.error(" TODO: fix property.delete() when instanceOf ")
         }
@@ -1434,6 +1418,8 @@ class AjaxController {
         }
     }
 
+    @Transactional
+    @Secured(['ROLE_USER'])
     def toggleEditMode() {
         log.debug ('toggleEditMode()')
 
@@ -1454,6 +1440,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def addIdentifier() {
         log.debug("AjaxController::addIdentifier ${params}")
         def owner = genericOIDService.resolveOID(params.owner)

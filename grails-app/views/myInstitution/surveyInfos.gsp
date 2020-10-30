@@ -111,7 +111,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
-                                                                                  subscriptionInstance: subscriptionInstance,
+                                                                                  subscription        : subscription,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>
 

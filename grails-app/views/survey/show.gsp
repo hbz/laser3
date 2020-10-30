@@ -183,7 +183,7 @@
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
-                                                                subscriptionInstance: surveyConfig.subscription,
+                                                                subscription: surveyConfig.subscription,
                                                                 tasks: tasks,
                                                                 visibleOrgRelations: visibleOrgRelations,
                                                                 properties: properties]"/>
@@ -192,7 +192,7 @@
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                                                      subscriptionInstance: surveyConfig.subscription,
+                                                                                      subscription: surveyConfig.subscription,
                                                                                       tasks: tasks,
                                                                                       visibleOrgRelations: visibleOrgRelations,
                                                                                       properties: properties]"/>
@@ -202,7 +202,7 @@
 
                     <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
                                                                     costItemSums: costItemSums,
-                                                                    subscriptionInstance: surveyConfig.subscription,
+                                                                    subscription: surveyConfig.subscription,
                                                                     tasks: tasks,
                                                                     visibleOrgRelations: visibleOrgRelations,
                                                                     properties: properties]"/>

@@ -108,53 +108,6 @@
 }
 /* semantic ui - upgrade to 2.3 - stop */
 
-
-body.yoda_appSecurity .secInfoWrapper span {
-    font-weight: bolder;
-    padding: 0px 5px;
-    color: #FF00FF;
-}
-body.yoda_appSecurity .secInfoWrapper2 span {
-    margin-left: 2px;
-    float: right;
-}
-body.yoda_appSecurity .secInfoWrapper .list .item:hover {
-    background-color: #f5f5f5;
-}
-body.yoda_appSecurity .secInfoWrapper .permitAll {
-    padding: 1px 5px;
-    color: #fff;
-    background-color: #ff0066;
-}
-body.yoda_appSecurity .secInfoWrapper .IS_AUTHENTICATED_FULLY {
-    color: #228B22;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_YODA {
-    color: crimson;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_ADMIN {
-    color: orange;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_DATAMANAGER {
-    color: #8B008B;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_USER {
-    color: #1E90FF;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_API,
-body.yoda_appSecurity .secInfoWrapper .ROLE_API_READER,
-body.yoda_appSecurity .secInfoWrapper .ROLE_API_WRITER,
-body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
-    color: #87CEEB;
-    font-style: italic;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_STATISTICS_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR {
-    color: #8B4513;
-}
-
 /* dashboard tasks */
 
 body.myInstitution_dashboard .ui.tab .item .header {

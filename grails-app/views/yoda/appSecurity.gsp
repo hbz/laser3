@@ -70,7 +70,15 @@
     </div>
 </div>
 
-<h3 class="ui header">Controller Annotations</h3>
+<h3 class="ui header">Controller Security</h3>
+
+<g:each in="${controller}" var="c">
+    <a href="#jumpMark_${c.key}">${c.key.replace('Controller', '')}</a>
+    &nbsp;&nbsp;
+</g:each>
+
+<br />
+<br />
 
 <div class="ui grid">
     <div class="sixteen wide column">
@@ -91,15 +99,35 @@
                             <div class="item">
                                 <g:link controller="${c.key.split('Controller')[0]}" action="${method.key}">${method.key}</g:link>
 
-                                <g:each in="${method.value}" var="v">
-                                    <g:if test="${v instanceof String}">
-                                        <span class="${v}">${v}</span>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                <g:each in="${method.value}" var="info">
+
+                                    <g:if test="${info.key == 'warning'}">
+                                        <strong class="${info.key}">${info.value}</strong>
                                     </g:if>
-                                    <g:else>
-                                        <g:if test="${v.value}">
-                                            <span class="${v.key}">${v.key}: ${v.value}</span>
-                                        </g:if>
-                                    </g:else>
+                                    <g:elseif test="${info.key == 'debug'}">
+                                        <g:each in="${info.value}" var="dd">
+                                            <g:if test="${dd.value}">
+                                                <span class="${dd.key}">${dd.value}</span>
+                                            </g:if>
+                                        </g:each>
+                                    </g:elseif>
+                                    <g:elseif test="${info.key == 'secured'}">
+                                        <g:each in="${info.value}" var="ss">
+                                            <span class="${ss.value}">${ss.value}</span>
+                                        </g:each>
+                                    </g:elseif>
+                                    <g:elseif test="${info.key == 'transactional'}">
+                                        <strong class="${info.value}">${info.value}</strong>
+                                    </g:elseif>
+                                    <g:elseif test="${info.key == 'ctrl'}">
+                                        <strong class="ctrl_${info.value}">ctrl: ${info.value}</strong>
+                                    </g:elseif>
+                                    <g:elseif test="${info.key == 'deprecated'}">
+                                        <em>Deprecated</em>
+                                    </g:elseif>
+
                                 </g:each>
                             </div>
                         </g:each>
@@ -111,6 +139,84 @@
     </div>
 </div>
 
+<style>
+.secInfoWrapper span {
+    font-weight: bolder;
+    padding: 0px 5px;
+    color: #FF00FF;
+}
+.secInfoWrapper2 span {
+    margin-left: 2px;
+    float: right;
+}
+.secInfoWrapper .list .item:hover {
+    background-color: #f5f5f5;
+}
+.secInfoWrapper .permitAll {
+    padding: 1px 5px;
+    color: #fff;
+    background-color: #ff0066;
+}
+
+.secInfoWrapper .transactional,
+.secInfoWrapper .ctrl_2 {
+    padding: 1px 5px;
+    color: green;
+    background-color: #eee;
+}
+.secInfoWrapper .warning ,
+.secInfoWrapper .ctrl_1 {
+    padding: 1px 5px;
+    color: black;
+    background-color: #eee;
+}
+
+.secInfoWrapper .affil,
+.secInfoWrapper .perm,
+.secInfoWrapper .type,
+.secInfoWrapper .specRole {
+    font-size: 90%;
+    color: #335555;
+}
+.secInfoWrapper .perm {
+    font-weight: normal;
+}
+.secInfoWrapper .type {
+    font-style: italic;
+}
+.secInfoWrapper .test {
+    color: #dd33dd;
+}
+
+.secInfoWrapper .IS_AUTHENTICATED_FULLY {
+    color: #228B22;
+}
+.secInfoWrapper .ROLE_YODA {
+    color: crimson;
+}
+.secInfoWrapper .ROLE_ADMIN {
+    color: orange;
+}
+.secInfoWrapper .ROLE_DATAMANAGER {
+    color: #8B008B;
+}
+.secInfoWrapper .ROLE_USER {
+    color: #1E90FF;
+}
+.secInfoWrapper .ROLE_API,
+.secInfoWrapper .ROLE_API_READER,
+.secInfoWrapper .ROLE_API_WRITER,
+.secInfoWrapper .ROLE_API_DATAMANAGER {
+    color: #87CEEB;
+    font-style: italic;
+}
+.secInfoWrapper .ROLE_ORG_EDITOR,
+.secInfoWrapper .ROLE_PACKAGE_EDITOR,
+.secInfoWrapper .ROLE_STATISTICS_EDITOR,
+.secInfoWrapper .ROLE_TICKET_EDITOR {
+    color: #8B4513;
+}
+</style>
 </body>
 </html>
 

@@ -196,7 +196,7 @@
 
         <div>
             <g:if test="${titles}">
-            <g:form action="subscriptionBatchUpdate" params="${[id: subscriptionInstance?.id]}" class="ui form">
+            <g:form action="subscriptionBatchUpdate" params="${[id: subscription.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
                 <table class="ui sortable celled la-table table ">
                     <thead>

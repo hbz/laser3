@@ -9,8 +9,8 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}"/>
+    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+                 text="${subscription.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.manageEntitlementGroup.label')}"/>
 </semui:breadcrumbs>
@@ -20,13 +20,13 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-<semui:xEditable owner="${subscriptionInstance}" field="name" />
+<semui:xEditable owner="${subscription}" field="name" />
 </h1>
 <g:if test="${editable}">
-    <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+    <semui:auditButton auditable="[subscription, 'name']" />
 </g:if>
 
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="manageEntitlementGroup" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<semui:anualRings object="${subscription}" controller="subscription" action="manageEntitlementGroup" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.manageEntitlementGroup.label')}</h2>
 <semui:messages data="${flash}"/>
@@ -66,7 +66,7 @@
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>
                         <g:if test="${!hasCostItems}">
                             <g:link action="removeEntitlementGroup" class="ui icon negative button"
-                                    params="${[titleGroup: titleGroup.id, sub: subscriptionInstance.id]}">
+                                    params="${[titleGroup: titleGroup.id, sub: subscription.id]}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

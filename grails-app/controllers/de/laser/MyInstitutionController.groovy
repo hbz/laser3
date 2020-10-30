@@ -1412,7 +1412,7 @@ join sub.orgRelations or_sub where
         null
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrl = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def dashboard() {
 
@@ -1762,14 +1762,13 @@ join sub.orgRelations or_sub where
         result.ownerId = result.surveyResults[0]?.owner?.id
 
         if(result.surveyConfig?.type == 'Subscription') {
-            result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-            result.subscription = result.subscriptionInstance
+            result.subscription = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
             result.authorizedOrgs = result.user?.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
-            if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations.each { OrgRole or ->
+            if(result.subscription) {
+                result.subscription.orgRelations.each { OrgRole or ->
                     if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         result.visibleOrgRelations << or
                     }
@@ -1788,7 +1787,7 @@ join sub.orgRelations or_sub where
                 if (costItems?.subscr) {
                     result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
-		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
+		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -1835,16 +1834,16 @@ join sub.orgRelations or_sub where
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
-        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscription = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
         result.iesListPriceSum = 0.0
         result.ies?.each{
             result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
         }
 
 
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
         result.iesFixListPriceSum = 0.0
         result.iesFix?.each{
             result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
@@ -1853,18 +1852,18 @@ join sub.orgRelations or_sub where
 
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
 
-        if(result.subscriptionInstance) {
+        if(result.subscription) {
             result.authorizedOrgs = result.user?.authorizedOrgs
             result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { OrgRole or ->
+            result.subscription.orgRelations.each { OrgRole or ->
                 if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                     result.visibleOrgRelations << or
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
+	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
         result
     }

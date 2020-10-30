@@ -1356,7 +1356,7 @@ class SurveyController {
                     if (result.surveyConfig.pickAndChoose) {
                         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
 
-                        result.subscriptionInstance = result.surveyConfig.subscription
+                        result.subscription = result.surveyConfig.subscription
 
                         List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org))
 
@@ -1526,16 +1526,16 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+        result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionInstance)
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
         result.iesListPriceSum = 0
         result.ies.each{
             result.iesListPriceSum = result.iesListPriceSum + (it.priceItem ? (it.priceItem.listPrice ? it.priceItem.listPrice : 0) : 0)
         }
 
 
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscriptionInstance)
+        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
         result.iesFixListPriceSum = 0
         result.iesFix.each{
             result.iesFixListPriceSum = result.iesFixListPriceSum + (it.priceItem ? (it.priceItem.listPrice ? it.priceItem.listPrice : 0) : 0)
@@ -1544,18 +1544,18 @@ class SurveyController {
 
         result.ownerId = result.surveyConfig.surveyInfo.owner.id ?: null
 
-        if(result.subscriptionInstance) {
+        if(result.subscription) {
             result.authorizedOrgs = result.user.authorizedOrgs
             result.contextOrg = result.institution
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
-            result.subscriptionInstance.orgRelations.each { OrgRole or ->
+            result.subscription.orgRelations.each { OrgRole or ->
                 if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                     result.visibleOrgRelations << or
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it.surveyConfig.configOrder }
@@ -1587,7 +1587,7 @@ class SurveyController {
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-        result.subscriptionInstance =  result.surveyConfig.subscription
+        result.subscription =  result.surveyConfig.subscription
 
         List ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
 
@@ -1764,7 +1764,7 @@ class SurveyController {
 
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-        result.subscriptionInstance =  result.surveyConfig.subscription
+        result.subscription =  result.surveyConfig.subscription
 
         result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
 
@@ -1793,13 +1793,12 @@ class SurveyController {
         result.ownerId = result.surveyResults[0].owner.id
 
         if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
-            result.subscriptionInstance = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-            result.subscription =  result.subscriptionInstance ?: null
+            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.costItemSums = [:]
-            if(result.subscriptionInstance) {
-                result.subscriptionInstance.orgRelations.each { OrgRole or ->
+            if(result.subscription) {
+                result.subscription.orgRelations.each { OrgRole or ->
                     if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                         result.visibleOrgRelations << or
                     }
@@ -1825,7 +1824,7 @@ class SurveyController {
             if (costItems?.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
-            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)    
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -1833,7 +1832,7 @@ class SurveyController {
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
-            result.links = linksGenerationService.getSourcesAndDestinations(result.subscriptionInstance,result.user)
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
@@ -4577,7 +4576,7 @@ class SurveyController {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
 
-        result.subscriptionInstance =  result.surveyConfig.subscription ?: null
+        result.subscription =  result.surveyConfig.subscription ?: null
 
         result
     }
@@ -4585,17 +4584,16 @@ class SurveyController {
     private Map<String,Object> setResultGenericsAndCheckAccessforSub(checkOption) {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription.subscriber
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (!result.subscriptionInstance.isVisibleBy(result.user)) {
+            if (!result.subscription.isVisibleBy(result.user)) {
                 log.debug("--- NOT VISIBLE ---")
                 return null
             }
         }
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        result.editable = result.subscription.isEditableBy(result.user)
 
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
