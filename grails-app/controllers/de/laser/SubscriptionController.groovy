@@ -308,6 +308,56 @@ class SubscriptionController {
         }
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def linkLicenseMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.linkLicenseMembers(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processLinkLicenseMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkLicenseMembers(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [ctrlResult.result.message])
+            redirect(action: 'linkLicenseMembers', id: params.id)
+        }
+    }
+
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processUnLinkLicenseMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkLicenseMembers(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [ctrlResult.result.message])
+        }
+        redirect(action: 'linkLicenseMembers', id: params.id)
+    }
+
     //-------------------------------- survey section --------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -793,154 +843,6 @@ class SubscriptionController {
         else {
             result
         }
-    }
-
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def linkLicenseMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.parentSub = result.subscription.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscription.instanceOf : result.subscription
-
-        result.parentLicenses = Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:result.parentSub,linkType:RDStore.LINKTYPE_LICENSE])
-
-        result.validLicenses = []
-
-        if(result.parentLicenses) {
-            def childLicenses = License.where {
-                instanceOf in result.parentLicenses
-            }
-
-            childLicenses?.each {
-                result.validLicenses << it
-            }
-        }
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        //Sortieren
-        result.validSubChilds = validSubChilds.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
-
-        def oldID =  params.id
-        params.id = result.parentSub.id
-
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-            }
-        }
-
-        params.id = oldID
-
-        result
-    }
-
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processLinkLicenseMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if(formService.validateToken(params)) {
-            result.parentSub = result.subscription.instanceOf && result.subscription._getCalculatedType() != CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscription.instanceOf : result.subscription
-
-            /*RefdataValue licenseeRoleType = OR_LICENSEE_CONS
-            if(result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
-                licenseeRoleType = OR_LICENSEE_COLL
-
-            result.parentLicense = result.parentSub.owner*/
-
-            Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
-            List selectedMembers = params.list("selectedMembers")
-
-            List<GString> changeAccepted = []
-            validSubChilds.each { Subscription subChild ->
-                if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
-                    License newLicense = License.get(params.license_All)
-                    if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
-                        changeAccepted << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                }
-            }
-            if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
-            }
-        }
-
-        redirect(action: 'linkLicenseMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processUnLinkLicenseMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-        if(formService.validateToken(params)) {
-            result.parentSub = result.subscription.instanceOf ?: result.subscription
-
-            //result.parentLicense = result.parentSub.owner TODO we need to iterate over ALL linked licenses!
-
-            List selectedMembers = params.list("selectedMembers")
-
-            Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
-            List<GString> removeLic = []
-            validSubChilds.each { Subscription subChild ->
-                if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                    Links.findAllByDestinationSubscriptionAndLinkType(subChild,RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        if (subscriptionService.setOrgLicRole(subChild,li.sourceLicense,true)) {
-                            removeLic << "${subChild.name} (${message(code:'subscription.linkInstance.label')} ${subChild.getSubscriber().sortname})"
-                        }
-                    }
-                }
-
-            }
-            if (removeLic) {
-                flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
-            }
-        }
-
-        redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
     @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
@@ -2397,7 +2299,7 @@ class SubscriptionController {
         result.subscription = Subscription.get(params.id)
         if(!params.id && params.subscription)
             result.subscription = Subscription.get(params.subscription)
-        result.contextOrg = contextService.getOrg()
+        result.contextOrg = contextService.org
         result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
         if(result.subscription) {
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }

@@ -715,6 +715,100 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> linkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.parentSub = result.subscription.instanceOf ?: result.subscription
+            result.parentLicenses = Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:result.parentSub,linkType:RDStore.LINKTYPE_LICENSE])
+            result.validLicenses = []
+            if(result.parentLicenses) {
+                result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
+            }
+            Set<Subscription> validSubChilds = Subscription.executeQuery("select sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent order by org.sortname asc, org.name asc",[parent:result.parentSub])
+            List<Long> filteredOrgIds = getOrgIdsForFilter(controller,params+[id:result.parentSub.id])
+            result.filteredSubChilds = new ArrayList<Subscription>()
+            validSubChilds.each { Subscription sub ->
+                List<Org> subscr = sub.getAllSubscribers()
+                Set<Org> filteredSubscr = []
+                subscr.each { Org subOrg ->
+                    if (filteredOrgIds.contains(subOrg.id)) {
+                        filteredSubscr << subOrg
+                    }
+                }
+                if (filteredSubscr) {
+                    result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+                }
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> processLinkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Locale locale = LocaleContextHolder.getLocale()
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            if(formService.validateToken(params)) {
+                result.parentSub = result.subscription.instanceOf ?: result.subscription
+                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+                List selectedMembers = params.list("selectedMembers")
+                List<GString> changeAccepted = []
+                validSubChilds.each { Subscription subChild ->
+                    if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
+                        License newLicense = License.get(params.license_All)
+                        if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
+                            changeAccepted << "${subChild.name} (${messageSource.getMessage('subscription.linkInstance.label',null,locale)} ${subChild.getSubscriber().sortname})"
+                    }
+                }
+                if (changeAccepted) {
+                    result.message = changeAccepted.join(', ')
+                }
+                [result:result,status:STATUS_OK]
+            }
+            else {
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+    }
+
+    Map<String,Object> processUnLinkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Locale locale = LocaleContextHolder.getLocale()
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            if(formService.validateToken(params)) {
+                result.parentSub = result.subscription.instanceOf ?: result.subscription
+                List selectedMembers = params.list("selectedMembers")
+                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+                List<GString> removeLic = []
+                validSubChilds.each { Subscription subChild ->
+                    if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
+                        Links.findAllByDestinationSubscriptionAndLinkType(subChild,RDStore.LINKTYPE_LICENSE).each { Links li ->
+                            if (subscriptionService.setOrgLicRole(subChild,li.sourceLicense,true)) {
+                                removeLic << "${subChild.name} (${messageSource.getMessage('subscription.linkInstance.label',null,locale)} ${subChild.getSubscriber().sortname})"
+                            }
+                        }
+                    }
+
+                }
+                if (removeLic) {
+                    result.message = removeLic.join(', ')
+                }
+                [result:result,status:STATUS_OK]
+            }
+            else {
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+    }
+
     //--------------------------------------- survey section -------------------------------------------
 
     Map<String,Object> surveys(SubscriptionController controller) {
@@ -1681,10 +1775,7 @@ class SubscriptionControllerService {
         Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         params.remove("max")
         params.remove("offset")
-        if (accessService.checkPerm("ORG_CONSORTIUM"))
-            params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            params.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
 
         if (params.filterPropDef) {
