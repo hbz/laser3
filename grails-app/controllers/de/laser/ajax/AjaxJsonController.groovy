@@ -49,6 +49,7 @@ class AjaxJsonController {
     def licenseService
     def subscriptionService
 
+    @Secured(['ROLE_USER'])
     def test() {
         Map<String, Object> result = [status: 'ok']
         result.id = params.id
@@ -228,6 +229,7 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
     def getBooleans() {
         List result = [
                 [value: 1, text: RDStore.YN_YES.getI10n('value')],
@@ -246,6 +248,7 @@ class AjaxJsonController {
         render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
     }*/
 
+    @Secured(['ROLE_USER'])
     def getPropValues() {
         List<Map<String, Object>> result = []
 
@@ -317,6 +320,7 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
     def getProvidersWithPrivateContacts() {
         Map<String, Object> result = [:]
         String fuzzyString = params.sSearch ? ('%' + params.sSearch.trim().toLowerCase() + '%') : '%'
@@ -384,6 +388,7 @@ class AjaxJsonController {
         render result as JSON // TODO -> check response; remove unnecessary information! only id and value_<x>?
     }
 
+    @Secured(['ROLE_USER'])
     def lookup() {
         // fallback for static refdataFind calls
         params.shortcode  = contextService.getOrg().shortcode
@@ -508,6 +513,7 @@ class AjaxJsonController {
         }
     }
 
+    @Secured(['ROLE_USER'])
     def refdataSearchByCategory() {
         List result = []
 
@@ -544,6 +550,7 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
     def searchPropertyAlternativesByOID() {
         List<Map<String, Object>> result = []
         PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.oid)

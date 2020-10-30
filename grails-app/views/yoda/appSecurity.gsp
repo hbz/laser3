@@ -73,7 +73,7 @@
 <h3 class="ui header">Controller Security</h3>
 
 <g:each in="${controller}" var="c">
-    <a href="#jumpMark_${c.key}">${c.key}</a>
+    <a href="#jumpMark_${c.key}">${c.key.replace('Controller', '')}</a>
     &nbsp;&nbsp;
 </g:each>
 
@@ -170,6 +170,24 @@
     color: black;
     background-color: #eee;
 }
+
+.secInfoWrapper .affil,
+.secInfoWrapper .perm,
+.secInfoWrapper .type,
+.secInfoWrapper .specRole {
+    font-size: 90%;
+    color: #335555;
+}
+.secInfoWrapper .perm {
+    font-weight: normal;
+}
+.secInfoWrapper .type {
+    font-style: italic;
+}
+.secInfoWrapper .test {
+    color: #dd33dd;
+}
+
 .secInfoWrapper .IS_AUTHENTICATED_FULLY {
     color: #228B22;
 }

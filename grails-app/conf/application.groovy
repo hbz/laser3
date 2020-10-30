@@ -50,7 +50,6 @@ grails.plugin.springsecurity.roleHierarchy = '''
 '''
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-        [pattern: '/api/**',         access: ['permitAll']],
         [pattern: '/assets/**',      access: ['permitAll']],
         [pattern: '/static/**',      access: ['permitAll']],
         [pattern: '/**/js/**',       access: ['permitAll']],
@@ -60,7 +59,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
-        [pattern: '/api/**',         filters: 'none'],
         [pattern: '/assets/**',      filters: 'none'],
         [pattern: '/**/js/**',       filters: 'none'],
         [pattern: '/**/css/**',      filters: 'none'],

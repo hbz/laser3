@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
  
 import de.laser.helper.DateUtil
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
@@ -20,12 +21,11 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessPointController  {
 
     def springSecurityService
     def contextService
-
-    def subscriptionsQueryService
     def orgTypeService
     AccessService accessService
     AccessPointService accessPointService
@@ -34,6 +34,7 @@ class AccessPointController  {
 
     static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -131,7 +132,7 @@ class AccessPointController  {
         return resultList
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
@@ -153,7 +154,7 @@ class AccessPointController  {
         return render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, params:params])
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
@@ -185,6 +186,7 @@ class AccessPointController  {
             model: [linkedPlatforms: linkedPlatforms, params:params, accessPoint: orgAccessPoint])
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -207,6 +209,7 @@ class AccessPointController  {
 
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -238,6 +241,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -276,6 +280,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -307,6 +312,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -338,6 +344,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -376,6 +383,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -414,6 +422,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -454,7 +463,7 @@ class AccessPointController  {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit_ip() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
@@ -541,27 +550,27 @@ class AccessPointController  {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit_vpn() {
         _edit()
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit_oa() {
         _edit()
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit_proxy() {
         _edit()
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit_ezproxy() {
         _edit()
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_USER'])
     def edit_shibboleth() {
         _edit()
     }
@@ -656,6 +665,7 @@ class AccessPointController  {
         }
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -667,6 +677,7 @@ class AccessPointController  {
         //redirect controller: 'accessPoint', action: 'edit_'+params.accessMethod, id: accessPoint.id, params: [autofocus: true]
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -694,6 +705,7 @@ class AccessPointController  {
         //redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
