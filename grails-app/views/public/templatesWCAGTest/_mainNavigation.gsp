@@ -7,9 +7,9 @@
                 Alle
                 <i aria-hidden="true" class="dropdown icon"></i>
                <div class="menu" role="menu" aria-label="das Menu">
-                    <a href="#"  class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
-                    <a href="#"  class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</a>
-                    <a href="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
+                    <a id="1" href="#"  class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
+                    <a id="2" href="#"  class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</a>
+                    <a id="3" ref="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
                 </div>
             </div>
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -29,19 +29,19 @@
                 Meine Einrichtung
                 <i aria-hidden="true" class="dropdown icon"></i>
                 <div class="menu" role="menu">
-                    <a href="#" class="item" role="menuitem" >Dashboard</a>
-                    <a href="#" class="item" role="menuitem" >Einrichtungsprofil</a>
-                    <a href="#" class="item" role="menuitem" >Mein Adressbuch</a>
-                    <a href="#" class="item" role="menuitem" >Aufgaben</a>
-                    <a href="#" class="item" role="menuitem" >Änderungen</a>
-                    <a href="#" class="item" role="menuitem" >Merkmale verwalten</a>
-                    <a href="#" class="item" role="menuitem" >Kostenübersicht</a>
-                    <a href="#" class="item" role="menuitem" >Budgetverwaltung</a>
-                    <a href="#" class="item" role="menuitem" >Kostenelemente verwalten</a>
-                    <a href="#" class="item" role="menuitem" >Kostenposten hochladen</a>
+                    <a id="11" href="#" class="item" role="menuitem" >Dashboard</a>
+                    <a id="12" href="#" class="item" role="menuitem" >Einrichtungsprofil</a>
+                    <a id="13" href="#" class="item" role="menuitem" >Mein Adressbuch</a>
+                    <a id="14" href="#" class="item" role="menuitem" >Aufgaben</a>
+                    <a id="15" href="#" class="item" role="menuitem" >Änderungen</a>
+                    <a id="16" href="#" class="item" role="menuitem" >Merkmale verwalten</a>
+                    <a id="17" href="#" class="item" role="menuitem" >Kostenübersicht</a>
+                    <a id="18" href="#" class="item" role="menuitem" >Budgetverwaltung</a>
+                    <a id="19" href="#" class="item" role="menuitem" >Kostenelemente verwalten</a>
+                    <a id="20" href="#" class="item" role="menuitem" >Kostenposten hochladen</a>
                     <div class="divider"></div>
-                    <a href="#" class="item" role="menuitem" >Nutzerverwaltung</a>
-                    <a href="#" class="item" role="menuitem" >Historie</a>
+                    <a id="21" href="#" class="item" role="menuitem" >Nutzerverwaltung</a>
+                    <a id="22" href="#" class="item" role="menuitem" >Historie</a>
                 </div>
             </div>
             <div class="right menu la-right-menuPart">
@@ -64,18 +64,18 @@
                     Ingrid Bluoss
                     <i aria-hidden="true" class="dropdown icon"></i>
                     <div class="menu" role="menu">
-                        <a href="#" class="item" role="menuitem" >DWI -
+                        <a  id="23" href="#" class="item" role="menuitem" >DWI -
                         Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>
-                        <a href="#" class="item active">hbz
+                        <a id="24" href="#" class="item active">hbz
                         Konsortialstelle Digitale Inhalte</a>
-                        <a href="#"
+                        <a id="25" href="#"
                            class="item" role="menuitem" >Universit&auml;tsbibliothek der RWTH Aachen</a>
                         <div class="divider"></div>
-                        <a href="#" class="item" role="menuitem" >Profil</a>
-                        <a href="#" class="item" role="menuitem" >Hilfe</a>
-                        <a href="#" class="item" role="menuitem" >Datenschutzinformationen</a>
+                        <a id="26" href="#" class="item" role="menuitem" >Profil</a>
+                        <a id="27" href="#" class="item" role="menuitem" >Hilfe</a>
+                        <a id="28" href="#" class="item" role="menuitem" >Datenschutzinformationen</a>
                         <div class="divider"></div>
-                        <a href="#" class="item" role="menuitem" >Abmelden</a>
+                        <a id="29" href="#" class="item" role="menuitem" >Abmelden</a>
                         <div class="divider"></div>
                         <div class="header">Version: 1.2.13 – 05.03.2020 10:26</div>
                         <div class="header">
