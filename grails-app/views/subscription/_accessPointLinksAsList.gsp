@@ -5,7 +5,7 @@
   <tr>
     <th scope="row" rowspan="0"
         class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th></tr>
-  <g:each in="${subscriptionInstance.packages}" var="sp">
+  <g:each in="${subscription.packages}" var="sp">
     <%
       Map<String,Object> packageMetadata = [:]
       String link
@@ -71,7 +71,7 @@
             <g:each in="${sp.pkg.tipps.platform.unique()}" var="platform">
               <div class="item">
                 <div class="right floated content">
-                  <g:each in="${sp.getAccessPointListForOrgAndPlatform(subscriptionInstance.getSubscriber(), platform)?.collect()}" var="orgap">
+                  <g:each in="${sp.getAccessPointListForOrgAndPlatform(subscription.getSubscriber(), platform)?.collect()}" var="orgap">
                     <g:link controller="accessPoint" action="edit_${orgap.oap.accessMethod}"
                             id="${orgap.oap.id}">${orgap.oap.name} (${orgap.oap.accessMethod.getI10n('value')})</g:link>
                     <g:if test="${accessConfigEditable && !platform.usesPlatformAccessPoints(contextOrg, sp)}">

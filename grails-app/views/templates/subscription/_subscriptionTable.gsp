@@ -159,14 +159,11 @@
                     <%--<td>
                             ${s.type?.getI10n('value')}
                         </td>--%>
-                        <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective']}">
+                        <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
                                 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
-                                <g:else>
-                                    ${s.getCollective()?.name}
-                                </g:else>
                             </td>
                         </g:if>
                         <td>

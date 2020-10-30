@@ -4,8 +4,8 @@
     <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" /> --%>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
-    <g:if test="${subscriptionInstance}">
-        <semui:crumb class="active" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
+    <g:if test="${subscription}">
+        <semui:crumb class="active" id="${subscription.id}" text="${subscription.name}" />
     </g:if>
     <g:if test="${actionName == 'compare'}">
         ${message(code:'subscription.compare.label')}

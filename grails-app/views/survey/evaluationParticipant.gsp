@@ -90,7 +90,7 @@
 
                 <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
-                                                                                  subscriptionInstance: subscriptionInstance,
+                                                                                  subscription        : subscription,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>
             </g:if>
@@ -99,7 +99,7 @@
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
                                                                              costItemSums        : costItemSums,
-                                                                             subscriptionInstance: surveyConfig.subscription,
+                                                                             subscription        : surveyConfig.subscription,
                                                                              tasks               : tasks,
                                                                              visibleOrgRelations : visibleOrgRelations]"/>
             </g:if>

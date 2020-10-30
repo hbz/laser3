@@ -97,10 +97,10 @@
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <semui:xEditable owner="${subscription}" field="name" />
         <semui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
     </h1>
-    <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <semui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <g:render template="nav" />
     <g:render template="/templates/filter/javascript" />
@@ -239,7 +239,7 @@
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.linkPrevMemberSub")}"
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
-                                    id="${subscriptionInstance.id}"
+                                    id="${subscription.id}"
                                     params="[prev: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow left icon grey"></i></g:link>
                         </g:elseif>
                     </td>
@@ -254,7 +254,7 @@
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.linkNextMemberSub")}"
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
-                                    id="${subscriptionInstance.id}"
+                                    id="${subscription.id}"
                                     params="[next: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
@@ -262,12 +262,12 @@
                         <td class="center aligned">
                             <g:set var="license" value="${Links.findByDestinationSubscriptionAndLinkType(sub,RDStore.LINKTYPE_LICENSE)}"/>
                             <g:if test="${!license}">
-                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-license icon"></i>
                                 </g:link>
                             </g:else>
@@ -276,12 +276,12 @@
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
-                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscriptionInstance.id}" class="ui icon ">
+                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-package icon"></i>
                                 </g:link>
                             </g:else>

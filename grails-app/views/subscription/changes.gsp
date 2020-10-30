@@ -7,7 +7,7 @@
 
 <body>
 
-    <g:render template="breadcrumb" model="${[ subscriptionInstance: subscription, params:params ]}"/>
+    <g:render template="breadcrumb" model="${[ subscription: subscription, params:params ]}"/>
     <semui:controlButtons>
         <g:render template="actions" />
     </semui:controlButtons>
@@ -20,7 +20,7 @@
 
     <g:render template="nav" contextPath="." />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
+    <g:if test="${subscription.instanceOf && (contextOrg.id == subscription.getConsortia()?.id)}">
         <g:render template="message" />
     </g:if>
 

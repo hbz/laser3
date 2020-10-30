@@ -15,7 +15,7 @@
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
 
-        <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <semui:xEditable owner="${subscription}" field="name" />
     </h1>
 
     <g:render template="nav"  />

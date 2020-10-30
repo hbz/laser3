@@ -116,7 +116,7 @@ class FinanceService {
                                 'select ci from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
                                  genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                                  ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
-                                 [owner:[sub.getConsortia(),sub.getCollective()],sub:sub]+genericExcludeParams+filterQuery.filterData)
+                                 [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
                             result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)

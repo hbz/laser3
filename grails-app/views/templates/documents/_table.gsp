@@ -4,10 +4,8 @@
     boolean parentAtChild = false
 
     if(instance instanceof Subscription) {
-        if(contextService.org.id in [instance.getConsortia()?.id,instance.getCollective()?.id] && instance.instanceOf) {
-            if(contextService.org.id == instance.getConsortia()?.id && instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE)
-                parentAtChild = true
-            else if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+        if(contextService.org.id == instance.getConsortia()?.id && instance.instanceOf) {
+            if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }

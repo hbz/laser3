@@ -2,7 +2,7 @@
 
 <semui:modal id="editEntitlementGroupItemModal" message="subscription.details.ieGroups.edit" isEditModal="true">
 
-    <g:form class="ui form" action="editEntitlementGroupItem" params="[ie: ie.id, id: subscriptionInstance.id]" method="POST">
+    <g:form class="ui form" action="editEntitlementGroupItem" params="[ie: ie.id, id: subscription.id]" method="POST">
         <input type="hidden" name="cmd" value="processing"/>
 
         <div class="ui grid">
@@ -22,7 +22,7 @@
                                     <th></th>
                                 </tr>
                                 <tbody>
-                                <g:each in="${subscriptionInstance.ieGroups.sort{it.name}}" var="titleGroup" status="i">
+                                <g:each in="${subscription.ieGroups.sort{it.name}}" var="titleGroup" status="i">
                                     <tr>
                                         <td>${i+1}</td>
                                         <td>

@@ -10,7 +10,7 @@
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
                 <div class="ui segment center aligned">
-                    <g:link controller="subscription" action="members" id="${subscriptionInstance.id}">
+                    <g:link controller="subscription" action="members" id="${subscription.id}">
                         <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
                         <div class="ui circular label">
                             ${countParticipants.subMembers}
@@ -294,7 +294,7 @@
             <div class="ui card">
                 <div class="content">
                     <div class="header">
-                        <g:if test="${!subscriptionInstance}">
+                        <g:if test="${!subscription}">
                             <h2 class="ui icon header"><semui:headerIcon/>
 
                                 <i class="icon clipboard outline la-list-icon"></i>
@@ -314,49 +314,49 @@
                         <g:else>
 
                             <h2 class="ui icon header"><semui:headerIcon/>
-                            <g:link controller="subscription" action="show" id="${subscriptionInstance.id}">
-                                ${subscriptionInstance.name}
+                            <g:link controller="subscription" action="show" id="${subscription.id}">
+                                ${subscription.name}
                             </g:link>
                             </h2>
-                            <semui:auditInfo auditable="[subscriptionInstance, 'name']"/>
+                            <semui:auditInfo auditable="[subscription, 'name']"/>
                         </g:else>
                     </div>
                 </div>
-                <g:if test="${subscriptionInstance}">
+                <g:if test="${subscription}">
                     <div class="content">
                         <div class="ui two column stackable grid container">
                             <div class="column">
                                 <dl>
                                     <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                                    <dd>${subscriptionInstance.status?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
+                                    <dd>${subscription.status.getI10n('value')}</dd>
+                                    <dd><semui:auditInfo auditable="[subscription, 'status']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
-                                    <dd>${subscriptionInstance.kind?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'kind']"/></dd>
+                                    <dd>${subscription.kind?.getI10n('value')}</dd>
+                                    <dd><semui:auditInfo auditable="[subscription, 'kind']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                                    <dd>${subscriptionInstance.form?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'form']"/></dd>
+                                    <dd>${subscription.form?.getI10n('value')}</dd>
+                                    <dd><semui:auditInfo auditable="[subscription, 'form']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                                    <dd>${subscriptionInstance.resource?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'resource']"/></dd>
+                                    <dd>${subscription.resource?.getI10n('value')}</dd>
+                                    <dd><semui:auditInfo auditable="[subscription, 'resource']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                                    <dd>${subscriptionInstance.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscriptionInstance, 'hasPerpetualAccess']"/></dd>
+                                    <dd>${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
+                                    <dd><semui:auditInfo auditable="[subscription, 'hasPerpetualAccess']"/></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">
                                         <g:message code="default.identifiers.label"/>
                                     </dt>
                                     <dd>
-                                        <g:each in="${subscriptionInstance.ids?.sort { it.ns.ns }}"
+                                        <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                 var="id">
                                             <span class="ui small blue image label">
                                                 ${id.ns.ns}: <div class="detail">${id.value}</div>
@@ -368,9 +368,9 @@
 
 
                             <div class="column">
-                                <g:if test="${subscriptionInstance.packages}">
+                                <g:if test="${subscription.packages}">
                                     <table class="ui three column la-selectable table">
-                                        <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
+                                        <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                                             <tr>
                                                 <th scope="row"
                                                     class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
@@ -394,7 +394,7 @@
 
                                     <g:render template="/templates/links/orgLinksAsList"
                                               model="${[roleLinks    : visibleOrgRelations,
-                                                        roleObject   : subscriptionInstance,
+                                                        roleObject   : subscription,
                                                         roleRespValue: 'Specific subscription editor',
                                                         editmode     : false,
                                                         showPersons  : false
@@ -414,7 +414,7 @@
                                 <g:set var="editable" value="${false}" scope="request"/>
                                 <g:set var="editable" value="${false}" scope="page"/>
                                 <g:render template="/subscription/properties" model="${[
-                                        subscriptionInstance: subscriptionInstance
+                                        subscription: subscription
                                 ]}"/>
 
                             </div>
@@ -433,7 +433,7 @@
                                 <g:if test="${links && links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                                     <table class="ui fixed table">
                                         <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
-                                            <tr><g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
+                                            <tr><g:set var="pair" value="${link.getOther(subscription)}"/>
                                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
                                                 <td>
                                                     <g:link controller="license" action="show" id="${pair.id}">
@@ -828,7 +828,7 @@
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(!(contextOrg.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id]) && subscriptionInstance.instanceOf) || !subscriptionInstance.instanceOf}">
+                    <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                         <h5 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h5>
                         <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>

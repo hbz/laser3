@@ -11,13 +11,13 @@
         <g:render template="actions" />
     </semui:controlButtons>
     <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <semui:xEditable owner="${subscription}" field="name" />
     </h1>
-    <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="tasks" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <semui:anualRings object="${subscription}" controller="subscription" action="tasks" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <g:render template="nav" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
+    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
         <g:render template="message" />
     </g:if>
 

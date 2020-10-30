@@ -14,8 +14,8 @@
 
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
     <semui:crumb message="issueEntitlementsSurvey.label"/>
-    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}" class="active"/>
+    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+                 text="${subscription.name}" class="active"/>
 </semui:breadcrumbs>
 <br />
 
@@ -108,7 +108,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
     <div class="la-inline-lists">
         <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                          subscriptionInstance: subscriptionInstance,
+                                                                          subscription        : subscription,
                                                                           visibleOrgRelations : visibleOrgRelations,
                                                                           surveyResults       : surveyResults        ]"/>
     </div>
@@ -151,10 +151,10 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                         <div class="two fields">
 
                             <div class="eight wide field" style="text-align: left;">
-                                <g:if test="${subscriptionInstance}">
+                                <g:if test="${subscription}">
                                     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
-                                            id="${subscriptionInstance.id}"
-                                            params="${[targetObjectId: subscriptionInstance.id,
+                                            id="${subscription.id}"
+                                            params="${[targetObjectId: subscription.id,
                                                        surveyConfigID      : surveyConfig.id]}"
                                             class="ui button">
                                         <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
@@ -180,7 +180,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
     </div>
 
     <div class="ui form twelve wide column">
-                <g:if test="${subscriptionInstance && editable}">
+                <g:if test="${subscription && editable}">
                     <g:link class="ui button green js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.concludeBinding.renewalEntitlements")}"
                             data-confirm-term-how="concludeBinding"

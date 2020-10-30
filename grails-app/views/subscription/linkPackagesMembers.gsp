@@ -13,8 +13,8 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}"/>
+    <semui:crumb controller="subscription" action="show" id="${subscription.id}"
+                 text="${subscription.name}"/>
 
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
@@ -22,9 +22,9 @@
 </semui:breadcrumbs>
 <br />
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscriptionInstance.name}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
 
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="${actionName}"
+<semui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <g:render template="navSubscriberManagement" model="${[args: args]}"/>
@@ -352,9 +352,9 @@
             }
         });
 
-      function unlinkPackage(pkg_id, subscriptionInstanceID){
+      function unlinkPackage(pkg_id, subscriptionID){
 
-        var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionInstanceID+"&package="+pkg_id
+        var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionID+"&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){

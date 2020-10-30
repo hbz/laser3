@@ -10,21 +10,21 @@
 
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
-            ownobj: subscriptionInstance,
+            ownobj: subscription,
             editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
             availPropDefGroups: availPropDefGroups
     ]}" />
 
 </semui:modal>
 
-<g:if test="${subscriptionInstance._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
+<g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
     <div class="ui card la-dl-no-table ">
         <div class="content">
             <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
             <div id="member_props_div">
                 <g:render template="/templates/properties/members" model="${[
                         prop_desc: PropertyDefinition.SUB_PROP,
-                        ownobj: subscriptionInstance,
+                        ownobj: subscription,
                         custom_props_div: "member_props_div"]}"/>
 
                 <%--<asset:script type="text/javascript">
@@ -41,7 +41,7 @@
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscriptionInstance._getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${subscription._getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -51,8 +51,8 @@
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
             List numberOfConsortiaProperties       = []
-            if(subscriptionInstance.getConsortia() && contextService.getOrg().id != subscriptionInstance.getConsortia().id)
-                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscriptionInstance,subscriptionInstance.getConsortia()))
+            if(subscription.getConsortia() && contextService.getOrg().id != subscription.getConsortia().id)
+                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscription,subscription.getConsortia()))
 
             boolean isVisible = false
 
@@ -73,11 +73,11 @@
                     propDefGroup: pdg,
                     propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.SUB_PROP,
-                    ownobj: subscriptionInstance,
+                    ownobj: subscription,
                     custom_props_div: "grouped_custom_props_div_${pdg.id}"
             ]}"/>
             <g:if test="${!binding?.isVisible && !pdg.isVisible}">
-                <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(subscriptionInstance).size()-numberOfConsortiaProperties.size()}" />
+                <g:set var="numberOfProperties" value="${pdg.getCurrentProperties(subscription).size()-numberOfConsortiaProperties.size()}" />
                 <g:if test="${numberOfProperties > 0}">
                     <%
                         hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems.withInheritance', args: [pdg.name, numberOfProperties])}"
@@ -86,7 +86,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscriptionInstance,contextService.getOrg())}" />
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscription,contextService.getOrg())}" />
             <g:if test="${numberOfProperties.size() > 0}">
                 <%
                     hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
@@ -117,7 +117,7 @@
         <div id="custom_props_div_props">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
-                    ownobj: subscriptionInstance,
+                    ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
                     editable: (controllerName == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
@@ -127,7 +127,7 @@
 
     <asset:script type="text/javascript">
     $(document).ready(function(){
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${subscriptionInstance.class.simpleName}:${subscriptionInstance.id}"]'/>", "#custom_props_div_props");
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
     });
     </asset:script>
 
@@ -142,7 +142,7 @@
         <div id="custom_props_div_${contextOrg.id}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
-                    ownobj: subscriptionInstance,
+                    ownobj: subscription,
                     custom_props_div: "custom_props_div_${contextOrg.id}",
                     tenant: contextOrg]}"/>
 
