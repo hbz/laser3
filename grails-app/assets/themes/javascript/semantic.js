@@ -7267,7 +7267,7 @@ $.fn.dropdown = function(parameters) {
                       .addClass(className.selected)
                     ;
                     if($nextItem.length !== 0) {
-                        //$module.attr('aria-activedescendant', $nextItem[0].id);
+                        $module.attr('aria-activedescendant', $nextItem[0].id);
                     }
                     module.set.scrollPosition($nextItem);
                     if(settings.selectOnKeydown && module.is.single()) {
@@ -7837,7 +7837,6 @@ $.fn.dropdown = function(parameters) {
             else {
               module.debug('Restoring default text', defaultText);
               module.set.text(defaultText);
-              module.set.activedescendantMainMenu();
             }
           },
           placeholderText: function() {
@@ -8035,9 +8034,6 @@ $.fn.dropdown = function(parameters) {
         },
 
         set: {
-          activedescendantMainMenu: function(selectedItemID){
-            $module.attr('aria-activedescendant', selectedItemID) // a11y
-          },
           ariaSelected : function (selectedItem) {
             $(selectedItem).attr('aria-selected', 'true') //"VOX: Menuepunkt ausgewählt"
           },
