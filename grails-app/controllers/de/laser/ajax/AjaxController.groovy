@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-@Secured(['permitAll']) // TODO
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
     def genericOIDService
@@ -1740,6 +1740,7 @@ class AjaxController {
     result;
   }
 
+    @Secured(['permitAll'])
     def notifyProfiler() {
         Map<String, Object> result = [status: 'failed']
         SessionCacheWrapper cache = contextService.getSessionCache()
