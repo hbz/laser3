@@ -42,6 +42,7 @@ import de.laser.SubscriptionController
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.SurveyConfig
+import de.laser.SurveyService
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.CreationException
@@ -65,6 +66,7 @@ import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.slurpersupport.GPathResult
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
@@ -94,6 +96,7 @@ class SubscriptionControllerService {
     ExecutorService executorService
     PackageService packageService
     GokbService gokbService
+    SurveyService surveyService
     GlobalSourceSyncService globalSourceSyncService
     LinksGenerationService linksGenerationService
     ExecutorWrapperService executorWrapperService
@@ -300,7 +303,7 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> tasks(SubscriptionController controller,GrailsParameterMap params) {
+    Map<String,Object> tasks(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
@@ -313,6 +316,38 @@ class SubscriptionControllerService {
             result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
             result.myTaskInstanceCount = result.myTaskInstanceList.size()
             result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> history(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.max = params.max ?: result.user.getDefaultPageSizeAsInteger()
+            result.offset = params.offset ?: 0
+            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id]
+            Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
+            result.historyLinesTotal = historyLines.size()
+            result.historyLines = historyLines.drop(result.offset).take(result.max)
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.max = params.max ?: result.user.getDefaultPageSizeAsInteger()
+            result.offset = params.offset ?: 0
+            Map<String, Object> baseParams = [sub: result.subscription, stats: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]
+            Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
+            result.todoHistoryLinesTotal = todoHistoryLines.size()
+            result.todoHistoryLines = todoHistoryLines.drop(result.offset).take(result.max)
             [result:result,status:STATUS_OK]
         }
     }
@@ -458,40 +493,9 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
-        Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
-        result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
-
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter(controller, params)
-        result.filteredSubChilds = []
-        result.validSubChilds.each { Subscription sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            Set<Org> filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                if (params.subRunTimeMultiYear || params.subRunTime) {
-
-                    if (params.subRunTimeMultiYear && !params.subRunTime) {
-                        if(sub.isMultiYear) {
-                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                        }
-                    }else if (!params.subRunTimeMultiYear && params.subRunTime){
-                        if(!sub.isMultiYear) {
-                            result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                        }
-                    }
-                    else {
-                        result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                    }
-                }
-                else {
-                    result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                }
-            }
-        }
+        Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+        //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
+        result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -721,27 +725,12 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.parentSub = result.subscription.instanceOf ?: result.subscription
-            result.parentLicenses = Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:result.parentSub,linkType:RDStore.LINKTYPE_LICENSE])
+            result.parentLicenses = Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:result.subscription,linkType:RDStore.LINKTYPE_LICENSE])
             result.validLicenses = []
             if(result.parentLicenses) {
                 result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
             }
-            Set<Subscription> validSubChilds = Subscription.executeQuery("select sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent order by org.sortname asc, org.name asc",[parent:result.parentSub])
-            List<Long> filteredOrgIds = getOrgIdsForFilter(controller,params+[id:result.parentSub.id])
-            result.filteredSubChilds = new ArrayList<Subscription>()
-            validSubChilds.each { Subscription sub ->
-                List<Org> subscr = sub.getAllSubscribers()
-                Set<Org> filteredSubscr = []
-                subscr.each { Org subOrg ->
-                    if (filteredOrgIds.contains(subOrg.id)) {
-                        filteredSubscr << subOrg
-                    }
-                }
-                if (filteredSubscr) {
-                    result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-                }
-            }
+            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
             [result:result,status:STATUS_OK]
         }
     }
@@ -754,8 +743,7 @@ class SubscriptionControllerService {
         }
         else {
             if(formService.validateToken(params)) {
-                result.parentSub = result.subscription.instanceOf ?: result.subscription
-                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
                 List selectedMembers = params.list("selectedMembers")
                 List<GString> changeAccepted = []
                 validSubChilds.each { Subscription subChild ->
@@ -784,9 +772,8 @@ class SubscriptionControllerService {
         }
         else {
             if(formService.validateToken(params)) {
-                result.parentSub = result.subscription.instanceOf ?: result.subscription
                 List selectedMembers = params.list("selectedMembers")
-                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
+                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
                 List<GString> removeLic = []
                 validSubChilds.each { Subscription subChild ->
                     if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
@@ -806,6 +793,141 @@ class SubscriptionControllerService {
             else {
                 [result:result,status:STATUS_ERROR]
             }
+        }
+    }
+
+    Map<String,Object> linkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            result.validPackages = result.subscription.packages
+            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> processLinkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            if(formService.validateToken(params)) {
+                List selectedMembers = params.list("selectedMembers")
+                if(selectedMembers && params.package_All){
+                    Package pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
+                    selectedMembers.each { id ->
+                        Subscription subChild = Subscription.get(Long.parseLong(id))
+                        if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
+                            if (!(pkg_to_link in subChild.packages.pkg)) {
+                                if (params.processOption == 'linkwithIE') {
+                                    pkg_to_link.addToSubscriptionCurrentStock(subChild, result.subscription)
+
+                                } else {
+                                    pkg_to_link.addToSubscription(subChild, false)
+                                }
+                            }
+                        }
+                        if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                            if (pkg_to_link in subChild.packages.pkg) {
+                                if (params.processOption == 'unlinkwithIE') {
+                                    pkg_to_link.unlinkFromSubscription(subChild, true)
+                                } else {
+                                    pkg_to_link.unlinkFromSubscription(subChild, false)
+                                }
+                            }
+                        }
+                    }
+                    [result:result,status:STATUS_OK]
+                }
+                else {
+                    if(!selectedMembers) {
+                        result.error = messageSource.getMessage('subscription.linkPackagesMembers.noSelectedMember',null,locale)
+                    }
+                    if(!params.package_All) {
+                        result.error = messageSource.getMessage('subscription.linkPackagesMembers.noSelectedPackage',null,locale)
+                    }
+                    [result:result,status:STATUS_ERROR]
+                }
+            }
+            else {
+                [result:result,status:STATUS_ERROR]
+            }
+        }
+    }
+
+    Map<String,Object> processUnLinkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            result.parentPackages = result.subscription.packages
+            result.message = []
+            result.error = []
+            List<SubscriptionPackage> validSubChildPackages = SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp join sp.subscription sub where sub.instanceOf = :parent",[parent:result.subscription])
+            validSubChildPackages.each { SubscriptionPackage sp ->
+                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp',[sp:sp])) {
+                    if (params.withIE) {
+                        if(sp.pkg.unlinkFromSubscription(sp.subscription, true)){
+                            result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.withIE.successful',null,locale)
+                        }
+                        else {
+                            result.error << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.withIE.fail',null,locale)
+                        }
+                    }
+                    else {
+                        if(sp.pkg.unlinkFromSubscription(sp.subscription, false)){
+                            result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful',null,locale)
+                        }
+                        else {
+                            result.error << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.onlyPackage.fail',null,locale)
+                        }
+                    }
+                }
+                else {
+                    Object[] args = [sp.pkg.name,sp.subscription.getSubscriber().name]
+                    result.error << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.costsExisting',args,locale)
+                }
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> propertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            [result:null,status:STATUS_OK]
+        }
+        else {
+            result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+            params.remove('filterPropDef')
+            Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.subscription,roleType:RDStore.OR_SUBSCRIBER_CONS])
+            if(validSubChildren) {
+                result.validSubChilds = validSubChildren
+                Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+                propList.addAll(result.subscription.propertySet.type)
+                result.propList = propList
+                result.filteredSubChilds = validSubChildren
+                List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
+                if(childSubs) {
+                    String localizedName
+                    switch(LocaleContextHolder.getLocale()) {
+                        case Locale.GERMANY:
+                        case Locale.GERMAN: localizedName = "name_de"
+                            break
+                        default: localizedName = "name_en"
+                            break
+                    }
+                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+                    result.memberProperties = memberProperties
+                }
+            }
+            [result:result,status:STATUS_OK]
         }
     }
 
@@ -1744,6 +1866,45 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+            if(!result.editable) {
+                [result:null,status:STATUS_ERROR]
+            }
+            else {
+                List iesToAdd = params."iesToAdd".split(",")
+                Integer countIEsToAdd = 0
+                iesToAdd.each { ieID ->
+                    IssueEntitlement ie = IssueEntitlement.findById(ieID)
+                    TitleInstancePackagePlatform tipp = ie.tipp
+                    try {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
+                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                            countIEsToAdd++
+                        }
+                    }
+                    catch (EntitlementCreationException e) {
+                        log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
+                        [result:result,status:STATUS_ERROR]
+                    }
+                }
+                if(countIEsToAdd > 0){
+                    Object[] args = [countIEsToAdd]
+                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
+                }
+                [result:result,status:STATUS_OK]
+            }
+        }
+    }
+
     //--------------------------------------------- admin section -------------------------------------------------
 
     Map<String,Object> pendingChanges(SubscriptionController controller) {
@@ -1771,18 +1932,42 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
-    ArrayList<Long> getOrgIdsForFilter(SubscriptionController controller, GrailsParameterMap params) {
+    List<Map> getFilteredSubscribers(SubscriptionController controller, GrailsParameterMap params, Subscription parentSub) {
         Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         params.remove("max")
         params.remove("offset")
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
         fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        Org.executeQuery(fsq.query, fsq.queryParams, params)
+        List<Long> filteredOrgIds = Org.executeQuery(fsq.query, fsq.queryParams, params+[id:parentSub.id])
+        Set rows = Subscription.executeQuery("select sub,org from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent order by org.sortname asc, org.name asc",[parent:parentSub])
+        List<Map> filteredSubChilds = []
+        rows.each { row ->
+            Org subscriber = row[1]
+            Subscription subscription = row[0]
+            if(subscriber.id in filteredOrgIds) {
+                if (params.subRunTimeMultiYear || params.subRunTime) {
+                    if (params.subRunTimeMultiYear && !params.subRunTime) {
+                        if (subscription.isMultiYear) {
+                            filteredSubChilds << [sub: subscription, orgs: subscriber]
+                        }
+                    } else if (!params.subRunTimeMultiYear && params.subRunTime) {
+                        if (!subscription.isMultiYear) {
+                            filteredSubChilds << [sub: subscription, orgs: subscriber]
+                        }
+                    } else {
+                        filteredSubChilds << [sub: subscription, orgs: subscriber]
+                    }
+                }
+                else {
+                    filteredSubChilds << [sub: subscription, orgs: subscriber]
+                }
+            }
+        }
+        filteredSubChilds
     }
 
 }
