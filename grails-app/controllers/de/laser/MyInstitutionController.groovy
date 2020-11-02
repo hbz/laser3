@@ -1007,78 +1007,9 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def linkObjects() {
-        //error when no pair is given!
-        params.keySet().each {
-            if(it.contains("pair_")) {
-                def pairCheck = params.get(it)
-                if(!pairCheck) {
-                    flash.error = message(code:'default.linking.noLinkError')
-                    redirect(url: request.getHeader('referer'))
-                    return
-                }
-            }
-        }
-        //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
-        Map<String,Object> configMap = [owner:contextService.org]
-        //perspectiveIndex 0: source -> dest, 1: dest -> source
-        if(params.link) {
-            configMap.link = genericOIDService.resolveOID(params.link)
-            if(params.commentID)
-                configMap.comment = genericOIDService.resolveOID(params.commentID)
-            if(params["linkType_${configMap.link.id}"]) {
-                String linkTypeString = params["linkType_${configMap.link.id}"].split("§")[0]
-                int perspectiveIndex = Integer.parseInt(params["linkType_${configMap.link.id}"].split("§")[1])
-                RefdataValue linkType = (RefdataValue) genericOIDService.resolveOID(linkTypeString)
-                configMap.commentContent = params["linkComment_${configMap.link.id}"].trim()
-                if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params.context)
-                    configMap.destination = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
-                }
-                else if(perspectiveIndex == 1) {
-                    configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
-                    configMap.destination = genericOIDService.resolveOID(params.context)
-                }
-                configMap.linkType = linkType
-            }
-            else if(!params["linkType_${configMap.link.id}"]) {
-                flash.error = message(code:'default.linking.linkTypeError')
-            }
-        }
-        else {
-            if(params["linkType_new"]) {
-                String linkTypeString = params["linkType_new"].split("§")[0]
-                int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
-                configMap.linkType = genericOIDService.resolveOID(linkTypeString)
-                configMap.commentContent = params.linkComment_new
-                if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params.context)
-                    configMap.destination = genericOIDService.resolveOID(params.pair_new)
-                }
-                else if(perspectiveIndex == 1) {
-                    configMap.source = genericOIDService.resolveOID(params.pair_new)
-                    configMap.destination = genericOIDService.resolveOID(params.context)
-                }
-                def currentObject = genericOIDService.resolveOID(params.context)
-                List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
-                if(childInstances) {
-                    configMap.contextInstances = childInstances
-                    def pairObject = genericOIDService.resolveOID(params.pair_new)
-                    configMap.pairInstances = pairObject.getClass().findAllByInstanceOf(pairObject)
-                }
-            }
-            else if(params["linkType_sl_new"]) {
-                configMap.linkType = RDStore.LINKTYPE_LICENSE
-                configMap.commentContent = params.linkComment_sl_new
-                configMap.source = genericOIDService.resolveOID(params.pair_sl_new)
-                configMap.destination = genericOIDService.resolveOID(params.context)
-            }
-            else if(!params["linkType_new"] && !params["linkType_sl_new"]) {
-                flash.error = message(code:'default.linking.linkTypeError')
-            }
-        }
-        def error = linksGenerationService.createOrUpdateLink(configMap)
-        if(error != false)
-            flash.error = error
+        Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
+        if(ctrlResult.status == LinksGenerationService.STATUS_ERROR)
+            flash.error = ctrlResult.error
         redirect(url: request.getHeader('referer'))
     }
 
