@@ -101,11 +101,6 @@ r2d2 = {
         console.log('r2d2.initGlobalAjaxLogin()')
 
         $.ajaxSetup({
-            beforeSend: function(jqXHR, event) {
-                if (event.url != $('#ajaxLoginForm').attr('action')) {
-                    onLogin = event.success
-                }
-            },
             statusCode: {
                 401: function() {
                     $(".select2-container").select2('close')
@@ -124,30 +119,27 @@ r2d2 = {
                 data: $('#ajaxLoginForm').serialize(),
                 method: 'POST',
                 dataType: 'JSON',
-                success: function (json, textStatus, jqXHR) {
+                success: function (json, textStatus, xhr) {
                     if (json.success) {
                         $('#ajaxLoginForm')[0].reset()
                         $('#ajaxLoginMessage').empty()
                         $('#ajaxLoginModal').modal('hide')
-                        if (onLogin) {
-                            onLogin(json, textStatus, jqXHR)
-                        }
                     }
                     else if (json.error) {
                         $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>')
                     }
                     else {
-                        $('#loginMessage').html(jqXHR.responseText)
+                        $('#loginMessage').html(xhr.responseText)
                     }
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    if (jqXHR.status == 401 && jqXHR.getResponseHeader('Location')) {
+                error: function (xhr, textStatus, errorThrown) {
+                    if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
                         // the login request itself wasn't allowed, possibly because the
                         // post url is incorrect and access was denied to it
                         $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>')
                     }
                     else {
-                        var responseText = jqXHR.responseText
+                        var responseText = xhr.responseText
                         if (responseText) {
                             var json = $.parseJSON(responseText)
                             if (json.error) {
