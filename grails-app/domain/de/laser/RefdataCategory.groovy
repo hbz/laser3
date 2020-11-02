@@ -73,12 +73,14 @@ class RefdataCategory extends AbstractI10n {
           matches = RefdataCategory.findAll()
       }
       else {
+          String q = "%${params.q.trim().toLowerCase()}%"
+
           switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
               case 'en':
-                  matches = RefdataCategory.findAllByDesc_enIlike("%${params.q}%")
+                  matches = RefdataCategory.executeQuery("select rc from RefdataCategory rc where lower(rc.desc_en) like :q", [q: q])
                   break
               case 'de':
-                  matches = RefdataCategory.findAllByDesc_deIlike("%${params.q}%")
+                  matches = RefdataCategory.executeQuery("select rc from RefdataCategory rc where lower(rc.desc_de) like :q", [q: q])
                   break
           }
       }
