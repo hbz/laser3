@@ -114,13 +114,13 @@
                                 <g:else>
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             controller="person"
-                                            action="_delete"
+                                            action="delete"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="delete">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
-                                    %{--<g:form controller="person" action="_delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
+                                    %{--<g:form controller="person" action="delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person.id}" />--}%
                                         %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
                                              %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person.toString()])}"--}%
@@ -161,7 +161,7 @@
                                 <g:else>
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             controller="person"
-                                            action="_delete"
+                                            action="delete"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="delete">

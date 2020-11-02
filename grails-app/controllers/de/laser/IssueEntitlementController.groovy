@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat
 class IssueEntitlementController  {
 
     def factService
-    def contextService
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService

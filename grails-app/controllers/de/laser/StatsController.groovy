@@ -7,9 +7,6 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class StatsController  {
 
-    def springSecurityService
-    def contextService
-
   @Secured(['ROLE_ADMIN'])
   def statsHome() { 
     Map<String, Object> result = [:]

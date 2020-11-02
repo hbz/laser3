@@ -70,7 +70,7 @@ data-confirm-term-how="concludeBinding":
 #### Use in Form
 
 ```
-<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
+<g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
         <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
             <i class="write icon"></i>

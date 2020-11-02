@@ -11,9 +11,9 @@ class ServerCodesController {
     GrailsApplication grailsApplication
 
     def error() {
-
         Map<String, Object> result = [
                 exception: request.getAttribute('exception'),
+                status: request.getAttribute('javax.servlet.error.status_code'),
                 mailString: ''
         ]
 
@@ -46,17 +46,17 @@ class ServerCodesController {
     }
 
     def forbidden() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         result
     }
 
     def notFound() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         result
     }
 
     def unavailable() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         result
     }
 }

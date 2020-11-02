@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} - ${message(code: 'serverCode.error.message2')}</title>
+    <title>${message(code: 'laser')} - ${message(code: 'serverCode.error.message1')}</title>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
 </head>
 
@@ -12,16 +12,20 @@
 
 <br />
 
-<div class="ui segment">
+<div class="ui segment piled">
     <div class="content">
-        <h3 class="ui header">
-            <i class="icon frown outline"></i> ${message(code: 'serverCode.error.message2')}
-        </h3>
+        <div>
+            <span class="ui orange label huge">${status}</span>
+        </div>
+
+        <h2 class="ui header">
+            ${message(code: 'serverCode.error.message1')}
+        </h2>
 
         <g:if test="${! flash.error}">
             <div>
-                <h4 class="ui header">${message(code: 'serverCode.error.message')}</h4>
-                <p>${request.forwardURI}</p>
+                <p>${message(code: 'serverCode.error.message2')}</p>
+                <p><strong>${request.forwardURI}</strong></p>
 
                 <g:if test="${exception}">
                     <p>${exception.message}</p>
@@ -31,11 +35,12 @@
                             <g:message code="serverCode.error.sendSupportMail"/>
                         </a>
                     </p>
-                    <br />
-                    <p>
-                        <button class="ui button" onclick="window.history.back()">${message(code: 'default.button.back')}</button>
-                    </p>
                 </g:if>
+
+                <br />
+                <p>
+                    <button class="ui button" onclick="window.history.back()">${message(code: 'default.button.back')}</button>
+                </p>
             </div>
         </g:if>
     </div>

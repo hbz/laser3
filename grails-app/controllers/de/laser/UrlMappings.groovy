@@ -40,6 +40,7 @@ class UrlMappings {
         "401"       (controller: 'serverCodes', action: 'forbidden')
         "403"       (controller: 'serverCodes', action: 'error')
         "404"       (controller: 'serverCodes', action: 'notFound')
+        "405"       (controller: 'serverCodes', action: 'error')
 
         // default
 

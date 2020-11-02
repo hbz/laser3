@@ -122,20 +122,23 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             matches = RefdataValue.findAll()
         }
         else {
+            String q = "%${params.q.trim().toLowerCase()}%"
+
             switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
-                    matches = RefdataValue.findAllByValue_enIlike("%${params.q}%")
+                    matches = RefdataValue.executeQuery("select rdv from RefdataValue rdv where lower(rdv.value_en) like :q", [q: q])
                     break
                 case 'de':
-                    matches = RefdataValue.findAllByValue_deIlike("%${params.q}%")
+                    matches = RefdataValue.executeQuery("select rdv from RefdataValue rdv where lower(rdv.value_de) like :q", [q: q])
                     break
             }
         }
+
         matches.each { it ->
             result.add([id: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
         }
 
-        matches
+        result
     }
 
     // called from AjaxController.resolveOID2()

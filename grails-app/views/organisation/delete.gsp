@@ -44,7 +44,7 @@
             <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
             <g:if test="${editable}">
-                <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}" style="display:inline-block;vertical-align:top">
+                <g:form controller="organisation" action="delete" params="${[id: orgInstance.id, process: true]}" style="display:inline-block;vertical-align:top">
 
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">

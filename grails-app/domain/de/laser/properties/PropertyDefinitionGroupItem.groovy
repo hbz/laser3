@@ -1,7 +1,5 @@
 package de.laser.properties
 
-import de.laser.properties.PropertyDefinition
-import de.laser.properties.PropertyDefinitionGroup
 import groovy.util.logging.Slf4j
 
 @Slf4j
