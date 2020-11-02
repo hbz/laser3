@@ -382,7 +382,7 @@ class PersonController  {
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def _delete() {
+    def delete() {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)
             if (!personInstance) {

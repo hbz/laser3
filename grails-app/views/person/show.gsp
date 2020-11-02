@@ -176,14 +176,14 @@
                                                             <div class="ui mini icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
-                                                                        action="_delete"
+                                                                        action="delete"
                                                                         id="${personInstance?.id}"
                                                                         params="[previousReferer: request.getHeader('referer')]"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args:[link?.functionType?.getI10n('value'), personInstance.toString()])}"
                                                                         data-confirm-term-how="delete">
                                                                     <i class="trash alternate icon"></i>
                                                                 </g:link>
-                                                                %{--<g:form controller="person" action="_delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
+                                                                %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                 %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
                                                                 %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                                                 %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
@@ -241,14 +241,14 @@
                                                             <div class="ui mini icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
-                                                                        action="_delete"
+                                                                        action="delete"
                                                                         id="${personInstance?.id}"
                                                                         params="[previousReferer: request.getHeader('referer')]"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args:[link.positionType?.getI10n('value'), personInstance.toString()])}"
                                                                         data-confirm-term-how="delete">
                                                                     <i class="trash alternate icon"></i>
                                                                 </g:link>
-                                                                %{--<g:form controller="person" action="_delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
+                                                                %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                     %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
                                                                     %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                                                          %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
@@ -409,7 +409,7 @@
                 <div class="ui card">
                     <div class="content">
                             <g:link controller="person"
-                                    action="_delete"
+                                    action="delete"
                                     id="${personInstance?.id}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance])}"
                                     data-confirm-term-how="delete"

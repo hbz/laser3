@@ -38,7 +38,7 @@
                 <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
+            <g:form controller="user" action="delete" params="${[id: user.id, process: true]}">
 
                 <g:link controller="organisation" action="users" params="${[id: contextService.getOrg().id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
 

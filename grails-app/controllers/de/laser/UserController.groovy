@@ -13,7 +13,6 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UserController  {
 
-    def springSecurityService
     def genericOIDService
     def instAdmService
     def contextService
@@ -21,7 +20,7 @@ class UserController  {
     def deletionService
     def userService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 
     def index() {
         redirect action: 'list', params: params
@@ -32,7 +31,7 @@ class UserController  {
         principal.user?.hasRole('ROLE_ADMIN') ||
                 principal.user?.hasAffiliation("INST_ADM")
     })
-    def _delete() {
+    def delete() {
         Map<String, Object> result = userService.setResultGenerics(params)
 
         if (result.user) {

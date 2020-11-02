@@ -1066,7 +1066,7 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def _delete() {
+    def delete() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
 
         if (result.orgInstance) {
@@ -1516,7 +1516,7 @@ class OrganisationController  {
             case 'userEdit':
                 isEditable = true
                 break
-            case '_delete':
+            case 'delete':
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN')
                 break
             case 'properties':
