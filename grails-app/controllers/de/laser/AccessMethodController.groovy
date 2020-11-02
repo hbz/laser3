@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
  
 import de.laser.helper.DateUtil
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -17,6 +18,7 @@ class AccessMethodController  {
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']
     
     @Secured(['ROLE_USER'])
+    @Transactional
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
 
@@ -41,7 +43,7 @@ class AccessMethodController  {
 
             accessMethod.accessMethod = RefdataValue.get(params.accessMethod)
 
-            accessMethod.save(flush: true)
+            accessMethod.save()
             accessMethod.errors.toString()
 
             flash.message = message(code: 'accessMethod.create.message', args: [accessMethod.accessMethod.getI10n('value')])
@@ -58,6 +60,7 @@ class AccessMethodController  {
     }
     
     @Secured(['ROLE_USER'])
+    @Transactional
     def delete() {
         PlatformAccessMethod accessMethod = PlatformAccessMethod.get(params.id)
 
@@ -65,7 +68,7 @@ class AccessMethodController  {
         Long platformId = platform.id
         
         try {
-            accessMethod.delete(flush: true)
+            accessMethod.delete()
 			flash.message = message(code: 'accessMethod.deleted', args: [accessMethod.accessMethod.getI10n('value')])
             redirect controller: 'platform', action: 'AccessMethods', id: platformId
         }
@@ -86,6 +89,7 @@ class AccessMethodController  {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def update() {
         PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
         Platform platf = accessMethod.platf
@@ -110,7 +114,7 @@ class AccessMethodController  {
             accessMethod.validTo = params.validTo
             accessMethod.lastUpdated = new Date()
 
-            accessMethod.save(flush: true)
+            accessMethod.save()
             accessMethod.errors.toString()
 
             flash.message = message(code: 'accessMethod.create.message', args: [accessMethod.accessMethod.getI10n('value')])

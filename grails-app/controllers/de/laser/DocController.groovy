@@ -5,8 +5,8 @@ import de.laser.auth.User
  
 import de.laser.helper.AppUtils
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
@@ -64,6 +64,7 @@ class DocController  {
     }
 
 	@Secured(['ROLE_USER'])
+	@Transactional
 	def createNote() {
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
@@ -80,7 +81,7 @@ class DocController  {
 						content: params.licenseNote,
 						type: RDStore.DOC_TYPE_NOTE,
 						owner: contextService.org,
-						user: user).save(flush:true)
+						user: user).save()
 
 				log.debug("Setting new context type to ${params.ownertp}..")
 
@@ -88,7 +89,7 @@ class DocController  {
 						"${params.ownertp}": instance,
 						owner: doc_content,
 						doctype: RDStore.DOC_TYPE_NOTE)
-				doc_context.save(flush:true)
+				doc_context.save()
 			}
 			else {
 				log.debug("no instance")

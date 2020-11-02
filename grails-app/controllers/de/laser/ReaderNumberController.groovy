@@ -1,7 +1,5 @@
 package de.laser
 
-
- 
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
@@ -10,9 +8,6 @@ import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ReaderNumberController  {
-
-	def springSecurityService
-	def contextService
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })

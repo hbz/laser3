@@ -13,7 +13,6 @@ class PendingChangeController  {
     def pendingChangeService
     def executorWrapperService
     def contextService
-    def springSecurityService
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })

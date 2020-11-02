@@ -7,6 +7,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -116,6 +117,7 @@ class PlatformController  {
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     //@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def delete() {
         Platform platformInstance = Platform.get(params.id)
         if (!platformInstance) {
@@ -125,7 +127,7 @@ class PlatformController  {
         }
 
         try {
-            platformInstance.delete(flush: true)
+            platformInstance.delete()
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
         }

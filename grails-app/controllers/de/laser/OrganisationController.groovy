@@ -469,6 +469,7 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Transactional
     def create() {
         switch (request.method) {
             case 'POST':
@@ -476,7 +477,7 @@ class OrganisationController  {
                 orgInstance.status = RDStore.O_STATUS_CURRENT
 
                 //if (params.name) {
-                    if (orgInstance.save(flush: true)) {
+                    if (orgInstance.save()) {
                         orgInstance.setDefaultCustomerType()
 
                         flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
@@ -939,6 +940,7 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def deleteIdentifier() {
         log.debug("OrganisationController::deleteIdentifier ${params}")
         def owner = genericOIDService.resolveOID(params.owner)
@@ -950,7 +952,7 @@ class OrganisationController  {
         if (owner && target) {
             if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
                 log.debug("Identifier deleted: ${params}")
-                target.delete(flush:true)
+                target.delete()
             }
         }
         redirect(url: request.getHeader('referer'))
@@ -1125,17 +1127,18 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def addOrgCombo(Org fromOrg, Org toOrg) {
         RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
-      log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
-      def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = :fromOrg and c.toOrg = :toOrg", [fromOrg: fromOrg, toOrg: toOrg])
+        log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
+        def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = :fromOrg and c.toOrg = :toOrg", [fromOrg: fromOrg, toOrg: toOrg])
       
       if (! dupe) {
           Combo consLink = new Combo(fromOrg:fromOrg,
                                  toOrg:toOrg,
                                  status:null,
                                  type:comboType)
-          consLink.save(flush:true)
+          consLink.save()
       }
       else {
         flash.message = "This Combo already exists!"
