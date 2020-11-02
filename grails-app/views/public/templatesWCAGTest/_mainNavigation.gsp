@@ -9,7 +9,7 @@
                <div class="menu" role="menu" aria-label="das Menu">
                     <a id="1" href="#"  class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
                     <a id="2" href="#"  class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</a>
-                    <a id="3" ref="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
+                    <a id="3" href="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
                 </div>
             </div>
             <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
