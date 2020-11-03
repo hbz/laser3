@@ -55,12 +55,12 @@
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
         <th>
-            ${message(code: 'person.function.label')}"/>
+            ${message(code: 'person.function.label')}
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
         <th>
-            ${message(code: 'person.position.label')}"/>
+            ${message(code: 'person.position.label')}
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
