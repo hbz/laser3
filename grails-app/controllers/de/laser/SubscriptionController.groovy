@@ -1,21 +1,15 @@
 package de.laser
 
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.properties.SubscriptionProperty
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
- 
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -43,7 +37,7 @@ class SubscriptionController {
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrl = 2)
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
         Map<String,Object> ctrlResult = subscriptionControllerService.show(this,params)
@@ -55,7 +49,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrl = 1)
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = subscriptionControllerService.tasks(this,params)

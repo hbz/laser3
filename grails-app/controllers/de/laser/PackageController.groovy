@@ -8,6 +8,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.GPathResult
@@ -848,6 +849,7 @@ class PackageController  {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def tasks() {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -859,7 +861,7 @@ class PackageController  {
             if (dTask && dTask.creator.id == result.user.id) {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
-                    dTask.delete(flush: true)
+                    dTask.delete()
                 }
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
@@ -994,6 +996,7 @@ class PackageController  {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def history() {
         Map<String, Object> result = [:]
         def exporting = params.format == 'csv' ? true : false
@@ -1071,7 +1074,7 @@ class PackageController  {
                         linetype = 'TIPP'
                     } else {
                         log.debug("Cleaning up history line that relates to a deleted item");
-                        hl.delete(flush:true)
+                        hl.delete()
                     }
             }
             switch (hl.eventName) {
