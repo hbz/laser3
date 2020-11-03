@@ -6,7 +6,7 @@
 
 
 -- 2020-10-15
--- clean up files
+-- clean up files ( all changesets before 2020-10-15)
 
 update databasechangelog set filename = replace(filename, 'done/changelog', 'done/pre1.7/changelog') where filename like 'done/changelog%';
 update databasechangelog set filename = concat('done/pre1.7/', filename) where filename like 'changelog-2020%';
