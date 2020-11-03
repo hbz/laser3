@@ -14,10 +14,12 @@ import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
@@ -33,7 +35,6 @@ class CopyElementsService {
     SubscriptionService subscriptionService
     ContextService contextService
     MessageSource messageSource
-    Locale locale
     DocstoreService docstoreService
     FormService formService
     LicenseService licenseService
@@ -45,12 +46,6 @@ class CopyElementsService {
     static final String WORKFLOW_SUBSCRIBER = '3'
     static final String WORKFLOW_PROPERTIES = '4'
     static final String WORKFLOW_END = '6'
-
-    @javax.annotation.PostConstruct
-    void init() {
-        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-    }
 
     List<String> allowedProperties(Object obj) {
         List<String> result = []
@@ -220,6 +215,7 @@ class CopyElementsService {
     }
 
     void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         targetObject.refresh()
         List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject)
         subscriptionToTake.each { Subscription subMember ->
@@ -764,6 +760,7 @@ class CopyElementsService {
     }
 
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.user.id
         toDeleteTasks.each { deleteTaskId ->
@@ -849,7 +846,6 @@ class CopyElementsService {
         int countDeleted = Identifier.executeUpdate('delete from Identifier i where i in (:toDeleteIdentifiers) and i.' + attr + ' = :reference',
                 [toDeleteIdentifiers: toDeleteIdentifiers, reference: targetObject])
         Object[] args = [countDeleted]
-        //flash.message += messageSource.getMessage('identifier.delete.success', args, locale)
     }
 
     def deleteDocs(List<Long> toDeleteDocs, Object targetObject, def flash) {
@@ -974,7 +970,7 @@ class CopyElementsService {
                 AuditConfig.removeAllConfigs(prop)
 
                 prop.getClass().findAllByInstanceOf(prop).each { prop2 ->
-                    prop2.delete() //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                    prop2.delete()
                 }
             }
             prop.delete()
@@ -1058,6 +1054,7 @@ class CopyElementsService {
     }
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         sourceObject.orgRelations?.each { or ->
             if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
                 if (targetObject.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
@@ -1139,7 +1136,8 @@ class CopyElementsService {
     }
 
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Object targetObject, def flash) {
-        packagesToTake.each { subscriptionPackage ->
+        Locale locale = LocaleContextHolder.getLocale()
+        packagesToTake.each { SubscriptionPackage subscriptionPackage ->
             if (targetObject.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
@@ -1221,6 +1219,7 @@ class CopyElementsService {
     }
 
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Object targetObject, def flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         entitlementsToTake.each { ieToTake ->
             if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
                 def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
@@ -1253,6 +1252,7 @@ class CopyElementsService {
     }
 
     private boolean save(obj, flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         //Flush muss drin bleiben sonst werden die Werte nicht gespeichert
         if (obj.save(flush: true)) {
             log.debug("Save ${obj} ok")
@@ -1266,6 +1266,7 @@ class CopyElementsService {
     }
 
     private boolean delete(obj, flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         if (obj) {
             obj.delete()
             log.debug("Delete ${obj} ok")
@@ -1275,6 +1276,7 @@ class CopyElementsService {
     }
 
     boolean isBothObjectsSet(Object sourceObject, Object targetObject) {
+        Locale locale = LocaleContextHolder.getLocale()
         FlashScope flash = getCurrentFlashScope()
 
         if (!sourceObject || !targetObject) {
