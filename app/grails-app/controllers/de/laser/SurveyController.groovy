@@ -3094,7 +3094,7 @@ class SurveyController {
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus
-            def sub_type = params.subType
+            def sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
             def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
