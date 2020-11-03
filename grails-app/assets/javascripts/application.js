@@ -103,7 +103,8 @@ r2d2 = {
         $.ajaxSetup({
             statusCode: {
                 401: function() {
-                    $(".select2-container").select2('close')
+                    $('.select2-container').select2('close')
+                    $('*[class^=xEditable]').editable('hide')
                     showAjaxLoginModal()
                 }
             }
@@ -335,7 +336,7 @@ r2d2 = {
                 }
             },
             error: function (xhr, status, error) {
-                alert(xhr.status + ": " + xhr.statusText);
+                return xhr.status + ": " + xhr.statusText
             },
         }).on('hidden', function() {
             c3po.loadJsAfterAjax();
@@ -392,7 +393,7 @@ r2d2 = {
                 return {newValue: (response != 'null' ? response : null)}
             },
             error: function (xhr, status, error) {
-                alert(xhr.status + ": " + xhr.statusText);
+                return xhr.status + ": " + xhr.statusText
             }
         }).on('save', function(e, params){
             if ($(this).attr('data-format')) {
