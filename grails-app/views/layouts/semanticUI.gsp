@@ -66,7 +66,7 @@
                         ${message(code:'menu.public')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                                 <g:link elementId="package-index" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</g:link>
                                 <g:link elementId="title-index"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
 
@@ -99,7 +99,7 @@
                         ${message(code:'menu.my')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
 
                             <semui:securedMainNavItem elementId="myInstitution-currentSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
                             <semui:securedMainNavItem elementId="myInstitution-currentLicenses" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
@@ -141,7 +141,7 @@
                         ${message(code:'menu.institutions.myInst')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                             <semui:securedMainNavItem elementId="myInstitution-dashboard" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
                             <g:link elementId="organisation-show" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
@@ -175,7 +175,7 @@
                         ${message(code:'menu.datamanager')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                             <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
                                 <g:link elementId="usage-index" class="item" role="menuitem" controller="usage"
                                         action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</g:link>
@@ -236,7 +236,7 @@
                         ${message(code:'menu.admin')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                             <g:link elementId="profile-errorOverview" class="item" role="menuitem" controller="profile" action="errorOverview">
                                 ${message(code: "menu.user.errorReport")}
                                 <g:if test="${newTickets.size() > 0}">
@@ -261,7 +261,7 @@
                                 ${message(code:'menu.admin.sysAdmin')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-appInfo" class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</g:link>
                                     <g:link elementId="admin-systemEvents" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
 
@@ -277,7 +277,7 @@
                                 <span class="text">Developer</span>
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="dev-frontend" class="item" role="menuitem" controller="dev" action="frontend">Frontend</g:link>
                                 </div>
                             </div>
@@ -292,7 +292,7 @@
                                 ${message(code:'org.plural.label')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="organisation-index" class="item" role="menuitem" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</g:link>
                                     <g:link elementId="admin-manageOrganisations" class="item" role="menuitem" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</g:link>
                                 </div>
@@ -300,7 +300,7 @@
 
                             <g:link elementId="user-list" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link elementId="admin-showAffiliations" class="item" role="menuitem" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
-                            <g:link elementId="usage" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
+                            <g:link elementId="usage-index" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
                             <g:link elementId="admin-updateQASubscriptionDates" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</g:link>
                             <% /* g:link  elementId="admin-juspSync" class="item" role="menuitem" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link elementId="admin-forceSendNotifications" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
@@ -311,7 +311,7 @@
                                 ${message(code:'menu.admin.bulkOps')}
                                <i aria-hidden="true" class="dropdown icon"></i>
 
-                               <div class="menu">
+                               <div class="menu" role="menu">
                                     <g:link elementId="admin-orgsExport" class="item" role="menuitem" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
                                     <g:link elementId="admin-orgsImport" class="item" role="menuitem" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link elementId="yoda-makeshiftLaserOrgExport" class="item" role="menuitem" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
@@ -340,7 +340,7 @@
                         ${message(code:'menu.yoda')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
 
                             <g:link elementId="yoda-dashboard" class="item" role="menuitem" controller="yoda" action="dashboard">Dashboard</g:link>
 
@@ -348,7 +348,7 @@
                                 <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
 
                                     <g:link elementId="yoda-settings" class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link elementId="admin-systemEvents" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
@@ -375,7 +375,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 Fällige Termine
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-dueDates_updateDashboardDB" class="item" role="menuitem" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
                                     <g:link elementId="yoda-dueDates_sendAllEmails" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
                                 </div>
@@ -387,7 +387,7 @@
                                 ${message(code:'menu.admin.dataManagement')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="dataManager-listPlatformDuplicates" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</g:link>
                                     <g:link elementId="package-getDuplicatePackages" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</g:link>
                                     <g:link elementId="dataManager-listDeletedTIPPS" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</g:link>
@@ -407,7 +407,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.syncManagement')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-globalSync" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
                                     <g:link elementId="yoda-manageGlobalSources" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
                                     <g:link elementId="yoda-getTIPPsWithoutGOKBId" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
@@ -421,7 +421,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ElasticSearch
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-fullReset" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
                                     <g:link elementId="yoda-esIndexUpdate" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
                                     <%--<g:link elementId="yoda-logViewer" class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
@@ -437,7 +437,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.dataMigration')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-migrateCollectiveSubscriptions" class="item" role="menuitem" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions (0.20)</g:link>
                                     <g:link elementId="yoda-migrateNatStatSettings" class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</g:link>
                                     <%--<g:link elementId="yoda-remapOriginEditUrl" class="item" role="menuitem" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</g:link>--%>
@@ -495,7 +495,7 @@
                             ${contextUser.displayName}
                             <i aria-hidden="true" class="dropdown icon"></i>
 
-                            <div class="menu">
+                            <div class="menu" role="menu">
 
                                 <g:set var="usaf" value="${contextUser.authorizedOrgs}" />
                                 <g:if test="${usaf && usaf.size() > 0}">
