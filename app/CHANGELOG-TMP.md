@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      03.11.2020  rc1.6   1.6.3       Moe     Bug         Lizenzen werden bei Verlängerungsumfrage nicht "zentral verhandelt" gesetzt
+
 2938    27.10.2020  rc1.6   1.6.3       Moe     Bug         Reiter "Kontaktinformationen" taucht auch im Profil von Anbietern & Lieferanten auf
 
 2965    23.10.2020  rc1.6   1.6.3       Moe     Bug         Löschen einer Anschriftin den Kontaktinformationen nicht möglich
