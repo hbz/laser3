@@ -33,7 +33,7 @@
 
 <h4>
     <g:message code="subscription"/>: <g:link controller="subscription" action="show"
-                                              id="${parentSub.id}">${parentSub.name}</g:link>
+                                              id="${subscription.id}">${subscription.name}</g:link>
     <br /><br />
 
 </h4>
@@ -45,7 +45,7 @@
 
         <g:link class="item ${params.tab == 'generalProperties' ? 'active' : ''}"
                 controller="subscription" action="subscriptionPropertiesMembers"
-                id="${parentSub?.id}"
+                id="${subscription.id}"
                 params="[tab: 'generalProperties']">
             <g:message code="subscription.subscriptionPropertiesMembers.generalProperties"/>
 
@@ -53,7 +53,7 @@
 
         <g:link class="item ${params.tab == 'providerAgency' ? 'active' : ''}"
                 controller="subscription" action="subscriptionPropertiesMembers"
-                id="${parentSub?.id}"
+                id="${subscription.id}"
                 params="[tab: 'providerAgency']">
             <g:message code="subscription.subscriptionPropertiesMembers.providerAgency"/>
 
@@ -61,7 +61,7 @@
 
         <g:link class="item ${params.tab == 'documents' ? 'active' : ''}"
                 controller="subscription" action="subscriptionPropertiesMembers"
-                id="${parentSub?.id}"
+                id="${subscription.id}"
                 params="[tab: 'documents']">
             <g:message code="subscription.subscriptionPropertiesMembers.documents"/>
 
@@ -69,7 +69,7 @@
 
         <g:link class="item ${params.tab == 'notes' ? 'active' : ''}"
                 controller="subscription" action="subscriptionPropertiesMembers"
-                id="${parentSub?.id}"
+                id="${subscription.id}"
                 params="[tab: 'notes']">
             <g:message code="subscription.subscriptionPropertiesMembers.notes"/>
 
@@ -77,7 +77,7 @@
 
         <g:link class="item ${params.tab == 'multiYear' ? 'active' : ''}"
                 controller="subscription" action="subscriptionPropertiesMembers"
-                id="${parentSub?.id}"
+                id="${subscription.id}"
                 params="[tab: 'multiYear']">
             <g:message code="subscription.isMultiYear.label"/>
 
@@ -110,43 +110,43 @@
                     </thead>
                     <tbody>
                     <tr>
-                    <td>${parentSub.name}</td>
+                    <td>${subscription.name}</td>
 
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${parentSub?.startDate}"/>
-                        <semui:auditButton auditable="[parentSub, 'startDate']"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
+                        <semui:auditButton auditable="[subscription, 'startDate']"/>
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${parentSub?.endDate}"/>
-                        <semui:auditButton auditable="[parentSub, 'endDate']"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
+                        <semui:auditButton auditable="[subscription, 'endDate']"/>
                     </td>
                     <td>
-                        ${parentSub.status.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'status']"/>
+                        ${subscription.status.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td>
-                        ${parentSub.kind?.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'kind']"/>
+                        ${subscription.kind?.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'kind']"/>
                     </td>
                     <td>
-                        ${parentSub.form?.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'form']"/>
+                        ${subscription.form?.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'form']"/>
                     </td>
                     <td>
-                        ${parentSub.resource?.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'resource']"/>
+                        ${subscription.resource?.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'resource']"/>
                     </td>
                     <td>
-                        ${parentSub.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'isPublicForApi']"/>
+                        ${subscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'isPublicForApi']"/>
                     </td>
                     <td>
-                        ${parentSub.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'hasPerpetualAccess']"/>
+                        ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
                     </td>
 
                     <td class="x">
-                        <g:link controller="subscription" action="show" id="${parentSub.id}"
+                        <g:link controller="subscription" action="show" id="${subscription.id}"
                                 class="ui icon button"><i
                                 class="write icon"></i></g:link>
                     </td>
@@ -373,7 +373,7 @@
                             <div class="content">
                                 <g:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks    : visibleOrgRelations,
-                                                    roleObject   : parentSub,
+                                                    roleObject   : subscription,
                                                     roleRespValue: 'Specific subscription editor',
                                                     editmode     : editable,
                                                     showPersons  : false
@@ -466,7 +466,7 @@
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <g:render template="/templates/documents/table"
-                          model="${[instance: parentSub, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
+                          model="${[instance: subscription, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
             </div>
 
             <div class="ui segment">
@@ -518,7 +518,7 @@
             <div class="ui segment ">
                 <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
-                <g:render template="/templates/notes/table" model="${[instance: parentSub, redirect: 'subscriptionPropertiesMembers']}"/>
+                <g:render template="/templates/notes/table" model="${[instance: subscription, redirect: 'subscriptionPropertiesMembers']}"/>
             </div>
 
             <div class="ui segment">
@@ -582,22 +582,22 @@
                     </thead>
                     <tbody>
                     <tr>
-                    <td>${parentSub.name}</td>
+                    <td>${subscription.name}</td>
 
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${parentSub?.startDate}"/>
-                        <semui:auditButton auditable="[parentSub, 'startDate']"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
+                        <semui:auditButton auditable="[subscription, 'startDate']"/>
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${parentSub?.endDate}"/>
-                        <semui:auditButton auditable="[parentSub, 'endDate']"/>
+                        <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
+                        <semui:auditButton auditable="[subscription, 'endDate']"/>
                     </td>
                     <td>
-                        ${parentSub.status.getI10n('value')}
-                        <semui:auditButton auditable="[parentSub, 'status']"/>
+                        ${subscription.status.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td class="x">
-                        <g:link controller="subscription" action="show" id="${parentSub.id}"
+                        <g:link controller="subscription" action="show" id="${subscription.id}"
                                 class="ui icon button"><i
                                 class="write icon"></i></g:link>
                     </td>

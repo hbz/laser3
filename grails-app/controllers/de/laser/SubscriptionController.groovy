@@ -447,6 +447,82 @@ class SubscriptionController {
         }
     }
 
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processPropertiesMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processPropertiesMembers(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+            else {
+                flash.error = ctrlResult.result.error
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processDeletePropertiesMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processDeletePropertiesMembers(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def subscriptionPropertiesMembers() {
+        params.tab = params.tab ?: 'generalProperties'
+        Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionPropertiesMembers(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def processSubscriptionPropertiesMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processSubscriptionPropertiesMembers(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            if(ctrlResult.result.change){
+                flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [ctrlResult.result.change.join(', ').toString()])
+            }
+            if(ctrlResult.result.noChange){
+                flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noChanges', args: [ctrlResult.result.noChange.join(', ').toString()])
+            }
+        }
+        redirect(action: 'subscriptionPropertiesMembers', id: params.id)
+    }
+
     //-------------------------------- survey section --------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -989,392 +1065,6 @@ class SubscriptionController {
         redirect(action:'show', params:[id:params.id])
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def subscriptionPropertiesMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        params.tab = params.tab ?: 'generalProperties'
-
-        result.parentSub = result.subscription.instanceOf ?: result.subscription
-
-        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-        //Sortieren
-        result.validSubChilds = validSubChilds.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
-
-        def oldID = params.id
-        params.id = result.parentSub.id
-
-        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
-        result.filteredSubChilds = new ArrayList<Subscription>()
-        result.validSubChilds.each { sub ->
-            List<Org> subscr = sub.getAllSubscribers()
-            def filteredSubscr = []
-            subscr.each { Org subOrg ->
-                if (filteredOrgIds.contains(subOrg.id)) {
-                    filteredSubscr << subOrg
-                }
-            }
-            if (filteredSubscr) {
-                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
-            }
-        }
-
-        if(params.tab == 'providerAgency') {
-
-            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-            result.visibleOrgRelations = []
-            result.parentSub.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it?.org?.sortname }
-        }
-
-        params.id = oldID
-
-        result
-    }
-
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processPropertiesMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        if(formService.validateToken(params)) {
-            result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
-
-            result.parentSub = result.subscription.instanceOf ?: result.subscription
-
-
-            if (params.filterPropDef && params.filterPropValue) {
-
-                def filterPropDef = params.filterPropDef
-                def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
-
-
-                def newProperties = 0
-                def changeProperties = 0
-
-                if (propDef) {
-
-                    List selectedMembers = params.list("selectedMembers")
-
-                    if(selectedMembers){
-                        selectedMembers.each { subId ->
-                            Subscription subChild = Subscription.get(subId)
-                            if (propDef?.tenant != null) {
-                                //private Property
-                                Subscription owner = subChild
-
-                                def existingProps = owner.propertySet.findAll {
-                                    it.owner.id == owner.id &&  it.type.id == propDef.id && it.tenant.id == result.institution && !it.isPublic
-                                }
-                                existingProps.removeAll { it.type.name != propDef.name } // dubious fix
-
-                                if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                                    AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef, result.institution)
-                                    if (newProp.hasErrors()) {
-                                        log.error(newProp.errors.toString())
-                                    } else {
-                                        log.debug("New private property created: " + newProp.type.name)
-
-                                        newProperties++
-                                        subscriptionService.updateProperty(newProp, params.filterPropValue)
-                                    }
-                                }
-
-                                if (existingProps.size() == 1){
-                                    def privateProp = SubscriptionProperty.get(existingProps[0].id)
-                                    changeProperties++
-                                    subscriptionService.updateProperty(privateProp, params.filterPropValue)
-
-                                }
-
-                            } else {
-                                //custom Property
-                                def owner = subChild
-
-                                def existingProp = owner.propertySet.find {
-                                    it.type.id == propDef.id && it.owner.id == owner.id
-                                }
-
-                                if (existingProp == null || propDef.multipleOccurrence) {
-                                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef, result.institution)
-                                    if (newProp.hasErrors()) {
-                                        log.error(newProp.errors.toString())
-                                    } else {
-                                        log.debug("New custom property created: " + newProp.type.name)
-                                        newProperties++
-                                        subscriptionService.updateProperty(newProp, params.filterPropValue)
-                                    }
-                                }
-
-                                if (existingProp){
-                                    SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
-                                    changeProperties++
-                                    subscriptionService.updateProperty(customProp, params.filterPropValue)
-                                }
-                            }
-
-                        }
-                        flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
-                    }else{
-                        flash.error = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
-                    }
-
-                }
-
-            }
-        }
-
-        def filterPropDef = params.filterPropDef
-        def id = params.id
-        redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
-    }
-
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processSubscriptionPropertiesMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        List selectedMembers = params.list("selectedMembers")
-
-        if(selectedMembers){
-            def change = []
-            def noChange = []
-            selectedMembers.each { subID ->
-
-                        Subscription subChild = Subscription.get(subID)
-
-                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
-
-
-                        if(startDate && !auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
-                        {
-                            subChild?.startDate = startDate
-                            change << message(code: 'default.startDate.label')
-                        }
-
-                        if(startDate && auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
-                        {
-                            noChange << message(code: 'default.startDate.label')
-                        }
-
-                        if(endDate && !auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
-                        {
-                            subChild?.endDate = endDate
-                            change << message(code: 'default.endDate.label')
-                        }
-
-                        if(endDate && auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
-                        {
-                            noChange << message(code: 'default.endDate.label')
-                        }
-
-
-                        if(params.status && !auditService.getAuditConfig(subChild?.instanceOf, 'status'))
-                        {
-                            subChild?.status = RefdataValue.get(params.status) ?: subChild?.status
-                            change << message(code: 'subscription.status.label')
-                        }
-                        if(params.status && auditService.getAuditConfig(subChild?.instanceOf, 'status'))
-                        {
-                            noChange << message(code: 'subscription.status.label')
-                        }
-
-                        if(params.kind && !auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
-                        {
-                            subChild?.kind = RefdataValue.get(params.kind) ?: subChild?.kind
-                            change << message(code: 'subscription.kind.label')
-                        }
-                        if(params.kind && auditService.getAuditConfig(subChild?.instanceOf, 'kind'))
-                        {
-                            noChange << message(code: 'subscription.kind.label')
-                        }
-
-                        if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
-                        {
-                            subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
-                            change << message(code: 'subscription.form.label')
-                        }
-                        if(params.form && auditService.getAuditConfig(subChild?.instanceOf, 'form'))
-                        {
-                            noChange << message(code: 'subscription.form.label')
-                        }
-
-                        if(params.resource && !auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
-                        {
-                            subChild?.resource = RefdataValue.get(params.resource) ?: subChild?.resource
-                            change << message(code: 'subscription.resource.label')
-                        }
-                        if(params.resource && auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
-                        {
-                            noChange << message(code: 'subscription.resource.label')
-                        }
-
-                        if(params.isPublicForApi && !auditService.getAuditConfig(subChild?.instanceOf, 'isPublicForApi'))
-                        {
-                            subChild?.isPublicForApi = RefdataValue.get(params.isPublicForApi) == RDStore.YN_YES
-                            change << message(code: 'subscription.isPublicForApi.label')
-                        }
-                        if(params.isPublicForApi && auditService.getAuditConfig(subChild?.instanceOf, 'isPublicForApi'))
-                        {
-                            noChange << message(code: 'subscription.isPublicForApi.label')
-                        }
-
-                        if(params.hasPerpetualAccess && !auditService.getAuditConfig(subChild?.instanceOf, 'hasPerpetualAccess'))
-                        {
-                            subChild?.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess) == RDStore.YN_YES
-                            change << message(code: 'subscription.hasPerpetualAccess.label')
-                        }
-                        if(params.hasPerpetuaLAccess && auditService.getAuditConfig(subChild?.instanceOf, 'hasPerpetualAccess'))
-                        {
-                            noChange << message(code: 'subscription.hasPerpetualAccess.label')
-                        }
-
-                        if (subChild?.isDirty()) {
-                            subChild?.save(flush: true)
-                        }
-                    }
-
-                    if(change){
-                        flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
-                    }
-
-                    if(noChange){
-                        flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noChanges', args: [noChange?.unique { a, b -> a <=> b }.join(', ').toString()])
-                    }
-        }else {
-            flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noSelectedMember')
-        }
-
-        redirect(action: 'subscriptionPropertiesMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processDeletePropertiesMembers() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
-
-        result.parentSub = result.subscription.instanceOf ?: result.subscription
-
-        List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
-
-        if (params.filterPropDef) {
-
-            String filterPropDef = params.filterPropDef
-            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
-
-            int deletedProperties = 0
-
-            if (propDef) {
-                validSubChilds.each { Subscription subChild ->
-
-                    if (propDef.tenant != null) {
-                        //private Property
-
-                        List<SubscriptionProperty> existingProps = subChild.propertySet.findAll {
-                            it.owner.id == subChild.id && it.type.id == propDef.id && it.tenant.id == result.institution.id
-                        }
-                        existingProps.removeAll { it.type.name != propDef.name } // dubious fix
-
-
-                        if (existingProps.size() == 1 ){
-                            SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
-
-                            try {
-                                privateProp.delete(flush:true)
-                                deletedProperties++
-                            } catch (Exception e)
-                            {
-                                log.error( e.toString() )
-                            }
-
-                        }
-
-                    } else {
-                        //custom Property
-
-                        def existingProp = subChild.propertySet.find {
-                            it.type.id == propDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
-                        }
-
-
-                        if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                            SubscriptionProperty customProp = SubscriptionProperty.get(existingProp.id)
-
-                            try {
-                                customProp.delete(flush:true)
-                                deletedProperties++
-                            } catch (Exception e){
-                                log.error( e.toString() )
-                            }
-
-                        }
-                    }
-
-                }
-                flash.message = message(code: 'subscription.propertiesMembers.deletedProperties', args: [deletedProperties])
-            }
-
-        }
-
-        def filterPropDef = params.filterPropDef
-        def id = params.id
-        redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
-    }
-
     /* TODO Cost per use tab, still needed?
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
@@ -1434,6 +1124,40 @@ class SubscriptionController {
 
         result
     }*/
+
+    //-------------------------------------- renewal and transfer section ---------------------------------------------
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def renewSubscription() {
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        result.institution = contextService.org
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
+        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
+        Date newStartDate
+        Date newEndDate
+        use(TimeCategory) {
+            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
+            newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
+        }
+
+        result.isRenewSub = true
+        result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
+                                 sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
+                                 sub_name     : subscription.name,
+                                 sub_id       : subscription.id,
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString()
+        ]
+
+        result.subscription = subscription
+        result
+    }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -1520,38 +1244,6 @@ class SubscriptionController {
                             params: [sourceObjectId: genericOIDService.getOID(result.subscription), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true]
             }
         }
-    }
-
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def renewSubscription() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        result.institution = contextService.org
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
-        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
-        Date newStartDate
-        Date newEndDate
-        use(TimeCategory) {
-            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
-            newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
-        }
-
-        result.isRenewSub = true
-        result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
-                                 sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_name     : subscription.name,
-                                 sub_id       : subscription.id,
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString()
-                                ]
-
-        result.subscription = subscription
-        result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")

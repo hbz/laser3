@@ -1797,15 +1797,15 @@ class SubscriptionService {
         prop.save()
     }
 
-    void updateProperty(AbstractPropertyWithCalculatedLastUpdated property, def value) {
+    void updateProperty(SubscriptionController controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
 
-        String field = PropertyDefinition.getImplClassValueProperty()
+        String field = prop.type.getImplClassValueProperty()
 
         //Wenn eine Vererbung vorhanden ist.
-        if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
-            if(property.instanceOf."${field}" == '' || property.instanceOf."${field}" == null)
+        if(field && prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)){
+            if(prop.instanceOf."${field}" == '' || prop.instanceOf."${field}" == null)
             {
-                value = property.instanceOf."${field}" ?: ''
+                value = prop.instanceOf."${field}" ?: ''
             }else{
                 //
                 return
@@ -1814,65 +1814,65 @@ class SubscriptionService {
 
         if (value == '' && field) {
             // Allow user to set a rel to null be calling set rel ''
-            property[field] = null
-            property.save()
+            prop[field] = null
+            prop.save()
         } else {
 
-            if (property && value && field){
+            if (prop && value && field){
 
                 if(field == "refValue") {
                     def binding_properties = ["${field}": value]
-                    bindData(property, binding_properties)
+                    controller.bindData(prop, binding_properties)
                     //property.save(flush:true)
-                    if(!property.save(failOnError: true))
+                    if(!prop.save(failOnError: true))
                     {
-                        println(property.error)
+                        println(prop.error)
                     }
                 } else if(field == "dateValue") {
                     SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
-                    def backup = property."${field}"
+                    def backup = prop."${field}"
                     try {
                         if (value && value.size() > 0) {
                             // parse new date
                             def parsed_date = sdf.parse(value)
-                            property."${field}" = parsed_date
+                            prop."${field}" = parsed_date
                         } else {
                             // delete existing date
-                            property."${field}" = null
+                            prop."${field}" = null
                         }
-                        property.save(failOnError: true)
+                        prop.save(failOnError: true)
                     }
                     catch (Exception e) {
-                        property."${field}" = backup
+                        prop."${field}" = backup
                         log.error( e.toString() )
                     }
                 } else if(field == "urlValue") {
 
-                    def backup = property."${field}"
+                    def backup = prop."${field}"
                     try {
                         if (value && value.size() > 0) {
-                            property."${field}" = new URL(value)
+                            prop."${field}" = new URL(value)
                         } else {
                             // delete existing url
-                            property."${field}" = null
+                            prop."${field}" = null
                         }
-                        property.save(failOnError: true)
+                        prop.save(failOnError: true)
                     }
                     catch (Exception e) {
-                        property."${field}" = backup
+                        prop."${field}" = backup
                         log.error( e.toString() )
                     }
                 } else {
                     def binding_properties = [:]
-                    if (property."${field}" instanceof Double) {
+                    if (prop."${field}" instanceof Double) {
                         value = Double.parseDouble(value)
                     }
 
                     binding_properties["${field}"] = value
-                    bindData(property, binding_properties)
+                    controller.bindData(prop, binding_properties)
 
-                    property.save(failOnError: true)
+                    prop.save(failOnError: true)
                 }
             }
         }
