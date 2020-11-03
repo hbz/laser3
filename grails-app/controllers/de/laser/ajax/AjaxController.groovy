@@ -1206,7 +1206,7 @@ class AjaxController {
 
         AuditConfig.removeAllConfigs(property)
 
-        //owner.customProperties.remove(property)
+        owner.propertySet.remove(property)
 
         try {
             property.delete()
