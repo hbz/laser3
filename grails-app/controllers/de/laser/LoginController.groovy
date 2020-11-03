@@ -57,12 +57,11 @@ class LoginController {
       log.debug("Attempting login");
     }
 
-    SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
-    // String requestUrl = savedRequest?.getRequestURL();
-    log.debug("auth action - the original ua request was for...");
-
-    String requestUrl = savedRequest?.getRedirectUrl();
     String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+
+    SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response)
+    log.debug("auth action - the original request was for .." + savedRequest.requestURL)
+
     render view: 'auth', model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
   }
 
@@ -72,6 +71,8 @@ class LoginController {
   def authAjax = {
     response.setHeader 'Location', SpringSecurityUtils.securityConfig.auth.ajaxLoginFormUrl
     response.sendError HttpServletResponse.SC_UNAUTHORIZED
+
+    render status: 401, text: 401
   }
 
   /**
@@ -167,6 +168,5 @@ class LoginController {
       else flash.error = g.message(code:'menu.user.forgottenPassword.userError')
     }
     redirect action: 'auth'
-
   }
 }

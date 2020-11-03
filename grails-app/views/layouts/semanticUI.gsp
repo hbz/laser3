@@ -721,6 +721,14 @@
             </div>
         </g:if>
 
+        <%-- ajax login --%>
+
+        <g:if test="${controllerName != 'login'}">
+            <g:render template="/templates/ajax/login" />
+        </g:if>
+
+        <%-- --%>
+
         <asset:deferredScripts/>
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
