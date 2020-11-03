@@ -121,8 +121,8 @@
                                     <g:elseif test="${info.key == 'transactional'}">
                                         <strong class="${info.value}">${info.value}</strong>
                                     </g:elseif>
-                                    <g:elseif test="${info.key == 'ctrl'}">
-                                        <strong class="ctrl_${info.value}">ctrl: ${info.value}</strong>
+                                    <g:elseif test="${info.key == 'ctrlService'}">
+                                        <strong class="ctrl_${info.value}">${info.key}: ${info.value}</strong>
                                     </g:elseif>
                                     <g:elseif test="${info.key == 'deprecated'}">
                                         <em>Deprecated</em>

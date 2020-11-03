@@ -4,7 +4,6 @@ package de.laser
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.ctrl.MyInstitutionControllerService
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PendingChangeService
@@ -24,7 +23,6 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
-import de.laser.system.SystemAnnouncement
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -1343,7 +1341,7 @@ join sub.orgRelations or_sub where
         null
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrl = 2)
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def dashboard() {
 

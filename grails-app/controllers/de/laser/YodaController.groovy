@@ -505,8 +505,8 @@ class YodaController {
                                     specRole : da.specRole(),
                                     test     : da.test()
                             ]
-                            if (da.ctrl()) {
-                                mInfo.ctrl = da.ctrl()
+                            if (da.ctrlService()) {
+                                mInfo.ctrlService = da.ctrlService()
                             }
                         }
 

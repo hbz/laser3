@@ -126,10 +126,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     Platform platform
     List<Platform> platform_candidates = []
 
-/*    if ( params.impId && params.impId.trim().length() > 0) {
-      platform = Platform.findByImpId(params.impId)
-    }*/
-
     if ( params.gokbId && params.gokbId.trim().length() > 0) {
       platform = Platform.findByGokbId(params.gokbId)
 
@@ -162,7 +158,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
                                 normname: norm_name,
                                 provenance: (params.provenance ?: null),
                                 primaryUrl: (params.primaryUrl ?: null),
-                                lastmod: System.currentTimeMillis()).save(flush:true)
+                                lastmod: System.currentTimeMillis()).save()
 
       }
     }
