@@ -908,7 +908,7 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc=2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->

@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
  
 import de.laser.helper.RDStore
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -22,6 +23,7 @@ class AnnouncementController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def createAnnouncement() {
         Map<String, Object> result = [:]
         if (params.annTxt) {
@@ -32,7 +34,7 @@ class AnnouncementController  {
                     content: params.annTxt,
                     user: result.user,
                     type: RDStore.DOC_TYPE_ANNOUNCEMENT,
-                    contentType: Doc.CONTENT_TYPE_STRING).save(flush: true)
+                    contentType: Doc.CONTENT_TYPE_STRING).save()
         }
         redirect(action: 'index')
     }

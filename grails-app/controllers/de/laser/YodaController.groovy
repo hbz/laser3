@@ -508,6 +508,9 @@ class YodaController {
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
                             }
+                            if (da.wtc()) {
+                                mInfo.wtc = da.wtc()
+                            }
                         }
 
                         if (method.getAnnotation(Secured)) {

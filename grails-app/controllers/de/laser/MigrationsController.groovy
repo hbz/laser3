@@ -8,9 +8,6 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MigrationsController {
 
-    def springSecurityService
-    def contextService
-
     static boolean ftupdate_running = false
 
     @Secured(['ROLE_YODA'])
