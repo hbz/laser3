@@ -58,6 +58,9 @@
                 <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
+                <g:elseif test="${accessService.checkPerm('ORG_INST')}">
+                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
+                </g:elseif>
 
                 <br/>
                 <div id="dynHiddenValues"></div>
