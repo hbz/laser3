@@ -76,10 +76,10 @@
                                 </g:if>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <semui:mainNavItem id="organisation-index" role="menuitem" controller="organisation" action="index" message="menu.public.all_orgs" />
+                                    <semui:mainNavItem elementId="organisation-index" role="menuitem" controller="organisation" action="index" message="menu.public.all_orgs" />
                                 </sec:ifAnyGranted>
 
-                                <semui:securedMainNavItem id="organisation-listInstitution" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem elementId="organisation-listInstitution" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                               controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
                                 <g:link elementId="organisation-listProvider" class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</g:link>
@@ -89,9 +89,9 @@
 
                                 <g:link elementId="gasco" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
-                                <a href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
+                                <a id="gokb" href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
 
-                                <a href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
+                                <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
                         </div>
                     </div>
 
@@ -101,37 +101,37 @@
 
                         <div class="menu">
 
-                            <semui:securedMainNavItem id="myInstitution-currentSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
-                            <semui:securedMainNavItem id="myInstitution-currentLicenses" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
-                            <semui:securedMainNavItem id="myInstitution-currentProviders" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
-                            <semui:securedMainNavItem id="myInstitution-currentPlatforms" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
-                            <semui:securedMainNavItem id="myInstitution-currentPackages" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
-                            <semui:securedMainNavItem id="myInstitution-currentTitles" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
-                            <semui:securedMainNavItem id="myInstitution-documents" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentLicenses" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentProviders" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentPlatforms" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentPackages" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentTitles" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
+                            <semui:securedMainNavItem elementId="myInstitution-documents" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                         <div class="divider"></div>
-                        <semui:securedMainNavItem id="myInstitution-currentSurveys" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+                        <semui:securedMainNavItem elementId="myInstitution-currentSurveys" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                     </g:if>
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem id="survey-currentSurveysConsortia" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
+                                <semui:securedMainNavItem elementId="survey-currentSurveysConsortia" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem id="myInstitution-manageMembers" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
-                                <semui:securedMainNavItem id="myInstitution-manageConsortiaSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
+                                <semui:securedMainNavItem elementId="myInstitution-manageMembers" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
+                                <semui:securedMainNavItem elementId="myInstitution-manageConsortiaSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
 
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem id="compare-compareSubscriptions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem elementId="compare-compareSubscriptions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem id="compare-compareLicenses" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
+                            <semui:securedMainNavItem elementId="compare-compareLicenses" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
 
                         </div>
                     </div>
@@ -142,28 +142,28 @@
                         <i aria-hidden="true" class="dropdown icon"></i>
 
                         <div class="menu">
-                            <semui:securedMainNavItem id="myInstitution-dashboard" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+                            <semui:securedMainNavItem elementId="myInstitution-dashboard" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
                             <g:link elementId="organisation-show" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                            <semui:securedMainNavItem id="myInstitution-addressbook" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                            <semui:securedMainNavItem id="myInstitution-tasks" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-                            <semui:securedMainNavItem id="myInstitution-reporting" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
-                            <semui:securedMainNavItem id="myInstitution-changes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />
-                            <semui:securedMainNavItem id="myInstitution-managePrivatePropertyDefinitions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
-                            <semui:securedMainNavItem id="myInstitution-finance" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                            <semui:securedMainNavItem id="myInstitution-budgetCodes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                            <semui:securedMainNavItem id="costConfiguration-index" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-                            <%--<semui:securedMainNavItem id="" "Disabled role="menuitem" message="menu.institutions.financeImport" />--%>
-                            <semui:securedMainNavItem id="myInstitution-financeImport" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                            <semui:securedMainNavItem elementId="myInstitution-addressbook" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                            <semui:securedMainNavItem elementId="myInstitution-tasks" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                            <semui:securedMainNavItem elementId="myInstitution-reporting" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                            <semui:securedMainNavItem elementId="myInstitution-changes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />
+                            <semui:securedMainNavItem elementId="myInstitution-managePrivatePropertyDefinitions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                            <semui:securedMainNavItem elementId="myInstitution-finance" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                            <semui:securedMainNavItem elementId="myInstitution-budgetCodes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                            <semui:securedMainNavItem elementId="costConfiguration-index" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+                            <%--<semui:securedMainNavItem elementId="" "Disabled role="menuitem" message="menu.institutions.financeImport" />--%>
+                            <semui:securedMainNavItem elementId="myInstitution-financeImport" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem id="myInstitution-userList" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
+                            <semui:securedMainNavItem elementId="myInstitution-userList" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                    <g:link elementId="myInstitution-changeLog" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
-                                <%--<semui:securedMainNavItem id="myInstitution-changeLog" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
+                                <%--<semui:securedMainNavItem elementId="myInstitution-changeLog" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                             </sec:ifAnyGranted>
 
                         </div>
