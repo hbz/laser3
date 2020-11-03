@@ -84,6 +84,8 @@ r2d2 = {
 
     go : function() {
 
+        r2d2.initGlobalAjaxLogin();
+
         r2d2.initGlobalSemuiStuff();
         r2d2.initGlobalXEditableStuff();
 
@@ -93,6 +95,72 @@ r2d2 = {
         $("html").css("cursor", "auto");
 
         console.log("r2d2 - laser.gspLocale: " + laser.gspLocale + ", laser.gspDateFormat: " + laser.gspDateFormat);
+    },
+
+    initGlobalAjaxLogin : function() {
+        console.log('r2d2.initGlobalAjaxLogin()')
+
+        $.ajaxSetup({
+            statusCode: {
+                401: function() {
+                    $('.select2-container').select2('close')
+                    $('*[class^=xEditable]').editable('hide')
+                    showAjaxLoginModal()
+                }
+            }
+        })
+
+        function showAjaxLoginModal() {
+            $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show')
+        }
+
+        function ajaxAuth() {
+            $.ajax({
+                url: $('#ajaxLoginForm').attr('action'),
+                data: $('#ajaxLoginForm').serialize(),
+                method: 'POST',
+                dataType: 'JSON',
+                success: function (json, textStatus, xhr) {
+                    if (json.success) {
+                        $('#ajaxLoginForm')[0].reset()
+                        $('#ajaxLoginMessage').empty()
+                        $('#ajaxLoginModal').modal('hide')
+                    }
+                    else if (json.error) {
+                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>')
+                    }
+                    else {
+                        $('#loginMessage').html(xhr.responseText)
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
+                        // the login request itself wasn't allowed, possibly because the
+                        // post url is incorrect and access was denied to it
+                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>')
+                    }
+                    else {
+                        var responseText = xhr.responseText
+                        if (responseText) {
+                            var json = $.parseJSON(responseText)
+                            if (json.error) {
+                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>')
+                                return
+                            }
+                        }
+                        else {
+                            responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')'
+                        }
+                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>')
+                    }
+                }
+            })
+        }
+
+        $('#ajaxLoginForm').submit(function(event) {
+            event.preventDefault()
+            ajaxAuth()
+        })
     },
 
     initGlobalSemuiStuff : function() {
@@ -268,7 +336,7 @@ r2d2 = {
                 }
             },
             error: function (xhr, status, error) {
-                alert(xhr.status + ": " + xhr.statusText);
+                return xhr.status + ": " + xhr.statusText
             },
         }).on('hidden', function() {
             c3po.loadJsAfterAjax();
@@ -325,7 +393,7 @@ r2d2 = {
                 return {newValue: (response != 'null' ? response : null)}
             },
             error: function (xhr, status, error) {
-                alert(xhr.status + ": " + xhr.statusText);
+                return xhr.status + ": " + xhr.statusText
             }
         }).on('save', function(e, params){
             if ($(this).attr('data-format')) {
