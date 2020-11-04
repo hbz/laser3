@@ -1129,7 +1129,7 @@ class DataloadService {
 
       log.debug("Nominal platform is ${selected_platform} for ${p.id}");
       p.nominalPlatform = selected_platform
-      p.save(flush:true)
+      p.save()
 
 
     }
@@ -1146,7 +1146,7 @@ class DataloadService {
         log.debug("Normalise Title ${it.title}");
         it.sortTitle = it.generateSortTitle(it.title) ?: 'AAA_Error'
         if ( it.sortTitle != null ) {
-          it.save(flush:true, failOnError:true)
+          it.save(failOnError:true)
           num_rows_updated++;
           rows_updated = true
         }
@@ -1157,8 +1157,8 @@ class DataloadService {
         log.debug("Normalise Package Name ${it.name}");
         it.sortName = it.generateSortName(it.name) ?: 'AAA_Error'
         if ( it.sortName != null ) {
-          it.save(flush:true, failOnError:true)
-          num_rows_updated++;
+          it.save(failOnError:true)
+          num_rows_updated++
           rows_updated = true
         }
       }
@@ -1168,7 +1168,7 @@ class DataloadService {
         log.debug("Normalise License Reference Name ${it.reference}");
         it.sortableReference = it.generateSortableReference(it.reference) ?: 'AAA_Error'
         if( it.sortableReference != null ) {
-          it.save(flush:true, failOnError:true)
+          it.save(failOnError:true)
           num_rows_updated++;
           rows_updated = true
         }
@@ -1303,7 +1303,7 @@ class DataloadService {
                             //ft.lastTimestamp = 0
                         }
 
-                        ft.save(flush: true)
+                        ft.save()
                     }
                 }
             }

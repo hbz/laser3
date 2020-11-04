@@ -6,7 +6,8 @@ import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -14,15 +15,42 @@ import java.text.SimpleDateFormat
 @Transactional
 class AccessPointService {
 
-    def messageSource
     ExportService exportService
-    Locale locale
     EscapeService escapeService
+    MessageSource messageSource
 
-    @javax.annotation.PostConstruct
-    void init() {
-        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+    void deleteIpRange(AccessPointData accessPointData) {
+        accessPointData.delete()
+    }
+
+    Map<String,Object> linkPlatform(GrailsParameterMap params) {
+        Map<String,Object> result = [:]
+        OrgAccessPoint accessPoint = OrgAccessPoint.get(params.accessPointId)
+        OrgAccessPointLink oapl = new OrgAccessPointLink()
+        oapl.active = true
+        oapl.oap = accessPoint
+        if (params.platforms) {
+            oapl.platform = Platform.get(params.platforms)
+            String hql = "select oap from OrgAccessPoint oap join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${accessPoint.id} and oapl.oap=:oap and oapl.subPkg is null order by LOWER(oap.name)"
+            Set<OrgAccessPoint> existingActiveAP = OrgAccessPoint.executeQuery(hql, ['oap' : accessPoint])
+            if (! existingActiveAP.isEmpty()){
+                result.error = "Existing active AccessPoint for platform"
+            }
+            if (! oapl.save()) {
+                result.error = "Could not link AccessPoint to Platform"
+            }
+        }
+        result
+    }
+
+    Map<String,Object> unlinkPlatform(OrgAccessPointLink aoplInstance) {
+        Map<String,Object> result = [:]
+        aoplInstance.active = false
+        if (! aoplInstance.save()) {
+            log.debug(aoplInstance.errors.toString())
+            result.error = "Error updating AccessPoint for platform"
+        }
+        result
     }
 
     List<Map> getOapListWithLinkCounts(Org org) {
@@ -114,15 +142,15 @@ class AccessPointService {
     def exportIPsOfOrgs(List<Org> orgs) {
 
         List titles = []
-        def local = LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
 
-        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, local),
-                       messageSource.getMessage('accessPoint.ip.name.label',null, local),
-                       messageSource.getMessage('accessMethod.label',null, local),
-                       messageSource.getMessage('accessPoint.ip.format.range',null, local),
-                       messageSource.getMessage('accessPoint.ip.format.cidr',null, local)
+                       messageSource.getMessage('org.shortname.label',null, locale),
+                       messageSource.getMessage('accessPoint.ip.name.label',null, locale),
+                       messageSource.getMessage('accessMethod.label',null, locale),
+                       messageSource.getMessage('accessPoint.ip.format.range',null, locale),
+                       messageSource.getMessage('accessPoint.ip.format.cidr',null, locale)
         ])
 
         List accessPointData = []
@@ -169,21 +197,21 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
     }
 
     def exportProxysOfOrgs(List<Org> orgs) {
 
         List titles = []
-        def local = LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
 
-        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, local),
-                       messageSource.getMessage('accessPoint.ip.name.label',null, local),
-                       messageSource.getMessage('accessMethod.label',null, local),
-                       messageSource.getMessage('accessPoint.ip.format.range',null, local),
-                       messageSource.getMessage('accessPoint.ip.format.cidr',null, local)
+                       messageSource.getMessage('org.shortname.label',null, locale),
+                       messageSource.getMessage('accessPoint.ip.name.label',null, locale),
+                       messageSource.getMessage('accessMethod.label',null, locale),
+                       messageSource.getMessage('accessPoint.ip.format.range',null, locale),
+                       messageSource.getMessage('accessPoint.ip.format.cidr',null, locale)
         ])
 
         List accessPointData = []
@@ -230,21 +258,21 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
     }
     def exportEZProxysOfOrgs(List<Org> orgs) {
 
         List titles = []
-        def local = LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
 
-        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, local),
-                       messageSource.getMessage('accessPoint.ezproxy.name.label',null, local),
-                       messageSource.getMessage('accessMethod.label',null, local),
-                       messageSource.getMessage('accessPoint.ip.format.range',null, local),
-                       messageSource.getMessage('accessPoint.ip.format.cidr',null, local),
-                       messageSource.getMessage('accessPoint.url',null, local)
+                       messageSource.getMessage('org.shortname.label',null, locale),
+                       messageSource.getMessage('accessPoint.ezproxy.name.label',null, locale),
+                       messageSource.getMessage('accessMethod.label',null, locale),
+                       messageSource.getMessage('accessPoint.ip.format.range',null, locale),
+                       messageSource.getMessage('accessPoint.ip.format.cidr',null, locale),
+                       messageSource.getMessage('accessPoint.url',null, locale)
         ])
 
         List accessPointData = []
@@ -293,19 +321,19 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
     }
     def exportShibbolethsOfOrgs(List<Org> orgs) {
 
         List titles = []
-        def local = LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
 
-        titles.addAll([messageSource.getMessage('org.sortname.label',null, local),
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, local),
-                       messageSource.getMessage('accessPoint.shibboleth.name.label',null, local),
-                       messageSource.getMessage('accessMethod.label',null, local),
-                       messageSource.getMessage('accessPoint.entitiyId.label',null, local)
+                       messageSource.getMessage('org.shortname.label',null, locale),
+                       messageSource.getMessage('accessPoint.shibboleth.name.label',null, locale),
+                       messageSource.getMessage('accessMethod.label',null, locale),
+                       messageSource.getMessage('accessPoint.entitiyId.label',null, locale)
         ])
 
         List accessPointData = []
@@ -331,6 +359,46 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName',null, local)}": [titleRow: titles, columnData: accessPointData]])
+        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+    }
+
+    /**
+     * Check for existing name in all supported locales and return available suggestions for IP Access Method
+     * A simpler solution would be nice
+     */
+    List availableOptions(Org org) {
+
+        List availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess', 'accessPoint.option.vpn']
+        Locale locale = LocaleContextHolder.getLocale()
+        Map localizedAccessPointNameSuggestions = [:]
+        availableLanguageKeys.each { key ->
+            localizedAccessPointNameSuggestions[messageSource.getMessage(key, null,locale)] = key
+        }
+        List<OrgAccessPoint> existingOapIpInstances = OrgAccessPoint.findAllByOrgAndAccessMethod(org, RefdataValue.getByValue('ip'))
+
+        if (existingOapIpInstances) {
+            existingOapIpInstances.each { OrgAccessPoint oap ->
+                if (localizedAccessPointNameSuggestions.keySet().contains(oap.name)){
+                    if (localizedAccessPointNameSuggestions[oap.name]) {
+                        availableLanguageKeys.removeAll {languageKey ->
+                            languageKey == localizedAccessPointNameSuggestions[oap.name]
+                        }
+                    }
+                }
+            }
+        }
+        List resultList = []
+        availableLanguageKeys.each { it ->
+            resultList.add(["${it}" : messageSource.getMessage(it,null,locale)])
+        }
+        resultList.add(["accessPoint.option.customName" : ''])
+        return resultList
+    }
+
+    List getLinkedPlatforms(GrailsParameterMap params, OrgAccessPoint orgAccessPoint) {
+        String sort = params.sort ?: "LOWER(p.name)"
+        String order = params.order ?: "ASC"
+        String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
+        Platform.executeQuery(qry1)
     }
 }

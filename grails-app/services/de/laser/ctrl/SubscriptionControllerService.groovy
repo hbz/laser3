@@ -106,7 +106,6 @@ class SubscriptionControllerService {
     AuditService auditService
     GlobalSourceSyncService globalSourceSyncService
     LinksGenerationService linksGenerationService
-    CopyElementsService copyElementsService
     ExecutorWrapperService executorWrapperService
     PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
