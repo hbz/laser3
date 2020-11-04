@@ -22,6 +22,8 @@ class User {
     String display
     String password
     String email
+    String image
+
     String shibbScope
     Date dateCreated
     Date lastUpdated
@@ -39,6 +41,7 @@ class User {
         password    blank: false, password: true
         display     blank: true, nullable: true
         email       blank: true, nullable: true
+        image       blank: true, nullable: true
         shibbScope  blank: true, nullable: true
     }
 

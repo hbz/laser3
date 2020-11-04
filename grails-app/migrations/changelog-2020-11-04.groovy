@@ -38,4 +38,11 @@ databaseChangeLog = {
 	changeSet(author: "galffy (modified)", id: "1604478749938-6") {
 		addNotNullConstraint(columnDataType: "int8", columnName: "pp_tenant_fk", tableName: "person_property")
 	}
+
+    changeSet(author: "klober (generated)", id: "1604478749938-7") {
+        addColumn(tableName: "user") {
+            column(name: "image", type: "varchar(255)")
+        }
+    }
+
 }

@@ -98,18 +98,35 @@
     <div class="column wide eight">
 
         <div class="ui segment la-js-changePassword">
-
             <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_YODA'))}">
-                <g:img dir="images" file="yoda.gif" style="
-                    position: absolute;
-                    top: -40px;
-                    right: -25px;
-                    z-index: 9;
-                    padding: 10px;
-                    background: #fff;
-                    border: 1px solid #ccc;
-                    height: 240px;
-                " />
+                <div id="profile-image">
+                    <g:if test="${user.image}">
+                        <g:img dir="images" file="profile/${user.image}" />
+                    </g:if>
+                    <g:else>
+                        <g:img dir="images" file="profile/yoda.gif" />
+                    </g:else>
+                    <style>
+                        #profile-image {
+                            position: absolute;
+                            top: -25px;
+                            right: -25px;
+                            z-index: 9;
+                            perspective: 800px;
+                        }
+                        #profile-image img {
+                            padding: 10px;
+                            background: #fff;
+                            border: 1px solid #ccc;
+                            height: 240px;
+                            transition: transform 1s;
+                        }
+                        .la-js-changePassword:hover #profile-image img {
+                            transform: rotateY(180deg);
+                            transform-style: preserve-3d;
+                        }
+                    </style>
+                </div>
             </g:if>
 
             <g:form action="updatePassword" class="ui form">
