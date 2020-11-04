@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2978    04.11.2020  rc1.6   1.6.5       Andreas Bug         falsche Berechtigungsprüfung in Lizenztabelle unter "Meine Lizenzen"
+
 --      03.11.2020  rc1.6   1.6.3       Moe     Bug         Lizenzen werden für Vollnutzer nicht als Lokal Lizenz geflagt
 
 --      03.11.2020  rc1.6   1.6.3       Moe     Bug         Lizenzen werden bei Verlängerungsumfrage nicht "zentral verhandelt" gesetzt
