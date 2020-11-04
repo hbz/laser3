@@ -28,8 +28,7 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def delete() {
         Map<String, Object> result = userService.setResultGenerics(params)
@@ -153,42 +152,42 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def show() {
         Map<String, Object> result = userService.setResultGenerics(params)
         result
     }
 
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def newPassword() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        User.withTransaction {
+            Map<String, Object> result = userService.setResultGenerics(params)
 
-        if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions')
+            if (!result.editable) {
+                flash.error = message(code: 'default.noPermissions')
+                redirect url: request.getHeader('referer'), id: params.id
+            }
+            if (result.user) {
+                String newPassword = User.generateRandomPassword()
+                result.user.password = newPassword
+                if (result.user.save()) {
+                    flash.message = message(code: 'user.newPassword.success')
+
+                    instAdmService.sendMail(result.user, 'Passwortänderung',
+                            '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
+
+                    redirect url: request.getHeader('referer'), id: params.id
+                    return
+                }
+            }
+
+            flash.error = message(code: 'user.newPassword.fail')
             redirect url: request.getHeader('referer'), id: params.id
         }
-        if (result.user) {
-            String newPassword = User.generateRandomPassword()
-            result.user.password = newPassword
-            if (result.user.save(flush: true)) {
-                flash.message = message(code: 'user.newPassword.success')
-
-                instAdmService.sendMail(result.user, 'Passwortänderung',
-                        '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
-
-                redirect url: request.getHeader('referer'), id: params.id
-                return
-            }
-        }
-
-        flash.error = message(code: 'user.newPassword.fail')
-        redirect url: request.getHeader('referer'), id: params.id
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -228,7 +227,7 @@ class UserController  {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def processUserCreate() {
+    def processCreateUser() {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {

@@ -7,12 +7,12 @@
 </g:if>
 <g:elseif test="${actionName == 'userList'}">
     <semui:actionsDropdown>
-        <semui:actionsDropdownItem controller="myInstitution" action="userCreate" message="user.create_new.label" />
+        <semui:actionsDropdownItem controller="myInstitution" action="createUser" message="user.create_new.label" />
     </semui:actionsDropdown>
 </g:elseif>
 <g:elseif test="${actionName == 'users'}">
     <semui:actionsDropdown>
-        <semui:actionsDropdownItem controller="organisation" action="userCreate" message="user.create_new.label" params="${[id:params.id]}"/>
+        <semui:actionsDropdownItem controller="organisation" action="createUser" message="user.create_new.label" params="${[id:params.id]}"/>
     </semui:actionsDropdown>
 </g:elseif>
 <g:if test="${actionName == 'edit'}">

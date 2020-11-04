@@ -15,7 +15,7 @@
         <semui:messages data="${flash}" />
 
         <g:if test="${editable}">
-            <g:form name="newUser" class="ui form" controller="${controllerName}" action="processUserCreate" method="post">
+            <g:form name="newUser" class="ui form" controller="${controllerName}" action="processCreateUser" method="post">
                 <fieldset>
                     <div class="field required">
                         <label for="username">${message(code:'user.username.label')}</label>
