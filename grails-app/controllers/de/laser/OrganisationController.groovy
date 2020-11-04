@@ -519,15 +519,11 @@ class OrganisationController  {
     def createProvider() {
         Org.withTransaction {
 
-            RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
-            RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
-            RefdataValue orgType2 = RefdataValue.getByValueAndCategory('Agency', RDConstants.ORG_TYPE)
-            Org orgInstance = new Org(name: params.provider, sector: orgSector.id)
-
+            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER)
             if (orgInstance.save()) {
 
-                orgInstance.addToOrgType(orgType)
-                orgInstance.addToOrgType(orgType2)
+                orgInstance.addToOrgType(RDStore.OT_PROVIDER)
+                orgInstance.addToOrgType(RDStore.OT_AGENCY)
                 orgInstance.save()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
