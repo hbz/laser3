@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.titles.BookInstance
-import com.k_int.kbplus.PendingChangeService
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -28,9 +27,9 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
-import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.internal.SQLQueryImpl
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigUtils
 
@@ -60,50 +59,49 @@ class AdminController  {
     def organisationService
     def apiService
 
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-
     @Secured(['ROLE_ADMIN'])
     def index() { }
 
+    @DebugAnnotation(wtc = 2)
     @Secured(['ROLE_ADMIN'])
     def systemAnnouncements() {
         Map<String, Object> result = [:]
+        SystemAnnouncement.withTransaction { TransactionStatus ts ->
+            result.mailDisabled = grailsApplication.config.grails.mail.disabled
 
-        result.mailDisabled = grailsApplication.config.grails.mail.disabled
-
-        if (params.id) {
-            SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
-
-            if (sa) {
-                if (params.cmd == 'edit') {
-                    result.currentAnnouncement = sa
-                }
-                else if (params.cmd == 'publish') {
-                    if (result.mailDisabled) {
-                        flash.error = message(code: 'system.config.mail.disabled')
+            if (params.id) {
+                SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
+                if (sa) {
+                    if (params.cmd == 'edit') {
+                        result.currentAnnouncement = sa
                     }
-                    else if (sa.publish()) {
-                        flash.message = message(code: 'announcement.published')
+                    else if (params.cmd == 'publish') {
+                        if (result.mailDisabled) {
+                            flash.error = message(code: 'system.config.mail.disabled')
+                        }
+                        else if (sa.publish()) {
+                            flash.message = message(code: 'announcement.published')
+                        }
+                        else {
+                            flash.error = message(code: 'announcement.published_error')
+                        }
                     }
-                    else {
-                        flash.error = message(code: 'announcement.published_error')
+                    else if (params.cmd == 'undo') {
+                        sa.isPublished = false
+                        if (sa.save()) {
+                            flash.message = message(code: 'announcement.undo')
+                        }
+                        else {
+                            flash.error = message(code: 'announcement.undo_error')
+                        }
                     }
-                }
-                else if (params.cmd == 'undo') {
-                    sa.isPublished = false
-                    if (sa.save(flush:true)) {
-                        flash.message = message(code: 'announcement.undo')
-                    }
-                    else {
-                        flash.error = message(code: 'announcement.undo_error')
-                    }
-                }
-                else if (params.cmd == 'delete') {
-                    if (sa.delete(flush: true)) {
-                        flash.message = message(code: 'default.success')
-                    }
-                    else {
-                        flash.error = message(code: 'default.delete.error.general.message')
+                    else if (params.cmd == 'delete') {
+                        if (sa.delete()) {
+                            flash.message = message(code: 'default.success')
+                        }
+                        else {
+                            flash.error = message(code: 'default.delete.error.general.message')
+                        }
                     }
                 }
             }
@@ -113,34 +111,37 @@ class AdminController  {
         result
     }
 
+    @DebugAnnotation(wtc = 2)
     @Secured(['ROLE_ADMIN'])
     def createSystemAnnouncement() {
-        if (params.saTitle && params.saContent) {
-            SystemAnnouncement sa
-            boolean isNew = false
+        SystemAnnouncement.withTransaction { TransactionStatus ts ->
+            if (params.saTitle && params.saContent) {
+                SystemAnnouncement sa
+                boolean isNew = false
 
-            if (params.saId) {
-                sa = SystemAnnouncement.get(params.long('saId'))
-            }
-            if (!sa) {
-                sa = new SystemAnnouncement()
-                isNew = true
-            }
+                if (params.saId) {
+                    sa = SystemAnnouncement.get(params.long('saId'))
+                }
+                if (!sa) {
+                    sa = new SystemAnnouncement()
+                    isNew = true
+                }
 
-            sa.title = params.saTitle
-            sa.content = params.saContent
-            sa.user = User.get(springSecurityService.principal.id)
-            sa.isPublished = false
+                sa.title = params.saTitle
+                sa.content = params.saContent
+                sa.user = User.get(springSecurityService.principal.id)
+                sa.isPublished = false
 
-            if (sa.save(flush: true)) {
-                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated')
+                if (sa.save()) {
+                    flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated')
+                }
+                else {
+                    flash.error = message(code: 'default.save.error.message', args: [sa])
+                }
             }
             else {
-                flash.error = message(code: 'default.save.error.message', args: [sa])
+                flash.error = message(code: 'default.error')
             }
-        }
-        else {
-            flash.error = message(code: 'default.error')
         }
         redirect(action: 'systemAnnouncements')
     }
@@ -202,57 +203,30 @@ class AdminController  {
     }
 
   @Secured(['ROLE_ADMIN'])
-  def updatePendingChanges() {
-  //Find all pending changes with license FK and timestamp after summer 14
-  // For those with changeType: CustomPropertyChange, change it to PropertyChange
-  // on changeDoc add value propertyOID with the value of OID
-    String theDate = "01/05/2014 00:00:00";
-    Date summer_date = new Date().parse("d/M/yyyy H:m:s", theDate)
-    def criteria = PendingChange.createCriteria()
-    def changes = criteria.list{
-      isNotNull("license")
-      ge("ts",summer_date)
-      like("changeDoc","%changeType\":\"CustomPropertyChange\",%")
-    }
-    log.debug("Starting PendingChange Update. Found:${changes.size()}")
-
-        changes.each{
-            def parsed_change_info = JSON.parse(it.payload)
-            parsed_change_info.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-            //parsed_change_info.changeType = "PropertyChange"
-            //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
-            it.payload = parsed_change_info
-            it.save(failOnError:true, flush: true)
-        }
-        log.debug("Pending Change Update Complete.")
-        redirect(controller:'home')
-
-    }
-
-  @Secured(['ROLE_ADMIN'])
   def actionAffiliationRequest() {
-      log.debug("actionMembershipRequest");
-      UserOrg req = UserOrg.get(params.req);
-      User user = User.get(springSecurityService.principal.id)
+    UserOrg.withTransaction { TransactionStatus ts ->
+        log.debug("actionMembershipRequest")
+        UserOrg req = UserOrg.get(params.req)
 
-    if ( req != null ) {
-      switch(params.act) {
-        case 'approve':
-          req.status = UserOrg.STATUS_APPROVED
-          break;
-        case 'deny':
-          req.status = UserOrg.STATUS_REJECTED
-          break;
-        default:
-          log.error("FLASH UNKNOWN CODE");
-          break;
-      }
-      // req.actionedBy = user
-      req.dateActioned = System.currentTimeMillis();
-      req.save(flush: true)
-    }
-    else {
-      log.error("FLASH");
+        if ( req != null ) {
+            switch(params.act) {
+                case 'approve':
+                    req.status = UserOrg.STATUS_APPROVED
+                    break;
+                case 'deny':
+                    req.status = UserOrg.STATUS_REJECTED
+                    break;
+                default:
+                    log.error("FLASH UNKNOWN CODE");
+                    break;
+            }
+            // req.actionedBy = user
+            req.dateActioned = System.currentTimeMillis();
+            req.save()
+        }
+        else {
+            log.error("FLASH")
+        }
     }
     redirect(action: "manageAffiliationRequests")
   }
@@ -325,6 +299,7 @@ class AdminController  {
         result
     }
 
+  @DebugAnnotation(wtc = 2)
   @Secured(['ROLE_ADMIN'])
   def performPackageDelete(){
    if (request.method == 'POST'){
@@ -333,22 +308,22 @@ class AdminController  {
         log.info("Deleting Package ")
         log.info("${pkg.id}::${pkg}")
         pkg.pendingChanges.each{
-          it.delete(flush:true)
+          it.delete()
         }
         pkg.documents.each{
-          it.delete(flush:true)
+          it.delete()
         }
         pkg.orgs.each{
-          it.delete(flush:true)
+          it.delete()
         }
 
                 pkg.subscriptions.each{
-                    it.delete(flush:true)
+                    it.delete()
                 }
                 pkg.tipps.each{
-                    it.delete(flush:true)
+                    it.delete()
                 }
-                pkg.delete(flush:true)
+                pkg.delete()
             }
             log.info("Delete Complete.")
         }
@@ -358,69 +333,70 @@ class AdminController  {
 
     @Secured(['ROLE_ADMIN'])
     def userMerge(){
-        log.debug("AdminController :: userMerge :: ${params}");
-        def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
-        def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
+        log.debug("AdminController :: userMerge :: ${params}")
         Map<String, Object> result = [:]
-        try {
-            log.debug("Determine user merge operation : ${request.method}");
-            switch (request.method) {
-                case 'GET':
-                    if(usrMrgId && usrKeepId ){
-                        User usrMrg = User.get(usrMrgId)
-                        User usrKeep =  User.get(usrKeepId)
-                        log.debug("Selected users : ${usrMrg}, ${usrKeep}");
-                        result.userRoles = usrMrg.getAuthorities()
-                        result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
-                        result.userMerge = usrMrg
-                        result.userKeep = usrKeep
-                    }else{
-                        log.error("Missing keep/merge userid ${params}");
-                        flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
-                    }
-                    log.debug("Get processing completed");
-                    break;
-                case 'POST':
-                    log.debug("Post...");
-                    if(usrMrgId && usrKeepId){
-                        User usrMrg = User.get(usrMrgId)
-                        User usrKeep =  User.get(usrKeepId)
-                        boolean success = false
-                        try{
-                            log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}");
-                            success = copyUserRoles(usrMrg, usrKeep)
-                            log.debug("Result of copyUserRoles : ${success}");
-                        }catch(Exception e){
-                            log.error("Exception while copying user roles.",e)
-                        }
-                        if(success){
-                            log.debug("Success");
-                            usrMrg.enabled = false
-                            log.debug("Save disable and save merged user");
-                            usrMrg.save(flush:true,failOnError:true)
-                            flash.message = "Rights copying successful. User '${usrMrg.displayName}' is now disabled."
+        User.withTransaction { TransactionStatus ts ->
+            def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
+            def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
+            try {
+                log.debug("Determine user merge operation : ${request.method}")
+                switch (request.method) {
+                    case 'GET':
+                        if(usrMrgId && usrKeepId ){
+                            User usrMrg = User.get(usrMrgId)
+                            User usrKeep =  User.get(usrKeepId)
+                            log.debug("Selected users : ${usrMrg}, ${usrKeep}")
+                            result.userRoles = usrMrg.getAuthorities()
+                            result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
+                            result.userMerge = usrMrg
+                            result.userKeep = usrKeep
                         }else{
-                            flash.error = "An error occured before rights transfer was complete."
+                            log.error("Missing keep/merge userid ${params}")
+                            flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
                         }
-                    }else{
-                        flash.error = "Please select 'user to keep' and 'user to merge' from the dropdown."
-                    }
-                    break
-                default:
-                    break;
+                        log.debug("Get processing completed")
+                        break
+                    case 'POST':
+                        log.debug("Post...");
+                        if(usrMrgId && usrKeepId){
+                            User usrMrg = User.get(usrMrgId)
+                            User usrKeep =  User.get(usrKeepId)
+                            boolean success = false
+                            try{
+                                log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}")
+                                success = copyUserRoles(usrMrg, usrKeep)
+                                log.debug("Result of copyUserRoles : ${success}")
+                            }catch(Exception e){
+                                log.error("Exception while copying user roles.",e)
+                            }
+                            if(success){
+                                log.debug("Success")
+                                usrMrg.enabled = false
+                                log.debug("Save disable and save merged user")
+                                usrMrg.save(failOnError:true)
+                                flash.message = "Rights copying successful. User '${usrMrg.displayName}' is now disabled."
+                            }else{
+                                flash.error = "An error occured before rights transfer was complete."
+                            }
+                        }else{
+                            flash.error = "Please select 'user to keep' and 'user to merge' from the dropdown."
+                        }
+                        break
+                    default:
+                        break
+                }
+
+                log.debug("Get all users")
+                result.usersAll = User.list(sort:"display", order:"asc")
+                log.debug("Get active users")
+                String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
+                result.usersActive = User.executeQuery(activeHQL)
             }
-
-       log.debug("Get all users");
-       result.usersAll = User.list(sort:"display", order:"asc")
-       log.debug("Get active users");
-       String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
-       result.usersActive = User.executeQuery(activeHQL)
-    }
-    catch ( Exception e ) {
-      log.error("Problem in user merge",e);
-    }
-
-        log.debug("Returning ${result}");
+            catch ( Exception e ) {
+                log.error("Problem in user merge",e)
+            }
+        }
+        log.debug("Returning ${result}")
         result
     }
 
