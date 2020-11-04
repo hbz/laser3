@@ -10,6 +10,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemTicket
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -140,15 +141,15 @@ class ProfileController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def processCancelRequest() {
         log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
         User user        = User.get(springSecurityService.principal.id)
         UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
-            userOrg.delete(flush:true)
+            userOrg.delete()
         }
-
         redirect(action: "index")
     }
 
@@ -181,50 +182,50 @@ class ProfileController {
         render view: 'deleteProfile', model: result
     }
 
-  @Secured(['ROLE_USER'])
-  def updateProfile() {
-    User user = User.get(springSecurityService.principal.id)
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def updateProfile() {
 
-    flash.message=""
+        User user = User.get(springSecurityService.principal.id)
+        flash.message=""
 
-    if ( user.display != params.userDispName ) {
-      user.display = params.userDispName
-      flash.message += message(code:'profile.updateProfile.updated.name')
-    }
-
-    if ( user.email != params.email ) {
-      if ( formService.validateEmailAddress(params.email) ) {
-        user.email = params.email
-        flash.message += message(code:'profile.updateProfile.updated.email')
-      }
-      else {
-        flash.error = message(code:'profile.updateProfile.updated.email.error')
-      }
-    }
-
-
-    // deprecated
-    if ( params.defaultPageSize != null ) {
-      try {
-        long l = Long.parseLong(params.defaultPageSize);
-        if ( ( l >= 5 ) && ( l <= 100 ) ) {
-          Long new_long = new Long(l);
-          if ( new_long != user.getDefaultPageSize() ) {
-            flash.message += message(code:'profile.updateProfile.updated.pageSize')
-          }
-            //user.setDefaultPageSizeTMP(new_long)
-            def setting = user.getSetting(KEYS.PAGE_SIZE, null)
-            setting.setValue(size)
-     
+        if ( user.display != params.userDispName ) {
+            user.display = params.userDispName
+            flash.message += message(code:'profile.updateProfile.updated.name')
         }
-        else {
-          flash.message+= message(code:'profile.updateProfile.updated.pageSize.error')
-        }
-      }
-      catch ( Exception e ) {}
-    }
 
-        user.save(flush: true)
+        if ( user.email != params.email ) {
+            if ( formService.validateEmailAddress(params.email) ) {
+                user.email = params.email
+                flash.message += message(code:'profile.updateProfile.updated.email')
+            }
+            else {
+                flash.error = message(code:'profile.updateProfile.updated.email.error')
+            }
+        }
+
+        // deprecated
+        if ( params.defaultPageSize != null ) {
+            try {
+                long l = Long.parseLong(params.defaultPageSize);
+                if ( ( l >= 5 ) && ( l <= 100 ) ) {
+                    Long new_long = new Long(l);
+                    if ( new_long != user.getDefaultPageSize() ) {
+                        flash.message += message(code:'profile.updateProfile.updated.pageSize')
+                    }
+                    //user.setDefaultPageSizeTMP(new_long)
+                    def setting = user.getSetting(KEYS.PAGE_SIZE, null)
+                    setting.setValue(size)
+
+                }
+                else {
+                    flash.message+= message(code:'profile.updateProfile.updated.pageSize.error')
+                }
+            }
+            catch ( Exception e ) {}
+        }
+
+        user.save()
 
         if (params.defaultDash) {
             Org org = (Org) genericOIDService.resolveOID(params.defaultDash)
@@ -382,6 +383,7 @@ class ProfileController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def updateIsRemindByEmail() {
         User user1 = User.get(springSecurityService.principal.id)
 
@@ -394,12 +396,13 @@ class ProfileController {
                 flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error')
             }
         }
-        user.save(flush: true)
+        user.save()
 
         redirect(action: "index")
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def updatePassword() {
         User user = User.get(springSecurityService.principal.id)
         flash.message = ""
@@ -407,15 +410,16 @@ class ProfileController {
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {
             if (params.passwordNew.trim().size() < 5) {
                 flash.message += message(code:'profile.password.update.enterValidNewPassword')
-            } else {
+            }
+            else {
                 user.password = params.passwordNew
 
-                if (user.save(flush: true)) {
+                if (user.save()) {
                     flash.message += message(code:'profile.password.update.success')
                 }
             }
-
-        } else {
+        }
+        else {
             flash.error = message(code:'profile.password.update.enterValidCurrentPassword')
         }
         redirect(action: "index")

@@ -5,7 +5,7 @@
         <semui:crumb controller="user" action="list" message="user.show_all.label" />
         <semui:crumb class="active" message="user.create_new.label" />
     </g:if>
-    <g:if test="${actionName in ['edit','userEdit']}">
+    <g:if test="${actionName in ['edit','editUser']}">
         <g:if test="${controllerName == 'myInstitution'}">
             <semui:crumb controller="myInstitution" action="userList" message="menu.institutions.users"/>
         </g:if>

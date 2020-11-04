@@ -343,17 +343,11 @@ class PackageController  {
     }
 
     private def formatDateOrNull(formatter, date) {
-        def result;
-        if (date) {
-            result = formatter.format(date)
-        } else {
-            result = ''
-        }
-        return result
+        return (date ? formatter.format(date) : '')
     }
 
     private def createCompareList(pkg, dateStr, params, result) {
-        def returnVals = [:]
+
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         Date date = dateStr ? sdf.parse(dateStr) : new Date()
         def packageId = pkg.substring(pkg.indexOf(":") + 1)
