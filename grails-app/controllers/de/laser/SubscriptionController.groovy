@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.ctrl.SubscriptionControllerService
+
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
@@ -19,7 +20,6 @@ class SubscriptionController {
 
     def springSecurityService
     def contextService
-    def addressbookService
     def genericOIDService
     def exportService
     def accessService
@@ -29,9 +29,7 @@ class SubscriptionController {
     def subscriptionService
     def escapeService
     def deletionService
-    def auditService
     def surveyService
-    FormService formService
     AccessPointService accessPointService
     CopyElementsService copyElementsService
 
@@ -49,34 +47,27 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = subscriptionControllerService.tasks(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            response.sendError(401)
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
         }
         else {
-            if (params.deleteId) {
-                Task dTask = Task.get(params.deleteId)
-                if (dTask && dTask.creator.id == ctrlResult.result.user.id) {
-                    try {
-                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
-                        dTask.delete()
-                        if(params.returnToShow)
-                            redirect action: 'show', id: params.id
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                    }
-                }
-            }
-            ctrlResult.result
+            if(params.returnToShow)
+                redirect action: 'show', id: params.id
+            else
+                ctrlResult.result
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def history() {
         Map<String,Object> ctrlResult = subscriptionControllerService.history(this,params)
@@ -88,7 +79,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def changes() {
         Map<String,Object> ctrlResult = subscriptionControllerService.changes(this,params)
@@ -111,7 +102,7 @@ class SubscriptionController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -126,7 +117,7 @@ class SubscriptionController {
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")})
     def emptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.emptySubscription(this,params)
@@ -138,7 +129,7 @@ class SubscriptionController {
             ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
     def processEmptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processEmptySubscription(this,params)
@@ -150,7 +141,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
@@ -174,7 +165,7 @@ class SubscriptionController {
 
     //--------------------------------------------- document section ----------------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def notes() {
         Map<String,Object> ctrlResult = subscriptionControllerService.notes(this)
@@ -184,7 +175,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -196,7 +187,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String,Object> result = [user:springSecurityService.getCurrentUser(),institution:contextService.org]
@@ -210,7 +201,7 @@ class SubscriptionController {
         render template: "/templates/documents/modal", model: result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         docstoreService.unifiedDeleteDocuments(params)
@@ -219,7 +210,7 @@ class SubscriptionController {
 
     //--------------------------------- consortia members section ----------------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def members() {
         Map<String,Object> ctrlResult = subscriptionControllerService.members(this,params)
@@ -276,7 +267,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addMembers() {
         log.debug("addMembers ..")
@@ -290,7 +281,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(this,params)
@@ -305,7 +296,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -322,7 +313,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -338,7 +329,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -355,7 +346,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -372,7 +363,7 @@ class SubscriptionController {
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -387,7 +378,7 @@ class SubscriptionController {
             ctrlResult.result
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -407,7 +398,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -425,7 +416,7 @@ class SubscriptionController {
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -441,7 +432,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -461,7 +452,7 @@ class SubscriptionController {
         redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -478,7 +469,7 @@ class SubscriptionController {
         redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -495,7 +486,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -519,7 +510,7 @@ class SubscriptionController {
 
     //-------------------------------- survey section --------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def surveys() {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this)
@@ -529,7 +520,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
     })
@@ -543,7 +534,7 @@ class SubscriptionController {
 
     //------------------------------------- packages section -------------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkPackage(this,params)
@@ -571,7 +562,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         Map<String, Object> ctrlResult = subscriptionControllerService.unlinkPackage(this,params)
@@ -597,7 +588,7 @@ class SubscriptionController {
 
     //-------------------------------- issue entitlements holding --------------------------------------
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def index() {
         Map<String,Object> ctrlResult = subscriptionControllerService.index(this,params)
@@ -655,7 +646,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def addEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addEntitlements(this,params)
@@ -710,7 +701,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlement(params)
@@ -723,7 +714,7 @@ class SubscriptionController {
         redirect action: 'index', id: params.sub
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
@@ -739,7 +730,7 @@ class SubscriptionController {
         redirect action: 'addEntitlements', id: ctrlResult.result.subscription.id
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
@@ -751,7 +742,7 @@ class SubscriptionController {
         redirect action: 'renewEntitlements', model: [targetObjectId: result.subscription.id, packageId: params.packageId]
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddIssueEntitlementsSurvey() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -776,7 +767,7 @@ class SubscriptionController {
         redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig.id]
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRemoveIssueEntitlementsSurvey() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -787,7 +778,7 @@ class SubscriptionController {
         redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig?.id]
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
         Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionBatchUpdate(this,params)
@@ -804,7 +795,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addEmptyPriceItem() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
@@ -814,7 +805,7 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def addCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addCoverage(params)
@@ -822,7 +813,7 @@ class SubscriptionController {
             redirect action: 'index', id: ctrlResult.result.subId, params: params
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def removeCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
@@ -830,7 +821,7 @@ class SubscriptionController {
             redirect action: 'index', id: ctrlResult.result.subId, params: params
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def manageEntitlementGroup() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
@@ -838,7 +829,7 @@ class SubscriptionController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def editEntitlementGroupItem() {
         Map<String,Object> ctrlResult = subscriptionControllerService.editEntitlementGroupItem(this,params)
@@ -852,7 +843,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processCreateEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processCreateEntitlementGroup(this,params)
@@ -862,7 +853,7 @@ class SubscriptionController {
         redirect action: 'manageEntitlementGroup', id: params.id
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def removeEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
@@ -882,7 +873,7 @@ class SubscriptionController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlements() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlements(this,params)
@@ -900,7 +891,7 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
         Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
@@ -941,7 +932,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
         Map<String, Object> result = [:]
@@ -1005,7 +996,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlementsWithSurvey(this,params)
@@ -1017,7 +1008,7 @@ class SubscriptionController {
         redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: ctrlResult.result.surveyConfig?.id]
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def setupPendingChangeConfiguration() {
         Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
@@ -1119,435 +1110,230 @@ class SubscriptionController {
         result
     }*/
 
-    //-------------------------------------- renewal and transfer section ---------------------------------------------
+    //--------------------------------------------- renewal section ---------------------------------------------
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def renewSubscription() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        result.institution = contextService.org
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
+        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
-        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
+        result.subscription = subscription
+        SimpleDateFormat sdf = DateUtil.SDF_dmy
         Date newStartDate
         Date newEndDate
         use(TimeCategory) {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
         }
-
         result.isRenewSub = true
         result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString()
-        ]
-
-        result.subscription = subscription
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString()]
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processRenewSubscription() {
-
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_FOLLOWS)
-        if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist')
-        } else {
-            def sub_startDate = params.subscription.start_date ? DateUtil.parseDateGeneric(params.subscription.start_date) : null
-            def sub_endDate = params.subscription.end_date ? DateUtil.parseDateGeneric(params.subscription.end_date) : null
-            def sub_status = params.subStatus ?: RDStore.SUBSCRIPTION_NO_STATUS
-            def sub_isMultiYear = params.subscription.isMultiYear
-            def new_subname = params.subscription.name
-            def manualCancellationDate = null
-
-            use(TimeCategory) {
-                manualCancellationDate =  result.subscription.manualCancellationDate ? (result.subscription.manualCancellationDate + 1.year) : null
+        Map<String,Object> ctrlResult = subscriptionControllerService.processRenewSubscription(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
             }
-
-            Subscription newSub = new Subscription(
-                    name: new_subname,
-                    startDate: sub_startDate,
-                    endDate: sub_endDate,
-                    manualCancellationDate: manualCancellationDate,
-                    identifier: UUID.randomUUID().toString(),
-                    isSlaved: result.subscription.isSlaved,
-                    type: result.subscription.type,
-                    kind: result.subscription.kind,
-                    resource: result.subscription.resource,
-                    form: result.subscription.form,
-                    isPublicForApi: result.subscription.isPublicForApi,
-                    hasPerpetualAccess: result.subscription.hasPerpetualAccess,
-                    status: sub_status,
-                    isMultiYear: sub_isMultiYear ?: false,
-                    administrative: result.subscription.administrative,
-            )
-
-            if (!newSub.save(flush:true)) {
-                log.error("Problem saving subscription ${newSub.errors}");
-                return newSub
-            } else {
-                log.debug("Save ok")
-                if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    if (params.list('auditList')) {
-                        //copy audit
-                        params.list('auditList').each { auditField ->
-                            //All ReferenceFields were copied!
-                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
-                            AuditConfig.addConfig(newSub, auditField)
-                        }
-                    }
-                }
-                //Copy References
-                //OrgRole
-                result.subscription.orgRelations?.each { or ->
-
-                    if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS,  RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, or.properties)
-                        newOrgRole.sub = newSub
-                        newOrgRole.save()
-                    }
-                }
-                //link to previous subscription
-                Links prevLink = Links.construct([source: newSub, destination: result.subscription, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
-                if (!prevLink.save(flush:true)) {
-                    log.error("Problem linking to previous subscription: ${prevLink.errors}")
-                }
-                result.newSub = newSub
-
-                if (params.targetObjectId == "null") params.remove("targetObjectId")
-                result.isRenewSub = true
-
-                redirect controller: 'subscription',
-                            action: 'copyElementsIntoSubscription',
-                            params: [sourceObjectId: genericOIDService.getOID(result.subscription), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true]
+            else {
+                flash.error = ctrlResult.result.error
+                if(ctrlResult.result.newSub)
+                    ctrlResult.result.newSub
             }
         }
+        else {
+            redirect controller: 'subscription',
+                    action: 'copyElementsIntoSubscription',
+                    params: [sourceObjectId: genericOIDService.getOID(ctrlResult.result.subscription), targetObjectId: genericOIDService.getOID(ctrlResult.result.newSub), isRenewSub: true]
+        }
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def copyElementsIntoSubscription() {
-        Map<String, Object> result = [:]
-        result.user = contextService.user
-        result.contextOrg = contextService.getOrg()
-        flash.error = ""
-        flash.message = ""
-        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId
-        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
+    //------------------------------------------------ copy section ---------------------------------------------
 
-        if (params.targetObjectId == "null") params.remove("targetObjectId")
-        if (params.targetObjectId) {
-            result.targetObjectId = params.targetObjectId
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-        }
-
-        result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.sourceObject)
-        result.consortialView = result.showConsortiaFunctions
-
-        result.editable = result.sourceObject?.isEditableBy(result.user)
-
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
-        if (params.fromSurvey && accessService.checkPerm("ORG_CONSORTIUM")) {result.fromSurvey = params.fromSurvey}
-
-        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
-
-        if (params.copyObject) {result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)}
-
-        result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
-        result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
-
-        List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
-                                                CalculatedType.TYPE_ADMINISTRATIVE]
-        result.isSubscriberVisible =
-                result.sourceObject &&
-                result.targetObject &&
-                subTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
-                subTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
-
-        if (! result.isSubscriberVisible) {
-            //flash.message += message(code: 'subscription.info.subscriberNotAvailable')
-        }
-
-        switch (params.workFlowPart) {
-            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
-                if (params.isRenewSub){
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
-                    result << copyElementsService.loadDataFor_PackagesEntitlements(params)
-                } else {
-                    result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
-                }
-                break
-            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
-                if (params.isRenewSub){
-                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-                } else {
-                    result << copyElementsService.loadDataFor_PackagesEntitlements(params)
-                }
-                break
-            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                if (params.isRenewSub){
-                    if (!params.fromSurvey && result.isSubscriberVisible){
-                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
-                        result << copyElementsService.loadDataFor_Subscriber(params)
-                    } else {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        result << copyElementsService.loadDataFor_Properties(params)
-                    }
-                } else {
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-                }
-                break
-            case CopyElementsService.WORKFLOW_SUBSCRIBER:
-                result << copyElementsService.copyObjectElements_Subscriber(params)
-                if (params.isRenewSub) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    result << copyElementsService.loadDataFor_Properties(params)
-                } else {
-                    result << copyElementsService.loadDataFor_Subscriber(params)
-                }
-                break
-            case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copyObjectElements_Properties(params)
-                if (params.isRenewSub && result.targetObject){
-                    flash.error = ""
-                    flash.message = ""
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
-
-                    if(surveyConfig && result.fromSurvey) {
-                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
-                    }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
-                    }
-                } else {
-                    result << copyElementsService.loadDataFor_Properties(params)
-                }
-                break
-            case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copyObjectElements_Properties(params)
-                if (result.targetObject){
-                    flash.error = ""
-                    flash.message = ""
-
-                    def surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(result.sourceObject, true)
-
-                    if(surveyConfig && result.fromSurvey) {
-                        redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
-                    }else {
-                        redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
-                    }
-                }
-                break
-            default:
-                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
-                break
-        }
-
-        if (params.targetObjectId) {
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-        }
-        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
-        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-
-        if (params.isRenewSub) {result.isRenewSub = params.isRenewSub}
-        result
-    }
-
-    @DebugAnnotation(perm = "ORG_INST", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def copyMyElements() {
-        Map<String, Object> result = [:]
-        result.user = contextService.user
-        result.contextOrg = contextService.getOrg()
-        flash.error = ""
-        flash.message = ""
-        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId
-        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-
-        if (params.targetObjectId == "null") params.remove("targetObjectId")
-        if (params.targetObjectId) {
-            result.targetObjectId = params.targetObjectId
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-        }
-
-        //isVisibleBy benötigt hier um zu schauen, ob das Objekt überhaupt angesehen darf
-        result.editable = result.sourceObject?.isVisibleBy(result.user)
-
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
-        result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
-
-        switch (params.workFlowPart) {
-            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-
-                break;
-            case CopyElementsService.WORKFLOW_PROPERTIES:
-                result << copyElementsService.copyObjectElements_Properties(params)
-                result << copyElementsService.loadDataFor_Properties(params)
-
-                break;
-            case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copyObjectElements_Properties(params)
-                if (result.targetObject){
-                    flash.error = ""
-                    flash.message = ""
-                    redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
-                }
-                break;
-            default:
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-                break;
-        }
-
-        if (params.targetObjectId) {
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-        }
-        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_PROPERTIES
-        result
-    }
-
-
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copySubscription() {
-        Map<String, Object> result = [:]
-        result.user = contextService.user
-        result.contextOrg = contextService.getOrg()
-        flash.error = ""
-        flash.message = ""
-        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId
-        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-
-        if (params.targetObjectId == "null") params.remove("targetObjectId")
-        if (params.targetObjectId) {
-            result.targetObjectId = params.targetObjectId
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-        }
-
-        result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.sourceObject)
-        result.consortialView = result.showConsortiaFunctions
-
-        result.editable = result.sourceObject?.isEditableBy(result.user)
-
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
-        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-        result.copyObject = true
-
-        if (params.name && !result.targetObject) {
-            String sub_name = params.name ?: "Kopie von ${result.sourceObject.name}"
-
-            Object targetObject = new Subscription(
-                    name: sub_name,
-                    status: RDStore.SUBSCRIPTION_NO_STATUS,
-                    identifier: java.util.UUID.randomUUID().toString(),
-                    type: result.sourceObject.type,
-                    isSlaved: result.sourceObject.isSlaved,
-                    administrative: result.sourceObject.administrative
-            )
-            //Copy InstanceOf
-            if (params.targetObject?.copylinktoSubscription) {
-                targetObject.instanceOf = result.sourceObject.instanceOf ?: null
+        Map<String,Object> ctrlResult = subscriptionControllerService.copySubscription(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result) {
+                response.sendError(401)
             }
-
-
-            if (!targetObject.save()) {
-                log.error("Problem saving subscription ${targetObject.errors}");
-            }else {
-                result.targetObject = targetObject
-                params.targetObjectId = genericOIDService.getOID(targetObject)
-
-                //Copy References
-                result.sourceObject.orgRelations.each { OrgRole or ->
-                    if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id])) {
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, or.properties)
-                        newOrgRole.sub = result.targetObject
-                        newOrgRole.save()
+            else flash.error = ctrlResult.result.error
+        }
+        else {
+            switch (params.workFlowPart) {
+                case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
+                    ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
+                    if(ctrlResult.result.targetObject) {
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
                     }
-                }
-
+                    ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                    break
+                case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
+                    ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
+                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    break
+                case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                    ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                    ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                    break
+                case CopyElementsService.WORKFLOW_END:
+                    ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
+                    if (ctrlResult.result.targetObject){
+                        redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.targetObject.id]
+                    }
+                    break
+                default:
+                    ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                    break
             }
+            ctrlResult.result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+            ctrlResult.result
         }
+    }
 
-
-        switch (params.workFlowPart) {
-            case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
-                result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
-                if(result.targetObject) {
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copyElementsIntoSubscription() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.copyElementsIntoSubscription(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result) {
+                response.sendError(401)
+            }
+            else flash.error = ctrlResult.result.error
+        }
+        else {
+            switch (params.workFlowPart) {
+                case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
+                    ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
+                    if (params.isRenewSub){
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                    } else {
+                        ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
+                    ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
+                    if (params.isRenewSub){
+                        params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    } else {
+                        ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                    ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    if (params.isRenewSub){
+                        if (!params.fromSurvey && result.isSubscriberVisible){
+                            params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
+                            ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
+                        } else {
+                            params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                            ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                        }
+                    } else {
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_SUBSCRIBER:
+                    ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
+                    if (params.isRenewSub) {
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                    } else {
+                        ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_PROPERTIES:
+                    ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
+                    if(!(params.isRenewSub && ctrlResult.result.targetObject)) {
+                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_END:
+                    ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
+                    break
+                default:
+                    ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                    break
+            }
+            if((params.workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES && params.isRenewSub && ctrlResult.result.targetObject) ||
+               (params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject)) {
+                SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
+                if (surveyConfig && ctrlResult.result.fromSurvey) {
+                    redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                 }
-                result << copyElementsService.loadDataFor_PackagesEntitlements(params)
-                break
-            case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
-                params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
-                break
-            case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                result << copyElementsService.loadDataFor_Properties(params)
-                break
-            case CopyElementsService.WORKFLOW_END:
-                result << copyElementsService.copyObjectElements_Properties(params)
-                if (result.targetObject){
+                else {
+                    redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.targetObject.id]
+                }
+            }
+            else ctrlResult.result
+        }
+    }
+
+    @DebugAnnotation(perm = "ORG_INST", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def copyMyElements() {
+        Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params)
+        if (!result) {
+            response.sendError(401)
+        }
+        else {
+            result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+            result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+            switch (params.workFlowPart) {
+                case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                    result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    break
+                case CopyElementsService.WORKFLOW_PROPERTIES:
+                    result << copyElementsService.copyObjectElements_Properties(params)
+                    result << copyElementsService.loadDataFor_Properties(params)
+                    break
+                case CopyElementsService.WORKFLOW_END:
+                    result << copyElementsService.copyObjectElements_Properties(params)
+                    if (result.targetObject){
+                        flash.error = ""
+                        flash.message = ""
                         redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
-                }
-                break
-            default:
-                result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
-                break
+                    }
+                    break
+                default:
+                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    break
+            }
+            if (params.targetObjectId) {
+                result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+            }
+            result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+            result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_PROPERTIES
+            result
         }
-
-        result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
-
-        result
     }
 
     //----------------------------------------- subscription import section -----------------------------------------
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1563,6 +1349,7 @@ class SubscriptionController {
 
     //--------------------------------------------- admin section -------------------------------------------------
 
+    @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_ADMIN'])
     def pendingChanges() {
         Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this)
@@ -1576,7 +1363,7 @@ class SubscriptionController {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
-    Map<String,Object> setResultGenericsAndCheckAccess(checkOption) {
+    Map<String,Object> setResultGenericsAndCheckAccess(String checkOption) {
         Map<String, Object> result = [:]
         result.user = contextService.user
         result.subscription = Subscription.get(params.id)

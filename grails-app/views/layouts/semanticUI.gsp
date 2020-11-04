@@ -66,7 +66,7 @@
                         ${message(code:'menu.public')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                                 <g:link elementId="package-index" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</g:link>
                                 <g:link elementId="title-index"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
 
@@ -76,10 +76,10 @@
                                 </g:if>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <semui:mainNavItem id="organisation-index" role="menuitem" controller="organisation" action="index" message="menu.public.all_orgs" />
+                                    <semui:mainNavItem elementId="organisation-index" role="menuitem" controller="organisation" action="index" message="menu.public.all_orgs" />
                                 </sec:ifAnyGranted>
 
-                                <semui:securedMainNavItem id="organisation-listInstitution" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem elementId="organisation-listInstitution" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                               controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
                                 <g:link elementId="organisation-listProvider" class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</g:link>
@@ -89,9 +89,9 @@
 
                                 <g:link elementId="gasco" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
-                                <a href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
+                                <a id="gokb" href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
 
-                                <a href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
+                                <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
                         </div>
                     </div>
 
@@ -99,39 +99,39 @@
                         ${message(code:'menu.my')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
 
-                            <semui:securedMainNavItem id="myInstitution-currentSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
-                            <semui:securedMainNavItem id="myInstitution-currentLicenses" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
-                            <semui:securedMainNavItem id="myInstitution-currentProviders" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
-                            <semui:securedMainNavItem id="myInstitution-currentPlatforms" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
-                            <semui:securedMainNavItem id="myInstitution-currentPackages" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
-                            <semui:securedMainNavItem id="myInstitution-currentTitles" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
-                            <semui:securedMainNavItem id="myInstitution-documents" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentLicenses" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentProviders" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentPlatforms" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentPackages" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
+                            <semui:securedMainNavItem elementId="myInstitution-currentTitles" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
+                            <semui:securedMainNavItem elementId="myInstitution-documents" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                         <div class="divider"></div>
-                        <semui:securedMainNavItem id="myInstitution-currentSurveys" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+                        <semui:securedMainNavItem elementId="myInstitution-currentSurveys" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                     </g:if>
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem id="survey-currentSurveysConsortia" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
+                                <semui:securedMainNavItem elementId="survey-currentSurveysConsortia" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem id="myInstitution-manageMembers" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
-                                <semui:securedMainNavItem id="myInstitution-manageConsortiaSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
+                                <semui:securedMainNavItem elementId="myInstitution-manageMembers" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
+                                <semui:securedMainNavItem elementId="myInstitution-manageConsortiaSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
 
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem id="compare-compareSubscriptions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem elementId="compare-compareSubscriptions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem id="compare-compareLicenses" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
+                            <semui:securedMainNavItem elementId="compare-compareLicenses" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
 
                         </div>
                     </div>
@@ -141,29 +141,29 @@
                         ${message(code:'menu.institutions.myInst')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
-                            <semui:securedMainNavItem id="myInstitution-dashboard" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+                        <div class="menu" role="menu">
+                            <semui:securedMainNavItem elementId="myInstitution-dashboard" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
                             <g:link elementId="organisation-show" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                            <semui:securedMainNavItem id="myInstitution-addressbook" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                            <semui:securedMainNavItem id="myInstitution-tasks" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-                            <semui:securedMainNavItem id="myInstitution-reporting" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
-                            <semui:securedMainNavItem id="myInstitution-changes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />
-                            <semui:securedMainNavItem id="myInstitution-managePrivatePropertyDefinitions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
-                            <semui:securedMainNavItem id="myInstitution-finance" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                            <semui:securedMainNavItem id="myInstitution-budgetCodes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                            <semui:securedMainNavItem id="costConfiguration-index" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-                            <%--<semui:securedMainNavItem id="" "Disabled role="menuitem" message="menu.institutions.financeImport" />--%>
-                            <semui:securedMainNavItem id="myInstitution-financeImport" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                            <semui:securedMainNavItem elementId="myInstitution-addressbook" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                            <semui:securedMainNavItem elementId="myInstitution-tasks" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                            <semui:securedMainNavItem elementId="myInstitution-reporting" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                            <semui:securedMainNavItem elementId="myInstitution-changes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />
+                            <semui:securedMainNavItem elementId="myInstitution-managePrivatePropertyDefinitions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                            <semui:securedMainNavItem elementId="myInstitution-finance" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                            <semui:securedMainNavItem elementId="myInstitution-budgetCodes" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                            <semui:securedMainNavItem elementId="costConfiguration-index" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+                            <%--<semui:securedMainNavItem elementId="" "Disabled role="menuitem" message="menu.institutions.financeImport" />--%>
+                            <semui:securedMainNavItem elementId="myInstitution-financeImport" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem id="myInstitution-userList" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
+                            <semui:securedMainNavItem elementId="myInstitution-userList" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                    <g:link elementId="myInstitution-changeLog" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
-                                <%--<semui:securedMainNavItem id="myInstitution-changeLog" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
+                                <%--<semui:securedMainNavItem elementId="myInstitution-changeLog" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                             </sec:ifAnyGranted>
 
                         </div>
@@ -175,7 +175,7 @@
                         ${message(code:'menu.datamanager')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                             <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
                                 <g:link elementId="usage-index" class="item" role="menuitem" controller="usage"
                                         action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</g:link>
@@ -236,7 +236,7 @@
                         ${message(code:'menu.admin')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
                             <g:link elementId="profile-errorOverview" class="item" role="menuitem" controller="profile" action="errorOverview">
                                 ${message(code: "menu.user.errorReport")}
                                 <g:if test="${newTickets.size() > 0}">
@@ -261,7 +261,7 @@
                                 ${message(code:'menu.admin.sysAdmin')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-appInfo" class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</g:link>
                                     <g:link elementId="admin-systemEvents" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
 
@@ -277,7 +277,7 @@
                                 <span class="text">Developer</span>
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="dev-frontend" class="item" role="menuitem" controller="dev" action="frontend">Frontend</g:link>
                                 </div>
                             </div>
@@ -292,7 +292,7 @@
                                 ${message(code:'org.plural.label')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="organisation-index" class="item" role="menuitem" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</g:link>
                                     <g:link elementId="admin-manageOrganisations" class="item" role="menuitem" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</g:link>
                                 </div>
@@ -300,7 +300,7 @@
 
                             <g:link elementId="user-list" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link elementId="admin-showAffiliations" class="item" role="menuitem" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
-                            <g:link elementId="usage" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
+                            <g:link elementId="usage-index" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
                             <g:link elementId="admin-updateQASubscriptionDates" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</g:link>
                             <% /* g:link  elementId="admin-juspSync" class="item" role="menuitem" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link elementId="admin-forceSendNotifications" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
@@ -311,7 +311,7 @@
                                 ${message(code:'menu.admin.bulkOps')}
                                <i aria-hidden="true" class="dropdown icon"></i>
 
-                               <div class="menu">
+                               <div class="menu" role="menu">
                                     <g:link elementId="admin-orgsExport" class="item" role="menuitem" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
                                     <g:link elementId="admin-orgsImport" class="item" role="menuitem" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link elementId="yoda-makeshiftLaserOrgExport" class="item" role="menuitem" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
@@ -340,7 +340,7 @@
                         ${message(code:'menu.yoda')}
                         <i aria-hidden="true" class="dropdown icon"></i>
 
-                        <div class="menu">
+                        <div class="menu" role="menu">
 
                             <g:link elementId="yoda-dashboard" class="item" role="menuitem" controller="yoda" action="dashboard">Dashboard</g:link>
 
@@ -348,7 +348,7 @@
                                 <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
 
                                     <g:link elementId="yoda-settings" class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
                                     <g:link elementId="admin-systemEvents" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
@@ -375,7 +375,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 Fällige Termine
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-dueDates_updateDashboardDB" class="item" role="menuitem" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
                                     <g:link elementId="yoda-dueDates_sendAllEmails" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
                                 </div>
@@ -387,7 +387,7 @@
                                 ${message(code:'menu.admin.dataManagement')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
 
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="dataManager-listPlatformDuplicates" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</g:link>
                                     <g:link elementId="package-getDuplicatePackages" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</g:link>
                                     <g:link elementId="dataManager-listDeletedTIPPS" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</g:link>
@@ -407,7 +407,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.syncManagement')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-globalSync" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
                                     <g:link elementId="yoda-manageGlobalSources" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
                                     <g:link elementId="yoda-getTIPPsWithoutGOKBId" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
@@ -421,7 +421,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ElasticSearch
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-fullReset" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
                                     <g:link elementId="yoda-esIndexUpdate" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
                                     <%--<g:link elementId="yoda-logViewer" class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
@@ -437,7 +437,7 @@
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.dataMigration')}
                                 <i aria-hidden="true" class="dropdown icon"></i>
-                                <div class="menu">
+                                <div class="menu" role="menu">
                                     <g:link elementId="yoda-migrateCollectiveSubscriptions" class="item" role="menuitem" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions (0.20)</g:link>
                                     <g:link elementId="yoda-migrateNatStatSettings" class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</g:link>
                                     <%--<g:link elementId="yoda-remapOriginEditUrl" class="item" role="menuitem" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</g:link>--%>
@@ -495,7 +495,7 @@
                             ${contextUser.displayName}
                             <i aria-hidden="true" class="dropdown icon"></i>
 
-                            <div class="menu">
+                            <div class="menu" role="menu">
 
                                 <g:set var="usaf" value="${contextUser.authorizedOrgs}" />
                                 <g:if test="${usaf && usaf.size() > 0}">

@@ -12,6 +12,7 @@ import de.laser.ApiSource
 import de.laser.AuditConfig
 import de.laser.AuditService
 import de.laser.ContextService
+import de.laser.CopyElementsService
 import de.laser.EscapeService
 import de.laser.FilterService
 import de.laser.FinanceService
@@ -44,6 +45,7 @@ import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.SurveyConfig
 import de.laser.SurveyService
+import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -67,8 +69,10 @@ import de.laser.titles.TitleInstance
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.time.TimeCategory
 import groovy.util.slurpersupport.GPathResult
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
@@ -102,6 +106,7 @@ class SubscriptionControllerService {
     AuditService auditService
     GlobalSourceSyncService globalSourceSyncService
     LinksGenerationService linksGenerationService
+    CopyElementsService copyElementsService
     ExecutorWrapperService executorWrapperService
     PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
@@ -311,6 +316,22 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
+            if (params.deleteId) {
+                Locale locale = LocaleContextHolder.getLocale()
+                Task dTask = Task.get(params.deleteId)
+                if (dTask && dTask.creator.id == result.user.id) {
+                    try {
+                        Object[] args = [messageSource.getMessage('task.label',null,locale), dTask.title]
+                        result.message = messageSource.getMessage('default.deleted.message',args,locale)
+                        dTask.delete()
+                    }
+                    catch (Exception e) {
+                        log.error(e)
+                        Object[] args = [messageSource.getMessage('task.label',null,locale), params.deleteId]
+                        result.error = messageSource.getMessage('default.not.deleted.message', args, locale)
+                    }
+                }
+            }
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
             result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
             result.taskInstanceCount = result.taskInstanceList.size()
@@ -2128,6 +2149,167 @@ class SubscriptionControllerService {
         }
     }
 
+    //--------------------------------------------- renewal section ---------------------------------------------
+
+    Map<String,Object> processRenewSubscription(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            List<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_FOLLOWS)
+            if (previousSubscriptions.size() > 0) {
+                result.error = messageSource.getMessage('subscription.renewSubExist',null,locale)
+                [result:result,status:STATUS_ERROR]
+            }
+            else {
+                Date sub_startDate = params.subscription.start_date ? DateUtil.parseDateGeneric(params.subscription.start_date) : null
+                Date sub_endDate = params.subscription.end_date ? DateUtil.parseDateGeneric(params.subscription.end_date) : null
+                RefdataValue sub_status = params.subStatus ? RefdataValue.get(params.subStatus) : RDStore.SUBSCRIPTION_NO_STATUS
+                boolean sub_isMultiYear = params.subscription.isMultiYear
+                String new_subname = params.subscription.name
+                Date manualCancellationDate = null
+                use(TimeCategory) {
+                    manualCancellationDate =  result.subscription.manualCancellationDate ? (result.subscription.manualCancellationDate + 1.year) : null
+                }
+                Subscription newSub = new Subscription(
+                        name: new_subname,
+                        startDate: sub_startDate,
+                        endDate: sub_endDate,
+                        manualCancellationDate: manualCancellationDate,
+                        identifier: UUID.randomUUID().toString(),
+                        isSlaved: result.subscription.isSlaved,
+                        type: result.subscription.type,
+                        kind: result.subscription.kind,
+                        resource: result.subscription.resource,
+                        form: result.subscription.form,
+                        isPublicForApi: result.subscription.isPublicForApi,
+                        hasPerpetualAccess: result.subscription.hasPerpetualAccess,
+                        status: sub_status,
+                        isMultiYear: sub_isMultiYear ?: false,
+                        administrative: result.subscription.administrative,
+                )
+                if (!newSub.save()) {
+                    log.error("Problem saving subscription ${newSub.errors}");
+                    [result:result,status:STATUS_ERROR]
+                }
+                else {
+                    log.debug("Save ok")
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        if (params.list('auditList')) {
+                            //copy audit
+                            params.list('auditList').each { auditField ->
+                                //All ReferenceFields were copied!
+                                //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                                AuditConfig.addConfig(newSub, auditField)
+                            }
+                        }
+                    }
+                    //Copy References
+                    //OrgRole
+                    result.subscription.orgRelations?.each { or ->
+                        if ((or.org.id == result.contextOrg.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS,  RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.sub = newSub
+                            newOrgRole.save()
+                        }
+                    }
+                    //link to previous subscription
+                    Links prevLink = Links.construct([source: newSub, destination: result.subscription, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    if (!prevLink.save()) {
+                        log.error("Problem linking to previous subscription: ${prevLink.errors}")
+                    }
+                    result.newSub = newSub
+                    if (params.targetObjectId == "null") params.remove("targetObjectId")
+                        result.isRenewSub = true
+                }
+                [result:result,status:STATUS_OK]
+            }
+        }
+    }
+
+    //------------------------------------------------ copy section ---------------------------------------------
+
+    Map<String,Object> copySubscription(GrailsParameterMap params) {
+        Map<String,Object> result = setCopyResultGenerics(params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            Locale locale = LocaleContextHolder.getLocale()
+            result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+            result.copyObject = true
+            if (params.name && !result.targetObject) {
+                String sub_name = params.name
+                Subscription targetObject = new Subscription(name: sub_name,
+                        status: RDStore.SUBSCRIPTION_NO_STATUS,
+                        identifier: UUID.randomUUID().toString(),
+                        type: result.sourceObject.type,
+                        isSlaved: result.sourceObject.isSlaved,
+                        administrative: result.sourceObject.administrative
+                )
+                //Copy InstanceOf
+                if (params.targetObject?.copylinktoSubscription) {
+                    targetObject.instanceOf = result.sourceObject.instanceOf ?: null
+                }
+                if (!targetObject.save()) {
+                    log.error("Problem saving subscription ${targetObject.errors}")
+                    result.error = messageSource.getMessage('default.save.error.general.message',null,locale)
+                    [result:result,status:STATUS_ERROR]
+                }
+                else {
+                    result.targetObject = targetObject
+                    params.targetObjectId = genericOIDService.getOID(targetObject)
+                    //Copy References
+                    result.sourceObject.orgRelations.each { OrgRole or ->
+                        if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id])) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.sub = result.targetObject
+                            newOrgRole.save()
+                        }
+                    }
+                }
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> copyElementsIntoSubscription(GrailsParameterMap params) {
+        Map<String,Object> result = setCopyResultGenerics(params)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            if (params.isRenewSub) {
+                result.isRenewSub = params.isRenewSub
+            }
+            if (params.fromSurvey && result.consortialView) {
+                result.fromSurvey = params.fromSurvey
+            }
+            result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+            if (params.copyObject) {
+                result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
+            }
+            result.allObjects_readRights = subscriptionService.getMySubscriptions_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+            result.allObjects_writeRights = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+            List<String> subTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]
+            result.isSubscriberVisible = result.sourceObject && result.targetObject &&
+                    subTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
+                    subTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
+            if (params.targetObjectId) {
+                result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+            }
+            result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+            result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+            if (params.isRenewSub) {
+                result.isRenewSub = params.isRenewSub
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
     //--------------------------------------------- admin section -------------------------------------------------
 
     Map<String,Object> pendingChanges(SubscriptionController controller) {
@@ -2191,6 +2373,31 @@ class SubscriptionControllerService {
             }
         }
         filteredSubChilds
+    }
+
+    Map<String,Object> setCopyResultGenerics(GrailsParameterMap params) {
+        Map<String, Object> result = [:]
+        result.user = contextService.user
+        result.contextOrg = contextService.getOrg()
+        if (params.sourceObjectId == "null")
+            params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
+        if (params.targetObjectId == "null")
+            params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+        result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.consortialView = result.showConsortiaFunctions
+        result.editable = result.sourceObject?.isEditableBy(result.user)
+        if (!result.editable) {
+            null
+        }
+        else if(!result.sourceObject?.isVisibleBy(result.user))
+            null
+        else result
     }
 
 }
