@@ -219,7 +219,7 @@ class SubscriptionControllerService {
                 PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                 result.natStatSupplierId = platform?.stringValue ?: null
                 result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-                if (result.institutional_usage_identifier) {
+                if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
                         def holdingTypes = result.subscription.getHoldingTypes() ?: null
