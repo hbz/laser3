@@ -59,7 +59,7 @@ class DocstoreService {
 
                 DocContext docctx = DocContext.get(docctx_to_delete)
                 docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-                docctx.save(flush: true)
+                docctx.save()
             }
             if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
                 String docctx_to_delete = p.key.substring(12);
@@ -67,7 +67,7 @@ class DocstoreService {
 
                 DocContext docctx = DocContext.get(docctx_to_delete)
                 docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-                docctx.save(flush: true)
+                docctx.save()
             }
         }
 
@@ -77,7 +77,7 @@ class DocstoreService {
 
             DocContext docctx = DocContext.get(docctx_to_delete)
             docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-            docctx.save(flush: true)
+            docctx.save()
         }
     }
 }

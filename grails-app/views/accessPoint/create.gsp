@@ -29,7 +29,7 @@
   <h1 class="ui header la-noMargin-top"><g:message code="accessPoint.new"/></h1>
   <semui:messages data="${flash}"/>
   <div id="details">
-    <g:render template="create_${accessMethod}"/>
+    <g:render template="createAccessPoint" model="[accessMethod: accessMethod, availableOptions : availableOptions]"/>
   </div>
 </div>
 </body>
