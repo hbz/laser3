@@ -135,13 +135,13 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
             return decValue.toString()
         }
         else if (type.isDateType()) {
-            return dateValue.getDateString()
+            return dateValue ? dateValue.getDateString() : ""
         }
         else if (type.isURLType()) {
             return urlValue.toString()
         }
         else if (type.isRefdataValueType()) {
-            return refValue ? refValue?.getI10n('value') : ""
+            return refValue ? refValue.getI10n('value') : ""
         }
     }
 

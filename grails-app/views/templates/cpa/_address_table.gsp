@@ -84,7 +84,7 @@
                     <g:link class="ui negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
-                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(adress)]">
+                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]">
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </g:if>

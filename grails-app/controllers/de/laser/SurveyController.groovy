@@ -3086,7 +3086,7 @@ class SurveyController {
             def sub_startDate = params.subscription.start_date ? parseDate(params.subscription.start_date, possible_date_formats) : null
             def sub_endDate = params.subscription.end_date ? parseDate(params.subscription.end_date, possible_date_formats) : null
             def sub_status = params.subStatus
-            def sub_type = params.subType
+            def sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
             def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
@@ -3440,9 +3440,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
-
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.superOrgType = []
@@ -3499,8 +3498,9 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
+
         }
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participantsList = []
@@ -3545,16 +3545,16 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
+        result.targetSubscription =  result.parentSuccessorSubscription
 
         Integer countNewCostItems = 0
-        RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        //RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             CostItem costItem = CostItem.get(costItemId)
             Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
-            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
+            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
                 Map properties = costItem.properties
@@ -3562,7 +3562,7 @@ class SurveyController {
                 InvokerHelper.setProperties(copyCostItem, properties)
                 copyCostItem.globalUID = null
                 copyCostItem.surveyOrg = null
-                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                 copyCostItem.sub = participantSub
                 if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
                     copyCostItem.currencyRate = 1.0
@@ -3570,6 +3570,8 @@ class SurveyController {
                 }
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
+                }else {
+                    log.debug("Error by proccessCopySurveyCostItems: "+ copyCostItem.errors)
                 }
 
             }
@@ -3631,12 +3633,12 @@ class SurveyController {
 
 
         Integer countNewCostItems = 0
-        RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        //RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
         params.list('selectedSurveyCostItem').each { costItemId ->
 
             CostItem costItem = CostItem.get(costItemId)
             Subscription participantSub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(costItem.surveyOrg.org)
-            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costElement, RDStore.COST_ITEM_DELETED)
+            List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
             if(costItem && participantSub && !participantSubCostItem){
 
                 Map properties = costItem.properties
@@ -3644,7 +3646,7 @@ class SurveyController {
                 InvokerHelper.setProperties(copyCostItem, properties)
                 copyCostItem.globalUID = null
                 copyCostItem.surveyOrg = null
-                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : null
+                copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                 copyCostItem.sub = participantSub
                 if(costItem.billingCurrency == RDStore.CURRENCY_EUR){
                     copyCostItem.currencyRate = 1.0
@@ -3653,6 +3655,8 @@ class SurveyController {
 
                 if(copyCostItem.save(flush:true)) {
                     countNewCostItems++
+                }else {
+                    log.debug("Error by proccessCopySurveyCostItems: "+ copyCostItem.errors)
                 }
 
             }
@@ -3681,8 +3685,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.selectedProperty
@@ -3773,9 +3777,8 @@ class SurveyController {
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-            result.targetSubscription =  result.parentSuccessorSubscription
         }
-
+        result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         if(params.list('selectedSub')) {
@@ -3948,7 +3951,7 @@ class SurveyController {
             // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
             if(!(it.participant in result.parentSuccessortParticipantsList)){
 
-                List oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.parentSubscription,
                          participant: it.participant
                         ])[0]
