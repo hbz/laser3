@@ -2055,6 +2055,7 @@ join sub.orgRelations or_sub where
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        params.sort = params.sort ?: 'pr.org.name'
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 

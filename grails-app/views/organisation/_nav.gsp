@@ -2,6 +2,10 @@
 
 <laser:serviceInjection/>
 
+<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}" />
+<g:set var="isProviderOrAgency"
+       value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}"/>
+
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
     <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>

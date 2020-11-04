@@ -188,7 +188,7 @@ class ChangeNotificationService extends AbstractLockableService {
                                                 type:announcement_type,
                                                 content:announcement_content,
                                                 dateCreated:new Date(),
-                                                user:User.findByUsername('admin')).save(flush:true);
+                                                user:User.findByUsername('admin')).save()
 
                   break;
                 default:

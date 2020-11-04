@@ -2,6 +2,13 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.123
+
+- fixed attribute: `License.properties`
+- fixed attribute: `Org.properties`
+- fixed attribute: `Platform.properties`
+- fixed attribute: `Subscription.properties`
+
 #### 0.122
 
 - added new attribute: `Org.eInvoicePortal`
