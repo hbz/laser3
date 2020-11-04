@@ -1943,6 +1943,7 @@ SELECT * FROM (
         result
     }
 
+    @DebugAnnotation(wtc = 2)
     @Secured(['ROLE_ADMIN'])
     def deleteSystemMessage(Long id) {
         SystemMessage.withTransaction { TransactionStatus ts ->
