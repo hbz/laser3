@@ -271,7 +271,7 @@ class SemanticUiNavigationTagLib {
                 action: attrs.action,
                 params: attrs.params,
                 class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                id: attrs.id,
+                elementId: attrs.elementId,
                 role: attrs.role
         )
     }
@@ -308,7 +308,7 @@ class SemanticUiNavigationTagLib {
                     action: attrs.action,
                     params: attrs.params,
                     class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                    id: attrs.id,
+                    elementId: attrs.elementId,
                     role: attrs.role
 
             )
