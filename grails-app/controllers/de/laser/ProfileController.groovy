@@ -5,8 +5,10 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.UserSetting.KEYS
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemTicket
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -21,6 +23,9 @@ class ProfileController {
     def instAdmService
     def deletionService
     FormService formService
+    CacheService cacheService
+    RefdataService refdataService
+    PropertyService propertyService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -61,6 +66,55 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result
+    }
+
+    @Secured(['ROLE_USER'])
+    def properties() {
+
+        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties')
+
+        def propDefs = [:]
+
+        if (cache.get('propDefs')) {
+            propDefs = cache.get('propDefs')
+            log.debug('propDefs from cache')
+        }
+        else {
+            PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+                def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+                propDefs << ["${it}": itResult]
+            }
+            cache.put('propDefs', propDefs)
+        }
+
+        List usedRdvList, usedPdList
+
+        if (cache.get('usedRdvList')) {
+            usedRdvList = cache.get('usedRdvList')
+            log.debug('usedRdvList from cache')
+        }
+        else {
+            usedRdvList = refdataService.getUsageDetails()
+            cache.put('usedRdvList', usedRdvList)
+        }
+
+        if (cache.get('usedPdList')) {
+            usedPdList = cache.get('usedPdList')
+            log.debug('usedPdList from cache')
+        }
+        else {
+            usedPdList = propertyService.getUsageDetails()
+            cache.put('usedPdList', usedPdList)
+        }
+
+        render view: 'properties', model: [
+                editable    : false,
+                cachedContent : cache.getCache().name,
+                propertyDefinitions: propDefs,
+                rdCategories: RefdataCategory.where{}.sort('desc'),
+                usedRdvList : usedRdvList,
+                usedPdList  : usedPdList
+        ]
     }
 
     @Secured(['ROLE_USER'])
