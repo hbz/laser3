@@ -20,6 +20,7 @@ class UserController  {
     def accessService
     def deletionService
     def userService
+    ResultGenericsService resultGenericsService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 
@@ -32,7 +33,7 @@ class UserController  {
         principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def delete() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = getResultGenerics()
 
         if (result.user) {
             List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
@@ -70,7 +71,7 @@ class UserController  {
     @Secured(['ROLE_ADMIN'])
     def list() {
 
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = getResultGenerics()
         Map filterParams = params
 
         params.max = params.max ?: result.editor?.getDefaultPageSize() // TODO
@@ -97,7 +98,7 @@ class UserController  {
 
     @Secured(['ROLE_ADMIN'])
     def edit() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = getResultGenerics()
 
         if (! result.editable) {
             redirect action: 'list'
@@ -124,7 +125,7 @@ class UserController  {
         principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def show() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = getResultGenerics()
         result
     }
 
@@ -134,7 +135,7 @@ class UserController  {
     })
     def newPassword() {
         User.withTransaction {
-            Map<String, Object> result = userService.setResultGenerics(params)
+            Map<String, Object> result = getResultGenerics()
 
             if (!result.editable) {
                 flash.error = message(code: 'default.noPermissions')
@@ -162,7 +163,7 @@ class UserController  {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def addAffiliation(){
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = getResultGenerics()
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
@@ -182,7 +183,7 @@ class UserController  {
 
     @Secured(['ROLE_ADMIN'])
     def create() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = getResultGenerics()
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect controller: 'user', action: 'list'
@@ -209,6 +210,10 @@ class UserController  {
             flash.error = success.join('<br>')
             redirect action: 'create'
         }
+    }
+
+    Map<String, Object> getResultGenerics() {
+        resultGenericsService.getResultGenerics(this, params)
     }
 
 }

@@ -28,7 +28,7 @@ class MyInstitutionControllerService {
 
     Map<String, Object> dashboard (MyInstitutionController controller, GrailsParameterMap params) {
 
-        Map<String, Object> result = controller.setResultGenerics()
+        Map<String, Object> result = controller.getResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             return [status: STATUS_ERROR, result: result]

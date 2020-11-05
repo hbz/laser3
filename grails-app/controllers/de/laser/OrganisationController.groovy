@@ -34,6 +34,7 @@ class OrganisationController  {
     def userService
     def accessPointService
     FormService formService
+    ResultGenericsService resultGenericsService
     TaskService taskService
 
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
@@ -1057,7 +1058,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = resultGenericsService.getResultGenerics(new UserController(), params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'editUser', id: params.id
@@ -1494,34 +1495,11 @@ class OrganisationController  {
         result
     }
 
-    private Map<String, Object> setResultGenericsAndCheckAccess() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.org
-        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false]
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
-            result.editable = checkIsEditable(user, result.orgInstance)
-            result.inContextOrg = result.orgInstance?.id == org.id
-            //this is a flag to check whether the page has been called for a consortia or inner-organisation member
-            Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
-            if(checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
-                result.institutionalView = true
-            //restrictions hold if viewed org is not the context org
-            if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
-                //restrictions further concern only single users, not consortia
-                if(accessService.checkPerm("ORG_INST") && result.orgInstance.getCustomerType() == "ORG_INST") {
-                    return null
-                }
-            }
-        } else {
-            result.editable = checkIsEditable(user, org)
-        }
-        result
+    Map<String, Object> setResultGenericsAndCheckAccess() {
+        resultGenericsService.getResultGenericsAndCheckAccess(this, params)
     }
 
-
-    private boolean checkIsEditable(User user, Org org) {
+    boolean checkIsEditable(User user, Org org) {
         boolean isEditable
         Org contextOrg = contextService.org
         Org orgInstance = org

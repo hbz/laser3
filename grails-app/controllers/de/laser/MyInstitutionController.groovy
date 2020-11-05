@@ -40,7 +40,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import grails.core.GrailsClass
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
@@ -61,8 +60,6 @@ class MyInstitutionController  {
     def springSecurityService
     def userService
     def genericOIDService
-    PendingChangeService pendingChangeService
-    ExportService exportService
     def escapeService
     def institutionsService
     def docstoreService
@@ -79,8 +76,11 @@ class MyInstitutionController  {
     def financeService
     def surveyService
     def formService
-    LinksGenerationService linksGenerationService
     ComparisonService comparisonService
+    ExportService exportService
+    LinksGenerationService linksGenerationService
+    PendingChangeService pendingChangeService
+    ResultGenericsService resultGenericsService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -105,7 +105,7 @@ class MyInstitutionController  {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def reporting() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
         result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)
         result.subForm = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)
@@ -254,7 +254,7 @@ class MyInstitutionController  {
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def currentLicenses() {
 
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         EhcacheWrapper cache = contextService.getCache("/license/filter/",ContextService.USER_SCOPE)
         if(cache && cache.get('licenseFilterCache')) {
             if(!params.resetFilter && !params.filterSet)
@@ -555,7 +555,7 @@ class MyInstitutionController  {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptyLicense() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -596,7 +596,7 @@ class MyInstitutionController  {
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def currentProviders() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
@@ -697,7 +697,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
 		ProfilerUtils pu = new ProfilerUtils()
 		//pu.setBenchmark('init')
@@ -1023,7 +1023,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     Map documents() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         result
     }
 
@@ -1043,7 +1043,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def currentTitles() {
 
-        Map<String,Object> result = setResultGenerics()
+        Map<String,Object> result = getResultGenerics()
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
@@ -1350,7 +1350,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def modal_create() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
@@ -1367,7 +1367,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def changes() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -1383,7 +1383,7 @@ join sub.orgRelations or_sub where
     //@Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     @Secured(['ROLE_ADMIN'])
     def announcements() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
@@ -1397,7 +1397,7 @@ join sub.orgRelations or_sub where
 
     @Secured(['ROLE_YODA'])
     def changeLog() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         def exporting = ( params.format == 'csv' ? true : false )
 
@@ -1470,7 +1470,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
                               "currency","exchangeRate","taxType","taxRate","value","subscription","package",
                               "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
@@ -1516,7 +1516,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processFinanceImport() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
@@ -1547,7 +1547,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def subscriptionImport() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
                               "manualCancellationDate","member","customProperties","privateProperties","notes"]
         result
@@ -1558,7 +1558,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
@@ -1591,7 +1591,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -1672,7 +1672,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         result.contextOrg = contextService.getOrg()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
@@ -1748,7 +1748,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfosIssueEntitlements() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
@@ -1795,7 +1795,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1884,7 +1884,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def userList() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         Map filterParams = params
         filterParams.status = UserOrg.STATUS_APPROVED
@@ -1932,7 +1932,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def createUser() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
         result.orgInstance = result.institution
         result.editor = result.user
         result.inContextOrg = true
@@ -1964,7 +1964,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = resultGenericsService.getResultGenerics(new UserController(), params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'editUser', id: params.id
@@ -1979,7 +1979,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -2011,7 +2011,7 @@ join sub.orgRelations or_sub where
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
-            Map<String, Object> result = setResultGenerics()
+            Map<String, Object> result = getResultGenerics()
 
             if (result.editable) {
 
@@ -2067,7 +2067,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         if (params.deleteId) {
             Task.withTransaction { TransactionStatus ts ->
@@ -2115,7 +2115,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         Combo.withTransaction {
-            Map<String, Object> result = setResultGenerics()
+            Map<String, Object> result = getResultGenerics()
 
             // new: filter preset
             result.comboType = 'Consortium'
@@ -2157,7 +2157,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def manageMembers() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('start')
@@ -2244,7 +2244,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
 
-        Map<String,Object> result = setResultGenerics()
+        Map<String,Object> result = getResultGenerics()
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
 
@@ -2612,7 +2612,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('filterService')
@@ -2673,7 +2673,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def managePropertyGroups() {
-        Map<String,Object> result = setResultGenerics()
+        Map<String,Object> result = getResultGenerics()
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
         switch(params.cmd) {
             case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
@@ -2773,7 +2773,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def manageProperties() {
-        Map<String,Object> result = setResultGenerics()
+        Map<String,Object> result = getResultGenerics()
         if (!result) {
             response.sendError(401); return
         }
@@ -2885,7 +2885,7 @@ join sub.orgRelations or_sub where
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
-            Map<String, Object> result = setResultGenerics()
+            Map<String, Object> result = getResultGenerics()
             log.debug(params.toMapString())
 
             PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
@@ -2983,7 +2983,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def managePrivatePropertyDefinitions() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         switch(params.cmd) {
             case 'add':List rl = propertyService.addPrivatePropertyDefinition(params)
@@ -3042,7 +3042,7 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     Object managePropertyDefinitions() {
-        Map<String,Object> result = setResultGenerics()
+        Map<String,Object> result = getResultGenerics()
 
         if(params.pd) {
             PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
@@ -3156,7 +3156,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def copyLicense() {
-        Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = getResultGenerics()
 
         if(params.id)
         {
@@ -3256,26 +3256,11 @@ join sub.orgRelations or_sub where
         return result
     }
 
-    Map<String, Object> setResultGenerics() {
-        Map<String, Object> result = [:]
-        switch(params.action){
-            case 'currentSurveys':
-            case 'surveyInfos':
-            case 'surveyInfoFinish':
-            case 'surveyInfosIssueEntitlements':
-            case 'surveyResultFinish':
-                result.user = User.get(springSecurityService.principal.id)
-                break
-            default:
-                result.user = contextService.getUser()
-        }
-        //result.institution  = Org.findByShortcode(params.shortcode)
-        result.institution  = contextService.getOrg()
-        result.editable = checkIsEditable(result.user, result.institution)
-        result
+    Map<String, Object> getResultGenerics() {
+        resultGenericsService.getResultGenerics(this, params)
     }
 
-    private boolean checkIsEditable(User user, Org org){
+    boolean checkIsEditable(User user, Org org){
         boolean isEditable
         switch(params.action){
             case 'processEmptyLicense': //to be moved to LicenseController

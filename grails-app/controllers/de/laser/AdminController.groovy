@@ -1671,7 +1671,6 @@ SELECT * FROM (
 
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
-        //def result = setResultGenerics()
         Map<String, Object> result = [:]
         result.editable = true // true, because action is protected
 

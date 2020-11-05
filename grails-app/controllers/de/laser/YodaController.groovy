@@ -57,6 +57,7 @@ class YodaController {
     def subscriptionService
     def exportService
     def dataConsistencyService
+    ResultGenericsService resultGenericsService
 
     @Secured(['ROLE_YODA'])
     @Transactional

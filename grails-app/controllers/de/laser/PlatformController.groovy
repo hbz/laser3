@@ -18,6 +18,7 @@ class PlatformController  {
     def contextService
     def orgTypeService
     def accessService
+    ResultGenericsService resultGenericsService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -68,7 +69,7 @@ class PlatformController  {
 
     @Secured(['ROLE_USER'])
     def show() {
-      Map<String, Object> result = setResultGenerics()
+      Map<String, Object> result = getResultGenerics()
         Platform platformInstance = Platform.get(params.id)
       if (!platformInstance) {
         flash.message = message(code: 'default.not.found.message', 
@@ -360,12 +361,8 @@ class PlatformController  {
         redirect action: 'link', params: [id:params.id]
     }
 
-    private Map<String, Object> setResultGenerics() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = contextService.org
-        result.contextOrg = result.institution //temp fix
-        result
+    Map<String, Object> getResultGenerics() {
+        resultGenericsService.getResultGenerics(this, params)
     }
 
 }
