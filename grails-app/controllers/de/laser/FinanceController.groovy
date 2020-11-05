@@ -752,34 +752,13 @@ class FinanceController  {
         render(template: "/finance/ajaxModal", model: result)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
-        Map<String, Object> result = [showView:params.showView]
-
-        CostItem ci = CostItem.get(params.id)
-        if (ci) {
-            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
-            Order order = ci.order
-            Invoice invoice = ci.invoice
-            log.debug("deleting CostItem: " + ci)
-            ci.costItemStatus = RDStore.COST_ITEM_DELETED
-            ci.invoice = null
-            ci.order = null
-            if(ci.save(flush:true)) {
-                if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
-                    order.delete(flush: true)
-                if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
-                    invoice.delete(flush: true)
-                cigs.each { CostItemGroup item ->
-                    item.delete(flush:true)
-                    log.debug("deleting CostItemGroup: " + item)
-                }
-            }
-            else log.error(ci.errors.toString())
-        }
-
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: result.showView])
+        Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
+        if(ctrlResult.error == FinanceService.STATUS_ERROR)
+            flash.error = ctrlResult.result.error
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView])
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

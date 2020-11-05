@@ -45,10 +45,10 @@
 
     <semui:messages data="${flash}"/>
 
-    <% Map params = [:];
-        if (sourceObjectId)   params << [sourceObjectId: genericOIDService.getOID(sourceObject)];
-        if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(targetObject)];
-        if (isRenewSub)             params << [isRenewSub: isRenewSub];
+    <% Map params = [:]
+        if (sourceObjectId)   params << [sourceObjectId: genericOIDService.getOID(sourceObject)]
+        if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(targetObject)]
+        if (isRenewSub)             params << [isRenewSub: isRenewSub]
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps la-clear-before">

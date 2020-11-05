@@ -1814,21 +1814,22 @@ join sub.orgRelations or_sub where
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
         boolean sendMailToSurveyOwner = false
 
-        if(surveyConfig && surveyConfig.pickAndChoose){
+        IssueEntitlement.withTransaction { TransactionStatus ts ->
+            if(surveyConfig && surveyConfig.pickAndChoose){
 
-            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
+                def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
-            def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-            ies.each { ie ->
-                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
-                ie.save(flush: true)
-            }
+                def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+                ies.each { ie ->
+                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                    ie.save()
+                }
 
-            /*if(ies.size() > 0) {*/
+                /*if(ies.size() > 0) {*/
 
                 if (surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
-                    if (!surveyOrg.save(flush: true)) {
+                    if (!surveyOrg.save()) {
                         flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                     } else {
                         flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
@@ -1837,10 +1838,12 @@ join sub.orgRelations or_sub where
                 } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                 }
-            /*}else {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-            }*/
+                /*}else {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
+                }*/
+            }
         }
+
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
@@ -1854,7 +1857,7 @@ join sub.orgRelations or_sub where
                 }
 
                 if(!noParticipation) {
-                    surveyResults.each { surre ->
+                    surveyResults.each { SurveyResult surre ->
                         SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
 
                         if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
@@ -1863,9 +1866,11 @@ join sub.orgRelations or_sub where
                 }
             }
             if (allResultHaveValue) {
-                surveyResults.each {
-                    it.finishDate = new Date()
-                    it.save(flush:true)
+                SurveyResult.withTransaction { TransactionStatus ts ->
+                    surveyResults.each { SurveyResult sr ->
+                        sr.finishDate = new Date()
+                        sr.save()
+                    }
                 }
                 sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")

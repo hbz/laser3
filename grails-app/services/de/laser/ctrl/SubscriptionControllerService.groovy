@@ -2300,11 +2300,6 @@ class SubscriptionControllerService {
             if (params.targetObjectId) {
                 result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
             }
-            result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
-            result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-            if (params.isRenewSub) {
-                result.isRenewSub = params.isRenewSub
-            }
             [result:result,status:STATUS_OK]
         }
     }
