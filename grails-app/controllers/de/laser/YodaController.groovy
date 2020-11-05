@@ -59,11 +59,13 @@ class YodaController {
     def dataConsistencyService
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def index() {
         redirect action: 'dashboard'
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def dashboard() {
         Map result = [:]
         result
@@ -892,7 +894,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def toggleBoolSetting() {
-        Map<String, Object> result = [:]
         def s = SystemSetting.findByName(params.setting)
         if (s) {
             if (s.tp == SystemSetting.CONTENT_TYPE_BOOLEAN) {
@@ -908,15 +909,16 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def toggleMailSent() {
         Map<String, Object> result = [:]
 
         if (params.mailSent) {
-                if (params.mailSent == 'true')
-                    grailsApplication.config.grails.mail.disabled = false
-                else
-                    grailsApplication.config.grails.mail.disabled = true
-            }
+            if (params.mailSent == 'true')
+                grailsApplication.config.grails.mail.disabled = false
+            else
+                grailsApplication.config.grails.mail.disabled = true
+        }
 
         redirect action:'settings'
     }

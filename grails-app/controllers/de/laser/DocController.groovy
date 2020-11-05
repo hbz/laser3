@@ -17,7 +17,7 @@ class DocController  {
 	def springSecurityService
 	def contextService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [delete: 'POST']
 
 	@Secured(['ROLE_ADMIN'])
     def index() {
@@ -36,13 +36,6 @@ class DocController  {
       	result
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def create() {
-		redirect controller: 'doc', action: 'show', params: params
-		return // ----- deprecated
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
@@ -54,13 +47,6 @@ class DocController  {
         }
 
         [docInstance: docInstance]
-    }
-
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-    def edit() {
-		redirect controller: 'doc', action: 'show', params: params
-		return // ----- deprecated
     }
 
 	@Secured(['ROLE_USER'])
@@ -102,66 +88,73 @@ class DocController  {
 		redirect(url: request.getHeader('referer'))
 	}
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
-		switch (request.method) {
-			case 'POST':
-				Doc docInstance = Doc.get(params.id)
-				if (!docInstance) {
-					flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
-					//redirect action: 'list'
-					redirect(url: request.getHeader('referer'))
-					return
-				}
+		Doc.withTransaction {
+			switch (request.method) {
+				case 'POST':
+					Doc docInstance = Doc.get(params.id)
+					if (!docInstance) {
+						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
+						//redirect action: 'list'
+						redirect(url: request.getHeader('referer'))
+						return
+					}
 
-				if (params.version) {
-					Long version = params.long('version')
-					if (docInstance.version > version) {
-						docInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-								[message(code: 'default.note.label')] as Object[],
-								"Another user has updated this Doc while you were editing")
+					if (params.version) {
+						Long version = params.long('version')
+						if (docInstance.version > version) {
+							docInstance.errors.rejectValue(
+									'version',
+									'default.optimistic.locking.failure',
+									[message(code: 'default.note.label')] as Object[],
+									'Another user has updated this Doc while you were editing'
+							)
+							//render view: 'edit', model: [docInstance: docInstance]
+							redirect(url: request.getHeader('referer'))
+							return
+						}
+					}
+
+					docInstance.properties = params
+					if (!docInstance.owner)
+						docInstance.owner = contextService.org
+
+					if (!docInstance.save()) {
 						//render view: 'edit', model: [docInstance: docInstance]
 						redirect(url: request.getHeader('referer'))
 						return
 					}
-				}
 
-				docInstance.properties = params
-				if(!docInstance.owner)
-					docInstance.owner = contextService.org
-
-				if (!docInstance.save(flush: true)) {
-					//render view: 'edit', model: [docInstance: docInstance]
+					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title])
+					//redirect action: 'show', id: docInstance.id
 					redirect(url: request.getHeader('referer'))
-					return
-				}
-
-				flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title])
-				//redirect action: 'show', id: docInstance.id
-				redirect(url: request.getHeader('referer'))
-				break
+					break
+			}
 		}
 	}
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
-		Doc docInstance = Doc.get(params.id)
-        if (!docInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
-            redirect action: 'list'
-            return
-        }
+		Doc.withTransaction {
+			Doc docInstance = Doc.get(params.id)
+			if (! docInstance) {
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
+				redirect action: 'list'
+				return
+			}
 
-        try {
-            docInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id])
-            redirect action: 'show', id: params.id
-        }
+			try {
+				docInstance.delete()
+				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id])
+				redirect action: 'list'
+			}
+			catch (DataIntegrityViolationException e) {
+				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id])
+				redirect action: 'show', id: params.id
+			}
+		}
     }
 }
