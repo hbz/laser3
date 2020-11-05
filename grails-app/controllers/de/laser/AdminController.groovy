@@ -805,6 +805,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def tippTransfer(){
         log.debug("tippTransfer :: ${params}")
         Map<String, Object> result = [:]
@@ -816,7 +817,7 @@ class AdminController  {
       if(ti && tipp){
         tipp.title = ti
         try{
-          tipp.save(flush:true,failOnError:true)
+          tipp.save(failOnError:true)
           result.success = true
         }catch(Exception e){
             log.error( e.toString() )
@@ -832,6 +833,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def ieTransfer(){
         log.debug( params.toMapString() )
         Map<String, Object> result = [:]
@@ -845,7 +847,7 @@ class AdminController  {
             def sourceIEs = IssueEntitlement.findAllByTipp(result.sourceTIPPObj)
             sourceIEs.each{
                 it.setTipp(result.targetTIPPObj)
-                it.save(flush:true)
+                it.save()
             }
         }
 

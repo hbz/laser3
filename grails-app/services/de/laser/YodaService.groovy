@@ -11,6 +11,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import groovy.util.slurpersupport.GPathResult
@@ -24,13 +25,11 @@ import org.springframework.transaction.TransactionStatus
 //@Transactional
 class YodaService {
 
-    GrailsApplication grailsApplication
     def sessionRegistry = Holders.grailsApplication.mainContext.getBean('sessionRegistry')
     def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
     GlobalSourceSyncService globalSourceSyncService = Holders.grailsApplication.mainContext.getBean('globalSourceSyncService')
     DeletionService deletionService
     GokbService gokbService = Holders.grailsApplication.mainContext.getBean('gokbService')
-    GenericOIDService genericOIDService = Holders.grailsApplication.mainContext.getBean('genericOIDService')
     ChangeNotificationService changeNotificationService = Holders.grailsApplication.mainContext.getBean('changeNotificationService')
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
 
@@ -808,6 +807,7 @@ class YodaService {
         result
     }
 
+    @Transactional
     void executePlatformCleanup(Map result) {
         List<String> toDelete = []
         toDelete.addAll(result.platformDupsWithoutTIPPs.collect{ plat -> plat.globalUID })
@@ -819,7 +819,7 @@ class YodaService {
             oldRecord.name = newRecord.name
             oldRecord.primaryUrl = newRecord.primaryUrl
             oldRecord.status = RefdataValue.getByValueAndCategory(newRecord.status,RDConstants.PLATFORM_STATUS)
-            oldRecord.save(flush:true) //here, it is necessary since object is being reused
+            oldRecord.save()
         }
         Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
     }

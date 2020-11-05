@@ -713,6 +713,8 @@ class PendingChangeService extends AbstractLockableService {
         ret
     }
 
-
+    void acknowledgeChange(PendingChange changeAccepted) {
+        changeAccepted.delete()
+    }
 
 }

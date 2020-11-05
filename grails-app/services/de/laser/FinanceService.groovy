@@ -2,12 +2,14 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
+import de.laser.exceptions.CreationException
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.finance.Invoice
 import de.laser.finance.Order
+import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.auth.User
 import de.laser.exceptions.FinancialDataException
@@ -22,12 +24,16 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.math.RoundingMode
+import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.
@@ -50,6 +56,206 @@ class FinanceService {
     //model attempt; the finance controller is subject of general refactoring
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
+
+    Map<String,Object> createOrUpdateCostItem(GrailsParameterMap params) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Map<String,Object> result = setResultGenerics(params)
+        CostItem newCostItem
+        try {
+            Order order = null
+            if (params.newOrderNumber) {
+                order = Order.findByOrderNumberAndOwner(params.newOrderNumber, result.institution)
+                if(!order) {
+                    order = new Order(orderNumber: params.newOrderNumber, owner: result.institution)
+                    order.save()
+                }
+            }
+            Invoice invoice = null
+            if (params.newInvoiceNumber) {
+                invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution)
+                if(!invoice) {
+                    invoice = new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution)
+                    invoice.save()
+                }
+            }
+            Set<Subscription> subsToDo = []
+            if (params.newSubscription.contains("${Subscription.class.name}:")) {
+                subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
+            }
+            switch (params.newLicenseeTarget) {
+                case "${Subscription.class.name}:forParent":
+                    // keep current
+                    break
+                case "${Subscription.class.name}:forAllSubscribers":
+                    // iterate over members
+                    Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                    subsToDo = parentSub.getDerivedSubscriptions()
+                    break
+                default:
+                    if (params.newLicenseeTarget) {
+                        subsToDo.clear()
+                        if(params.newLicenseeTarget instanceof String)
+                            subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
+                        else if(params.newLicenseeTarget instanceof String[]) {
+                            params.newLicenseeTarget.each { newLicenseeTarget ->
+                                subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
+                            }
+                        }
+                    }
+                    break
+            }
+            SubscriptionPackage pkg
+            if (params.newPackage?.contains("${SubscriptionPackage.class.name}:")) {
+                try {
+                    if (params.newPackage.split(":")[1] != 'null') {
+                        pkg = (SubscriptionPackage) genericOIDService.resolveOID(params.newPackage)
+                    }
+                } catch (Exception e) {
+                    log.error("Non-valid sub-package sent ${params.newPackage}",e)
+                }
+            }
+            Date datePaid    = DateUtil.parseDateGeneric(params.newDatePaid)
+            Date startDate   = DateUtil.parseDateGeneric(params.newStartDate)
+            Date endDate     = DateUtil.parseDateGeneric(params.newEndDate)
+            Date invoiceDate = DateUtil.parseDateGeneric(params.newInvoiceDate)
+            Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
+            IssueEntitlement ie = null
+            if(params.newIE) {
+                ie = genericOIDService.resolveOID(params.newIE)
+            }
+            IssueEntitlementGroup issueEntitlementGroup = null
+            if(params.newTitleGroup) {
+                issueEntitlementGroup = genericOIDService.resolveOID(params.newTitleGroup)
+            }
+            RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
+            RefdataValue cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null    //estimate, commitment, etc
+            RefdataValue cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+            RefdataValue cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            Double cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency.trim()).doubleValue() : 0.00
+            Double cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
+            Double cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency.trim()).doubleValue() : 0.00
+            Double cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+            Double cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
+            CostItem.TAX_TYPES tax_key = setTaxKey(params.newTaxRate)
+            RefdataValue elementSign
+            try {
+                elementSign = RefdataValue.get(Long.parseLong(params.ciec))
+            }
+            catch (Exception e) {
+                elementSign = null
+            }
+            boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
+            if (! subsToDo) {
+                subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
+            }
+            subsToDo.each { Subscription sub ->
+                List<CostItem> copiedCostItems = []
+                if(params.costItemId && params.mode != 'copy') {
+                    newCostItem = CostItem.get(Long.parseLong(params.costItemId))
+                    //get copied cost items
+                    copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
+                    if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
+                        CostItem costItemWithOrder = CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.order,newCostItem.id,RDStore.COST_ITEM_DELETED)
+                        if(!costItemWithOrder)
+                            newCostItem.order.delete()
+                    }
+                    if(params.newInvoiceNumber == null || params.newInvoiceNumber.length() < 1) {
+                        CostItem costItemWithInvoice = CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.invoice,newCostItem.id,RDStore.COST_ITEM_DELETED)
+                        if(!costItemWithInvoice)
+                            newCostItem.invoice.delete()
+                    }
+                }
+                else {
+                    newCostItem = new CostItem()
+                    if(params.mode == 'copy')
+                        newCostItem.copyBase = CostItem.get(Long.parseLong(params.costItemId))
+                }
+                newCostItem.owner = (Org) result.institution
+                newCostItem.sub = sub
+                newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+                newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
+                newCostItem.issueEntitlementGroup = issueEntitlementGroup ?: null
+                newCostItem.order = order
+                newCostItem.invoice = invoice
+                if(sub)
+                    newCostItem.isVisibleForSubscriber = sub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
+                else newCostItem.isVisibleForSubscriber = false
+                newCostItem.costItemCategory = cost_item_category
+                newCostItem.costItemElement = cost_item_element
+                newCostItem.costItemStatus = cost_item_status
+                newCostItem.billingCurrency = billing_currency //Not specified default to EUR
+                newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
+                newCostItem.costTitle = params.newCostTitle ?: null
+                newCostItem.costInBillingCurrency = cost_billing_currency as Double
+                newCostItem.costInLocalCurrency = cost_local_currency as Double
+                newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+                newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
+                newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                newCostItem.currencyRate = cost_currency_rate as Double
+                newCostItem.taxKey = tax_key
+                newCostItem.costItemElementConfiguration = elementSign
+                newCostItem.datePaid = datePaid
+                newCostItem.startDate = startDate
+                newCostItem.endDate = endDate
+                newCostItem.invoiceDate = invoiceDate
+                newCostItem.financialYear = financialYear
+                newCostItem.reference = params.newReference ? params.newReference.trim() : null
+                if (newCostItem.save()) {
+                    List<BudgetCode> newBcObjs = []
+                    params.list('newBudgetCodes')?.each { newbc ->
+                        BudgetCode bc = (BudgetCode) genericOIDService.resolveOID(newbc)
+                        if (bc) {
+                            newBcObjs << bc
+                            if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
+                                new CostItemGroup(costItem: newCostItem, budgetCode: bc).save()
+                            }
+                        }
+                    }
+                    List<BudgetCode> toDelete = newCostItem.budgetcodes.minus(newBcObjs)
+                    toDelete.each{ BudgetCode bc ->
+                        CostItemGroup cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
+                        if (cig) {
+                            log.debug('deleting ' + cig)
+                            cig.delete()
+                        }
+                    }
+                    //notify cost items copied from this cost item
+                    copiedCostItems.each { cci ->
+                        List diffs = []
+                        if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                            diffs.add([prop:'billingCurrency', msgToken: PendingChangeConfiguration.BILLING_SUM_UPDATED, oldValue: cci.costInBillingCurrency, newValue:newCostItem.costInBillingCurrencyAfterTax])
+                        }
+                        if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                            diffs.add([prop:'localCurrency',msgToken:PendingChangeConfiguration.LOCAL_SUM_UPDATED,oldValue: cci.costInLocalCurrency,newValue:newCostItem.costInLocalCurrencyAfterTax])
+                        }
+                        diffs.each { diff ->
+                            try {
+                                PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                            }
+                            catch (CreationException e) {
+                                log.error( e.toString() )
+                            }
+                        }
+                    }
+                }
+                else {
+                    result.error = newCostItem.errors.allErrors.collect { ObjectError oe ->
+                        log.error("Field: ${oe.properties.field}, user input: ${oe.properties.rejectedValue}, Reason! ${oe.properties.code}")
+                        Object[] args = [oe.properties.field]
+                        messageSource.getMessage('finance.addNew.error', args, locale)
+                    }
+                    [result:result,status:STATUS_ERROR]
+                }
+            } // subsToDo.each
+        }
+        catch (Exception e) {
+            e.printStackTrace()
+            result.message = messageSource.getMessage('default.save.error.general.message',null,locale)
+            [result:result,status:STATUS_ERROR]
+        }
+        [result:result,status:STATUS_OK]
+    }
 
     Map<String,Object> deleteCostItem(GrailsParameterMap params) {
         Map<String, Object> result = [showView:params.showView]
@@ -81,6 +287,44 @@ class FinanceService {
         }
         else [result:result,status:STATUS_ERROR]
     }
+
+    CostItem.TAX_TYPES setTaxKey(String newTaxRateString) {
+        CostItem.TAX_TYPES tax_key = null //on invoice, self declared, etc
+        if(!newTaxRateString.contains("null")) {
+            String[] newTaxRate = newTaxRateString.split("§")
+            RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
+            int taxRate = Integer.parseInt(newTaxRate[1])
+            switch(taxType.id) {
+                case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                    switch(taxRate) {
+                        case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
+                            break
+                        case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                            break
+                        case 16: tax_key = CostItem.TAX_TYPES.TAXABLE_16
+                            break
+                        case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                            break
+                    }
+                    break
+                case RefdataValue.getByValueAndCategory("taxable tax-exempt",RDConstants.TAX_TYPE).id:
+                    tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                    break
+                case RefdataValue.getByValueAndCategory("not taxable",RDConstants.TAX_TYPE).id:
+                    tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                    break
+                case RefdataValue.getByValueAndCategory("not applicable",RDConstants.TAX_TYPE).id:
+                    tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                    break
+                case RefdataValue.getByValueAndCategory("reverse charge",RDConstants.TAX_TYPE).id:
+                    tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                    break
+            }
+        }
+        tax_key
+    }
+
+    //---------------------------------------------- display section ---------------------------------------------------
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -593,7 +837,6 @@ class FinanceService {
      * @return a {@link Map} with the data red off
      */
     Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
-
         Org contextOrg = contextService.org
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
@@ -693,32 +936,6 @@ class FinanceService {
             List<String> cols = row.split('\t')
             //check if we have some mandatory properties ...
             //owner(nullable: false, blank: false) -> to institution, defaults to context org
-            /*Org owner
-            String orgIdentifier
-            if(colMap.institution)
-                orgIdentifier = cols[colMap.institution]
-            if(orgIdentifier){
-                //fetch possible identifier namespaces
-                // TODO [ticket=1789]
-                //List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
-                List<Org> orgMatches = Org.executeQuery("select distinct id.org from Identifier id where cast(id.org.id as string) = :idCandidate or id.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)", [idCandidate:orgIdentifier, wibid:namespaces.wibid])
-                if(orgMatches.size() > 1)
-                    mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname ?: org.name }
-                else if(orgMatches.size() == 1) {
-                    if(accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
-                        mappingErrorBag.ownerMismatchError = orgMatches[0]
-                    }
-                    else {
-                        owner = orgMatches[0]
-                    }
-                }
-                else {
-                    owner = contextOrg
-                }
-            }
-            else {
-                owner = contextOrg
-            }*/
             CostItem costItem = new CostItem(owner: contextOrg)
             //sub(nullable: true, blank: false) -> to subscription
             Subscription subscription
@@ -1085,6 +1302,111 @@ class FinanceService {
         result.candidates = candidates
         result.budgetCodes = budgetCodes
         result
+    }
+
+    Map<String,Object> importCostItems(GrailsParameterMap params) {
+        Map<String,Object> result = [error:[]]
+        Org contextOrg = contextService.org
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        def candidates = JSON.parse(params.candidates)
+        def bcJSON = JSON.parse(params.budgetCodes)
+        List budgetCodes = []
+        bcJSON.each { k,v ->
+            if(v)
+                budgetCodes[Integer.parseInt(k)] = v
+        }
+        candidates.eachWithIndex { ci, Integer c ->
+            if(params["take${c}"]) {
+                //a single cast did not work because of financialYear type mismatch
+                CostItem costItem = new CostItem(owner: contextOrg)
+                costItem.sub = Subscription.get(ci.sub.id) ?: null
+                costItem.subPkg = SubscriptionPackage.get(ci.subPkg?.id) ?: null
+                costItem.issueEntitlement = IssueEntitlement.get(ci.issueEntitlement?.id) ?: null
+                costItem.order = Order.get(ci.order?.id) ?: null
+                costItem.invoice = Invoice.get(ci.invoice?.id) ?: null
+                costItem.billingCurrency = RefdataValue.get(ci.billingCurrency?.id) ?: null
+                costItem.costItemElement = RefdataValue.get(ci.costItemElement?.id) ?: null
+                costItem.costItemElementConfiguration = RefdataValue.get(ci.costItemElementConfiguration?.id) ?: null
+                costItem.taxKey = CostItem.TAX_TYPES.valueOf(ci.taxKey?.name) ?: null
+                costItem.costInBillingCurrency = ci.costInBillingCurrency ?: 0.0
+                costItem.costInLocalCurrency = ci.costInLocalCurrency ?: 0.0
+                costItem.currencyRate = ci.currencyRate ?: 0.0
+                costItem.invoiceDate = ci.invoiceDate ? sdf.parse(ci.invoiceDate) : null
+                costItem.financialYear = ci.financialYear ? Year.parse(ci.financialYear.value.toString()) : null
+                costItem.costTitle = ci.costTitle ?: null
+                costItem.costDescription = ci.costDescription ?: null
+                costItem.costItemStatus = RefdataValue.get(ci.costItemStatus.id)
+                costItem.reference = ci.reference ?: null
+                costItem.datePaid = ci.datePaid ? sdf.parse(ci.datePaid) : null
+                costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null
+                costItem.endDate = ci.endDate ? sdf.parse(ci.endDate) : null
+                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
+                if(!costItem.save()) {
+                    result.error << costItem.errors
+                }
+                else {
+                    if(budgetCodes) {
+                        String[] budgetCodeKeys
+                        Pattern p = Pattern.compile('.*[,;].*')
+                        String code = budgetCodes.get(c)
+                        Matcher m = p.matcher(code)
+                        if(m.find())
+                            budgetCodeKeys = code.split('[,;]')
+                        else
+                            budgetCodeKeys = [code]
+                        budgetCodeKeys.each { String k ->
+                            String bck = k.trim()
+                            BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
+                            if(!bc) {
+                                bc = new BudgetCode(owner: contextOrg, value: bck)
+                            }
+                            if(!bc.save()) {
+                                result.error << bc.errors
+                            }
+                            else {
+                                CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
+                                if(!cig.save()) {
+                                    result.error << cig.errors
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(result.errors.size() > 0)
+            [result:result,status:STATUS_ERROR]
+        else [result:result,status:STATUS_OK]
+    }
+
+    Map<String,Object> processCostItemsBulk(GrailsParameterMap params) {
+        Map<String,Object> result = setResultGenerics(params)
+        result.putAll(setEditVars(result.institution))
+        List selectedCostItems = params.list("selectedCostItems")
+        if(selectedCostItems) {
+            RefdataValue billing_currency = null
+            if (params.long('newCostCurrency2')) {
+                billing_currency = RefdataValue.get(params.newCostCurrency2)
+            }
+            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            Double cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
+            Double cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
+            Double cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+            CostItem.TAX_TYPES tax_key = setTaxKey(params.newTaxRate2)
+            selectedCostItems.each { id ->
+                CostItem costItem = CostItem.get(Long.parseLong(id))
+                if(costItem && costItem.costItemStatus != RDStore.COST_ITEM_DELETED){
+                    costItem.costInBillingCurrency = cost_billing_currency ?: costItem.costInBillingCurrency
+                    costItem.billingCurrency = billing_currency ?: costItem.billingCurrency
+                    costItem.costInLocalCurrency = cost_local_currency ?: costItem.costInLocalCurrency
+                    costItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+                    costItem.currencyRate = cost_currency_rate ?: costItem.currencyRate
+                    costItem.taxKey = tax_key ?: costItem.taxKey
+                    costItem.save()
+                }
+            }
+        }
+        [result:result,status:STATUS_OK]
     }
 
     /**
