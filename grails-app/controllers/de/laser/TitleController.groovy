@@ -19,7 +19,6 @@ class TitleController  {
 
     def springSecurityService
     def ESSearchService
-    def contextService
 
     @Secured(['ROLE_USER'])
     def index() {

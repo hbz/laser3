@@ -1333,14 +1333,6 @@ join sub.orgRelations or_sub where
 
     }
 
-    def resolveOID(oid_components) {
-        GrailsClass domain_class = AppUtils.getDomainClassGeneric( oid_components[0] )
-        if (domain_class) {
-            return domain_class.getClazz().get(oid_components[1])
-        }
-        null
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def dashboard() {

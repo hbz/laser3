@@ -64,6 +64,7 @@ class AdminController  {
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def index() { }
 
     @Secured(['ROLE_ADMIN'])
