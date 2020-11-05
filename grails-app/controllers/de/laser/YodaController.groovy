@@ -610,6 +610,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def remapOriginEditUrl() {
         List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
         originEditUrls.each { originEditUrl ->
@@ -628,7 +629,7 @@ class YodaController {
             }
             if(!obj.originEditUrl) {
                 obj.originEditUrl = new URL(originEditUrl.identifier.value)
-                obj.save(flush:true)
+                obj.save()
             }
         }
         redirect controller: 'home'
@@ -739,6 +740,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def newGlobalSource() {
         Map<String, Object> result=[:]
         log.debug("manageGlobalSources ..")
@@ -754,12 +756,13 @@ class YodaController {
                 principal:params.principal,
                 credentials:params.credentials,
                 rectype:params.int('rectype'))
-        result.newSource.save(flush:true)
+        result.newSource.save()
 
         redirect action:'manageGlobalSources'
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def migrateNatStatSettings() {
         Map<String, Object> result = [:]
         Org contextOrg = contextService.getOrg()
@@ -796,8 +799,9 @@ class YodaController {
         OrgProperty.executeQuery(
                 'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '
                 + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
-                [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]
-        ).each{ it.delete(flush:true) }
+                [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]).each{
+            it.delete()
+        }
 
         redirect action:'dashboard'
     }
@@ -810,6 +814,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def migrateCollectiveSubscriptions() {
         Map<String, Object> result = [:]
 
@@ -836,10 +841,10 @@ class YodaController {
 
 				if (sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
 					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
-					role.save(flush:true)
+					role.save()
 
 					sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-					sub.save(flush:true)
+					sub.save()
 				}
             }
 
@@ -856,7 +861,7 @@ class YodaController {
                             sub: sub,
                             roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
                     )
-                    newRole.save(flush:true)
+                    newRole.save()
                 }
             }
 
@@ -885,6 +890,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def toggleBoolSetting() {
         Map<String, Object> result = [:]
         def s = SystemSetting.findByName(params.setting)
@@ -895,7 +901,7 @@ class YodaController {
                 else
                     s.value = 'true'
             }
-            s.save(flush:true)
+            s.save()
         }
 
         redirect action:'settings'
@@ -1059,6 +1065,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def createSubscriptionPackagesFromIssueEntitlements() {
         List<IssueEntitlement> toLink = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp.pkg tp where not exists (select sp.pkg from SubscriptionPackage sp where sp.subscription = ie.subscription and sp.pkg = tp)')
         Set<Map> entries = []
@@ -1069,7 +1076,7 @@ class YodaController {
             List<String> errorMsg = []
             entries.each { entry ->
                 SubscriptionPackage sp = new SubscriptionPackage(entry)
-                if(!sp.save(flush:true))
+                if(!sp.save())
                     errorMsg << sp.errors
             }
             if(errorMsg)
@@ -1110,6 +1117,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def insertEditUris() {
         //ERMS-1758
         List<ApiSource> apiSources = ApiSource.findAllByEditUrlIsNull()
@@ -1121,7 +1129,7 @@ class YodaController {
             else {
                 aps.editUrl = aps.baseUrl
             }
-            aps.save(flush:true)
+            aps.save()
         }
         globalRecordSources.each { GlobalRecordSource grs ->
             if(grs.uri.contains('phaeton.hbz-nrw')) {
@@ -1130,7 +1138,7 @@ class YodaController {
             else {
                 grs.editUri = grs.uri
             }
-            grs.save(flush:true)
+            grs.save()
         }
         flash.message = "${apiSources.size()} ApiSources und ${globalRecordSources.size()} GlobalRecordSources angepasst!"
         redirect controller: 'home', action: 'index'
@@ -1846,6 +1854,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def cleanUpSurveyOrgFinishDate() {
 
         Integer changes = 0
@@ -1858,7 +1867,7 @@ class YodaController {
 
             if(surveyResults.size() == surveyResultsFinish.size()){
                 surveyOrg.finishDate = surveyResultsFinish[0].finishDate
-                surveyOrg.save(flush: true)
+                surveyOrg.save()
                 changes++
             }
 
