@@ -1047,7 +1047,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def updateTaxRates(){
         flash.message = "Kosten werden in das neue Steuermodell überführt ..."
-        financeServicd.updateTaxRates()
+        financeService.updateTaxRates()
         redirect(url: request.getHeader('referer'))
     }
 

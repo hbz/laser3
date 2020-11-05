@@ -1275,6 +1275,11 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     break
             }
+            ctrlResult.result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
+            ctrlResult.result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+            if (params.isRenewSub) {
+                ctrlResult.result.isRenewSub = params.isRenewSub
+            }
             if((params.workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES && params.isRenewSub && ctrlResult.result.targetObject) ||
                (params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject)) {
                 SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)

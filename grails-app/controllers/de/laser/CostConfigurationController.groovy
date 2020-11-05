@@ -14,6 +14,7 @@ class CostConfigurationController {
     def contextService
     def accessService
     def genericOIDService
+    FinanceService financeService
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -73,16 +74,7 @@ class CostConfigurationController {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processConfigurationCreation() {
-        CostItemElementConfiguration ciec = new CostItemElementConfiguration()
-        ciec.costItemElement = genericOIDService.resolveOID(params.cie)
-        ciec.elementSign = genericOIDService.resolveOID(params.sign)
-        ciec.forOrganisation = (Org) contextService.getOrg()
-        if(!ciec.validate()) {
-            ciec.errors.allErrors.collect {
-                log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
-            }
-        }
-        else ciec.save(flush:true)
+        financeService.processConfigurationCreation(params)
         redirect action: 'index'
     }
 
@@ -94,7 +86,7 @@ class CostConfigurationController {
         if(params.ciec) {
             CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
             if(ciec)
-                ciec.delete(flush:true)
+                financeService.deleteCostConfiguration(ciec)
         }
         else {
             flash.error = message(code: 'costConfiguration.delete.noCiec')

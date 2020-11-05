@@ -10,6 +10,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
@@ -498,22 +499,23 @@ class DataManagerController  {
         result
     }
 
+    @Transactional
     @Secured(['ROLE_ADMIN'])
     def createMailTemplate() {
 
         MailTemplate mailTemplate = new MailTemplate(params)
 
-        if(mailTemplate.save(flush: true))
-        {
+        if(mailTemplate.save()) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
         }
-        else{
+        else {
             flash.error = message(code: 'default.save.error.message', args: [message(code: 'mailTemplate.label')])
         }
 
         redirect(action: 'listMailTemplates')
     }
 
+    @Transactional
     @Secured(['ROLE_ADMIN'])
     def editMailTemplate() {
 
@@ -527,8 +529,7 @@ class DataManagerController  {
             mailTemplate.type = params.type ? RefdataValue.get(params.type) : mailTemplate.type
         }
 
-        if(mailTemplate.save(flush: true))
-        {
+        if(mailTemplate.save()) {
             flash.message = message(code: 'default.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
         }
         else{

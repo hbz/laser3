@@ -1254,7 +1254,7 @@ class CopyElementsService {
     private boolean save(obj, flash) {
         Locale locale = LocaleContextHolder.getLocale()
         //Flush muss drin bleiben sonst werden die Werte nicht gespeichert
-        if (obj.save(flush: true)) {
+        if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
         } else {
@@ -1317,7 +1317,7 @@ class CopyElementsService {
                                     ie: ie,
                                     ieGroup: issueEntitlementGroup)
 
-                            if (!issueEntitlementGroupItem.save(flush: true)) {
+                            if (!issueEntitlementGroupItem.save()) {
                                 log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
                             }
                         }

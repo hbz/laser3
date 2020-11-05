@@ -5,6 +5,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
+import de.laser.finance.CostItemGroup
 import de.laser.finance.Invoice
 import de.laser.finance.Order
 import de.laser.titles.TitleInstance
@@ -41,11 +42,45 @@ class FinanceService {
     def messageSource
     AccessService accessService
     EscapeService escapeService
-    SubscriptionService subscriptionService
     SpringSecurityService springSecurityService
     LinksGenerationService linksGenerationService
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
     Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
+
+    //model attempt; the finance controller is subject of general refactoring
+    static final int STATUS_OK = 0
+    static final int STATUS_ERROR = 1
+
+    Map<String,Object> deleteCostItem(GrailsParameterMap params) {
+        Map<String, Object> result = [showView:params.showView]
+        CostItem ci = CostItem.get(params.id)
+        if (ci) {
+            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
+            Order order = ci.order
+            Invoice invoice = ci.invoice
+            log.debug("deleting CostItem: " + ci)
+            ci.costItemStatus = RDStore.COST_ITEM_DELETED
+            ci.invoice = null
+            ci.order = null
+            if(ci.save()) {
+                if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
+                    order.delete()
+                if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
+                    invoice.delete()
+                cigs.each { CostItemGroup item ->
+                    item.delete()
+                    log.debug("deleting CostItemGroup: " + item)
+                }
+            }
+            else {
+                log.error(ci.errors.toString())
+                result.error = messageSource.getMessage('default.delete.error.general.message',null,LocaleContextHolder.getLocale())
+                [result:result,status:STATUS_ERROR]
+            }
+            [result:result,status:STATUS_OK]
+        }
+        else [result:result,status:STATUS_ERROR]
+    }
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -1255,7 +1290,27 @@ class FinanceService {
         result
     }
 
-    @Secured(['ROLE_YODA'])
+    //------------------------------------------- cost element section -------------------------------------------
+
+    void processConfigurationCreation(GrailsParameterMap params) {
+        CostItemElementConfiguration ciec = new CostItemElementConfiguration()
+        ciec.costItemElement = genericOIDService.resolveOID(params.cie)
+        ciec.elementSign = genericOIDService.resolveOID(params.sign)
+        ciec.forOrganisation = (Org) contextService.getOrg()
+        if(!ciec.validate()) {
+            ciec.errors.allErrors.collect {
+                log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
+            }
+        }
+        else ciec.save()
+    }
+
+    void deleteCostConfiguration(CostItemElementConfiguration ciec) {
+        ciec.delete()
+    }
+
+    //---------------------------------------------- poison cupboard ---------------------------------------------
+
     void updateTaxRates() {
         CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 7 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_7])
         CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 19 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_19])
@@ -1264,7 +1319,6 @@ class FinanceService {
         CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_NOT_APPLICABLE,value: RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE)])
     }
 
-    @Secured(['ROLE_YODA'])
     Map correctCostsInLocalCurrency(boolean dryRun) {
         Map<CostItem,Double> result = [:]
         List res = CostItem.executeQuery('select ci, (ci.costInBillingCurrency * ci.currencyRate) as costInLocalCurrency from CostItem ci where ci.costInLocalCurrency = 0 and ci.costInBillingCurrency != 0')
