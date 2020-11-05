@@ -1881,37 +1881,6 @@ join sub.orgRelations or_sub where
     }
 
 
-    @Deprecated
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def surveyResultFinish() {
-        Map<String, Object> result = setResultGenerics()
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
-
-        result.surveyResults.each{
-
-           if(it.participant == result.institution) {
-               it.finishDate = new Date(System.currentTimeMillis())
-               it.save(flush: true)
-
-               flash.message = g.message(code: "default.notAutorized.message")
-           }
-        }
-
-
-        redirect action: 'surveyResult', id: result.surveyInfo.id
-    }
-
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def userList() {
@@ -2095,24 +2064,28 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String, Object> result = setResultGenerics()
 
         if (params.deleteId) {
-            Task dTask = Task.get(params.deleteId)
-            if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
-                try {
-                    dTask.delete(flush: true)
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), params.deleteId])
+            Task.withTransaction { TransactionStatus ts ->
+                Task dTask = Task.get(params.deleteId)
+                if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
+                    try {
+                        dTask.delete()
+                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), params.deleteId])
+                    }
+                    catch (Exception e) {
+                        flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
+                    }
                 }
-                catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
+                else {
+                    flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label'), params.deleteId])
                 }
-            } else {
-                flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label'), params.deleteId])
             }
+
         }
 
         if ( ! params.sort) {
@@ -2179,7 +2152,7 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
@@ -2194,13 +2167,15 @@ join sub.orgRelations or_sub where
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
 
-            params.list('selectedOrgs').each { soId ->
-                def cmb = Combo.findWhere(
-                        toOrg: result.institution,
-                        fromOrg: Org.get(Long.parseLong(soId)),
-                        type: RDStore.COMBO_TYPE_CONSORTIUM
-                )
-                cmb.delete(flush:true)
+            Combo.withTransaction { TransactionStatus ts ->
+                params.list('selectedOrgs').each { soId ->
+                    Combo cmb = Combo.findWhere(
+                            toOrg: result.institution,
+                            fromOrg: Org.get(Long.parseLong(soId)),
+                            type: RDStore.COMBO_TYPE_CONSORTIUM
+                    )
+                    cmb.delete()
+                }
             }
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
@@ -2693,7 +2668,7 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -2713,12 +2688,14 @@ join sub.orgRelations or_sub where
                 return
             case 'delete':
                 PropertyDefinitionGroup pdg = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
-                try {
-                    pdg.delete(flush:true)
-                    flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
-                }
-                catch (e) {
-                    flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
+                    try {
+                        pdg.delete()
+                        flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
+                    }
+                    catch (e) {
+                        flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                    }
                 }
                 break
             case 'processing':
@@ -2727,43 +2704,44 @@ join sub.orgRelations or_sub where
                     PropertyDefinitionGroup propDefGroup
                     String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
-                    if (params.oid) {
-                        propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
-                        propDefGroup.name = params.name ?: propDefGroup.name
-                        propDefGroup.description = params.description
-                        propDefGroup.ownerType = ownerType
+                    PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
+                        if (params.oid) {
+                            propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
+                            propDefGroup.name = params.name ?: propDefGroup.name
+                            propDefGroup.description = params.description
+                            propDefGroup.ownerType = ownerType
 
-                        if (propDefGroup.save(flush:true)) {
-                            valid = true
-                        }
-                    }
-                    else {
-                        if (params.name && ownerType) {
-                            propDefGroup = new PropertyDefinitionGroup(
-                                    name: params.name,
-                                    description: params.description,
-                                    tenant: result.institution,
-                                    ownerType: ownerType,
-                                    isVisible: true
-                            )
-                            if (propDefGroup.save(flush:true)) {
+                            if (propDefGroup.save()) {
                                 valid = true
                             }
                         }
-                    }
+                        else {
+                            if (params.name && ownerType) {
+                                propDefGroup = new PropertyDefinitionGroup(
+                                        name: params.name,
+                                        description: params.description,
+                                        tenant: result.institution,
+                                        ownerType: ownerType,
+                                        isVisible: true
+                                )
+                                if (propDefGroup.save()) {
+                                    valid = true
+                                }
+                            }
+                        }
+                        if (valid) {
+                            PropertyDefinitionGroupItem.executeUpdate(
+                                    "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                    [pdg: propDefGroup]
+                            )
 
-                    if (valid) {
-                        PropertyDefinitionGroupItem.executeUpdate(
-                                "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                                [pdg: propDefGroup]
-                        )
+                            params.list('propertyDefinition')?.each { pd ->
 
-                        params.list('propertyDefinition')?.each { pd ->
-
-                            new PropertyDefinitionGroupItem(
-                                    propDef: pd,
-                                    propDefGroup: propDefGroup
-                            ).save(flush:true)
+                                new PropertyDefinitionGroupItem(
+                                        propDef: pd,
+                                        propDefGroup: propDefGroup
+                                ).save()
+                            }
                         }
                     }
                 }
@@ -2921,7 +2899,7 @@ join sub.orgRelations or_sub where
                         AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                         if (!prop || pd.multipleOccurrence) {
                             prop = PropertyDefinition.createGenericProperty(propertyType, owner, pd, result.institution)
-                            if (setPropValue(prop, params.filterPropValue)) {
+                            if (propertyService.setPropValue(prop, params.filterPropValue)) {
                                 if (id in withAudit) {
                                     owner.getClass().findAllByInstanceOf(owner).each { member ->
                                         AbstractPropertyWithCalculatedLastUpdated memberProp = PropertyDefinition.createGenericProperty(propertyType, member, prop.type, result.institution)
@@ -2947,7 +2925,7 @@ join sub.orgRelations or_sub where
                         if (owner) {
                             AbstractPropertyWithCalculatedLastUpdated prop = owner.propertySet.find { exProp -> exProp.type.id == pd.id && exProp.tenant.id == result.institution.id }
                             if (prop) {
-                                setPropValue(prop, params.filterPropValue)
+                                propertyService.setPropValue(prop, params.filterPropValue)
                             }
                         }
                     }
@@ -2997,37 +2975,10 @@ join sub.orgRelations or_sub where
         owner
     }
 
-    //explicit assignal raises a grails warning
-    boolean setPropValue(prop, String filterPropValue) {
-        prop = (AbstractPropertyWithCalculatedLastUpdated) prop
-
-        if (prop.type.isIntegerType()) {
-            prop.intValue = Integer.parseInt(filterPropValue)
-        }
-        else if (prop.type.isStringType()) {
-            prop.stringValue = filterPropValue
-        }
-        else if (prop.type.isBigDecimalType()) {
-            prop.decValue = new BigDecimal(filterPropValue)
-        }
-        else if (prop.type.isDateType()) {
-            SimpleDateFormat sdf = DateUtil.SDF_NoTime
-                prop.dateValue = sdf.parse(filterPropValue)
-        }
-        else if (prop.type.isURLType()) {
-            prop.urlValue = filterPropValue.startsWith('http') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
-        }
-        else if (prop.type.isRefdataValueType()) {
-            prop.refValue = RefdataValue.get(filterPropValue)
-        }
-
-        prop.save(flush:true)
-    }
-
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -3035,18 +2986,22 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = setResultGenerics()
 
         switch(params.cmd) {
-            case 'add':List rl = addPrivatePropertyDefinition(params)
+            case 'add':List rl = propertyService.addPrivatePropertyDefinition(params)
                 flash."${rl[0]}" = rl[1]
                 break
             case 'toggleMandatory':
-                PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
-                pd.mandatory = !pd.mandatory
-                pd.save(flush:true)
+                PropertyDefinition.withTransaction { TransactionStatus ts ->
+                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    pd.mandatory = !pd.mandatory
+                    pd.save()
+                }
                 break
             case 'toggleMultipleOccurrence':
-                PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
-                pd.multipleOccurrence = !pd.multipleOccurrence
-                pd.save(flush:true)
+                PropertyDefinition.withTransaction { TransactionStatus ts ->
+                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    pd.multipleOccurrence = !pd.multipleOccurrence
+                    pd.save()
+                }
                 break
             case 'delete': flash.message = deletePrivatePropertyDefinition(params)
                 break
@@ -3082,7 +3037,7 @@ join sub.orgRelations or_sub where
             result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -3092,24 +3047,26 @@ join sub.orgRelations or_sub where
         if(params.pd) {
             PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
             if (pd) {
-                switch(params.cmd) {
-                    case 'toggleMandatory': pd.mandatory = !pd.mandatory
-                        pd.save(flush:true)
-                        break
-                    case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
-                        pd.save(flush:true)
-                        break
-                    case 'deletePropertyDefinition':
-                        if (! pd.isHardData) {
-                            try {
-                                pd.delete(flush:true)
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
+                PropertyDefinition.withTransaction { TransactionStatus ts ->
+                    switch(params.cmd) {
+                        case 'toggleMandatory': pd.mandatory = !pd.mandatory
+                            pd.save()
+                            break
+                        case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
+                            pd.save()
+                            break
+                        case 'deletePropertyDefinition':
+                            if (! pd.isHardData) {
+                                try {
+                                    pd.delete()
+                                    flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
+                                }
+                                catch(Exception e) {
+                                    flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
+                                }
                             }
-                            catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
-                            }
-                        }
-                        break
+                            break
+                    }
                 }
             }
         }
@@ -3152,48 +3109,6 @@ join sub.orgRelations or_sub where
             contextService.setOrg(org)
         }
         redirect action:'dashboard', params:params.remove('oid')
-    }
-
-    /**
-     * Adding new PrivateProperty for this institution if not existing
-     *
-     * @param params
-     * @return
-     */
-
-    private List addPrivatePropertyDefinition(params) {
-        log.debug("trying to add private property definition for institution: " + params)
-
-        Org tenant = contextService.getOrg()
-
-        RefdataCategory rdc = null
-
-        if (params.refdatacategory) {
-            rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-        }
-
-        Map<String, Object> map = [
-                token       : UUID.randomUUID(),
-                category    : params.pd_descr,
-                type        : params.pd_type,
-                rdc         : rdc?.getDesc(),
-                multiple    : (params.pd_multiple_occurrence ? true : false),
-                mandatory   : (params.pd_mandatory ? true : false),
-                i10n        : [
-                        name_de: params.pd_name?.trim(),
-                        name_en: params.pd_name?.trim(),
-                        expl_de: params.pd_expl?.trim(),
-                        expl_en: params.pd_expl?.trim()
-                ],
-                tenant      : tenant.globalUID]
-
-        PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
-        if (privatePropDef.save(flush: true)) {
-            return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-        }
-        else {
-            return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
-        }
     }
 
     /**
