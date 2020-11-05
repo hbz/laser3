@@ -1101,35 +1101,37 @@ class OrganisationController  {
         render view: 'delete', model: result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
-      Map<String, Object> result = [:]
-      result.user = User.get(springSecurityService.principal.id)
+        UserOrg.withTransaction {
+            Map<String, Object> result = [:]
+            result.user = User.get(springSecurityService.principal.id)
 
-      // ERMS-2370 -> support multiple assocs
-      UserOrg uo = UserOrg.get(params.assoc)
+            // ERMS-2370 -> support multiple assocs
+            UserOrg uo = UserOrg.get(params.assoc)
 
-        // ERMS-2370 -> what about ADMIN and YODA?
-      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [
-              RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM
-      ])) {
+            // ERMS-2370 -> what about ADMIN and YODA?
+            if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [
+                    RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM
+            ])) {
 
-          if (params.cmd == 'approve') {
-              uo.status = UserOrg.STATUS_APPROVED
-              uo.dateActioned = System.currentTimeMillis()
-              uo.save(flush: true)
-          }
-          else if (params.cmd == 'reject') {
-              uo.status = UserOrg.STATUS_REJECTED
-              uo.dateActioned = System.currentTimeMillis()
-              uo.save(flush: true)
-          }
-          else if (params.cmd == 'delete') {
-              uo.delete(flush: true)
-          }
-      }
-      redirect action: 'users', id: params.id
+                if (params.cmd == 'approve') {
+                    uo.status = UserOrg.STATUS_APPROVED
+                    uo.dateActioned = System.currentTimeMillis()
+                    uo.save()
+                }
+                else if (params.cmd == 'reject') {
+                    uo.status = UserOrg.STATUS_REJECTED
+                    uo.dateActioned = System.currentTimeMillis()
+                    uo.save()
+                }
+                else if (params.cmd == 'delete') {
+                    uo.delete()
+                }
+            }
+            redirect action: 'users', id: params.id
+        }
     }
 
     @Secured(['ROLE_USER'])

@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat
 class TippController  {
 
   def springSecurityService
-  def contextService
 
   @Secured(['ROLE_USER'])
   def show() { 
