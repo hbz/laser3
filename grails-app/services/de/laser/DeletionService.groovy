@@ -28,7 +28,6 @@ import org.elasticsearch.client.RestHighLevelClient
 class DeletionService {
 
     def ESWrapperService
-    def genericOIDService
     def subscriptionService
 
     static boolean DRY_RUN                  = true
@@ -119,7 +118,7 @@ class DeletionService {
                         List changeList = DocContext.findAllBySharedFrom(tmp)
                         changeList.each { tmp2 ->
                             tmp2.sharedFrom = null
-                            tmp2.save(flush:true)
+                            tmp2.save()
                         }
                     }
                     // org roles
@@ -127,7 +126,7 @@ class DeletionService {
                         List changeList = OrgRole.findAllBySharedFrom(tmp)
                         changeList.each { tmp2 ->
                             tmp2.sharedFrom = null
-                            tmp2.save(flush:true)
+                            tmp2.save()
                         }
                     }
                     // custom properties
@@ -135,13 +134,13 @@ class DeletionService {
                         List changeList = LicenseProperty.findAllByInstanceOf(tmp)
                         changeList.each { tmp2 ->
                             tmp2.instanceOf = null
-                            tmp2.save(flush:true)
+                            tmp2.save()
                         }
                     }
                     // packages
                     packages.each{ tmp ->
                         tmp.license = null
-                        tmp.save(flush:true)
+                        tmp.save()
                     }
 
                     // ----- delete foreign objects
@@ -221,7 +220,6 @@ class DeletionService {
         // gathering references
 
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
-        List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
         List links = Links.where { sourceSubscription == sub || destinationSubscription == sub }.findAll()
 
@@ -254,9 +252,9 @@ class DeletionService {
         result.info = []
 
         result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
-        result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
+        result.info << ['Referenzen: Vorgänger/Nachfolger', links.findAll { it.linkType == RDStore.LINKTYPE_FOLLOWS }]
 
-        result.info << ['Links: Lizenzen', links]
+        result.info << ['Links: Lizenzen', links.findAll { it.linkType == RDStore.LINKTYPE_LICENSE }]
         result.info << ['Aufgaben', tasks]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
@@ -324,11 +322,6 @@ class DeletionService {
                             tmp2.instanceOf = null
                             tmp2.save()
                         }
-                    }
-
-                    ref_previousSubscription.each{ tmp ->
-                        tmp.previousSubscription = null
-                        tmp.save(flush: true)
                     }
 
                     // ----- delete foreign objects
@@ -931,7 +924,8 @@ class DeletionService {
             esclient.close()
         }
         catch(Exception e) {
-            log.error("deleteDocumentFromIndex with id=${id} failed because: " + e)
+            log.error("deleteDocumentFromIndex with id=${id} failed because: ")
+            e.printStackTrace()
             esclient.close()
         }
     }

@@ -14,8 +14,12 @@ import grails.plugins.mail.MailService
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.core.GrailsApplication
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Transactional
@@ -990,6 +994,160 @@ class SurveyService {
             }
         }else {
             return false
+        }
+    }
+
+    def addSubMembers(SurveyConfig surveyConfig) {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = contextService.getUser()
+
+        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo.owner.id == result.institution.id)
+
+        if (!result.editable) {
+            return
+        }
+
+        List orgs = []
+        List currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
+
+        currentMembersSubs.each{ sub ->
+            orgs.addAll(sub.getAllSubscribers())
+        }
+
+        if (orgs) {
+
+            orgs.each { org ->
+
+                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
+
+                    boolean existsMultiYearTerm = false
+                    Subscription sub = surveyConfig.subscription
+                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+
+                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
+                            existsMultiYearTerm = true
+                        }
+
+                    }
+                    if (!existsMultiYearTerm) {
+                        SurveyOrg surveyOrg = new SurveyOrg(
+                                surveyConfig: surveyConfig,
+                                org: org
+                        )
+
+                        if (!surveyOrg.save()) {
+                            log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
+                        }else{
+                            if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
+                                surveyConfig.surveyProperties.each { property ->
+
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org ?: null,
+                                            startDate: surveyConfig.surveyInfo.startDate,
+                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: surveyConfig
+                                    )
+
+                                    if (surveyResult.save()) {
+                                        log.debug( surveyResult.toString() )
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
+                                }
+
+                                if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
+                                    emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
+        oldSurveyConfig.documents.each { dctx ->
+            //Copy Docs
+            if (params.copySurvey.copyDocs) {
+                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                    Doc clonedContents = new Doc(
+                            status: dctx.owner.status,
+                            type: dctx.owner.type,
+                            content: dctx.owner.content,
+                            uuid: dctx.owner.uuid,
+                            contentType: dctx.owner.contentType,
+                            title: dctx.owner.title,
+                            filename: dctx.owner.filename,
+                            mimeType: dctx.owner.mimeType,
+                            migrated: dctx.owner.migrated,
+                            owner: dctx.owner.owner
+                    ).save()
+                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                    Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                    Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
+                    Files.copy(source, target)
+                    DocContext ndc = new DocContext(
+                            owner: clonedContents,
+                            surveyConfig: newSurveyConfig,
+                            domain: dctx.domain,
+                            status: dctx.status,
+                            doctype: dctx.doctype
+                    ).save()
+                }
+            }
+            //Copy Announcements
+            if (params.copySurvey.copyAnnouncements) {
+                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                    Doc clonedContents = new Doc(
+                            status: dctx.owner.status,
+                            type: dctx.owner.type,
+                            content: dctx.owner.content,
+                            uuid: dctx.owner.uuid,
+                            contentType: dctx.owner.contentType,
+                            title: dctx.owner.title,
+                            filename: dctx.owner.filename,
+                            mimeType: dctx.owner.mimeType,
+                            migrated: dctx.owner.migrated
+                    ).save()
+                    DocContext ndc = new DocContext(
+                            owner: clonedContents,
+                            surveyConfig: newSurveyConfig,
+                            domain: dctx.domain,
+                            status: dctx.status,
+                            doctype: dctx.doctype
+                    ).save()
+                }
+            }
+        }
+
+        //Copy Tasks
+        if (params.copySurvey.copyTasks) {
+            Task.findAllBySurveyConfig(oldSurveyConfig).each { Task  task ->
+                Task newTask = new Task()
+                InvokerHelper.setProperties(newTask, task.properties)
+                newTask.systemCreateDate = new Date()
+                newTask.surveyConfig = newSurveyConfig
+                newTask.save()
+            }
+        }
+        //Copy Participants
+        if (params.copySurvey.copyParticipants) {
+            oldSurveyConfig.orgs.each { SurveyOrg surveyOrg ->
+                SurveyOrg newSurveyOrg = new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save()
+            }
+        }
+        //Copy Properties
+        if (params.copySurvey.copySurveyProperties) {
+            oldSurveyConfig.surveyProperties.each { SurveyConfigProperties surveyConfigProperty ->
+                SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                        surveyProperty: surveyConfigProperty.surveyProperty,
+                        surveyConfig: newSurveyConfig).save()
+            }
         }
     }
 

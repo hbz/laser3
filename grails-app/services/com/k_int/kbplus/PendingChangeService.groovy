@@ -283,7 +283,7 @@ class PendingChangeService extends AbstractLockableService {
                         //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlementCoverage cov = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
-                            if(cov.delete(flush:true)) {
+                            if(cov.delete()) {
                                 saveWithoutError = true
                             }
                             else {
@@ -381,14 +381,14 @@ class PendingChangeService extends AbstractLockableService {
                     // in case of C or B set instanceOf
                     if (setInstanceOf && targetProperty.hasProperty('instanceOf')) {
                         targetProperty.instanceOf = srcObject
-                        targetProperty.save(flush: true)
+                        targetProperty.save()
                     }
 
                     if (changeDoc.event.endsWith('Property.deleted')) {
 
                         log.debug("Deleting property ${targetProperty.type.name} from ${pendingChange.payloadChangeTargetOid}")
                         changeTarget.customProperties.remove(targetProperty)
-                        targetProperty.delete(flush:true)
+                        targetProperty.delete()
                     }
                     else if (changeDoc.event.endsWith('Property.updated')) {
 
@@ -409,7 +409,7 @@ class PendingChangeService extends AbstractLockableService {
                         }
 
                         log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
-                        targetProperty.save(flush:true)
+                        targetProperty.save()
                     }
                     else {
                         log.error("ChangeDoc event '${changeDoc.event}' not recognized.")
@@ -713,6 +713,8 @@ class PendingChangeService extends AbstractLockableService {
         ret
     }
 
-
+    void acknowledgeChange(PendingChange changeAccepted) {
+        changeAccepted.delete()
+    }
 
 }

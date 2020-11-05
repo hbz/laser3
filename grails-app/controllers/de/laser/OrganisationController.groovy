@@ -301,6 +301,7 @@ class OrganisationController  {
         render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier]
     }
 
+    @Transactional
     def processCreateIdentifier(){
         log.debug("OrganisationController::processCreateIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
@@ -324,24 +325,29 @@ class OrganisationController  {
         String note = params.note?.trim()
         Identifier id = Identifier.construct([value: value, reference: org, namespace: namespace])
         id.note = note
-        id.save(flush:true)
+        id.save()
 
         redirect(url: request.getHeader('referer'))
     }
+
+    @Transactional
     def processCreateCustomerIdentifier(){
         log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
-        Org org   = params.orgid ? Org.get(params.orgid) : null
+
+        Org org = params.orgid ? Org.get(params.orgid) : null
         if ( ! (org && params.addCIPlatform)){
             flash.error = message(code: 'menu.admin.error')
             redirect(url: request.getHeader('referer'))
             return
         }
+
         Platform plt = Platform.get(params.addCIPlatform)
         if (!plt){
             flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
             redirect(url: request.getHeader('referer'))
             return
         }
+
         if ( ! params.value){
             String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
             flash.error = message(code: 'org.customerIdentifier.create.err.missingvalue', args: [p])
@@ -358,7 +364,7 @@ class OrganisationController  {
                     isPublic: true,
                     type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
             )
-            ci.save(flush:true)
+            ci.save()
         }
 
         redirect(url: request.getHeader('referer'))
@@ -418,6 +424,8 @@ class OrganisationController  {
 
         redirect(url: request.getHeader('referer'))
     }
+
+    @Transactional
     def processEditCustomerIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
         CustomerIdentifier customeridentifier   = CustomerIdentifier.get(params.customeridentifier)
@@ -435,7 +443,7 @@ class OrganisationController  {
         }
         customeridentifier.value = params.value
         customeridentifier.note = params.note?.trim()
-        customeridentifier.save(flush:true)
+        customeridentifier.save()
 
         redirect(url: request.getHeader('referer'))
     }
@@ -504,30 +512,28 @@ class OrganisationController  {
         redirect action: 'show', id: params.id
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def createProvider() {
+        Org.withTransaction {
 
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Publisher', RDConstants.ORG_SECTOR)
-        RefdataValue orgType = RefdataValue.getByValueAndCategory('Provider', RDConstants.ORG_TYPE)
-        RefdataValue orgType2 = RefdataValue.getByValueAndCategory('Agency', RDConstants.ORG_TYPE)
-        Org orgInstance = new Org(name: params.provider, sector: orgSector.id)
+            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER)
+            if (orgInstance.save()) {
 
-        if ( orgInstance.save(flush:true) ) {
+                orgInstance.addToOrgType(RDStore.OT_PROVIDER)
+                orgInstance.addToOrgType(RDStore.OT_AGENCY)
+                orgInstance.save()
 
-            orgInstance.addToOrgType(orgType)
-            orgInstance.addToOrgType(orgType2)
-            orgInstance.save(flush:true)
-
-            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
-            redirect action: 'show', id: orgInstance.id
-        }
-        else {
-            log.error("Problem creating title: ${orgInstance.errors}");
-            flash.message = message(code:'org.error.createProviderError',args:[orgInstance.errors])
-            redirect ( action:'findProviderMatches' )
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
+                redirect action: 'show', id: orgInstance.id
+            }
+            else {
+                log.error("Problem creating title: ${orgInstance.errors}");
+                flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors])
+                redirect(action: 'findProviderMatches')
+            }
         }
     }
 
@@ -1001,7 +1007,7 @@ class OrganisationController  {
         result.tableConfig = [
                 editable: result.editable,
                 editor: result.user,
-                editLink: 'userEdit',
+                editLink: 'editUser',
                 users: result.users,
                 showAllAffiliations: false,
                 showAffiliationDeleteLink: true,
@@ -1014,7 +1020,7 @@ class OrganisationController  {
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
-    def userEdit() {
+    def editUser() {
         Map result = [user: User.get(params.id), editor: contextService.user, orgInstance: contextService.org, manipulateAffiliations: false]
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
@@ -1023,7 +1029,7 @@ class OrganisationController  {
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
-    def userCreate() {
+    def createUser() {
         Map<String, Object> result = setResultGenericsAndCheckAccess()
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
@@ -1035,16 +1041,16 @@ class OrganisationController  {
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
-    def processUserCreate() {
+    def processCreateUser() {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
-            redirect action: 'userEdit', id: success.id
+            redirect action: 'editUser', id: success.id
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
-            redirect action: 'userCreate'
+            redirect action: 'createUser'
         }
     }
 
@@ -1054,11 +1060,11 @@ class OrganisationController  {
         Map<String, Object> result = userService.setResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
-            redirect action: 'userEdit', id: params.id
+            redirect action: 'editUser', id: params.id
             return
         }
         userService.addAffiliation(result.user,params.org,params.formalRole,flash)
-        redirect action: 'userEdit', id: params.id
+        redirect action: 'editUser', id: params.id
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -1095,35 +1101,37 @@ class OrganisationController  {
         render view: 'delete', model: result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
-      Map<String, Object> result = [:]
-      result.user = User.get(springSecurityService.principal.id)
+        UserOrg.withTransaction {
+            Map<String, Object> result = [:]
+            result.user = User.get(springSecurityService.principal.id)
 
-      // ERMS-2370 -> support multiple assocs
-      UserOrg uo = UserOrg.get(params.assoc)
+            // ERMS-2370 -> support multiple assocs
+            UserOrg uo = UserOrg.get(params.assoc)
 
-        // ERMS-2370 -> what about ADMIN and YODA?
-      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [
-              RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM
-      ])) {
+            // ERMS-2370 -> what about ADMIN and YODA?
+            if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [
+                    RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM
+            ])) {
 
-          if (params.cmd == 'approve') {
-              uo.status = UserOrg.STATUS_APPROVED
-              uo.dateActioned = System.currentTimeMillis()
-              uo.save(flush: true)
-          }
-          else if (params.cmd == 'reject') {
-              uo.status = UserOrg.STATUS_REJECTED
-              uo.dateActioned = System.currentTimeMillis()
-              uo.save(flush: true)
-          }
-          else if (params.cmd == 'delete') {
-              uo.delete(flush: true)
-          }
-      }
-      redirect action: 'users', id: params.id
+                if (params.cmd == 'approve') {
+                    uo.status = UserOrg.STATUS_APPROVED
+                    uo.dateActioned = System.currentTimeMillis()
+                    uo.save()
+                }
+                else if (params.cmd == 'reject') {
+                    uo.status = UserOrg.STATUS_REJECTED
+                    uo.dateActioned = System.currentTimeMillis()
+                    uo.save()
+                }
+                else if (params.cmd == 'delete') {
+                    uo.delete()
+                }
+            }
+            redirect action: 'users', id: params.id
+        }
     }
 
     @Secured(['ROLE_USER'])
@@ -1166,6 +1174,8 @@ class OrganisationController  {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         params.org = result.orgInstance
+
+        params.sort = params.sort ?: 'p.last_name, p.first_name'
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
@@ -1466,6 +1476,8 @@ class OrganisationController  {
 
         }
 
+        params.sort = params.sort ?: 'p.last_name, p.first_name'
+
         List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
@@ -1516,7 +1528,7 @@ class OrganisationController  {
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
         boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') ||user.hasRole('ROLE_ORG_EDITOR') || user.hasAffiliation('INST_EDITOR')
         switch(params.action){
-            case 'userEdit':
+            case 'editUser':
                 isEditable = true
                 break
             case 'delete':

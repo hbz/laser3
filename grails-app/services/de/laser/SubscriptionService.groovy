@@ -995,6 +995,11 @@ class SubscriptionService {
         }
     }
 
+    boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
+        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
+                [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
+    }
+
     boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
         Links curLink = Links.findBySourceLicenseAndDestinationSubscriptionAndLinkType(newLicense,sub,RDStore.LINKTYPE_LICENSE)
@@ -1129,8 +1134,8 @@ class SubscriptionService {
                         isNotesCol = true
                         propDefString = headerCol.split('\\$\\$')[0].toLowerCase()
                     }
-                    Map queryParams = [propDef:propDefString,contextOrg:contextOrg]
-                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where (lower(pd.name_de) = :propDef or lower(pd.name_en) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    Map queryParams = [propDef:propDefString,contextOrg:contextOrg,subProp:PropertyDefinition.SUB_PROP]
+                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr = :subProp and (lower(pd.name_de) = :propDef or lower(pd.name_en) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
                     if(possiblePropDefs.size() == 1) {
                         PropertyDefinition propDef = possiblePropDefs[0]
                         if(isNotesCol) {
@@ -1388,6 +1393,105 @@ class SubscriptionService {
             candidates.put(candidate,mappingErrorBag)
         }
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
+    }
+
+    List addSubscriptions(candidates,GrailsParameterMap params) {
+        List errors = []
+        Org contextOrg = contextService.org
+        SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        candidates.eachWithIndex{ entry, int s ->
+            if(params["take${s}"]) {
+                //create object itself
+                Subscription sub = new Subscription(name: entry.name,
+                        status: genericOIDService.resolveOID(entry.status),
+                        kind: genericOIDService.resolveOID(entry.kind),
+                        form: genericOIDService.resolveOID(entry.form),
+                        resource: genericOIDService.resolveOID(entry.resource),
+                        type: genericOIDService.resolveOID(entry.type),
+                        identifier: UUID.randomUUID())
+                sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
+                sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
+                sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
+                /* TODO [ticket=2276]
+                if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
+                    sub.administrative = true*/
+                sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
+                Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
+                Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
+                Org agency = entry.agency ? genericOIDService.resolveOID(entry.agency) : null
+                if(sub.instanceOf && member)
+                    sub.isSlaved = RDStore.YN_YES
+                if(sub.save()) {
+                    //create the org role associations
+                    RefdataValue parentRoleType, memberRoleType
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        memberRoleType = RDStore.OR_SUBSCRIBER_CONS
+                    }
+                    else
+                        parentRoleType = RDStore.OR_SUBSCRIBER
+                    entry.licenses.each { String licenseOID ->
+                        License license = (License) genericOIDService.resolveOID(licenseOID)
+                        setOrgLicRole(sub,license,false)
+                    }
+                    OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
+                    if(!parentRole.save()) {
+                        errors << parentRole.errors
+                    }
+                    if(memberRoleType && member) {
+                        OrgRole memberRole = new OrgRole(roleType: memberRoleType, sub: sub, org: member)
+                        if(!memberRole.save()) {
+                            errors << memberRole.errors
+                        }
+                    }
+                    if(provider) {
+                        OrgRole providerRole = new OrgRole(roleType: RDStore.OR_PROVIDER, sub: sub, org: provider)
+                        if(!providerRole.save()) {
+                            errors << providerRole.errors
+                        }
+                    }
+                    if(agency) {
+                        OrgRole agencyRole = new OrgRole(roleType: RDStore.OR_AGENCY, sub: sub, org: agency)
+                        if(!agencyRole.save()) {
+                            errors << agencyRole.errors
+                        }
+                    }
+                    //process subscription properties
+                    entry.properties.each { k, v ->
+                        if(v.propValue?.trim()) {
+                            log.debug("${k}:${v.propValue}")
+                            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
+                            List<String> valueList
+                            if(propDef.multipleOccurrence) {
+                                valueList = v?.propValue?.split(',')
+                            }
+                            else valueList = [v.propValue]
+                            //in most cases, valueList is a list with one entry
+                            valueList.each { value ->
+                                try {
+                                    createProperty(propDef,sub,contextOrg,value.trim(),v.propNote)
+                                }
+                                catch (Exception e) {
+                                    errors << e.getMessage()
+                                }
+                            }
+                        }
+                    }
+                    if(entry.notes) {
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.user)
+                        if(docContent.save()) {
+                            DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RDStore.DOC_TYPE_NOTE)
+                            dc.save()
+                        }
+                    }
+                }
+                else {
+                    errors << sub.errors
+                }
+            }
+        }
+        errors
     }
 
     Map issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
@@ -1693,15 +1797,15 @@ class SubscriptionService {
         prop.save()
     }
 
-    void updateProperty(AbstractPropertyWithCalculatedLastUpdated property, def value) {
+    void updateProperty(SubscriptionController controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
 
-        String field = PropertyDefinition.getImplClassValueProperty()
+        String field = prop.type.getImplClassValueProperty()
 
         //Wenn eine Vererbung vorhanden ist.
-        if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
-            if(property.instanceOf."${field}" == '' || property.instanceOf."${field}" == null)
+        if(field && prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)){
+            if(prop.instanceOf."${field}" == '' || prop.instanceOf."${field}" == null)
             {
-                value = property.instanceOf."${field}" ?: ''
+                value = prop.instanceOf."${field}" ?: ''
             }else{
                 //
                 return
@@ -1710,65 +1814,65 @@ class SubscriptionService {
 
         if (value == '' && field) {
             // Allow user to set a rel to null be calling set rel ''
-            property[field] = null
-            property.save()
+            prop[field] = null
+            prop.save()
         } else {
 
-            if (property && value && field){
+            if (prop && value && field){
 
                 if(field == "refValue") {
                     def binding_properties = ["${field}": value]
-                    bindData(property, binding_properties)
+                    controller.bindData(prop, binding_properties)
                     //property.save(flush:true)
-                    if(!property.save(failOnError: true))
+                    if(!prop.save(failOnError: true))
                     {
-                        println(property.error)
+                        println(prop.error)
                     }
                 } else if(field == "dateValue") {
                     SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 
-                    def backup = property."${field}"
+                    def backup = prop."${field}"
                     try {
                         if (value && value.size() > 0) {
                             // parse new date
                             def parsed_date = sdf.parse(value)
-                            property."${field}" = parsed_date
+                            prop."${field}" = parsed_date
                         } else {
                             // delete existing date
-                            property."${field}" = null
+                            prop."${field}" = null
                         }
-                        property.save(failOnError: true)
+                        prop.save(failOnError: true)
                     }
                     catch (Exception e) {
-                        property."${field}" = backup
+                        prop."${field}" = backup
                         log.error( e.toString() )
                     }
                 } else if(field == "urlValue") {
 
-                    def backup = property."${field}"
+                    def backup = prop."${field}"
                     try {
                         if (value && value.size() > 0) {
-                            property."${field}" = new URL(value)
+                            prop."${field}" = new URL(value)
                         } else {
                             // delete existing url
-                            property."${field}" = null
+                            prop."${field}" = null
                         }
-                        property.save(failOnError: true)
+                        prop.save(failOnError: true)
                     }
                     catch (Exception e) {
-                        property."${field}" = backup
+                        prop."${field}" = backup
                         log.error( e.toString() )
                     }
                 } else {
                     def binding_properties = [:]
-                    if (property."${field}" instanceof Double) {
+                    if (prop."${field}" instanceof Double) {
                         value = Double.parseDouble(value)
                     }
 
                     binding_properties["${field}"] = value
-                    bindData(property, binding_properties)
+                    controller.bindData(prop, binding_properties)
 
-                    property.save(failOnError: true)
+                    prop.save(failOnError: true)
                 }
             }
         }

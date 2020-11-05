@@ -34,7 +34,7 @@
 <h4>
     <g:message code="subscription"/>: <g:link
         controller="subscription" action="show"
-        id="${parentSub.id}">${parentSub.name}</g:link><br /><br />
+        id="${subscription.id}">${subscription.name}</g:link><br /><br />
 
     <g:if test="${parentLicense}">
         <g:message code="subscription.linkLicenseMembers.license" args="${args.superOrgType}"/>: <g:link
@@ -81,19 +81,18 @@
 
 
         <div class="two fields">
-            <div class="eight wide field" style="text-align: left;">
+            <div class="eight wide field">
                 <div class="ui buttons">
                     <button class="ui button" type="submit" name="processOption"
                             value="linkLicense">${message(code: 'subscription.linkLicenseMembers.linkLicenses.button')}</button>
                 </div>
             </div>
 
-            <div class="eight wide field" style="text-align: right;">
+            <div class="eight wide field">
                 <div class="ui buttons">
                     <button class="ui button negative js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
-                            data-confirm-term-how="ok" action="processUnLinkLicenseMembers"
-                            type="submit" name="processOption"
+                            data-confirm-term-how="ok" type="submit" name="processOption"
                             value="unlinkLicense">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</button>
                 </div>
 
@@ -131,35 +130,28 @@
                         <g:checkBox name="selectedMembers" value="${sub.id}" checked="false"/>
                     </td>
                     <td>${i + 1}</td>
-                    <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
-                    <g:each in="${filteredSubscribers}" var="subscr">
-                        <td>
-                            ${subscr.sortname}
-                        </td>
-                        <td>
-                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
+                    <g:set var="subscr" value="${zeile.orgs}"/>
+                    <td>
+                        ${subscr.sortname}
+                    </td>
+                    <td>
+                        <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
-                            <g:if test="${sub.isSlaved}">
-                                <span data-position="top right"
-                                      class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="thumbtack blue icon"></i>
-                                </span>
-                            </g:if>
+                        <g:if test="${sub.isSlaved}">
+                            <span data-position="top right"
+                                  class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'license.details.isSlaved.tooltip')}">
+                                <i class="thumbtack blue icon"></i>
+                            </span>
+                        </g:if>
 
-                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${subscr.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
-
-                        </td>
-                    </g:each>
-                    <g:if test="${!sub.getAllSubscribers()}">
-                        <td></td>
-                        <td></td>
-                    </g:if>
+                        <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${subscr.getCustomerTypeI10n()}">
+                                <i class="chess rook grey icon"></i>
+                            </span>
+                        </g:if>
+                    </td>
 
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>

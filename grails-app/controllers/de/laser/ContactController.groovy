@@ -19,7 +19,7 @@ class ContactController  {
 		redirect controller: 'myInstitution', action: 'addressbook'
 	}
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Contact.withTransaction {
@@ -81,7 +81,7 @@ class ContactController  {
 		return // ----- deprecated
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Contact.withTransaction {

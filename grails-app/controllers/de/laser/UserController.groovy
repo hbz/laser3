@@ -7,6 +7,7 @@ import de.laser.auth.UserOrg
  
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -28,8 +29,7 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def delete() {
         Map<String, Object> result = userService.setResultGenerics(params)
@@ -71,20 +71,6 @@ class UserController  {
     def list() {
 
         Map<String, Object> result = userService.setResultGenerics(params)
-
-        /*
-        as of ERMS-1557, this method can be called only with admin rights. All other contexts are deployed to their respective controllers.
-        if (! result.editor.hasRole('ROLE_ADMIN') || params.org) {
-            // only context org depending
-            baseQuery.add('UserOrg uo')
-            whereQuery.add('( uo.user = u and uo.org = :org )')
-            //whereQuery.add('( uo.user = u and uo.org = :ctxOrg ) or not exists ( SELECT uoCheck from UserOrg uoCheck where uoCheck.user = u ) )')
-
-            Org comboOrg = params.org ? Org.get(params.org) : contextService.getOrg()
-            queryParams.put('org', comboOrg)
-        }
-        */
-
         Map filterParams = params
 
         params.max = params.max ?: result.editor?.getDefaultPageSize() // TODO
@@ -123,75 +109,58 @@ class UserController  {
             return
         }
         else {
-            /*if (! result.editor.hasRole('ROLE_ADMIN')) {
-                result.availableOrgs = contextService.getOrg()
-
-                result.availableComboConsOrgs = Combo.executeQuery(
-                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
-                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
-                        ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM
-                ]
-                )
-                result.availableComboDeptOrgs = Combo.executeQuery(
-                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
-                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
-                        ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_DEPARTMENT
-                ]
-                )
-                result.availableOrgRoles = Role.findAllByRoleType('user')
-            }
-            else {*/
-                result.availableOrgs = Org.executeQuery("select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
+            result.availableOrgs = Org.executeQuery(
+                    "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
                         [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
                 )
-                result.availableOrgRoles = Role.findAllByRoleType('user')
+            result.availableOrgRoles = Role.findAllByRoleType('user')
             result.manipulateAffiliations = true
-            //}
         }
         render view: '/globals/user/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def show() {
         Map<String, Object> result = userService.setResultGenerics(params)
         result
     }
 
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
     })
     def newPassword() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        User.withTransaction {
+            Map<String, Object> result = userService.setResultGenerics(params)
 
-        if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions')
+            if (!result.editable) {
+                flash.error = message(code: 'default.noPermissions')
+                redirect url: request.getHeader('referer'), id: params.id
+            }
+            if (result.user) {
+                String newPassword = User.generateRandomPassword()
+                result.user.password = newPassword
+                if (result.user.save()) {
+                    flash.message = message(code: 'user.newPassword.success')
+
+                    instAdmService.sendMail(result.user, 'Passwortänderung',
+                            '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
+
+                    redirect url: request.getHeader('referer'), id: params.id
+                    return
+                }
+            }
+
+            flash.error = message(code: 'user.newPassword.fail')
             redirect url: request.getHeader('referer'), id: params.id
         }
-        if (result.user) {
-            String newPassword = User.generateRandomPassword()
-            result.user.password = newPassword
-            if (result.user.save(flush: true)) {
-                flash.message = message(code: 'user.newPassword.success')
-
-                instAdmService.sendMail(result.user, 'Passwortänderung',
-                        '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
-
-                redirect url: request.getHeader('referer'), id: params.id
-                return
-            }
-        }
-
-        flash.error = message(code: 'user.newPassword.fail')
-        redirect url: request.getHeader('referer'), id: params.id
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def addAffiliation(){
         Map<String, Object> result = userService.setResultGenerics(params)
 
@@ -228,7 +197,8 @@ class UserController  {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def processUserCreate() {
+    @Transactional
+    def processCreateUser() {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {

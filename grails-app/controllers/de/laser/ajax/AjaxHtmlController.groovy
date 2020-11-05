@@ -14,7 +14,7 @@ import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(['permitAll'])
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
     /**

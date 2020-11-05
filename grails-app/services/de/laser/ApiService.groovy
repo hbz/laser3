@@ -149,7 +149,7 @@ class ApiService {
             org.libraryNetwork  = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.LIBRARY_NETWORK, inst.library_network?.text()) ?: org.libraryNetwork
             org.funderType      = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.FUNDER_TYPE, inst.funder_type?.text()) ?: org.funderType
 
-            org.save(flush: true)
+            org.save()
 
             // adding new identifiers
 
@@ -240,7 +240,7 @@ class ApiService {
                 if (legal_address.url.text()) {
                     log.debug("setting urlGov to: " + legal_address.url)
                     org.setUrlGov(legal_address.url?.text())
-                    org.save(flush: true)
+                    org.save()
                 }
             }
 
@@ -727,7 +727,7 @@ class ApiService {
                         //data to be processed after save()
                         userData.roles.role.each { uRole ->
                             //log.debug("role: ${Role.findByAuthority(uRole.text())}")
-                            new UserRole(user: user, role: Role.findByAuthority(uRole.text())).save(flush: true) //null pointer exception occuring, make further tests
+                            new UserRole(user: user, role: Role.findByAuthority(uRole.text())).save() //null pointer exception occuring, make further tests
                         }
                         userData.settings.setting.each { st ->
                             log.debug("name: ${UserSetting.KEYS.valueOf(st.name.text())}")

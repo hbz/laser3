@@ -32,7 +32,7 @@ import grails.core.GrailsClass
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-@Secured(['permitAll'])
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
     /**

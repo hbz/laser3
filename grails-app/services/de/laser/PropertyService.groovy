@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.LicenseProperty
@@ -11,6 +12,9 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
+
+import java.text.SimpleDateFormat
 
 @Transactional
 class PropertyService {
@@ -110,6 +114,74 @@ class PropertyService {
             base_qry += order_by
         }
         [query: base_qry, queryParams: base_qry_params]
+    }
+
+    //explicit assignal raises a grails warning
+    boolean setPropValue(prop, String filterPropValue) {
+        prop = (AbstractPropertyWithCalculatedLastUpdated) prop
+
+        if (prop.type.isIntegerType()) {
+            prop.intValue = Integer.parseInt(filterPropValue)
+        }
+        else if (prop.type.isStringType()) {
+            prop.stringValue = filterPropValue
+        }
+        else if (prop.type.isBigDecimalType()) {
+            prop.decValue = new BigDecimal(filterPropValue)
+        }
+        else if (prop.type.isDateType()) {
+            SimpleDateFormat sdf = DateUtil.SDF_NoTime
+            prop.dateValue = sdf.parse(filterPropValue)
+        }
+        else if (prop.type.isURLType()) {
+            prop.urlValue = filterPropValue.startsWith('http') ? new URL(filterPropValue) : new URL('http://'+filterPropValue)
+        }
+        else if (prop.type.isRefdataValueType()) {
+            prop.refValue = RefdataValue.get(filterPropValue)
+        }
+
+        prop.save()
+    }
+
+    /**
+     * Adding new PrivateProperty for this institution if not existing
+     *
+     * @param params
+     * @return
+     */
+    List addPrivatePropertyDefinition(GrailsParameterMap params) {
+        log.debug("trying to add private property definition for institution: " + params)
+
+        Org tenant = contextService.getOrg()
+
+        RefdataCategory rdc = null
+
+        if (params.refdatacategory) {
+            rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+        }
+
+        Map<String, Object> map = [
+                token       : UUID.randomUUID(),
+                category    : params.pd_descr,
+                type        : params.pd_type,
+                rdc         : rdc?.getDesc(),
+                multiple    : (params.pd_multiple_occurrence ? true : false),
+                mandatory   : (params.pd_mandatory ? true : false),
+                i10n        : [
+                        name_de: params.pd_name?.trim(),
+                        name_en: params.pd_name?.trim(),
+                        expl_de: params.pd_expl?.trim(),
+                        expl_en: params.pd_expl?.trim()
+                ],
+                tenant      : tenant.globalUID]
+
+        PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
+        if (privatePropDef.save()) {
+            return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
+        }
+        else {
+            return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
+        }
     }
 
     List getUsageDetails() {
@@ -224,7 +296,7 @@ class PropertyService {
         customProps.each{ cp ->
             log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
             cp.type = pdTo
-            cp.save(flush:true)
+            cp.save()
             count++
         }
         count

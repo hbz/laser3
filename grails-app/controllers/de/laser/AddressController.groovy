@@ -20,7 +20,7 @@ class AddressController  {
         redirect controller: 'myInstitution', action: 'addressbook'
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
         Address.withTransaction {
@@ -99,7 +99,7 @@ class AddressController  {
         render template: "/templates/cpa/addressFormModal", model: model
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
         Address.withTransaction {
@@ -153,7 +153,7 @@ class AddressController  {
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Address.withTransaction {

@@ -3,10 +3,16 @@ package com.k_int.kbplus
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
+import de.laser.Org
+import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.finance.BudgetCode
+import de.laser.finance.CostItem
+import de.laser.finance.CostItemGroup
 import de.laser.helper.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -25,6 +31,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
@@ -511,6 +518,332 @@ class ExportService {
 				cells.add(cell)
 		}
 		cells
+	}
+
+	/**
+	 * Make a XLSX export of cost item results
+	 * @param result - passed from index
+	 * @return
+	 */
+	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
+		Locale locale = LocaleContextHolder.getLocale()
+		SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
+		XSSFWorkbook workbook = new XSSFWorkbook()
+		POIXMLProperties xmlProps = workbook.getProperties()
+		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+		coreProps.setCreator(messageSource.getMessage('laser',null,locale))
+		LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+		LinkedHashMap<Subscription,Set<Org>> providers = [:]
+		LinkedHashMap<Subscription, BudgetCode> costItemGroups = [:]
+		OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
+			List<Org> orgs = subscribers.get(it.sub)
+			if(orgs == null)
+				orgs = [it.org]
+			else orgs.add(it.org)
+			subscribers.put(it.sub,orgs)
+		}
+		OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+			Set<Org> orgs = providers.get(it.sub)
+			if(orgs == null)
+				orgs = [it.org]
+			else orgs.add(it.org)
+			providers.put(it.sub,orgs)
+		}
+		XSSFCellStyle csPositive = workbook.createCellStyle()
+		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
+		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNegative = workbook.createCellStyle()
+		csNegative.setFillForegroundColor(new XSSFColor(new Color(255,199,206)))
+		csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNeutral = workbook.createCellStyle()
+		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
+		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+		wb.setCompressTempFiles(true)
+		CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
+		result.cost_item_tabs.entrySet().each { cit ->
+			String sheettitle
+			String viewMode = cit.getKey()
+			switch(viewMode) {
+				case "own": sheettitle = messageSource.getMessage('financials.header.ownCosts',null,locale)
+					break
+				case "cons": sheettitle = messageSource.getMessage('financials.header.consortialCosts',null,locale)
+					break
+				case "subscr": sheettitle = messageSource.getMessage('financials.header.subscriptionCosts',null,locale)
+					break
+			}
+			SXSSFSheet sheet = wb.createSheet(sheettitle)
+			sheet.flushRows(10)
+			sheet.setAutobreaks(true)
+			Row headerRow = sheet.createRow(0)
+			headerRow.setHeightInPoints(16.75f)
+			ArrayList titles = [messageSource.getMessage( 'sidewide.number',null,locale)]
+			if(viewMode == "cons")
+				titles.addAll([messageSource('org.sortName.label',null,locale),messageSource('financials.newCosts.costParticipants',null,locale),messageSource('financials.isVisibleForSubscriber',null,locale)])
+			titles.add(messageSource.getMessage( 'financials.newCosts.costTitle'),null,locale)
+			if(viewMode == "cons")
+				titles.add(messageSource.getMessage('default.provider.label',null,locale))
+			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null.locale), messageSource.getMessage('subscription.endDate.label',null,locale),
+						   messageSource.getMessage('financials.costItemConfiguration',null,locale), messageSource.getMessage('package.label',null,locale), messageSource.getMessage('issueEntitlement.label',null,locale),
+						   messageSource.getMessage('financials.datePaid',null,locale), messageSource.getMessage('financials.dateFrom',null,locale), messageSource.getMessage('financials.dateTo',null,locale), messageSource.getMessage('financials.financialYear',null,locale),
+						   messageSource.getMessage('default.status.label',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale), messageSource.getMessage('financials.costInBillingCurrency',null,locale),"EUR",
+						   messageSource.getMessage('financials.costInLocalCurrency',null,locale)])
+			if(["own","cons"].indexOf(viewMode) > -1)
+				titles.addAll([messageSource.getMessage('financials.taxRate',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale),messageSource.getMessage('financials.costInBillingCurrencyAfterTax',null,locale),"EUR",messageSource.getMessage('financials.costInLocalCurrencyAfterTax',null,locale)])
+			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale),messageSource.getMessage('financials.newCosts.description',null,locale),
+						   messageSource.getMessage('financials.newCosts.constsReferenceOn',null,locale), messageSource.getMessage('financials.budgetCode',null,locale),
+						   messageSource.getMessage('financials.invoice_number',null,locale), messageSource.getMessage('financials.order_number',null,locale), messageSource.getMessage('globalUID.label',null,locale)])
+			titles.eachWithIndex { titleName, int i ->
+				Cell cell = headerRow.createCell(i)
+				cell.setCellValue(titleName)
+			}
+			sheet.createFreezePane(0, 1)
+			Row row
+			Cell cell
+			int rownum = 1
+			int sumcell = -1
+			int sumcellAfterTax = -1
+			int sumTitleCell = -1
+			int sumCurrencyCell = -1
+			int sumCurrencyAfterTaxCell = -1
+			HashSet<String> currencies = new HashSet<String>()
+			if(cit.getValue().count > 0) {
+				cit.getValue().costItems.each { ci ->
+					BudgetCode codes = costItemGroups.get(ci)
+					String start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
+					String end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
+					String paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
+					int cellnum = 0
+					row = sheet.createRow(rownum)
+					//sidewide number
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(rownum)
+					if(viewMode == "cons") {
+						if(ci.sub) {
+							List<Org> orgRoles = subscribers.get(ci.sub)
+							//participants (visible?)
+							Cell cellA = row.createCell(cellnum++)
+							Cell cellB = row.createCell(cellnum++)
+							String cellValueA = ""
+							String cellValueB = ""
+							orgRoles.each { or ->
+								cellValueA += or.sortname
+								cellValueB += or.name
+							}
+							cellA.setCellValue(cellValueA)
+							cellB.setCellValue(cellValueB)
+							cell = row.createCell(cellnum++)
+							cell.setCellValue(ci.isVisibleForSubscriber ? message(code:'financials.isVisibleForSubscriber') : "")
+						}
+					}
+					//cost title
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci.costTitle ?: '')
+					if(viewMode == "cons") {
+						//provider
+						cell = row.createCell(cellnum++)
+						if(ci.sub) {
+							Set<Org> orgRoles = providers.get(ci.sub)
+							String cellValue = ""
+							orgRoles.each { or ->
+								cellValue += or.name
+							}
+							cell.setCellValue(cellValue)
+						}
+						else cell.setCellValue("")
+					}
+					//cell.setCellValue(ci.sub ? ci.sub"")
+					//subscription
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci.sub ? ci.sub.name : "")
+					//dates from-to
+					Cell fromCell = row.createCell(cellnum++)
+					Cell toCell = row.createCell(cellnum++)
+					if(ci.sub) {
+						if(ci.sub.startDate)
+							fromCell.setCellValue(dateFormat.format(ci.sub.startDate))
+						else
+							fromCell.setCellValue("")
+						if(ci.sub.endDate)
+							toCell.setCellValue(dateFormat.format(ci.sub.endDate))
+						else
+							toCell.setCellValue("")
+					}
+					//cost sign
+					cell = row.createCell(cellnum++)
+					if(ci.costItemElementConfiguration) {
+						cell.setCellValue(ci.costItemElementConfiguration.getI10n("value"))
+					}
+					else
+						cell.setCellValue(message(code:'financials.costItemConfiguration.notSet'))
+					//subscription package
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
+					//issue entitlement
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+					//date paid
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(paid_date ?: '')
+					//date from
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(start_date ?: '')
+					//date to
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(end_date ?: '')
+					//financial year
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.financialYear ? ci.financialYear.toString():'')
+					//for the sum title
+					sumTitleCell = cellnum
+					//cost item status
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.getI10n("value"):'')
+					if(["own","cons"].indexOf(viewMode) > -1) {
+						//billing currency and value
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
+						sumCurrencyCell = cellnum
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
+						if(ci.costItemElementConfiguration) {
+							switch(ci.costItemElementConfiguration) {
+								case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
+									break
+								case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
+									break
+								case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+									break
+							}
+						}
+						//local currency and value
+						cell = row.createCell(cellnum++)
+						cell.setCellValue("EUR")
+						sumcell = cellnum
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
+						if(ci.costItemElementConfiguration) {
+							switch(ci.costItemElementConfiguration) {
+								case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
+									break
+								case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
+									break
+								case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+									break
+							}
+						}
+						//tax rate
+						cell = row.createCell(cellnum++)
+						String taxString
+						if(ci.taxKey && ci.taxKey.display) {
+							taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+						}
+						else if(ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
+							taxString = "${ci.taxKey.taxType.getI10n('value')}"
+						}
+						else taxString = message(code:'financials.taxRate.notSet')
+						cell.setCellValue(taxString)
+					}
+					//billing currency and value
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
+					sumCurrencyAfterTaxCell = cellnum
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
+					if(ci.costItemElementConfiguration) {
+						switch(ci.costItemElementConfiguration) {
+							case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
+								break
+							case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
+								break
+							case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+								break
+						}
+					}
+					//local currency and value
+					cell = row.createCell(cellnum++)
+					cell.setCellValue("EUR")
+					sumcellAfterTax = cellnum
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
+					if(ci.costItemElementConfiguration) {
+						switch(ci.costItemElementConfiguration) {
+							case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
+								break
+							case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
+								break
+							case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+								break
+						}
+					}
+					//cost item element
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
+					//cost item description
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.costDescription?: '')
+					//reference
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.reference?:'')
+					//budget codes
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(codes ? codes.value : '')
+					//invoice number
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
+					//order number
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
+					//globalUUID
+					cell = row.createCell(cellnum++)
+					cell.setCellValue(ci?.globalUID ?: '')
+					rownum++
+				}
+				rownum++
+				sheet.createRow(rownum)
+				Row sumRow = sheet.createRow(rownum)
+				cell = sumRow.createCell(sumTitleCell)
+				cell.setCellValue(message(code:'financials.export.sums'))
+				if(sumcell > 0) {
+					cell = sumRow.createCell(sumcell)
+					BigDecimal localSum = BigDecimal.valueOf(cit.getValue().sums.localSums.localSum)
+					cell.setCellValue(localSum.setScale(2, RoundingMode.HALF_UP))
+				}
+				cell = sumRow.createCell(sumcellAfterTax)
+				BigDecimal localSumAfterTax = BigDecimal.valueOf(cit.getValue().sums.localSums.localSumAfterTax)
+				cell.setCellValue(localSumAfterTax.setScale(2, RoundingMode.HALF_UP))
+				rownum++
+				cit.getValue().sums.billingSums.each { entry ->
+					sumRow = sheet.createRow(rownum)
+					cell = sumRow.createCell(sumTitleCell)
+					cell.setCellValue(entry.currency)
+					if(sumCurrencyCell > 0) {
+						cell = sumRow.createCell(sumCurrencyCell)
+						BigDecimal billingSum = BigDecimal.valueOf(entry.billingSum)
+						cell.setCellValue(billingSum.setScale(2, RoundingMode.HALF_UP))
+					}
+					cell = sumRow.createCell(sumCurrencyAfterTaxCell)
+					BigDecimal billingSumAfterTax = BigDecimal.valueOf(entry.billingSumAfterTax)
+					cell.setCellValue(billingSumAfterTax.setScale(2, RoundingMode.HALF_UP))
+					rownum++
+				}
+			}
+			else {
+				row = sheet.createRow(rownum)
+				cell = row.createCell(0)
+				cell.setCellValue(message(code:"finance.export.empty"))
+			}
+
+			for(int i = 0; i < titles.size(); i++) {
+				try {
+					sheet.autoSizeColumn(i)
+				}
+				catch(NullPointerException e) {
+					log.error("Null value in column ${i}")
+				}
+			}
+		}
+		wb
 	}
 
 	/**

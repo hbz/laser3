@@ -99,8 +99,6 @@
                             <div class="item">
                                 <g:link controller="${c.key.split('Controller')[0]}" action="${method.key}">${method.key}</g:link>
 
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
                                 <g:each in="${method.value}" var="info">
 
                                     <g:if test="${info.key == 'warning'}">
@@ -119,10 +117,13 @@
                                         </g:each>
                                     </g:elseif>
                                     <g:elseif test="${info.key == 'transactional'}">
-                                        <strong class="${info.value}">${info.value}</strong>
+                                        <strong class="${info.value}">@${info.value}</strong>
                                     </g:elseif>
-                                    <g:elseif test="${info.key == 'ctrl'}">
-                                        <strong class="ctrl_${info.value}">ctrl: ${info.value}</strong>
+                                    <g:elseif test="${info.key == 'ctrlService'}">
+                                        <strong class="${info.key}_${info.value}">ctrlService</strong>
+                                    </g:elseif>
+                                    <g:elseif test="${info.key == 'wtc'}">
+                                        <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                     </g:elseif>
                                     <g:elseif test="${info.key == 'deprecated'}">
                                         <em>Deprecated</em>
@@ -159,16 +160,34 @@
 }
 
 .secInfoWrapper .transactional,
-.secInfoWrapper .ctrl_2 {
+.secInfoWrapper .warning,
+.secInfoWrapper .wtc_1,
+.secInfoWrapper .ctrlService_1,
+.secInfoWrapper .wtc_2,
+.secInfoWrapper .ctrlService_2 {
+    margin-right: 1em;
     padding: 1px 5px;
-    color: green;
+    min-width: 90px;
+    text-align: center;
+    font-weight: normal;
     background-color: #eee;
+    float: left;
 }
-.secInfoWrapper .warning ,
-.secInfoWrapper .ctrl_1 {
-    padding: 1px 5px;
-    color: black;
-    background-color: #eee;
+
+.secInfoWrapper .warning {
+    color: orangered;
+}
+
+.secInfoWrapper .wtc_1,
+.secInfoWrapper .ctrlService_1 {
+    color: green;
+    opacity: 0.4;
+}
+
+.secInfoWrapper .transactional,
+.secInfoWrapper .wtc_2,
+.secInfoWrapper .ctrlService_2 {
+    color: green;
 }
 
 .secInfoWrapper .affil,

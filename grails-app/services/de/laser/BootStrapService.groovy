@@ -83,7 +83,7 @@ class BootStrapService {
         SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
 
         if(mailSent){
-            mailSent.delete(flush: true)
+            mailSent.delete()
         }
 
         SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
@@ -247,7 +247,7 @@ class BootStrapService {
 
         // seting perm grants to current state
 
-        PermGrant.findAll().each { it.delete(flush:true) }
+        PermGrant.findAll().each { it.delete() }
 
         // Permissions
 
@@ -692,7 +692,7 @@ No Host Platform URL Content
             String namespace = namespaceProperties["ns"]
             String typ = namespaceProperties["typ"] ?: null
             //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
-            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save(flush: true);
+            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save()
         }
     }
 }

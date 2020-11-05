@@ -16,8 +16,13 @@ import java.lang.annotation.Target
     String affil() default ''
     String specRole() default ''
 
-    int ctrl() default 0
+    int ctrlService() default 0
     // 0: not transactional - no use of associated controllerService
     // 1: in between        - logic is partially in controllerService
     // 2: transactional     - full use of associated controllerService
+
+    int wtc() default 0
+    // 0: not transactional - no use of withTransaction{}
+    // 1: in between        - partially wrapped with withTransaction{}
+    // 2: withTransaction   - full wrapped with withTransaction{}
 }

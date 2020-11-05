@@ -152,8 +152,7 @@
                 </td>
             </g:if>
 
-            <g:each in="${participantResult.properties.sort { it.type.name }}"
-                    var="participantResultProperty">
+            <g:each in="${participantResult.properties}" var="participantResultProperty">
                 <td>
                     ${participantResultProperty.getResult()}
 

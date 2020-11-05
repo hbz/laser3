@@ -34,15 +34,15 @@
 <h4>
     <g:message code="subscription"/>: <g:link
         controller="subscription" action="show"
-        id="${parentSub.id}">${parentSub.name}</g:link><br /><br />
+        id="${subscription.id}">${subscription.name}</g:link><br /><br />
 
 
 <g:message code="subscription.linkPackagesMembers.package.label"
            args="${args.superOrgType}"/></label>
 
-    <g:if test="${parentPackages}">
+    <g:if test="${validPackages}">
         <div class="ui middle aligned selection list">
-            <g:each in="${parentPackages}" var="subPkg">
+            <g:each in="${validPackages}" var="subPkg">
                 <div class="item">
                     <g:link controller="package" action="show"
                             id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
@@ -93,42 +93,6 @@
 
     </div>
 
-%{--<div class="ui segment">
-    <g:form action="processUnLinkPackagesConsortia" method="post" class="ui form">
-        <g:hiddenField name="id" value="${params.id}"/>
-        <div class="field required">
-            <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfoforPackage')}:</h4>
-            <label><g:message code="subscription.linkPackagesMembers.package.label"
-                              args="${args.superOrgType}"/></label>
-            <g:if test="${validPackages}">
-                <g:select class="ui search dropdown"
-                          optionKey="id" optionValue="${{ it.getPackageName() }}"
-                          from="${validPackages}" name="package_All" value=""
-                          required=""
-                          noSelection='["": "${message(code: 'subscription.linkPackagesMembers.unlinknoSelection')}"]'/>
-            </g:if>
-            <g:else>
-                <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
-            </g:else>
-        </div>
-
-        <div class="ui buttons">
-            <button class="ui button js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
-                    data-confirm-term-how="ok" type="submit" name="withIE"
-                    value="${false}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
-
-            <div class="or" data-text="${message(code:'default.or')}"></div>
-            <button class="ui button js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
-                    data-confirm-term-how="ok" type="submit" name="withIE"
-                    value="${true}">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
-        </div>
-    </g:form>
-
-</div>--}%
-
-
     <g:form action="processLinkPackagesMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -153,32 +117,27 @@
 
 
             <div class="two fields">
-                <div class="eight wide field" style="text-align: left;">
+                <div class="eight wide field">
                     <div class="ui buttons">
                         <button class="ui button" type="submit" name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscription.linkPackagesMembers.linkwithoutIE')}</button>
-
                         <div class="or" data-text="${message(code:'default.or')}"></div>
                         <button class="ui button" type="submit" name="processOption"
                                 value="linkwithIE">${message(code: 'subscription.linkPackagesMembers.linkwithIE', args: args.superOrgType)}</button>
-
                     </div>
                 </div>
-
-                <div class="eight wide field" style="text-align: right;">
+                <div class="eight wide field">
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
-                                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" type="submit" name="processOption"
+                                data-confirm-term-how="ok" type="submit" name="processOption"
                                 value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
-
                         <div class="or" data-text="${message(code:'default.or')}"></div>
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                                 data-confirm-term-how="ok" type="submit" name="processOption"
                                 value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
                     </div>
-
                 </div>
             </div>
 
@@ -231,7 +190,7 @@
                                     </span>
                                 </g:if>
 
-                                <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                           data-content="${subscr.getCustomerTypeI10n()}">
                                         <i class="chess rook grey icon"></i>
@@ -251,34 +210,18 @@
                         <td>
 
                             <div class="ui middle aligned selection list">
-                                <g:each in="${sub.packages.sort { it.pkg.name }}" var="sp">
+                                <g:each in="${sub.packages}" var="sp">
                                     <g:set var="childPkgHasCostItems"
                                            value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.id = :sp', [sp: sp.id])}"/>
                                     <div class="item">
                                         <div class="right floated content">
-                                            %{--<g:if test="${editable && !childPkgHasCostItems}">
-                                                <div class="ui icon negative buttons">
-                                                    <button class="ui button la-selectable-button"
-                                                            onclick="unlinkPackage(${sp.pkg.id}, ${sub.id})">
-                                                        <i class="unlink icon"></i>
-                                                    </button>
-                                                </div>
-                                                <br />
-                                            </g:if>
-                                            <g:elseif test="${editable && childPkgHasCostItems}">
-                                                <div class="ui icon negative buttons">
-                                                    <button class="ui button la-selectable-button disabled">
-                                                        <i class="unlink icon"></i>
-                                                    </button>
-                                                </div>
-                                                <br />
-                                            </g:elseif>--}%
+
                                         </div>
 
                                         <div class="content">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
-                                                    params="[pkgfilter: sp.pkg?.id]">
-                                                ${sp?.pkg?.name}<br />${raw(sp.getIEandPackageSize())}
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br />${raw(sp.getIEandPackageSize())}
                                             </g:link>
                                             <g:if test="${editable && childPkgHasCostItems}">
                                                 <br /><g:message code="subscription.delete.existingCostItems"/>
@@ -287,33 +230,6 @@
                                     </div>
                                 </g:each>
                             </div>
-
-                            %{--<g:if test="${validPackages}">
-                                <g:form action="processLinkPackagesConsortia" method="post" class="ui form">
-                                    <g:hiddenField name="id" value="${params.id}"/>
-                                    <div class="field ">
-                                        <g:select class="ui search dropdown"
-                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                  from="${validPackages}" name="package_${sub.id}"
-                                                  noSelection='["": "${message(code: 'subscription.linkPackagesMembers.noSelection')}"]'/>
-                                    </div>
-
-                                    <div class="field ">
-                                        <input type="checkbox" class="ui checkbox" name="withIssueEntitlements">
-                                        <g:message code="subscription.linkPackagesMembers.linkwithIE"
-                                                   args="${args.superOrgType}"/>
-
-                                    </div>
-                                    <button class="ui button"
-                                            type="submit">${message(code: 'default.button.save_changes')}</button>
-
-                                </g:form>
-
-                            </g:if>
-                            <g:else>
-                                <g:message code="subscription.linkPackagesMembers.noValidLicenses"
-                                           args="${args.superOrgType}"/>
-                            </g:else>--}%
                         </td>
                         <td>
                             <g:if test="${sub.isMultiYear}">

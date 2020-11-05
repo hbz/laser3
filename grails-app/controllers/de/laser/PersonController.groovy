@@ -30,7 +30,7 @@ class PersonController  {
         redirect controller: 'myInstitution', action: 'addressbook'
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def create() {
         Person.withTransaction {
@@ -225,7 +225,7 @@ class PersonController  {
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
@@ -380,7 +380,7 @@ class PersonController  {
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Person.withTransaction {

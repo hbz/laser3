@@ -22,6 +22,7 @@ import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -63,9 +64,11 @@ class AdminController  {
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def index() { }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def systemAnnouncements() {
         Map<String, Object> result = [:]
 
@@ -91,7 +94,7 @@ class AdminController  {
                 }
                 else if (params.cmd == 'undo') {
                     sa.isPublished = false
-                    if (sa.save(flush:true)) {
+                    if (sa.save()) {
                         flash.message = message(code: 'announcement.undo')
                     }
                     else {
@@ -99,7 +102,7 @@ class AdminController  {
                     }
                 }
                 else if (params.cmd == 'delete') {
-                    if (sa.delete(flush: true)) {
+                    if (sa.delete()) {
                         flash.message = message(code: 'default.success')
                     }
                     else {
@@ -114,6 +117,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def createSystemAnnouncement() {
         if (params.saTitle && params.saContent) {
             SystemAnnouncement sa
@@ -132,7 +136,7 @@ class AdminController  {
             sa.user = User.get(springSecurityService.principal.id)
             sa.isPublished = false
 
-            if (sa.save(flush: true)) {
+            if (sa.save()) {
                 flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated')
             }
             else {
@@ -202,38 +206,10 @@ class AdminController  {
     }
 
   @Secured(['ROLE_ADMIN'])
-  def updatePendingChanges() {
-  //Find all pending changes with license FK and timestamp after summer 14
-  // For those with changeType: CustomPropertyChange, change it to PropertyChange
-  // on changeDoc add value propertyOID with the value of OID
-    String theDate = "01/05/2014 00:00:00";
-    Date summer_date = new Date().parse("d/M/yyyy H:m:s", theDate)
-    def criteria = PendingChange.createCriteria()
-    def changes = criteria.list{
-      isNotNull("license")
-      ge("ts",summer_date)
-      like("changeDoc","%changeType\":\"CustomPropertyChange\",%")
-    }
-    log.debug("Starting PendingChange Update. Found:${changes.size()}")
-
-        changes.each{
-            def parsed_change_info = JSON.parse(it.payload)
-            parsed_change_info.changeType = PendingChangeService.EVENT_PROPERTY_CHANGE
-            //parsed_change_info.changeType = "PropertyChange"
-            //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
-            it.payload = parsed_change_info
-            it.save(failOnError:true, flush: true)
-        }
-        log.debug("Pending Change Update Complete.")
-        redirect(controller:'home')
-
-    }
-
-  @Secured(['ROLE_ADMIN'])
+  @Transactional
   def actionAffiliationRequest() {
-      log.debug("actionMembershipRequest");
-      UserOrg req = UserOrg.get(params.req);
-      User user = User.get(springSecurityService.principal.id)
+      log.debug("actionMembershipRequest")
+      UserOrg req = UserOrg.get(params.req)
 
     if ( req != null ) {
       switch(params.act) {
@@ -244,15 +220,14 @@ class AdminController  {
           req.status = UserOrg.STATUS_REJECTED
           break;
         default:
-          log.error("FLASH UNKNOWN CODE");
+          log.error("FLASH UNKNOWN CODE")
           break;
       }
-      // req.actionedBy = user
       req.dateActioned = System.currentTimeMillis();
-      req.save(flush: true)
+      req.save()
     }
     else {
-      log.error("FLASH");
+      log.error("FLASH")
     }
     redirect(action: "manageAffiliationRequests")
   }
@@ -267,7 +242,7 @@ class AdminController  {
         }
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
     if(params.id){
         Package pkg = Package.get(params.id)
@@ -333,22 +308,22 @@ class AdminController  {
         log.info("Deleting Package ")
         log.info("${pkg.id}::${pkg}")
         pkg.pendingChanges.each{
-          it.delete(flush:true)
+          it.delete()
         }
         pkg.documents.each{
-          it.delete(flush:true)
+          it.delete()
         }
         pkg.orgs.each{
-          it.delete(flush:true)
+          it.delete()
         }
 
                 pkg.subscriptions.each{
-                    it.delete(flush:true)
+                    it.delete()
                 }
                 pkg.tipps.each{
-                    it.delete(flush:true)
+                    it.delete()
                 }
-                pkg.delete(flush:true)
+                pkg.delete()
             }
             log.info("Delete Complete.")
         }
@@ -357,47 +332,52 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def userMerge(){
-        log.debug("AdminController :: userMerge :: ${params}");
+        log.debug("AdminController :: userMerge :: ${params}")
         def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
         def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
         Map<String, Object> result = [:]
+
         try {
-            log.debug("Determine user merge operation : ${request.method}");
+            log.debug("Determine user merge operation : ${request.method}")
             switch (request.method) {
                 case 'GET':
                     if(usrMrgId && usrKeepId ){
                         User usrMrg = User.get(usrMrgId)
                         User usrKeep =  User.get(usrKeepId)
-                        log.debug("Selected users : ${usrMrg}, ${usrKeep}");
+                        log.debug("Selected users : ${usrMrg}, ${usrKeep}")
+
                         result.userRoles = usrMrg.getAuthorities()
                         result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
                         result.userMerge = usrMrg
                         result.userKeep = usrKeep
-                    }else{
-                        log.error("Missing keep/merge userid ${params}");
+                    }
+                    else{
+                        log.error("Missing keep/merge userid ${params}")
                         flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
                     }
-                    log.debug("Get processing completed");
+                    log.debug("Get processing completed")
                     break;
                 case 'POST':
-                    log.debug("Post...");
+                    log.debug("Post...")
                     if(usrMrgId && usrKeepId){
                         User usrMrg = User.get(usrMrgId)
                         User usrKeep =  User.get(usrKeepId)
                         boolean success = false
                         try{
-                            log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}");
+                            log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}")
                             success = copyUserRoles(usrMrg, usrKeep)
-                            log.debug("Result of copyUserRoles : ${success}");
-                        }catch(Exception e){
+                            log.debug("Result of copyUserRoles : ${success}")
+                        }
+                        catch(Exception e){
                             log.error("Exception while copying user roles.",e)
                         }
                         if(success){
-                            log.debug("Success");
+                            log.debug("Success")
                             usrMrg.enabled = false
-                            log.debug("Save disable and save merged user");
-                            usrMrg.save(flush:true,failOnError:true)
+                            log.debug("Save disable and save merged user")
+                            usrMrg.save(failOnError:true)
                             flash.message = "Rights copying successful. User '${usrMrg.displayName}' is now disabled."
                         }else{
                             flash.error = "An error occured before rights transfer was complete."
@@ -410,21 +390,23 @@ class AdminController  {
                     break;
             }
 
-       log.debug("Get all users");
-       result.usersAll = User.list(sort:"display", order:"asc")
-       log.debug("Get active users");
-       String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
-       result.usersActive = User.executeQuery(activeHQL)
-    }
-    catch ( Exception e ) {
-      log.error("Problem in user merge",e);
-    }
+            log.debug("Get all users");
+            result.usersAll = User.list(sort:"display", order:"asc")
 
-        log.debug("Returning ${result}");
+            log.debug("Get active users");
+            String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
+            result.usersActive = User.executeQuery(activeHQL)
+        }
+        catch ( Exception e ) {
+            log.error("Problem in user merge", e)
+        }
+
+        log.debug("Returning ${result}")
         result
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
         Set<Role> mergeRoles = usrMrg.getAuthorities()
         Set<UserOrg> mergeAffil = usrMrg.getAuthorizedAffiliations()
@@ -442,22 +424,22 @@ class AdminController  {
                 UserOrg existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole)
 
         if ( existing_affil_check == null ) {
-            log.debug("No existing affiliation");
+            log.debug("No existing affiliation")
             UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
-          if(!newAffil.save(flush:true,failOnError:true)){
-            log.error("Probem saving user roles");
-            newAffil.errors.each { e ->
-                log.error( e.toString() )
+            if(!newAffil.save(failOnError:true)){
+                log.error("Probem saving user roles")
+                newAffil.errors.each { e ->
+                    log.error( e.toString() )
+                }
+                return false
             }
-            return false
-          }
         }
         else {
           if (affil.status != existing_affil_check.status) {
             existing_affil_check.status = affil.status
-            existing_affil_check.save(flush:true)
+            existing_affil_check.save()
           }
-          log.debug("Affiliation already present - skipping ${existing_affil_check}");
+          log.debug("Affiliation already present - skipping ${existing_affil_check}")
         }
       }
     }
@@ -804,16 +786,15 @@ class AdminController  {
             }
             if ( request.method.equalsIgnoreCase("post")) {
                 contentItem.content = params.content
-                contentItem.save(flush:true)
+                contentItem.save()
                 messageService.update(key,locale) // TODO: refactoring legacy
-                redirect(action:'manageContentItems');
+                redirect(action:'manageContentItems')
             }
         }
         else {
             flash.message="Unable to parse content item id ${params.id} - ${idparts}"
-            redirect(action:'manageContentItems');
+            redirect(action:'manageContentItems')
         }
-
         result
     }
 
@@ -824,6 +805,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def tippTransfer(){
         log.debug("tippTransfer :: ${params}")
         Map<String, Object> result = [:]
@@ -835,7 +817,7 @@ class AdminController  {
       if(ti && tipp){
         tipp.title = ti
         try{
-          tipp.save(flush:true,failOnError:true)
+          tipp.save(failOnError:true)
           result.success = true
         }catch(Exception e){
             log.error( e.toString() )
@@ -851,6 +833,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def ieTransfer(){
         log.debug( params.toMapString() )
         Map<String, Object> result = [:]
@@ -864,7 +847,7 @@ class AdminController  {
             def sourceIEs = IssueEntitlement.findAllByTipp(result.sourceTIPPObj)
             sourceIEs.each{
                 it.setTipp(result.targetTIPPObj)
-                it.save(flush:true)
+                it.save()
             }
         }
 
@@ -1359,6 +1342,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
 
@@ -1372,16 +1356,16 @@ class AdminController  {
                 ApiToolkit.removeApiLevel(target)
             }
             target.lastUpdated = new Date()
-            target.save(flush:true)
+            target.save()
         }
         else if (params.cmd == 'deleteCustomerType') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
             def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                oss.delete(flush:true)
+                oss.delete()
             }
             target.lastUpdated = new Date()
-            target.save(flush:true)
+            target.save()
         }
         else if (params.cmd == 'changeCustomerType') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -1412,10 +1396,10 @@ class AdminController  {
                     subscriberRoles.each{ role ->
                         if (role.sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
                             role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
-                            role.save(flush:true)
+                            role.save()
 
                             role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            role.sub.save(flush:true)
+                            role.sub.save()
                         }
                     }
                     /*
@@ -1429,7 +1413,7 @@ class AdminController  {
                                     sub: role.sub,
                                     roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
                             )
-                            newRole.save(flush:true)
+                            newRole.save()
 
                             // keep consortia type
                             //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
@@ -1438,7 +1422,7 @@ class AdminController  {
                     }
                 }
                 oss.roleValue = customerType
-                oss.save(flush:true)
+                oss.save()
 
                 params.remove('customerType') // unwanted parameter for filter query
             }
@@ -1446,7 +1430,7 @@ class AdminController  {
                 OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)
             }
             target.lastUpdated = new Date()
-            target.save(flush:true)
+            target.save()
         }
         else if (params.cmd == 'changeGascoEntry') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -1457,13 +1441,13 @@ class AdminController  {
 
                 if (oss != OrgSetting.SETTING_NOT_FOUND) {
                     oss.rdValue = option
-                    oss.save(flush: true)
+                    oss.save()
                 } else {
                     OrgSetting.add(target, OrgSetting.KEYS.GASCO_ENTRY, option)
                 }
             }
             target.lastUpdated = new Date()
-            target.save(flush:true)
+            target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -1473,7 +1457,7 @@ class AdminController  {
                 target.legallyObligedBy = Org.get(params.legallyObligedBy)
             }
             target.lastUpdated = new Date()
-            target.save(flush:true)
+            target.save()
         }
 
         def fsq = filterService.getOrgQuery(params)
@@ -1487,6 +1471,7 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def manageNamespaces() {
         IdentifierNamespace idnsInstance = new IdentifierNamespace(params)
         Map detailsStats = [:]
@@ -1498,7 +1483,7 @@ class AdminController  {
                 if (params.cmd == 'deleteNamespace') {
                     if (idnsInstance && Identifier.countByNs(idnsInstance) == 0) {
                         try {
-                            idnsInstance.delete(flush:true)
+                            idnsInstance.delete()
                             flash.message = "Namensraum ${idnsInstance.ns} wurde gelöscht."
                         }
                         catch (Exception e) {
@@ -1582,6 +1567,7 @@ SELECT * FROM (
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def managePropertyDefinitions() {
 
         if (params.cmd){
@@ -1590,20 +1576,20 @@ SELECT * FROM (
                 case 'toggleMandatory':
                     if(pd) {
                         pd.mandatory = !pd.mandatory
-                        pd.save(flush:true)
+                        pd.save()
                     }
                     break
                 case 'toggleMultipleOccurrence':
                     if(pd) {
                         pd.multipleOccurrence = !pd.multipleOccurrence
-                        pd.save(flush:true)
+                        pd.save()
                     }
                     break
                 case 'deletePropertyDefinition':
                     if (pd) {
                         if (! pd.isHardData) {
                             try {
-                                pd.delete(flush:true)
+                                pd.delete()
                                 flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
                             }
                             catch(Exception e) {
@@ -1655,6 +1641,7 @@ SELECT * FROM (
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def transferSubPropToSurProp() {
 
         PropertyDefinition propertyDefinition = PropertyDefinition.get(params.propertyDefinition)
@@ -1671,7 +1658,7 @@ SELECT * FROM (
                     descr: PropertyDefinition.SVY_PROP
             )
 
-            if (surveyProperty.save(flush: true)) {
+            if (surveyProperty.save()) {
                 flash.message = message(code: 'propertyDefinition.copySubPropToSurProp.created.sucess')
             }
             else {
@@ -1703,7 +1690,7 @@ SELECT * FROM (
         else if (params.cmd == 'delete') {
             def pdg = genericOIDService.resolveOID(params.oid)
             try {
-                pdg.delete(flush:true)
+                pdg.delete()
                 flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
             }
             catch (e) {
@@ -1721,7 +1708,7 @@ SELECT * FROM (
                 propDefGroup.description = params.description
                 propDefGroup.ownerType = ownerType
 
-                if (propDefGroup.save(flush:true)) {
+                if (propDefGroup.save()) {
                     valid = true
                 }
             }
@@ -1734,7 +1721,7 @@ SELECT * FROM (
                             ownerType: ownerType,
                             isVisible: true
                     )
-                    if (propDefGroup.save(flush:true)) {
+                    if (propDefGroup.save()) {
                         valid = true
                     }
                 }
@@ -1751,7 +1738,7 @@ SELECT * FROM (
                     new PropertyDefinitionGroupItem(
                             propDef: pd,
                             propDefGroup: propDefGroup
-                    ).save(flush: true)
+                    ).save()
                 }
             }
         }
@@ -1763,6 +1750,7 @@ SELECT * FROM (
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def manageRefdatas() {
 
         if (params.cmd == 'deleteRefdataValue') {
@@ -1771,7 +1759,7 @@ SELECT * FROM (
             if (rdv) {
                 if (! rdv.isHardData) {
                     try {
-                        rdv.delete(flush:true)
+                        rdv.delete()
                         flash.message = "${params.rdv} wurde gelöscht."
                     }
                     catch(Exception e) {
@@ -1839,6 +1827,7 @@ SELECT * FROM (
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def titleEnrichment() {
         Map<String, Object> result = [:]
 
@@ -1912,20 +1901,20 @@ SELECT * FROM (
                                 if(colMap.summaryOfContentTitleCol && (cols[colMap.summaryOfContentTitleCol] != null || cols[colMap.summaryOfContentTitleCol] != "") && (cols[colMap.summaryOfContentTitleCol].trim() != titleInstance.summaryOfContent) ){
                                     countChanges++
                                     titleInstance.summaryOfContent = cols[colMap.summaryOfContentTitleCol].trim()
-                                    titleInstance.save(flush: true)
+                                    titleInstance.save()
                                 }
                             }
 
                                 if(colMap.seriesNameTitleCol && (cols[colMap.seriesNameTitleCol] != null || cols[colMap.seriesNameTitleCol] != "") && (cols[colMap.seriesNameTitleCol].trim() != titleInstance.seriesName) ){
                                     countChanges++
                                     titleInstance.seriesName = cols[colMap.seriesNameTitleCol].trim()
-                                    titleInstance.save(flush: true)
+                                    titleInstance.save()
                                 }
 
                                 if(colMap.subjectReferenceTitleCol && (cols[colMap.subjectReferenceTitleCol] != null || cols[colMap.subjectReferenceTitleCol] != "") && (cols[colMap.subjectReferenceTitleCol].trim() != titleInstance.subjectReference) ){
                                     countChanges++
                                     titleInstance.subjectReference = cols[colMap.subjectReferenceTitleCol].trim()
-                                    titleInstance.save(flush: true)
+                                    titleInstance.save()
                                 }
                         }
                     }
@@ -1941,6 +1930,7 @@ SELECT * FROM (
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def systemMessages() {
 
         Map<String, Object> result = [:]
@@ -1953,7 +1943,7 @@ SELECT * FROM (
                     type: params.type,
                     isActive: false)
 
-            if (sm.save(flush: true)){
+            if (sm.save()){
                 flash.message = 'Systemmeldung erstellt'
             } else {
                 flash.error = 'Systemmeldung wurde nicht erstellt'
@@ -1966,10 +1956,11 @@ SELECT * FROM (
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
     def deleteSystemMessage(Long id) {
 
         if (SystemMessage.get(id)){
-            SystemMessage.get(id).delete(flush: true)
+            SystemMessage.get(id).delete()
             flash.message = 'Systemmeldung wurde gelöscht'
         }
 

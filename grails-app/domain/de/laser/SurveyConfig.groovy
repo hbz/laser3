@@ -69,11 +69,8 @@ class SurveyConfig {
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: false)
-        pickAndChoose       (nullable: true)
         documents(nullable: true, blank: false)
         orgs(nullable: true, blank: false)
-        configFinish        (nullable: true)
-        costItemsFinish     (nullable: true)
         scheduledStartDate  (nullable: true)
         scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: false)
@@ -83,11 +80,8 @@ class SurveyConfig {
         urlComment(nullable: true, blank: false)
         urlComment2(nullable: true, blank: false)
         urlComment3(nullable: true, blank: false)
-        evaluationFinish        (nullable: true)
-        subSurveyUseForTransfer (nullable: true)
         propertySet(nullable: true, blank: false)
         transferWorkflow (nullable: true, blank: false)
-        createTitleGroups (nullable: true, blank: false)
     }
 
     static transients = [

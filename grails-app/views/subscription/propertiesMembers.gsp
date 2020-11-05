@@ -31,7 +31,7 @@
 
 <h4>
     <g:message code="subscription"/>:
-    <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link><br /><br />
+    <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link><br /><br />
 
 </h4>
 
@@ -40,7 +40,7 @@
         <div class="ui two column very relaxed grid">
             <div class="column">
                 <semui:filter>
-                    <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
+                    <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [subscription.name])}</h4>
                     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
                         <g:render template="/templates/properties/genericFilter"
                                   model="[propList: propList, hideFilterProp: true]"/>
@@ -84,7 +84,7 @@
                 <div id="member_props_div">
                     <g:render template="/templates/properties/members" model="${[
                             prop_desc       : PropertyDefinition.SUB_PROP,
-                            ownobj          : parentSub,
+                            ownobj          : subscription,
                             custom_props_div: "member_props_div"]}"/>
                 </div>
             </div>
@@ -95,23 +95,6 @@
 
 
 <g:if test="${filteredSubChilds && filterPropDef}">
-
-%{--<div class="ui segment">
-
-    <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
-    <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.isRefdataValueType()}">
-        <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
-                var="refdataValue">
-            <g:set var="refdataValues"
-                   value="${refdataValues + refdataValue?.getI10n('value')}"/>
-        </g:each>
-        <br />
-        (${refdataValues.join('/')})
-    </g:if>
-
-</div>--}%
 
     <div class="ui icon info message">
         <i class="info icon"></i>
@@ -145,7 +128,7 @@
         <g:link class="ui button negative js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
                 data-confirm-term-how="ok" action="processDeletePropertiesMembers" id="${params.id}"
-                params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesMembers.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
+                params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesMembers.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</g:link>
 
     </div>
 
@@ -161,42 +144,42 @@
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'default.status.label')}</th>
-                <th>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
+                <th>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
 
-            <td>${parentSub.name}</td>
+            <td>${subscription.name}</td>
 
             <td>
-                <g:formatDate formatName="default.date.format.notime" date="${parentSub.startDate}"/>
-                <semui:auditButton auditable="[parentSub, 'startDate']"/>
+                <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
+                <semui:auditButton auditable="[subscription, 'startDate']"/>
             </td>
             <td>
-                <g:formatDate formatName="default.date.format.notime" date="${parentSub.endDate}"/>
-                <semui:auditButton auditable="[parentSub, 'endDate']"/>
+                <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
+                <semui:auditButton auditable="[subscription, 'endDate']"/>
             </td>
             <td>
-                ${parentSub.status.getI10n('value')}
-                <semui:auditButton auditable="[parentSub, 'status']"/>
+                ${subscription.status.getI10n('value')}
+                <semui:auditButton auditable="[subscription, 'status']"/>
             </td>
             <td>
 
                 <div class="ui middle aligned selection list">
 
-                    <g:if test="${filterPropDef?.tenant == null}">
+                    <g:if test="${filterPropDef.tenant == null}">
                         <div class="item">
 
                             <div class="right floated content">
                                 <span class="la-popup-tooltip la-delay" data-content="Anzahl der allg. Merkmale in der Lizenz" data-position="top right">
                                 <semui:totalNumber
-                                        total="${parentSub.propertySet.findAll {  (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic ))}.size()}"/>
+                                        total="${subscription.propertySet.findAll {  (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic ))}.size()}"/>
                                 </span>
                             </div>
 
                             <g:set var="customProperties"
-                                   value="${parentSub.propertySet.findAll {  (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic )) && it.type == filterPropDef }}"/>
+                                   value="${subscription.propertySet.findAll {  (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic )) && it.type == filterPropDef }}"/>
                             <g:if test="${customProperties}">
                                 <g:each in="${customProperties}" var="customProperty">
                                     <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
@@ -238,7 +221,7 @@
 
                                         <%
                                             if (AuditConfig.getConfig(customProperty)) {
-                                                if (parentSub.isSlaved) {
+                                                if (subscription.isSlaved) {
                                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                                 } else {
                                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
@@ -253,10 +236,10 @@
                                 ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
                                 <g:link class="ui button" controller="ajax" action="addCustomPropertyValue" params="[
                                         propIdent:      filterPropDef.id,
-                                        ownerId:        parentSub.id,
-                                        ownerClass:     parentSub.class,
+                                        ownerId:        subscription.id,
+                                        ownerClass:     subscription.class,
                                         withoutRender:  true,
-                                        url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: parentSub.id, filterPropDef: filterPropDef])
+                                        url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: subscription.id, filterPropDef: filterPropDef])
                                 ]">
                                     ${message(code:'default.button.add.label')}
                                 </g:link>
@@ -273,12 +256,12 @@
                             <div class="right floated content">
                                 <span class="la-popup-tooltip la-delay" data-content="Anzahl der priv. Merkmale in der Lizenz" data-position="top right">
                                 <semui:totalNumber
-                                        total="${parentSub.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.size()}"/>
+                                        total="${subscription.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.size()}"/>
                                 </span>
                             </div>
 
                             <g:set var="privateProperties"
-                                   value="${parentSub.propertySet.findAll { it.type.tenant?.id == contextOrg.id && it.type == filterPropDef  }}"/>
+                                   value="${subscription.propertySet.findAll { it.type.tenant?.id == contextOrg.id && it.type == filterPropDef  }}"/>
                             <g:if test="${privateProperties}">
                                 <g:each in="${privateProperties}" var="privateProperty">
                                     <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
@@ -320,7 +303,7 @@
 
                                         <%
                                             if (AuditConfig.getConfig(privateProperty)) {
-                                                if (parentSub.isSlaved) {
+                                                if (subscription.isSlaved) {
                                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                                 } else {
                                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
@@ -335,10 +318,10 @@
                                 ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
                                 <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue" params="[
                                         propIdent:      filterPropDef.id,
-                                        ownerId:        parentSub.id,
-                                        ownerClass:     parentSub.class,
+                                        ownerId:        subscription.id,
+                                        ownerClass:     subscription.class,
                                         withoutRender:  true,
-                                        url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: parentSub.id, filterPropDef: filterPropDef])
+                                        url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: subscription.id, filterPropDef: filterPropDef])
                                 ]">
                                     ${message(code:'default.button.add.label')}
                                 </g:link>
@@ -352,7 +335,7 @@
             </td>
 
             <td class="x">
-                <g:link controller="subscription" action="show" id="${parentSub.id}"
+                <g:link controller="subscription" action="show" id="${subscription.id}"
                         class="ui icon button"><i
                         class="write icon"></i></g:link>
             </td>
@@ -565,7 +548,7 @@
                                                     ownerId:        sub.id,
                                                     ownerClass:     sub.class,
                                                     withoutRender:  true,
-                                                    url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: parentSub.id, filterPropDef: filterPropDef])
+                                                    url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: subscription.id, filterPropDef: filterPropDef])
                                             ]">
                                                 ${message(code:'default.button.add.label')}
                                             </g:link>
@@ -644,7 +627,7 @@
                                                         ownerId:        sub.id,
                                                         ownerClass:     sub.class,
                                                         withoutRender:  true,
-                                                        url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: parentSub.id, filterPropDef: filterPropDef])
+                                                        url:            createLink(absolute: true, controller: 'subscription', action: 'propertiesMembers', params: [id: subscription.id, filterPropDef: filterPropDef])
                                                 ]">
                                                     ${message(code:'default.button.add.label')}
                                                 </g:link>
