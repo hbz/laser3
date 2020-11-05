@@ -2128,7 +2128,7 @@ class SurveyController {
      Map<String,Object> processEndSurvey() {
         Map<String,Object> result = setResultGenericsAndCheckAccess()
         if (!result.editable) {
-            response.sendError(401); returnproce
+            response.sendError(401); return
         }
 
         if (result.editable) {
