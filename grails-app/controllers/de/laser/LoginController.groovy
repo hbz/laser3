@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.core.GrailsApplication
 import org.springframework.security.access.annotation.Secured
@@ -150,6 +151,7 @@ class LoginController {
   /**
    * Resets for a given username the password. Has to be corrected later.
    */
+  @Transactional
   def resetForgottenPassword() {
     if(!params.forgotten_username) {
       flash.error = g.message(code:'menu.user.forgottenPassword.userMissing')
@@ -159,7 +161,7 @@ class LoginController {
       if (user) {
         String newPassword = User.generateRandomPassword()
         user.password = newPassword
-        if (user.save(flush: true)) {
+        if (user.save()) {
           flash.message = message(code: 'user.newPassword.successNoOutput')
 
           instAdmService.sendMail(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])

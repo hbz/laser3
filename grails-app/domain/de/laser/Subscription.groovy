@@ -283,7 +283,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         }
                         if (existingOrgRoles) {
                             log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ tmp -> tmp.delete(flush:true) }
+                            existingOrgRoles.each{ OrgRole tmp -> tmp.delete() }
                         }
                     }
                     sharedObject.addShareForTarget_trait(sub)

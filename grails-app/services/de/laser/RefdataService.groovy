@@ -88,7 +88,7 @@ class RefdataService {
                     if (it."${df.name}" == rdvFrom) {
                         log.debug("exchange refdata value at: ${dcName}(${it.id}) from: ${rdvFrom}(${rdvFrom.id}) to: ${rdvTo}(${rdvTo.id})")
                         it."${df.name}" = rdvTo
-                        it.save(flush: true)
+                        it.save()
                         count++
                     }
                 }

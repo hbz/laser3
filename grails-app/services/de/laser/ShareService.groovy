@@ -28,7 +28,7 @@ class ShareService {
                 sharedFrom:     share,
                 isShared:       false
         )
-        if (clonedShare.save(flush: true)) {
+        if (clonedShare.save()) {
             if(target instanceof Subscription) {
                 //damn that three-tier inheritance level ... check if there are departments for a consortial subscription!!!! Show David!!!
                 List<Subscription> descendants = Subscription.findAllByInstanceOf(target)
@@ -42,12 +42,12 @@ class ShareService {
                             sharedFrom:     share,
                             isShared:       false
                     )
-                    clonedDescendantShare.save(flush: true)
+                    clonedDescendantShare.save()
                 }
             }
             if (! share.isShared) {
                 share.isShared = true
-                if (share.save(flush: true)) {
+                if (share.save()) {
                     return true
                 }
             }
@@ -91,10 +91,10 @@ class ShareService {
                 isShared:       false
         )
 
-        if (clonedShare.save(flush: true)) {
+        if (clonedShare.save()) {
             if (! share.isShared) {
                 share.isShared = true
-                if (share.save(flush: true)) {
+                if (share.save()) {
                     return true
                 }
             }

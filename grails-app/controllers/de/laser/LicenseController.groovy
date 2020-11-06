@@ -49,6 +49,8 @@ class LicenseController {
     PropertyService propertyService
     SubscriptionsQueryService subscriptionsQueryService
 
+    //----------------------------------------- general or ungroupable section ----------------------------------------
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def show() {
@@ -247,6 +249,23 @@ class LicenseController {
     }
     */
   }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    def tasks() {
+        Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)
+        if(ctrlResult.error == LicenseControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        ctrlResult.result
+    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
@@ -710,44 +729,6 @@ class LicenseController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-    def tasks() {
-        log.debug("license id:${params.id}")
-
-        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (params.deleteId) {
-            Task dTask = Task.get(params.deleteId)
-            if (dTask && dTask.creator.id == result.user.id) {
-                try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
-                    dTask.delete(flush: true)
-                }
-                catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                }
-            }
-        }
-
-        int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
-        result.taskInstanceCount = result.taskInstanceList.size()
-        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-
-        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.license)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
-        log.debug(result.taskInstanceList.toString())
-        log.debug(result.myTaskInstanceList.toString())
-
-        result
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -875,146 +856,6 @@ class LicenseController {
 
         result
 
-    }
-
-    @Deprecated
-    def processcopyLicense() {
-
-        params.id = params.baseLicense
-        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        License baseLicense = License.get(params.baseLicense)
-
-        if (baseLicense) {
-
-            String lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
-
-            License licenseInstance = new License(
-                    reference: lic_name,
-                    type: baseLicense.type,
-                    startDate: params.license.copyDates ? baseLicense?.startDate : null,
-                    endDate: params.license.copyDates ? baseLicense?.endDate : null,
-                    instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
-                    status: baseLicense?.status ?: null,
-                    openEnded: baseLicense?.openEnded
-            )
-
-
-            if (!licenseInstance.save(flush:true)) {
-                log.error("Problem saving license ${licenseInstance.errors}")
-                return licenseInstance
-            }
-            else {
-                   log.debug("Save ok")
-
-                    baseLicense.documents?.each { DocContext dctx ->
-
-                        //Copy Docs
-                        if (params.license.copyDocs) {
-                            if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
-                                Doc clonedContents = new Doc(
-                                        status: dctx.owner.status,
-                                        type: dctx.owner.type,
-                                        content: dctx.owner.content,
-                                        uuid: dctx.owner.uuid,
-                                        contentType: dctx.owner.contentType,
-                                        title: dctx.owner.title,
-                                        filename: dctx.owner.filename,
-                                        mimeType: dctx.owner.mimeType,
-                                        migrated: dctx.owner.migrated,
-                                        owner: dctx.owner.owner
-                                ).save(flush:true)
-
-                                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
-
-                                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
-                                Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
-                                Files.copy(source, target)
-
-                                DocContext ndc = new DocContext(
-                                        owner: clonedContents,
-                                        license: licenseInstance,
-                                        domain: dctx.domain,
-                                        status: dctx.status,
-                                        doctype: dctx.doctype
-                                ).save(flush:true)
-                            }
-                        }
-                        //Copy Announcements
-                        if (params.license.copyAnnouncements) {
-                            if ((dctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                                Doc clonedContents = new Doc(
-                                        status: dctx.owner.status,
-                                        type: dctx.owner.type,
-                                        content: dctx.owner.content,
-                                        uuid: dctx.owner.uuid,
-                                        contentType: dctx.owner.contentType,
-                                        title: dctx.owner.title,
-                                        filename: dctx.owner.filename,
-                                        mimeType: dctx.owner.mimeType,
-                                        migrated: dctx.owner.migrated
-                                ).save(flush:true)
-
-                                DocContext ndc = new DocContext(
-                                        owner: clonedContents,
-                                        license: licenseInstance,
-                                        domain: dctx.domain,
-                                        status: dctx.status,
-                                        doctype: dctx.doctype
-                                ).save(flush:true)
-                            }
-                        }
-                    }
-                    //Copy Tasks
-                    if (params.license.copyTasks) {
-
-                        Task.findAllByLicense(baseLicense).each { task ->
-
-                            Task newTask = new Task()
-                            InvokerHelper.setProperties(newTask, task.properties)
-                            newTask.systemCreateDate = new Date()
-                            newTask.license = licenseInstance
-                            newTask.save(flush:true)
-                        }
-
-                    }
-                    //Copy References
-                        baseLicense.orgRelations.each { OrgRole or ->
-                            if ((or.org.id == result.institution.id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
-                            OrgRole newOrgRole = new OrgRole()
-                            InvokerHelper.setProperties(newOrgRole, or.properties)
-                            newOrgRole.lic = licenseInstance
-                            newOrgRole.save(flush:true)
-
-                            }
-
-                    }
-
-                    if(params.license.copyCustomProperties) {
-                        //customProperties
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant == null && prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
-                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.instanceOf = null
-                            copiedProp.save(flush:true)
-                        }
-                    }
-                    if(params.license.copyPrivateProperties){
-                        //privatProperties
-
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant?.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
-                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save(flush:true)
-                        }
-                    }
-                redirect controller: 'license', action: 'show', params: [id: licenseInstance.id]
-                }
-
-            }
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

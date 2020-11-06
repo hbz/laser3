@@ -16,8 +16,6 @@ import java.text.SimpleDateFormat
 class PendingChange {
 
     def genericOIDService
-    def pendingChangeService
-    def auditService
     def messageSource
 
     final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
@@ -120,7 +118,7 @@ class PendingChange {
     }
 
     /**
-     * Factory method which should replace the legacy method ${@link ChangeNotificationService}.registerPendingChange().
+     * Factory method which should replace the legacy method ChangeNotificationService.registerPendingChange().
      * @param configMap
      * @return
      * @throws CreationException
@@ -256,7 +254,7 @@ class PendingChange {
                 if(target instanceof IssueEntitlementCoverage) {
                     IssueEntitlementCoverage targetCov = (IssueEntitlementCoverage) target
                     //no way to check whether object could actually be deleted or not
-                    targetCov.delete(flush:true)
+                    targetCov.delete()
                     done = true
                 }
                 else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${oid}! Pending change is void!")

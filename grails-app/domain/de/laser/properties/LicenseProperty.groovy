@@ -119,7 +119,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+        deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this))
     }
 
     @Override
@@ -223,7 +223,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete(flush:true)
+                            pc.delete()
                         }
                     }
                 }

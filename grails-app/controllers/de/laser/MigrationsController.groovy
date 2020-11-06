@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.titles.TitleInstance
 import de.laser.helper.ConfigUtils
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -11,6 +12,7 @@ class MigrationsController {
     static boolean ftupdate_running = false
 
     @Secured(['ROLE_YODA'])
+    @Transactional
     def erms2362() {
         List<String> validNsList = ['acs', 'ebookcentral', 'emerald', 'herdt', 'mitpress', 'oup']
 
@@ -109,13 +111,13 @@ class MigrationsController {
                 log.debug( 'execute ..')
                 if (! matches.isEmpty()) {
                     matches.each { c ->
-                        ((Identifier) c.oldId).delete(flush:true)
+                        ((Identifier) c.oldId).delete()
                     }
                 }
                 if (! orphaned.isEmpty()) {
                     orphaned.each { c ->
                         ((Identifier) c.oldId).setNs(c.newNs)
-                        ((Identifier) c.oldId).save(flush:true)
+                        ((Identifier) c.oldId).save()
                     }
                 }
             }

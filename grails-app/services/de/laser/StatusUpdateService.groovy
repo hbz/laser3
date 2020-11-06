@@ -412,7 +412,9 @@ class StatusUpdateService extends AbstractLockableService {
     /**
      * Triggered from the Admin menu
      * Takes every test subscription, processes them by name and counts their respective years up by one
+     * @deprecated Micha says new users should start from a clean environment, the feature is not required any more
      */
+    @Deprecated
     def updateQASubscriptionDates() {
         //if someone changes the names, we are all screwed up since UUIDs may not persist when database is changed!
         List<String> names = ['Daten A (Test)','Daten A', 'E-Book-Pick', 'Journal-Paket', 'Journal-Paket_Extrem', 'Journal-Paket_extrem', 'Musterdatenbank', 'Datenbank', 'Datenbank 2']
@@ -429,7 +431,7 @@ class StatusUpdateService extends AbstractLockableService {
                         sub[field] = cal.getTime()
                     }
                 }
-                if(!sub.save(flush:true)) //damn it! But here, it is unavoidable.
+                if(!sub.save())
                     [sub,sub.errors]
             }
         }
