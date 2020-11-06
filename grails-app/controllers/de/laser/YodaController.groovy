@@ -488,13 +488,24 @@ class YodaController {
         Map<String, Object> result = [:]
         Map<String, Object> cList = [:]
 
+        // filter dynamic getter/setter
+        List<String> blacklist = [
+                'getAllowedMethods',
+                'setAllowedMethods',
+                'getStaticApplicationContext'
+        ]
+
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('de.laser.')) {
-                Map<String, Object> mList = [:]
+            if (controllerClass.name.startsWith('de.laser')) {
+                Map<String, Object> mList = [public:[:], others:[:]]
 
-                controllerClass.methods.each { Method method ->
-                    if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
+                controllerClass.declaredMethods.each { Method method ->
+                    int mods = method.getModifiers()
+                    if ( ! Modifier.isSynthetic(mods) && (
+                            (method.getAnnotation(Action) || Modifier.isPrivate(mods)) ||
+                            (Modifier.isStatic(mods) && ! (method.name in blacklist))
+                    ) ) {
                         String mKey = method.name
                         Map<String, Object> mInfo = [:]
 
@@ -509,9 +520,15 @@ class YodaController {
                             ]
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
+                                if (da.ctrlService() == 2) {
+                                    mInfo.refactoring = 'done'
+                                }
                             }
                             if (da.wtc()) {
                                 mInfo.wtc = da.wtc()
+                                if (da.wtc() == 2) {
+                                    mInfo.refactoring = 'done'
+                                }
                             }
                         }
 
@@ -524,12 +541,27 @@ class YodaController {
 
                         if (method.getAnnotation(Transactional)) {
                             mInfo.transactional = 'transactional'
+                            mInfo.refactoring = 'done'
                         }
                         if (method.getAnnotation(Deprecated)) {
                             mInfo.deprecated = 'deprecated'
                         }
 
-                        mList << ["${mKey}": mInfo]
+                        if (Modifier.isPrivate(mods) || Modifier.isStatic(mods)) {
+
+                            // filter dynamic getter/setter
+                            String check = method.name.replaceFirst('get', '').replaceFirst('set', '').replace('_', '')
+                            if (check.toUpperCase() != check) {
+                                mInfo.modifiers = [
+                                        private: Modifier.isPrivate(mods),
+                                        static: Modifier.isStatic(mods)
+                                ]
+                                mList.others << ["${mKey}": mInfo]
+                            }
+                        }
+                        else {
+                            mList.public << ["${mKey}": mInfo]
+                        }
                     }
                 }
 
@@ -539,7 +571,10 @@ class YodaController {
                 }
                 cList<< ["${cKey}": [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
-                        'methods': mList.sort{it.key}
+                        'methods': [
+                                public: mList.public.sort{it.key},
+                                others: mList.others.sort{it.key}
+                            ]
                         ]
                 ]
             }
