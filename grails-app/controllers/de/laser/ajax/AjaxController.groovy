@@ -37,6 +37,7 @@ class AjaxController {
     def escapeService
     def formService
     def dashboardDueDatesService
+    IdentifierService identifierService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1456,21 +1457,8 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    @Transactional
     def deleteIdentifier() {
-        log.debug("AjaxController::deleteIdentifier ${params}")
-        def owner = genericOIDService.resolveOID(params.owner)
-        def target = genericOIDService.resolveOID(params.target)
-
-        log.debug('owner: ' + owner)
-        log.debug('target: ' + target)
-
-        if (owner && target) {
-            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
-                log.debug("Identifier deleted: ${params}")
-                target.delete()
-            }
-        }
+        identifierService.deleteIdentifier(params)
         redirect(url: request.getHeader('referer'))
     }
 

@@ -1,10 +1,13 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 
 @Transactional
 class IdentifierService {
+
+    GenericOIDService genericOIDService
 
     void checkNullUIDs() {
         List<Person> persons = Person.findAllByGlobalUIDIsNull()
@@ -42,4 +45,16 @@ class IdentifierService {
             pkg.save()
         }
     }
+
+    void deleteIdentifier(GrailsParameterMap params) {
+        def owner = genericOIDService.resolveOID(params.owner)
+        def target = genericOIDService.resolveOID(params.target)
+        if (owner && target) {
+            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
+                log.debug("Identifier deleted: ${params}")
+                target.delete()
+            }
+        }
+    }
+
 }
