@@ -10,6 +10,7 @@ class ResourcesController {
      *
      * @return the requested file
      */
+    @Secured(['ROLE_USER'])
     def downloadFile() {
         //Get the current working server root to have an absolute path to work with
         String root = request.getSession().getServletContext().getRealPath("/")

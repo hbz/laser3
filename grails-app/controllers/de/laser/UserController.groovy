@@ -24,6 +24,7 @@ class UserController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 
+    @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }

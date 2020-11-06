@@ -797,11 +797,7 @@ class PackageController  {
     }
 
     def isEditable() {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
-            return true
-        } else {
-            return false
-        }
+        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
