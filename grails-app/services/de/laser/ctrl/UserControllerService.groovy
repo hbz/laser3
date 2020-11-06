@@ -15,6 +15,8 @@ class UserControllerService {
     ContextService contextService
     InstAdmService instAdmService
 
+    //--------------------------------------------- helper section -------------------------------------------------
+
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
 
         Map<String, Object> result = [orgInstance: contextService.org]

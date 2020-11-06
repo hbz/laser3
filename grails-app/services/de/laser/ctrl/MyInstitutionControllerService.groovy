@@ -100,6 +100,8 @@ class MyInstitutionControllerService {
         [status: STATUS_OK, result: result]
     }
 
+    //--------------------------------------------- helper section -------------------------------------------------
+
     Map<String, Object> getResultGenerics(MyInstitutionController controller, GrailsParameterMap params) {
 
         Map<String, Object> result = [:]

@@ -20,6 +20,8 @@ class LicenseControllerService {
     LinksGenerationService linksGenerationService
     SpringSecurityService springSecurityService
 
+    //--------------------------------------------- helper section -------------------------------------------------
+
     Map<String, Object> getResultGenericsAndCheckAccess(LicenseController controller, GrailsParameterMap params, String checkOption) {
 
         Map<String, Object> result = [:]

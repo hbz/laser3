@@ -4,6 +4,7 @@ package de.laser
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
+import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
@@ -40,6 +41,7 @@ class SurveyController {
     GenericOIDService genericOIDService
     SurveyService surveyService
     FinanceService financeService
+    FinanceControllerService financeControllerService
     ExportService exportService
     TaskService taskService
     SubscriptionService subscriptionService
@@ -849,7 +851,7 @@ class SurveyController {
     Map<String,Object> surveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
 
         Map<Long,Object> orgConfigurations = [:]
         result.costItemElements.each { oc ->
@@ -910,7 +912,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
         List selectedMembers = params.list("selectedOrgs")
 
         if(selectedMembers) {
@@ -2381,7 +2383,7 @@ class SurveyController {
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> editSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2413,7 +2415,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
 
         Map<Long,Object> orgConfigurations = [:]
         result.costItemElements.each { oc ->
@@ -3150,7 +3152,7 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
-        //result.putAll(financeService.setEditVars(result.institution))
+        //result.putAll(financeControllerService.setEditVars(result.institution))
 
         /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
 
@@ -3199,7 +3201,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         def newCostItem = null
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
 
         try {
             log.debug("SurveyController::newCostItem() ${params}");
@@ -4467,6 +4469,7 @@ class SurveyController {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /*
     private Map<String,Object> setResultGenericsAndCheckAccessforSub(checkOption) {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -4490,6 +4493,7 @@ class SurveyController {
 
         result
     }
+    */
 
     @DebugAnnotation(wtc = 1)
     private def setNewProperty(def property, def value) {

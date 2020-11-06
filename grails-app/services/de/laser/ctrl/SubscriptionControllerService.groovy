@@ -92,6 +92,7 @@ class SubscriptionControllerService {
     TaskService taskService
     AddressbookService addressbookService
     FinanceService financeService
+    FinanceControllerService financeControllerService
     OrgTypeService orgTypeService
     FactService factService
     SubscriptionService subscriptionService
@@ -252,7 +253,7 @@ class SubscriptionControllerService {
             pu.setBenchmark('costs')
             //cost items
             //params.forExport = true
-            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeService.setResultGenerics(params))
+            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeControllerService.getResultGenerics(params))
             result.costItemSums = [:]
             if (costItems.own) {
                 result.costItemSums.ownCosts = costItems.own.sums

@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.PendingChangeService
+import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
@@ -16,24 +17,24 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import javax.servlet.ServletOutputStream
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
-import java.util.List
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController  {
 
-    PendingChangeService pendingChangeService
     def accessService
     def genericOIDService
     def financeService
     def escapeService
     def exportService
+    FinanceControllerService financeControllerService
+    PendingChangeService pendingChangeService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def index() {
         log.debug("FinanceController::index() ${params}")
         try {
-            Map<String,Object> result = financeService.setResultGenerics(params)
+            Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItems(params,result)
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
@@ -51,7 +52,7 @@ class FinanceController  {
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
-            Map<String,Object> result = financeService.setResultGenerics(params)
+            Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
@@ -68,7 +69,7 @@ class FinanceController  {
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
-        Map<String, Object> result = financeService.setResultGenerics(params+[forExport:true])
+        Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
         if (!accessService.checkMinUserOrgRole(result.user,result.institution,"INST_USER")) {
             flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
             response.sendError(403)
@@ -359,8 +360,8 @@ class FinanceController  {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
-        Map<String, Object> result = financeService.setResultGenerics(params)
-        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        Map<String, Object> result = financeControllerService.getResultGenerics(params)
+        result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
@@ -376,9 +377,9 @@ class FinanceController  {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Object editCostItem() {
-        Map<String, Object> result = financeService.setResultGenerics(params)
+        Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
         if(!result.dataToDisplay.contains('subscr')) {
             if(result.costItem.taxKey)
                 result.taxKey = result.costItem.taxKey
@@ -392,9 +393,9 @@ class FinanceController  {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Object copyCostItem() {
-        Map<String, Object> result = financeService.setResultGenerics(params)
+        Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        result.putAll(financeService.setAdditionalGenericEditResults(result))
+        result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id

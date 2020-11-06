@@ -22,6 +22,8 @@ class OrganisationControllerService {
     ContextService contextService
     SpringSecurityService springSecurityService
 
+    //--------------------------------------------- helper section -------------------------------------------------
+
     Map<String, Object> getResultGenericsAndCheckAccess(OrganisationController controller, GrailsParameterMap params) {
 
         User user = User.get(springSecurityService.principal.id)

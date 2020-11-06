@@ -18,6 +18,8 @@ class SurveyControllerService {
     ContextService contextService
     SpringSecurityService springSecurityService
 
+    //--------------------------------------------- helper section -------------------------------------------------
+
     Map<String, Object> getResultGenericsAndCheckAccess(GrailsParameterMap params) {
 
         Map<String, Object> result = [:]
