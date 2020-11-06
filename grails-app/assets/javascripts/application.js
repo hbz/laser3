@@ -780,8 +780,24 @@ r2d2 = {
 
                 $('.tiny.modal')
                     .modal({
+                        onShow : function() {
+                            //only in form context
+                            if (dataAttr) {
+                                // only if the button that triggers the confirmation modal has the attribute value set
+                                if ($(that).val()) {
+                                    // than find the form that wraps the button
+                                    // and insert the hidden field with name and value
+                                    var name = $(that).attr('name')
+                                    var  hiddenField = $('<input id="additionalHiddenField" type="hidden"/>')
+                                        .attr( 'name',name )
+                                        .val($(that).val());
+                                    $('[data-confirm-id='+dataAttr+']').prepend(hiddenField);
+                                }
+                            }
+                        },
                         closable  : false,
                         onApprove : function() {
+
                             // open confirmation modal from inside a form
                             if (dataAttr){
                                 $('[data-confirm-id='+dataAttr+']').submit();
@@ -796,8 +812,12 @@ r2d2 = {
                             $('#js-confirmation-content-term').html('');
                         },
                         onDeny : function() {
-                            $('#js-confirmation-content-term').html('')
-                        },
+                            $('#js-confirmation-content-term').html('');
+                            // delete hidden field
+                            if ($('#additionalHiddenField')) {
+                                $('#additionalHiddenField').remove();
+                            }
+                        }
                         /*                        onShow : function() {
                                                     $modal.removeAttr('aria-hidden');
                                                     // is needed to hide the rest of the page from Screenreaders in case of open the modal

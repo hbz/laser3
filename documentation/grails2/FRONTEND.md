@@ -69,6 +69,14 @@ data-confirm-term-how="concludeBinding":
 
 #### Use in Form
 
+#### Important
+
+Mind the convention of data-confirm-id in form element and inner button element
+
+#### The possible pattern
+
+1.) The form sending trigger element (e.g. button) **HAS NO** value and name/value is set in hidden field via ***Markup*** (***=from you***)
+
 ```
 <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
@@ -82,6 +90,20 @@ data-confirm-term-how="concludeBinding":
             <i class="trash alternate icon"></i>
         </div>
 </g:form>
+```
+2.) The form sending trigger element (e.g. button) **HAS** value and name/value is set in hidden field via ***Javascript*** (***=from system***) 
+- name and value 
+```
+    <g:form action="processLinkLicenseMembers" method="post" class="ui form" data-confirm-id="deleteLicenses_form">
+                <div class="ui buttons">
+                    <button class="ui button negative js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
+                            data-confirm-term-how="ok"
+                            name="processOption"
+                            data-confirm-id="deleteLicenses"
+                            value="unlinkLicense">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</button>
+                </div>
+    </g:form>
 ```
 
 #### Form with Ajax Update
