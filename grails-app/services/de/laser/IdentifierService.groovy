@@ -45,7 +45,9 @@ class IdentifierService {
         }
     }
 
-    void deleteIdentifier(owner,target) {
+    void deleteIdentifier(String ownerKey,String targetKey) {
+        def owner = genericOIDService.resolveOID(ownerKey)
+        def target = genericOIDService.resolveOID(targetKey)
         if (owner && target) {
             if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
                 log.debug("Identifier deleted: ${owner}, ${target}")
