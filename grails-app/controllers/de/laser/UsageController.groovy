@@ -15,8 +15,6 @@ class UsageController  {
     def contextService
     def springSecurityService
 
-    static transactional = false
-
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
         def result = initResult()

@@ -16,7 +16,7 @@ class AccessMethodController  {
     def springSecurityService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']
-    
+
     @Secured(['ROLE_USER'])
     @Transactional
     def create() {
