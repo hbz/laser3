@@ -1,6 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.ContextService
+import de.laser.InstAdmService
 import de.laser.auth.User
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -12,6 +13,7 @@ class UserControllerService {
     static final int STATUS_ERROR = 1
 
     ContextService contextService
+    InstAdmService instAdmService
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
 

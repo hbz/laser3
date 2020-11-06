@@ -27,7 +27,7 @@ class SurveyControllerService {
         result.user = User.get(springSecurityService.principal.id)
 
         result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
         result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs?.size() > 1)
 
         result.editable = result.surveyInfo.isEditable() ?: false
