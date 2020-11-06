@@ -40,7 +40,6 @@ class YodaController {
 
     def yodaService
     def cacheService
-    def springSecurityService
     def statsSyncService
     def dataloadService
     def globalSourceSyncService
@@ -48,15 +47,12 @@ class YodaController {
     def dashboardDueDatesService
     StatusUpdateService statusUpdateService
     FinanceService financeService
-    def documentUpdateService
     def quartzScheduler
     def identifierService
     def deletionService
     def surveyUpdateService
-    def changeNotificationService
     def subscriptionService
     def exportService
-    def dataConsistencyService
 
     @Secured(['ROLE_YODA'])
     @Transactional
@@ -83,7 +79,7 @@ class YodaController {
     def demo() {
         Map result = [:]
 
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         result.roles = result.user.roles
         result.affiliations = result.user.affiliations
 

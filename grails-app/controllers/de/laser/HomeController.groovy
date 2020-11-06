@@ -1,21 +1,20 @@
 package de.laser
 
-import de.laser.auth.User
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class HomeController {
 
+    def contextService
     def springSecurityService
  
     @Secured(['ROLE_USER'])
     def index() {
         Map<String, Object> result = [:]
-        log.debug("HomeController::index - ${springSecurityService.principal.id}");
+        result.user = contextService.getUser()
 
-        result.user = User.get(springSecurityService.principal.id)
         if (result.user) {
-
+            log.debug("HomeController::index - ${result.user.id}")
             if (UserSetting.get(result.user, UserSetting.KEYS.DASHBOARD) == UserSetting.SETTING_NOT_FOUND) {
                 flash.message = message(code: 'profile.dash.not_set')
                 redirect(controller: 'profile', action: 'index')
@@ -24,7 +23,7 @@ class HomeController {
             redirect(controller: 'myInstitution', action: 'dashboard')
         }
         else {
-            log.error("Unable to lookup user for principal id :: ${springSecurityService.principal.id}");
+            log.error("Unable to lookup user for principal id :: ${springSecurityService.principal.id}")
         }
     }
 }

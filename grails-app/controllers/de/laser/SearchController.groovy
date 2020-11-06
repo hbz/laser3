@@ -15,7 +15,7 @@ class SearchController  {
         log.debug("searchController: index");
         Map<String, Object> result = [:]
 
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         params.max = params.max ?: result.user.getDefaultPageSize()
         params.offset = params.offset ? params.int('offset') : 0
 
@@ -70,7 +70,7 @@ class SearchController  {
         Map<String, Object> result = [:]
         def filtered
         def query = "${params.query}"
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         //params.max = result.user.getDefaultPageSize() ?: 15
         params.max = 50
 

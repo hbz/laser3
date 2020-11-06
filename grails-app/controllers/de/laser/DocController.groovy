@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocController  {
 
-	def springSecurityService
 	def contextService
 
     static allowedMethods = [delete: 'POST']
@@ -27,7 +26,7 @@ class DocController  {
 	@Secured(['ROLE_ADMIN'])
     def list() {
       	Map<String, Object> result = [:]
-      	result.user = User.get(springSecurityService.principal.id)
+      	result.user = contextService.getUser()
 
 		params.max = params.max ?: result.user?.getDefaultPageSize()
 
@@ -54,7 +53,7 @@ class DocController  {
 	def createNote() {
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
-		User user = User.get(springSecurityService.principal.id)
+		User user = contextService.getUser()
 		GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
 		if (domain_class) {

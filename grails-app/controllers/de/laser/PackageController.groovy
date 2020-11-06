@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController  {
 
-    def springSecurityService
     def genericOIDService
     def yodaService
     def exportService
@@ -46,10 +45,9 @@ class PackageController  {
     def index() {
 
         Map<String, Object> result = [:]
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         params.max = params.max ?: result.user.getDefaultPageSize()
 
-        if (springSecurityService.isLoggedIn()) {
             if (params.q == "") params.remove('q');
 
             if (params.search.equals("yes")) {
@@ -102,14 +100,14 @@ class PackageController  {
             if (!old_sort) {
                 params.remove('sort')
             }
-        }
+
         result
     }
 
     @Secured(['ROLE_USER'])
     def list() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 
         result.editable = true
@@ -193,7 +191,7 @@ class PackageController  {
     @Deprecated
     // should this not be only possible from GOKb??
     def create() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
 
         switch (request.method) {
             case 'GET':
@@ -240,7 +238,7 @@ class PackageController  {
         Map<String, Object> result = [:]
         result.unionList = []
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -384,7 +382,7 @@ class PackageController  {
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
@@ -396,7 +394,7 @@ class PackageController  {
 
         // tasks
         Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
+        result.tasks = taskService.getTasksByResponsiblesAndObject(contextService.getUser(), contextOrg, packageInstance)
         Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
@@ -501,7 +499,7 @@ class PackageController  {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.editable = isEditable()
 
         Package packageInstance = Package.get(params.id)
@@ -599,7 +597,7 @@ class PackageController  {
     @Secured(['ROLE_USER'])
     def documents() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.institution = contextService.org
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
@@ -622,7 +620,7 @@ class PackageController  {
         log.debug("previous_expected ${params}");
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.editable = isEditable()
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
@@ -832,7 +830,7 @@ class PackageController  {
     @Secured(['ROLE_USER'])
     def notes() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
         result
@@ -842,7 +840,7 @@ class PackageController  {
     @Transactional
     def tasks() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 
@@ -996,7 +994,7 @@ class PackageController  {
             params.max = 9999999
             result.offset = 0
         } else {
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
             params.max = result.max
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;

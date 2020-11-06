@@ -1,6 +1,5 @@
 package de.laser
 
-
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
@@ -14,7 +13,6 @@ import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -31,7 +29,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
 
-    SpringSecurityService springSecurityService
     AccessService accessService
     ContextService contextService
     SubscriptionsQueryService subscriptionsQueryService
@@ -71,7 +68,7 @@ class SurveyController {
     Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -145,7 +142,7 @@ class SurveyController {
     Map<String, Object> workflowsSurveysConsortia() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -207,7 +204,7 @@ class SurveyController {
     Map<String,Object> createGeneralSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -226,7 +223,7 @@ class SurveyController {
     Map<String,Object> processCreateGeneralSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -292,7 +289,7 @@ class SurveyController {
     Map<String,Object> createSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -373,7 +370,7 @@ class SurveyController {
     Map<String,Object> createIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -453,7 +450,7 @@ class SurveyController {
     Map<String,Object> addSubtoSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -478,7 +475,7 @@ class SurveyController {
     Map<String,Object> addSubtoIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -504,7 +501,7 @@ class SurveyController {
     Map<String,Object> processCreateSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -591,7 +588,7 @@ class SurveyController {
     Map<String,Object> processCreateIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -1425,7 +1422,7 @@ class SurveyController {
      def showEntitlementsRenew() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.participant = params.participant ? Org.get(params.participant) : null
 
         result.surveyConfig = SurveyConfig.get(params.id)
@@ -1541,7 +1538,7 @@ class SurveyController {
      Map<String,Object> openIssueEntitlementsSurveyAgain() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.participant = params.participant ? Org.get(params.participant) : null
 
         result.surveyConfig = SurveyConfig.get(params.id)
@@ -1583,7 +1580,7 @@ class SurveyController {
      Map<String,Object> openSurveyAgainForParticipant() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.participant = params.participant ? Org.get(params.participant) : null
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
@@ -1615,7 +1612,7 @@ class SurveyController {
      Map<String,Object> completeIssueEntitlementsSurveyforParticipant() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.participant = params.participant ? Org.get(params.participant) : null
 
         result.surveyConfig = SurveyConfig.get(params.id)
@@ -1670,7 +1667,7 @@ class SurveyController {
      Map<String,Object> completeIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
@@ -1877,7 +1874,7 @@ class SurveyController {
      Map<String,Object> deleteSurveyPropFromConfig() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -1916,7 +1913,7 @@ class SurveyController {
      Map<String,Object> createSurveyProperty() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -1974,7 +1971,7 @@ class SurveyController {
      Map<String,Object> deleteSurveyProperty() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -2003,7 +2000,7 @@ class SurveyController {
      Map<String,Object> addSurveyParticipants() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -3207,7 +3204,7 @@ class SurveyController {
             log.debug("SurveyController::newCostItem() ${params}");
 
 
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             result.error = [] as List
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
@@ -4472,7 +4469,7 @@ class SurveyController {
     /*
     private Map<String,Object> setResultGenericsAndCheckAccessforSub(checkOption) {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription.subscriber
 
@@ -4606,7 +4603,7 @@ class SurveyController {
     })
      Map<String,Object> copyElementsIntoSurvey() {
         def result             = [:]
-        result.user            = User.get(springSecurityService.principal.id)
+        result.user            = contextService.getUser()
         result.institution     = contextService.org
         result.contextOrg      = result.institution
 

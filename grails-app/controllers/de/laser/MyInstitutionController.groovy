@@ -25,6 +25,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
@@ -55,10 +56,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
-
-
     def dataSource
-    def springSecurityService
     def userService
     def genericOIDService
     def escapeService
@@ -124,7 +122,7 @@ class MyInstitutionController  {
 
         Map<String, Object> result = [:]
         result.institution        = contextService.getOrg()
-        result.user               = User.get(springSecurityService.principal.id)
+        result.user               = contextService.getUser()
         result.editable           = true // inherit
         result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, contextService.getOrg(), [sort:'dateRequested'])
 
@@ -138,7 +136,7 @@ class MyInstitutionController  {
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
@@ -914,7 +912,7 @@ join sub.orgRelations or_sub where
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
@@ -1241,7 +1239,7 @@ join sub.orgRelations or_sub where
     def currentPackages() {
 
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
@@ -1336,7 +1334,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { principal.hasProperty('user') && principal.user.hasAffiliation("INST_USER") })
     def dashboard() {
 
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
@@ -1367,7 +1365,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.springSecurityService.isLoggedIn() && principal.user.hasAffiliation("INST_USER") })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -3103,7 +3101,7 @@ join sub.orgRelations or_sub where
 
     @Secured(['ROLE_USER'])
     def switchContext() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         Org org = (Org) genericOIDService.resolveOID(params.oid)
 
         if (user && org && org.id in user.getAuthorizedOrgsIds()) {

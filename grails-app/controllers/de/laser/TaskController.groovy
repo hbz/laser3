@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.auth.User
  
 import de.laser.helper.DateUtil
@@ -13,7 +12,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController  {
 
-	def springSecurityService
     def contextService
     def taskService
 
@@ -27,7 +25,7 @@ class TaskController  {
 	@Secured(['ROLE_ADMIN'])
     def list() {
 		if (! params.max) {
-			User user   = springSecurityService.getCurrentUser()
+			User user   = contextService.getUser()
 			params.max  = user?.getDefaultPageSize()
 		}
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]

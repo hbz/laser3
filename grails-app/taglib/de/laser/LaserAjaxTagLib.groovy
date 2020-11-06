@@ -5,8 +5,6 @@ import org.springframework.web.util.HtmlUtils
 
 class LaserAjaxTagLib {
 
-    def springSecurityService
-
     static namespace = 'laser'
 
     def remoteLink = {attrs, body ->

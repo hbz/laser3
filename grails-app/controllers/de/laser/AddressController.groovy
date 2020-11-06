@@ -2,14 +2,13 @@ package de.laser
  
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AddressController  {
 
-	def springSecurityService
+	def contextService
 	def addressbookService
     def formService
 
@@ -92,7 +91,7 @@ class AddressController  {
             modalText: messageCode?
                     message(code: 'default.edit.label', args: [message(code: messageCode)]) :
                     message(code: 'default.new.label', args: [message(code: 'person.address.label')]),
-            editable: addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser()),
+            editable: addressbookService.isAddressEditable(addressInstance, contextService.getUser()),
             redirect: '.',
             hideType: true
         ]
@@ -109,7 +108,7 @@ class AddressController  {
                 redirect(url: request.getHeader('referer'))
                 return
             }
-            if (!addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())) {
+            if (!addressbookService.isAddressEditable(addressInstance, contextService.getUser())) {
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -163,7 +162,7 @@ class AddressController  {
                 redirect action: 'list'
                 return
             }
-            if (!addressbookService.isAddressEditable(addressInstance, springSecurityService.getCurrentUser())) {
+            if (!addressbookService.isAddressEditable(addressInstance, contextService.getUser())) {
                 redirect action: 'show', id: params.id
                 return
             }

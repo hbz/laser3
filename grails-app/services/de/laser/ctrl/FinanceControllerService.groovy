@@ -15,7 +15,6 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -31,12 +30,11 @@ class FinanceControllerService {
     FinanceService financeService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
-    SpringSecurityService springSecurityService
 
     //--------------------------------------------- helper section -------------------------------------------------
 
     Map<String,Object> getResultGenerics(GrailsParameterMap params) throws FinancialDataException {
-        Map<String,Object> result = [user: User.get(springSecurityService.principal.id),
+        Map<String,Object> result = [user: contextService.getUser(),
                                      offsets:[collOffset:0, consOffset:0, subscrOffset:0, ownOffset:0],
                                      sortConfig:[
                                              collSort:'sortname', collOrder:'asc',

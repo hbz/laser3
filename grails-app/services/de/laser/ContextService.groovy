@@ -29,7 +29,6 @@ class ContextService {
 
     Org getOrg() {
         Org.withNewSession {
-
             try {
                 SessionCacheWrapper scw = getSessionCache()
 
@@ -55,7 +54,6 @@ class ContextService {
 
     User getUser() {
         User.withNewSession {
-
             try {
                 def user = springSecurityService.getCurrentUser()
                 return (User) GrailsHibernateUtil.unwrapIfProxy(user)

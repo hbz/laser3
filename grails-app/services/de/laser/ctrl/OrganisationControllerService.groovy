@@ -8,7 +8,6 @@ import de.laser.OrganisationController
 import de.laser.auth.User
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -20,13 +19,12 @@ class OrganisationControllerService {
 
     AccessService accessService
     ContextService contextService
-    SpringSecurityService springSecurityService
 
     //--------------------------------------------- helper section -------------------------------------------------
 
     Map<String, Object> getResultGenericsAndCheckAccess(OrganisationController controller, GrailsParameterMap params) {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         Org org = contextService.org
         Map<String, Object> result = [user:user, institution:org, inContextOrg:true, institutionalView:false]
 

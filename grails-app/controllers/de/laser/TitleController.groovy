@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
 
-    def springSecurityService
+    def contextService
     def ESSearchService
 
     @Secured(['ROLE_USER'])
@@ -33,10 +33,9 @@ class TitleController  {
 
         Map<String, Object> result = [:]
 
-        if (springSecurityService.isLoggedIn()) {
             params.rectype = ["EBookInstance", "JournalInstance", "BookInstance", "TitleInstance", "DatabaseInstance"] // Tells ESSearchService what to look for
             params.showAllTitles = true
-            result.user = springSecurityService.getCurrentUser()
+            result.user = contextService.getUser()
             params.max = params.max ?: result.user.getDefaultPageSize()
 
 
@@ -67,7 +66,6 @@ class TitleController  {
             if(! old_sort ) {
                 params.remove('sort')
             }
-        }
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -173,7 +171,7 @@ class TitleController  {
   def batchUpdate() {
         log.debug( params.toMapString() )
         SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
 
       params.each { p ->
       if ( p.key.startsWith('_bulkflag.')&& (p.value=='on'))  {
@@ -234,7 +232,7 @@ class TitleController  {
       result.offset = 0
     }
     else {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
       result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -301,7 +299,7 @@ class TitleController  {
       params.offset = 0
       params.remove("search")
     }
-      User user = User.get(springSecurityService.principal.id)
+      User user = contextService.getUser()
     Map<String, Object> result = [:]
     result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;

@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    def springSecurityService
     def contextService
     def genericOIDService
     def exportService
@@ -189,7 +188,7 @@ class SubscriptionController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map<String,Object> result = [user:springSecurityService.getCurrentUser(),institution:contextService.org]
+        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.org]
         result.ownobj = Subscription.get(params.instanceId)
         result.owntp = 'subscription'
         if(params.id) {

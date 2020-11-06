@@ -1,9 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.ContextService
-import de.laser.auth.User
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.servlet.mvc.GrailsParameterMap
 
 @Transactional
@@ -13,7 +11,6 @@ class PlatformControllerService {
     static final int STATUS_ERROR = 1
 
     ContextService contextService
-    SpringSecurityService springSecurityService
 
     //--------------------------------------------- helper section -------------------------------------------------
 
@@ -21,7 +18,7 @@ class PlatformControllerService {
 
         Map<String, Object> result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.institution = contextService.org
         result.contextOrg = result.institution //temp fix
 

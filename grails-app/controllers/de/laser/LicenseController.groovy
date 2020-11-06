@@ -4,7 +4,6 @@ import com.k_int.kbplus.InstitutionsService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
@@ -18,16 +17,12 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
-import de.laser.helper.ConfigUtils
 
-import java.nio.file.Files
-import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController {
 
-    def springSecurityService
     def taskService
     def docstoreService
     def genericOIDService
@@ -757,7 +752,7 @@ class LicenseController {
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
   def create() {
     Map<String, Object> result = [:]
-    result.user = User.get(springSecurityService.principal.id)
+    result.user = contextService.getUser()
     result
   }
 
@@ -862,7 +857,7 @@ class LicenseController {
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoLicense() {
         def result             = [:]
-        result.user            = User.get(springSecurityService.principal.id)
+        result.user            = contextService.getUser()
         result.institution     = contextService.org
         result.contextOrg      = result.institution
 

@@ -18,9 +18,9 @@ import java.text.SimpleDateFormat
 class IssueEntitlementController  {
 
     def factService
+    ContextService contextService
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
-   def springSecurityService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
@@ -31,7 +31,7 @@ class IssueEntitlementController  {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: contextService.getUser().getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
@@ -46,7 +46,7 @@ class IssueEntitlementController  {
     def show() {
       Map<String, Object> result = [:]
 
-      result.user = User.get(springSecurityService.principal.id)
+      result.user = contextService.getUser()
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
 
       params.max = Math.min(params.max ? params.int('max') : 10, 100)

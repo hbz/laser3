@@ -19,7 +19,6 @@ class ProfileController {
 
     def contextService
     def genericOIDService
-    def springSecurityService
     def passwordEncoder
     def instAdmService
     def deletionService
@@ -31,7 +30,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def index() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.editable = true
         result.isOrgBasicMember = contextService.org.getCustomerType() == 'ORG_BASIC_MEMBER'
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
@@ -43,7 +42,7 @@ class ProfileController {
     @Secured(['ROLE_ADMIN'])
     def errorReport() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.title = params.title
         result.described = params.described
         result.expected = params.expected
@@ -55,7 +54,7 @@ class ProfileController {
     @Secured(['ROLE_ADMIN'])
     def errorOverview() {
         Map<String, Object> result = [:]
-        result.user     = User.get(springSecurityService.principal.id)
+        result.user     = contextService.getUser()
         result.tickets  = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
         result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_YODA,ROLE_TICKET_EDITOR")
 
@@ -65,7 +64,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def help() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result
     }
 
@@ -121,7 +120,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def dsgvo() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result
     }
 
@@ -129,7 +128,7 @@ class ProfileController {
     def processJoinRequest() {
         log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}")
 
-        User user       = User.get(springSecurityService.principal.id)
+        User user       = contextService.getUser()
         Org org         = Org.get(params.org)
         Role formalRole = Role.get(params.formalRole)
 
@@ -144,7 +143,7 @@ class ProfileController {
     @Transactional
     def processCancelRequest() {
         log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
-        User user        = User.get(springSecurityService.principal.id)
+        User user        = contextService.getUser()
         UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
@@ -156,7 +155,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def deleteProfile() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
          // TODO : isLastAdminForOrg
 
@@ -186,7 +185,7 @@ class ProfileController {
     @Transactional
     def updateProfile() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         flash.message=""
 
         if ( user.display != params.userDispName ) {
@@ -243,7 +242,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updateReminderSettings() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
 
         flash.message = ""
         flash.error = ""
@@ -305,7 +304,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updateNotificationSettings() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
 
         flash.message = ""
         flash.error = ""
@@ -387,7 +386,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updateIsRemindByEmail() {
-        User user1 = User.get(springSecurityService.principal.id)
+        User user1 = contextService.getUser()
 
         flash.message=""
         def was_isRemindByEmail = user1.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
@@ -406,7 +405,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updatePassword() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         flash.message = ""
 
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {
