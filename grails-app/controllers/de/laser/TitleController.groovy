@@ -9,6 +9,7 @@ import de.laser.auth.User
  
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -89,31 +90,6 @@ class TitleController  {
     result
   }
 
-  @Secured(['ROLE_ADMIN'])
-  @Deprecated
-  /**
-   * Is a GOKb functionality, no need to keep it in LAS:eR
-   */
-  def createTitle() {
-    log.debug("Create new title for ${params.title}");
-    //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()
-    def ti_status = RefdataValue.getByValueAndCategory('Current', RefdataCategory.TITLE_STATUS)
-    def new_title =  ((params.typ=='Ebook') ? new BookInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('EBook', RefdataCategory.TI_MEDIUM)) :
-              (params.typ=='Database' ? new DatabaseInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Database', RefdataCategory.TI_MEDIUM)) : new JournalInstance(title:params.title, impId:java.util.UUID.randomUUID().toString(), status: ti_status, type: RefdataValue.getByValueAndCategory('Journal', RefdataCategory.TI_MEDIUM))))
-
-    if ( new_title.save(flush:true) ) {
-        new_title.impId = new_title.globalUID
-        new_title.save(flush:true)
-        log.debug("New title id is ${new_title.id}");
-        redirect ( action:'edit', id:new_title.id);
-    }
-    else {
-      log.error("Problem creating title: ${new_title.errors}");
-      flash.message = "Problem creating title: ${new_title.errors}"
-      redirect ( action:'findTitleMatches' )
-    }
-  }
-
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Map<String, Object> result = [:]
@@ -170,6 +146,7 @@ class TitleController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    @Transactional
   def batchUpdate() {
         log.debug( params.toMapString() )
         SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
@@ -215,7 +192,7 @@ class TitleController  {
                 }
             }
           if (changed)
-             tipp_to_bulk_edit.save(flush: true)
+             tipp_to_bulk_edit.save()
         }
       }
     }
