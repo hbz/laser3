@@ -1,6 +1,7 @@
 package de.laser
 
-
+import de.laser.ctrl.OrganisationControllerService
+import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -34,8 +35,9 @@ class OrganisationController  {
     def userService
     def accessPointService
     FormService formService
-    ResultGenericsService resultGenericsService
+    OrganisationControllerService organisationControllerService
     TaskService taskService
+    UserControllerService userControllerService
 
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def index() {
@@ -47,7 +49,7 @@ class OrganisationController  {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
@@ -180,7 +182,7 @@ class OrganisationController  {
         ctx.accessService.checkPermTypeAffiliation("ORG_CONSORTIUM", "Consortium", "INST_USER")
     })
     Map listInstitution() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         params.orgType   = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
@@ -622,7 +624,7 @@ class OrganisationController  {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
 
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (! result) {
             response.sendError(401)
             return
@@ -706,7 +708,7 @@ class OrganisationController  {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
 
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -835,7 +837,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (!result) {
             response.sendError(401); return
         }
@@ -873,7 +875,7 @@ class OrganisationController  {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -884,7 +886,7 @@ class OrganisationController  {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -914,7 +916,7 @@ class OrganisationController  {
         principal.user?.hasAffiliation("INST_USER")
     })
     def notes() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -968,7 +970,7 @@ class OrganisationController  {
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
     def users() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1031,7 +1033,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def createUser() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
@@ -1058,7 +1060,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
-        Map<String, Object> result = resultGenericsService.getResultGenerics(new UserController(), params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'editUser', id: params.id
@@ -1076,7 +1078,7 @@ class OrganisationController  {
 
     @Secured(['ROLE_ADMIN'])
     def delete() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (result.orgInstance) {
             if (params.process  && result.editable) {
@@ -1159,7 +1161,7 @@ class OrganisationController  {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1199,7 +1201,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1275,7 +1277,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1356,7 +1358,7 @@ class OrganisationController  {
 
     @Transactional
     def addSubjectGroup() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (!result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1387,7 +1389,7 @@ class OrganisationController  {
 
     @Transactional
     def deleteSubjectGroup() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (!result.orgInstance) {
             flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1408,7 +1410,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1454,7 +1456,7 @@ class OrganisationController  {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -1494,11 +1496,7 @@ class OrganisationController  {
 
         result
     }
-
-    Map<String, Object> setResultGenericsAndCheckAccess() {
-        resultGenericsService.getResultGenericsAndCheckAccess(this, params)
-    }
-
+    
     boolean checkIsEditable(User user, Org org) {
         boolean isEditable
         Org contextOrg = contextService.org

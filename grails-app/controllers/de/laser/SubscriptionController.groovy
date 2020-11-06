@@ -31,7 +31,6 @@ class SubscriptionController {
     def surveyService
     AccessPointService accessPointService
     CopyElementsService copyElementsService
-    ResultGenericsService resultGenericsService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -97,7 +96,7 @@ class SubscriptionController {
     })*/
     @Secured(['ROLE_ADMIN'])
     def compare() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
         result
     }
@@ -105,7 +104,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             response.sendError(401)
         }
@@ -144,7 +143,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
             result.parentId = result.subscription.instanceOf.id
         else if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
@@ -733,7 +732,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401)
         }
@@ -745,7 +744,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processAddIssueEntitlementsSurvey() {
-        Map<String, Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         if (result.subscription) {
@@ -770,7 +769,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def processRemoveIssueEntitlementsSurvey() {
-        Map<String, Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
@@ -824,7 +823,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def manageEntitlementGroup() {
-        Map<String, Object> result = getResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.titleGroups = result.subscription.ieGroups
         result
     }
@@ -894,7 +893,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
@@ -1011,7 +1010,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def setupPendingChangeConfiguration() {
-        Map<String, Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
             response.sendError(403)
         }
@@ -1054,7 +1053,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def costPerUse() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1117,7 +1116,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def renewSubscription() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
         result.subscription = subscription
         SimpleDateFormat sdf = DateUtil.SDF_dmy
@@ -1368,7 +1367,4 @@ class SubscriptionController {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
-    Map<String,Object> getResultGenericsAndCheckAccess(String checkOption) {
-        resultGenericsService.getResultGenericsAndCheckAccess(this, params, checkOption)
-    }
 }

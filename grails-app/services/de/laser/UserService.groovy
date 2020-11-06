@@ -77,23 +77,6 @@ class UserService {
         User.executeQuery(baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') , queryParams /*,params */)
     }
 
-    Map<String, Object> setResultGenerics(GrailsParameterMap params) {
-        Map<String, Object> result = [orgInstance: contextService.org]
-        result.editor = contextService.user
-
-        if (params.get('id')) {
-            result.user = User.get(params.id)
-            result.editable = result.editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-
-            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
-        }
-        else {
-            result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')
-        }
-
-        result
-    }
-
     User addNewUser(Map params, FlashScope flash) {
         User user = new User(params)
         user.enabled = true
