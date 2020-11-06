@@ -4,7 +4,8 @@ package de.laser
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.InstitutionsService
+import de.laser.ctrl.FinanceControllerService
+import de.laser.ctrl.SurveyControllerService
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -23,8 +24,6 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus
 
 import javax.servlet.ServletOutputStream
-import java.nio.file.Files
-import java.nio.file.Path
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -42,6 +41,7 @@ class SurveyController {
     GenericOIDService genericOIDService
     SurveyService surveyService
     FinanceService financeService
+    FinanceControllerService financeControllerService
     ExportService exportService
     TaskService taskService
     SubscriptionService subscriptionService
@@ -50,6 +50,7 @@ class SurveyController {
     PropertyService propertyService
     LinksGenerationService linksGenerationService
     CopyElementsService copyElementsService
+    SurveyControllerService surveyControllerService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
@@ -658,7 +659,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def show() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
@@ -758,7 +759,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     Map<String,Object> surveyTitles() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -792,7 +793,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     Map<String,Object> surveyConfigDocs() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         result
 
@@ -803,7 +804,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     Map<String,Object> surveyParticipants() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         // new: filter preset
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
@@ -848,9 +849,9 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     Map<String,Object> surveyCostItems() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
 
         Map<Long,Object> orgConfigurations = [:]
         result.costItemElements.each { oc ->
@@ -906,12 +907,12 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     Map<String,Object> processSurveyCostItemsBulk() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
 
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
         List selectedMembers = params.list("selectedOrgs")
 
         if(selectedMembers) {
@@ -999,7 +1000,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     Map<String,Object> surveyConfigFinish() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1022,7 +1023,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     Map<String,Object> surveyCostItemsFinish() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1044,7 +1045,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     Map<String,Object> surveyTransferConfig() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1095,7 +1096,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
     def surveyEvaluation() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         params.tab = params.tab ?: 'participantsViewAllFinish'
 
@@ -1151,7 +1152,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> surveyTransfer() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
          Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
 
@@ -1169,7 +1170,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processTransferParticipants() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1269,7 +1270,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> openParticipantsAgain() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         params.tab = params.tab ?: 'participantsViewAllFinish'
         if(params.tab == 'participantsViewAllNotFinish'){
@@ -1297,7 +1298,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> processOpenParticipantsAgain() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
@@ -1380,7 +1381,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      def surveyTitlesEvaluation() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
@@ -1482,7 +1483,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> surveyTitlesSubscriber() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.participant = params.participant ? Org.get(params.participant) : null
 
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
@@ -1725,7 +1726,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> evaluateIssueEntitlementsSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1752,7 +1753,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> evaluationParticipant() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -1822,7 +1823,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
      Map<String,Object> allSurveyProperties() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
             response.sendError(401); return
         }
@@ -1840,7 +1841,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> addSurveyPropToConfig() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2079,7 +2080,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processOpenSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2126,7 +2127,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processEndSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2151,7 +2152,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processBackInProcessingSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2171,7 +2172,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processOpenSurveyNow() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2229,7 +2230,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> openSurveyAgain() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2262,7 +2263,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> deleteSurveyParticipants() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2299,7 +2300,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> deleteDocuments() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2316,7 +2317,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> deleteSurveyInfo() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2381,8 +2382,8 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> editSurveyCostItem() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
-        result.putAll(financeService.setEditVars(result.institution))
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        result.putAll(financeControllerService.getEditVars(result.institution))
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2409,12 +2410,12 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> addForAllSurveyCostItem() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
 
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
 
         Map<Long,Object> orgConfigurations = [:]
         result.costItemElements.each { oc ->
@@ -2442,7 +2443,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> setInEvaluation() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2464,7 +2465,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> setCompleted() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2487,7 +2488,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> setCompleteSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2509,7 +2510,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> setSurveyConfigComment() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2529,7 +2530,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> renewalWithSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2820,7 +2821,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> copySurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2909,7 +2910,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> addSubMembersToSurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -2926,7 +2927,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processCopySurvey() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3014,7 +3015,7 @@ class SurveyController {
     })
      Map<String,Object> renewSubscriptionConsortiaWithSurvey() {
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.institution = contextService.org
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
@@ -3057,7 +3058,7 @@ class SurveyController {
     })
      def processRenewalWithSurvey() {
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -3147,11 +3148,11 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', wtc = 0)
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
      def exportSurCostItems() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
-        //result.putAll(financeService.setEditVars(result.institution))
+        //result.putAll(financeControllerService.setEditVars(result.institution))
 
         /*   def surveyInfo = SurveyInfo.findByIdAndOwner(params.id, result.institution) ?: null
 
@@ -3200,7 +3201,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         def newCostItem = null
-        result.putAll(financeService.setEditVars(result.institution))
+        result.putAll(financeControllerService.getEditVars(result.institution))
 
         try {
             log.debug("SurveyController::newCostItem() ${params}");
@@ -3415,7 +3416,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> compareMembersOfTwoSubs() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3474,7 +3475,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> copySurveyCostItems() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3520,7 +3521,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> proccessCopySurveyCostItems() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3575,7 +3576,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> copySurveyCostItemsToSub() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3611,7 +3612,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> proccessCopySurveyCostItemsToSub() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3662,7 +3663,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> copyProperties() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3757,7 +3758,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> proccessCopyProperties() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -3890,7 +3891,7 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> processTransferParticipantsByRenewal() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
         }
@@ -4468,27 +4469,7 @@ class SurveyController {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    private Map<String,Object> setResultGenericsAndCheckAccess() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.contextOrg = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-        result.surveyInfo = SurveyInfo.get(params.id)
-        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID as Long ? params.surveyConfigID: Long.parseLong(params.surveyConfigID)) : result.surveyInfo.surveyConfigs[0]
-        result.surveyWithManyConfigs = (result.surveyInfo.surveyConfigs?.size() > 1)
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if(result.surveyConfig)
-        {
-            result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
-        }
-
-        result.subscription =  result.surveyConfig.subscription ?: null
-
-        result
-    }
-
+    /*
     private Map<String,Object> setResultGenericsAndCheckAccessforSub(checkOption) {
         Map<String, Object> result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -4512,6 +4493,7 @@ class SurveyController {
 
         result
     }
+    */
 
     @DebugAnnotation(wtc = 1)
     private def setNewProperty(def property, def value) {

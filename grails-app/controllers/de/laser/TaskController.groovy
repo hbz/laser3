@@ -44,7 +44,7 @@ class TaskController  {
 				params.endDate = sdf.parse(params.endDate)
 			}
 
-			def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
+			Task taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
 			taskInstance.creator = contextService.getUser()
 			taskInstance.createDate = new Date()
 
@@ -98,7 +98,7 @@ class TaskController  {
 
     @Secured(['ROLE_ADMIN'])
     def show() {
-        def taskInstance = Task.get(params.id)
+		Task taskInstance = Task.get(params.id)
         if (! taskInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
 			redirect controller: 'myInstitution', action: 'dashboard'
@@ -121,7 +121,7 @@ class TaskController  {
 				params.endDate = sdf.parse(params.endDate)
 			}
 
-			def taskInstance = Task.get(params.id)
+			Task taskInstance = Task.get(params.id)
 
 			if (((!taskInstance.responsibleOrg) && taskInstance.responsibleUser != contextService.getUser()) && (taskInstance.responsibleOrg != contextOrg) && (taskInstance.creator != contextService.getUser())) {
 				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title])

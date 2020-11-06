@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.InstitutionsService
+import de.laser.ctrl.LicenseControllerService
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -30,7 +31,6 @@ class LicenseController {
     def taskService
     def docstoreService
     def genericOIDService
-    PropertyService propertyService
     def institutionsService
     def pendingChangeService
     def executorWrapperService
@@ -41,11 +41,13 @@ class LicenseController {
     def orgTypeService
     def deletionService
     def subscriptionService
-    SubscriptionsQueryService subscriptionsQueryService
-    LinksGenerationService linksGenerationService
-    FormService formService
     CopyElementsService copyElementsService
+    FormService formService
     LicenseService licenseService
+    LicenseControllerService licenseControllerService
+    LinksGenerationService linksGenerationService
+    PropertyService propertyService
+    SubscriptionsQueryService subscriptionsQueryService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
@@ -55,7 +57,7 @@ class LicenseController {
         pu.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -249,7 +251,7 @@ class LicenseController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_EDIT)
 
         if (params.process && result.editable) {
             result.delResult = deletionService.deleteLicense(result.license, false)
@@ -266,7 +268,7 @@ class LicenseController {
     def processAddMembers() {
         log.debug( params.toMapString() )
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -346,7 +348,7 @@ class LicenseController {
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
         log.debug("linkToSubscription :: ${params}")
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['showLinking','onlyMemberSubs']
         Set<Subscription> allSubscriptions = []
         String action
@@ -387,7 +389,7 @@ class LicenseController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     Map<String,Object> linkLicenseToSubs() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
         result.tableConfig = ['showLinking']
         result.linkedSubscriptions = Links.executeQuery('select l.destinationSubscription from Links l where l.sourceLicense = :license and l.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
@@ -397,7 +399,7 @@ class LicenseController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
     def linkedSubs() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -483,7 +485,7 @@ class LicenseController {
     def members() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -531,7 +533,7 @@ class LicenseController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
     def linkMemberLicensesToSubs() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
         result.linkedSubscriptions = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
@@ -568,7 +570,7 @@ class LicenseController {
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, accessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
@@ -590,7 +592,7 @@ class LicenseController {
     def pendingChanges() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -624,7 +626,7 @@ class LicenseController {
     def history() {
         log.debug("license::history : ${params}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -673,7 +675,7 @@ class LicenseController {
     def changes() {
         log.debug("license::changes : ${params}")
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -700,7 +702,7 @@ class LicenseController {
     def notes() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -713,7 +715,7 @@ class LicenseController {
     def tasks() {
         log.debug("license id:${params.id}")
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -753,7 +755,7 @@ class LicenseController {
     def documents() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -879,7 +881,7 @@ class LicenseController {
     def processcopyLicense() {
 
         params.id = params.baseLicense
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -1092,42 +1094,8 @@ class LicenseController {
 
         result
     }
-
-    private Map<String,Object> setResultGenericsAndCheckAccess(String checkOption) {
-        Map<String,Object> result = [:]
-        result.user            = User.get(springSecurityService.principal.id)
-        result.institution     = contextService.org
-        result.contextOrg      = result.institution
-        result.license         = License.get(params.id)
-        result.licenseInstance = result.license
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
-        result.navPrevLicense = links.prevLink
-        result.navNextLicense = links.nextLink
-        result.showConsortiaFunctions = showConsortiaFunctions(result.license)
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ?: 0
-
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.licenseInstance.isVisibleBy(result.user)) {
-                log.debug( "--- NOT VISIBLE ---")
-                return null
-            }
-        }
-        result.editable = result.license.isEditableBy(result.user)
-
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.editable) {
-                log.debug( "--- NOT EDITABLE ---")
-                return null
-            }
-        }
-
-        result
-    }
-
+    
     boolean showConsortiaFunctions(License license) {
-
         return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 

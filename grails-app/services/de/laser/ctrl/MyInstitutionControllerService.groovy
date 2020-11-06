@@ -4,6 +4,7 @@ import de.laser.MyInstitutionController
 import de.laser.Org
 import de.laser.SurveyConfig
 import de.laser.UserSetting
+import de.laser.auth.User
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.system.SystemAnnouncement
@@ -26,9 +27,9 @@ class MyInstitutionControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    Map<String, Object> dashboard (MyInstitutionController controller, GrailsParameterMap params) {
+    Map<String, Object> dashboard(MyInstitutionController controller, GrailsParameterMap params) {
 
-        Map<String, Object> result = controller.setResultGenerics()
+        Map<String, Object> result = getResultGenerics(controller, params)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             return [status: STATUS_ERROR, result: result]
@@ -97,5 +98,28 @@ class MyInstitutionControllerService {
 
 
         [status: STATUS_OK, result: result]
+    }
+
+    //--------------------------------------------- helper section -------------------------------------------------
+
+    Map<String, Object> getResultGenerics(MyInstitutionController controller, GrailsParameterMap params) {
+
+        Map<String, Object> result = [:]
+
+        switch(params.action){
+            case 'currentSurveys':
+            case 'surveyInfos':
+            case 'surveyInfoFinish':
+            case 'surveyInfosIssueEntitlements':
+            case 'surveyResultFinish':
+                result.user = User.get(springSecurityService.principal.id)
+                break
+            default:
+                result.user = contextService.getUser()
+        }
+        result.institution = contextService.getOrg()
+        result.editable = controller.checkIsEditable(result.user, result.institution)
+
+        result
     }
 }

@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
- 
+import de.laser.ctrl.PlatformControllerService
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.oap.OrgAccessPoint
@@ -18,6 +18,7 @@ class PlatformController  {
     def contextService
     def orgTypeService
     def accessService
+    PlatformControllerService platformControllerService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -68,14 +69,14 @@ class PlatformController  {
 
     @Secured(['ROLE_USER'])
     def show() {
-      Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = Platform.get(params.id)
-      if (!platformInstance) {
-        flash.message = message(code: 'default.not.found.message', 
-                                args: [message(code: 'platform.label'), params.id])
-        redirect action: 'list'
-        return
-      }
+
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
+            redirect action: 'list'
+            return
+        }
 
         result.platformInstance = platformInstance
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
@@ -359,13 +360,4 @@ class PlatformController  {
         }
         redirect action: 'link', params: [id:params.id]
     }
-
-    private Map<String, Object> setResultGenerics() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = contextService.org
-        result.contextOrg = result.institution //temp fix
-        result
-    }
-
 }
