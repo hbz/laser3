@@ -680,6 +680,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def addCustomPropertyType() {
         def newProp
         def error
@@ -739,7 +740,7 @@ class AjaxController {
             else {
                 msg = message(code: 'ajax.addCustPropertyType.success')
                 //newProp.softData = true
-                newProp.save(flush: true)
+                newProp.save()
 
                 if (params.autoAdd == "on" && newProp) {
                     params.propIdent = newProp.id.toString()
@@ -849,6 +850,7 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def addCustomPropertyGroupBinding() {
 
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
@@ -870,7 +872,7 @@ class AjaxController {
                 else if (ownobj.class.name == Subscription.class.name) {
                     gb.sub = ownobj
                 }
-                gb.save(flush:true)
+                gb.save()
             }
         }
 
@@ -885,6 +887,7 @@ class AjaxController {
 
 
     @Secured(['ROLE_USER'])
+    @Transactional
     def deleteCustomPropertyGroupBinding() {
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
@@ -892,7 +895,7 @@ class AjaxController {
         List<PropertyDefinitionGroup> availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup && binding) {
-            binding.delete(flush:true)
+            binding.delete()
         }
 
         render(template: "/templates/properties/groupBindings", model:[
@@ -1297,6 +1300,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     private setDashboardDueDateIsHidden(boolean isHidden){
         log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
@@ -1315,7 +1319,7 @@ class AjaxController {
             DashboardDueDate dueDate = (DashboardDueDate) genericOIDService.resolveOID(params.owner)
             if (dueDate){
                 dueDate.isHidden = isHidden
-                dueDate.save(flush: true)
+                dueDate.save()
             } else {
                 if (isHidden)   flash.error += message(code:'dashboardDueDate.err.toHide.doesNotExist')
                 else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
@@ -1349,6 +1353,7 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
+    @Transactional
     private setDashboardDueDateIsDone(boolean isDone){
         log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
 
@@ -1371,10 +1376,10 @@ class AjaxController {
                 if (obj instanceof Task && isDone){
                     Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)
-                    dueTask.save(flush: true)
+                    dueTask.save()
                 }
                 dueDateObject.isDone = isDone
-                dueDateObject.save(flush: true)
+                dueDateObject.save()
             } else {
                 if (isDone)   flash.error += message(code:'dashboardDueDate.err.toSetDone.doesNotExist')
                 else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
@@ -1397,25 +1402,27 @@ class AjaxController {
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
+    @Secured(['ROLE_USER'])
+    @Transactional
     def delete() {
       switch(params.cmd) {
         case 'deletePersonRole': deletePersonRole()
         break
         default: def obj = genericOIDService.resolveOID(params.oid)
           if (obj) {
-            obj.delete(flush:true)
+            obj.delete()
           }
         break
       }
       redirect(url: request.getHeader('referer'))
     }
 
-    //TODO: Überprüfuen, ob die Berechtigung korrekt funktioniert.
     @Secured(['ROLE_ORG_EDITOR'])
+    @Transactional
     def deletePersonRole(){
         def obj = genericOIDService.resolveOID(params.oid)
         if (obj) {
-                obj.delete(flush:true)
+            obj.delete()
         }
     }
 
@@ -1458,10 +1465,11 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
-        identifierService.deleteIdentifier(params)
+        identifierService.deleteIdentifier(params.owner,params.target)
         redirect(url: request.getHeader('referer'))
     }
 
+    @Transactional
     @Secured(['ROLE_USER'])
   def addToCollection() {
     log.debug("AjaxController::addToCollection ${params}");
@@ -1508,7 +1516,7 @@ class AjaxController {
 
         // log.debug("Saving ${new_obj}");
         try{
-          if ( new_obj.save(flush: true) ) {
+          if ( new_obj.save() ) {
             log.debug("Saved OK");
           }
           else {
@@ -1555,6 +1563,7 @@ class AjaxController {
     result
   }
 
+    @Transactional
     @Secured(['ROLE_USER'])
   def deleteThrough() {
     // log.debug("deleteThrough(${params})");
@@ -1562,8 +1571,8 @@ class AjaxController {
     def target_object = resolveOID2(params.targetOid)
     if ( context_object."${params.contextProperty}".contains(target_object) ) {
       def otr = context_object."${params.contextProperty}".remove(target_object)
-      target_object.delete(flush:true)
-      context_object.save(flush:true)
+      target_object.delete()
+      context_object.save()
     }
     redirect(url: request.getHeader('referer'))
 

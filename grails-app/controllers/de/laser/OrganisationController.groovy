@@ -917,7 +917,7 @@ class OrganisationController  {
     @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
-        identifierService.deleteIdentifier(params)
+        identifierService.deleteIdentifier(params.owner,params.target)
         redirect(url: request.getHeader('referer'))
     }
 
