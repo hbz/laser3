@@ -75,7 +75,7 @@ Mind the convention of data-confirm-id in form element and inner button element
 
 #### The possible pattern
 
-1.) The form sending trigger element (e.g. button) **HAS NO** value and name/value is set in hidden field via ***Markup*** (***=from you***)
+1.) The form sending trigger element (e.g. button) **HAS NO** value/name. This is set in hidden field via ***Markup*** (***=from you***)
 
 ```
 <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
@@ -91,8 +91,8 @@ Mind the convention of data-confirm-id in form element and inner button element
         </div>
 </g:form>
 ```
-2.) The form sending trigger element (e.g. button) **HAS** value and name/value is set in hidden field via ***Javascript*** (***=from system***) 
-- name and value 
+2.) The form sending trigger element (e.g. button) **HAS** value/name. The system makes a copy in hidden field via ***Javascript***.
+
 ```
     <g:form action="processLinkLicenseMembers" method="post" class="ui form" data-confirm-id="deleteLicenses_form">
                 <div class="ui buttons">
