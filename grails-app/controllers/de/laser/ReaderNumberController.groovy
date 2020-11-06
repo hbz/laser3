@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 class ReaderNumberController  {
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
 		if (params.dueDate)
@@ -27,7 +27,7 @@ class ReaderNumberController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		ReaderNumber numbersInstance = ReaderNumber.get(params.id)
 		if (! numbersInstance) {
@@ -46,7 +46,7 @@ class ReaderNumberController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         List<Long> numbersToDelete = []
 		Org org = Org.get(params.org)

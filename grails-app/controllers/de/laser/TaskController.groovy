@@ -32,7 +32,7 @@ class TaskController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Task.withTransaction {
 			def contextOrg  = contextService.getOrg()
@@ -83,7 +83,7 @@ class TaskController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
@@ -107,7 +107,7 @@ class TaskController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
@@ -183,7 +183,7 @@ class TaskController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Task.withTransaction {
 			Task taskInstance = Task.get(params.id)

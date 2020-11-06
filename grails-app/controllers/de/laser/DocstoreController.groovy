@@ -164,7 +164,7 @@ class DocstoreController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String,Object> ctrlResult = docstoreControllerService.editDocument(params)
         if(ctrlResult.status == DocstoreControllerService.STATUS_ERROR) {

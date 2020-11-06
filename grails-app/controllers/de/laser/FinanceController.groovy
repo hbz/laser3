@@ -30,7 +30,7 @@ class FinanceController  {
     PendingChangeService pendingChangeService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         log.debug("FinanceController::index() ${params}")
         try {
@@ -48,7 +48,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
@@ -66,7 +66,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
@@ -358,7 +358,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
@@ -375,7 +375,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object editCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
@@ -391,7 +391,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
@@ -406,7 +406,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
         Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
         if(ctrlResult.error == FinanceService.STATUS_ERROR)
@@ -415,7 +415,7 @@ class FinanceController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def createOrUpdateCostItem() {
         Map<String,Object> ctrlResult = financeService.createOrUpdateCostItem(params)
         if(ctrlResult.error == FinanceService.STATUS_ERROR) {

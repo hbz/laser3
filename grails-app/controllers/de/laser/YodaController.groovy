@@ -190,17 +190,17 @@ class YodaController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def demo2() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationOR("INST_USER", "ROLE_XY")')
-    @Secured(closure = { principal.user?.hasAffiliationOR("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliationOR("INST_USER", "ROLE_XY") })
     def demo3() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationAND("INST_USER", "ROLE_XY")')
-    @Secured(closure = { principal.user?.hasAffiliationAND("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliationAND("INST_USER", "ROLE_XY") })
     def demo4() {
         redirect action: 'demo'
     }

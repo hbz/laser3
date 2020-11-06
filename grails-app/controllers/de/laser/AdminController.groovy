@@ -184,8 +184,7 @@ class AdminController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def manageAffiliationRequests() {
         Map<String, Object> result = [:]

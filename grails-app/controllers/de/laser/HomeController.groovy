@@ -23,7 +23,7 @@ class HomeController {
             redirect(controller: 'myInstitution', action: 'dashboard')
         }
         else {
-            log.error("Unable to lookup user for principal id :: ${springSecurityService.principal.id}")
+            log.error("Unable to lookup user for principal : ${springSecurityService.principal}")
         }
     }
 }

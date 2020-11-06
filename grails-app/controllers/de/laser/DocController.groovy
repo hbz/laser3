@@ -36,7 +36,7 @@ class DocController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 		Doc docInstance = Doc.get(params.id)
         if (!docInstance) {
@@ -88,7 +88,7 @@ class DocController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
 		Doc.withTransaction {
 			switch (request.method) {
@@ -135,7 +135,7 @@ class DocController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Doc.withTransaction {
 			Doc docInstance = Doc.get(params.id)

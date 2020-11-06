@@ -20,7 +20,7 @@ class ContactController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Contact.withTransaction {
 			switch (request.method) {
@@ -75,14 +75,14 @@ class ContactController  {
 
 	@Deprecated
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		redirect controller: 'contact', action: 'show', params: params
 		return // ----- deprecated
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Contact.withTransaction {
 			Contact contactInstance = Contact.get(params.id)

@@ -27,7 +27,7 @@ class PersonController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
@@ -222,7 +222,7 @@ class PersonController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
         //return // ----- deprecated
@@ -377,7 +377,7 @@ class PersonController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)

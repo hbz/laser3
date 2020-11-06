@@ -799,7 +799,7 @@ class PackageController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addToSub() {
         Package pkg = Package.get(params.id)
         Subscription sub = Subscription.get(params.subid)

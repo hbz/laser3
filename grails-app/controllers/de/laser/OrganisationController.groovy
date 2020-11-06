@@ -883,7 +883,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -901,7 +901,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -912,7 +912,7 @@ class OrganisationController  {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
-        principal.user?.hasAffiliation("INST_USER")
+        ctx.contextService.getUser()?.hasAffiliation("INST_USER")
     })
     def notes() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -967,7 +967,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
@@ -1104,7 +1104,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
         UserOrg.withTransaction {
             Map<String, Object> result = [:]
@@ -1453,7 +1453,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 

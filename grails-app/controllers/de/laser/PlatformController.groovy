@@ -114,7 +114,7 @@ class PlatformController  {
     }
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def delete() {
@@ -154,7 +154,7 @@ class PlatformController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
@@ -187,7 +187,7 @@ class PlatformController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)

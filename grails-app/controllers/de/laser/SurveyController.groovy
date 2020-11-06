@@ -2377,7 +2377,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> editSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
@@ -2405,7 +2405,7 @@ class SurveyController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3143,7 +3143,7 @@ class SurveyController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', wtc = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3175,7 +3175,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', wtc = 0)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
      Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
         result.modalID = params.targetId
@@ -3191,7 +3191,7 @@ class SurveyController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 1)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> newSurveyCostItem() {
         SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
 

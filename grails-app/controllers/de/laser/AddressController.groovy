@@ -20,7 +20,7 @@ class AddressController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         Address.withTransaction {
             switch (request.method) {
@@ -99,7 +99,7 @@ class AddressController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
@@ -153,7 +153,7 @@ class AddressController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
