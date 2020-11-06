@@ -116,7 +116,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+        deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this))
     }
 
     def notifyDependencies(changeDocument) {
@@ -200,7 +200,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                     if (payload.changeDoc) {
                         def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
-                            pc.delete(flush:true)
+                            pc.delete()
                         }
                     }
                 }

@@ -101,7 +101,7 @@ class InstAdmService {
                 if (uoStatus == UserOrg.STATUS_APPROVED) {
                     uo.dateActioned = uo.dateRequested
                 }
-                if (uo.save(flush:true)) {
+                if (uo.save()) {
                     flash?.message = "Die neue Organisations-Zugehörigkeit wurde angelegt."
 
                     if (uoStatus == UserOrg.STATUS_APPROVED) {

@@ -21,7 +21,6 @@ class UserService {
     def contextService
     def messageSource
     def grailsApplication
-    Locale locale = LocaleContextHolder.getLocale()
 
     // called after every successful login
     void initMandatorySettings(User user) {
@@ -78,10 +77,11 @@ class UserService {
     }
 
     User addNewUser(Map params, FlashScope flash) {
+        Locale locale = LocaleContextHolder.getLocale()
         User user = new User(params)
         user.enabled = true
 
-        if (! user.save(flush: true)) {
+        if (! user.save()) {
             Set errMess = []
             Object[] withArticle = new Object[messageSource.getMessage('user.withArticle.label',null,locale)]
             user.errors.fieldErrors.each { FieldError e ->
@@ -185,7 +185,7 @@ class UserService {
 
     void setupAdminAccounts(Map<String,Org> orgs) {
         List adminUsers = grailsApplication.config.adminUsers
-        List<String> customerTypes = ['konsorte','institut','singlenutzer','kollektivnutzer','konsortium']
+        List<String> customerTypes = ['konsorte','institut','singlenutzer','konsortium']
         //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
                                        'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'

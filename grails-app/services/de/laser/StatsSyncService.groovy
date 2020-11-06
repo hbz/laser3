@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.helper.ConfigUtils
+import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.titles.TitleInstance
@@ -313,8 +314,8 @@ class StatsSyncService {
                     List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, csr.availFrom.format('yyyy-MM'))
                     followingRanges.each {
                         if (it == followingRanges.first()){
-                            csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end']))
-                            csr.save(flush: true)
+                            csr.availTo = DateUtil.SDF_ymd.parse(getDateForLastDayOfMonth(it['end']))
+                            csr.save()
                         } else {
                             writeNewCsr(0, it['begin'],it['end'],options)
                         }
@@ -322,7 +323,7 @@ class StatsSyncService {
                 }
             } else {
                 // 3030 Exception
-                csr.save(flush: true)
+                csr.save()
             }
             return
         }
@@ -363,7 +364,7 @@ class StatsSyncService {
                     csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
                     csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it.end))
                     csr.numFacts = factCount
-                    csr.save(flush: true)
+                    csr.save()
 
                 } else {
                     def newFromPeriod = getNextFromPeriod(csr).substring(0,7)
@@ -372,9 +373,9 @@ class StatsSyncService {
                         csr = writeNewCsr(factCount, it['begin'], it['end'], options)
                     } else {
                         // There is no gap, just update csr with new availTo value
-                        csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it.end))
+                        csr.availTo = DateUtil.SDF_ymd.parse(getDateForLastDayOfMonth(it.end))
                         csr.numFacts = csr.numFacts + factCount
-                        csr.save(flush: true)
+                        csr.save()
                     }
 
                 }
@@ -392,7 +393,7 @@ class StatsSyncService {
         csr.supplierId = options.platform
         csr.factType = options.factType
         csr.identifierType = options.identifier.ns
-        csr.save(flush: true)
+        csr.save()
         return csr
     }
 

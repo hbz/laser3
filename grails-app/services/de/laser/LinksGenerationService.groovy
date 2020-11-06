@@ -305,8 +305,8 @@ class LinksGenerationService {
             DocContext comment = DocContext.findByLink(obj)
             if(comment) {
                 Doc commentContent = comment.owner
-                comment.delete(flush:true)
-                commentContent.delete(flush:true)
+                comment.delete()
+                commentContent.delete()
             }
             def source = obj.determineSource(), destination = obj.determineDestination()
             Set sourceChildren = source.getClass().findAllByInstanceOf(source), destinationChildren = destination.getClass().findAllByInstanceOf(destination)
@@ -319,7 +319,7 @@ class LinksGenerationService {
                 if(destinationChild)
                     Links.executeUpdate('delete from Links li where :source in (li.sourceSubscription,li.sourceLicense) and :destination in (li.destinationSubscription,li.destinationLicense) and li.linkType = :linkType and li.owner = :owner',[source:sourceChild, destination:destinationChild, linkType:obj.linkType, owner:obj.owner])
             }
-            obj.delete(flush:true)
+            obj.delete()
             true
         }
         else false

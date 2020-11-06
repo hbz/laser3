@@ -8,38 +8,38 @@ class IdentifierService {
 
     void checkNullUIDs() {
         List<Person> persons = Person.findAllByGlobalUIDIsNull()
-        persons.each { person ->
+        persons.each { Person person ->
             log.debug("Da identificator pro persona ${person.id}")
             person.setGlobalUID()
-            person.save(flush: true)
+            person.save()
         }
 
         List<Org> orgs = Org.findAllByGlobalUIDIsNull()
-        orgs.each { org ->
-            log.debug("Da identificator pro societati ${org.id}")
+        orgs.each { Org org ->
+            log.debug("Da identificator pro societate ${org.id}")
             org.setGlobalUID()
-            org.save(flush:true)
+            org.save()
         }
 
         List<Subscription> subs = Subscription.findAllByGlobalUIDIsNull()
-        subs.each { sub ->
-            log.debug("Da identificator pro subscriptioni ${sub.id}")
+        subs.each { Subscription sub ->
+            log.debug("Da identificator pro subscriptione ${sub.id}")
             sub.setGlobalUID()
-            sub.save(flush:true)
+            sub.save()
         }
 
         List<License> licenses = License.findAllByGlobalUIDIsNull()
-        licenses.each { lic ->
+        licenses.each { License lic ->
             log.debug("Da identificator pro contracto ${lic.id}")
             lic.setGlobalUID()
-            lic.save(flush:true)
+            lic.save()
         }
 
         List<Package> packages = Package.findAllByGlobalUIDIsNull()
-        packages.each { pkg ->
+        packages.each { Package pkg ->
             log.debug("Da identificator pro ballo ${pkg.id}")
             pkg.setGlobalUID()
-            pkg.save(flush:true)
+            pkg.save()
         }
     }
 }

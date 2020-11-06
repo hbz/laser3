@@ -22,6 +22,8 @@ import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.sql.Timestamp
@@ -32,23 +34,14 @@ class SubscriptionService {
     def contextService
     def accessService
     def subscriptionsQueryService
-    def docstoreService
-    def messageSource
+    MessageSource messageSource
     def escapeService
     def refdataService
     def propertyService
     FilterService filterService
-    Locale locale
     GenericOIDService genericOIDService
     LinksGenerationService linksGenerationService
     ComparisonService comparisonService
-    TaskService taskService
-
-    @javax.annotation.PostConstruct
-    void init() {
-        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-    }
 
     //ex SubscriptionController.currentSubscriptions()
     Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
@@ -1044,7 +1037,7 @@ class SubscriptionService {
         }
         else if(unlink && curLink) {
             License lic = curLink.sourceLicense
-            curLink.delete(flush:true) //delete() is void, no way to check whether errors occurred or not; flush is necessary because of list processing and/or grails 3
+            curLink.delete() //delete() is void, no way to check whether errors occurred or not
             if(sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
                 String linkedSubsQuery = "select li from Links li, OrgRole oo where li.sourceLicense = :lic and li.linkType = :linkType and li.destinationSubscription = oo.sub and oo.roleType in (:subscrTypes) and oo.org = :subscr"
                 Set<Links> linkedSubs = Links.executeQuery(linkedSubsQuery, [lic: lic, linkType: RDStore.LINKTYPE_LICENSE, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subscr: subscr])
@@ -1059,6 +1052,7 @@ class SubscriptionService {
     }
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
+        Locale locale = LocaleContextHolder.getLocale()
         Org contextOrg = contextService.org
         RefdataValue comboType
         String[] parentSubType
@@ -1659,7 +1653,7 @@ class SubscriptionService {
 
                         if(uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(issueEntitlement.coverages)){
                             ieCoverage.issueEntitlement = issueEntitlement
-                            if (!ieCoverage.save(flush: true)) {
+                            if (!ieCoverage.save()) {
                                 throw new EntitlementCreationException(ieCoverage.errors)
                             }else{
                                 countChangesCoverageDates++
@@ -1667,7 +1661,7 @@ class SubscriptionService {
                         }
                         if(uploadPriceInfo && priceItem){
                             priceItem.setGlobalUID()
-                            if (!priceItem.save(flush: true)) {
+                            if (!priceItem.save()) {
                                 throw new Exception(priceItem.errors.toString())
                             }else {
 
