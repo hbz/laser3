@@ -734,6 +734,7 @@ class SubscriptionService {
     }
 
     Set<String> getSubjects(List titleIDs) {
+        Locale locale = LocaleContextHolder.getLocale()
         Set<String> subjects = []
 
         if(titleIDs){
@@ -747,6 +748,7 @@ class SubscriptionService {
     }
 
     Set<String> getSeriesNames(List titleIDs) {
+        Locale locale = LocaleContextHolder.getLocale()
         Set<String> seriesName = []
 
         if(titleIDs){

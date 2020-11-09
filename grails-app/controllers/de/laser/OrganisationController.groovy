@@ -33,7 +33,7 @@ class OrganisationController  {
     def deletionService
     def userService
     def accessPointService
-    FormService formService
+    IdentifierService identifierService
     OrganisationControllerService organisationControllerService
     TaskService taskService
     UserControllerService userControllerService
@@ -554,37 +554,16 @@ class OrganisationController  {
         result
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def createMember() {
-        Org contextOrg = contextService.org
-        //new institution = consortia member, implies combo type consortium
-        Org orgInstance
-        if(formService.validateToken(params)) {
-            try {
-                // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, sector: RDStore.O_SECTOR_HIGHER_EDU, status: RDStore.O_STATUS_CURRENT)
-                orgInstance.save(flush:true)
-
-                Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type: RDStore.COMBO_TYPE_CONSORTIUM)
-                newMember.save(flush:true)
-
-                orgInstance.setDefaultCustomerType()
-                orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)) //RDStore adding causes a DuplicateKeyException
-
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
-                redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
-            }
-            catch (Exception e) {
-                log.error("Problem creating institution")
-                log.error(e.printStackTrace())
-
-                flash.message = message(code: "org.error.createInstitutionError", args:[orgInstance ? orgInstance.errors : 'unbekannt'])
-
-                redirect ( action:'findOrganisationMatches', params: params )
-            }
+        Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
+        if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
+            redirect action:'findOrganisationMatches', params:params
         }
-        else redirect action:'findOrganisationMatches'
+        else {
+            redirect action: 'show', id: ctrlResult.result.orgInstance.id
+        }
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
@@ -923,46 +902,21 @@ class OrganisationController  {
         result
     }
 
-    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        log.debug("OrganisationController::deleteIdentifier ${params}");
-        CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
-        Org owner = GrailsHibernateUtil.unwrapIfProxy(ci).owner
-        if (ci && owner.id == contextService.org.id) {
-            ci.delete(flush:true)
-            log.debug("Customeridentifier deleted: ${params}")
-        } else {
-            if ( ! ci ) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code:
-                        'org.customerIdentifier'), params.deleteCI])
-            } else {
-                flash.message = message(code: 'org.customerIdentifier.delete.norights')
-            }
-            log.error("Customeridentifier NOT deleted: ${params}; CostomerIdentifier not found or ContextOrg is not " +
-                    "owner of this CustomerIdentifier and has no rights to delete it!")
-        }
+        Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
+        if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR)
+            flash.error = ctrlResult.result.error
         redirect action: 'ids', id: params.id
     }
 
+    @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_USER'])
-    @Transactional
     def deleteIdentifier() {
-        log.debug("OrganisationController::deleteIdentifier ${params}")
-        def owner = genericOIDService.resolveOID(params.owner)
-        def target = genericOIDService.resolveOID(params.target)
-
-        log.debug('owner: ' + owner)
-        log.debug('target: ' + target)
-
-        if (owner && target) {
-            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
-                log.debug("Identifier deleted: ${params}")
-                target.delete()
-            }
-        }
+        identifierService.deleteIdentifier(params.owner,params.target)
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1406,48 +1360,19 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
-        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        if(!result) {
-            response.sendError(401)
-            return
+        Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
+        if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+            }
         }
-        if(!params.direction) {
-            flash.error(message(code:'org.error.noToggleDirection'))
-            response.sendError(404)
-            return
-        }
-        switch(params.direction) {
-            case 'add':
-                Map map = [toOrg: result.institution,
-                        fromOrg: Org.get(params.fromOrg),
-                        type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)]
-                if (! Combo.findWhere(map)) {
-                    Combo cmb = new Combo(map)
-                    cmb.save(flush:true)
-                }
-                break
-            case 'remove':
-
-                def subs = Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
-                if(subs){
-                    flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
-                }
-                def lics = License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
-                if(lics){
-                    flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
-                }
-
-                if(!subs && !lics) {
-
-                    Combo cmb = Combo.findWhere(toOrg: result.institution,
-                            fromOrg: Org.get(params.fromOrg),
-                            type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE))
-                    cmb.delete(flush:true)
-                }
-                break
+        else {
+            flash.message = ctrlResult.result.message
         }
         redirect action: 'listInstitution'
     }

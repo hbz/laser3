@@ -60,7 +60,7 @@
     <div class="divider"></div>
 
     <div class="ui segment">
-    <g:form action="processLinkLicenseMembers" method="post" class="ui form">
+    <g:form action="processLinkLicenseMembers" method="post" class="ui form" data-confirm-id="deleteLicenses_form">
         <g:hiddenField name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -92,7 +92,9 @@
                 <div class="ui buttons">
                     <button class="ui button negative js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
-                            data-confirm-term-how="ok" type="submit" name="processOption"
+                            data-confirm-term-how="ok"
+                            name="processOption"
+                            data-confirm-id="deleteLicenses"
                             value="unlinkLicense">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</button>
                 </div>
 
