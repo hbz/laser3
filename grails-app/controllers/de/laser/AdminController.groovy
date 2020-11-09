@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.titles.BookInstance
-import com.k_int.kbplus.PendingChangeService
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -29,7 +28,6 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
-import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.internal.SQLQueryImpl
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -42,7 +40,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    def springSecurityService
     def dataloadService
     def statsSyncService
     StatusUpdateService statusUpdateService
@@ -133,7 +130,7 @@ class AdminController  {
 
             sa.title = params.saTitle
             sa.content = params.saContent
-            sa.user = User.get(springSecurityService.principal.id)
+            sa.user = contextService.getUser()
             sa.isPublished = false
 
             if (sa.save()) {
@@ -187,13 +184,12 @@ class AdminController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') ||
-                principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def manageAffiliationRequests() {
         Map<String, Object> result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result << organisationService.getPendingRequests(result.user, contextService.getOrg())
 
         result
@@ -240,7 +236,7 @@ class AdminController  {
             params.offset = 0
             params.search = null
         }
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
@@ -450,7 +446,7 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     def showAffiliations() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.users = User.list()
 
         withFormat {
@@ -1933,7 +1929,7 @@ SELECT * FROM (
     def systemMessages() {
 
         Map<String, Object> result = [:]
-        result.user = springSecurityService.currentUser
+        result.user = contextService.getUser()
 
         if (params.create){
             SystemMessage sm = new SystemMessage(

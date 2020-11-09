@@ -40,7 +40,6 @@ class YodaController {
 
     def yodaService
     def cacheService
-    def springSecurityService
     def statsSyncService
     def dataloadService
     def globalSourceSyncService
@@ -48,15 +47,12 @@ class YodaController {
     def dashboardDueDatesService
     StatusUpdateService statusUpdateService
     FinanceService financeService
-    def documentUpdateService
     def quartzScheduler
     def identifierService
     def deletionService
     def surveyUpdateService
-    def changeNotificationService
     def subscriptionService
     def exportService
-    def dataConsistencyService
 
     @Secured(['ROLE_YODA'])
     @Transactional
@@ -83,7 +79,7 @@ class YodaController {
     def demo() {
         Map result = [:]
 
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         result.roles = result.user.roles
         result.affiliations = result.user.affiliations
 
@@ -194,17 +190,17 @@ class YodaController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def demo2() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationOR("INST_USER", "ROLE_XY")')
-    @Secured(closure = { principal.user?.hasAffiliationOR("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliationOR("INST_USER", "ROLE_XY") })
     def demo3() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationAND("INST_USER", "ROLE_XY")')
-    @Secured(closure = { principal.user?.hasAffiliationAND("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliationAND("INST_USER", "ROLE_XY") })
     def demo4() {
         redirect action: 'demo'
     }

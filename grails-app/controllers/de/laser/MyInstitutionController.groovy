@@ -25,6 +25,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
@@ -55,10 +56,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
-
-
     def dataSource
-    def springSecurityService
     def userService
     def genericOIDService
     def escapeService
@@ -97,7 +95,7 @@ class MyInstitutionController  {
     def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect(action:'dashboard')
     }
@@ -118,13 +116,13 @@ class MyInstitutionController  {
 
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
         redirect controller: 'organisation', action: 'users', id: contextService.getOrg().id
 
         Map<String, Object> result = [:]
         result.institution        = contextService.getOrg()
-        result.user               = User.get(springSecurityService.principal.id)
+        result.user               = contextService.getUser()
         result.editable           = true // inherit
         result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, contextService.getOrg(), [sort:'dateRequested'])
 
@@ -138,7 +136,7 @@ class MyInstitutionController  {
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
@@ -253,7 +251,7 @@ class MyInstitutionController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -596,7 +594,7 @@ class MyInstitutionController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 		ProfilerUtils pu = new ProfilerUtils()
@@ -697,7 +695,7 @@ join sub.orgRelations or_sub where
 
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -911,10 +909,10 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
@@ -1005,7 +1003,7 @@ join sub.orgRelations or_sub where
      * @return void, redirects to main page
      */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
         if(ctrlResult.status == LinksGenerationService.STATUS_ERROR)
@@ -1014,7 +1012,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
         redirect(url: request.getHeader('referer'))
@@ -1030,7 +1028,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         def ctxlist = []
 
@@ -1042,7 +1040,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1237,11 +1235,11 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentPackages() {
 
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ?: result.user.getDefaultPageSize()
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
@@ -1336,7 +1334,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
 
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
@@ -1350,7 +1348,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1367,7 +1365,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1382,7 +1380,7 @@ join sub.orgRelations or_sub where
     }
 
     //@DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    //@Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     @Secured(['ROLE_ADMIN'])
     def announcements() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1884,7 +1882,7 @@ join sub.orgRelations or_sub where
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def userList() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1917,7 +1915,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
         Map result = [user: User.get(params.id), editor: contextService.user, editable: true, institution: contextService.org, manipulateAffiliations: true]
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
@@ -1932,7 +1930,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.orgInstance = result.institution
@@ -1949,7 +1947,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -1964,7 +1962,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         if (! result.editable) {
@@ -3103,7 +3101,7 @@ join sub.orgRelations or_sub where
 
     @Secured(['ROLE_USER'])
     def switchContext() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         Org org = (Org) genericOIDService.resolveOID(params.oid)
 
         if (user && org && org.id in user.getAuthorizedOrgsIds()) {
@@ -3156,7 +3154,7 @@ join sub.orgRelations or_sub where
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 

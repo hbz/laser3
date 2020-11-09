@@ -8,8 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ContactController  {
 
-	def springSecurityService
 	def addressbookService
+	ContextService contextService
 	FormService formService
 
     static allowedMethods = [create: ['GET', 'POST'], delete: 'POST']
@@ -20,7 +20,7 @@ class ContactController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Contact.withTransaction {
 			switch (request.method) {
@@ -69,20 +69,20 @@ class ContactController  {
 
 		[
             contactInstance: contactInstance,
-            editable: addressbookService.isContactEditable(contactInstance, springSecurityService.getCurrentUser())
+            editable: addressbookService.isContactEditable(contactInstance, contextService.getUser())
 		] // TODO
     }
 
 	@Deprecated
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		redirect controller: 'contact', action: 'show', params: params
 		return // ----- deprecated
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Contact.withTransaction {
 			Contact contactInstance = Contact.get(params.id)
@@ -91,7 +91,7 @@ class ContactController  {
 				redirect action: 'list'
 				return
 			}
-			if (!addressbookService.isContactEditable(contactInstance, springSecurityService.getCurrentUser())) {
+			if (!addressbookService.isContactEditable(contactInstance, contextService.getUser())) {
 				redirect action: 'show', id: params.id
 				return
 			}

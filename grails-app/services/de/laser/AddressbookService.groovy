@@ -11,7 +11,6 @@ import de.laser.helper.RDStore
 @Transactional
 class AddressbookService {
 
-    def springSecurityService
     def contextService
     def accessService
     def propertyService

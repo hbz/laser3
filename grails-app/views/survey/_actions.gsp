@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 <semui:actionsDropdown>
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+    <g:if test="${contextService.getUser().hasAffiliation("INST_EDITOR")}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
 
             <g:render template="actionsCreate"/>

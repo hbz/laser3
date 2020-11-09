@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    def springSecurityService
     def contextService
     def genericOIDService
     def exportService
@@ -35,7 +34,7 @@ class SubscriptionController {
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
         Map<String,Object> ctrlResult = subscriptionControllerService.show(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -67,7 +66,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def history() {
         Map<String,Object> ctrlResult = subscriptionControllerService.history(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -79,7 +78,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
         Map<String,Object> ctrlResult = subscriptionControllerService.changes(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -102,7 +101,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
@@ -141,7 +140,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
@@ -165,7 +164,7 @@ class SubscriptionController {
     //--------------------------------------------- document section ----------------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
         Map<String,Object> ctrlResult = subscriptionControllerService.notes(this)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -187,9 +186,9 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map<String,Object> result = [user:springSecurityService.getCurrentUser(),institution:contextService.org]
+        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.org]
         result.ownobj = Subscription.get(params.instanceId)
         result.owntp = 'subscription'
         if(params.id) {
@@ -201,7 +200,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
         docstoreService.unifiedDeleteDocuments(params)
         redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId
@@ -210,7 +209,7 @@ class SubscriptionController {
     //--------------------------------- consortia members section ----------------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def members() {
         Map<String,Object> ctrlResult = subscriptionControllerService.members(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -267,7 +266,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addMembers() {
         log.debug("addMembers ..")
         Map<String,Object> ctrlResult = subscriptionControllerService.addMembers(this,params)
@@ -281,7 +280,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(this,params)
         if (ctrlResult.error == SubscriptionControllerService.STATUS_ERROR) {
@@ -510,7 +509,7 @@ class SubscriptionController {
     //-------------------------------- survey section --------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def surveys() {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -534,7 +533,7 @@ class SubscriptionController {
     //------------------------------------- packages section -------------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkPackage(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -562,7 +561,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         Map<String, Object> ctrlResult = subscriptionControllerService.unlinkPackage(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -588,7 +587,7 @@ class SubscriptionController {
     //-------------------------------- issue entitlements holding --------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         Map<String,Object> ctrlResult = subscriptionControllerService.index(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -646,7 +645,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def addEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -701,7 +700,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlement(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
@@ -714,7 +713,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -730,7 +729,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -742,7 +741,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
@@ -767,7 +766,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRemoveIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
@@ -778,7 +777,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
         Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionBatchUpdate(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -795,7 +794,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addEmptyPriceItem() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -805,7 +804,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addCoverage(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK)
@@ -813,7 +812,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK)
@@ -821,7 +820,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def manageEntitlementGroup() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.titleGroups = result.subscription.ieGroups
@@ -829,7 +828,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editEntitlementGroupItem() {
         Map<String,Object> ctrlResult = subscriptionControllerService.editEntitlementGroupItem(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -843,7 +842,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processCreateEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processCreateEntitlementGroup(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -853,7 +852,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
         Object[] args = [message(code:'issueEntitlementGroup.label'),params.titleGroup]
@@ -873,7 +872,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlements() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlements(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -891,7 +890,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.surveyConfig = SurveyConfig.get(params.id)
@@ -932,7 +931,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.org
@@ -996,7 +995,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlementsWithSurvey(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -1008,7 +1007,7 @@ class SubscriptionController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def setupPendingChangeConfiguration() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
@@ -1051,7 +1050,7 @@ class SubscriptionController {
 
     /* TODO Cost per use tab, still needed?
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {

@@ -21,7 +21,6 @@ class MyInstitutionControllerService {
     def dashboardDueDatesService
     def filterService
     def pendingChangeService
-    def springSecurityService
     def taskService
 
     static final int STATUS_OK = 0
@@ -68,7 +67,7 @@ class MyInstitutionControllerService {
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         Org contextOrg  = contextService.getOrg()
-        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
+        result.tasks    = taskService.getTasksByResponsibles(contextService.getUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
 
@@ -78,7 +77,7 @@ class MyInstitutionControllerService {
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
@@ -112,7 +111,7 @@ class MyInstitutionControllerService {
             case 'surveyInfoFinish':
             case 'surveyInfosIssueEntitlements':
             case 'surveyResultFinish':
-                result.user = User.get(springSecurityService.principal.id)
+                result.user = contextService.getUser()
                 break
             default:
                 result.user = contextService.getUser()

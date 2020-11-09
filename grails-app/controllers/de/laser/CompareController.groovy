@@ -1,19 +1,14 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.auth.User
- 
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class CompareController  {
 
-    SpringSecurityService springSecurityService
     ContextService contextService
-    ControlledListService controlledListService
     CompareService compareService
     GenericOIDService genericOIDService
 
@@ -23,7 +18,7 @@ class CompareController  {
     })
     def compareLicenses() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
         params.status = params.status ?: [RDStore.LICENSE_CURRENT.id.toString()]
@@ -49,7 +44,7 @@ class CompareController  {
     })
     def compareSubscriptions() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id.toString()]

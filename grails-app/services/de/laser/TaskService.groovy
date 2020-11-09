@@ -14,8 +14,8 @@ class TaskService {
 
     final static WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
 
-    def springSecurityService
     def accessService
+    def contextService
     def filterService
     def messageSource
 
@@ -223,7 +223,7 @@ class TaskService {
     Map<String, Object> getPreconditions(Org contextOrg) {
         Map<String, Object> result = [:]
 
-        result.taskCreator                  = springSecurityService.getCurrentUser()
+        result.taskCreator                  = contextService.getUser()
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
         result.validPackages                = getPackagesDropdown(contextOrg)
@@ -438,7 +438,7 @@ class TaskService {
         def validResponsibleUsers   = contextOrg ? User.executeQuery(
                 "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
                 [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
-        result.taskCreator          = springSecurityService.getCurrentUser()
+        result.taskCreator          = contextService.getUser()
         result.validResponsibleUsers = validResponsibleUsers
         result
     }

@@ -19,7 +19,6 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.helper.RDConstants
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
@@ -47,8 +46,7 @@ class FinanceService {
     AccessService accessService
     EscapeService escapeService
     FinanceControllerService financeControllerService
-    SpringSecurityService springSecurityService
-    LinksGenerationService linksGenerationService
+
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
     Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
 

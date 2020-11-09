@@ -1,7 +1,6 @@
 package de.laser
 
 
-import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -14,7 +13,6 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController  {
 
-    def springSecurityService
     def contextService
     def orgTypeService
     def accessService
@@ -30,7 +28,7 @@ class PlatformController  {
     @Secured(['ROLE_USER'])
     def list() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ?: result.user.getDefaultPageSize()
 
         result.offset = params.offset ?: 0
@@ -116,7 +114,7 @@ class PlatformController  {
     }
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def delete() {
@@ -156,7 +154,7 @@ class PlatformController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
@@ -189,7 +187,7 @@ class PlatformController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)

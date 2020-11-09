@@ -9,13 +9,10 @@ import de.laser.FormService
 import de.laser.License
 import de.laser.Org
 import de.laser.OrganisationController
-import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.auth.User
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -129,7 +126,7 @@ class OrganisationControllerService {
 
     Map<String, Object> getResultGenericsAndCheckAccess(OrganisationController controller, GrailsParameterMap params) {
 
-        User user = contextService.user
+        User user = contextService.getUser()
         Org org = contextService.org
         Map<String, Object> result = [user:user, institution:org, inContextOrg:true, institutionalView:false]
 

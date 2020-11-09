@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController  {
 
-    def springSecurityService
     def accessService
     def contextService
     def addressbookService
@@ -122,7 +121,7 @@ class OrganisationController  {
     def list() {
 
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSize()
         result.offset = params.offset ? Long.parseLong(params.offset) : 0
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -206,7 +205,7 @@ class OrganisationController  {
     def listProvider() {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        result.user        = User.get(springSecurityService.principal.id)
+        result.user        = contextService.getUser()
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
 
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
@@ -682,7 +681,7 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def ids() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         Org org   = Org.get(params.id)
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
@@ -863,7 +862,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -881,7 +880,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -892,7 +891,7 @@ class OrganisationController  {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
-        principal.user?.hasAffiliation("INST_USER")
+        ctx.contextService.getUser()?.hasAffiliation("INST_USER")
     })
     def notes() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -922,7 +921,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
@@ -1059,11 +1058,11 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
         UserOrg.withTransaction {
             Map<String, Object> result = [:]
-            result.user = User.get(springSecurityService.principal.id)
+            result.user = contextService.getUser()
 
             // ERMS-2370 -> support multiple assocs
             UserOrg uo = UserOrg.get(params.assoc)
@@ -1268,7 +1267,7 @@ class OrganisationController  {
     @Transactional
     def addOrgType() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
@@ -1290,7 +1289,7 @@ class OrganisationController  {
     @Transactional
     def deleteOrgType() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
@@ -1379,7 +1378,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 

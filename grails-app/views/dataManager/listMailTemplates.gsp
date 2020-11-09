@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser')} ${message(code: 'mailTemplate.plural.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'mailTemplate.plural.label')}</title>
 </head>
 
 <body>
@@ -39,27 +39,15 @@
             <g:each in="${mailTemplates}" var="template" status="i">
                 <tr>
                     <td> ${i+1}</td>
+                    <td>${template.name}</td>
+                    <td>${template.type.getI10n('value')}</td>
+                    <td>${template.language.getI10n('value')}</td>
                     <td>
-                            ${template.name}
+                        <g:if test="${template.owner}">${template.owner.name}</g:if>
                     </td>
-
-                    <td>
-                            ${template.type.getI10n('value')}
-                    </td>
-
-                    <td>
-                            ${template.language.getI10n('value')}
-                    </td>
-
-                    <td>
-                            <g:if test="${template.owner}">
-                                ${template.owner.name}
-                            </g:if>
-                    </td>
-
                     <td>
                         <button type="button" class="ui icon button la-popup-tooltip la-delay"
-                                data-mailTemplateTarget="${de.laser.MailTemplate.class.name}:${template.id}"
+                                data-mailTemplateTarget="${MailTemplate.class.name}:${template.id}"
                                 data-mailTemplateName="${template.name}"
                                 data-mailTemplateSubject="${template.subject}"
                                 data-mailTemplateText="${template.text}"
@@ -69,7 +57,6 @@
                                 data-href="#editMailTemplate"
                                 data-content="Mail Template ändern" data-position="top left"><i class="edit icon"></i></button>
                     </td>
-
                 </tr>
             </g:each>
             </tbody>
@@ -90,20 +77,17 @@
         <input type="hidden" name="target" value="" />
         <div class="field fieldcontain required">
             <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>
-
             <input type="text" id="mailTemplateNameEdit" name="name" />
         </div>
 
         <div class="field fieldcontain required">
             <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')}:</label>
-
             <input type="text" id="mailTemplateSubjectEdit" name="subject" />
         </div>
 
         <div class="field fieldcontain">
             <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}:</label>
-
-            <g:textArea  id="mailTemplateTextEdit" name="text" rows="5" cols="40"/>
+            <g:textArea id="mailTemplateTextEdit" name="text" rows="5" cols="40"/>
         </div>
 
         <div  class="field fieldcontain required">
@@ -133,7 +117,7 @@
         dcbStore.modal.show.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))
-            $('#editMailTemplate #mailTemplateTextEdit').attr('value', $(trigger).attr('data-mailTemplateText'))
+            $('#editMailTemplate #mailTemplateTextEdit').text($(trigger).attr('data-mailTemplateText'))
             $('#editMailTemplate input[name=target]').attr('value', $(trigger).attr('data-mailTemplateTarget'))
             $('#editMailTemplate select[name=type]').dropdown('set selected', $(trigger).attr('data-mailTemplateType'))
             $('#editMailTemplate select[name=language]').dropdown('set selected', $(trigger).attr('data-mailTemplateLanguage'))
@@ -148,20 +132,17 @@
 
         <div class="field fieldcontain required">
             <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>
-
             <input type="text" id="mailTemplateName" name="name" />
         </div>
 
         <div class="field fieldcontain required">
             <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')}:</label>
-
             <input type="text" id="mailTemplateSubject" name="subject" />
         </div>
 
         <div class="field fieldcontain">
             <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}:</label>
-
-            <g:textArea  id="mailTemplateText" name="text" rows="5" cols="40"/>
+            <g:textArea id="mailTemplateText" name="text" rows="5" cols="40"/>
         </div>
 
         <div  class="field fieldcontain required">

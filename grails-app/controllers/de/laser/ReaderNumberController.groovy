@@ -13,7 +13,7 @@ class ReaderNumberController  {
 	//TODO [ticket=2937]: as there are minor bugs in the current release, the closures are going to be deployed (and merged into OrganisationController/-Service) along with the bugfixes.
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -32,7 +32,7 @@ class ReaderNumberController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			ReaderNumber numbersInstance = ReaderNumber.get(params.id)
@@ -53,7 +53,7 @@ class ReaderNumberController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			List<Long> numbersToDelete = []

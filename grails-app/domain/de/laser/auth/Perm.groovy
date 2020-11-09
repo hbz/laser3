@@ -3,7 +3,6 @@ package de.laser.auth
 class Perm {
 
     String code
-    Set grantedTo = []
 
     static mapping = {
         cache   true
@@ -18,6 +17,6 @@ class Perm {
     ]
 
     static mappedBy = [
-            grantedTo: "perm"
+            grantedTo: 'perm'
     ]
 }

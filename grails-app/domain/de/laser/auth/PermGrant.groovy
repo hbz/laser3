@@ -2,8 +2,10 @@ package de.laser.auth
 
 class PermGrant {
 
-    Perm perm
-    Role role
+    //Perm perm
+    //Role role
+
+    static belongsTo = [perm: Perm, role: Role]
 
     static mapping = {
         cache   true

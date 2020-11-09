@@ -13,7 +13,6 @@ class UsageController  {
     def statsSyncService
     def factService
     def contextService
-    def springSecurityService
 
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
@@ -96,7 +95,7 @@ class UsageController  {
 
         result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
         ArrayList platformsWithNatstatId = factService.platformsWithNatstatId()
 

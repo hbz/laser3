@@ -5,8 +5,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class LaserI10nTagLib {
 
-    def springSecurityService
-
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 

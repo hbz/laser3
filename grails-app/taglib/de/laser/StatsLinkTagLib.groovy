@@ -2,8 +2,6 @@ package de.laser
 
 class StatsLinkTagLib {
 
-    def springSecurityService
-
     static namespace = 'laser'
     static encodeAsForTags = [statsLink: [taglib:'none']]
 

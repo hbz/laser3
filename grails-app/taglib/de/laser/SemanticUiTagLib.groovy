@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat
 
 class SemanticUiTagLib {
 
-    def springSecurityService
     def yodaService
     def auditService
     def systemService
@@ -363,7 +362,7 @@ class SemanticUiTagLib {
 
         def mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             mode = (user.getSettingsValue(UserSetting.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
 
             // CAUTION: inject default mode

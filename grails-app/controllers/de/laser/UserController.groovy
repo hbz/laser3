@@ -31,7 +31,7 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def delete() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
@@ -123,7 +123,7 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def show() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
@@ -132,7 +132,7 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def newPassword() {
         User.withTransaction {

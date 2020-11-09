@@ -6,7 +6,6 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 class SemanticUiNavigationTagLib {
 
-    def springSecurityService
     def contextService
     def accessService
 

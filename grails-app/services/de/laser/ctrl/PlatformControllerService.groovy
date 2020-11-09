@@ -8,7 +8,6 @@ import de.laser.auth.User
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -130,7 +129,7 @@ class PlatformControllerService {
 
         Map<String, Object> result = [:]
 
-        result.user = contextService.user
+        result.user = contextService.getUser()
         result.institution = contextService.org
         result.contextOrg = result.institution //temp fix
 

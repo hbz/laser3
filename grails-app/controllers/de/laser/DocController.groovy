@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocController  {
 
-	def springSecurityService
 	def contextService
 
     static allowedMethods = [delete: 'POST']
@@ -27,7 +26,7 @@ class DocController  {
 	@Secured(['ROLE_ADMIN'])
     def list() {
       	Map<String, Object> result = [:]
-      	result.user = User.get(springSecurityService.principal.id)
+      	result.user = contextService.getUser()
 
 		params.max = params.max ?: result.user?.getDefaultPageSize()
 
@@ -37,7 +36,7 @@ class DocController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 		Doc docInstance = Doc.get(params.id)
         if (!docInstance) {
@@ -54,7 +53,7 @@ class DocController  {
 	def createNote() {
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
-		User user = User.get(springSecurityService.principal.id)
+		User user = contextService.getUser()
 		GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
 		if (domain_class) {
@@ -89,7 +88,7 @@ class DocController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
 		Doc.withTransaction {
 			switch (request.method) {
@@ -136,7 +135,7 @@ class DocController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Doc.withTransaction {
 			Doc docInstance = Doc.get(params.id)

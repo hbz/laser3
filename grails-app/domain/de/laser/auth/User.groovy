@@ -28,9 +28,9 @@ class User {
     Date dateCreated
     Date lastUpdated
 
-    boolean enabled = false
-    boolean accountExpired = false
-    boolean accountLocked = false
+    boolean enabled         = false
+    boolean accountExpired  = false
+    boolean accountLocked   = false
     boolean passwordExpired = false
 
     static hasMany      = [ affiliations: UserOrg, roles: UserRole ]

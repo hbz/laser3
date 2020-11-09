@@ -6,9 +6,7 @@ import de.laser.License
 import de.laser.LicenseController
 import de.laser.LinksGenerationService
 import de.laser.Task
-import de.laser.auth.User
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -22,7 +20,6 @@ class LicenseControllerService {
     ContextService contextService
     MessageSource messageSource
     LinksGenerationService linksGenerationService
-    SpringSecurityService springSecurityService
 
     //------------------------------------ general or ungroupable section ------------------------------------------
 
@@ -65,7 +62,7 @@ class LicenseControllerService {
 
         Map<String, Object> result = [:]
 
-        result.user            = User.get(springSecurityService.principal.id)
+        result.user            = contextService.getUser()
         result.institution     = contextService.org
         result.contextOrg      = result.institution
         result.license         = License.get(params.id)

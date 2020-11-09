@@ -1,9 +1,6 @@
 package de.laser
 
-
-import de.laser.properties.PersonProperty
 import de.laser.titles.TitleInstance
-import de.laser.auth.User
  
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -17,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PersonController  {
 
-    def springSecurityService
     def addressbookService
     def genericOIDService
     def contextService
@@ -31,11 +27,11 @@ class PersonController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
-            List userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
+            List userMemberships = contextService.getUser().authorizedOrgs
 
             switch (request.method) {
                 case 'GET':
@@ -217,7 +213,7 @@ class PersonController  {
                 institution: contextOrg,
                 personInstance: personInstance,
                 presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
-                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser()),
+                editable: addressbookService.isPersonEditable(personInstance, contextService.getUser()),
                 myPublicContact: myPublicContact,
                 contextOrg: contextOrg
         ]
@@ -226,7 +222,7 @@ class PersonController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
         //return // ----- deprecated
@@ -240,7 +236,7 @@ class PersonController  {
                 redirect(url: request.getHeader('referer'))
                 return
             }
-            if (!addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
+            if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
                 flash.error = message(code: 'default.notAutorized.message')
                 redirect(url: request.getHeader('referer'))
                 return
@@ -381,7 +377,7 @@ class PersonController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)
@@ -400,7 +396,7 @@ class PersonController  {
                 }
                 return
             }
-            if (!addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())) {
+            if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
                 redirect action: 'show', id: params.id
                 return
             }
@@ -537,7 +533,7 @@ class PersonController  {
         PersonRole result
         Person prs = Person.get(params.id)
 
-        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+        if (addressbookService.isPersonEditable(prs, contextService.getUser())) {
 
             if (params.newPrsRoleOrg && params.newPrsRoleType) {
                 Org org = Org.get(params.newPrsRoleOrg)
@@ -578,7 +574,7 @@ class PersonController  {
     def deletePersonRole() {
         Person prs = Person.get(params.id)
 
-        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+        if (addressbookService.isPersonEditable(prs, contextService.getUser())) {
 
             if (params.oid) {
                 PersonRole pr = (PersonRole) genericOIDService.resolveOID(params.oid)

@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessPointController  {
 
-    def springSecurityService
     def contextService
     def orgTypeService
     GenericOIDService genericOIDService
@@ -93,7 +92,7 @@ class AccessPointController  {
     })
     def create() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.org
         result.orgInstance = organisation

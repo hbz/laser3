@@ -1,17 +1,14 @@
 package de.laser
 
-
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
-import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['permitAll'])
 class PublicController {
 
-    def springSecurityService
     def genericOIDService
     def mailService
     EscapeService escapeService

@@ -7,8 +7,6 @@ import de.laser.helper.SwissKnife
 
 class SemanticUiDropdownTagLib {
 
-    def springSecurityService
-
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 

@@ -1,8 +1,6 @@
 package de.laser
 
 
-import de.laser.auth.User
- 
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -13,13 +11,13 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TippController  {
 
-  def springSecurityService
+  ContextService contextService
 
   @Secured(['ROLE_USER'])
   def show() { 
     Map<String, Object> result = [:]
 
-    result.user = User.get(springSecurityService.principal.id)
+    result.user = contextService.getUser()
     result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
     result.tipp = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where :id = cast(tipp.id as string) or :id = tipp.gokbId',[id:params.id]).get(0) //we use unique identifiers

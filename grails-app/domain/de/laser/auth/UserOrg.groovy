@@ -4,25 +4,28 @@ import de.laser.Org
 import org.codehaus.groovy.util.HashCodeHelper
 import javax.persistence.Transient
 
+//@GrailsCompileStatic
 class UserOrg implements Comparable {
 
     static STATUS_PENDING       = 0
     static STATUS_APPROVED      = 1
     static STATUS_REJECTED      = 2
 
-    int status  // 0=Pending, 1=Approved, 2=Rejected
+    int status
 
     Long dateRequested
     Long dateActioned
 
-    Org org
-    User user
-    Role formalRole
+    //Org org
+    //User user
+    //Role formalRole
 
     Date dateCreated
     Date lastUpdated
 
     static transients = ['sortString'] // mark read-only accessor methods
+
+    static belongsTo = [user: User, org: Org, formalRole: Role]
 
     static mapping = {
         cache           true
@@ -33,7 +36,7 @@ class UserOrg implements Comparable {
     static constraints = {
         dateActioned    nullable: true
         dateRequested   nullable: true
-        formalRole      nullable: true
+        //formalRole      nullable: true
         lastUpdated     nullable: true
         dateCreated     nullable: true
     }
@@ -45,7 +48,7 @@ class UserOrg implements Comparable {
 
     @Transient
     int compareTo(obj) {
-        sortString.compareTo(obj?.sortString)
+        sortString.compareTo(((UserOrg) obj)?.getSortString())
     }
 
     @Override
