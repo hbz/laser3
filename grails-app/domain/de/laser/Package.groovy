@@ -6,7 +6,7 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait

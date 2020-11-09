@@ -9,7 +9,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import grails.plugins.orm.auditable.Auditable
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions

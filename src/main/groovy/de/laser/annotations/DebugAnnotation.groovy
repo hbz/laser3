@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.annotations
 
 import java.lang.annotation.ElementType
 import java.lang.annotation.Retention

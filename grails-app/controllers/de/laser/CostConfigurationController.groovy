@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured

@@ -53,7 +53,7 @@ class ContextService {
     }
 
     User getUser() {
-        //User.withNewSession { ?? LazyInitializationException in /profile/index
+        //User.withNewSession { ?? LazyInitializationException in /profile/index 
             try {
                 if (springSecurityService.isLoggedIn()) {
                     return (User) springSecurityService.getCurrentUser()

@@ -13,7 +13,7 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
  
 import de.laser.exceptions.CleanupException
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper

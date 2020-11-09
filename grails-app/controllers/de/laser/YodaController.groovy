@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.DebugAnnotation
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg

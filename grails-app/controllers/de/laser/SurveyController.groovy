@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
+import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.properties.SubscriptionProperty

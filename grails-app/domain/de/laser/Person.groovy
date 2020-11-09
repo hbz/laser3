@@ -6,7 +6,7 @@ import de.laser.titles.TitleInstance
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

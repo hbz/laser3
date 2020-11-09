@@ -9,7 +9,7 @@ import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.DeleteFlag
 

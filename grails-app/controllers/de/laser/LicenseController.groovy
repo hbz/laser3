@@ -8,7 +8,7 @@ import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType

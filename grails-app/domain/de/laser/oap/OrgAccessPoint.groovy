@@ -8,7 +8,7 @@ import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.uni_freiburg.ub.IpRange
 import de.uni_freiburg.ub.IpRangeCollection
 import groovy.json.JsonSlurper

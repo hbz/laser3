@@ -2,11 +2,10 @@ package de.laser
 
 
 import de.laser.properties.PlatformProperty
-import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException

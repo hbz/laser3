@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class PendingChangeConfiguration {
 
