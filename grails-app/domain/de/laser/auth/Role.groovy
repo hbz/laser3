@@ -9,7 +9,6 @@ class Role implements I10nTrait {
 
 	String authority
 	String roleType
-	Set grantedPermissions = []
 
 	static mapping = {
 		cache 	true
@@ -20,7 +19,7 @@ class Role implements I10nTrait {
 	]
 
 	static mappedBy = [
-			grantedPermissions: "role"
+			grantedPermissions: 'role'
 	]
 
 	static constraints = {

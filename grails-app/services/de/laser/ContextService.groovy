@@ -53,16 +53,17 @@ class ContextService {
     }
 
     User getUser() {
-        User.withNewSession {
+        //User.withNewSession { ?? LazyInitializationException in /profile/index
             try {
-                def user = springSecurityService.getCurrentUser()
-                return (User) GrailsHibernateUtil.unwrapIfProxy(user)
+                if (springSecurityService.isLoggedIn()) {
+                    return (User) springSecurityService.getCurrentUser()
+                }
             }
             catch (Exception e) {
                 log.warn('getUser() - ' + e.getMessage())
             }
             return null
-        }
+        //}
     }
 
     List<Org> getMemberships() {
