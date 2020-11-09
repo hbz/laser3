@@ -109,6 +109,6 @@ class UserRole implements Serializable, Comparable {
 
 	@Transient
 	int compareTo(obj) {
-		sortString.compareTo(obj?.sortString)
+		sortString.compareTo(((UserRole) obj)?.getSortString())
 	}
 }

@@ -28,14 +28,12 @@ class Role implements I10nTrait {
 	}
 
 	static def refdataFind(params) {
-		def result = [];
-		def ql = null;
-		ql = Role.findAllByAuthorityIlikeAndRoleType("${params.q}%", "global", params)
+		List result = []
+		String authority = "${params.q}%"
 
-		if (ql) {
-			ql.each { id ->
-				result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
-			}
+		List<Role> ql = Role.findAllByAuthorityIlikeAndRoleType(authority, 'global', params)
+		ql.each { id ->
+			result.add([id: "${id.class.name}:${id.id}", text: "${id.authority}"])
 		}
 
 		result

@@ -4,6 +4,7 @@ import de.laser.Org
 import org.codehaus.groovy.util.HashCodeHelper
 import javax.persistence.Transient
 
+//@GrailsCompileStatic
 class UserOrg implements Comparable {
 
     static STATUS_PENDING       = 0
@@ -47,7 +48,7 @@ class UserOrg implements Comparable {
 
     @Transient
     int compareTo(obj) {
-        sortString.compareTo(obj?.sortString)
+        sortString.compareTo(((UserOrg) obj)?.getSortString())
     }
 
     @Override
