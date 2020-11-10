@@ -1,6 +1,6 @@
 package de.laser.system
 
-import de.laser.YodaService
+import de.laser.SystemService
 import grails.util.Holders
 
 class SystemActivityProfiler {
@@ -18,12 +18,12 @@ class SystemActivityProfiler {
     static constraints = { }
 
     static void update() {
-        YodaService yodaService = (YodaService) Holders.grailsApplication.mainContext.getBean('yodaService')
+        SystemService systemService = (SystemService) Holders.grailsApplication.mainContext.getBean('systemService')
 
-        withTransaction {
-            int userCount = yodaService.getNumberOfActiveUsers()
+        SystemActivityProfiler.withTransaction {
+            int userCount = systemService.getNumberOfActiveUsers()
             if (userCount > 0) {
-                new SystemActivityProfiler(userCount: yodaService.getNumberOfActiveUsers()).save()
+                new SystemActivityProfiler(userCount: systemService.getNumberOfActiveUsers()).save()
             }
         }
     }
