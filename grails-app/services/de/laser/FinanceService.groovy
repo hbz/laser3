@@ -10,6 +10,7 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.finance.Invoice
 import de.laser.finance.Order
+import de.laser.helper.ProfilerUtils
 import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.exceptions.FinancialDataException
@@ -332,8 +333,11 @@ class FinanceService {
      */
     Map getCostItemsForSubscription(GrailsParameterMap params,Map configMap) throws FinancialDataException {
         if(configMap.subscription) {
+            ProfilerUtils pu = new ProfilerUtils()
+            pu.setBenchmark("init")
             Subscription sub = (Subscription) configMap.subscription
             Org org = (Org) configMap.institution
+            pu.setBenchmark("load filter")
             Map<String,Object> filterQuery = processFilterParams(params)
             EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
             if(params.reset || params.submit)
@@ -346,6 +350,7 @@ class FinanceService {
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
                     case "own":
+                        pu.setBenchmark("before own query")
                         String subFilter = filterQuery.subFilter
                         subFilter = subFilter.replace(" and orgRoles.org in (:filterConsMembers) ","")
                         Map<String,Object> ownFilter = [:]
@@ -356,6 +361,7 @@ class FinanceService {
                                         genericExcludes + subFilter + filterQuery.ciFilter +
                                         ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
                                 [owner:org,sub:sub]+genericExcludeParams+ownFilter)
+                        pu.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
                             result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
@@ -363,6 +369,7 @@ class FinanceService {
                         }
                         break
                     case "cons":
+                        pu.setBenchmark("before cons query")
                         List consCostRows = CostItem.executeQuery(
                                 'select ci, ' +
                                         '(select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname ' +
@@ -370,6 +377,7 @@ class FinanceService {
                                 filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
                                 ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
                                 [owner:org,sub:sub,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        pu.setBenchmark("assembling map")
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
                             List<CostItem> consCostItems = consCostRows.collect { row -> row[0]}
@@ -377,10 +385,13 @@ class FinanceService {
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
-                    case "consAtSubscr": List<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci join ci.sub sub where ci.owner = :owner and sub = :sub'+
+                    case "consAtSubscr":
+                        pu.setBenchmark("before cons at subscr")
+                        List<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci join ci.sub sub where ci.owner = :owner and sub = :sub'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
                             ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
                             [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
+                        pu.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
                             result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
@@ -388,11 +399,13 @@ class FinanceService {
                         }
                         break
                     case "subscr":
+                        pu.setBenchmark("before subscr")
                         List<CostItem> subscrCostItems = CostItem.executeQuery(
                                 'select ci from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
                                  genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                                  ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
                                  [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
+                        pu.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
                             result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
@@ -401,6 +414,7 @@ class FinanceService {
                         break
                 }
             }
+            result.benchMark = pu.stopBenchmark()
             result
         }
         else if(!configMap.subscription) {
@@ -415,7 +429,10 @@ class FinanceService {
      * @return a LinkedHashMap with the cost items for each tab to display
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark("load filter params")
         Map<String,Object> filterQuery = processFilterParams(params)
+        pu.setBenchmark("get cache")
         EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
         if(params.reset || params.submit)
             cache.put('cachedFilter',filterQuery)
@@ -425,6 +442,7 @@ class FinanceService {
         if(filterQuery.subFilter || filterQuery.ciFilter)
             result.filterSet = true
         Org org = (Org) configMap.institution
+        pu.setBenchmark("load cost data for tabs")
         configMap.dataToDisplay.each { String dataToDisplay ->
             switch(dataToDisplay) {
                 //get own costs
@@ -443,15 +461,19 @@ class FinanceService {
                     String queryStringBase = "select ci from CostItem ci ${subJoin}" +
                         "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder
+                    pu.setBenchmark("execute own query")
                     List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
                     result.own = [count:ownSubscriptionCostItems.size()]
+                    pu.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
                         result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
                         result.own.sums = calculateResults(ownSubscriptionCostItems)
                     }
                         break
                 //get consortial costs
-                case "cons": List consortialCostRows = CostItem.executeQuery('select ci, orgRoles.org.sortname as sortname from CostItem ci ' +
+                case "cons":
+                    pu.setBenchmark("execute cons query")
+                    List consortialCostRows = CostItem.executeQuery('select ci, orgRoles.org.sortname as sortname from CostItem ci ' +
                         'join ci.owner orgC ' +
                         'join ci.sub sub ' +
                         'join sub.instanceOf subC ' +
@@ -471,32 +493,15 @@ class FinanceService {
                                 ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname ?:
                                         ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name}
                         }
+                        pu.setBenchmark("map assembly")
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                         result.cons.sums = calculateResults(consortialCostItems)
                     }
                     break
-                //get collective costs
-                case "coll": List collectiveCostRows = CostItem.executeQuery('select ci, orgRoles.org.name as sortname from CostItem ci ' +
-                        'join ci.owner orgC ' +
-                        'join ci.sub sub ' +
-                        'join sub.instanceOf subC ' +
-                        'join subC.orgRelations roleC ' +
-                        'join sub.orgRelations roleMC ' +
-                        'join sub.orgRelations orgRoles ' +
-                        'where orgC = :org and orgC = roleC.org and roleMC.roleType = :collectiveType and orgRoles.roleType in (:subscrType)'+
-                        genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
-                        ' order by '+configMap.sortConfig.collSort+' '+configMap.sortConfig.collOrder,
-                        [org:org,collectiveType:RDStore.OR_SUBSCRIPTION_COLLECTIVE,subscrType:[RDStore.OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
-                    result.coll = [count:0]
-                    if(collectiveCostRows) {
-                        Set<CostItem> collectiveCostItems = collectiveCostRows.collect { row -> row[0] }
-                        result.coll.count = collectiveCostItems.size()
-                        result.coll.costItems = collectiveCostItems.drop(configMap.offsets.collOffset).take(configMap.max)
-                        result.coll.sums = calculateResults(collectiveCostItems)
-                    }
-                    break
                 //get membership costs
-                case "subscr": List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
+                case "subscr":
+                    pu.setBenchmark("execute subscr query")
+                    List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
                         'join ci.sub sub ' +
                         'left join ci.subPkg subPkg ' +
                         'join sub.instanceOf subC ' +
@@ -517,6 +522,7 @@ class FinanceService {
                     break
             }
         }
+        result.benchMark = pu.stopBenchmark()
         result
     }
 

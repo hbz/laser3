@@ -19,9 +19,9 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.SessionFactory
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -151,11 +151,7 @@ class SubscriptionService {
         result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
-        tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        tmpParams.sort = 'o.sortname'
-
-        Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, contextOrg)
+        Map<String,Object> fsq = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
         pu.setBenchmark('filterSubTypes & filterPropList')
@@ -179,6 +175,7 @@ class SubscriptionService {
         pu.setBenchmark('filter query')
 
         String query
+        Long statusId
         Map qarams
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
@@ -188,12 +185,11 @@ class SubscriptionService {
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
-                    " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) " +
+                    " and roleT.roleType in (:rdvSubscr) " +
                     " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
-                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
+                      rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
                       deleted  : RDStore.COST_ITEM_DELETED
             ]
         }
@@ -207,7 +203,8 @@ class SubscriptionService {
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
-                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
+                      status   : statusId
             ]
         }
 
@@ -224,6 +221,12 @@ class SubscriptionService {
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
+        }
+        else if(!params.filterSet) {
+            query += " and roleT.org.id = :member "
+            qarams.put('member', result.filterConsortiaMembers[0].id)
+            params.member = result.filterConsortiaMembers[0].id
+            result.defaultSet = true
         }
 
         if (params.identifier?.length() > 0) {
@@ -254,10 +257,10 @@ class SubscriptionService {
 
         if (params.status?.size() > 0) {
             query += " and subT.status.id = :status "
-            qarams.put('status', params.long('status'))
+            qarams.put('status',params.long('status'))
         } else if(!params.filterSet) {
             query += " and subT.status.id = :status "
-            qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
+            qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
             result.defaultSet = true
         }
@@ -281,7 +284,7 @@ class SubscriptionService {
             qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
 
-        if (params.containsKey('subKinds')) {
+        if (params.subKinds?.size() > 0) {
             query += " and subT.kind.id in (:subKinds) "
             qarams.put('subKinds', params.list('subKinds').collect { Long.parseLong(it) })
         }
@@ -319,27 +322,23 @@ class SubscriptionService {
         // log.debug( qarams )
 
         if('withCostItems' in tableConf) {
-            pu.setBenchmark('costs')
-
-            String totalMembersQuery = query.replace("ci, subT, roleT.org", "roleT.org")
-
-            result.totalMembers    = CostItem.executeQuery(
-                    totalMembersQuery, qarams
-            )
+            pu.setBenchmark('costs init')
 
             List costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
+            pu.setBenchmark('read off costs')
             result.totalCount = costs.size()
             if(params.exportXLS || params.format)
                 result.entries = costs
             else result.entries = costs.drop((int) result.offset).take((int) result.max)
 
+            result.totalMembers = []
             result.finances = {
                 Map entries = [:]
                 result.entries.each { obj ->
                     if (obj[0]) {
-                        CostItem ci = obj[0]
+                        CostItem ci = (CostItem) obj[0]
                         if (!entries."${ci.billingCurrency}") {
                             entries."${ci.billingCurrency}" = 0.0
                         }
@@ -350,9 +349,10 @@ class SubscriptionService {
                         else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
                             entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
                         }
+                        result.totalMembers << ci.sub.getSubscriber()
                     }
                     if (obj[1]) {
-                        Subscription subCons = obj[1]
+                        Subscription subCons = (Subscription) obj[1]
                         //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
                         linkedLicenses.put(subCons,Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:subCons,linkType:RDStore.LINKTYPE_LICENSE]))
                     }
@@ -374,8 +374,7 @@ class SubscriptionService {
         }
         result.linkedLicenses = linkedLicenses
 
-        List bm = pu.stopBenchmark()
-        result.benchMark = bm
+        result.pu = pu
 
         result
     }

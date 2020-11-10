@@ -3,38 +3,39 @@
 
 <g:if test="${params.member}">
     <g:set var="chosenOrg" value="${Org.findById(params.member)}" />
-    <g:set var="chosenOrgCPAs" value="${chosenOrg?.getGeneralContactPersons(false)}" />
-
-    <table class="ui table la-table compact">
-        <tbody>
-        <tr>
-            <td>
-                <p>
-                    <strong>
-                        ${chosenOrg?.name}
-                        <g:if test="${chosenOrg?.shortname}">(${chosenOrg?.shortname})</g:if>
-                        <g:if test="${chosenOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${chosenOrg.getCustomerTypeI10n()}">
-                                <i class="chess rook grey icon"></i>
-                            </span>
-                        </g:if>
-                    </strong>
-                </p>
-                ${chosenOrg?.libraryType?.getI10n('value')}
-            </td>
-            <td>
-                <g:if test="${chosenOrgCPAs}">
-                    <g:each in="${chosenOrgCPAs}" var="gcp">
-                        <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true, overwriteEditable: false]}" />
-                    </g:each>
-                </g:if>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <g:if test="${chosenOrg}">
+        <g:set var="chosenOrgCPAs" value="${chosenOrg.getGeneralContactPersons(false)}" />
+        <table class="ui table la-table compact">
+            <tbody>
+            <tr>
+                <td>
+                    <p>
+                        <strong>
+                            ${chosenOrg.name}
+                            <g:if test="${chosenOrg.getCustomerType() == 'ORG_INST'}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${chosenOrg.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
+                            </g:if>
+                        </strong>
+                    </p>
+                    ${chosenOrg.libraryType?.getI10n('value')}
+                </td>
+                <td>
+                    <g:if test="${chosenOrgCPAs}">
+                        <g:each in="${chosenOrgCPAs}" var="gcp">
+                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true, overwriteEditable: false]}" />
+                        </g:each>
+                    </g:if>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </g:if>
 </g:if>
 <g:if test="${entries}">
+    <g:set var="start" value="${System.currentTimeMillis()}"/>
     <table class="ui celled sortable table table-tworow la-table la-ignore-fixed">
         <thead>
         <tr>
@@ -81,13 +82,13 @@
                 Subscription subCons
                 Org subscr
                 if('withCostItems' in tableConfig) {
-                    ci = entry[0] ?: new CostItem()
-                    subCons = entry[1]
-                    subscr = entry[2]
+                    ci = (CostItem) entry[0]
+                    subCons = (Subscription) entry[1]
+                    subscr = (Org) entry[2]
                 }
                 else if('onlyMemberSubs' in tableConfig) {
-                    subCons = entry[0]
-                    subscr = entry[1]
+                    subCons = (Subscription) entry[0]
+                    subscr = (Org) entry[1]
                 }
             %>
             <tr>
@@ -99,7 +100,7 @@
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})
                     </g:link>
-                    <g:if test="${OrgRole.findBySubAndOrgAndRoleType(subCons, subscr, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
+                    <g:if test="${subCons.orgRelations.find { OrgRole oo -> oo.org == subscr && oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isNotVisibleForSubscriber')}">
                             <i class="low vision grey icon"></i>
                         </span>
@@ -146,7 +147,7 @@
                 </td>
                 <g:if test="${'withCostItems' in tableConfig}">
                     <td>
-                        <g:if test="${ci.id}"> <%-- only existing cost item --%>
+                        <g:if test="${ci.id}">
                             <g:if test="${ci.getDerivedStartDate()}">
                                 <g:formatDate date="${ci.getDerivedStartDate()}" format="${message(code:'default.date.format.notime')}"/>
                                 <br />
@@ -157,7 +158,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${ci.id}"> <%-- only existing cost item --%>
+                        <g:if test="${ci.id}">
                             <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
                                             type="currency"
                                             currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
@@ -244,7 +245,7 @@
         <g:if test="${'withCostItems' in tableConfig}">
             <tfoot>
             <tr>
-                <th colspan="8">
+                <th colspan="9">
                     ${message(code:'financials.totalCostOnPage')}
                 </th>
             </tr>
@@ -256,7 +257,7 @@
                     <td class="la-exposed-bg">
                         <g:formatNumber number="${entry.value}" type="currency" currencySymbol="${entry.key}"/>
                     </td>
-                    <td colspan="1">
+                    <td colspan="2">
 
                     </td>
                 </tr>

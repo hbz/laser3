@@ -18,13 +18,13 @@ class GenericOIDService {
 
     if (oid) {
       String[] parts = oid.toString().split(':')
-
-      GrailsClass dc = AppUtils.getDomainClass(parts[0])
+      String domainClassString = parts[0].trim()
+      GrailsClass dc = AppUtils.getDomainClass(domainClassString)
       if (! dc) {
-        dc = AppUtils.getDomainClassGeneric(parts[0])
+        dc = AppUtils.getDomainClassGeneric(domainClassString)
       }
       if (dc)  {
-        result = dc.getClazz().get(parts[1])
+        result = dc.getClazz().get(parts[1].trim())
       }
       else {
         log.error("failed to resolveOID() for: ${oid}")
