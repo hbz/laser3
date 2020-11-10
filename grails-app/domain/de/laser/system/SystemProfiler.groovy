@@ -18,7 +18,7 @@ class SystemProfiler {
 
     static mapping = {
         id          column:'sp_id'
-        version     column:'sp_version'
+        version     false
         uri         column:'sp_uri',        index: 'sp_uri_idx'
         params      column:'sp_params',     type: 'text'
         context     column:'sp_context_fk'

@@ -15,16 +15,15 @@
     </asset:script>
     <%-- value="${params.filterPropDef}" --%>
     <semui:dropdown id="filterPropDef" name="filterPropDef"
-
                     class="la-filterPropDef"
                     from="${propList}"
                     iconWhich = "shield alternate"
                     optionKey="${{
                         it.refdataCategory ?
-                                "${genericOIDService.getOID(it)}\" data-rdc=\"${it.refdataCategory}"
-                                : "${genericOIDService.getOID(it)}"
+                                "${it}\" data-rdc=\"${it.refdataCategory}":
+                                 "${it}"
                     }}"
-                    optionValue="${{ it.getI10n('name') }}"
+                    optionValue="${{ it.name_de }}"
                     noSelection="${message(code: 'default.select.choose.label')}"/>
     <asset:script type="text/javascript">
         $(function() {
@@ -66,7 +65,7 @@
                     $.ajax({
                         url: '<g:createLink controller="ajaxJson" action="refdataSearchByCategory"/>' + '?cat=' + selOpt.attr('data-rdc'),
                         success: function (data) {
-                            var genericNullValue = "${RefdataValue.class.name}:${RDStore.GENERIC_NULL_VALUE.id}";
+                            var genericNullValue = "${genericOIDService.getOID(RDStore.GENERIC_NULL_VALUE.id)}";
                             var select = '';
                             for (var index = 0; index < data.length; index++) {
                                 var option = data[index];

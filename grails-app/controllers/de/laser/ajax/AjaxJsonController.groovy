@@ -530,7 +530,7 @@ class AjaxJsonController {
 
             rq.each { RefdataValue it ->
                 if (it instanceof I10nTrait || it instanceof AbstractI10n) {
-                    result.add([value: "${it.class.name}:${it.id}", text: "${it.getI10n('value')}"])
+                    result.add([value: "${genericOIDService.getOID(it)}", text: "${it.getI10n('value')}"])
                 }
                 else {
                     String value = it.value
@@ -544,7 +544,7 @@ class AjaxJsonController {
         }
         if (result) {
             RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
-            result.add([value: "${notSet.class.name}:${notSet.id}", text: "${notSet.getI10n('value')}"])
+            result.add([value: "${genericOIDService.getOID(notSet)}", text: "${notSet.getI10n('value')}"])
         }
 
         render result as JSON

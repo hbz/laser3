@@ -110,7 +110,7 @@ class CostItem extends AbstractBase
     //@Transient
     //def budgetcodes //Binds getBudgetcodes
 
-    static final TAX_RATES = [ 0, 7, 19 ]
+    static final TAX_RATES = [ 0, 5, 7, 16, 19 ]
 
     static transients = ['deleted', 'derivedStartDate', 'derivedEndDate'] // mark read-only accessor methods
 
