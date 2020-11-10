@@ -10,11 +10,13 @@ class UserRole implements Serializable, Comparable {
 
 	private static final long serialVersionUID = 1
 
-    User user
-    Role role
+    //User user
+    //Role role
 
 	Date dateCreated
 	Date lastUpdated
+
+	static belongsTo = [user: User, role: Role]
 
 	static constraints = {
 		user nullable: false
@@ -107,6 +109,6 @@ class UserRole implements Serializable, Comparable {
 
 	@Transient
 	int compareTo(obj) {
-		sortString.compareTo(obj?.sortString)
+		sortString.compareTo(((UserRole) obj)?.getSortString())
 	}
 }

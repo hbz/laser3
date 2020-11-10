@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController  {
 
-    def springSecurityService
     GokbService gokbService
     def contextService
     def genericOIDService
@@ -53,7 +52,7 @@ class DataManagerController  {
       result.offset = 0
     }
     else {
-      User user = User.get(springSecurityService.principal.id)
+      User user = contextService.getUser()
       result.max = params.max ?: user.getDefaultPageSize()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -324,7 +323,7 @@ class DataManagerController  {
   def deletedTitles() {
     Map<String, Object> result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max): result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
@@ -348,7 +347,7 @@ class DataManagerController  {
     def deletedOrgs() {
         Map<String, Object> result = [:]
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max): result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.editable = true
@@ -442,9 +441,8 @@ class DataManagerController  {
   @Secured(['ROLE_ADMIN'])
   def checkPackageTIPPs() {
     Map<String, Object> result = [:]
-    result.user = springSecurityService.getCurrentUser()
+    result.user = contextService.getUser()
     params.max =  params.max ?: result.user.getDefaultPageSize()
-
 
         def gokbRecords = []
 
@@ -466,18 +464,6 @@ class DataManagerController  {
             }
         }
 
-        /*if(params.onlyNotEqual) {
-          result.tippsNotEqual = []
-          result.records.each { hit ->
-            if (de.laser.Package.findByGokbId(hit.uuid)) {
-              if (de.laser.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
-                result.tippsNotEqual << hit
-              }
-            }
-          }
-          result.records = result.tippsNotEqual
-        }*/
-
         result.resultsTotal2 = result.records?.size()
 
         Integer start = params.offset ? params.int('offset') : 0
@@ -486,16 +472,13 @@ class DataManagerController  {
 
         result.records = result.records?.subList(start, end)
 
-
         result
     }
 
   @Secured(['ROLE_ADMIN'])
   def listMailTemplates() {
     Map<String, Object> result = [:]
-
         result.mailTemplates = MailTemplate.getAll()
-
         result
     }
 

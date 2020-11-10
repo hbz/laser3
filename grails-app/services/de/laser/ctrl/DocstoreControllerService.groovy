@@ -1,6 +1,5 @@
 package de.laser.ctrl
 
-import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.GenericOIDService
 import de.laser.ContextService
 import de.laser.Doc

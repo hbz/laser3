@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class CustomerIdentifier {
 

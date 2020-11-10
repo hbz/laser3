@@ -1,10 +1,9 @@
 package de.laser
 
-
 import de.laser.auth.User
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -13,7 +12,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController  {
 
-	def springSecurityService
     def contextService
     def taskService
 
@@ -27,14 +25,14 @@ class TaskController  {
 	@Secured(['ROLE_ADMIN'])
     def list() {
 		if (! params.max) {
-			User user   = springSecurityService.getCurrentUser()
+			User user   = contextService.getUser()
 			params.max  = user?.getDefaultPageSize()
 		}
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Task.withTransaction {
 			def contextOrg  = contextService.getOrg()
@@ -44,7 +42,7 @@ class TaskController  {
 				params.endDate = sdf.parse(params.endDate)
 			}
 
-			def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
+			Task taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
 			taskInstance.creator = contextService.getUser()
 			taskInstance.createDate = new Date()
 
@@ -85,7 +83,7 @@ class TaskController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
         def contextOrg  = contextService.getOrg()
 		def result      = taskService.getPreconditions(contextOrg)
@@ -98,7 +96,7 @@ class TaskController  {
 
     @Secured(['ROLE_ADMIN'])
     def show() {
-        def taskInstance = Task.get(params.id)
+		Task taskInstance = Task.get(params.id)
         if (! taskInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
 			redirect controller: 'myInstitution', action: 'dashboard'
@@ -109,7 +107,7 @@ class TaskController  {
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
@@ -121,7 +119,7 @@ class TaskController  {
 				params.endDate = sdf.parse(params.endDate)
 			}
 
-			def taskInstance = Task.get(params.id)
+			Task taskInstance = Task.get(params.id)
 
 			if (((!taskInstance.responsibleOrg) && taskInstance.responsibleUser != contextService.getUser()) && (taskInstance.responsibleOrg != contextOrg) && (taskInstance.creator != contextService.getUser())) {
 				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title])
@@ -185,7 +183,7 @@ class TaskController  {
 	}
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Task.withTransaction {
 			Task taskInstance = Task.get(params.id)

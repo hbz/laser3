@@ -67,7 +67,7 @@ class ApiWriter {
                 // TODO: set subscription.owner = license
                 //def subscriptions = inHelperService.getSubscriptions(data.subscriptions)
 
-                license.save(flush: true)
+                license.save()
                 result = ['result': Constants.HTTP_CREATED, 'debug': license]
             }
             catch (Exception e) {
@@ -123,7 +123,7 @@ class ApiWriter {
 
                 org.prsLinks        = personsAndRoles['personRoles']
 
-                org.save(flush: true)
+                org.save()
                 result = ['result': Constants.HTTP_CREATED, 'debug': org]
             }
             catch (Exception e) {
@@ -180,7 +180,7 @@ class ApiWriter {
                 // not supported: license
                 // not supported: packages
 
-                sub.save(flush: true)
+                sub.save()
                 result = ['result': Constants.HTTP_CREATED, 'debug': sub]
             }
             catch (Exception e) {

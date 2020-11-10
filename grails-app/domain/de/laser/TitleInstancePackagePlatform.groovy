@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.laser.titles.TitleInstance
 import groovy.time.TimeCategory
 import org.apache.commons.logging.Log

@@ -4,12 +4,9 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class CostItemElementConfiguration extends AbstractBase {
-
-    def contextService
-    def springSecurityService
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement

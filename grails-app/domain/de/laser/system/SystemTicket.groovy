@@ -4,7 +4,7 @@ package de.laser.system
 import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class SystemTicket {
 

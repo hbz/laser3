@@ -4,8 +4,8 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
- 
-import de.laser.helper.DebugAnnotation
+import de.laser.ctrl.UserControllerService
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -20,19 +20,21 @@ class UserController  {
     def accessService
     def deletionService
     def userService
+    UserControllerService userControllerService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 
+    @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def delete() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (result.user) {
             List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
@@ -70,7 +72,7 @@ class UserController  {
     @Secured(['ROLE_ADMIN'])
     def list() {
 
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
         Map filterParams = params
 
         params.max = params.max ?: result.editor?.getDefaultPageSize() // TODO
@@ -97,7 +99,7 @@ class UserController  {
 
     @Secured(['ROLE_ADMIN'])
     def edit() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (! result.editable) {
             redirect action: 'list'
@@ -121,20 +123,20 @@ class UserController  {
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def show() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
         result
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = {
-        principal.user?.hasRole('ROLE_ADMIN') || principal.user?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
     def newPassword() {
         User.withTransaction {
-            Map<String, Object> result = userService.setResultGenerics(params)
+            Map<String, Object> result = userControllerService.getResultGenerics(params)
 
             if (!result.editable) {
                 flash.error = message(code: 'default.noPermissions')
@@ -162,7 +164,7 @@ class UserController  {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def addAffiliation(){
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
@@ -182,7 +184,7 @@ class UserController  {
 
     @Secured(['ROLE_ADMIN'])
     def create() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect controller: 'user', action: 'list'
@@ -210,5 +212,4 @@ class UserController  {
             redirect action: 'create'
         }
     }
-
 }

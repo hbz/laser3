@@ -1,4 +1,4 @@
-<g:set var="springSecurityService" bean="springSecurityService" />
+<laser:serviceInjection/>
 
 <g:if test="${actionName == 'list'}">
     <semui:actionsDropdown>
@@ -16,7 +16,7 @@
     </semui:actionsDropdown>
 </g:elseif>
 <g:if test="${actionName == 'edit'}">
-    <g:if test="${springSecurityService.getCurrentUser().hasRole('ROLE_ADMIN') || springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+    <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN') || contextService.getUser().hasAffiliation("INST_ADM")}">
         <semui:actionsDropdown>
             <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.user')}</g:link>
         </semui:actionsDropdown>

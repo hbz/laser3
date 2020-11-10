@@ -2,7 +2,7 @@ package de.laser
 
 
  
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -15,7 +15,7 @@ class PendingChangeController  {
     def contextService
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def accept() {
         log.debug("Accept")
         //distinct between legacy accept and new accept!
@@ -30,7 +30,7 @@ class PendingChangeController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def reject() {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
@@ -45,7 +45,7 @@ class PendingChangeController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAll() {
         log.debug("processAll - ${params}")
         List<String> concernedPackage = params.list("acceptChangesForPackages")
@@ -90,7 +90,7 @@ class PendingChangeController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def acceptAll() {
         log.debug("acceptAll - ${params}")
         if(params.OID) {
@@ -108,7 +108,7 @@ class PendingChangeController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def rejectAll() {
         log.debug("rejectAll ${params}")
         if(params.OID) {

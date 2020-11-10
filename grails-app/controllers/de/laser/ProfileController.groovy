@@ -19,7 +19,6 @@ class ProfileController {
 
     def contextService
     def genericOIDService
-    def springSecurityService
     def passwordEncoder
     def instAdmService
     def deletionService
@@ -31,7 +30,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def index() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.editable = true
         result.isOrgBasicMember = contextService.org.getCustomerType() == 'ORG_BASIC_MEMBER'
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
@@ -43,7 +42,7 @@ class ProfileController {
     @Secured(['ROLE_ADMIN'])
     def errorReport() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.title = params.title
         result.described = params.described
         result.expected = params.expected
@@ -55,7 +54,7 @@ class ProfileController {
     @Secured(['ROLE_ADMIN'])
     def errorOverview() {
         Map<String, Object> result = [:]
-        result.user     = User.get(springSecurityService.principal.id)
+        result.user     = contextService.getUser()
         result.tickets  = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
         result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_YODA,ROLE_TICKET_EDITOR")
 
@@ -65,7 +64,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def help() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result
     }
 
@@ -121,7 +120,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def dsgvo() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result
     }
 
@@ -129,7 +128,7 @@ class ProfileController {
     def processJoinRequest() {
         log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}")
 
-        User user       = User.get(springSecurityService.principal.id)
+        User user       = contextService.getUser()
         Org org         = Org.get(params.org)
         Role formalRole = Role.get(params.formalRole)
 
@@ -144,7 +143,7 @@ class ProfileController {
     @Transactional
     def processCancelRequest() {
         log.debug("processCancelRequest(${params}) userOrg with id ${params.assoc}")
-        User user        = User.get(springSecurityService.principal.id)
+        User user        = contextService.getUser()
         UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
@@ -156,7 +155,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def deleteProfile() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
 
          // TODO : isLastAdminForOrg
 
@@ -186,7 +185,7 @@ class ProfileController {
     @Transactional
     def updateProfile() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         flash.message=""
 
         if ( user.display != params.userDispName ) {
@@ -240,31 +239,32 @@ class ProfileController {
         redirect(action: "index")
     }
 
-  @Secured(['ROLE_USER'])
-  def updateReminderSettings() {
-    User user = User.get(springSecurityService.principal.id)
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def updateReminderSettings() {
+        User user = contextService.getUser()
 
-    flash.message = ""
-    flash.error = ""
+        flash.message = ""
+        flash.error = ""
 
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),         params.remindPeriodForLicensePrivateProp,       'profile.updateProfile.updated.remindPeriodForLicensePrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForLicenseCustomProp,        'profile.updateProfile.updated.remindPeriodForLicenseCustomProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),              params.remindPeriodForOrgCustomProp,            'profile.updateProfile.updated.remindPeriodForOrgCustomProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),             params.remindPeriodForOrgPrivateProp,           'profile.updateProfile.updated.remindPeriodForOrgPrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForPersonPrivateProp,        'profile.updateProfile.updated.remindPeriodForPersonPrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSubscriptionsCustomProp,  'profile.updateProfile.updated.remindPeriodForSubscriptionsCustomProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionsPrivateProp, 'profile.updateProfile.updated.remindPeriodForSubscriptionsPrivateProp')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSetting.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_TASKS, UserSetting.DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
-    changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSurveysMandatoryEndDate, 'profile.updateProfile.updated.remindPeriodForSurveyMandatoryEndDate')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),         params.remindPeriodForLicensePrivateProp,       'profile.updateProfile.updated.remindPeriodForLicensePrivateProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForLicenseCustomProp,        'profile.updateProfile.updated.remindPeriodForLicenseCustomProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),              params.remindPeriodForOrgCustomProp,            'profile.updateProfile.updated.remindPeriodForOrgCustomProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),             params.remindPeriodForOrgPrivateProp,           'profile.updateProfile.updated.remindPeriodForOrgPrivateProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),          params.remindPeriodForPersonPrivateProp,        'profile.updateProfile.updated.remindPeriodForPersonPrivateProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSubscriptionsCustomProp,  'profile.updateProfile.updated.remindPeriodForSubscriptionsCustomProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, UserSetting.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionsPrivateProp, 'profile.updateProfile.updated.remindPeriodForSubscriptionsPrivateProp')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSetting.DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_TASKS, UserSetting.DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
+        changeValue(user.getSetting(KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE, UserSetting.DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSurveysMandatoryEndDate, 'profile.updateProfile.updated.remindPeriodForSurveyMandatoryEndDate')
 
     //Error: Emailreminder without Emailaddress
     if ( (! user.email) && params.isRemindByEmail) {
       flash.error += message(code:'profile.updateProfile.updated.isRemindByEmail.error')
     } else {
-      changeValue(user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO),                                             params.isRemindByEmail?:"N",                    'profile.updateProfile.updated.isRemindByEmail')
+      changeValue(user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO), params.isRemindByEmail?:"N", 'profile.updateProfile.updated.isRemindByEmail')
     }
 
     //Error: EmailCCReminder without EmailReminder
@@ -283,26 +283,28 @@ class ProfileController {
         }
     }
 
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, RDStore.YN_NO),    params.isSubscriptionsNoticePeriod?:"N",     'profile.updateProfile.updated.subscriptions.noticePeriod')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, RDStore.YN_NO),         params.isSubscriptionsEnddate?:"N",          'profile.updateProfile.updated.subscriptions.enddate')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, RDStore.YN_NO),     params.isSubscriptionsCustomProp?:"N",       'profile.updateProfile.updated.subscriptions.customProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, RDStore.YN_NO),    params.isSubscriptionsPrivateProp?:"N",      'profile.updateProfile.updated.subscriptions.privateProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP, RDStore.YN_NO),           params.isLicenseCustomProp?:"N",             'profile.updateProfile.updated.license.customProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, RDStore.YN_NO),          params.isLicensePrivateProp?:"N",            'profile.updateProfile.updated.license.privateProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP, RDStore.YN_NO),               params.isOrgCustomProp?:"N",                 'profile.updateProfile.updated.org.customProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP, RDStore.YN_NO),              params.isOrgPrivateProp?:"N",                'profile.updateProfile.updated.org.privateProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP, RDStore.YN_NO),           params.isPersonPrivateProp?:"N",             'profile.updateProfile.updated.person.privateProperty')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_TASKS, RDStore.YN_NO),                         params.isTasks?:"N",                         'profile.updateProfile.updated.tasks')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, RDStore.YN_NO), params.isSurveysNotMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysEndDate')
-    changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_NO),     params.isSurveysMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysMandatoryEndDate')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, RDStore.YN_NO),    params.isSubscriptionsNoticePeriod?:"N",     'profile.updateProfile.updated.subscriptions.noticePeriod')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, RDStore.YN_NO),         params.isSubscriptionsEnddate?:"N",          'profile.updateProfile.updated.subscriptions.enddate')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, RDStore.YN_NO),     params.isSubscriptionsCustomProp?:"N",       'profile.updateProfile.updated.subscriptions.customProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, RDStore.YN_NO),    params.isSubscriptionsPrivateProp?:"N",      'profile.updateProfile.updated.subscriptions.privateProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP, RDStore.YN_NO),           params.isLicenseCustomProp?:"N",             'profile.updateProfile.updated.license.customProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, RDStore.YN_NO),          params.isLicensePrivateProp?:"N",            'profile.updateProfile.updated.license.privateProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP, RDStore.YN_NO),               params.isOrgCustomProp?:"N",                 'profile.updateProfile.updated.org.customProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP, RDStore.YN_NO),              params.isOrgPrivateProp?:"N",                'profile.updateProfile.updated.org.privateProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP, RDStore.YN_NO),           params.isPersonPrivateProp?:"N",             'profile.updateProfile.updated.person.privateProperty')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_TASKS, RDStore.YN_NO),                         params.isTasks?:"N",                         'profile.updateProfile.updated.tasks')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE, RDStore.YN_NO), params.isSurveysNotMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysEndDate')
+        changeValue(user.getSetting(KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE, RDStore.YN_NO),     params.isSurveysMandatoryEndDate?:"N",      'profile.updateProfile.updated.surveysMandatoryEndDate')
 
-    user.save(flush: true)
+        user.save()
 
-    redirect(action: "index")
-  }
+        redirect(action: "index")
+    }
+
     @Secured(['ROLE_USER'])
+    @Transactional
     def updateNotificationSettings() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
 
         flash.message = ""
         flash.error = ""
@@ -311,7 +313,7 @@ class ProfileController {
         if ( (! user.email) && params.isNotificationByEmail) {
             flash.error += message(code:'profile.updateProfile.updated.isNotificationByEmail.error')
         } else {
-            changeValue(user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO),                                             params.isNotificationByEmail?:"N",                    'profile.updateProfile.updated.isNotificationByEmail')
+            changeValue(user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO), params.isNotificationByEmail?:"N", 'profile.updateProfile.updated.isNotificationByEmail')
         }
 
         //Error: EmailCCReminder without EmailReminder
@@ -323,21 +325,20 @@ class ProfileController {
             } else {
                 if (params.notificationCCEmailaddress){
                     if (formService.validateEmailAddress(params.notificationCCEmailaddress)){
-                        changeValue(user.getSetting(KEYS.NOTIFICATION_CC_EMAILADDRESS, null),       params.notificationCCEmailaddress,     'profile.updateProfile.updated.notificationCCEmailaddress')
+                        changeValue(user.getSetting(KEYS.NOTIFICATION_CC_EMAILADDRESS, null), params.notificationCCEmailaddress, 'profile.updateProfile.updated.notificationCCEmailaddress')
                     } else {
                         flash.error += message(code:'profile.updateProfile.updated.email.error')
                     }
                 }
-                changeValue(user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO),                   params.isNotificationCCByEmail?:"N",     'profile.updateProfile.updated.isNotificationCCByEmail')
+                changeValue(user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO), params.isNotificationCCByEmail?:"N", 'profile.updateProfile.updated.isNotificationCCByEmail')
             }
         }
 
-        changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_NO),    params.isNotificationForSurveysStart?:"N",     'profile.updateProfile.updated.surveysStart')
-        changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_NO),    params.isNotificationForSystemMessages?:"N",     'profile.updateProfile.updated.systemMessages')
+        changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_NO), params.isNotificationForSurveysStart?:"N", 'profile.updateProfile.updated.surveysStart')
+        changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_NO), params.isNotificationForSystemMessages?:"N", 'profile.updateProfile.updated.systemMessages')
+        changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO), params.isNotificationForSurveysParticipationFinish?:"N", 'profile.updateProfile.updated.surveysParticipationFinish')
 
-        changeValue(user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO),    params.isNotificationForSurveysParticipationFinish?:"N",     'profile.updateProfile.updated.surveysParticipationFinish')
-
-        user.save(flush: true)
+        user.save()
 
         redirect(action: "index")
     }
@@ -385,7 +386,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updateIsRemindByEmail() {
-        User user1 = User.get(springSecurityService.principal.id)
+        User user1 = contextService.getUser()
 
         flash.message=""
         def was_isRemindByEmail = user1.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
@@ -404,7 +405,7 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updatePassword() {
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         flash.message = ""
 
         if (passwordEncoder.isPasswordValid(user.password, params.passwordCurrent, null)) {

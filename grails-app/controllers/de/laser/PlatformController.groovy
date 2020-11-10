@@ -1,9 +1,8 @@
 package de.laser
 
 
-import de.laser.auth.User
- 
-import de.laser.helper.DebugAnnotation
+import de.laser.ctrl.PlatformControllerService
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
@@ -14,10 +13,10 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController  {
 
-    def springSecurityService
     def contextService
     def orgTypeService
     def accessService
+    PlatformControllerService platformControllerService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -29,7 +28,7 @@ class PlatformController  {
     @Secured(['ROLE_USER'])
     def list() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ?: result.user.getDefaultPageSize()
 
         result.offset = params.offset ?: 0
@@ -68,14 +67,14 @@ class PlatformController  {
 
     @Secured(['ROLE_USER'])
     def show() {
-      Map<String, Object> result = setResultGenerics()
+        Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = Platform.get(params.id)
-      if (!platformInstance) {
-        flash.message = message(code: 'default.not.found.message', 
-                                args: [message(code: 'platform.label'), params.id])
-        redirect action: 'list'
-        return
-      }
+
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
+            redirect action: 'list'
+            return
+        }
 
         result.platformInstance = platformInstance
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
@@ -115,7 +114,7 @@ class PlatformController  {
     }
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def delete() {
@@ -155,7 +154,7 @@ class PlatformController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
@@ -188,7 +187,7 @@ class PlatformController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)
@@ -222,83 +221,31 @@ class PlatformController  {
         render(view: "_apLinkContent", model: result)
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def addDerivation() {
-        if (!params.sp) {
-            flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
-            redirect(url: request.getHeader('referer'))
-            return
+        Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
+        if(ctrlResult.status == PlatformControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
         }
-        def subPkg = SubscriptionPackage.get(params.sp)
-        if (!subPkg){
-            flash.message = message(code: 'subscription.details.linkAccessPoint.subPkgNotFound.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if (!params.platform_id) {
-            flash.message = message(code: 'subscription.details.linkAccessPoint.missingPlatform.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        def platform = Platform.get(params.platform_id)
-        if (!platform){
-            flash.message = message(code: 'subscription.details.linkAccessPoint.platformNotFound.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        // delete marker all OrgAccessPointLinks for the given platform und SubscriptionPackage
-        // The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
-        // gets deleted too
-        String hql = "delete from OrgAccessPointLink oapl where oapl.platform=:platform_id and oapl.subPkg =:subPkg and oapl.active=true"
-        OrgAccessPointLink.executeUpdate(hql, [platform_id:platform, subPkg:subPkg])
-
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def removeDerivation() {
-        // create an OrgAccessPointLink with
-        // subscriptionPackage=passed subscriptionPackage | Platform = passed Platform | AccessPoint = null
-        // this is a kind of marker to indicate that a subscriptionPackage specific AP configuration and no
-        // AccessPoint derivation from Platform is used
-        if (!params.sp) {
-            flash.message = message(code: 'subscription.details.linkAccessPoint.missingSubPkg.message')
-            redirect(url: request.getHeader('referer'))
-            return
+        Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
+        if(ctrlResult.status == PlatformControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
         }
-        def subPkg = SubscriptionPackage.get(params.sp)
-        if (!subPkg){
-            flash.message = message(code: 'subscription.details.linkAccessPoint.subPkgNotFound.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if (!params.platform_id) {
-            flash.message = message(code: 'subscription.details.linkAccessPoint.missingPlatform.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        def platform = Platform.get(params.platform_id)
-        if (!platform){
-            flash.message = message(code: 'subscription.details.linkAccessPoint.platformNotFound.message')
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-
-        def oapl = new OrgAccessPointLink()
-        oapl.subPkg = subPkg
-        oapl.platform = platform
-        oapl.active = true
-        oapl.save(flush:true)
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -309,63 +256,26 @@ class PlatformController  {
             if (!apInstance) {
                 flash.error = 'No valid Accesspoint id given'
                 redirect action: 'link', params: [id:params.id]
-                return
+            }
+            else {
+                Map<String,Object> ctrlResult = platformControllerService.linkAccessPoint(params, apInstance)
+                if(ctrlResult.status == PlatformControllerService.STATUS_ERROR) {
+                    flash.error = ctrlResult.result.error
+                }
+                redirect(url: request.getHeader('referer'))
             }
         }
-        // save link
-        OrgAccessPointLink oapl = new OrgAccessPointLink()
-        oapl.active = true
-        oapl.oap = apInstance
-        oapl.platform = Platform.get(params.platform_id)
-        List<OrgAccessPointLink> existingActiveAP = []
-        if (params.subscriptionPackage_id){
-            SubscriptionPackage sp = SubscriptionPackage.get(params.subscriptionPackage_id)
-            if (sp) {
-                oapl.subPkg = sp
-            }
-            existingActiveAP = OrgAccessPointLink.findAllByActiveAndPlatformAndOapAndSubPkgIsNotNull(
-                true, oapl.platform, apInstance
-            )
-        } else {
-            existingActiveAP = OrgAccessPointLink.findAllByActiveAndPlatformAndOapAndSubPkgIsNull(
-                true, oapl.platform, apInstance
-            )
-        }
-
-        if (!existingActiveAP.isEmpty()){
-            flash.error = "Existing active AccessPoint for platform"
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        if (! oapl.save(flush:true)) {
-            flash.error = "Existing active AccessPoint for platform"
-        }
-
-        redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def removeAccessPoint() {
-        // update active aopl, set active=false
-        OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.oapl_id)
-        aoplInstance.active = false
-        if (! aoplInstance.save(flush:true)) {
-            log.debug("Error updateing AccessPoint for platform")
-            log.debug(aopl.errors.toString())
-            // TODO flash
+        Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)
+        if(ctrlResult.status == PlatformControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
         }
         redirect action: 'link', params: [id:params.id]
     }
-
-    private Map<String, Object> setResultGenerics() {
-        Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.institution = contextService.org
-        result.contextOrg = result.institution //temp fix
-        result
-    }
-
 }

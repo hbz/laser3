@@ -1,6 +1,8 @@
 package de.laser
 
-
+import de.laser.annotations.DebugAnnotation
+import de.laser.ctrl.OrganisationControllerService
+import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -12,7 +14,6 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -20,7 +21,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController  {
 
-    def springSecurityService
     def accessService
     def contextService
     def addressbookService
@@ -33,8 +33,10 @@ class OrganisationController  {
     def deletionService
     def userService
     def accessPointService
-    FormService formService
+    IdentifierService identifierService
+    OrganisationControllerService organisationControllerService
     TaskService taskService
+    UserControllerService userControllerService
 
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def index() {
@@ -46,7 +48,7 @@ class OrganisationController  {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
@@ -119,7 +121,7 @@ class OrganisationController  {
     def list() {
 
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSize()
         result.offset = params.offset ? Long.parseLong(params.offset) : 0
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -179,7 +181,7 @@ class OrganisationController  {
         ctx.accessService.checkPermTypeAffiliation("ORG_CONSORTIUM", "Consortium", "INST_USER")
     })
     Map listInstitution() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         params.orgType   = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
@@ -203,7 +205,7 @@ class OrganisationController  {
     def listProvider() {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        result.user        = User.get(springSecurityService.principal.id)
+        result.user        = contextService.getUser()
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
 
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
@@ -552,37 +554,16 @@ class OrganisationController  {
         result
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def createMember() {
-        Org contextOrg = contextService.org
-        //new institution = consortia member, implies combo type consortium
-        Org orgInstance
-        if(formService.validateToken(params)) {
-            try {
-                // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, sector: RDStore.O_SECTOR_HIGHER_EDU, status: RDStore.O_STATUS_CURRENT)
-                orgInstance.save(flush:true)
-
-                Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type: RDStore.COMBO_TYPE_CONSORTIUM)
-                newMember.save(flush:true)
-
-                orgInstance.setDefaultCustomerType()
-                orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)) //RDStore adding causes a DuplicateKeyException
-
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
-                redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
-            }
-            catch (Exception e) {
-                log.error("Problem creating institution")
-                log.error(e.printStackTrace())
-
-                flash.message = message(code: "org.error.createInstitutionError", args:[orgInstance ? orgInstance.errors : 'unbekannt'])
-
-                redirect ( action:'findOrganisationMatches', params: params )
-            }
+        Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
+        if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
+            redirect action:'findOrganisationMatches', params:params
         }
-        else redirect action:'findOrganisationMatches'
+        else {
+            redirect action: 'show', id: ctrlResult.result.orgInstance.id
+        }
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
@@ -621,7 +602,7 @@ class OrganisationController  {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
 
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (! result) {
             response.sendError(401)
             return
@@ -700,12 +681,12 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def ids() {
 
-        User user = User.get(springSecurityService.principal.id)
+        User user = contextService.getUser()
         Org org   = Org.get(params.id)
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
 
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -834,7 +815,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess()
+        Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (!result) {
             response.sendError(401); return
         }
@@ -872,7 +853,7 @@ class OrganisationController  {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -881,9 +862,9 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -899,7 +880,7 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -910,10 +891,10 @@ class OrganisationController  {
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
-        principal.user?.hasAffiliation("INST_USER")
+        ctx.contextService.getUser()?.hasAffiliation("INST_USER")
     })
     def notes() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -921,53 +902,28 @@ class OrganisationController  {
         result
     }
 
-    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        log.debug("OrganisationController::deleteIdentifier ${params}");
-        CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
-        Org owner = GrailsHibernateUtil.unwrapIfProxy(ci).owner
-        if (ci && owner.id == contextService.org.id) {
-            ci.delete(flush:true)
-            log.debug("Customeridentifier deleted: ${params}")
-        } else {
-            if ( ! ci ) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code:
-                        'org.customerIdentifier'), params.deleteCI])
-            } else {
-                flash.message = message(code: 'org.customerIdentifier.delete.norights')
-            }
-            log.error("Customeridentifier NOT deleted: ${params}; CostomerIdentifier not found or ContextOrg is not " +
-                    "owner of this CustomerIdentifier and has no rights to delete it!")
-        }
+        Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
+        if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR)
+            flash.error = ctrlResult.result.error
         redirect action: 'ids', id: params.id
     }
 
+    @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_USER'])
-    @Transactional
     def deleteIdentifier() {
-        log.debug("OrganisationController::deleteIdentifier ${params}")
-        def owner = genericOIDService.resolveOID(params.owner)
-        def target = genericOIDService.resolveOID(params.target)
-
-        log.debug('owner: ' + owner)
-        log.debug('target: ' + target)
-
-        if (owner && target) {
-            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
-                log.debug("Identifier deleted: ${params}")
-                target.delete()
-            }
-        }
+        identifierService.deleteIdentifier(params.owner,params.target)
         redirect(url: request.getHeader('referer'))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def users() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1030,7 +986,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def createUser() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
@@ -1057,7 +1013,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
-        Map<String, Object> result = userService.setResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenerics(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
             redirect action: 'editUser', id: params.id
@@ -1075,7 +1031,7 @@ class OrganisationController  {
 
     @Secured(['ROLE_ADMIN'])
     def delete() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (result.orgInstance) {
             if (params.process  && result.editable) {
@@ -1102,11 +1058,11 @@ class OrganisationController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")', wtc = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_ADM") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def processAffiliation() {
         UserOrg.withTransaction {
             Map<String, Object> result = [:]
-            result.user = User.get(springSecurityService.principal.id)
+            result.user = contextService.getUser()
 
             // ERMS-2370 -> support multiple assocs
             UserOrg uo = UserOrg.get(params.assoc)
@@ -1158,7 +1114,7 @@ class OrganisationController  {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1198,7 +1154,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1274,7 +1230,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
             response.sendError(401)
             return
@@ -1311,7 +1267,7 @@ class OrganisationController  {
     @Transactional
     def addOrgType() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
@@ -1333,7 +1289,7 @@ class OrganisationController  {
     @Transactional
     def deleteOrgType() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
@@ -1355,7 +1311,7 @@ class OrganisationController  {
 
     @Transactional
     def addSubjectGroup() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (!result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1386,7 +1342,7 @@ class OrganisationController  {
 
     @Transactional
     def deleteSubjectGroup() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (!result.orgInstance) {
             flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
@@ -1404,56 +1360,27 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
-        if(!result) {
-            response.sendError(401)
-            return
+        Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
+        if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+            }
         }
-        if(!params.direction) {
-            flash.error(message(code:'org.error.noToggleDirection'))
-            response.sendError(404)
-            return
-        }
-        switch(params.direction) {
-            case 'add':
-                Map map = [toOrg: result.institution,
-                        fromOrg: Org.get(params.fromOrg),
-                        type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)]
-                if (! Combo.findWhere(map)) {
-                    Combo cmb = new Combo(map)
-                    cmb.save(flush:true)
-                }
-                break
-            case 'remove':
-
-                def subs = Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
-                if(subs){
-                    flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
-                }
-                def lics = License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])
-                if(lics){
-                    flash.error = message(code:'org.consortiaToggle.remove.notPossible.sub')
-                }
-
-                if(!subs && !lics) {
-
-                    Combo cmb = Combo.findWhere(toOrg: result.institution,
-                            fromOrg: Org.get(params.fromOrg),
-                            type: RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE))
-                    cmb.delete(flush:true)
-                }
-                break
+        else {
+            flash.message = ctrlResult.result.message
         }
         redirect action: 'listInstitution'
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess()
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -1493,35 +1420,8 @@ class OrganisationController  {
 
         result
     }
-
-    private Map<String, Object> setResultGenericsAndCheckAccess() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.org
-        Map<String, Object> result = [user:user,institution:org,inContextOrg:true,institutionalView:false]
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
-            result.editable = checkIsEditable(user, result.orgInstance)
-            result.inContextOrg = result.orgInstance?.id == org.id
-            //this is a flag to check whether the page has been called for a consortia or inner-organisation member
-            Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
-            if(checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
-                result.institutionalView = true
-            //restrictions hold if viewed org is not the context org
-            if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
-                //restrictions further concern only single users, not consortia
-                if(accessService.checkPerm("ORG_INST") && result.orgInstance.getCustomerType() == "ORG_INST") {
-                    return null
-                }
-            }
-        } else {
-            result.editable = checkIsEditable(user, org)
-        }
-        result
-    }
-
-
-    private boolean checkIsEditable(User user, Org org) {
+    
+    boolean checkIsEditable(User user, Org org) {
         boolean isEditable
         Org contextOrg = contextService.org
         Org orgInstance = org

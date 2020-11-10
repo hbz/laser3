@@ -2,14 +2,14 @@ package de.laser
 
 
 import de.laser.properties.PlatformProperty
-import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 
@@ -17,36 +17,35 @@ import java.text.SimpleDateFormat
 class IssueEntitlementController  {
 
     def factService
+    ContextService contextService
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
-   def springSecurityService
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: contextService.getUser().getDefaultPageSize()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 0)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
-        return // ----- deprecated
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
       Map<String, Object> result = [:]
 
-      result.user = User.get(springSecurityService.principal.id)
+      result.user = contextService.getUser()
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
 
       params.max = Math.min(params.max ? params.int('max') : 10, 100)
@@ -130,31 +129,31 @@ class IssueEntitlementController  {
 
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 0)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
-        return // ----- deprecated
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
-  def delete() {
-        IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
-    if (!issueEntitlementInstance) {
-    flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
-        redirect action: 'list'
-        return
-    }
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    def delete() {
+        IssueEntitlement.withTransaction { TransactionStatus ts ->
+            IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
+            if (!issueEntitlementInstance) {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
+                redirect action: 'list'
+            }
+            try {
+                issueEntitlementInstance.delete()
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
+                redirect action: 'list'
+            }
+            catch (DataIntegrityViolationException e) {
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
+                redirect action: 'show', id: params.id
+            }
+        }
 
-    try {
-      issueEntitlementInstance.delete(flush: true)
-      flash.message = message(code: 'default.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
-      redirect action: 'list'
     }
-    catch (DataIntegrityViolationException e) {
-      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
-      redirect action: 'show', id: params.id
-    }
-  }
 }

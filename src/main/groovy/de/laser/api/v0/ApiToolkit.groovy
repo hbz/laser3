@@ -59,7 +59,7 @@ class ApiToolkit {
         def oss = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
         if (oss != OrgSetting.SETTING_NOT_FOUND) {
             oss.strValue = apiLevel
-            oss.save(flush:true)
+            oss.save()
         }
         else {
             OrgSetting.add(org, OrgSetting.KEYS.API_LEVEL, apiLevel)

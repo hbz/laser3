@@ -11,7 +11,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import grails.plugins.orm.auditable.Auditable
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
@@ -283,7 +283,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         }
                         if (existingOrgRoles) {
                             log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ tmp -> tmp.delete(flush:true) }
+                            existingOrgRoles.each{ OrgRole tmp -> tmp.delete() }
                         }
                     }
                     sharedObject.addShareForTarget_trait(sub)

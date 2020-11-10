@@ -6,7 +6,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 class SemanticUiSubNavTagLib {
 
-    def springSecurityService
     def contextService
     def accessService
 

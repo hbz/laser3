@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 class FilterService {
 
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
-    def springSecurityService
+
     def genericOIDService
     def contextService
     def messageSource

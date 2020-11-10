@@ -4,7 +4,7 @@ import com.k_int.kbplus.ExecutorWrapperService
 import de.laser.auth.User
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController  {
 
-    def springSecurityService
     def genericOIDService
     def yodaService
     def exportService
@@ -46,10 +45,9 @@ class PackageController  {
     def index() {
 
         Map<String, Object> result = [:]
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         params.max = params.max ?: result.user.getDefaultPageSize()
 
-        if (springSecurityService.isLoggedIn()) {
             if (params.q == "") params.remove('q');
 
             if (params.search.equals("yes")) {
@@ -102,14 +100,14 @@ class PackageController  {
             if (!old_sort) {
                 params.remove('sort')
             }
-        }
+
         result
     }
 
     @Secured(['ROLE_USER'])
     def list() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 
         result.editable = true
@@ -189,49 +187,6 @@ class PackageController  {
         }
     }
 
-    @Secured(['ROLE_ADMIN'])
-    @Deprecated
-    // should this not be only possible from GOKb??
-    def create() {
-        User user = User.get(springSecurityService.principal.id)
-
-        switch (request.method) {
-            case 'GET':
-                [packageInstance: new Package(params), user: user]
-                break
-            case 'POST':
-                def providerName = params.contentProviderName
-                def packageName = params.packageName
-                def identifier = params.identifier
-
-                Org contentProvider = Org.findByName(providerName);
-                Package existing_pkg = Package.findByIdentifier(identifier);
-
-                if (contentProvider && existing_pkg == null) {
-                    log.debug("Create new package, content provider = ${contentProvider}, identifier is ${identifier}");
-                    Package new_pkg = new Package(identifier: identifier,
-                            contentProvider: contentProvider,
-                            name: packageName,
-                            impId: java.util.UUID.randomUUID().toString());
-                    if (new_pkg.save(flush: true)) {
-                        redirect action: 'edit', id: new_pkg.id
-                    } else {
-                        new_pkg.errors.each { e ->
-                            log.error("Problem: ${e}");
-                        }
-                        render view: 'create', model: [packageInstance: new_pkg, user: user]
-                    }
-                } else {
-                    render view: 'create', model: [packageInstance: packageInstance, user: user]
-                    return
-                }
-
-                // flash.message = message(code: 'default.created.message', args: [message(code: 'package.label'), packageInstance.id])
-                // redirect action: 'show', id: packageInstance.id
-                break
-        }
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -240,7 +195,7 @@ class PackageController  {
         Map<String, Object> result = [:]
         result.unionList = []
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -384,7 +339,7 @@ class PackageController  {
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
@@ -396,7 +351,7 @@ class PackageController  {
 
         // tasks
         Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
+        result.tasks = taskService.getTasksByResponsiblesAndObject(contextService.getUser(), contextOrg, packageInstance)
         Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
         result << preCon
 
@@ -501,7 +456,7 @@ class PackageController  {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.editable = isEditable()
 
         Package packageInstance = Package.get(params.id)
@@ -599,7 +554,7 @@ class PackageController  {
     @Secured(['ROLE_USER'])
     def documents() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.institution = contextService.org
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
@@ -622,7 +577,7 @@ class PackageController  {
         log.debug("previous_expected ${params}");
         Map<String, Object> result = [:]
         boolean showDeletedTipps = false
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.editable = isEditable()
         def packageInstance = Package.get(params.id)
         if (!packageInstance) {
@@ -797,15 +752,11 @@ class PackageController  {
     }
 
     def isEditable() {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
-            return true
-        } else {
-            return false
-        }
+        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addToSub() {
         Package pkg = Package.get(params.id)
         Subscription sub = Subscription.get(params.subid)
@@ -836,7 +787,7 @@ class PackageController  {
     @Secured(['ROLE_USER'])
     def notes() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
         result
@@ -846,7 +797,7 @@ class PackageController  {
     @Transactional
     def tasks() {
         Map<String, Object> result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = contextService.getUser()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 
@@ -878,118 +829,6 @@ class PackageController  {
     }
 
     @Secured(['ROLE_USER'])
-    def packageBatchUpdate() {
-
-        Package packageInstance = Package.get(params.id)
-        boolean showDeletedTipps = false
-
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
-            showDeletedTipps = true
-        }
-
-        log.debug("packageBatchUpdate ${params}");
-
-        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
-
-        def bulk_fields = [
-                [formProp: 'start_date', domainClassProp: 'startDate', type: 'date'],
-                [formProp: 'start_volume', domainClassProp: 'startVolume'],
-                [formProp: 'start_issue', domainClassProp: 'startIssue'],
-                [formProp: 'end_date', domainClassProp: 'endDate', type: 'date'],
-                [formProp: 'end_volume', domainClassProp: 'endVolume'],
-                [formProp: 'end_issue', domainClassProp: 'endIssue'],
-                [formProp: 'coverage_depth', domainClassProp: 'coverageDepth'],
-                [formProp: 'coverage_note', domainClassProp: 'coverageNote'],
-                [formProp: 'embargo', domainClassProp: 'embargo'],
-                [formProp: 'delayedOA', domainClassProp: 'delayedOA', type: 'ref'],
-                [formProp: 'hybridOA', domainClassProp: 'hybridOA', type: 'ref'],
-                [formProp: 'payment', domainClassProp: 'payment', type: 'ref'],
-                [formProp: 'hostPlatformURL', domainClassProp: 'hostPlatformURL'],
-        ]
-
-
-        if (params.BatchSelectedBtn == 'on') {
-            log.debug("Apply batch changes - selected")
-            params.filter = null //remove filters
-            params.coverageNoteFilter = null
-            params.startsBefore = null
-            params.endsAfter = null
-            params.each { p ->
-                if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
-                    def tipp_id_to_edit = p.key.substring(10);
-                    log.debug("row selected for bulk edit: ${tipp_id_to_edit}");
-                    def tipp_to_bulk_edit = TitleInstancePackagePlatform.get(tipp_id_to_edit);
-                    boolean changed = false
-
-                    if (params.bulkOperation == 'edit') {
-                        bulk_fields.each { bulk_field_defn ->
-                            if (params["clear_${bulk_field_defn.formProp}"] == 'on') {
-                                log.debug("Request to clear field ${bulk_field_defn.formProp}");
-                                tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = null
-                                changed = true
-                            } else {
-                                def proposed_value = params['bulk_' + bulk_field_defn.formProp]
-                                if ((proposed_value != null) && (proposed_value.length() > 0)) {
-                                    log.debug("Set field ${bulk_field_defn.formProp} to ${proposed_value}");
-                                    if (bulk_field_defn.type == 'date') {
-                                        tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = formatter.parse(proposed_value)
-                                    } else if (bulk_field_defn.type == 'ref') {
-                                        tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = genericOIDService.resolveOID(proposed_value)
-                                    } else {
-                                        tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = proposed_value
-                                    }
-                                    changed = true
-                                }
-                            }
-                        }
-                        if (changed)
-                            tipp_to_bulk_edit.save(flush: true)
-                    } else {
-                        log.debug("Bulk removal ${tipp_to_bulk_edit.id}");
-                        tipp_to_bulk_edit.status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.TIPP_STATUS)
-                        tipp_to_bulk_edit.save(flush: true)
-                    }
-                }
-            }
-        } else if (params.BatchAllBtn == 'on') {
-            log.debug("Batch process all filtered by: " + params.filter);
-            def qry_params = [pkgInstance: packageInstance]
-            def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, new Date(),"Package")
-            def tipplist = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params)
-            tipplist.each { tipp_to_bulk_edit ->
-                boolean changed = false
-                log.debug("update tipp ${tipp_to_bulk_edit.id}");
-                if (params.bulkOperation == 'edit') {
-                    bulk_fields.each { bulk_field_defn ->
-                        if (params["clear_${bulk_field_defn.formProp}"] == 'on') {
-                            log.debug("Request to clear field ${bulk_field_defn.formProp}");
-                            tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = null
-                            changed = true
-                        } else {
-                            def proposed_value = params['bulk_' + bulk_field_defn.formProp]
-                            if ((proposed_value != null) && (proposed_value.length() > 0)) {
-                                log.debug("Set field ${bulk_field_defn.formProp} to proposed_value");
-                                if (bulk_field_defn.type == 'date') {
-                                    tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = formatter.parse(proposed_value)
-                                } else if (bulk_field_defn.type == 'ref') {
-                                    tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = genericOIDService.resolveOID(proposed_value)
-                                } else {
-                                    tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = proposed_value
-                                }
-                                changed = true
-                            }
-                        }
-                    }
-                    if (changed)
-                        tipp_to_bulk_edit.save(flush: true)
-                }
-            }
-        }
-
-        redirect(action: 'show', params: [id: params.id, sort: params.sort, order: params.order, max: params.max, offset: params.offset]);
-    }
-
-    @Secured(['ROLE_USER'])
     @Transactional
     def history() {
         Map<String, Object> result = [:]
@@ -1000,7 +839,7 @@ class PackageController  {
             params.max = 9999999
             result.offset = 0
         } else {
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
             params.max = result.max
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;

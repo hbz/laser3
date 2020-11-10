@@ -34,10 +34,6 @@ beans = {
         grailsApplication = ref('grailsApplication')
     }
 
-//    userDetailsService(GormUserDetailsService) {
-//        grailsApplication = ref('grailsApplication')
-//    }
-
     userDetailsByNameServiceWrapper(org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper) {
         userDetailsService = ref('userDetailsService')
     }

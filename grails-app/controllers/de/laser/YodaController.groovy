@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.DebugAnnotation
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
@@ -40,7 +40,6 @@ class YodaController {
 
     def yodaService
     def cacheService
-    def springSecurityService
     def statsSyncService
     def dataloadService
     def globalSourceSyncService
@@ -48,15 +47,12 @@ class YodaController {
     def dashboardDueDatesService
     StatusUpdateService statusUpdateService
     FinanceService financeService
-    def documentUpdateService
     def quartzScheduler
     def identifierService
     def deletionService
     def surveyUpdateService
-    def changeNotificationService
     def subscriptionService
     def exportService
-    def dataConsistencyService
 
     @Secured(['ROLE_YODA'])
     @Transactional
@@ -83,7 +79,7 @@ class YodaController {
     def demo() {
         Map result = [:]
 
-        result.user = springSecurityService.getCurrentUser()
+        result.user = contextService.getUser()
         result.roles = result.user.roles
         result.affiliations = result.user.affiliations
 
@@ -194,17 +190,17 @@ class YodaController {
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def demo2() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationOR("INST_USER", "ROLE_XY")')
-    @Secured(closure = { principal.user?.hasAffiliationOR("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliationOR("INST_USER", "ROLE_XY") })
     def demo3() {
         redirect action: 'demo'
     }
     @DebugAnnotation(test='hasAffiliationAND("INST_USER", "ROLE_XY")')
-    @Secured(closure = { principal.user?.hasAffiliationAND("INST_USER", "ROLE_XY") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliationAND("INST_USER", "ROLE_XY") })
     def demo4() {
         redirect action: 'demo'
     }
@@ -488,13 +484,24 @@ class YodaController {
         Map<String, Object> result = [:]
         Map<String, Object> cList = [:]
 
+        // filter dynamic getter/setter
+        List<String> blacklist = [
+                'getAllowedMethods',
+                'setAllowedMethods',
+                'getStaticApplicationContext'
+        ]
+
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('de.laser.')) {
-                Map<String, Object> mList = [:]
+            if (controllerClass.name.startsWith('de.laser')) {
+                Map<String, Object> mList = [public:[:], others:[:]]
 
-                controllerClass.methods.each { Method method ->
-                    if (method.getAnnotation(Action) && method.getModifiers() == Modifier.PUBLIC) {
+                controllerClass.declaredMethods.each { Method method ->
+                    int mods = method.getModifiers()
+                    if ( ! Modifier.isSynthetic(mods) && (
+                            (method.getAnnotation(Action) || Modifier.isPrivate(mods)) ||
+                            (Modifier.isStatic(mods) && ! (method.name in blacklist))
+                    ) ) {
                         String mKey = method.name
                         Map<String, Object> mInfo = [:]
 
@@ -509,9 +516,15 @@ class YodaController {
                             ]
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
+                                if (da.ctrlService() == 2) {
+                                    mInfo.refactoring = 'done'
+                                }
                             }
                             if (da.wtc()) {
                                 mInfo.wtc = da.wtc()
+                                if (da.wtc() == 2) {
+                                    mInfo.refactoring = 'done'
+                                }
                             }
                         }
 
@@ -524,12 +537,27 @@ class YodaController {
 
                         if (method.getAnnotation(Transactional)) {
                             mInfo.transactional = 'transactional'
+                            mInfo.refactoring = 'done'
                         }
                         if (method.getAnnotation(Deprecated)) {
                             mInfo.deprecated = 'deprecated'
                         }
 
-                        mList << ["${mKey}": mInfo]
+                        if (Modifier.isPrivate(mods) || Modifier.isStatic(mods)) {
+
+                            // filter dynamic getter/setter
+                            String check = method.name.replaceFirst('get', '').replaceFirst('set', '').replace('_', '')
+                            if (check.toUpperCase() != check) {
+                                mInfo.modifiers = [
+                                        private: Modifier.isPrivate(mods),
+                                        static: Modifier.isStatic(mods)
+                                ]
+                                mList.others << ["${mKey}": mInfo]
+                            }
+                        }
+                        else {
+                            mList.public << ["${mKey}": mInfo]
+                        }
                     }
                 }
 
@@ -539,7 +567,10 @@ class YodaController {
                 }
                 cList<< ["${cKey}": [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
-                        'methods': mList.sort{it.key}
+                        'methods': [
+                                public: mList.public.sort{it.key},
+                                others: mList.others.sort{it.key}
+                            ]
                         ]
                 ]
             }

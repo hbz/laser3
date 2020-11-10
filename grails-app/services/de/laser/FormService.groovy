@@ -8,7 +8,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 @Transactional
 class FormService {
 
-    def springSecurityService
     def contextService
 
     final static String FORM_SERVICE_TOKEN = 'FORM_SERVICE_TOKEN'
@@ -18,7 +17,7 @@ class FormService {
     }
 
     boolean validateToken(GrailsParameterMap params) {
-        if (springSecurityService.getCurrentUser()) {
+        if (contextService.getUser()) {
             String token = params.get(FormService.FORM_SERVICE_TOKEN)
 
             if (token) {

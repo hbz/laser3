@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
@@ -16,7 +16,6 @@ import org.springframework.transaction.TransactionStatus
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocstoreController  {
 
-    def springSecurityService
     def genericOIDService
     DocstoreControllerService docstoreControllerService
     MessageSource messageSource
@@ -57,7 +56,7 @@ class DocstoreController  {
             def input_stream = input_file?.inputStream
             String original_filename = request.getFile("upload_file")?.originalFilename
 
-            User user = User.get(springSecurityService.principal.id)
+            User user = contextService.getUser()
             GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
             if (domain_class) {
@@ -165,7 +164,7 @@ class DocstoreController  {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String,Object> ctrlResult = docstoreControllerService.editDocument(params)
         if(ctrlResult.status == DocstoreControllerService.STATUS_ERROR) {

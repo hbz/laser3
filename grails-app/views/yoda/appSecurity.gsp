@@ -80,23 +80,59 @@
 <br />
 <br />
 
+<button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>
+
+<asset:script>
+    var resultViewModes = [
+        'Sichtbar: Alle Methoden',
+        'ToDo: Nicht transaktionsgesicherte Methoden',
+        'Sichtbar: Überarbeitete Methoden',
+    ]
+    var resultViewMode = 0
+
+    $('#resultToggle').on('click', function(){
+
+        if (++resultViewMode >= resultViewModes.length) {
+            resultViewMode = 0
+        }
+        $('#resultToggle').html(resultViewModes[resultViewMode])
+
+        if (resultViewMode == 0) {
+            $('.secInfoWrapper2 .list .item').removeClass('hidden')
+        }
+        else if (resultViewMode == 1) {
+            $('.secInfoWrapper2 .list .item.refactoring-done').addClass('hidden')
+            $('.secInfoWrapper2 .list .item:not(.refactoring-done)').removeClass('hidden')
+
+        }
+        else if (resultViewMode == 2) {
+            $('.secInfoWrapper2 .list .item:not(.refactoring-done)').addClass('hidden')
+            $('.secInfoWrapper2 .list .item.refactoring-done').removeClass('hidden')
+        }
+    })
+</asset:script>
+
+<br />
+<br />
+
 <div class="ui grid">
     <div class="sixteen wide column">
 
         <div class="secInfoWrapper secInfoWrapper2">
             <g:each in="${controller}" var="c">
 
-                <h5 class="ui header" id="jumpMark_${c.key}">
+                <h4 class="ui header" id="jumpMark_${c.key}">
                     ${c.key}
                     <g:each in="${c.value.secured}" var="cSecured">
                         <span class="${cSecured}">${cSecured}</span> &nbsp;
                     </g:each>
-                </h5>
+                </h4>
 
                 <div class="ui segment">
                     <div class="ui divided list">
-                        <g:each in="${c.value.methods}" var="method">
-                            <div class="item">
+                        <g:each in="${c.value.methods.public}" var="method">
+                            <g:set var="refactoringDone" value="${method.value?.refactoring == 'done'}" />
+                            <div class="item${refactoringDone ? ' refactoring-done':''}">
                                 <g:link controller="${c.key.split('Controller')[0]}" action="${method.key}">${method.key}</g:link>
 
                                 <g:each in="${method.value}" var="info">
@@ -126,7 +162,7 @@
                                         <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                     </g:elseif>
                                     <g:elseif test="${info.key == 'deprecated'}">
-                                        <em>Deprecated</em>
+                                        <em>&larr; Deprecated</em>
                                     </g:elseif>
 
                                 </g:each>
@@ -134,6 +170,57 @@
                         </g:each>
                     </div>
                 </div>
+                <g:if test="${c.value.methods.others}">
+                    <div class="ui segment">
+                        <div class="ui divided list">
+                            <g:each in="${c.value.methods.others}" var="method">
+                                <div class="item">
+                                    <g:link controller="${c.key.split('Controller')[0]}" action="${method.key}">${method.key}</g:link>
+
+                                    <g:each in="${method.value}" var="info">
+
+                                        <g:if test="${info.key == 'warning'}">
+                                            <strong class="${info.key}">${info.value}</strong>
+                                        </g:if>
+                                        <g:elseif test="${info.key == 'debug'}">
+                                            <g:each in="${info.value}" var="dd">
+                                                <g:if test="${dd.value}">
+                                                    <span class="${dd.key}">${dd.value}</span>
+                                                </g:if>
+                                            </g:each>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'secured'}">
+                                            <g:each in="${info.value}" var="ss">
+                                                <span class="${ss.value}">${ss.value}</span>
+                                            </g:each>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'transactional'}">
+                                            <strong class="${info.value}">@${info.value}</strong>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'ctrlService'}">
+                                            <strong class="${info.key}_${info.value}">ctrlService</strong>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'wtc'}">
+                                            <strong class="${info.key}_${info.value}">withTransaction{}</strong>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'deprecated'}">
+                                            <em>&larr; Deprecated</em>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'modifiers'}">
+                                            <g:if test="${info.value.private == true}">
+                                                <strong class="modifier">private</strong>
+                                            </g:if>
+                                            <g:if test="${info.value.static == true}">
+                                                <strong class="modifier">static</strong>
+                                            </g:if>
+                                        </g:elseif>
+
+                                    </g:each>
+                                </div>
+                            </g:each>
+                        </div>
+                    </div>
+                </g:if>
             </g:each>
         </div>
 
@@ -161,6 +248,7 @@
 
 .secInfoWrapper .transactional,
 .secInfoWrapper .warning,
+.secInfoWrapper .modifier,
 .secInfoWrapper .wtc_1,
 .secInfoWrapper .ctrlService_1,
 .secInfoWrapper .wtc_2,
@@ -176,6 +264,9 @@
 
 .secInfoWrapper .warning {
     color: orangered;
+}
+.secInfoWrapper .modifier {
+    color: slategrey;
 }
 
 .secInfoWrapper .wtc_1,

@@ -12,7 +12,6 @@ import de.laser.ApiSource
 import de.laser.AuditConfig
 import de.laser.AuditService
 import de.laser.ContextService
-import de.laser.CopyElementsService
 import de.laser.EscapeService
 import de.laser.FilterService
 import de.laser.FinanceService
@@ -93,6 +92,7 @@ class SubscriptionControllerService {
     TaskService taskService
     AddressbookService addressbookService
     FinanceService financeService
+    FinanceControllerService financeControllerService
     OrgTypeService orgTypeService
     FactService factService
     SubscriptionService subscriptionService
@@ -116,7 +116,7 @@ class SubscriptionControllerService {
     Map<String,Object> show(SubscriptionController controller, GrailsParameterMap params) {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('1')
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -253,7 +253,7 @@ class SubscriptionControllerService {
             pu.setBenchmark('costs')
             //cost items
             //params.forExport = true
-            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeService.setResultGenerics(params))
+            LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeControllerService.getResultGenerics(params))
             result.costItemSums = [:]
             if (costItems.own) {
                 result.costItemSums.ownCosts = costItems.own.sums
@@ -311,7 +311,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> tasks(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -344,7 +344,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> history(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -360,7 +360,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -378,7 +378,7 @@ class SubscriptionControllerService {
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
     Map<String,Object> emptySubscription(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String, Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(result.editable) {
             Calendar cal = GregorianCalendar.getInstance()
             SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
@@ -404,7 +404,7 @@ class SubscriptionControllerService {
 
     Map<String,Object> processEmptySubscription(SubscriptionController controller, GrailsParameterMap params) {
         log.debug( params.toMapString() )
-        Map<String, Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         RefdataValue orgRole
         RefdataValue memberRole
         RefdataValue subType = RefdataValue.get(params.type)
@@ -496,14 +496,14 @@ class SubscriptionControllerService {
     //--------------------------------------------- document section ----------------------------------------------
 
     Map<String,Object> notes(SubscriptionController controller) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
     }
 
     Map<String,Object> documents(SubscriptionController controller) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
@@ -512,7 +512,7 @@ class SubscriptionControllerService {
     //--------------------------------- consortia members section ----------------------------------------------
 
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
@@ -560,7 +560,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> addMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -580,7 +580,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processAddMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -712,7 +712,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> linkNextPrevMemberSub(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -743,7 +743,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> linkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -759,7 +759,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processLinkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Locale locale = LocaleContextHolder.getLocale()
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -788,7 +788,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processUnLinkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Locale locale = LocaleContextHolder.getLocale()
         if(!result) {
             [result:null,status:STATUS_ERROR]
@@ -820,7 +820,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> linkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -831,7 +831,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processLinkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -882,7 +882,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processUnLinkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -921,7 +921,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> propertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -955,7 +955,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processPropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1022,7 +1022,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processDeletePropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1075,7 +1075,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> subscriptionPropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1091,7 +1091,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processSubscriptionPropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1177,7 +1177,7 @@ class SubscriptionControllerService {
     //--------------------------------------- survey section -------------------------------------------
 
     Map<String,Object> surveys(SubscriptionController controller) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1191,7 +1191,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> surveysConsortia(SubscriptionController controller) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1204,7 +1204,7 @@ class SubscriptionControllerService {
     //-------------------------------------- packages section ------------------------------------------
 
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -1311,7 +1311,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> unlinkPackage(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
@@ -1351,7 +1351,7 @@ class SubscriptionControllerService {
     //-------------------------------- issue entitlements holding --------------------------------------
 
     Map<String,Object> index(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -1489,7 +1489,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> addEntitlements(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1837,7 +1837,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1896,7 +1896,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> subscriptionBatchUpdate(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -2010,7 +2010,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> editEntitlementGroupItem(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String, Object> result = controller.setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.ie = IssueEntitlement.get(params.ie)
         if(result.ie) {
             switch (params.cmd) {
@@ -2042,7 +2042,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processCreateEntitlementGroup(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(accessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         Locale locale = LocaleContextHolder.getLocale()
         if(!IssueEntitlementGroup.findBySubAndName(result.subscription, params.name)) {
             IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(name: params.name,
@@ -2073,7 +2073,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -2110,7 +2110,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -2151,7 +2151,7 @@ class SubscriptionControllerService {
     //--------------------------------------------- renewal section ---------------------------------------------
 
     Map<String,Object> processRenewSubscription(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -2307,7 +2307,7 @@ class SubscriptionControllerService {
     //--------------------------------------------- admin section -------------------------------------------------
 
     Map<String,Object> pendingChanges(SubscriptionController controller) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -2332,7 +2332,7 @@ class SubscriptionControllerService {
     //--------------------------------------------- helper section -------------------------------------------------
 
     List<Map> getFilteredSubscribers(SubscriptionController controller, GrailsParameterMap params, Subscription parentSub) {
-        Map<String,Object> result = controller.setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         params.remove("max")
         params.remove("offset")
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
@@ -2392,6 +2392,68 @@ class SubscriptionControllerService {
         else if(!result.sourceObject?.isVisibleBy(result.user))
             null
         else result
+    }
+
+    Map<String, Object> getResultGenericsAndCheckAccess(GrailsParameterMap params, String checkOption) {
+
+        Map<String, Object> result = [:]
+
+        result.user = contextService.user
+        result.subscription = Subscription.get(params.id)
+
+        if (!params.id && params.subscription) {
+            result.subscription = Subscription.get(params.subscription)
+        }
+        result.contextOrg = contextService.org
+        result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
+
+        if (result.subscription) {
+            result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
+
+            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
+            result.navPrevSubscription = links.prevLink
+            result.navNextSubscription = links.nextLink
+
+            result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
+
+            if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+                if (!result.subscription.isVisibleBy(result.user)) {
+                    log.debug("--- NOT VISIBLE ---")
+                    return null
+                }
+            }
+            result.editable = result.subscription.isEditableBy(result.user)
+
+            if (params.orgBasicMemberView){
+                result.editable = false
+            }
+
+            if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+                if (!result.editable) {
+                    log.debug("--- NOT EDITABLE ---")
+                    return null
+                }
+            }
+        }
+        else {
+            if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+                result.editable = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")
+            }
+        }
+        result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.getCustomerType() == "ORG_CONSORTIUM"
+
+        Map args = [:]
+        if (result.consortialView) {
+            Locale locale = LocaleContextHolder.getLocale()
+
+            args.superOrgType       = [messageSource.getMessage('consortium.superOrgType', null, locale)]
+            args.memberTypeSingle   = [messageSource.getMessage('consortium.subscriber', null, locale)]
+            args.memberType         = [messageSource.getMessage('consortium.subscriber', null, locale)]
+            args.memberTypeGenitive = [messageSource.getMessage('consortium.subscriber', null, locale)]
+        }
+        result.args = args
+
+        result
     }
 
 }

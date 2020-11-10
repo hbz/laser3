@@ -13,14 +13,14 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessMethodController  {
 
-    def springSecurityService
+    ContextService contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']
-    
+
     @Secured(['ROLE_USER'])
     @Transactional
     def create() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: contextService.getUser().getDefaultPageSize()
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
         if (params.validFrom) {

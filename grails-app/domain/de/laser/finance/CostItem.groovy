@@ -9,7 +9,7 @@ import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.DeleteFlag
 
@@ -18,8 +18,6 @@ import java.time.Year
 
 class CostItem extends AbstractBase
         implements DeleteFlag, CalculatedType  {
-
-    def springSecurityService
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),

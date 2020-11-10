@@ -4,6 +4,7 @@ import de.laser.MyInstitutionController
 import de.laser.Org
 import de.laser.SurveyConfig
 import de.laser.UserSetting
+import de.laser.auth.User
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.system.SystemAnnouncement
@@ -20,15 +21,14 @@ class MyInstitutionControllerService {
     def dashboardDueDatesService
     def filterService
     def pendingChangeService
-    def springSecurityService
     def taskService
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    Map<String, Object> dashboard (MyInstitutionController controller, GrailsParameterMap params) {
+    Map<String, Object> dashboard(MyInstitutionController controller, GrailsParameterMap params) {
 
-        Map<String, Object> result = controller.setResultGenerics()
+        Map<String, Object> result = getResultGenerics(controller, params)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             return [status: STATUS_ERROR, result: result]
@@ -67,7 +67,7 @@ class MyInstitutionControllerService {
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         Org contextOrg  = contextService.getOrg()
-        result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
+        result.tasks    = taskService.getTasksByResponsibles(contextService.getUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
 
@@ -77,7 +77,7 @@ class MyInstitutionControllerService {
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
 
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( contextService.user, contextService.org, false, false).size()
 
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
@@ -97,5 +97,28 @@ class MyInstitutionControllerService {
 
 
         [status: STATUS_OK, result: result]
+    }
+
+    //--------------------------------------------- helper section -------------------------------------------------
+
+    Map<String, Object> getResultGenerics(MyInstitutionController controller, GrailsParameterMap params) {
+
+        Map<String, Object> result = [:]
+
+        switch(params.action){
+            case 'currentSurveys':
+            case 'surveyInfos':
+            case 'surveyInfoFinish':
+            case 'surveyInfosIssueEntitlements':
+            case 'surveyResultFinish':
+                result.user = contextService.getUser()
+                break
+            default:
+                result.user = contextService.getUser()
+        }
+        result.institution = contextService.getOrg()
+        result.editable = controller.checkIsEditable(result.user, result.institution)
+
+        result
     }
 }

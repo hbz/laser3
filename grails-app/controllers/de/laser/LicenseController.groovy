@@ -1,14 +1,14 @@
 package de.laser
 
 import com.k_int.kbplus.InstitutionsService
+import de.laser.ctrl.LicenseControllerService
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
@@ -17,20 +17,15 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
-import de.laser.helper.ConfigUtils
 
-import java.nio.file.Files
-import java.nio.file.Path
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController {
 
-    def springSecurityService
     def taskService
     def docstoreService
     def genericOIDService
-    PropertyService propertyService
     def institutionsService
     def pendingChangeService
     def executorWrapperService
@@ -41,21 +36,25 @@ class LicenseController {
     def orgTypeService
     def deletionService
     def subscriptionService
-    SubscriptionsQueryService subscriptionsQueryService
-    LinksGenerationService linksGenerationService
-    FormService formService
     CopyElementsService copyElementsService
+    FormService formService
     LicenseService licenseService
+    LicenseControllerService licenseControllerService
+    LinksGenerationService linksGenerationService
+    PropertyService propertyService
+    SubscriptionsQueryService subscriptionsQueryService
+
+    //----------------------------------------- general or ungroupable section ----------------------------------------
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -246,10 +245,27 @@ class LicenseController {
     */
   }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    def tasks() {
+        Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)
+        if(ctrlResult.error == LicenseControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        ctrlResult.result
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_EDIT)
 
         if (params.process && result.editable) {
             result.delResult = deletionService.deleteLicense(result.license, false)
@@ -262,11 +278,11 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug( params.toMapString() )
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
@@ -343,10 +359,10 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
         log.debug("linkToSubscription :: ${params}")
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['showLinking','onlyMemberSubs']
         Set<Subscription> allSubscriptions = []
         String action
@@ -385,9 +401,9 @@ class LicenseController {
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Map<String,Object> linkLicenseToSubs() {
-        Map<String, Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
         result.tableConfig = ['showLinking']
         result.linkedSubscriptions = Links.executeQuery('select l.destinationSubscription from Links l where l.sourceLicense = :license and l.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
@@ -395,9 +411,9 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def linkedSubs() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -479,11 +495,11 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def members() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -529,9 +545,9 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkMemberLicensesToSubs() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
         result.linkedSubscriptions = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
@@ -568,7 +584,7 @@ class LicenseController {
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
-        Map<String,Object> result = setResultGenericsAndCheckAccess(accessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, accessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
@@ -586,11 +602,11 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -620,11 +636,11 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def history() {
         log.debug("license::history : ${params}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -669,11 +685,11 @@ class LicenseController {
 
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
         log.debug("license::changes : ${params}")
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -696,52 +712,14 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
-
-        result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_USER") })
-    def tasks() {
-        log.debug("license id:${params.id}")
-
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        if (params.deleteId) {
-            Task dTask = Task.get(params.deleteId)
-            if (dTask && dTask.creator.id == result.user.id) {
-                try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
-                    dTask.delete(flush: true)
-                }
-                catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                }
-            }
-        }
-
-        int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
-        result.taskInstanceCount = result.taskInstanceList.size()
-        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-
-        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.license)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
-        log.debug(result.taskInstanceList.toString())
-        log.debug(result.myTaskInstanceList.toString())
 
         result
     }
@@ -753,7 +731,7 @@ class LicenseController {
     def documents() {
         log.debug("license id:${params.id}");
 
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
@@ -761,7 +739,7 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}")
 
@@ -771,10 +749,10 @@ class LicenseController {
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
   def create() {
     Map<String, Object> result = [:]
-    result.user = User.get(springSecurityService.principal.id)
+    result.user = contextService.getUser()
     result
   }
 
@@ -875,151 +853,11 @@ class LicenseController {
 
     }
 
-    @Deprecated
-    def processcopyLicense() {
-
-        params.id = params.baseLicense
-        Map<String,Object> result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        License baseLicense = License.get(params.baseLicense)
-
-        if (baseLicense) {
-
-            String lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
-
-            License licenseInstance = new License(
-                    reference: lic_name,
-                    type: baseLicense.type,
-                    startDate: params.license.copyDates ? baseLicense?.startDate : null,
-                    endDate: params.license.copyDates ? baseLicense?.endDate : null,
-                    instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
-                    status: baseLicense?.status ?: null,
-                    openEnded: baseLicense?.openEnded
-            )
-
-
-            if (!licenseInstance.save(flush:true)) {
-                log.error("Problem saving license ${licenseInstance.errors}")
-                return licenseInstance
-            }
-            else {
-                   log.debug("Save ok")
-
-                    baseLicense.documents?.each { DocContext dctx ->
-
-                        //Copy Docs
-                        if (params.license.copyDocs) {
-                            if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
-                                Doc clonedContents = new Doc(
-                                        status: dctx.owner.status,
-                                        type: dctx.owner.type,
-                                        content: dctx.owner.content,
-                                        uuid: dctx.owner.uuid,
-                                        contentType: dctx.owner.contentType,
-                                        title: dctx.owner.title,
-                                        filename: dctx.owner.filename,
-                                        mimeType: dctx.owner.mimeType,
-                                        migrated: dctx.owner.migrated,
-                                        owner: dctx.owner.owner
-                                ).save(flush:true)
-
-                                String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
-
-                                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
-                                Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
-                                Files.copy(source, target)
-
-                                DocContext ndc = new DocContext(
-                                        owner: clonedContents,
-                                        license: licenseInstance,
-                                        domain: dctx.domain,
-                                        status: dctx.status,
-                                        doctype: dctx.doctype
-                                ).save(flush:true)
-                            }
-                        }
-                        //Copy Announcements
-                        if (params.license.copyAnnouncements) {
-                            if ((dctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                                Doc clonedContents = new Doc(
-                                        status: dctx.owner.status,
-                                        type: dctx.owner.type,
-                                        content: dctx.owner.content,
-                                        uuid: dctx.owner.uuid,
-                                        contentType: dctx.owner.contentType,
-                                        title: dctx.owner.title,
-                                        filename: dctx.owner.filename,
-                                        mimeType: dctx.owner.mimeType,
-                                        migrated: dctx.owner.migrated
-                                ).save(flush:true)
-
-                                DocContext ndc = new DocContext(
-                                        owner: clonedContents,
-                                        license: licenseInstance,
-                                        domain: dctx.domain,
-                                        status: dctx.status,
-                                        doctype: dctx.doctype
-                                ).save(flush:true)
-                            }
-                        }
-                    }
-                    //Copy Tasks
-                    if (params.license.copyTasks) {
-
-                        Task.findAllByLicense(baseLicense).each { task ->
-
-                            Task newTask = new Task()
-                            InvokerHelper.setProperties(newTask, task.properties)
-                            newTask.systemCreateDate = new Date()
-                            newTask.license = licenseInstance
-                            newTask.save(flush:true)
-                        }
-
-                    }
-                    //Copy References
-                        baseLicense.orgRelations.each { OrgRole or ->
-                            if ((or.org.id == result.institution.id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
-                            OrgRole newOrgRole = new OrgRole()
-                            InvokerHelper.setProperties(newOrgRole, or.properties)
-                            newOrgRole.lic = licenseInstance
-                            newOrgRole.save(flush:true)
-
-                            }
-
-                    }
-
-                    if(params.license.copyCustomProperties) {
-                        //customProperties
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant == null && prop.tenant.id == result.institution.id && prop.isPublic }.each{ LicenseProperty prop ->
-                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.instanceOf = null
-                            copiedProp.save(flush:true)
-                        }
-                    }
-                    if(params.license.copyPrivateProperties){
-                        //privatProperties
-
-                        baseLicense.propertySet.findAll{ LicenseProperty prop -> prop.type.tenant?.id == result.institution.id && prop.tenant.id == result.institution.id && !prop.isPublic }.each { LicenseProperty prop ->
-                            LicenseProperty copiedProp = new LicenseProperty(type: prop.type, owner: licenseInstance, tenant: prop.tenant, isPublic: prop.isPublic)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save(flush:true)
-                        }
-                    }
-                redirect controller: 'license', action: 'show', params: [id: licenseInstance.id]
-                }
-
-            }
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { principal.user?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoLicense() {
         def result             = [:]
-        result.user            = User.get(springSecurityService.principal.id)
+        result.user            = contextService.getUser()
         result.institution     = contextService.org
         result.contextOrg      = result.institution
 
@@ -1092,42 +930,8 @@ class LicenseController {
 
         result
     }
-
-    private Map<String,Object> setResultGenericsAndCheckAccess(String checkOption) {
-        Map<String,Object> result = [:]
-        result.user            = User.get(springSecurityService.principal.id)
-        result.institution     = contextService.org
-        result.contextOrg      = result.institution
-        result.license         = License.get(params.id)
-        result.licenseInstance = result.license
-        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
-        result.navPrevLicense = links.prevLink
-        result.navNextLicense = links.nextLink
-        result.showConsortiaFunctions = showConsortiaFunctions(result.license)
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ?: 0
-
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.licenseInstance.isVisibleBy(result.user)) {
-                log.debug( "--- NOT VISIBLE ---")
-                return null
-            }
-        }
-        result.editable = result.license.isEditableBy(result.user)
-
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.editable) {
-                log.debug( "--- NOT EDITABLE ---")
-                return null
-            }
-        }
-
-        result
-    }
-
+    
     boolean showConsortiaFunctions(License license) {
-
         return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
