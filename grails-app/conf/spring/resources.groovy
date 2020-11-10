@@ -1,4 +1,11 @@
 import de.laser.dbm.MigrationCallbacks
+import de.laser.userdetails.CustomUserDetailsService
+import de.laser.web.AuthSuccessHandler
+
+import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
+import org.springframework.security.web.context.SecurityContextPersistenceFilter
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -6,17 +13,16 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 beans = {
 
-    migrationCallbacks(MigrationCallbacks) {
+    migrationCallbacks( MigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
     }
 
     // [ user counter ..
-    sessionRegistry(org.springframework.security.core.session.SessionRegistryImpl)
-
+    sessionRegistry( SessionRegistryImpl )
     // .. ]
 
     // [ supporting initMandatorySettings for users ..
-    authenticationSuccessHandler(de.laser.web.AuthSuccessHandler) {
+    authenticationSuccessHandler( AuthSuccessHandler ) {
         // Reusing the security configuration
         def conf = SpringSecurityUtils.securityConfig
         // Configuring the bean ..
@@ -30,18 +36,18 @@ beans = {
     }
     // .. ]
 
-    userDetailsService(de.laser.userdetails.CustomUserDetailsService) {
+    userDetailsService( CustomUserDetailsService ) {
         grailsApplication = ref('grailsApplication')
     }
 
-    userDetailsByNameServiceWrapper(org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper) {
+    userDetailsByNameServiceWrapper( UserDetailsByNameServiceWrapper ) {
         userDetailsService = ref('userDetailsService')
     }
 
-    preAuthenticatedAuthenticationProvider(org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider) {
+    preAuthenticatedAuthenticationProvider( PreAuthenticatedAuthenticationProvider ) {
         preAuthenticatedUserDetailsService = ref('userDetailsByNameServiceWrapper')
     }
 
-    securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){}
+    securityContextPersistenceFilter( SecurityContextPersistenceFilter ) {}
 
 }

@@ -46,6 +46,7 @@ class YodaController {
     def contextService
     def dashboardDueDatesService
     StatusUpdateService statusUpdateService
+    SystemService systemService
     FinanceService financeService
     def quartzScheduler
     def identifierService
@@ -97,7 +98,7 @@ class YodaController {
         //result.q5 = User.executeQuery('select u from User u where u.accountLocked is null and u.id < 4')
         result.q6 = User.executeQuery('select u from User u where u.accountLocked is not null and u.id < 4')
 
-        result.numberOfActiveUsers = yodaService.getNumberOfActiveUsers()
+        result.numberOfActiveUsers = systemService.getNumberOfActiveUsers()
 
         def userCache = contextService.getCache('yoda/test1', ContextService.USER_SCOPE)
         def orgCache  = contextService.getCache('yoda/test2', ContextService.ORG_SCOPE)

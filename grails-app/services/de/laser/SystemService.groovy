@@ -8,7 +8,10 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class SystemService {
 
+    def contextService
     def grailsApplication
+    def sessionRegistry
+    def springSecurityService
 
     Map<String, Object> serviceCheck() {
         Map<String, Object> checks = [:]
@@ -43,5 +46,28 @@ class SystemService {
         }
 
         return checks
+    }
+
+    int getNumberOfActiveUsers() {
+        getActiveUsers( (1000 * 60 * 10) ).size() // 10 minutes
+    }
+
+    List getActiveUsers(long ms) {
+        List result = []
+
+        sessionRegistry.getAllPrincipals().each { user ->
+            List lastAccessTimes = []
+
+            sessionRegistry.getAllSessions(user, false).each { userSession ->
+                if (user.username == contextService.getUser()?.username) {
+                    userSession.refreshLastRequest()
+                }
+                lastAccessTimes << userSession.getLastRequest().getTime()
+            }
+            if (lastAccessTimes.max() > System.currentTimeMillis() - ms) {
+                result.add(user)
+            }
+        }
+        result
     }
 }
