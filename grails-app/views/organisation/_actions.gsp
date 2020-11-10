@@ -1,4 +1,3 @@
-<%@page import="de.laser.helper.RDStore; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
 <g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">

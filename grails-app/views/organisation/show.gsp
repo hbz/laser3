@@ -1,15 +1,10 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.OrgSubjectGroup; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
-<%@ page import="de.laser.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo" %>
 <laser:serviceInjection/>
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}" />
-    <g:set var="isProviderOrAgency" value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}" />
-    <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
-    <g:set var="isGrantedOrgRoleAdmin" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
     <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
@@ -27,14 +22,9 @@
 
 <body>
 
-<semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-    %{-- grails-3: performance issue <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/> --}%
-    %{--<g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
-</semui:debugInfo>
-
 <g:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
+
 
 <semui:controlButtons>
     <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
@@ -42,18 +32,18 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-<g:if test="${inContextOrg && orgInstance.eInvoice && (!orgInstance.eInvoicePortal || !orgInstance.getLeitID()?.value)}">
+<g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
         <i class="info icon"></i>
         <div class="content">
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}
             <div class="ui bulleted list">
-            <g:if test="${!orgInstance.eInvoicePortal}">
-                <div class="item">${message(code: 'org.eInvoice.info.missing.eInvoicePortal')}</div>
+            <g:if test="${missing.eInvoicePortal}">
+                <div class="item">${missing.eInvoicePortal}</div>
             </g:if>
-            <g:if test="${!orgInstance.getLeitID()?.value}">
-                <div class="item">${message(code: 'org.eInvoice.info.missing.leitID')}</div>
+            <g:if test="${missing.leitID}">
+                <div class="item">${missing.leitID}</div>
             </g:if>
         </div>
         </div>
@@ -75,14 +65,13 @@
     <div class="twelve wide column">
 
         <div class="la-inline-lists">
-
             <div class="ui card">
                 <div class="content">
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" field="name"/>
-                            <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
                                     <i class="chess rook grey icon"></i>
@@ -212,21 +201,8 @@
                         <dl>
                             <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
-                                <%
-                                    // hotfix:
-                                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                                    def orgType_types = RefdataValue.executeQuery("select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.ORG_TYPE + "' order by rdv.order, rdv.value_" + locale)
-                                    def orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-                                    if (!orgType_editable) {
-                                        orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR')
-
-                                        orgType_types = orgType_types.minus(RDStore.OT_CONSORTIUM)
-                                    }
-
-                                %>
                                 <g:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: orgType_types, editable: orgType_editable]}"/>
+                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: availableOrgTypes, editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                             </dd>
                         </dl>
 
@@ -258,7 +234,7 @@
                             </dt>
                             <dd>
                                 <%
-                                    def subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                    List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
                                 %>
                                 <g:render template="orgSubjectGroupAsList"
                                           model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
@@ -518,6 +494,13 @@
         <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
     </aside>
 </div>
+
+<semui:debugInfo>
+    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
+%{-- grails-3: performance issue <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/> --}%
+%{--<g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
+</semui:debugInfo>
+
 </body>
 </html>
 <asset:script type="text/javascript">
@@ -539,8 +522,6 @@
         var country = $("#country").editable('getValue', true);
         showRegionsdropdown(country);
     });
-</asset:script>
-<asset:script type="text/javascript">
         function addresscreate_org(orgId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             private_address_modal(url);
@@ -569,9 +550,7 @@
                 }
             });
         }
-</asset:script>
 <g:if test="${isProviderOrAgency}">
-<asset:script type="text/javascript">
     function personCreate(contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml"
                                  action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
@@ -594,5 +573,5 @@
             }
         });
     }
-</asset:script>
 </g:if>
+</asset:script>
