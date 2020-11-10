@@ -4,7 +4,7 @@ package de.laser
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
-class OrgSubjectGroup {
+class OrgSubjectGroup implements Comparable {
 
     @RefdataAnnotation(cat = RDConstants.SUBJECT_GROUP)
     RefdataValue subjectGroup
@@ -27,5 +27,11 @@ class OrgSubjectGroup {
     static constraints = {
         lastUpdated  (nullable: true)
         dateCreated  (nullable: true)
+    }
+
+    @Override
+    int compareTo(Object o) {
+        OrgSubjectGroup b = (OrgSubjectGroup) o
+        return subjectGroup.getI10n('value') <=> b.subjectGroup.getI10n('value')
     }
 }

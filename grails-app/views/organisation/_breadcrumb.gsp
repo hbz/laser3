@@ -2,25 +2,21 @@
 <laser:serviceInjection/>
 <semui:breadcrumbs>
     <g:if test="${!inContextOrg}">
-        <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getAllOrgTypeIds())}">
+        <g:if test="${isProviderOrAgency}">
             <semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
-            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+            <semui:crumb text="${orgInstance.name}" class="active"/>
         </g:if>
-        <g:elseif test="${departmentalView}">
-            <semui:crumb message="menu.my.departments" controller="myInstitution" action="manageMembers" params="[comboType:'Department']"/>
-            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
-        </g:elseif>
         <g:else>
-            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM') && institutionalView}">
-                <semui:crumb message="menu.my.consortia" controller="myInstitution" action="manageMembers" params="[comboType:'Consortium']"/>
-                <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+            <g:if test="${institutionalView}">
+                <semui:crumb message="menu.my.consortia" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                <semui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
             <g:else>
-                <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+                <semui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:else>
         </g:else>
     </g:if>
     <g:else>
-        <%--<semui:crumb text="${orgInstance.getDesignation()}" class="active"/>--%>
+        <semui:crumb text="${institution.name}" class="active"/>
     </g:else>
 </semui:breadcrumbs>

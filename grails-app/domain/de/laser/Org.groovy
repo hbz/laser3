@@ -43,7 +43,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String legalPatronName
     String url
     String urlGov
-    //URL originEditUrl
+    SortedSet subjectGroup
 
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
