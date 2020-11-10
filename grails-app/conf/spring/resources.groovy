@@ -1,47 +1,76 @@
 import de.laser.dbm.MigrationCallbacks
+import de.laser.userdetails.CustomUserDetailsService
+import de.laser.web.AuthSuccessHandler
+
+import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
+import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy
+import org.springframework.security.web.context.SecurityContextPersistenceFilter
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+
 
 // # https://docs.spring.io/spring-security/site/migrate/current/3-to-4/html5/migrate-3-to-4-xml.html
 
 beans = {
 
-    migrationCallbacks(MigrationCallbacks) {
+    migrationCallbacks( MigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
     }
 
     // [ user counter ..
-    sessionRegistry(org.springframework.security.core.session.SessionRegistryImpl)
+    sessionRegistry( SessionRegistryImpl )
 
+    registerSessionAuthenticationStrategy( RegisterSessionAuthenticationStrategy, ref('sessionRegistry') )
+
+    sessionFixationProtectionStrategy( SessionFixationProtectionStrategy )
+
+    concurrentSessionControlAuthenticationStrategy( ConcurrentSessionControlAuthenticationStrategy, ref('sessionRegistry') ){
+        maximumSessions = -1
+        // exceptionIfMaximumExceeded = true
+    }
+//    compositeSessionAuthenticationStrategy( CompositeSessionAuthenticationStrategy, [
+//            ref('registerSessionAuthenticationStrategy'),
+//            ref('sessionFixationProtectionStrategy'),
+//            ref('concurrentSessionControlAuthenticationStrategy')
+//    ])
+
+    sessionAuthenticationStrategy( CompositeSessionAuthenticationStrategy, [
+            ref('concurrentSessionControlAuthenticationStrategy'),
+            ref('sessionFixationProtectionStrategy'),
+            ref('registerSessionAuthenticationStrategy')
+    ])
     // .. ]
 
     // [ supporting initMandatorySettings for users ..
-    authenticationSuccessHandler(de.laser.web.AuthSuccessHandler) {
-        // Reusing the security configuration
-        def conf = SpringSecurityUtils.securityConfig
-        // Configuring the bean ..
-        requestCache = ref('requestCache')
-        redirectStrategy = ref('redirectStrategy')
-        defaultTargetUrl = conf.successHandler.defaultTargetUrl
-        alwaysUseDefaultTargetUrl = conf.successHandler.alwaysUseDefault
-        targetUrlParameter = conf.successHandler.targetUrlParameter
-        ajaxSuccessUrl = conf.successHandler.ajaxSuccessUrl
-        useReferer = conf.successHandler.useReferer
+    authenticationSuccessHandler( AuthSuccessHandler ) {
+        ConfigObject conf = SpringSecurityUtils.securityConfig
+
+        requestCache                = ref('requestCache')
+        redirectStrategy            = ref('redirectStrategy')
+        defaultTargetUrl            = conf.successHandler.defaultTargetUrl
+        alwaysUseDefaultTargetUrl   = conf.successHandler.alwaysUseDefault
+        targetUrlParameter          = conf.successHandler.targetUrlParameter
+        ajaxSuccessUrl              = conf.successHandler.ajaxSuccessUrl
+        useReferer                  = conf.successHandler.useReferer
     }
     // .. ]
 
-    userDetailsService(de.laser.userdetails.CustomUserDetailsService) {
+    userDetailsService( CustomUserDetailsService ) {
         grailsApplication = ref('grailsApplication')
     }
 
-    userDetailsByNameServiceWrapper(org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper) {
+    userDetailsByNameServiceWrapper( UserDetailsByNameServiceWrapper ) {
         userDetailsService = ref('userDetailsService')
     }
 
-    preAuthenticatedAuthenticationProvider(org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider) {
+    preAuthenticatedAuthenticationProvider( PreAuthenticatedAuthenticationProvider ) {
         preAuthenticatedUserDetailsService = ref('userDetailsByNameServiceWrapper')
     }
 
-    securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){}
-
+    securityContextPersistenceFilter( SecurityContextPersistenceFilter )
 }
