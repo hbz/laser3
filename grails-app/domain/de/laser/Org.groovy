@@ -148,7 +148,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
    legalPatronName          column:'org_legal_patronname'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
-      subjectGroup          column:'org_subject_group'
+    //subjectGroup          column:'org_subject_group'
    //originEditUrl          column:'org_origin_edit_url'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
@@ -204,7 +204,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-        subjectGroup(nullable:true)
+      //subjectGroup(nullable:true)
      //originEditUrl(nullable:true, blank:false)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
