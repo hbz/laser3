@@ -12,6 +12,7 @@ class Role implements I10nTrait {
 
 	static mapping = {
 		cache 	true
+		version	false
 	}
 
 	static hasMany = [

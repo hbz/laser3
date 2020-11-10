@@ -6,6 +6,7 @@ class Perm {
 
     static mapping = {
         cache   true
+        version false
     }
 
     static constraints = {
