@@ -99,21 +99,24 @@
                     <div class="cacheContent hidden">
                         <dl>
                         <g:each in="${cache.getKeys().toSorted()}" var="key">
-                            <g:set var="cacheEntry" value="${cache.get(key)}" />
-                            <g:if test="${cacheEntry}">
+                            <g:set var="element" value="${cache.get(key)}" />
+                            <g:if test="${element}">
                                 <dt>
-                                    ${cacheEntry.getObjectKey() instanceof String ? cacheEntry.getObjectKey() : cacheEntry.getObjectKey().id}
-                                    >
-                                    creation=${new Date(cacheEntry.getCreationTime()).format('HH:mm:ss')},
-                                    lastAccess=${new Date(cacheEntry.getLastAccessTime()).format('HH:mm:ss')},
-                                    version=${cacheEntry.version},
-                                    hitCount=${cacheEntry.hitCount}
+                                    <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />
+                                    ${ceKey} -
+                                    creation=${new Date(element.getCreationTime()).format('HH:mm:ss')},
+                                    lastAccess=${new Date(element.getLastAccessTime()).format('HH:mm:ss')},
+                                    version=${element.version},
+                                    hitCount=${element.hitCount}
                                 </dt>
                                 <dd>
-                                    <g:set var="objectValue" value="${cacheEntry.getObjectValue()}" />
+                                    <g:set var="objectValue" value="${element.getObjectValue()}" />
                                     <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">
                                         ${objectValue}
                                     </g:if>
+                                    <g:else>
+                                        ${objectValue.getValue()}
+                                    </g:else>
                                 </dd>
                             </g:if>
                         </g:each>
