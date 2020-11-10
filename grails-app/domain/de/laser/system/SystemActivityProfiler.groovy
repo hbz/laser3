@@ -10,7 +10,7 @@ class SystemActivityProfiler {
 
     static mapping = {
         id          column:'sap_id'
-        version     column:'sap_version'
+        version     false
         userCount   column:'sap_user_count'
         dateCreated column:'sap_date_created'
     }

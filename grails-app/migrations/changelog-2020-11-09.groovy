@@ -24,7 +24,7 @@ databaseChangeLog = {
         dropColumn(columnName: "version", tableName: "role")
     }
 
-    changeSet(author: "klober (generated)", id: "1604920204115-7") {
+    changeSet(author: "klober (modified)", id: "1604920204115-7") {
         grailsChange {
             change {
                 sql.execute("ALTER SEQUENCE system_activity_profiler_ap_id_seq RENAME TO system_activity_profiler_sap_id_seq")
@@ -33,5 +33,17 @@ databaseChangeLog = {
             }
             rollback {}
         }
+    }
+
+    changeSet(author: "klober (generated)", id: "1604920204115-8") {
+        dropColumn(columnName: "sap_version", tableName: "system_activity_profiler")
+    }
+
+    changeSet(author: "klober (generated)", id: "1604920204115-9") {
+        dropColumn(columnName: "sp_version", tableName: "system_profiler")
+    }
+
+    changeSet(author: "klober (generated)", id: "1604920204115-10") {
+        dropColumn(columnName: "version", tableName: "system_event")
     }
 }
