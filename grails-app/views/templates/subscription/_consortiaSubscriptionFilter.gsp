@@ -1,5 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection />
+<%--<laser:serviceInjection />--%>
 
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
@@ -21,7 +21,6 @@
                           value="${params.q}"/>
                </div>
                --%>
-
                 <label>${message(code:'myinst.consortiaSubscriptions.consortia')}</label>
                 <g:select class="ui search selection dropdown" name="member"
                           from="${filterConsortiaMembers}"
@@ -42,11 +41,9 @@
                     </div>
                 </div>
             </g:if>
-
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
-
             <div class="field fieldcontain">
                 <label>${message(code: 'default.status.label')}</label>
                 <%
@@ -62,10 +59,8 @@
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
-
         <div class="four fields">
             <g:render template="/templates/properties/genericFilter" model="[propList: filterPropList]"/>
-
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
                 <laser:select class="ui dropdown" name="form"
@@ -75,7 +70,6 @@
                               value="${params.form}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
                 <laser:select class="ui dropdown" name="resource"
@@ -86,7 +80,6 @@
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
-
         <div class="four fields">
             <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
@@ -123,7 +116,6 @@
                 <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
                         <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
                         value="${subKind.id}" ">
@@ -133,7 +125,6 @@
                 </select>
 
             </div>
-
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
                 <laser:select class="ui fluid dropdown" name="isPublicForApi"
@@ -157,7 +148,6 @@
         </div>
 
         <div class="two fields">
-
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -177,7 +167,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="field la-field-right-aligned">
                 <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
                     <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
@@ -206,16 +195,16 @@ $(document).ready(function(){
     else {
         subStatus = "FETCH_ALL";
     }
-    <g:if test="${params.selSubscription}">
+    <g:if test="${'onlyMemberSubs' in tableConfig && params.selSubscription}">
         $("#selSubscription").dropdown('set value',[<g:each in="${params.selSubscription.split(',')}" var="sub" status="i">'${sub}'<g:if test="${i < params.selSubscription.split(',').size()-1}">,</g:if></g:each>]);
+        $("#selSubscription").dropdown({
+            apiSettings: {
+                url: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
+                cache: false
+            },
+            clearable: true,
+            minCharacters: 1
+        });
     </g:if>
-    $("#selSubscription").dropdown({
-        apiSettings: {
-            url: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
-            cache: false
-        },
-        clearable: true,
-        minCharacters: 1
-    });
 });
 </asset:script>

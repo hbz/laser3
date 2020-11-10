@@ -9,6 +9,9 @@
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
+        <semui:debugInfo>
+            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        </semui:debugInfo>
         <semui:breadcrumbs>
             <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />--%>
             <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />

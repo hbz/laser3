@@ -2247,7 +2247,8 @@ join sub.orgRelations or_sub where
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
-
+        ProfilerUtils pu = result.pu
+        pu.setBenchmark("after subscription loading, before providers")
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]
         BidiMap subLinks = new DualHashBidiMap()
@@ -2285,7 +2286,7 @@ join sub.orgRelations or_sub where
         }
 
         SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-
+        pu.setBenchmark("before xls")
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
@@ -2464,16 +2465,17 @@ join sub.orgRelations or_sub where
             response.outputStream.close()
             workbook.dispose()
         }
-        else
+        else {
+            result.benchMark = pu.stopBenchmark()
             withFormat {
                 html {
                     result
                 }
                 csv {
-                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'myinst.consortiaSubscriptions.subscription'), message(code:'globalUID.label'),
-                                   message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
-                                   message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
-                                   message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
+                    List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'myinst.consortiaSubscriptions.subscription'), message(code: 'globalUID.label'),
+                                   message(code: 'license.label'), message(code: 'myinst.consortiaSubscriptions.packages'), message(code: 'myinst.consortiaSubscriptions.provider'), message(code: 'myinst.consortiaSubscriptions.runningTimes'),
+                                   message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
+                                   message(code: 'financials.amountFinal'), "${message(code: 'financials.isVisibleForSubscriber')} / ${message(code: 'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
                     result.entries.eachWithIndex { entry, int sidewideNumber ->
@@ -2491,13 +2493,13 @@ join sub.orgRelations or_sub where
                         log.debug("insert sortname")
                         cellnum++
                         String subscrName = ""
-                        if(subscr.sortname) subscrName += subscr.sortname
+                        if (subscr.sortname) subscrName += subscr.sortname
                         subscrName += "(${subscr.name})"
-                        row.add(subscrName.replaceAll(',',' '))
+                        row.add(subscrName.replaceAll(',', ' '))
                         log.debug("insert general contacts")
                         //general contacts
                         Set<String> generalContacts = mailAddresses.get(subscr)
-                        if(generalContacts)
+                        if (generalContacts)
                             row.add(generalContacts.join('; '))
                         else row.add(' ')
                         //subscription name
@@ -2505,9 +2507,9 @@ join sub.orgRelations or_sub where
                         cellnum++
                         String subscriptionString = subCons.name
                         //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
-                        if(subLinks.getKey(subCons.id))
-                            subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
-                        row.add(subscriptionString.replaceAll(',',' '))
+                        if (subLinks.getKey(subCons.id))
+                            subscriptionString += " (${message(code: 'subscription.hasPreviousSubscription')})"
+                        row.add(subscriptionString.replaceAll(',', ' '))
                         //subscription global uid
                         log.debug("insert global uid")
                         cellnum++
@@ -2515,11 +2517,10 @@ join sub.orgRelations or_sub where
                         //license name
                         log.debug("insert license name")
                         cellnum++
-                        if(result.linkedLicenses.get(subCons)) {
-                            List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',',' ') }
+                        if (result.linkedLicenses.get(subCons)) {
+                            List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',', ' ') }
                             row.add(references.join(' '))
-                        }
-                        else row.add(' ')
+                        } else row.add(' ')
                         //packages
                         log.debug("insert package name")
                         cellnum++
@@ -2527,7 +2528,7 @@ join sub.orgRelations or_sub where
                         subCons.packages.each { subPkg ->
                             packagesString += "${subPkg.pkg.name} "
                         }
-                        row.add(packagesString.replaceAll(',',' '))
+                        row.add(packagesString.replaceAll(',', ' '))
                         //provider
                         log.debug("insert provider name")
                         cellnum++
@@ -2536,14 +2537,14 @@ join sub.orgRelations or_sub where
                             log.debug("Getting provider ${p}")
                             providersString += "${p.name} "
                         }
-                        row.add(providersString.replaceAll(',',' '))
+                        row.add(providersString.replaceAll(',', ' '))
                         //running time from / to
                         log.debug("insert running times")
                         cellnum++
                         String dateString = " "
-                        if(ci.id) {
-                            if(ci.getDerivedStartDate()) dateString += sdf.format(ci.getDerivedStartDate())
-                            if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
+                        if (ci.id) {
+                            if (ci.getDerivedStartDate()) dateString += sdf.format(ci.getDerivedStartDate())
+                            if (ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                         }
                         row.add(dateString)
                         //is public for api
@@ -2557,23 +2558,21 @@ join sub.orgRelations or_sub where
                         //final sum
                         log.debug("insert final sum")
                         cellnum++
-                        if(ci.id && ci.costItemElementConfiguration) {
+                        if (ci.id && ci.costItemElementConfiguration) {
                             row.add("${ci.costInBillingCurrencyAfterTax ?: 0.0} ${ci.billingCurrency ?: 'EUR'}")
-                        }
-                        else row.add(" ")
+                        } else row.add(" ")
                         //cost item sign and visibility
                         log.debug("insert cost sign and visiblity")
                         cellnum++
                         String costSignAndVisibility = " "
-                        if(ci.id) {
-                            if(ci.isVisibleForSubscriber) {
-                                costSignAndVisibility += message(code:'financials.isVisibleForSubscriber')+" / "
+                        if (ci.id) {
+                            if (ci.isVisibleForSubscriber) {
+                                costSignAndVisibility += message(code: 'financials.isVisibleForSubscriber') + " / "
                             }
-                            if(ci.costItemElementConfiguration) {
+                            if (ci.costItemElementConfiguration) {
                                 costSignAndVisibility += ci.costItemElementConfiguration.getI10n("value")
-                            }
-                            else
-                                costSignAndVisibility += message(code:'financials.costItemConfiguration.notSet')
+                            } else
+                                costSignAndVisibility += message(code: 'financials.costItemConfiguration.notSet')
                         }
                         row.add(costSignAndVisibility)
                         columnData.add(row)
@@ -2583,31 +2582,32 @@ join sub.orgRelations or_sub where
                     row = []
                     //sumcell = 11
                     //sumTitleCell = 10
-                    for(int h = 0;h < 10;h++) {
+                    for (int h = 0; h < 10; h++) {
                         row.add(" ")
                     }
-                    row.add(message(code:'financials.export.sums'))
+                    row.add(message(code: 'financials.export.sums'))
                     columnData.add(row)
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for(int h = 0;h < 10;h++) {
+                        for (int h = 0; h < 10; h++) {
                             row.add(" ")
                         }
-                        row.add("${message(code:'financials.sum.billing')} ${entry.key}")
+                        row.add("${message(code: 'financials.sum.billing')} ${entry.key}")
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.csv"
-                    response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
+                    String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(titles,columnData,','))
+                        writer.write(exportService.generateSeparatorTableString(titles, columnData, ','))
                     }
                     response.outputStream.flush()
                     response.outputStream.close()
                 }
             }
+        }
     }
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })

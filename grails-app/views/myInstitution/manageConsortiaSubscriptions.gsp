@@ -1,5 +1,4 @@
 <%@ page import="de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection />
 
 <!doctype html>
 <html>
