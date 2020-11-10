@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.ctrl.PlatformControllerService
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink

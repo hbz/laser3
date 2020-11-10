@@ -3,6 +3,7 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
+import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.properties.LicenseProperty
@@ -25,7 +26,6 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import grails.converters.JSON
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap

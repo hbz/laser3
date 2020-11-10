@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class SurveyInfo {
 

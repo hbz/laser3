@@ -1,10 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.auth.User
 import de.laser.ctrl.AccessPointControllerService
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint

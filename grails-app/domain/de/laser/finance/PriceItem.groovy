@@ -4,7 +4,7 @@ import de.laser.IssueEntitlement
 import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class PriceItem extends AbstractBase {
 

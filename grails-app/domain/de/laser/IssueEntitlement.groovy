@@ -6,7 +6,7 @@ import de.laser.finance.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 import javax.persistence.Transient
 

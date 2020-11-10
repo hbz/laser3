@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.titles.TitleInstance
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 

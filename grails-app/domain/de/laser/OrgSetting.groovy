@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 
 class OrgSetting {
 

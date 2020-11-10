@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.titles.TitleInstance
  
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON

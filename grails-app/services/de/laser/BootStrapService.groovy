@@ -19,7 +19,6 @@ import org.hibernate.type.TextType
 class BootStrapService {
 
     def apiService
-    def cacheService
     def dataSource
     def grailsApplication
     def organisationService
@@ -247,7 +246,7 @@ class BootStrapService {
 
         // seting perm grants to current state
 
-        PermGrant.findAll().each { it.delete() }
+        PermGrant.findAll().each { it.delete(flush: true) } // TODO: flash as workaround
 
         // Permissions
 

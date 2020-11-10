@@ -4,7 +4,7 @@ import com.k_int.kbplus.ExecutorWrapperService
 import de.laser.auth.User
  
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON

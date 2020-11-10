@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
@@ -13,7 +14,6 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat

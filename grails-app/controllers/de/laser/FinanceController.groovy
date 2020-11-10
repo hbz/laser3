@@ -8,7 +8,7 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtil
-import de.laser.helper.DebugAnnotation
+import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured

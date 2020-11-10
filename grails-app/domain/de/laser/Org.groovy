@@ -14,7 +14,7 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import grails.util.Holders
 import groovy.util.logging.Slf4j

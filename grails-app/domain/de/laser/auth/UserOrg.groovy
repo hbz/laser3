@@ -16,10 +16,6 @@ class UserOrg implements Comparable {
     Long dateRequested
     Long dateActioned
 
-    //Org org
-    //User user
-    //Role formalRole
-
     Date dateCreated
     Date lastUpdated
 
@@ -36,7 +32,6 @@ class UserOrg implements Comparable {
     static constraints = {
         dateActioned    nullable: true
         dateRequested   nullable: true
-        //formalRole      nullable: true
         lastUpdated     nullable: true
         dateCreated     nullable: true
     }

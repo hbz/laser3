@@ -7,7 +7,7 @@ import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.RefdataAnnotation
+import de.laser.annotations.RefdataAnnotation
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
 
