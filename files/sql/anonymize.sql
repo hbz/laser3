@@ -14,7 +14,7 @@ WHERE id NOT IN (
     WHERE o.org_name ILIKE 'hbz%' OR org_name ILIKE '%backoffice'
 );
 
-UPDATE user_settings SET
+UPDATE user_setting SET
     us_string_value = 'cc@localhost.local'
 WHERE
         us_string_value != ''
