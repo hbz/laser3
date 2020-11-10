@@ -98,6 +98,7 @@ class SystemEvent {
 
     static mapping = {
         id          column:'se_id'
+        version     false
         token       column:'se_token'
         payload     column:'se_payload', type: 'text'
         category    column:'se_category'
