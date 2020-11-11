@@ -37,6 +37,7 @@ bb8 = {
         $.ajax({
             url: url,
             beforeSend: function (xhr) {
+                $('#loadingIndicator').show()
                 if (before) {
                     eval(before)
                 }
@@ -60,6 +61,7 @@ bb8 = {
                 }
             })
             .always(function () {
+                $('#loadingIndicator').hide()
                 if (always) {
                     eval(always)
                 }
@@ -80,6 +82,7 @@ bb8 = {
             url: url,
             data : data,
             beforeSend: function (xhr) {
+                $('#loadingIndicator').show()
                 if (before) {
                     eval(before)
                 }
@@ -103,6 +106,7 @@ bb8 = {
                 }
             })
             .always(function () {
+                $('#loadingIndicator').hide()
                 if (always) {
                     eval(always)
                 }

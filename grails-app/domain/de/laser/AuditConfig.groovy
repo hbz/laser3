@@ -7,8 +7,6 @@ import javax.persistence.Transient
 @Slf4j
 class AuditConfig {
 
-    def grailsApplication
-
     final static COMPLETE_OBJECT = 'COMPLETE_OBJECT'
 
     Long   referenceId
@@ -47,7 +45,7 @@ class AuditConfig {
     }
 
     static void addConfig(Object obj, String field) {
-        withTransaction {
+        AuditConfig.withTransaction {
             if (obj) {
                 AuditConfig config = new AuditConfig(
                         referenceId: obj.getId(),
@@ -87,7 +85,7 @@ class AuditConfig {
     }
 
     static void removeConfig(Object obj, String field) {
-        withTransaction {
+        AuditConfig.withTransaction {
             if (obj) {
                 AuditConfig.findAllWhere(
                         referenceId: obj.getId(),
@@ -99,12 +97,12 @@ class AuditConfig {
     }
 
     static void removeAllConfigs(Object obj) {
-        withTransaction {
+        AuditConfig.withTransaction {
             if (obj) {
-                AuditConfig.findAllWhere(
-                        referenceId: obj.getId(),
-                        referenceClass: obj.getClass().name
-                ).each { it.delete() }
+                AuditConfig.executeUpdate(
+                    'delete AuditConfig ac where ac.referenceId = :id and ac.referenceClass = :cls',
+                    [ id: obj.getId(), cls: obj.getClass().name ]
+                )
             }
         }
     }

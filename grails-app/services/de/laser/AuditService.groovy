@@ -14,8 +14,6 @@ import javax.persistence.Transient
 @Transactional
 class AuditService {
 
-    GrailsApplication grailsApplication
-
     def changeNotificationService
 
     def getWatchedProperties(Auditable obj) {
