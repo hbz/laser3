@@ -72,8 +72,6 @@
                         break
                     case 'cons': total << "${cons.count} ${message(code:'financials.header.consortialCosts')}"
                         break
-                    case 'coll': total << "${coll.count} ${message(code:'financials.header.collectiveCosts')}"
-                        break
                     case 'subscr': total << "${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"
                         break
                 }
@@ -81,6 +79,6 @@
         %>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${total.join(' / ')}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,coll:coll,showView:showView,filterPresets:filterPresets]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
     </body>
 </html>

@@ -38,6 +38,7 @@ class FinanceController  {
             result.financialData = financeService.getCostItems(params,result)
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
+            result.benchMark = result.financialData.benchMark
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
             result
         }
