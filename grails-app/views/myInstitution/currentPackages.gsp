@@ -72,9 +72,9 @@
             <td>
                 ${ (params.int('offset') ?: 0)  + jj + 1 }
             </td>
-            <td>
+            <th scope="row" class="la-th-column">
                 <g:link class="la-main-object"  controller="package" action="show" id="${pkg.id}">${fieldValue(bean: pkg, field: "name")}</g:link>
-            </td>
+            </th>
 
             <td>
                 ${pkg.getCurrentTipps().size() ?: 0}

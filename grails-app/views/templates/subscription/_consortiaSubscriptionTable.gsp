@@ -113,7 +113,7 @@
                     </g:if>
 
                 </td>
-                <td>
+                <th scope="row" class="la-th-column">
 
                     <div class="la-flexbox la-main-object">
 
@@ -126,12 +126,12 @@
                         </g:if>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
-                        <div class="la-flexbox">
+                        <div class="la-flexbox la-minor-object">
                             <i class="icon balance scale la-list-icon"></i>
                             <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br />
                         </div>
                     </g:each>
-                </td>
+                </th>
                 <td>
                     <g:each in="${subCons.packages}" var="subPkg">
                         <div class="la-flexbox">

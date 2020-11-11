@@ -43,9 +43,9 @@
 
                 <g:each in="${pendingRequests}" var="uo">
                     <tr>
-                        <td class="la-main-object">
+                        <th scope="row" class="la-th-column la-main-object">
                             ${uo.user.username}
-                        </td>
+                        </th>
                         <td>
                             ${uo.user.displayName}
                         </td>

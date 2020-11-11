@@ -80,9 +80,9 @@
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
-                        <td class="la-main-object" >
+                        <th scope="row" class="la-th-column la-main-object" >
                             ${docctx.owner.title}
-                        </td>
+                        </th>
                         <td>
                             ${docctx.owner.filename}
                         </td>

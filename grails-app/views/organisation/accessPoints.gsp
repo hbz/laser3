@@ -101,7 +101,7 @@
                     <g:each in="${accessPointListItem.value}" var="accessPointItem">
                         <g:set var="accessPoint" value="${accessPointItem.oap}"/>
                         <tr>
-                            <td class="la-main-object" >
+                            <th scope="row" class="la-th-column la-main-object" >
                                 <g:if test="${editable}">
                                     <g:link controller="accessPoint" action="edit_${accessPoint.accessMethod.value.toLowerCase()}" id="${accessPoint.id}">
                                         ${accessPoint.name}
@@ -110,7 +110,7 @@
                                 <g:else>
                                     ${accessPoint.name}
                                 </g:else>
-                            </td>
+                            </th>
                             <g:if test="${accessPointListItem.key in ['ip', 'proxy']}">
                                 <td>
                                     <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
