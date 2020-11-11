@@ -68,6 +68,8 @@ class SurveyController {
     })
     Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark("init")
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
@@ -79,28 +81,25 @@ class SurveyController {
         params.max = result.max
         params.offset = result.offset
         params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
-
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], result.institution)
-
+        pu.setBenchmark("before properties")
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
+        pu.setBenchmark("after properties")
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
-            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+            SimpleDateFormat sdfyear = DateUtil.getSimpleDateFormatByToken('default.date.format.onlyYear')
+            params.validOnYear = sdfyear.format(new Date())
         }
-
+        pu.setBenchmark("before surveyYears")
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
-
-        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
-
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
-
+        pu.setBenchmark("after surveyYears and before current org ids of providers and agencies")
+        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( (Org) result.institution )
+        pu.setBenchmark("after providers and agencies and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
-
-        DateFormat sdFormat = DateUtil.getSDF_NoTime()
-        Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
-
+        pu.setBenchmark("after subscriptions and before survey config query")
+        Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, DateUtil.getSDF_NoTime(), (Org) result.institution)
+        pu.setBenchmark("after query, before survey config execution")
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
-
+        pu.setBenchmark("after survey config execute")
         if ( params.exportXLSX ) {
 
             SXSSFWorkbook wb
@@ -127,11 +126,12 @@ class SurveyController {
             response.outputStream.close()
             wb.dispose()
 
-            return
         }else {
+            pu.setBenchmark("before surveysCount")
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
             result.filterSet = params.filterSet ? true : false
-
+            pu.setBenchmark("output")
+            result.benchMark = pu.stopBenchmark()
             result
         }
     }
@@ -321,7 +321,7 @@ class SurveyController {
             }
         }
 
-        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
@@ -401,7 +401,7 @@ class SurveyController {
             }
         }
 
-        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
@@ -2864,7 +2864,7 @@ class SurveyController {
                 }
             }
 
-            List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
+            Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
 
             result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 

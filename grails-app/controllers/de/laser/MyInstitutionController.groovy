@@ -1579,7 +1579,7 @@ join sub.orgRelations or_sub where
                         group by o order by lower(o.name) """
         )
 
-        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
