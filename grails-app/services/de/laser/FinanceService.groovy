@@ -339,14 +339,8 @@ class FinanceService {
             Org org = (Org) configMap.institution
             pu.setBenchmark("load filter")
             Map<String,Object> filterQuery = processFilterParams(params)
-            EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
-            if(params.reset || params.submit)
-                cache.put('cachedFilter',filterQuery)
-            else if(cache && cache.get('cachedFilter'))
-                filterQuery = (Map<String,Object>) cache.get('cachedFilter')
             Map<String,Object> result = [filterPresets:filterQuery.filterData]
-            if(filterQuery.subFilter || filterQuery.ciFilter)
-                result.filterSet = true
+            result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
                     case "own":
@@ -356,59 +350,56 @@ class FinanceService {
                         Map<String,Object> ownFilter = [:]
                         ownFilter.putAll(filterQuery.filterData)
                         ownFilter.remove('filterConsMembers')
-                        Set<CostItem> ownCostItems = CostItem.executeQuery(
-                                'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
+                        Set<Long> ownCostItems = CostItem.executeQuery(
+                                'select ci.id from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
                                         genericExcludes + subFilter + filterQuery.ciFilter +
                                         ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
                                 [owner:org,sub:sub]+genericExcludeParams+ownFilter)
                         pu.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset])
                             result.own.sums = calculateResults(ownCostItems)
                         }
                         break
                     case "cons":
                         pu.setBenchmark("before cons query")
                         List consCostRows = CostItem.executeQuery(
-                                'select ci, ' +
-                                        '(select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname ' +
-                                'from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub where sub.instanceOf = :sub '+
-                                filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter +
-                                ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
-                                [owner:org,sub:sub,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                                'select ci.id from CostItem as ci where ci.owner = :owner and ci.sub in (select sub from Subscription as sub where sub.instanceOf = :sub '+
+                                filterQuery.subFilter + ')' + genericExcludes + filterQuery.ciFilter,
+                                [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
-                            List<CostItem> consCostItems = consCostRows.collect { row -> row[0]}
-                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
+                            Set<Long> consCostItems = consCostRows
+                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max,offset:configMap.offsets.consOffset])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
                     case "consAtSubscr":
                         pu.setBenchmark("before cons at subscr")
-                        List<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci join ci.sub sub where ci.owner = :owner and sub = :sub'+
+                        Set<Long> consCostItems = CostItem.executeQuery('select ci.id from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
                             ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
                             [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
+                            result.cons.costItems = CostItem.findAllByIdInList(consCostItems,[max:configMap.max,offset:configMap.offsets.consOffset])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
                     case "subscr":
                         pu.setBenchmark("before subscr")
                         List<CostItem> subscrCostItems = CostItem.executeQuery(
-                                'select ci from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
+                                'select ci.id from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
                                  genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                                  ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
                                  [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
-                            result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
+                            result.subscr.costItems = CostItem.findAllByIdInList(subscrCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset])
                             result.subscr.sums = calculateResults(subscrCostItems)
                         }
                         break
@@ -433,14 +424,8 @@ class FinanceService {
         pu.setBenchmark("load filter params")
         Map<String,Object> filterQuery = processFilterParams(params)
         pu.setBenchmark("get cache")
-        EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
-        if(params.reset || params.submit)
-            cache.put('cachedFilter',filterQuery)
-        else if(cache && cache.get('cachedFilter'))
-            filterQuery = (Map<String,Object>) cache.get('cachedFilter')
         Map<String,Object> result = [filterPresets:filterQuery.filterData]
-        if(filterQuery.subFilter || filterQuery.ciFilter)
-            result.filterSet = true
+        result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
         Org org = (Org) configMap.institution
         pu.setBenchmark("load cost data for tabs")
         configMap.dataToDisplay.each { String dataToDisplay ->
@@ -473,7 +458,7 @@ class FinanceService {
                 //get consortial costs
                 case "cons":
                     pu.setBenchmark("execute cons query")
-                    List consortialCostRows = CostItem.executeQuery('select ci, orgRoles.org.sortname as sortname from CostItem ci ' +
+                    List consortialCostRows = CostItem.executeQuery('select ci.id from CostItem ci ' +
                         'join ci.owner orgC ' +
                         'join ci.sub sub ' +
                         'join sub.instanceOf subC ' +
@@ -481,27 +466,26 @@ class FinanceService {
                         'join sub.orgRelations roleMC ' +
                         'join sub.orgRelations orgRoles ' +
                         'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType)'+
-                        genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
-                        ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
+                        genericExcludes+filterQuery.subFilter+filterQuery.ciFilter,
                         [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
-                        List<CostItem> consortialCostItems = consortialCostRows.collect { row -> row[0] }
+                        List<Long> consortialCostItems = consortialCostRows
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
-                        if(configMap.sortConfig.consSort == 'sortname') {
+                        /*if(configMap.sortConfig.consSort == 'sortname') {
                             consortialCostItems = consortialCostItems.sort{ ciA, ciB ->
                                 ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname ?:
                                         ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name}
-                        }
+                        }*/
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset])
                         result.cons.sums = calculateResults(consortialCostItems)
                     }
                     break
                 //get membership costs
                 case "subscr":
                     pu.setBenchmark("execute subscr query")
-                    List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
+                    List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci.id from CostItem ci '+
                         'join ci.sub sub ' +
                         'left join ci.subPkg subPkg ' +
                         'join sub.instanceOf subC ' +
@@ -515,7 +499,7 @@ class FinanceService {
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
-                        result.subscr.costItems = consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
+                        result.subscr.costItems = CostItem.findAllByIdInList(consortialMemberSubscriptionCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset])
                     }
                     break
                 default: log.info("display call ${dataToDisplay} not handled here ... skipping ...")
@@ -533,210 +517,217 @@ class FinanceService {
      * @return an array with the filter string on position 0 and the filter parameter map on position 1
      */
     Map<String,Object> processFilterParams(GrailsParameterMap params) {
-        String subFilterQuery = "", costItemFilterQuery = ""
-        LinkedHashMap queryParams = [:]
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
-        //subscription filter settings
-        //subscription members A (from /subFinance)
-        if(params.filterSubMembers) {
-            subFilterQuery += " and sub in (:filterSubMembers) "
-            List<Subscription> filterSubMembers = []
-            String[] subMembers = params.list("filterSubMembers")
-            subMembers.each { String subMember ->
-                filterSubMembers.add(Subscription.get(Long.parseLong(subMember)))
+        EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
+        if(cache && cache.get('cachedFilter'))
+            (Map<String,Object>) cache.get('cachedFilter')
+        else {
+            String subFilterQuery = "", costItemFilterQuery = ""
+            Map<String,Object> queryParams = [:]
+            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            //subscription filter settings
+            //subscription members A (from /subFinance)
+            if(params.filterSubMembers) {
+                subFilterQuery += " and sub in (:filterSubMembers) "
+                List<Subscription> filterSubMembers = []
+                String[] subMembers = params.list("filterSubMembers")
+                subMembers.each { String subMember ->
+                    filterSubMembers.add(Subscription.get(Long.parseLong(subMember)))
+                }
+                queryParams.filterSubMembers = filterSubMembers
+                log.info(queryParams.filterSubMembers)
             }
-            queryParams.filterSubMembers = filterSubMembers
-            log.info(queryParams.filterSubMembers)
-        }
-        //subscription members B (from /finance)
-        if(params.filterConsMembers) {
-            subFilterQuery += " and orgRoles.org in (:filterConsMembers) "
-            List<Org> filterConsMembers = []
-            String[] consMembers = params.list("filterConsMembers")
-            consMembers.each { String consMember ->
-                filterConsMembers.add(Org.get(Long.parseLong(consMember)))
+            //subscription members B (from /finance)
+            if(params.filterConsMembers) {
+                subFilterQuery += " and orgRoles.org in (:filterConsMembers) "
+                List<Org> filterConsMembers = []
+                String[] consMembers = params.list("filterConsMembers")
+                consMembers.each { String consMember ->
+                    filterConsMembers.add(Org.get(Long.parseLong(consMember)))
+                }
+                queryParams.filterConsMembers = filterConsMembers
+                log.info(queryParams.filterConsMembers)
             }
-            queryParams.filterConsMembers = filterConsMembers
-            log.info(queryParams.filterConsMembers)
-        }
-        //providers
-        if(params.filterSubProviders) {
-            subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
-            List<Org> filterSubProviders = []
-            String[] subProviders
-            if(params.filterSubProviders.contains(","))
-                subProviders = params.filterSubProviders.split(',')
-            else subProviders = [params.filterSubProviders]
-            subProviders.each { String subProvider ->
-                filterSubProviders.add(genericOIDService.resolveOID(subProvider))
+            //providers
+            if(params.filterSubProviders) {
+                subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
+                List<Org> filterSubProviders = []
+                String[] subProviders
+                if(params.filterSubProviders.contains(","))
+                    subProviders = params.filterSubProviders.split(',')
+                else subProviders = [params.filterSubProviders]
+                subProviders.each { String subProvider ->
+                    filterSubProviders.add(genericOIDService.resolveOID(subProvider))
+                }
+                queryParams.filterSubProviders = filterSubProviders
+                log.info(queryParams.filterSubProviders)
             }
-            queryParams.filterSubProviders = filterSubProviders
-            log.info(queryParams.filterSubProviders)
-        }
-        //subscription status
-        //we have to distinct between not existent and present but zero length
-        if(params.filterSubStatus) {
-            subFilterQuery += " and sub.status = :filterSubStatus "
-            queryParams.filterSubStatus = RefdataValue.get(Long.parseLong(params.filterSubStatus))
-            log.info(queryParams.filterSubStatus)
-        }
-        //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
-        else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
-            subFilterQuery += " and sub.status = :filterSubStatus "
-            queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
-        }
-        //cost item filter settings
-        //cost item title
-        if(params.filterCITitle) {
-            costItemFilterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
-            queryParams.filterCITitle = "%${params.filterCITitle}%"
-            queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
-            log.info(queryParams.filterCITitle)
-        }
-        //cost item subscription
-        if(params.filterCISub) {
-            costItemFilterQuery += " and sub in (:filterCISub) "
-            List<Subscription> filterSubs = []
-            String[] subscriptions = params.filterCISub.split(',')
-            subscriptions.each { String sub ->
-                filterSubs.add((Subscription) genericOIDService.resolveOID(sub))
+            //subscription status
+            //we have to distinct between not existent and present but zero length
+            if(params.filterSubStatus) {
+                subFilterQuery += " and sub.status = :filterSubStatus "
+                queryParams.filterSubStatus = RefdataValue.get(Long.parseLong(params.filterSubStatus))
+                log.info(queryParams.filterSubStatus)
             }
-            queryParams.filterCISub = filterSubs
-            log.info(queryParams.filterCISub)
-        }
-        //subscription package
-        if(params.filterCISPkg) {
-            costItemFilterQuery += " and ci.subPkg in (:filterCISPkg) "
-            List<SubscriptionPackage> filterSubPackages = []
-            String[] subscriptionPackages = params."filterCISPkg".split(',')
-            subscriptionPackages.each { String subPkg ->
-                filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
+            //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
+            else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
+                subFilterQuery += " and sub.status = :filterSubStatus "
+                queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
             }
-            queryParams.filterCISPkg = filterSubPackages
-            log.info(queryParams.filterCISPkg)
-        }
-        //budget code
-        if(params.filterCIBudgetCode) {
-            costItemFilterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
-            List<BudgetCode> filterBudgetCodes = []
-            String[] budgetCodes = params."filterCIBudgetCode".split(',')
-            budgetCodes.each { String bc ->
-                filterBudgetCodes.add(BudgetCode.get(Long.parseLong(bc)))
+            //cost item filter settings
+            //cost item title
+            if(params.filterCITitle) {
+                costItemFilterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
+                queryParams.filterCITitle = "%${params.filterCITitle}%"
+                queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
+                log.info(queryParams.filterCITitle)
             }
-            queryParams.filterCIBudgetCode = filterBudgetCodes
-            log.info(queryParams.filterCIBudgetCode)
-        }
-        //reference/code
-        if(params.filterCIReference) {
-            costItemFilterQuery += " and ci.reference in (:filterCIReference) "
-            List<String> filterReferences = params."filterCIReference".split(',')
-            queryParams.filterCIReference = filterReferences
-            log.info(queryParams.filterCIReference)
-        }
-        //invoice number
-        if(params.filterCIInvoiceNumber) {
-            costItemFilterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
-            List<String> filterInvoiceNumbers = []
-            String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
-            invoiceNumbers.each { String invNum ->
-                filterInvoiceNumbers.add(invNum)
+            //cost item subscription
+            if(params.filterCISub) {
+                costItemFilterQuery += " and sub in (:filterCISub) "
+                List<Subscription> filterSubs = []
+                String[] subscriptions = params.filterCISub.split(',')
+                subscriptions.each { String sub ->
+                    filterSubs.add((Subscription) genericOIDService.resolveOID(sub))
+                }
+                queryParams.filterCISub = filterSubs
+                log.info(queryParams.filterCISub)
             }
-            queryParams.filterCIInvoiceNumber = filterInvoiceNumbers
-            log.info(queryParams.filterCIInvoiceNumber)
-        }
-        //order number
-        if(params.filterCIOrderNumber) {
-            costItemFilterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
-            List<String> filterOrderNumbers = []
-            String[] orderNumbers = params."filterCIOrderNumber".split(',')
-            orderNumbers.each { String orderNum ->
-                filterOrderNumbers.add(orderNum)
+            //subscription package
+            if(params.filterCISPkg) {
+                costItemFilterQuery += " and ci.subPkg in (:filterCISPkg) "
+                List<SubscriptionPackage> filterSubPackages = []
+                String[] subscriptionPackages = params."filterCISPkg".split(',')
+                subscriptionPackages.each { String subPkg ->
+                    filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
+                }
+                queryParams.filterCISPkg = filterSubPackages
+                log.info(queryParams.filterCISPkg)
             }
-            queryParams.filterCIOrderNumber = filterOrderNumbers
-            log.info(queryParams.filterCIOrderNumber)
-        }
-        //cost item element
-        if(params.filterCIElement) {
-            costItemFilterQuery += " and ci.costItemElement in (:filterCIElement) "
-            List<RefdataValue> filterElements = []
-            String[] costItemElements = params.list('filterCIElement')
-            costItemElements.each { String cie ->
-                filterElements.add(genericOIDService.resolveOID(cie))
+            //budget code
+            if(params.filterCIBudgetCode) {
+                costItemFilterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
+                List<BudgetCode> filterBudgetCodes = []
+                String[] budgetCodes = params."filterCIBudgetCode".split(',')
+                budgetCodes.each { String bc ->
+                    filterBudgetCodes.add(BudgetCode.get(Long.parseLong(bc)))
+                }
+                queryParams.filterCIBudgetCode = filterBudgetCodes
+                log.info(queryParams.filterCIBudgetCode)
             }
-            queryParams.filterCIElement = filterElements
-            log.info(queryParams.filterCIElement)
-        }
-        //cost item status
-        if(params.filterCIStatus) {
-            costItemFilterQuery += " and ci.costItemStatus in (:filterCIStatus) "
-            List<RefdataValue> filterStatus = []
-            String[] costItemStatus = params.list("filterCIStatus")
-            costItemStatus.each { String cis ->
-                filterStatus.add(genericOIDService.resolveOID(cis))
+            //reference/code
+            if(params.filterCIReference) {
+                costItemFilterQuery += " and ci.reference in (:filterCIReference) "
+                List<String> filterReferences = params."filterCIReference".split(',')
+                queryParams.filterCIReference = filterReferences
+                log.info(queryParams.filterCIReference)
             }
-            queryParams.filterCIStatus = filterStatus
-            log.info(queryParams.filterCIStatus)
-        }
-        //tax type
-        if(params.filterCITaxType) {
-            if(params.filterCITaxType == 'null') {
-                costItemFilterQuery += " and ci.taxKey = null"
+            //invoice number
+            if(params.filterCIInvoiceNumber) {
+                costItemFilterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
+                List<String> filterInvoiceNumbers = []
+                String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
+                invoiceNumbers.each { String invNum ->
+                    filterInvoiceNumbers.add(invNum)
+                }
+                queryParams.filterCIInvoiceNumber = filterInvoiceNumbers
+                log.info(queryParams.filterCIInvoiceNumber)
+            }
+            //order number
+            if(params.filterCIOrderNumber) {
+                costItemFilterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
+                List<String> filterOrderNumbers = []
+                String[] orderNumbers = params."filterCIOrderNumber".split(',')
+                orderNumbers.each { String orderNum ->
+                    filterOrderNumbers.add(orderNum)
+                }
+                queryParams.filterCIOrderNumber = filterOrderNumbers
+                log.info(queryParams.filterCIOrderNumber)
+            }
+            //cost item element
+            if(params.filterCIElement) {
+                costItemFilterQuery += " and ci.costItemElement in (:filterCIElement) "
+                List<RefdataValue> filterElements = []
+                String[] costItemElements = params.list('filterCIElement')
+                costItemElements.each { String cie ->
+                    filterElements.add(genericOIDService.resolveOID(cie))
+                }
+                queryParams.filterCIElement = filterElements
+                log.info(queryParams.filterCIElement)
+            }
+            //cost item status
+            if(params.filterCIStatus) {
+                costItemFilterQuery += " and ci.costItemStatus in (:filterCIStatus) "
+                List<RefdataValue> filterStatus = []
+                String[] costItemStatus = params.list("filterCIStatus")
+                costItemStatus.each { String cis ->
+                    filterStatus.add(genericOIDService.resolveOID(cis))
+                }
+                queryParams.filterCIStatus = filterStatus
+                log.info(queryParams.filterCIStatus)
+            }
+            //tax type
+            if(params.filterCITaxType) {
+                if(params.filterCITaxType == 'null') {
+                    costItemFilterQuery += " and ci.taxKey = null"
+                }
+                else {
+                    costItemFilterQuery += " and ci.taxKey = :filterCITaxType "
+                    queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
+                }
+                log.info(params.filterCITaxType)
+            }
+            //financial year
+            if(params.filterCIFinancialYear) {
+                costItemFilterQuery += " and ci.financialYear = :filterCIFinancialYear "
+                Year financialYear = Year.parse(params.filterCIFinancialYear)
+                queryParams.filterCIFinancialYear = financialYear
+                log.info(queryParams.filterCIFinancialYear)
+            }
+            //invoice from
+            if(params.filterCIInvoiceFrom) {
+                costItemFilterQuery += " and (ci.invoiceDate >= :filterCIInvoiceFrom AND ci.invoiceDate is not null) "
+                Date invoiceFrom = sdf.parse(params.filterCIInvoiceFrom)
+                queryParams.filterCIInvoiceFrom = invoiceFrom
+                log.info(queryParams.filterCIInvoiceFrom)
+            }
+            //invoice to
+            if(params.filterCIInvoiceTo) {
+                costItemFilterQuery += " and (ci.invoiceDate <= :filterCIInvoiceTo AND ci.invoiceDate is not null) "
+                Date invoiceTo = sdf.parse(params.filterCIInvoiceTo)
+                queryParams.filterCIInvoiceTo = invoiceTo
+                log.info(queryParams.filterCIInvoiceTo)
+            }
+            //valid on
+            if(params.filterCIValidOn) {
+                costItemFilterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
+                Date validOn = sdf.parse(params.filterCIValidOn)
+                queryParams.filterCIValidOn = validOn
+                log.info(queryParams.filterCIValidOn)
+            }
+            if(params.filterCIUnpaid) {
+                costItemFilterQuery += " and ci.datePaid is null "
             }
             else {
-                costItemFilterQuery += " and ci.taxKey = :filterCITaxType "
-                queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
+                //paid from
+                if(params.filterCIPaidFrom) {
+                    costItemFilterQuery += " and (ci.datePaid >= :filterCIPaidFrom AND ci.datePaid is not null) "
+                    Date invoiceFrom = sdf.parse(params.filterCIPaidFrom)
+                    queryParams.filterCIPaidFrom = invoiceFrom
+                    log.info(queryParams.filterCIPaidFrom)
+                }
+                //paid to
+                if(params.filterCIPaidTo) {
+                    costItemFilterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
+                    Date invoiceTo = sdf.parse(params.filterCIPaidTo)
+                    queryParams.filterCIPaidTo = invoiceTo
+                    log.info(queryParams.filterCIPaidTo)
+                }
             }
-            log.info(params.filterCITaxType)
+            Map<String,Object> result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
+            if(params.reset || params.submit)
+                cache.put('cachedFilter',result)
+            result
         }
-        //financial year
-        if(params.filterCIFinancialYear) {
-            costItemFilterQuery += " and ci.financialYear = :filterCIFinancialYear "
-            Year financialYear = Year.parse(params.filterCIFinancialYear)
-            queryParams.filterCIFinancialYear = financialYear
-            log.info(queryParams.filterCIFinancialYear)
-        }
-        //invoice from
-        if(params.filterCIInvoiceFrom) {
-            costItemFilterQuery += " and (ci.invoiceDate >= :filterCIInvoiceFrom AND ci.invoiceDate is not null) "
-            Date invoiceFrom = sdf.parse(params.filterCIInvoiceFrom)
-            queryParams.filterCIInvoiceFrom = invoiceFrom
-            log.info(queryParams.filterCIInvoiceFrom)
-        }
-        //invoice to
-        if(params.filterCIInvoiceTo) {
-            costItemFilterQuery += " and (ci.invoiceDate <= :filterCIInvoiceTo AND ci.invoiceDate is not null) "
-            Date invoiceTo = sdf.parse(params.filterCIInvoiceTo)
-            queryParams.filterCIInvoiceTo = invoiceTo
-            log.info(queryParams.filterCIInvoiceTo)
-        }
-        //valid on
-        if(params.filterCIValidOn) {
-            costItemFilterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
-            Date validOn = sdf.parse(params.filterCIValidOn)
-            queryParams.filterCIValidOn = validOn
-            log.info(queryParams.filterCIValidOn)
-        }
-        if(params.filterCIUnpaid) {
-            costItemFilterQuery += " and ci.datePaid is null "
-        }
-        else {
-            //paid from
-            if(params.filterCIPaidFrom) {
-                costItemFilterQuery += " and (ci.datePaid >= :filterCIPaidFrom AND ci.datePaid is not null) "
-                Date invoiceFrom = sdf.parse(params.filterCIPaidFrom)
-                queryParams.filterCIPaidFrom = invoiceFrom
-                log.info(queryParams.filterCIPaidFrom)
-            }
-            //paid to
-            if(params.filterCIPaidTo) {
-                costItemFilterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
-                Date invoiceTo = sdf.parse(params.filterCIPaidTo)
-                queryParams.filterCIPaidTo = invoiceTo
-                log.info(queryParams.filterCIPaidTo)
-            }
-        }
-
-        return [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
     }
 
     /**
@@ -757,12 +748,18 @@ class FinanceService {
      * }
      *
      */
-    Map<String,Object> calculateResults(Collection<CostItem> costItems) {
+    Map<String,Object> calculateResults(Collection costItemSet) {
+        Set<Long> costItems
+        if(!costItemSet.empty && costItemSet[0] instanceof CostItem)
+            costItems = costItemSet.collect { CostItem row -> row.id }
+        else if(!costItemSet.empty && costItemSet[0] instanceof Long)
+            costItems = costItemSet
+        else costItems = []
         //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        Map<BigDecimal,BigDecimal> localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
-        Map<BigDecimal,BigDecimal> localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
+        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        Map<BigDecimal,BigDecimal> localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
+        Map<BigDecimal,BigDecimal> localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         List billingSums = []
         Set<String> positiveCurrencies = []
         Map<String,BigDecimal> localSums = [:]

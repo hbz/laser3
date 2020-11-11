@@ -35,15 +35,26 @@ class FinanceControllerService {
 
     Map<String,Object> getResultGenerics(GrailsParameterMap params) throws FinancialDataException {
         Map<String,Object> result = [user: contextService.getUser(),
-                                     offsets:[collOffset:0, consOffset:0, subscrOffset:0, ownOffset:0],
+                                     offsets:[consOffset:0, subscrOffset:0, ownOffset:0],
                                      sortConfig:[
-                                             collSort:'sortname', collOrder:'asc',
-                                             consSort:'sortname', consOrder:'asc',
+                                             consSort:'oo.org.sortname', consOrder:'asc',
                                              subscrSort:'sub.name', subscrOrder:'asc',
                                              ownSort:'ci.costTitle', ownOrder:'asc'
                                      ],
                                      institution:contextService.getOrg(),
                                      editConf:[:]]
+        if(params.ownSort) {
+            result.sortConfig.ownSort = params.sort
+            result.sortConfig.ownOrder = params.order
+        }
+        if(params.consSort) {
+            result.sortConfig.consSort = params.sort
+            result.sortConfig.consOrder = params.order
+        }
+        if(params.subscrSort) {
+            result.sortConfig.subscrSort = params.sort
+            result.sortConfig.subscrOrder = params.order
+        }
         if (params.forExport) {
             result.max = 1000000
         }
@@ -76,7 +87,7 @@ class FinanceControllerService {
             3. consortia: child subscription preview (show consortial tab) (level 2)
             4. single user: own subscription (show own tab) (level 1)
             5. single user: child subscription (show own and subscriber tab) (level 2)
-            6. basic member or department: child subscription (show subscriber tab) (level 2 or 3)
+            6. basic member: child subscription (show subscriber tab) (level 2)
          */
         List<String> dataToDisplay = []
         boolean editable = false

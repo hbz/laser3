@@ -56,15 +56,7 @@ class OrgTypeService {
      * @return List<Subscription> with accessible (my) subscriptions
      */
     List<Subscription> getCurrentSubscriptions(Org context) {
-        String query = "select s from Subscription as s join s.orgRelations as ogr where ( s = ogr.sub and ogr.org = :subOrg ) and ( ogr.roleType in (:roleTypes) )"
-
-        return Subscription.executeQuery( query, [
-                subOrg: context,
-                roleTypes: [
-                    RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE,
-                    RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
-            ]]
-        )
+        return Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :subOrg and oo.roleType in (:roleTypes)", [subOrg: context, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
     }
 
     /**
@@ -131,37 +123,15 @@ class OrgTypeService {
         result.unique()
     }
 
-    List<Org> getCurrentOrgsOfProvidersAndAgencies(Org context) {
-        List<Org> result = []
-        List<Subscription> current = getCurrentSubscriptions(context)
-
-        if (current) {
-            result = OrgRole.findAll(
-                    "from OrgRole where sub in (:subscriptions) and roleType in (:provider, :agency)",
-                    [subscriptions: current,
-                     provider     : RDStore.OR_PROVIDER,
-                     agency       : RDStore.OR_AGENCY]
-            ).collect { it.org }
-        }
-
-        result.unique()
+    Set<Org> getCurrentOrgsOfProvidersAndAgencies(Org context) {
+        Set<Org> result = Org.executeQuery("select oo.org from OrgRole oo where oo.sub in (select sub from OrgRole where org = :context and roleType in (:roleTypes)) and oo.roleType in (:providerTypes) order by oo.org.name asc",
+                    [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],providerTypes: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY]])
+        result
     }
 
-    List<Long> getCurrentOrgIdsOfProvidersAndAgencies(Org context) {
-        List<Long> result = []
-        List<Subscription> current = getCurrentSubscriptions(context)
-
-        if (current) {
-            result = OrgRole.executeQuery(""" 
-                     select distinct(o.id) from OrgRole orgr 
-                     left join orgr.org as o 
-                         where orgr.sub in (:subscriptions) 
-                         and orgr.roleType in (:provider, :agency)""",
-                    [subscriptions: current,
-                     provider     : RDStore.OR_PROVIDER,
-                     agency       : RDStore.OR_AGENCY]
-            )
-        }
+    Set<Long> getCurrentOrgIdsOfProvidersAndAgencies(Org context) {
+        Set<Long> result = OrgRole.executeQuery("select o.id from OrgRole oo join oo.org as o where oo.sub in (select sub from OrgRole where org = :context and roleType in (:roleTypes)) and oo.roleType in (:providerTypes)",
+                    [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],providerTypes: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY]])
         result
     }
 

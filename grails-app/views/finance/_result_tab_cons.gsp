@@ -61,7 +61,7 @@
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
                 <g:if test="${showView == "cons"}">
-                    <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
+                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
                 </g:if>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[consSort: true]"/>
@@ -81,7 +81,7 @@
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
                 <g:if test="${showView == "cons"}">
-                    <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 </g:if>
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>

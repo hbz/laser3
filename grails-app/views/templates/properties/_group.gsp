@@ -1,4 +1,4 @@
-<!-- _groups.gsp -->
+<!-- A: templates/properties/_group -->
 <%@ page import="de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
@@ -308,4 +308,4 @@
 <g:if test="${error}">
     <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
-<!-- _groups.gsp -->
+<!-- O: templates/properties/_group -->
