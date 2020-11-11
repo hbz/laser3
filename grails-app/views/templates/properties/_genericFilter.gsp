@@ -1,6 +1,6 @@
+<!-- A: templates/properties/_genericFilter -->
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
-<!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
     <label for="filterPropDef">${message(code: 'subscription.property.search')}
@@ -206,6 +206,4 @@
     });
 
 </script>
-
-
-<!-- genericFilter.gsp -->
+<!-- O: templates/properties/_genericFilter -->

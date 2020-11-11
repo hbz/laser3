@@ -244,9 +244,7 @@ class BootStrapService {
 
     void setupRolesAndPermissions() {
 
-        // seting perm grants to current state
-
-        PermGrant.findAll().each { it.delete(flush: true) } // TODO: flash as workaround
+        PermGrant.executeUpdate('delete PermGrant pg')
 
         // Permissions
 

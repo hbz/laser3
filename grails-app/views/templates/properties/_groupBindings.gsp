@@ -1,7 +1,7 @@
+<!-- A: templates/properties/_groupBindings -->
 <%@ page import="de.laser.License; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.Subscription" %>
 <laser:serviceInjection />
 
-<!-- _propertyGroupBindings -->
     <div id="propDefGroupBindingConfig">
 
         <table class="ui compact la-table-inCard table">
@@ -123,4 +123,4 @@
         })
     })
 </script>
-<!-- _propertyGroupBindings -->
+<!-- O: templates/properties/_groupBindings -->
