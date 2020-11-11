@@ -1,3 +1,4 @@
+<!-- A: templates/properties/_propertyGroupModal -->
 <%@ page import="de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.FormService"%>
 <laser:serviceInjection />
 
@@ -136,3 +137,4 @@
         prop_descr_selector_controller.init()
         setTimeout( function(){ $(window).trigger('resize')}, 500);
 </script>--%>
+<!-- O: templates/properties/_propertyGroupModal -->

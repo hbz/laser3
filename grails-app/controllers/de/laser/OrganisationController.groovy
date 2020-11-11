@@ -612,8 +612,15 @@ class OrganisationController  {
             return
         }
 
-        //this is a flag to check whether the page has been called directly after creation
-        result.fromCreate = params.fromCreate ? true : false
+        result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
+        result.missing = [:]
+
+        if(result.inContextOrg && result.institution.eInvoice) {
+            if(!institution.eInvoicePortal)
+                result.missing.eInvoicePortal = message(code: 'org.eInvoice.info.missing.eInvoicePortal')
+            if(!institution.getLeitID())
+                result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
+        }
 
         pu.setBenchmark('orgRoles & editable')
 
@@ -652,7 +659,7 @@ class OrganisationController  {
 
         pu.setBenchmark('identifier')
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
+        if(result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 

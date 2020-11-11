@@ -78,9 +78,7 @@
                 </dt>
                 <dd>
                     <%
-                        List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE),
-                                             RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)]
+                        List notAvailable = [RDStore.DOC_TYPE_NOTE,RDStore.DOC_TYPE_ANNOUNCEMENT,RDStore.DOC_TYPE_ONIXPL]
                         List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
                     %>
                     <g:select from="${documentTypes}"
@@ -92,28 +90,13 @@
                 </dd>
             </dl>
 
-            <g:if test="${ownobj instanceof Org}">
+            <g:if test="${controllerName == 'organisation'}"> <%-- orgs and availableConfigs are set in getResultGenerics() in OrganisationControllerService --%>
                 <g:if test="${inContextOrg}">
                     <dl>
                         <dt>
                             <label>${message(code:'template.addDocument.target')}</label>
                         </dt>
                         <dd>
-                            <%
-                                //Germans would say 'Durch das Knie in's Auge und zurück' ...
-                                List<Org> orgs = []
-                                if(institution.hasPerm('ORG_CONSORTIUM'))
-                                    orgs = Org.executeQuery("select distinct o from Combo c join c.fromOrg o where (o.status = null or o.status != :deleted) and (o != :contextOrg and not c.type = :department)",[contextOrg:institution, deleted:RDStore.O_STATUS_DELETED, department:RDStore.COMBO_TYPE_DEPARTMENT])
-                                else if(institution.hasPerm('ORG_INST_COLLECTIVE'))
-                                    orgs = Org.executeQuery("select distinct o from Combo c join c.fromOrg o where (o.status = null or o.status != :deleted) and (o != :contextOrg and (c.toOrg = :contextOrg and c.type = :department))",[contextOrg:institution, deleted:RDStore.O_STATUS_DELETED, department:RDStore.COMBO_TYPE_DEPARTMENT])
-                                //feel free to include this sort clause in the queries above!
-                                orgs.addAll(Org.findAllBySector(RDStore.O_SECTOR_PUBLISHER))
-                                orgs.sort { x,y ->
-                                    if(x.sortname == y.sortname)
-                                        x.name <=> y.name
-                                    else x.sortname <=> y.sortname
-                                }
-                            %>
                             <g:select name="targetOrg" id="targetOrg" from="${orgs}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                         </dd>
                     </dl>
@@ -127,19 +110,13 @@
                     </dt>
                     <dd>
                         <%
-                            String value = "${RefdataValue.class.name}:${RDStore.SHARE_CONF_UPLOADER_ORG.id}"
+                            Long value = RDStore.SHARE_CONF_UPLOADER_ORG.id
                             if(docctx) {
-                                value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
+                                value = docctx.shareConf?.id
                             }
-                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = '" + RDConstants.SHARE_CONFIGURATION + "' and rdv.isHardData = true order by rdv.order asc")
-                            List availableConfigs = []
-                            if(!accessService.checkPerm("ORG_CONSORTIUM")){
-                                availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
-                            }
-                            else availableConfigs = allConfigs
                         %>
                         <laser:select from="${availableConfigs}" class="ui dropdown fluid" name="shareConf"
-                                      optionKey="${{it.class.name+":"+it.id}}" optionValue="value" value="${value}"/>
+                                      optionKey="id" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>
             </g:if>

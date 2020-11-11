@@ -101,7 +101,7 @@ class DocstoreController  {
                                 owner: doc_content,
                                 doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                         )
-                        doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
+                        doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
                         doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
 
                         doc_context.save()

@@ -1123,15 +1123,13 @@ class AjaxController {
         Org contextOrg = contextService.getOrg()
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
-
             AuditConfig.removeAllConfigs(property)
 
             property.getClass().findAllByInstanceOf(property).each{ prop ->
-                prop.delete() //see ERMS-2049. Here, it is unavoidable because it affects the loading of orphaned properties - Hibernate tries to set up a list and encounters implicitely a SessionMismatch
+                prop.delete()
             }
         }
         else {
-
             owner.getClass().findAllByInstanceOf(owner).each { member ->
 
                 def existingProp = property.getClass().findByOwnerAndInstanceOf(member, property)
@@ -1171,7 +1169,7 @@ class AjaxController {
         }
 
         request.setAttribute("editable", params.editable == "true")
-        if(params.propDefGroup) {
+        if (params.propDefGroup) {
           render(template: "/templates/properties/group", model: [
                   ownobj          : owner,
                   newProp         : property,

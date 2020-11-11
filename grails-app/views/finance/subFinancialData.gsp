@@ -71,9 +71,6 @@
                     case 'cons':
                     case 'consAtSubscr': total << "${cons.count} ${message(code:'financials.header.consortialCosts')}"
                         break
-                    case 'coll':
-                    case 'collAtSubscr': total << "${coll.count} ${message(code:'financials.header.collectiveCosts')}"
-                        break
                     case 'subscr': total << "${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"
                         break
                 }

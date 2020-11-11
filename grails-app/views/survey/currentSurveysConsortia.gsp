@@ -107,7 +107,7 @@
                 <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${subscriptions.sort { it }}" var="sub">
+                    <g:each in="${subscriptions}" var="sub">
                         <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
                         value="${sub}" ">
                         ${sub}
@@ -430,6 +430,10 @@
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${surveysCount}"/>
 </g:if>
+
+<semui:debugInfo>
+    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</semui:debugInfo>
 
 </body>
 </html>

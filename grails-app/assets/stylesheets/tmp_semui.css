@@ -255,6 +255,18 @@ h1 .icon.h1-icon-overwrite {
     background-color: #ffdf00  !important;
 }
 
+/* loadingIndicator */
+
+#loadingIndicator {
+    position: fixed;
+    bottom: 25px;
+    left: 3px;
+    padding: 10px 15px;
+    font-weight: 700;
+    color: rgba(0,0,0, 0.6);
+    background-color: #e8e8e8;
+}
+
 /* debug info */
 
 #showSystemInfo {

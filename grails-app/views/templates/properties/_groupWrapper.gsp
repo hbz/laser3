@@ -1,7 +1,6 @@
+<!-- A: templates/properties/_groupWrapper -->
 <%@ page import="de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
-<!-- _groupWrapper -->
-
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
@@ -39,5 +38,4 @@
             c3po.initGroupedProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${custom_props_div}");
         });
 </asset:script>
-
-<!-- _groupWrapper -->
+<!-- O: templates/properties/_groupWrapper -->

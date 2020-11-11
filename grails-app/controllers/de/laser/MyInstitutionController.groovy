@@ -141,47 +141,17 @@ class MyInstitutionController  {
         result.offset = params.offset ?: 0
         result.contextOrg = contextService.org
 
-        EhcacheWrapper cache = contextService.getCache('MyInstitutionController/currentPlatforms', contextService.ORG_SCOPE)
+        pu.setBenchmark("before loading subscription ids")
 
-        List idsCurrentSubscriptions = []
-        List idsCategory1 = []
-        List idsCategory2 = []
-
-        if (cache.get('currentSubInfo')) {
-            def currentSubInfo = cache.get('currentSubInfo')
-
-            idsCurrentSubscriptions = currentSubInfo['idsCurrentSubscriptions']
-            idsCategory1 = currentSubInfo['idsCategory1']
-            idsCategory2 = currentSubInfo['idsCategory2']
-
-            log.debug('currentSubInfo from cache')
-        }
-        else {
-            idsCurrentSubscriptions = orgTypeService.getCurrentSubscriptionIds(contextService.getOrg())
-
-            idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
-                    org: contextService.getOrg(), roleTypes: [
-                        RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE
-                    ]
-            ])
-            idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
-                    org: contextService.getOrg(), roleTypes: [
-                    RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                ]
-            ])
-
-            cache.put('currentSubInfo', [
-                    idsCurrentSubscriptions: idsCurrentSubscriptions,
-                    idsCategory1: idsCategory1,
-                    idsCategory2: idsCategory2
-            ])
-        }
+        String instanceFilter = ""
+        if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
+            instanceFilter += " and s.instanceOf = null "
+        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes)'+instanceFilter,[contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
         if (idsCurrentSubscriptions) {
-
             String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                     "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
                     "where tipp.pkg = pkg and s.id in (:subIds) "
@@ -213,30 +183,25 @@ class MyInstitutionController  {
                 qry3 += " order by p.normname asc"
             }
 
+            pu.setBenchmark("before loading platforms")
             List platformSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
 
             log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
-
+            pu.setBenchmark("before platform subscription list loop")
             platformSubscriptionList.each { entry ->
-                // entry[0] = Platform
-                // entry[0] = Subscription
+                Platform pl = (Platform) entry[0]
+                Subscription s = (Subscription) entry[1]
 
-                String key = 'platform_' + entry[0].id
+                String key = 'platform_' + pl.id
 
                 if (! result.subscriptionMap.containsKey(key)) {
                     result.subscriptionMap.put(key, [])
-                    result.platformInstanceList.add(entry[0])
+                    result.platformInstanceList.add(pl)
                 }
 
-                if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
-
-                    if (idsCategory1.contains(entry[1].id)) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
-                    else if (idsCategory2.contains(entry[1].id) && entry[1].instanceOf == null) {
-                        result.subscriptionMap.get(key).add(entry[1])
-                    }
+                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+                    result.subscriptionMap.get(key).add(s)
                 }
             }
         }
@@ -617,20 +582,20 @@ join sub.orgRelations or_sub where
     ( or_sub.roleType in (:subRoleTypes) ) and
         ( or_pa.roleType in (:paRoleTypes) )
 """, [
-        subOrg:       contextService.getOrg(),
+        subOrg:       result.institution,
         subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
         paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
     ])
             orgIds = matches.collect{ it.id }
 
             // TODO: merge master into dev
-            // TODO: orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+            // TODO: orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )
 
             cache.put('orgIds', orgIds)
         }
 
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
 
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
@@ -1614,7 +1579,7 @@ join sub.orgRelations or_sub where
                         group by o order by lower(o.name) """
         )
 
-        List orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 

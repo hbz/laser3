@@ -9,8 +9,10 @@ import de.laser.FormService
 import de.laser.License
 import de.laser.Org
 import de.laser.OrganisationController
+import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.auth.User
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -128,10 +130,30 @@ class OrganisationControllerService {
 
         User user = contextService.getUser()
         Org org = contextService.org
-        Map<String, Object> result = [user:user, institution:org, inContextOrg:true, institutionalView:false]
+        Map<String, Object> result = [user:user,
+                                      institution:org,
+                                      inContextOrg:true,
+                                      institutionalView:false,
+                                      isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+                                      isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
+                                      contextCustomerType:org.getCustomerType()]
+
+        //if(result.contextCustomerType == 'ORG_CONSORTIUM')
+        //to translate in hql: select org_name from org left join combo on org_id = combo_from_org_fk where combo_to_org_fk = 1 or org_sector_rv_fk = 82 order by org_sortname asc, org_name asc;
+        Set<Org> orgs = Org.executeQuery("select o from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg or o.sector = :publisher) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED, publisher: RDStore.O_SECTOR_PUBLISHER])
+        orgs-org
+        result.orgs = orgs
+
+        result.availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
+        if(result.contextCustomerType == "ORG_CONSORTIUM"){
+            result.availableConfigs-RDStore.SHARE_CONF_CONSORTIUM
+        }
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
+            result.targetCustomerType = result.orgInstance.getCustomerType()
+            result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
+            result.isProviderOrAgency = RDStore.OT_PROVIDER.id in result.allOrgTypeIds || RDStore.OT_AGENCY.id in result.allOrgTypeIds
             result.editable = controller.checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance?.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member

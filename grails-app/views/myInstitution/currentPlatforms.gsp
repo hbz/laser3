@@ -1,4 +1,5 @@
 <%@ page import="de.laser.Platform" %>
+
 <!doctype html>
 <html>
 <head>

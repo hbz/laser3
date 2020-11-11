@@ -524,7 +524,7 @@
                                     <div class="header">Version: ${grailsApplication.metadata['info.app.version']} – ${grailsApplication.metadata['info.app.build.date']}</div>
                                 </g:if>
                                 <div class="header">
-                                    ${yodaService.getNumberOfActiveUsers()} Benutzer online
+                                    ${systemService.getNumberOfActiveUsers()} Benutzer online
                                 </div>
                             </div>
                         </div>
@@ -696,7 +696,7 @@
 
         <%-- global loading indicator --%>
         <div id="loadingIndicator" style="display: none">
-            <div class="ui text loader active">Loading</div>
+            <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
         </div>
 
         <%-- global confirmation modal --%>

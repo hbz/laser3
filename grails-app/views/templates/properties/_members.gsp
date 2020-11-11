@@ -1,3 +1,4 @@
+<!-- A: templates/properties/_members -->
 %{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
@@ -110,3 +111,4 @@
         </tfoot>
     </g:if>--%>
 </table>
+<!-- O: templates/properties/_members -->
