@@ -223,7 +223,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                <td class="la-main-object">
+                <th scope="row" class="la-th-column la-main-object">
                     <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                         ${fieldValue(bean: org, field: "name")} <br />
                         <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
@@ -245,7 +245,7 @@
                             <i class="chess rook grey icon"></i>
                         </span>
                     </g:if>
-                </td>
+                </th>
             </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">

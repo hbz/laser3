@@ -71,9 +71,9 @@
 
             <g:each in="${pendingRequests}" var="uo">
                 <tr>
-                    <td class="la-main-object">
+                    <th scope="row" class="la-th-column la-main-object">
                         ${uo.user.username}
-                    </td>
+                    </th>
                     <td>
                         ${uo.user.displayName}
                     </td>
@@ -124,7 +124,7 @@
 
         <g:each in="${users}" var="uo">
             <tr>
-                <td class="la-main-object">
+                <th scope="row" class="la-th-column la-main-object">
                     ${uo.user.username}
 
                     <g:if test="${! uo.user.enabled}">
@@ -132,7 +132,7 @@
                             <i class="icon minus circle red"></i>
                         </span>
                     </g:if>
-                </td>
+                </th>
                 <td>
                     ${uo.user.displayName}
                 </td>

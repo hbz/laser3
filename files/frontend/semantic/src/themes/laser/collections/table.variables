@@ -42,12 +42,12 @@
 @headerBackground: transparent;
 @headerAlign: inherit;
 @headerVerticalAlign: inherit;
-@headerColor: @textColor;
+@headerColor: #515151;
 @headerVerticalPadding: @relativeSmall;
 @headerHorizontalPadding: @cellHorizontalPadding;
 @headerFontStyle: none;
 @headerFontWeight: bold;
-@headerTextTransform: none;
+@headerTextTransform: uppercase;
 @headerBoxShadow: none;
 
 /* Table Footer */
