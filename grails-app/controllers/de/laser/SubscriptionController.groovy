@@ -167,7 +167,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.notes(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.notes(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -179,7 +179,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.documents(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.documents(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -524,7 +524,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
     })
     def surveysConsortia() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -1356,7 +1356,7 @@ class SubscriptionController {
     @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_ADMIN'])
     def pendingChanges() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result)
                 response.sendError(401)
