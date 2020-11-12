@@ -245,7 +245,7 @@ class SemanticUiTagLib {
                     }
                     // inherit (from)
                     else if (obj?.showUIShareButton()) {
-                        String oid = "${obj.getClass().getName()}:${obj.getId()}"
+                        String oid = genericOIDService.getOID(obj)
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
                             out << '<div class="ui simple dropdown icon mini green button la-audit-button" data-content="Wert wird vererbt">'

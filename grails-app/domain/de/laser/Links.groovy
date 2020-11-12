@@ -27,6 +27,10 @@ class Links {
     Date    dateCreated
     Date    lastUpdated
 
+    static hasOne = [
+        document: DocContext
+    ]
+
     static mapping = {
         id                      column: 'l_id'
         sourceSubscription      column: 'l_source_sub_fk', index: 'l_source_sub_idx'
@@ -44,9 +48,9 @@ class Links {
         destinationSubscription (nullable: true)
         sourceLicense           (nullable: true)
         destinationLicense      (nullable: true)
+        document                (nullable: true)
         // Nullable is true, because values are already in the database
         dateCreated             (nullable: true)
-
     }
 
     /**
@@ -90,10 +94,10 @@ class Links {
         }
 
         if(context) {
-            if(genericOIDService.getOID(context) == genericOIDService.getOID(sourceSubscription) || genericOIDService.getOID(context) == genericOIDService.getOID(sourceLicense)) {
+            if(context in [sourceSubscription,sourceLicense]) {
                 determineDestination()
             }
-            else if(genericOIDService.getOID(context) == genericOIDService.getOID(destinationSubscription) || genericOIDService.getOID(context) == genericOIDService.getOID(destinationLicense)) {
+            else if(context in [destinationSubscription,destinationLicense]) {
                 determineSource()
             }
         }
