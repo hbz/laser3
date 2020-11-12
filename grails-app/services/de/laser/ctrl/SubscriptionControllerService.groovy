@@ -495,14 +495,14 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- document section ----------------------------------------------
 
-    Map<String,Object> notes(SubscriptionController controller) {
+    Map<String,Object> notes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
     }
 
-    Map<String,Object> documents(SubscriptionController controller) {
+    Map<String,Object> documents(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
@@ -1176,7 +1176,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------- survey section -------------------------------------------
 
-    Map<String,Object> surveys(SubscriptionController controller) {
+    Map<String,Object> surveys(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -1190,7 +1190,7 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> surveysConsortia(SubscriptionController controller) {
+    Map<String,Object> surveysConsortia(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -2306,7 +2306,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- admin section -------------------------------------------------
 
-    Map<String,Object> pendingChanges(SubscriptionController controller) {
+    Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]

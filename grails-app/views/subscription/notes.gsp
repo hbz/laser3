@@ -18,7 +18,7 @@
 
         <g:render template="nav" />
 
-        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id)}">
+        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
             <g:render template="message" />
         </g:if>
 

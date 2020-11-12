@@ -65,7 +65,7 @@ class OrganisationControllerService {
 
     Map<String, Object> toggleCombo(OrganisationController controller, GrailsParameterMap params) {
         Locale locale = LocaleContextHolder.getLocale()
-        Map<String, Object> result = getResultGenericsAndCheckAccess(this, params)
+        Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }

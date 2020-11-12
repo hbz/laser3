@@ -209,12 +209,12 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def appConfig() {
         Map result = [:]
-        //SystemAdmin should only be created once in BootStrap
-        //result.adminObj = SystemAdmin.list().first()
+
+        result.blacklist = [
+                'jira', 'dataSource', 'dataSource.password'
+        ]
         result.editable = true
-        //if (request.method == "POST") {
-        //    result.adminObj.refresh()
-        //}
+
         result.currentconf = grails.util.Holders.config
 
         result
