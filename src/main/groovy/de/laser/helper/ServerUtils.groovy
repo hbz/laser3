@@ -12,9 +12,11 @@ class ServerUtils {
 
         switch (ConfigUtils.getLaserSystemId()) {
             case 'LAS:eR-Dev':
+            case 'LAS:eR-Dev @ Grails3':
                 return SERVER_DEV
                 break
             case 'LAS:eR-QA/Stage':
+            case 'LAS:eR-QA/Stage @ Grails3':
                 return SERVER_QA
                 break
             case 'LAS:eR-Productive':
