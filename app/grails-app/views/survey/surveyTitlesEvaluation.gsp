@@ -44,7 +44,7 @@
     <div class="sixteen wide stretched column">
         <div class="ui top attached tabular menu">
 
-            <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
+            <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? 'active' : ''}" data-tab="participantsViewAllFinish">
                 ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
                 <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
             </a>
@@ -61,7 +61,7 @@
 
         </div>
 
-        <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? '' : 'active'}" data-tab="participantsViewAllFinish">
+        <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? 'active' : ''}" data-tab="participantsViewAllFinish">
 
                 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish.size()}"/></h2>

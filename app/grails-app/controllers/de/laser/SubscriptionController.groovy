@@ -1321,7 +1321,7 @@ class SubscriptionController
     Map renewEntitlements() {
         params.id = params.targetObjectId
         params.sourceObjectId = genericOIDService.resolveOID(params.targetObjectId)?.instanceOf?.id
-        def result = loadDataFor_PackagesEntitlements()
+        //def result = loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
     }
@@ -1340,7 +1340,7 @@ class SubscriptionController
         params.max = 5000
         params.tab = params.tab ?: 'allIEs'
 
-        Subscription newSub = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : Subscription.get(params.id)
+        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
         Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
         params.id = newSub.id
         params.sourceObjectId = baseSub.id
