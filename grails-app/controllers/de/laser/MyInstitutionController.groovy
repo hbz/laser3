@@ -146,7 +146,7 @@ class MyInstitutionController  {
         String instanceFilter = ""
         if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
             instanceFilter += " and s.instanceOf = null "
-        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes)'+instanceFilter,[contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.hasPerpetualAccess = true'+instanceFilter,[contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []

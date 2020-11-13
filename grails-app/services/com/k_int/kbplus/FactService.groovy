@@ -264,10 +264,8 @@ class FactService {
 
   def generateUsageDataForSubscriptionPeriod(org_id, supplier_id, subscription, title_id=null) {
     Map<String, Object> result = [:]
-
     if (org_id != null &&
         supplier_id != null) {
-
       def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
       if (factList.size == 0){
         return result
@@ -284,7 +282,6 @@ class FactService {
         def firstFactYear = factList.reportingYear.unique(false).sort()*.intValue().first()
         (firstSubscriptionMonth, firstSubscriptionYear) = [1, firstFactYear]
       }
-
       if (subscription.endDate) {
         cal.setTimeInMillis(subscription.endDate.getTime())
         (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
@@ -298,11 +295,8 @@ class FactService {
       y_axis_labels = y_axis_labels.unique().sort()
 
       def x_axis_labels = (firstSubscriptionYear..lastSubscriptionYear).toList()
-
       addFactsForSubscriptionPeriodWithoutUsage(x_axis_labels,factList)
-
       result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
-
       if (firstSubscriptionMonth > 1) {
         def firstYearIndex = x_axis_labels.indexOf(x_axis_labels.first())
         x_axis_labels[firstYearIndex] = "${firstSubscriptionMonth}-12/${firstSubscriptionYear}"

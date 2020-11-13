@@ -24,7 +24,6 @@ class SubscriptionController {
     def accessService
     def docstoreService
     SubscriptionControllerService subscriptionControllerService
-    def linksGenerationService
     def subscriptionService
     def escapeService
     def deletionService
@@ -37,7 +36,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.show(this,params)
+        Map<String,Object> ctrlResult = subscriptionControllerService.show(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)

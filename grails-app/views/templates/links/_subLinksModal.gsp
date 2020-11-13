@@ -27,13 +27,13 @@
                 header = message(code:"subscription.linking.header")
                 thisString = message(code:"subscription.linking.this")
                 lookupName = "lookupSubscriptions"
-                instanceType = controllerName
+                instanceType = message(code:"subscription")
             }
             break
         case License.class.name: header = message(code:"license.linking.header")
             thisString = message(code:"license.linking.this")
             lookupName = "lookupLicenses"
-            instanceType = controllerName
+            instanceType = message(code:"license")
             break
     }
 %>
@@ -141,10 +141,9 @@
     </g:form>
 </semui:modal>
 <g:if test="${!link}">
-<%-- for that one day, we may move away from that ... --%>
-    <asset:script type="text/javascript">
+    <%-- for that one day, we may move away from that ... --%>
+    <script type="text/javascript">
     $(document).ready(function(){
-       //console.log("${lookupName}");
         $("#${selectPair}").dropdown({
             apiSettings: {
                 url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
@@ -154,5 +153,5 @@
             minCharacters: 1
         });
     });
-    </asset:script>
+    </script>
 </g:if>

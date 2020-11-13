@@ -4,13 +4,13 @@
 
     if(ownobj instanceof Subscription) {
         //array is created and should be extended to collective view; not yet done because collective view is not merged yet
-        if(contextService.org.id == ownobj.getConsortia()?.id && ownobj.instanceOf) {
+        if(contextOrg.id == ownobj.getConsortia()?.id && ownobj.instanceOf) {
             if(ownobj._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }
     else if(ownobj instanceof License) {
-        if(contextService.org.id == ownobj.getLicensingConsortium()?.id && ownobj.instanceOf) {
+        if(institution.id == ownobj.getLicensingConsortium()?.id && ownobj.instanceOf) {
             parentAtChild = true
         }
     }
