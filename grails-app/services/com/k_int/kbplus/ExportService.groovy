@@ -19,7 +19,7 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
@@ -59,7 +59,7 @@ import java.util.List
 @Transactional
 class ExportService {
 
-	SimpleDateFormat formatter = DateUtil.getSDF_ymd()
+	SimpleDateFormat formatter = DateUtils.getSDF_ymd()
 	def messageSource
 	def escapeService
 	def contextService
@@ -481,7 +481,7 @@ class ExportService {
 	 */
 	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target, Map childObjects, Map objectNames) {
 		List cells = []
-		SimpleDateFormat sdf = DateUtil.getSimpleDateFormatByToken('default.date.format.notime')
+		SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notime')
 		propertyDefinitions.each { PropertyDefinition pd ->
 			Set<String> value = []
 			target.propertySet.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
@@ -527,7 +527,7 @@ class ExportService {
 	 */
 	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
 		Locale locale = LocaleContextHolder.getLocale()
-		SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
+		SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()

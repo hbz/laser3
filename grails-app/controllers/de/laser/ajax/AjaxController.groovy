@@ -467,7 +467,7 @@ class AjaxController {
               else
                   ieCoverage = ieCandidate.coverages[covStmtKey]
               if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                  SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                   ieCoverage[prop] = sdf.parse(params.propValue)
               }
               else {
@@ -492,11 +492,11 @@ class AjaxController {
     @Transactional
     def addOrgRole() {
         def owner  = genericOIDService.resolveOID(params.parent)
-        def rel    = RefdataValue.get(params.orm_orgRole)
+        RefdataValue rel = RefdataValue.get(params.orm_orgRole)
 
         def orgIds = params.list('orm_orgOid')
         orgIds.each{ oid ->
-            def org_to_link = genericOIDService.resolveOID(oid)
+            Org org_to_link = (Org) genericOIDService.resolveOID(oid)
             boolean duplicateOrgRole = false
 
             if(params.recip_prop == 'sub') {
@@ -1587,7 +1587,7 @@ class AjaxController {
         try {
             if (target_object) {
                 if (params.type == 'date') {
-                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                     def backup = target_object."${params.name}"
 
                     try {

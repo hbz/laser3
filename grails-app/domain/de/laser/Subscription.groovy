@@ -8,7 +8,7 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
@@ -770,7 +770,7 @@ select distinct oap from OrgAccessPoint oap
 
   String dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-       SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+       SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
 
        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
@@ -809,7 +809,7 @@ select distinct oap from OrgAccessPoint oap
     }
 
     String dropdownNamingConventionWithoutOrg(Org contextOrg){
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
         period = endDate ? period + ' - ' + sdf.format(endDate)  : ''

@@ -1,14 +1,11 @@
 package de.laser.base
 
-import de.laser.Org
+
 import de.laser.RefdataValue
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.interfaces.CalculatedLastUpdated
-import de.laser.properties.PropertyDefinition
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-
-import javax.persistence.Transient
 
 abstract class AbstractPropertyWithCalculatedLastUpdated
         implements CalculatedLastUpdated, Serializable {
@@ -146,7 +143,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
                 break
             case Date.toString():
             case Date.class.name:
-                result = DateUtil.toDate_NoTime(value)
+                result = DateUtils.toDate_NoTime(value)
                 break
             case URL.toString():
             case URL.class.name:

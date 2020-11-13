@@ -63,7 +63,7 @@
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <table class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
-                                <g:set var="clt" value="${de.laser.helper.SortUtil.getCollator()}" />
+                                <g:set var="clt" value="${de.laser.helper.SortUtils.getCollator()}" />
                                 <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> clt.compare(a?.getI10n('name'), b?.getI10n('name'))}}" var="pd">
                                     <tr>
                                         <td>

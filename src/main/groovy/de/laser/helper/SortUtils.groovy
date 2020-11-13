@@ -4,7 +4,7 @@ package de.laser.helper
 import java.text.Collator
 import java.text.RuleBasedCollator;
 
-class SortUtil {
+class SortUtils {
 
     static RuleBasedCollator getCollator() {
 
@@ -25,7 +25,7 @@ class SortUtil {
 
     static List<Object> sortList(List<Object> list) {
 
-        RuleBasedCollator germanCollator = SortUtil.getCollator()
+        RuleBasedCollator germanCollator = SortUtils.getCollator()
         Collections.sort(list, germanCollator)
         list
     }
@@ -36,7 +36,7 @@ class SortUtil {
                 "Äbc", "v", "äbc", "V", "Àbc", "ü", "U", "B", "àbc", "Abc", "abc", "ABC", "b", "Ü"
         )
 
-        words = SortUtil.sortList(words)
+        words = SortUtils.sortList(words)
 
         println words
     }

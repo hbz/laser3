@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.titles.TitleInstance
@@ -13,7 +13,6 @@ import groovy.json.JsonOutput
 import groovyx.gpars.GParsPool
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
-import org.grails.plugins.domain.DomainClassGrailsPlugin
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -314,7 +313,7 @@ class StatsSyncService {
                     List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, csr.availFrom.format('yyyy-MM'))
                     followingRanges.each {
                         if (it == followingRanges.first()){
-                            csr.availTo = DateUtil.SDF_ymd.parse(getDateForLastDayOfMonth(it['end']))
+                            csr.availTo = DateUtils.SDF_ymd.parse(getDateForLastDayOfMonth(it['end']))
                             csr.save()
                         } else {
                             writeNewCsr(0, it['begin'],it['end'],options)
@@ -373,7 +372,7 @@ class StatsSyncService {
                         csr = writeNewCsr(factCount, it['begin'], it['end'], options)
                     } else {
                         // There is no gap, just update csr with new availTo value
-                        csr.availTo = DateUtil.SDF_ymd.parse(getDateForLastDayOfMonth(it.end))
+                        csr.availTo = DateUtils.SDF_ymd.parse(getDateForLastDayOfMonth(it.end))
                         csr.numFacts = csr.numFacts + factCount
                         csr.save()
                     }

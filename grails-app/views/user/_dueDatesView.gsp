@@ -1,4 +1,4 @@
-<%@ page import="java.text.SimpleDateFormat; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.DateUtils; java.text.SimpleDateFormat; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
     <g:if test="${ ! dueDates}">
         <semui:msg class="info" header="" message="profile.noDashboardReminderDates" />
@@ -7,7 +7,7 @@
     <g:if test="${dashboard_last_update != null}" >
         <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
         <%
-            def sdf = de.laser.helper.DateUtil.getSDF_NoTime()
+            def sdf = DateUtils.getSDF_NoTime()
             def dateString = sdf.format(dashboard_last_update)
         %>
 

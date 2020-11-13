@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.helper.AppUtils
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
@@ -68,8 +68,8 @@ class DataConsistencyService {
     List<Object> ajaxQuery(String key1, String key2, String value) {
 
         List<Object> result = []
-        SimpleDateFormat sdfA = DateUtil.getSDF_NoTime()
-        SimpleDateFormat sdfB = DateUtil.getSDF_NoZ()
+        SimpleDateFormat sdfA = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdfB = DateUtils.getSDF_NoZ()
 
         if (key1 == 'Org') {
             result = Org.findAllWhere( "${key2}": value ).collect{ it ->

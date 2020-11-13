@@ -216,7 +216,7 @@ class SubscriptionController {
             response.sendError(401)
         }
         else {
-            SimpleDateFormat sdf = DateUtil.SDF_ymd
+            SimpleDateFormat sdf = DateUtils.SDF_ymd
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
             if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs) {
@@ -599,7 +599,7 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
@@ -654,7 +654,7 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
             if(params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
@@ -1118,7 +1118,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
         result.subscription = subscription
-        SimpleDateFormat sdf = DateUtil.SDF_dmy
+        SimpleDateFormat sdf = DateUtils.SDF_dmy
         Date newStartDate
         Date newEndDate
         use(TimeCategory) {

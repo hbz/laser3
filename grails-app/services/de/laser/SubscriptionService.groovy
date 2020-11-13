@@ -8,7 +8,7 @@ import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
@@ -21,7 +21,6 @@ import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.SessionFactory
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -82,7 +81,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         def date_restriction = null
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -251,7 +250,7 @@ class SubscriptionService {
                 query += ") "
             }
 
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
         }
 
@@ -569,7 +568,7 @@ class SubscriptionService {
             String base_qry = null
             Map<String,Object> qry_params = [subscription: subscription]
 
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
                 date_filter = sdf.parse(params.asAt)
@@ -870,8 +869,8 @@ class SubscriptionService {
 					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
-                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? DateUtil.parseDateGeneric(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
-                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? DateUtil.parseDateGeneric(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
+                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
+                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
             if (new_ie.save()) {
@@ -919,7 +918,7 @@ class SubscriptionService {
                     }
                     else {
 
-                        PriceItem pi = new PriceItem(priceDate: DateUtil.parseDateGeneric(issueEntitlementOverwrite.priceDate),
+                        PriceItem pi = new PriceItem(priceDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.priceDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
                                 listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
                                 localPrice: issueEntitlementOverwrite.localPrice,
@@ -1287,7 +1286,7 @@ class SubscriptionService {
             */
             Date startDate
             if(colMap.startDate != null) {
-                startDate = DateUtil.parseDateGeneric(cols[colMap.startDate].trim())
+                startDate = DateUtils.parseDateGeneric(cols[colMap.startDate].trim())
             }
             /*
             endDate(nullable:true, blank:false, validator: { val, obj ->
@@ -1298,7 +1297,7 @@ class SubscriptionService {
             */
             Date endDate
             if(colMap.endDate != null) {
-                endDate = DateUtil.parseDateGeneric(cols[colMap.endDate].trim())
+                endDate = DateUtils.parseDateGeneric(cols[colMap.endDate].trim())
             }
             if(startDate && endDate) {
                 if(startDate <= endDate) {
@@ -1315,7 +1314,7 @@ class SubscriptionService {
                 candidate.endDate = endDate
             //manualCancellationDate(nullable:true, blank:false)
             if(colMap.manualCancellationDate != null) {
-                Date manualCancellationDate = DateUtil.parseDateGeneric(cols[colMap.manualCancellationDate])
+                Date manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
                 if(manualCancellationDate)
                     candidate.manualCancellationDate = manualCancellationDate
             }
@@ -1394,7 +1393,7 @@ class SubscriptionService {
         List errors = []
         Org contextOrg = contextService.org
         SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         candidates.eachWithIndex{ entry, int s ->
             if(params["take${s}"]) {
                 //create object itself
@@ -1596,21 +1595,21 @@ class SubscriptionService {
                                 String cellEntry = cols[colNo].trim()
                                 if (uploadCoverageDates) {
                                     switch (colName) {
-                                        case "startDateCol": ieCoverage.startDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : null
+                                        case "startDateCol": ieCoverage.startDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
                                             break
                                         case "startVolumeCol": ieCoverage.startVolume = cellEntry ?: null
                                             break
                                         case "startIssueCol": ieCoverage.startIssue = cellEntry ?: null
                                             break
-                                        case "endDateCol": ieCoverage.endDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : null
+                                        case "endDateCol": ieCoverage.endDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
                                             break
                                         case "endVolumeCol": ieCoverage.endVolume = cellEntry ?: null
                                             break
                                         case "endIssueCol": ieCoverage.endIssue = cellEntry ?: null
                                             break
-                                        case "accessStartDateCol": issueEntitlement.accessStartDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : issueEntitlement.accessStartDate
+                                        case "accessStartDateCol": issueEntitlement.accessStartDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : issueEntitlement.accessStartDate
                                             break
-                                        case "accessEndDateCol": issueEntitlement.accessEndDate = cellEntry ? DateUtil.parseDateGeneric(cellEntry) : issueEntitlement.accessEndDate
+                                        case "accessEndDateCol": issueEntitlement.accessEndDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : issueEntitlement.accessEndDate
                                             break
                                         case "embargoCol": ieCoverage.embargo = cellEntry ?: null
                                             break
@@ -1641,7 +1640,7 @@ class SubscriptionService {
                                                 break
                                             case "localCurrencyCol": priceItem.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)
                                                 break
-                                            case "priceDateCol": priceItem.priceDate = cellEntry  ? DateUtil.parseDateGeneric(cellEntry) : null
+                                            case "priceDateCol": priceItem.priceDate = cellEntry  ? DateUtils.parseDateGeneric(cellEntry) : null
                                                 break
                                         }
                                     }
@@ -1775,7 +1774,7 @@ class SubscriptionService {
                 prop.setRefValue(rdv)
         }
         else if (propDef.isDateType()) {
-            Date date = DateUtil.parseDateGeneric(value)
+            Date date = DateUtils.parseDateGeneric(value)
             if(date)
                 prop.setDateValue(date)
         }
@@ -1824,7 +1823,7 @@ class SubscriptionService {
                         println(prop.error)
                     }
                 } else if(field == "dateValue") {
-                    SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
                     def backup = prop."${field}"
                     try {

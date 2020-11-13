@@ -15,7 +15,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
 import de.laser.helper.AppUtils
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -103,7 +103,7 @@ class PendingChangeService extends AbstractLockableService {
                         }
                         break
                     case EVENT_TIPP_ADD :
-                        TitleInstancePackagePlatform underlyingTIPP = genericOIDService.resolveOID(payload.changeDoc.OID)
+                        TitleInstancePackagePlatform underlyingTIPP = (TitleInstancePackagePlatform) genericOIDService.resolveOID(payload.changeDoc.OID)
                         Subscription subConcerned = pendingChange.subscription
                         subscriptionService.addEntitlement(subConcerned,underlyingTIPP.gokbId,null,false,RDStore.IE_ACCEPT_STATUS_FIXED)
                         saveWithoutError = true
@@ -127,8 +127,8 @@ class PendingChangeService extends AbstractLockableService {
                                     processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
                                 }
                                 else if ( prop_info.name == 'status' ) {
-                                    RefdataValue oldStatus = genericOIDService.resolveOID(payload.changeDoc.old)
-                                    RefdataValue newStatus = genericOIDService.resolveOID(payload.changeDoc.new)
+                                    RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
+                                    RefdataValue newStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.new)
                                     log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
                                     target_object.status = newStatus
                                 }
@@ -238,7 +238,7 @@ class PendingChangeService extends AbstractLockableService {
                     case EVENT_COVERAGE_ADD:
                         // TODO [ticket=1894]
                         //IssueEntitlement target = genericOIDService.resolveOID(payload.changeTarget)
-                        IssueEntitlement target = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+                        IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(target) {
                             Map newCovData = payload.changeDoc
                             IssueEntitlementCoverage cov = new IssueEntitlementCoverage(newCovData)
@@ -259,7 +259,7 @@ class PendingChangeService extends AbstractLockableService {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
                         // TODO [ticket=1894]
                         //IssueEntitlementCoverage target = genericOIDService.resolveOID(payload.changeTarget)
-                        IssueEntitlementCoverage target = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+                        IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         Map changeAttrs = payload.changeDoc
                         if(target) {
                             if(changeAttrs.prop in ['startDate','endDate']) {
@@ -281,7 +281,7 @@ class PendingChangeService extends AbstractLockableService {
                     case EVENT_COVERAGE_DELETE:
                         // TODO [ticket=1894]
                         //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
-                        IssueEntitlementCoverage cov = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
+                        IssueEntitlementCoverage cov = (IssueEntitlementCoverage) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
                             if(cov.delete()) {
                                 saveWithoutError = true
@@ -545,7 +545,7 @@ class PendingChangeService extends AbstractLockableService {
         Locale locale = LocaleContextHolder.getLocale()
         String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
         List<Object> eventData
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
             eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
@@ -704,7 +704,7 @@ class PendingChangeService extends AbstractLockableService {
         Locale locale = LocaleContextHolder.getLocale()
         def ret
         if(change.targetProperty in PendingChange.DATE_FIELDS) {
-            Date date = DateUtil.parseDateGeneric(change[key])
+            Date date = DateUtils.parseDateGeneric(change[key])
             if(date)
                 ret = date.format(messageSource.getMessage('default.date.format.notime',null,locale))
             else ret = null

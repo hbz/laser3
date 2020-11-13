@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.LicenseProperty
@@ -37,7 +37,7 @@ class PropertyService {
         (base_qry, order_by) = splitQueryFromOrderBy(base_qry)
 
         if (params.filterPropDef) {
-            PropertyDefinition pd = genericOIDService.resolveOID(params.filterPropDef)
+            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
             base_qry += ' and ( exists ( select gProp from '+hqlVar+'.propertySet as gProp where gProp.type = :propDef and (gProp.tenant = :tenant or (gProp.tenant != :tenant and gProp.isPublic = true) or gProp.tenant is null) '
             base_qry_params.put('propDef', pd)
             base_qry_params.put('tenant', contextService.org)
@@ -130,7 +130,7 @@ class PropertyService {
             prop.decValue = new BigDecimal(filterPropValue)
         }
         else if (prop.type.isDateType()) {
-            SimpleDateFormat sdf = DateUtil.SDF_NoTime
+            SimpleDateFormat sdf = DateUtils.SDF_NoTime
             prop.dateValue = sdf.parse(filterPropValue)
         }
         else if (prop.type.isURLType()) {

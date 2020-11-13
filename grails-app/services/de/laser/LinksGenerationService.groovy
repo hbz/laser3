@@ -108,13 +108,13 @@ class LinksGenerationService {
             //IN is from the point of view of the context object (= obj)
 
             sources.each { Links link ->
-                Subscription destination = genericOIDService.resolveOID(link.destination)
+                Subscription destination = (Subscription) genericOIDService.resolveOID(link.destination)
                 if (destination.isVisibleBy(user)) {
                     result.add(destination)
                 }
             }
             destinations.each { Links link ->
-                Subscription source = genericOIDService.resolveOID(link.source)
+                Subscription source = (Subscription) genericOIDService.resolveOID(link.source)
                 if (source.isVisibleBy(user)) {
                     result.add(source)
                 }
@@ -304,7 +304,7 @@ class LinksGenerationService {
     }
 
     boolean deleteLink(String oid) {
-        Links obj = genericOIDService.resolveOID(oid)
+        Links obj = (Links) genericOIDService.resolveOID(oid)
         if (obj) {
             DocContext comment = DocContext.findByLink(obj)
             if(comment) {

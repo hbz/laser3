@@ -6,7 +6,7 @@ import de.laser.SurveyConfig
 import de.laser.SurveyInfo
 import de.laser.UserSetting
 import de.laser.auth.User
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.system.SystemAnnouncement
 import grails.gorm.transactions.Transactional
@@ -66,7 +66,7 @@ class MyInstitutionControllerService {
 
         // tasks
 
-        SimpleDateFormat sdFormat    = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdFormat    = DateUtils.getSDF_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         Org contextOrg  = contextService.getOrg()

@@ -4,7 +4,7 @@ package de.laser
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
  
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
@@ -99,14 +99,14 @@ class IssueEntitlementController  {
       }
 
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date d = sdf.parse(params.endsAfter)
         base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-          SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+          SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
           Date d = sdf.parse(params.startsBefore)
         base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
         qry_params.add(d)

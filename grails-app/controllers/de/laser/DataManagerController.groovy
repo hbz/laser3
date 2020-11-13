@@ -6,7 +6,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
  
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
@@ -44,7 +44,7 @@ class DataManagerController  {
 
         log.debug("changeLog ${params}")
         Map<String, Object> result = [:]
-        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
+        SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
         boolean exporting = params.format == 'csv'
 
     if ( exporting ) {

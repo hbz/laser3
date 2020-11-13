@@ -4,7 +4,7 @@ package de.laser
 import de.laser.finance.CostItem
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
@@ -141,7 +141,7 @@ class PendingChange {
             pc.msgToken = configMap.msgToken
             pc.targetProperty = configMap.prop
             if(pc.targetProperty in PendingChange.DATE_FIELDS) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 pc.newValue = configMap.newValue ? sdf.format(configMap.newValue) : null
                 pc.oldValue = configMap.oldValue ? sdf.format(configMap.oldValue) : null
             }
@@ -169,7 +169,7 @@ class PendingChange {
             target = costItem
         def parsedNewValue
         if(targetProperty in DATE_FIELDS)
-            parsedNewValue = DateUtil.parseDateGeneric(newValue)
+            parsedNewValue = DateUtils.parseDateGeneric(newValue)
         else if(targetProperty in REFDATA_FIELDS) {
             if(newValue)
                 parsedNewValue = RefdataValue.get(Long.parseLong(newValue))

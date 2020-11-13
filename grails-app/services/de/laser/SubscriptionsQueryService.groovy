@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -17,7 +17,7 @@ class SubscriptionsQueryService {
     List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg) {
 
         def date_restriction
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         boolean filterSet = false
         if (params.validOn == null || params.validOn.trim() == '') {
             date_restriction = null

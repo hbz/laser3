@@ -6,9 +6,9 @@ import org.apache.commons.logging.LogFactory
 
 import java.text.SimpleDateFormat
 
-class DateUtil {
+class DateUtils {
 
-    static Log static_logger = LogFactory.getLog(DateUtil)
+    static Log static_logger = LogFactory.getLog(DateUtils)
 
     public static final String DATE_FORMAT_NOTIME_NOPOINT   = 'default.date.format.notimenopoint'
     public static final String DATE_FORMAT_NOTIME           = 'default.date.format.notime'
@@ -16,7 +16,7 @@ class DateUtil {
     public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
 
     /** This is a Utility-Class. There are only static methods. It is not necessary to create an instance */
-    private DateUtil(){}
+    private DateUtils(){}
 
     static SimpleDateFormat getSimpleDateFormatByToken(String token) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')

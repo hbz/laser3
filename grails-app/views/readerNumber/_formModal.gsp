@@ -1,8 +1,8 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants;de.laser.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.ReaderNumber" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants;de.laser.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.ReaderNumber" %>
 <laser:serviceInjection />
 <%
-    SimpleDateFormat sdf = de.laser.helper.DateUtil.getSDF_NoTime()
-    Date startOfYear = de.laser.helper.DateUtil.getSDF_ymd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
+    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+    Date startOfYear = DateUtils.getSDF_ymd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
     Set<String> preloadGroups
     switch(formId) {
         case 'newForUni': preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL

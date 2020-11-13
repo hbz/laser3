@@ -318,14 +318,14 @@ class YodaController {
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 
-            String dayKey = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
+            String dayKey = (DateUtils.getSDF_NoTime()).format(new Date(it.getTime()))
             activity.put(dayKey, [])
 
             slots.each { hour ->
                 activity[dayKey].add([
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),   // time.start
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),   // time.min
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),   // time.max
+                        (DateUtils.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),   // time.start
+                        (DateUtils.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),   // time.min
+                        (DateUtils.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),   // time.max
                         hour[3],    // user.min
                         hour[4],    // user.max
                         hour[5]     // user.avg
@@ -423,7 +423,7 @@ class YodaController {
 
         result.globalTimeline           = [:]
         result.globalTimelineStartDate  = (new Date()).minus(30)
-        result.globalTimelineDates      = (25..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getSDF_NoTime()).format( (new Date()).minus(it) ) }
 
         Map<String, Integer> ordered = [:]
 

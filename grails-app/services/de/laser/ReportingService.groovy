@@ -1,15 +1,12 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 
 import java.math.RoundingMode
-import java.text.SimpleDateFormat
-import java.time.Year
 
 @Transactional
 class ReportingService {

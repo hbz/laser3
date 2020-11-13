@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.auth.User
  
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -36,7 +36,7 @@ class TaskController  {
     def create() {
 		Task.withTransaction {
 			def contextOrg  = contextService.getOrg()
-			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
 			if (params.endDate) {
 				params.endDate = sdf.parse(params.endDate)
@@ -113,7 +113,7 @@ class TaskController  {
 			Org contextOrg = contextService.getOrg()
 			def result = taskService.getPreconditionsWithoutTargets(contextOrg)
 
-			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
 			if (params.endDate) {
 				params.endDate = sdf.parse(params.endDate)

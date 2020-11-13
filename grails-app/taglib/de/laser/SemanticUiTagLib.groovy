@@ -190,16 +190,16 @@ class SemanticUiTagLib {
 
     def systemInfo = { attrs, body ->
 
-        def systemChecks = systemService?.serviceCheck()
+        def systemChecks = systemService.serviceCheck()
 
         if (systemChecks) {
 
             out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button icon" data-semui="modal">'
-            out << '<i aria-hidden="true" class="red fire extinguisher icon"></i>'
+            out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i aria-hidden="true" class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i aria-hidden="true" class="red exclamation triangle icon"></i> SYSTEM-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
@@ -578,7 +578,7 @@ class SemanticUiTagLib {
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         def value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value

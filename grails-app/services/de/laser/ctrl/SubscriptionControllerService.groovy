@@ -30,7 +30,6 @@ import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.OrgSetting
-import de.laser.OrgTypeService
 import de.laser.Package
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
@@ -53,7 +52,7 @@ import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
@@ -385,7 +384,7 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(result.editable) {
             Calendar cal = GregorianCalendar.getInstance()
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
             cal.set(Calendar.DAY_OF_MONTH, 1)
@@ -429,7 +428,7 @@ class SubscriptionControllerService {
         //result may be null, change is TODO
         if (result?.editable) {
 
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
@@ -626,7 +625,7 @@ class SubscriptionControllerService {
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS)
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
-                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                         Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                         Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                         Subscription memberSub = new Subscription(
@@ -1104,7 +1103,7 @@ class SubscriptionControllerService {
             List selectedMembers = params.list("selectedMembers")
             if(selectedMembers) {
                 Set change = [], noChange = []
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Set<Subscription> subChildren = Subscription.findAllByIdInList(selectedMembers)
@@ -1384,7 +1383,7 @@ class SubscriptionControllerService {
             Map<String,Object> qry_params = [subscription: result.subscription]
             Date date_filter
             if (params.asAt && params.asAt.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 date_filter = sdf.parse(params.asAt)
                 result.as_at_date = date_filter
                 result.editable = false
@@ -1543,14 +1542,14 @@ class SubscriptionControllerService {
                 basequery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and tipp.status = :tippStatus and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) )"
             }
             if (params.endsAfter && params.endsAfter.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :endDate"
                 qry_params.endDate = d
                 filterSet = true
             }
             if (params.startsBefore && params.startsBefore.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :startDate"
                 qry_params.startDate = d
@@ -1905,7 +1904,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
+            SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
             boolean error = false
             params.each { Map.Entry<Object,Object> p ->
                 if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
@@ -1919,7 +1918,7 @@ class SubscriptionControllerService {
                             ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                         }
                         if (params.bulk_medium.trim().length() > 0) {
-                            RefdataValue selected_refdata = genericOIDService.resolveOID(params.bulk_medium.trim())
+                            RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
                             log.debug("Selected medium is ${selected_refdata}");
                             ie.medium = selected_refdata
                         }
@@ -2167,8 +2166,8 @@ class SubscriptionControllerService {
                 [result:result,status:STATUS_ERROR]
             }
             else {
-                Date sub_startDate = params.subscription.start_date ? DateUtil.parseDateGeneric(params.subscription.start_date) : null
-                Date sub_endDate = params.subscription.end_date ? DateUtil.parseDateGeneric(params.subscription.end_date) : null
+                Date sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
+                Date sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
                 RefdataValue sub_status = params.subStatus ? RefdataValue.get(params.subStatus) : RDStore.SUBSCRIPTION_NO_STATUS
                 boolean sub_isMultiYear = params.subscription.isMultiYear
                 String new_subname = params.subscription.name

@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.ExecutorWrapperService
 import de.laser.auth.User
  
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -254,7 +254,7 @@ class PackageController  {
                         def comparisonMap =
                                 institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
                         log.debug("Create CSV Response")
-                        SimpleDateFormat dateFormatter = DateUtil.getSDF_NoTime()
+                        SimpleDateFormat dateFormatter = DateUtils.getSDF_NoTime()
                         response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                         response.contentType = "text/csv"
                         def out = response.outputStream
@@ -284,7 +284,7 @@ class PackageController  {
             }
 
         } else {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             Date currentDate = sdf?.format(new Date())
             params.dateA = currentDate
             params.dateB = currentDate
@@ -303,7 +303,7 @@ class PackageController  {
 
     private def createCompareList(pkg, dateStr, params, result) {
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date date = dateStr ? sdf.parse(dateStr) : new Date()
         def packageId = pkg.substring(pkg.indexOf(":") + 1)
 
@@ -384,7 +384,7 @@ class PackageController  {
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
         Map<String,Object> qry_params = [pkgInstance: packageInstance]
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date today = new Date()
         if (!params.asAt) {
             if (packageInstance.startDate > today) {
@@ -494,7 +494,7 @@ class PackageController  {
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 
-        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")

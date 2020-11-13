@@ -1,13 +1,11 @@
 package de.laser
 
-import de.laser.titles.BookInstance
-import de.laser.titles.DatabaseInstance
-import de.laser.titles.JournalInstance
+
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance
 import de.laser.auth.User
  
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -147,7 +145,7 @@ class TitleController  {
     @Transactional
   def batchUpdate() {
         log.debug( params.toMapString() )
-        SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
+        SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
         User user = contextService.getUser()
 
       params.each { p ->
