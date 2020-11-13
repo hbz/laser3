@@ -46,4 +46,35 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1604920204115-10") {
         dropColumn(columnName: "version", tableName: "system_event")
     }
+
+    changeSet(author: "kloberd (modified)", id: "1604920204115-11") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.Subscription:', 'de.laser.Subscription:') where pc_change_doc_oid is not null")
+                sql.execute("update pending_change set pc_change_target_oid = replace(pc_change_target_oid, 'com.k_int.kbplus.Subscription:', 'de.laser.Subscription:') where pc_change_target_oid is not null")
+
+
+            }
+            rollback {}
+        }
+    }
+    changeSet(author: "kloberd (modified)", id: "1604920204115-12") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.License:', 'de.laser.License:') where pc_change_doc_oid is not null")
+                sql.execute("update pending_change set pc_change_target_oid = replace(pc_change_target_oid, 'com.k_int.kbplus.License:', 'de.laser.License:') where pc_change_target_oid is not null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "kloberd (modified)", id: "1604920204115-13") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.SubscriptionProperty:', 'de.laser.properties.SubscriptionProperty:') where pc_change_doc_oid is not null")
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.LicenseProperty:', 'de.laser.properties.LicenseProperty:') where pc_change_doc_oid is not null")
+            }
+            rollback {}
+        }
+    }
 }
