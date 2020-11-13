@@ -423,12 +423,12 @@ class YodaController {
 
         result.globalTimeline           = [:]
         result.globalTimelineStartDate  = (new Date()).minus(30)
-        result.globalTimelineDates      = (30..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+        result.globalTimelineDates      = (25..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
 
         Map<String, Integer> ordered = [:]
 
         allUri.each { uri ->
-            result.globalTimeline[uri] = (30..0).collect { 0 }
+            result.globalTimeline[uri] = (25..0).collect { 0 }
 
             String sql = "select to_char(sp.dateCreated, 'dd.mm.yyyy'), count(*) from SystemProfiler sp where sp.uri = :uri and sp.dateCreated >= :dCheck group by to_char(sp.dateCreated, 'dd.mm.yyyy')"
             List hits = SystemProfiler.executeQuery(sql, [uri: uri, dCheck: result.globalTimelineStartDate])

@@ -3220,39 +3220,4 @@ join sub.orgRelations or_sub where
         }
         return result
     }
-
-    boolean checkIsEditable(User user, Org org){
-        boolean isEditable
-        switch(params.action){
-            case 'processEmptyLicense': //to be moved to LicenseController
-            case 'currentLicenses':
-            case 'currentSurveys':
-            case 'dashboard':
-            case 'emptyLicense': //to be moved to LicenseController
-            case 'surveyInfoFinish':
-            case 'surveyResultFinish':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
-                break
-            case 'addressbook':
-            case 'budgetCodes':
-            case 'tasks':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-                break
-            case 'surveyInfos':
-                isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
-                break
-            case 'surveyInfosIssueEntitlements':
-                isEditable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
-                break
-            case 'userList':
-                isEditable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
-                break
-            case 'managePropertyDefinitions':
-                isEditable = false
-                break
-            default:
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
-        }
-        isEditable
-    }
 }
