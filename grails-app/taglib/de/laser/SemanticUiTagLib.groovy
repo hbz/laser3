@@ -368,27 +368,6 @@ class SemanticUiTagLib {
             // CAUTION: inject default mode
             attrs.params.mode = mode
         }
-
-        /*
-
-        out << '<div class="ui tiny buttons">'
-        out << g.link( "${message(code:'profile.simpleView')}",
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params + ['mode':'basic'],
-                class: "ui mini button ${mode == 'basic' ? 'positive' : ''}"
-        )
-
-        //out << '<div class="or"></div>'
-
-        out << g.link( "${message(code:'profile.advancedView')}",
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params + ['mode':'advanced'],
-                class: "ui mini button ${mode == 'advanced' ? 'positive' : ''}"
-        )
-        out << '</div>'
-        */
     }
 
     //<semui:meta> CONTENT <semui:meta>

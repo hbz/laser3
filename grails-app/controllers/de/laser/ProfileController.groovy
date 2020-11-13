@@ -386,14 +386,14 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     @Transactional
     def updateIsRemindByEmail() {
-        User user1 = contextService.getUser()
+        User user = contextService.getUser()
 
         flash.message=""
-        def was_isRemindByEmail = user1.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
+        def was_isRemindByEmail = user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
         if ( was_isRemindByEmail != params.isRemindByEmail ) {
             was_isRemindByEmail = params.isRemindByEmail
             flash.message += message(code:'profile.updateProfile.updated.isRemindByEmail')
-            if ( ! user1.email && was_isRemindByEmail.equals(RDStore.YN_YES)) {
+            if ( ! user.email && was_isRemindByEmail.equals(RDStore.YN_YES)) {
                 flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error')
             }
         }

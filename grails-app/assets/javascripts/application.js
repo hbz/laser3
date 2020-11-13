@@ -236,11 +236,6 @@ r2d2 = {
                     $.each(elasticResponse.results, function(index, item) {
 
                         var category   = item.category || 'Unknown';
-                        //var maxResults = 15;
-
-                        //if (index >= maxResults) {
-                        //    return false;
-                        //}
                         // create new object category
                         if (response.results[category] === undefined) {
                             response.results[category] = {
@@ -264,18 +259,6 @@ r2d2 = {
             }
         });
 
-        /*  Menue Search Animated Input
-               $('#btn-search').on('click', function(e) {
-                    e.preventDefault();
-
-                    $('#spotlightSearch').animate({width: 'toggle'}).focus();
-                    $(this).toggleClass('open');
-                });*/
-
-        // metaboxes
-        $('.metaboxToggle').click(function() {
-            $(this).next('.metaboxContent').slideToggle();
-        })
     },
 
 
@@ -686,16 +669,6 @@ r2d2 = {
                 // r2d2.countSettedFilters();
             }
         });
-
-        // for default selected Dropdown value
-        /*
-        var currentDropdown = $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown');
-
-        currentDropdown.find("div.text").hasClass("default")
-            ?  currentDropdown.removeClass('la-filter-dropdown-selected')
-            : currentDropdown.addClass('la-filter-dropdown-selected');
-        */
-
 
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {

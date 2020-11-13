@@ -14,6 +14,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
+import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -271,8 +272,30 @@ class DataManagerController  {
                 }
                 response.setHeader("Content-disposition", "attachment; filename=\"DMChangeLog.csv\"")
                 response.contentType = "text/csv"
-                def out = response.outputStream
-                def actors_list = getActorNameList(params)
+
+                ServletOutputStream out = response.outputStream
+                List<String> actors_list = []
+
+                if (params.change_actors) {
+                    params.change_actors.each{ ca ->
+
+                        if (ca == "change_actor_PEOPLE" ) {
+                            actors_list.add("All Real Users")
+                        }
+                        if (ca == "change_actor_ALL" ) {
+                            actors_list.add("All Including System")
+                        }
+
+                        if (ca != 'change_actor_ALL' && ca != 'change_actor_PEOPLE') {
+                            String username = ca.split("change_actor_")[1]
+                            User user = User.findByUsername(username)
+                            if (user){
+                                actors_list.add(user.displayName)
+                            }
+                        }
+                    }
+                }
+
                 out.withWriter { w ->
                     w.write('Start Date, End Date, Change Actors, Packages, Licenses, Titles, TIPPs, New Items, Updates\n')
                     w.write("\"${params.startDate}\", \"${params.endDate}\", \"${actors_list}\", ${params.packages}, ${params.licenses}, ${params.titles}, ${params.tipps}, ${params.creates}, ${params.updates} \n")
@@ -289,35 +312,6 @@ class DataManagerController  {
             }
         }
     }
-
-    private def getActorNameList(params) {
-        def actors = []
-        //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
-        def filterActors = params.change_actors
-
-        if(filterActors) {
-
-            filterActors.each{
-
-                if (it == "change_actor_PEOPLE" ) {
-                    actors += "All Real Users"
-                }
-                if (it == "change_actor_ALL" ) {
-                    actors += "All Including System"
-                }
-
-          if(it != 'change_actor_ALL' && it != 'change_actor_PEOPLE') {
-            def paramKey = it.replaceAll("[^A-Za-z]", "")//remove things that can cause problems in sql
-            def username = it.split("change_actor_")[1]
-            User user = User.findByUsername(username)
-            if (user){
-              actors += user.displayName
-            }
-          }     
-      }     
-    }
-    return actors
-  }
 
   @Secured(['ROLE_ADMIN'])
   def deletedTitles() {
