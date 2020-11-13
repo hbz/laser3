@@ -413,7 +413,7 @@ class BootStrapService {
                     String fileName = file.getName()
                     if (fileName.endsWith('.sql')) {
                         String fileSql     = file.readLines().join(System.getProperty("line.separator")).trim()
-                        String validateSql = "SELECT proname, REGEXP_MATCH(prosrc, 'VERSION CONSTANT NUMERIC = [0-9]*') FROM pg_proc WHERE proname = '" +
+                        String validateSql = "SELECT proname, regexp_matches(prosrc, 'VERSION CONSTANT NUMERIC = [0-9]*') FROM pg_proc WHERE proname = '" +
                                 fileName.replace('.sql', '') + "'"
 
                         if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
@@ -422,7 +422,7 @@ class BootStrapService {
                                 org.hibernate.SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
                                 org.hibernate.SQLQuery validate = sessionFactory.currentSession
                                         .createSQLQuery(validateSql)
-                                        .addScalar("REGEXP_MATCH", new TextType())
+                                        .addScalar("regexp_matches", new TextType())
 
                                 query.executeUpdate()
                                 log.debug("  -> ${fileName} : " + validate.list()?.get(0))
