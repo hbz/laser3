@@ -511,7 +511,7 @@ class BootStrapService {
 
             RefdataValue val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
             if (group) {
-                val.setGroup(group) // TODO [ticket=2880]
+                val.setGroup(group)
             }
             val.save()
         }

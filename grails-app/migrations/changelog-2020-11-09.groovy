@@ -77,4 +77,29 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "kloberd (modified)", id: "1604920204115-14") {
+        grailsChange {
+            change {
+                sql.execute("update property_definition set pd_type = replace(pd_type, 'class ', '') where pd_type is not null")
+            }
+            rollback {}
+        }
+    }
+    changeSet(author: "kloberd (modified)", id: "1604920204115-15") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_payload = replace(pc_payload, 'type\":\"class ', 'type\":\"') where pc_payload is not null")
+            }
+            rollback {}
+        }
+    }
+    changeSet(author: "kloberd (modified)", id: "1604920204115-16") {
+        grailsChange {
+            change {
+                sql.execute("update survey_property set surpro_type = replace(surpro_type, 'class ', '')  where surpro_type is not null")
+            }
+            rollback {}
+        }
+    }
 }

@@ -693,7 +693,7 @@ class AjaxController {
             error = message(code: 'propertyDefinition.name.unique')
         }
         else {
-            if (params.cust_prop_type.equals(RefdataValue.toString())) { // TODO [ticket=2880]
+            if (params.cust_prop_type.equals(RefdataValue.class.name)) {
                 if (params.refdatacategory) {
 
                     Map<String, Object> map = [

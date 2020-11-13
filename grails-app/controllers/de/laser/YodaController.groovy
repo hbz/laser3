@@ -140,7 +140,7 @@ class YodaController {
         Map<String, Object> map3 = [
                 token       : "EGP Nr.",
                 category    : PropertyDefinition.ORG_PROP,
-                type        : "class java.lang.Integer",
+                type        : "java.lang.Integer",
                 tenant      : contextService.getOrg().globalUID,
                 i10n        : [
                         name_de: "EGP Nr.",
