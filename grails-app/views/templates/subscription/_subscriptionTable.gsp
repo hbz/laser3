@@ -85,7 +85,7 @@
                         <td class="center aligned">
                             ${ (params.int('offset') ?: 0)  + i + 1 }
                         </td>
-                        <td>
+                        <th scope="row" class="la-th-column">
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                                 <g:if test="${s.name}">
                                     ${s.name}
@@ -118,14 +118,14 @@
                                 <g:each in="${allLinkedLicenses}" var="row">
                                     <g:if test="${s == row.destinationSubscription}">
                                         <g:set var="license" value="${row.sourceLicense}"/>
-                                        <div class="la-flexbox">
+                                        <div class="la-flexbox la-minor-object">
                                             <i class="icon balance scale la-list-icon"></i>
                                             <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                         </div>
                                     </g:if>
                                 </g:each>
                             </g:if>
-                        </td>
+                        </th>
                         <td>
                         <!-- packages -->
                             <g:each in="${s.packages}" var="sp" status="ind">

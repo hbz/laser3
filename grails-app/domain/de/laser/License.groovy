@@ -6,7 +6,7 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
@@ -594,7 +594,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     String dropdownNamingConvention() {
         String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate) : ''
         period = endDate ? period + ' - ' + sdf.format(endDate) : ''
         period = period ? '(' + period + ')' : ''

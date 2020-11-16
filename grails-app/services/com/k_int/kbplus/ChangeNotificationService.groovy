@@ -47,7 +47,6 @@ class ChangeNotificationService extends AbstractLockableService {
     else {
       log.error(new_queue_item.errors.toString());
     }
-
   }
 
 
@@ -397,7 +396,7 @@ class ChangeNotificationService extends AbstractLockableService {
         }
         else {
             if(msgToken == PendingChangeConfiguration.TITLE_DELETED) {
-                IssueEntitlement ie = genericOIDService.resolveOID(args.oid)
+                IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(args.oid)
                 if(ie.subscription.instanceOf)
                     contextOrg = ie.subscription.getConsortia()
                 else contextOrg = ie.subscription.getSubscriber()

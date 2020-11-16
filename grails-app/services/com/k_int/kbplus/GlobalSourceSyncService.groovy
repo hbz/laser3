@@ -18,7 +18,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
 import de.laser.exceptions.SyncException
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -33,7 +33,6 @@ import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
-import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.SessionFactory
 import org.hibernate.Session
@@ -123,7 +122,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             log.info("got OAI record ${r.header.identifier} datestamp: ${r.header.datestamp} job: ${source.id} url: ${source.uri}")
                             //String recUUID = r.header.uuid.text() ?: '0'
                             //String recIdentifier = r.header.identifier.text()
-                            Date recordTimestamp = DateUtil.parseDateGeneric(r.header.datestamp.text())
+                            Date recordTimestamp = DateUtils.parseDateGeneric(r.header.datestamp.text())
                             //leave out GlobalRecordInfo update, no need to reflect it twice since we keep the package structure internally
                             //jump to packageReconcile which includes packageConv - check if there is a package, otherwise, update package data
                             tippsToNotify << createOrUpdatePackage(r.metadata.gokb.package)
@@ -245,7 +244,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue consistent = RefdataValue.getByValueAndCategory(packageData.consistent.text(),RDConstants.PACKAGE_CONSISTENT) //needed?
         RefdataValue fixed = RefdataValue.getByValueAndCategory(packageData.fixed.text(),RDConstants.PACKAGE_FIXED) //needed?
         RefdataValue contentType = RefdataValue.getByValueAndCategory(packageData.contentType.text(),RDConstants.PACKAGE_CONTENT_TYPE)
-        Date listVerifiedDate = packageData.listVerifiedDate.text() ? DateUtil.parseDateGeneric(packageData.listVerifiedDate.text()) : null
+        Date listVerifiedDate = packageData.listVerifiedDate.text() ? DateUtils.parseDateGeneric(packageData.listVerifiedDate.text()) : null
         //result.global = packageData.global.text() needed? not used in packageReconcile
         String providerUUID
         String platformUUID
@@ -488,16 +487,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 identifiers: [],
                 id: tipp.'@id'.text(),
                 uuid: tipp.'@uuid'.text(),
-                accessStartDate : tipp.access.'@start'.text() ? DateUtil.parseDateGeneric(tipp.access.'@start'.text()) : null,
-                accessEndDate   : tipp.access.'@end'.text() ? DateUtil.parseDateGeneric(tipp.access.'@end'.text()) : null,
+                accessStartDate : tipp.access.'@start'.text() ? DateUtils.parseDateGeneric(tipp.access.'@start'.text()) : null,
+                accessEndDate   : tipp.access.'@end'.text() ? DateUtils.parseDateGeneric(tipp.access.'@end'.text()) : null,
                 medium      : tipp.medium.text()
         ]
         updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
         if(tipp.title.type.text() == 'JournalInstance') {
             tipp.coverage.each { cov ->
                 updatedTIPP.coverages << [
-                        startDate: cov.'@startDate'.text() ? DateUtil.parseDateGeneric(cov.'@startDate'.text()) : null,
-                        endDate: cov.'@endDate'.text() ? DateUtil.parseDateGeneric(cov.'@endDate'.text()) : null,
+                        startDate: cov.'@startDate'.text() ? DateUtils.parseDateGeneric(cov.'@startDate'.text()) : null,
+                        endDate: cov.'@endDate'.text() ? DateUtils.parseDateGeneric(cov.'@endDate'.text()) : null,
                         startVolume: cov.'@startVolume'.text() ?: null,
                         endVolume: cov.'@endVolume'.text() ?: null,
                         startIssue: cov.'@startIssue'.text() ?: null,
@@ -601,8 +600,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                                      editionDifferentiator: titleRecord.editionDifferentiator.text() ?: null,
                                                                      editionStatement: titleRecord.editionStatement.text() ?: null,
                                                                      volume: titleRecord.volumeNumber.text() ?: null,
-                                                                     dateFirstInPrint: titleRecord.dateFirstInPrint ? DateUtil.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null,
-                                                                     dateFirstOnline: titleRecord.dateFirstOnline ? DateUtil.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null,
+                                                                     dateFirstInPrint: titleRecord.dateFirstInPrint ? DateUtils.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null,
+                                                                     dateFirstOnline: titleRecord.dateFirstOnline ? DateUtils.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null,
                                                                      firstAuthor: titleRecord.firstAuthor.text() ?: null,
                                                                      firstEditor: titleRecord.firstEditor.text() ?: null]
                                 titleInstance = titleInstance ? (BookInstance) titleInstance :  BookInstance.construct(newTitleParams)
@@ -610,8 +609,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 titleInstance.editionDifferentiator = titleRecord.editionDifferentiator.text() ?: null
                                 titleInstance.editionStatement = titleRecord.editionStatement.text() ?: null
                                 titleInstance.volume = titleRecord.volumeNumber.text() ?: null
-                                titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? DateUtil.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null
-                                titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? DateUtil.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null
+                                titleInstance.dateFirstInPrint = titleRecord.dateFirstInPrint ? DateUtils.parseDateGeneric(titleRecord.dateFirstInPrint.text()) : null
+                                titleInstance.dateFirstOnline = titleRecord.dateFirstOnline ? DateUtils.parseDateGeneric(titleRecord.dateFirstOnline.text()) : null
                                 titleInstance.firstAuthor = titleRecord.firstAuthor.text() ?: null
                                 titleInstance.firstEditor = titleRecord.firstEditor.text() ?: null
                                 break
@@ -701,7 +700,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             throw e
                                         }
                                     }
-                                    Date eventDate = DateUtil.parseDateGeneric(eventData.date.text())
+                                    Date eventDate = DateUtils.parseDateGeneric(eventData.date.text())
                                     String baseQuery = "select the from TitleHistoryEvent the where the.eventDate = :eventDate"
                                     Map<String,Object> queryParams = [eventDate:eventDate]
                                     if(from) {

@@ -49,11 +49,15 @@ class LinksGenerationService {
         return [prevLink:prevLink,nextLink:nextLink]
     }
 
-    Map<String,Object> getSourcesAndDestinations(obj,user) {
+    Map<String,Object> getSourcesAndDestinations(obj,User user) {
+        getSourcesAndDestinations(obj,user,RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))
+    }
+
+    Map<String,Object> getSourcesAndDestinations(obj,User user,List<RefdataValue> linkTypes) {
         Map<String,Set<Links>> links = [:]
         // links
-        Set<Links> sources = Links.executeQuery('select li from Links li where :context in (li.sourceSubscription,li.sourceLicense)',[context:obj])
-        Set<Links> destinations = Links.executeQuery('select li from Links li where :context in (li.destinationSubscription,li.destinationLicense)',[context:obj])
+        Set<Links> sources = Links.executeQuery('select li from Links li where :context in (li.sourceSubscription,li.sourceLicense) and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes])
+        Set<Links> destinations = Links.executeQuery('select li from Links li where :context in (li.destinationSubscription,li.destinationLicense) and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes])
         //IN is from the point of view of the context object (= obj)
 
         sources.each { Links link ->
@@ -104,13 +108,13 @@ class LinksGenerationService {
             //IN is from the point of view of the context object (= obj)
 
             sources.each { Links link ->
-                Subscription destination = genericOIDService.resolveOID(link.destination)
+                Subscription destination = (Subscription) genericOIDService.resolveOID(link.destination)
                 if (destination.isVisibleBy(user)) {
                     result.add(destination)
                 }
             }
             destinations.each { Links link ->
-                Subscription source = genericOIDService.resolveOID(link.source)
+                Subscription source = (Subscription) genericOIDService.resolveOID(link.source)
                 if (source.isVisibleBy(user)) {
                     result.add(source)
                 }
@@ -300,7 +304,7 @@ class LinksGenerationService {
     }
 
     boolean deleteLink(String oid) {
-        Links obj = genericOIDService.resolveOID(oid)
+        Links obj = (Links) genericOIDService.resolveOID(oid)
         if (obj) {
             DocContext comment = DocContext.findByLink(obj)
             if(comment) {

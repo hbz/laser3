@@ -1,9 +1,7 @@
 package de.laser
 
 
-import de.laser.auth.User
- 
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -22,7 +20,7 @@ class AccessMethodController  {
     def create() {
         params.max = params.max ?: contextService.getUser().getDefaultPageSize()
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -95,7 +93,7 @@ class AccessMethodController  {
         Platform platf = accessMethod.platf
 
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {

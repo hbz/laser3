@@ -174,20 +174,20 @@
                               </td>
                           </g:if>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
-                          <td>
+                          <th scope="row" class="la-th-column">
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
                               <g:each in="${allLinkedSubscriptions}" var="row">
                                   <g:if test="${l == row.sourceLicense}">
                                       <g:set var="sub" value="${row.destinationSubscription}"></g:set>
-                                      <div class="la-flexbox">
+                                      <div class="la-flexbox la-minor-object">
                                           <i class="icon clipboard outline outline la-list-icon"></i>
                                           <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                       </div>
                                   </g:if>
                               </g:each>
-                          </td>
+                          </th>
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">

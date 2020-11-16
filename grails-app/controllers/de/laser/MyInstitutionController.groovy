@@ -146,7 +146,7 @@ class MyInstitutionController  {
         String instanceFilter = ""
         if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
             instanceFilter += " and s.instanceOf = null "
-        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes)'+instanceFilter,[contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.hasPerpetualAccess = true'+instanceFilter,[contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
@@ -233,7 +233,7 @@ class MyInstitutionController  {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         def date_restriction = null
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -417,7 +417,7 @@ class MyInstitutionController  {
 		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
-        SimpleDateFormat sdfNoPoint = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdfNoPoint = DateUtils.getSDF_NoTimeNoPoint()
         String filename = "${sdfNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.currentLicenses')}"
         List titles = [
                 g.message(code:'license.details.reference'),
@@ -532,7 +532,7 @@ class MyInstitutionController  {
         }
 
         def cal = new java.util.GregorianCalendar()
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         cal.setTimeInMillis(System.currentTimeMillis())
         cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -613,7 +613,7 @@ join sub.orgRelations or_sub where
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.my.currentProviders')
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
@@ -672,7 +672,7 @@ join sub.orgRelations or_sub where
         result.compare = params.compare ?: ''
 
         // Write the output to a file
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -711,7 +711,7 @@ join sub.orgRelations or_sub where
 
 
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -910,8 +910,8 @@ join sub.orgRelations or_sub where
                         render view: 'editLicense', model: [licenseInstance: copyLicense]
                     } else {
                         copyLicense.reference = params.licenseName
-                        copyLicense.startDate = DateUtil.parseDateGeneric(params.licenseStartDate)
-                        copyLicense.endDate = DateUtil.parseDateGeneric(params.licenseEndDate)
+                        copyLicense.startDate = DateUtils.parseDateGeneric(params.licenseStartDate)
+                        copyLicense.endDate = DateUtils.parseDateGeneric(params.licenseEndDate)
 
                         if (copyLicense.save()) {
                             flash.message = message(code: 'license.createdfromTemplate.message')
@@ -931,8 +931,8 @@ join sub.orgRelations or_sub where
             }
 
             License licenseInstance = new License(type: RDStore.LICENSE_TYPE_ACTUAL, reference: params.licenseName,
-                    startDate:params.licenseStartDate ? DateUtil.parseDateGeneric(params.licenseStartDate) : null,
-                    endDate: params.licenseEndDate ? DateUtil.parseDateGeneric(params.licenseEndDate) : null,
+                    startDate:params.licenseStartDate ? DateUtils.parseDateGeneric(params.licenseStartDate) : null,
+                    endDate: params.licenseEndDate ? DateUtils.parseDateGeneric(params.licenseEndDate) : null,
                     status: RefdataValue.get(params.status),
                     openEnded: RDStore.YNU_UNKNOWN
             )
@@ -1027,7 +1027,7 @@ join sub.orgRelations or_sub where
         // Set Date Restriction
         Date checkedDate = null
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         boolean defaultSet = false
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -1131,7 +1131,7 @@ join sub.orgRelations or_sub where
         result.titles = allTitles.drop(result.offset).take(result.max)
 
         result.filterSet = params.filterSet || defaultSet
-        String filename = "${message(code:'export.my.currentTitles')}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
 		List bm = pu.stopBenchmark()
 		result.benchMark = bm
@@ -1411,7 +1411,7 @@ join sub.orgRelations or_sub where
                 result
             }
             csv {
-                SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
+                SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(result.institution.name)}_changes.csv\"")
                 response.contentType = "text/csv"
@@ -1586,7 +1586,7 @@ join sub.orgRelations or_sub where
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
 
-        SimpleDateFormat sdFormat = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
 
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
 
@@ -1597,7 +1597,7 @@ join sub.orgRelations or_sub where
             SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1605,7 +1605,7 @@ join sub.orgRelations or_sub where
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
             }else {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1685,7 +1685,7 @@ join sub.orgRelations or_sub where
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2057,7 +2057,7 @@ join sub.orgRelations or_sub where
             params.sort = "t.endDate"
             params.order = "asc"
         }
-        SimpleDateFormat sdFormat = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
@@ -2170,7 +2170,7 @@ join sub.orgRelations or_sub where
 
         header = message(code: 'menu.my.consortia')
         exportHeader = message(code: 'export.my.consortia')
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
 
@@ -2250,7 +2250,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         pu.setBenchmark("before xls")
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -2422,7 +2422,7 @@ join sub.orgRelations or_sub where
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
+            String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
@@ -2562,7 +2562,7 @@ join sub.orgRelations or_sub where
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${DateUtil.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
+                    String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->
@@ -2585,7 +2585,7 @@ join sub.orgRelations or_sub where
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        DateFormat sdFormat = DateUtil.getSDF_NoTime()
+        DateFormat sdFormat = DateUtils.getSDF_NoTime()
 
         result.participant = Org.get(Long.parseLong(params.id))
 
@@ -2611,7 +2611,7 @@ join sub.orgRelations or_sub where
         if ( params.exportXLSX ) {
 
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2720,7 +2720,7 @@ join sub.orgRelations or_sub where
         }
 
         if(params.cmd == 'exportXLS') {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyGroupUsageXLS(result.propDefGroups))
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.propertyGroups')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2900,10 +2900,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
-    })
     def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
         PropertyDefinition.withTransaction {
             int deletedProperties = 0
@@ -2989,7 +2985,7 @@ join sub.orgRelations or_sub where
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
         if(params.cmd == 'exportXLS') {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.privateProperties')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3051,7 +3047,7 @@ join sub.orgRelations or_sub where
 
         result.propertyType = 'custom'
         if(params.cmd == 'exportXLS') {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.customProperties')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3219,40 +3215,5 @@ join sub.orgRelations or_sub where
                      org    : participant]).groupBy { it.id[1] }.size()
         }
         return result
-    }
-
-    boolean checkIsEditable(User user, Org org){
-        boolean isEditable
-        switch(params.action){
-            case 'processEmptyLicense': //to be moved to LicenseController
-            case 'currentLicenses':
-            case 'currentSurveys':
-            case 'dashboard':
-            case 'emptyLicense': //to be moved to LicenseController
-            case 'surveyInfoFinish':
-            case 'surveyResultFinish':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
-                break
-            case 'addressbook':
-            case 'budgetCodes':
-            case 'tasks':
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-                break
-            case 'surveyInfos':
-                isEditable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
-                break
-            case 'surveyInfosIssueEntitlements':
-                isEditable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
-                break
-            case 'userList':
-                isEditable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
-                break
-            case 'managePropertyDefinitions':
-                isEditable = false
-                break
-            default:
-                isEditable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
-        }
-        isEditable
     }
 }

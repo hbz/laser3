@@ -26,7 +26,7 @@
 <h3 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h3>
 
 <div class="ui segment">
-    <p>${sessionCache.getSession().id}</p>
+    <p>ID: ${sessionCache.getSession().id}</p>
 
     <g:link class="ui button small"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
@@ -36,8 +36,7 @@
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt>${entry.key}</dt>
                 <dd>
-                    ${entry.value} <br />
-                    <em>${entry.value.class.name}</em>
+                     ${entry.value} <em>(${entry.value.class.name})</em>
                 </dd>
             </g:each>
         </dl>
@@ -58,31 +57,15 @@
 
 <g:each in="${ehCaches}" var="ehCache">
 
-    <g:each in="${ehCache}" var="cacheName">
+    <g:each in="${ehCache.toSorted()}" var="cacheName">
         <g:set var="cache" value="${ehcacheManager.getCache(cacheName)}" />
         <g:set var="cacheStats" value="${cache.getStatistics()}" />
 
         <h4 class="ui header">${cacheName}
-            <span class="ui label">${cache.class}</span>
-            <%-- <span class="ui label">
-
-                try {
-                    println "disk: ${Math.round(cacheStats.getLocalDiskSizeInBytes() / 1024)} kb, "
-                } catch (Exception e) {
-                    println "error, "
-                }
-                try {
-                    println "heap: ${Math.round(cacheStats.getLocalHeapSizeInBytes() / 1024)} kb / "
-                } catch (Exception e) {
-                    println "error / "
-                }
-                try {
-                    println "${Math.round(cacheStats.getLocalOffHeapSizeInBytes() / 1024)} kb"
-                } catch (Exception e) {
-                    println "error"
-                }
-
-            </span> --%>
+            <span class="ui label">
+                ${cache.class} /
+                hitCount: ${cacheStats.cacheHitCount()}, disk: ${cacheStats.getLocalDiskSize()}kb
+            </span>
         </h4>
 
         <div class="ui segments">

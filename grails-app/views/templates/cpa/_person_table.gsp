@@ -105,10 +105,10 @@
             </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-            <td class="la-main-object">
+            <th scope="row" class="la-th-column la-main-object">
                 ${person.first_name ? person.last_name + ', ' + person.first_name : person.last_name}
                 ${person.middle_name}
-            </td>
+            </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
             <td>

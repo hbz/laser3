@@ -1,10 +1,6 @@
-<%@ page import="de.laser.DocContext; de.laser.helper.ConfigUtils; de.laser.Person; de.laser.PersonRole; java.math.MathContext; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat" %>
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License" %>
-<%@ page import="de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.PendingChangeConfiguration" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
-
 <!doctype html>
 <html>
     <head>
@@ -37,39 +33,28 @@
             %{--<g:render template="/templates/debug/orgRoles"  model="[debug: subscription.orgRelations]" />--}%
             %{--<g:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
         </semui:debugInfo>
-
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
-
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
-
         <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
             <semui:xEditable owner="${subscription}" field="name" />
         </h1>
         <g:if test="${editable}">
             <semui:auditButton auditable="[subscription, 'name']" />
         </g:if>
-
         <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
-
 
     <g:render template="nav" />
 
     <semui:objectStatus object="${subscription}" status="${subscription.status}" />
-
     <g:render template="message" />
-
     <g:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}" />
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscription]}"/>
-
-
     <div id="collapseableSubDetails" class="ui stackable grid">
         <div class="twelve wide column">
-
             <div class="la-inline-lists">
                 <div class="ui two stackable cards">
                     <div class="ui card la-time-card">
@@ -207,175 +192,10 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="ui card">
-                    <div class="content">
-                        <h5 class="ui header">
-                           <g:message code="subscription.details.linksHeader"/>
-                        </h5>
-                        <g:if test="${links.entrySet()}">
-                            <table class="ui three column table">
-                                <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
-                                    <g:if test="${linkTypes.getValue().size() > 0 && linkTypes.getKey() != genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}">
-                                        <g:each in="${linkTypes.getValue()}" var="link">
-                                            <tr>
-                                                <%
-                                                    int perspectiveIndex = subscription == link.sourceSubscription ? 0 : 1
-                                                %>
-                                                <th scope="row" class="control-label la-js-dont-hide-this-card">${genericOIDService.resolveOID(linkTypes.getKey()).getI10n("value").split("\\|")[perspectiveIndex]}</th>
-                                                <td>
-                                                    <g:set var="pair" value="${link.getOther(subscription)}"/>
-                                                    <g:link controller="subscription" action="show" id="${pair.id}">
-                                                        ${pair.name}
-                                                    </g:link><br />
-                                                    <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>–<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
-                                                    <g:set var="comment" value="${DocContext.findByLink(link)}"/>
-                                                    <g:if test="${comment}">
-                                                        <p><em>${comment.owner.content}</em></p>
-                                                    </g:if>
-                                                </td>
-                                                <td class="right aligned">
-                                                    <g:render template="/templates/links/subLinksModal"
-                                                              model="${[tmplText:message(code:'subscription.details.editLink'),
-                                                                        tmplIcon:'write',
-                                                                        tmplCss: 'icon la-selectable-button',
-                                                                        tmplID:'editLink',
-                                                                        tmplModalID:"sub_edit_link_${link.id}",
-                                                                        editmode: editable,
-                                                                        context: subscription,
-                                                                        atConsortialParent: contextOrg.id == subscription.getConsortia()?.id ? "true" : "false",
-                                                                        link: link
-                                                              ]}" />
-                                                    <g:if test="${editable}">
-                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                                    data-confirm-term-how="unlink"
-                                                                    controller="myInstitution" action="unlinkObjects" params="${[oid : link.class.name+':'+link.id]}">
-                                                                <i class="unlink icon"></i>
-                                                            </g:link>
-                                                        </span>
-                                                    </g:if>
-                                                </td>
-                                            </tr>
-                                        </g:each>
-                                    </g:if>
-                                </g:each>
-                            </table>
-                        </g:if>
-                        <g:else>
-                            <p>
-                                <g:message code="subscription.details.noLink"/>
-                            </p>
-                        </g:else>
-                        <div class="ui la-vertical buttons">
-                            <g:render template="/templates/links/subLinksModal"
-                                      model="${[tmplText:message(code:'subscription.details.addLink'),
-                                                tmplID:'addLink',
-                                                tmplButtonText:message(code:'subscription.details.addLink'),
-                                                tmplModalID:'sub_add_link',
-                                                editmode: editable,
-                                                atConsortialParent: contextOrg.id == subscription.getConsortia()?.id ? "true" : "false",
-                                                context: subscription
-                                      ]}" />
-                        </div>
-                    </div>
-                </div>
-
+                <div class="ui card" id="links"></div>
               <g:if test="${subscription.packages}">
-                <div class="ui card la-js-hideable hidden">
-                  <div class="content">
-                      <g:render template="accessPointLinksAsList"
-                                model="${[roleLinks: visibleOrgRelations,
-                                          roleObject: subscription,
-                                          roleRespValue: 'Specific subscription editor',
-                                          editmode: editable,
-                                          accessConfigEditable : accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && subscription.getSubscriber().id == contextOrg.id)
-                                ]}" />
-                  </div><!-- .content -->
-                </div>
-
-
-                      <div class="ui card la-js-hideable hidden">
-                          <div class="ui segment accordion">
-                              <div class="ui title header">
-                                  <i class="dropdown icon la-dropdown-accordion"></i><g:message code="subscription.packages.config.header" />
-                              </div>
-                              <div class="content">
-                                  <g:each in="${subscription.packages}" var="subscriptionPackage">
-                                      <h5 class="ui header">
-                                          <g:message code="subscription.packages.config.label" args="${[subscriptionPackage.pkg.name]}"/>
-                                      </h5>
-                                      <g:form action="setupPendingChangeConfiguration" params="[id:subscription.id,subscriptionPackage:subscriptionPackage.id]">
-                                          <dl>
-                                              <dt class="control-label"><g:message code="subscription.packages.changeType.label"/></dt>
-                                              <dt class="control-label">
-                                                  <g:message code="subscription.packages.setting.label"/>
-                                              </dt>
-                                              <dt class="control-label" data-tooltip="${message(code:"subscription.packages.notification.label")}">
-                                                  <i class="ui large icon bullhorn"></i>
-                                              </dt>
-                                              <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                                                  <dt class="control-label" data-tooltip="${message(code:'subscription.packages.auditable')}">
-                                                      <i class="ui large icon thumbtack"></i>
-                                                  </dt>
-                                              </g:if>
-                                          </dl>
-                                          <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                                          <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
-                                              <dl>
-                                                  <dt class="control-label">
-                                                      <g:message code="subscription.packages.${settingKey}"/>
-                                                  </dt>
-                                                  <dd>
-                                                      <g:if test="${!(settingKey in excludes)}">
-                                                          <g:if test="${editable}">
-                                                              <laser:select class="ui dropdown"
-                                                                            name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                                            optionKey="id" optionValue="value"
-                                                                            value="${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
-                                                              />
-                                                          </g:if>
-                                                          <g:else>
-                                                              ${subscriptionPackage.getPendingChangeConfig(settingKey) ? subscriptionPackage.getPendingChangeConfig(settingKey).settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                                          </g:else>
-                                                      </g:if>
-                                                  </dd>
-                                                  <dd>
-                                                      <g:if test="${editable}">
-                                                          <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification}"/>
-                                                      </g:if>
-                                                      <g:else>
-                                                          ${subscriptionPackage.getPendingChangeConfig(settingKey)?.withNotification ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                      </g:else>
-                                                  </dd>
-                                                  <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                                                      <dd>
-                                                          <g:if test="${!(settingKey in excludes)}">
-                                                              <g:if test="${editable}">
-                                                                  <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${subscriptionPackage.getPendingChangeConfig(settingKey) ? auditService.getAuditConfig(subscription,settingKey) : false}"/>
-                                                              </g:if>
-                                                              <g:else>
-                                                                  ${subscriptionPackage.getPendingChangeConfig(settingKey) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                              </g:else>
-                                                          </g:if>
-                                                      </dd>
-                                                  </g:if>
-                                              </dl>
-                                          </g:each>
-                                          <g:if test="${editable}">
-                                              <dl>
-                                                  <dt class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></dt>
-                                              </dl>
-                                          </g:if>
-                                      </g:form>
-                                  </g:each>
-
-                              </div><!-- .content -->
-                          </div>
-                      </div>
+                  <div id="packages"></div>
               </g:if>
-
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">
                         <g:render template="/templates/links/orgLinksAsList"
@@ -385,7 +205,6 @@
                                             editmode: editable,
                                             showPersons: true
                                   ]}" />
-
                         <div class="ui la-vertical buttons la-js-hide-this-card">
 
                             <g:render template="/templates/links/orgLinksSimpleModal"
@@ -402,7 +221,6 @@
                                                 orgList: availableProviderList,
                                                 signedIdList: existingProviderIdList
                                       ]}" />
-
                             <g:render template="/templates/links/orgLinksSimpleModal"
                                       model="${[linkType: subscription.class.name,
                                                 parent: genericOIDService.getOID(subscription),
@@ -422,103 +240,7 @@
 
                     </div>
                 </div>
-
-                <div class="ui card la-js-hideable hidden">
-                    <div class="content">
-                        <h5 class="ui header">
-                            <g:message code="license.plural"/>
-                        </h5>
-                        <g:if test="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
-                            <table class="ui fixed table">
-                                <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
-                                    <tr><g:set var="pair" value="${link.getOther(subscription)}"/>
-                                        <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
-                                        <td>
-                                            <g:link controller="license" action="show" id="${pair.id}">
-                                                ${pair.reference} (${pair.status.getI10n("value")})
-                                            </g:link>
-                                            <p><g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/></p>
-                                            <g:set var="comment" value="${DocContext.findByLink(link)}"/>
-                                            <g:if test="${comment}">
-                                                <p><em>${comment.owner.content}</em></p>
-                                            </g:if>
-                                        </td>
-                                        <td class="right aligned">
-                                            <g:if test="${pair.propertySet}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.viewLicenseProperties')}">
-                                                    <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
-                                                        <i class="ui angle double down icon"></i>
-                                                    </button>
-                                                </span>
-                                                <asset:script type="text/javascript">
-                                                    $("#derived-license-properties-toggle${link.id}").on('click', function() {
-                                                        $("#derived-license-properties${link.id}").transition('slide down');
-                                                        //$("#derived-license-properties${link.id}").toggleClass('hidden');
-
-                                                        if ($("#derived-license-properties${link.id}").hasClass('visible')) {
-                                                            $(this).html('<i class="ui angle double down icon"></i>');
-                                                        } else {
-                                                            $(this).html('<i class="ui angle double up icon"></i>');
-                                                        }
-                                                    })
-                                                </asset:script>
-                                            </g:if>
-                                            <g:render template="/templates/links/subLinksModal"
-                                                      model="${[tmplText:message(code:'subscription.details.editLink'),
-                                                                tmplIcon:'write',
-                                                                tmplCss: 'icon la-selectable-button',
-                                                                tmplID:'editLicenseLink',
-                                                                tmplModalID:"sub_edit_link_${link.id}",
-                                                                editmode: editable,
-                                                                subscriptionLicenseLink: true,
-                                                                context: subscription,
-                                                                atConsortialParent: contextOrg == subscription.getConsortia(),
-                                                                link: link
-                                                      ]}" />
-                                            <g:if test="${editable}">
-                                                <div class="ui icon negative buttons">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                                data-confirm-term-how="unlink"
-                                                                action="unlinkLicense" params="${[licenseOID: link.sourceLicense.id, id:subscription.id]}">
-                                                            <i class="unlink icon"></i>
-                                                        </g:link>
-                                                    </span>
-                                                </div>
-                                                <br />
-                                            </g:if>
-                                        </td>
-                                    </tr>
-                                    <g:if test="${pair.propertySet}">
-                                    <tr>
-                                        <td style="border-top: none;" colspan="3"><div id="${link.id}Properties"></div></td>
-                                    </tr>
-                                    </g:if>
-                                </g:each>
-                            </table>
-                        </g:if>
-
-                        <g:if test="${editable}">
-                            <div class="ui la-vertical buttons">
-                                <g:render template="/templates/links/subLinksModal"
-                                          model="${[tmplText:message(code:'license.details.addLink'),
-                                                    tmplID:'addLicenseLink',
-                                                    tmplButtonText:message(code:'license.details.addLink'),
-                                                    tmplModalID:'sub_add_license_link',
-                                                    editmode: editable,
-                                                    subscriptionLicenseLink: true,
-                                                    atConsortialParent: contextOrg == subscription.getConsortia(),
-                                                    context: subscription
-                                          ]}" />
-                            </div>
-                        </g:if>
-
-
-
-                    </div><!-- .content -->
-                </div>
-
+                <div class="ui card" id="licenses"></div>
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
                 <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
@@ -660,23 +382,13 @@
                         </div>
                     </div>
                 </g:if>
-
-                <div id="new-dynamic-properties-block">
-
-                    <g:render template="properties" model="${[
-                            subscription: subscription
-                    ]}" />
-
-                </div><!-- #new-dynamic-properties-block -->
-
+                <div id="new-dynamic-properties-block"></div><!-- #new-dynamic-properties-block -->
                <div class="clear-fix"></div>
             </div>
         </div><!-- .twelve -->
-
         <aside class="four wide column la-sidekick">
             <g:render template="/templates/aside1" model="${[ownobj:subscription, owntp:'subscription']}" />
         </aside><!-- .four -->
-
     </div><!-- .grid -->
 
 
@@ -684,6 +396,11 @@
 
     <asset:script type="text/javascript">
       $(document).ready(function() {
+
+          loadLinks();
+          loadLicenses();
+          loadPackages();
+          loadProperties();
 
           function unlinkPackage(pkg_id){
             var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscription.id])}&package="+pkg_id
@@ -697,47 +414,54 @@
               }
             });
           }
-
-          function hideModal(){
-            $("[name='coreAssertionEdit']").modal('hide');
-          }
-
-          function showCoreAssertionModal(){
-
-            $("[name='coreAssertionEdit']").modal('show');
-
-          }
-
-          <g:if test="${editable}">
-
-             $('#collapseableSubDetails').on('show', function() {
-                $('.hidden-license-details i').removeClass('icon-plus').addClass('icon-minus');
-            });
-
-            // Reverse it for hide:
-            $('#collapseableSubDetails').on('hide', function() {
-                $('.hidden-license-details i').removeClass('icon-minus').addClass('icon-plus');
-            });
-          </g:if>
-
-          <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
-            document.body.style.background = "#fcf8e3";
-          });</g:if>
-
-          <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+          function loadLinks() {
               $.ajax({
-                  url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
+                  url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                   data: {
-                       loadFor: "${link.sourceLicense.id}",
-                       linkId: ${link.id}
+                      entry:"${genericOIDService.getOID(subscription)}"
                   }
-              }).done(function(response) {
-                  $("#${link.id}Properties").html(response);
+              }).done(function(response){
+                  $("#links").html(response);
+                  r2d2.initDynamicSemuiStuff('#links');
               }).fail();
-
-          </g:each>
-
+          }
+          function loadLicenses() {
+              $.ajax({
+                  url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
+                  data: {
+                      entry:"${genericOIDService.getOID(subscription)}",
+                      subscriptionLicenseLink: true
+                  }
+              }).done(function(response){
+                  $("#licenses").html(response);
+                  r2d2.initDynamicSemuiStuff("#licenses");
+              }).fail();
+          }
+          function loadPackages() {
+              $.ajax({
+                  url: "<g:createLink controller="ajaxHtml" action="getPackageData" />",
+                  data: {
+                      subscription: "${subscription.id}"
+                  }
+              }).done(function(response){
+                  $("#packages").html(response);
+                  r2d2.initDynamicSemuiStuff("#packages");
+              }).fail();
+          }
+          function loadProperties() {
+              $.ajax({
+                  url: "<g:createLink controller="ajaxHtml" action="getProperties" />",
+                  data: {
+                      subscription: "${subscription.id}"
+                  }
+              }).done(function(response){
+                  $("#new-dynamic-properties-block").html(response);
+                  r2d2.initDynamicSemuiStuff("#new-dynamic-properties-block");
+                  r2d2.initDynamicXEditableStuff("#new-dynamic-properties-block");
+              }).fail();
+          }
         });
+
 
     </asset:script>
   </body>

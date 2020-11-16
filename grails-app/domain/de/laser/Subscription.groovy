@@ -8,7 +8,7 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
@@ -120,7 +120,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'nameConcatenated', 'isSlavedAsString', 'provider', 'collective', 'multiYearSubscription',
-            'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate', 'holdingTypes',
+            'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'allocationTerm',
             'subscriber', 'providers', 'agencies', 'consortia'
     ] // mark read-only accessor methods
@@ -421,11 +421,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     Org getConsortia() {
-        Org result
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA )
-                result = or.org
-            }
+        Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }.org
         result
     }
 
@@ -768,18 +764,13 @@ select distinct oap from OrgAccessPoint oap
       return OrgAccessPoint.executeQuery(hql, [sub:this, org:org, platform:platform])
   }
 
-  def getHoldingTypes() {
-      def types = issueEntitlements?.tipp?.title?.medium?.unique()
-      types
-  }
-
   String dropdownNamingConvention() {
       dropdownNamingConvention(contextService.org)
   }
 
   String dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-       SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+       SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
 
        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
@@ -818,7 +809,7 @@ select distinct oap from OrgAccessPoint oap
     }
 
     String dropdownNamingConventionWithoutOrg(Org contextOrg){
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
 
         period = endDate ? period + ' - ' + sdf.format(endDate)  : ''

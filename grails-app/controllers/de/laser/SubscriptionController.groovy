@@ -24,7 +24,6 @@ class SubscriptionController {
     def accessService
     def docstoreService
     SubscriptionControllerService subscriptionControllerService
-    def linksGenerationService
     def subscriptionService
     def escapeService
     def deletionService
@@ -37,7 +36,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.show(this,params)
+        Map<String,Object> ctrlResult = subscriptionControllerService.show(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -167,7 +166,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.notes(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.notes(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -179,7 +178,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.documents(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.documents(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -217,7 +216,7 @@ class SubscriptionController {
             response.sendError(401)
         }
         else {
-            SimpleDateFormat sdf = DateUtil.SDF_ymd
+            SimpleDateFormat sdf = DateUtils.SDF_ymd
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
             if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs) {
@@ -524,7 +523,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
     })
     def surveysConsortia() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -600,7 +599,7 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
@@ -655,7 +654,7 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtil.SDF_NoTimeNoPoint.format(new Date())}"
+            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
             if(params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
@@ -1119,7 +1118,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
         result.subscription = subscription
-        SimpleDateFormat sdf = DateUtil.SDF_dmy
+        SimpleDateFormat sdf = DateUtils.SDF_dmy
         Date newStartDate
         Date newEndDate
         use(TimeCategory) {
@@ -1356,7 +1355,7 @@ class SubscriptionController {
     @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_ADMIN'])
     def pendingChanges() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result)
                 response.sendError(401)

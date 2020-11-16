@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
 import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
@@ -16,7 +16,6 @@ import grails.util.Holders
 import grails.core.GrailsApplication
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.transaction.TransactionStatus
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -35,7 +34,7 @@ class SurveyService {
     String replyTo
     GenericOIDService genericOIDService
 
-    SimpleDateFormat formatter = DateUtil.getSDF_dmy()
+    SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
 
     @javax.annotation.PostConstruct
@@ -137,7 +136,7 @@ class SurveyService {
     }
 
     def exportSurveys(List<SurveyConfig> surveyConfigs, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map sheetData = [:]
 
@@ -273,7 +272,7 @@ class SurveyService {
 
                         List licenseNames = []
                         Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                            License l = genericOIDService.resolveOID(li.source)
+                            License l = (License) genericOIDService.resolveOID(li.source)
                             licenseNames << l.reference
                         }
                         row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -349,7 +348,7 @@ class SurveyService {
 
                     List licenseNames = []
                     Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        License l = genericOIDService.resolveOID(li.source)
+                        License l = (License) genericOIDService.resolveOID(li.source)
                         licenseNames << l.reference
                     }
                     row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -434,7 +433,7 @@ class SurveyService {
     }
 
     def exportSurveyCostItems(List<SurveyConfig> surveyConfigs, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map sheetData = [:]
 
@@ -666,7 +665,7 @@ class SurveyService {
     }
 
     def exportSurveysOfParticipant(List surveyConfigs, Org participant) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map sheetData = [:]
             List titles = []
@@ -737,7 +736,7 @@ class SurveyService {
 
                             List licenseNames = []
                             Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                                License l = genericOIDService.resolveOID(li.source)
+                                License l = (License) genericOIDService.resolveOID(li.source)
                                 licenseNames << l.reference
                             }
                             row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])

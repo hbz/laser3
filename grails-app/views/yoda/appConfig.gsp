@@ -34,7 +34,7 @@
         <div class="field">
             <label>${key}</label>
 
-            <g:if test="${key.equalsIgnoreCase('jira')}">
+            <g:if test="${blacklist.contains(key)}">
                 <g:textArea readonly="" rows="2" style="width:95%" name="key" value="=== C O N C E A L E D ==="/>
             </g:if>
             <g:else>

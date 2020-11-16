@@ -28,12 +28,12 @@ class SurveyProperty implements I10nTrait {
 
     @Transient
     static def validTypes = [
-            'class java.lang.Integer'            : ['de': 'Zahl', 'en': 'Number'],
-            'class java.lang.String'             : ['de': 'Text', 'en': 'Text'],
-            'class de.laser.RefdataValue'        : ['de': 'Referenzwert', 'en': 'Refdata'],
-            'class java.math.BigDecimal'         : ['de': 'Dezimalzahl', 'en': 'Decimal'],
-            'class java.util.Date'               : ['de': 'Datum', 'en': 'Date'],
-            'class java.net.URL'                 : ['de': 'Url', 'en': 'Url']
+            'java.lang.Integer'            : ['de': 'Zahl', 'en': 'Number'],
+            'java.lang.String'             : ['de': 'Text', 'en': 'Text'],
+            'de.laser.RefdataValue'        : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'java.math.BigDecimal'         : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'java.util.Date'               : ['de': 'Datum', 'en': 'Date'],
+            'java.net.URL'                 : ['de': 'Url', 'en': 'Url']
     ]
 
     static constraints = {

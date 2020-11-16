@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
@@ -67,7 +67,7 @@ class AccessPointService {
     }
 
     def exportAccessPoints(List accessPoints, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         List titles = []
 

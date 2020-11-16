@@ -7,7 +7,7 @@ import de.laser.auth.Role
 import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
@@ -562,7 +562,7 @@ class LicenseController {
      */
     private Map<String,Object> setSubscriptionFilterData() {
         Map<String, Object> result = [:]
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date dateRestriction = null
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""

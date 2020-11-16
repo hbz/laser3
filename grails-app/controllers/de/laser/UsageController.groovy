@@ -1,8 +1,5 @@
 package de.laser
 
-
-import de.laser.auth.User
- 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification
@@ -10,13 +7,17 @@ import org.hibernate.criterion.CriteriaSpecification
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UsageController  {
 
-    def statsSyncService
-    def factService
     def contextService
+    def statsSyncService
+    def usageControllerService
 
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
-        def result = initResult()
+        Map<String, Object> result = usageControllerService.initResult(this, params)
+        if (result.tmpFlashError) {
+            flash.error = result.tmpFlashError
+            result.remove('tmpFlashError')
+        }
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
@@ -78,72 +79,15 @@ class UsageController  {
         result
     }
 
-    private initResult()
-    {
-        Map<String, Object> result = [:]
-        result.statsSyncService = [:]
-        result.statsSyncService.running = statsSyncService.running
-        result.statsSyncService.submitCount = statsSyncService.submitCount
-        result.statsSyncService.completedCount = statsSyncService.completedCount
-        result.statsSyncService.newFactCount = statsSyncService.newFactCount
-        result.statsSyncService.totalTime = statsSyncService.totalTime
-        result.statsSyncService.threads = statsSyncService.THREAD_POOL_SIZE
-        result.statsSyncService.queryTime = statsSyncService.queryTime
-        result.statsSyncService.activityHistogram = statsSyncService.activityHistogram
-        result.statsSyncService.syncStartTime = statsSyncService.syncStartTime
-        result.statsSyncService.syncElapsed = statsSyncService.syncElapsed
-
-        result.institution = contextService.getOrg()
-        result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
-        result.user = contextService.getUser()
-
-        ArrayList platformsWithNatstatId = factService.platformsWithNatstatId()
-
-        ArrayList providerList = []
-        if (!result.institutionList.isEmpty()) {
-            String joinedInstitutions = result.institutionList.id.join(',')
-            platformsWithNatstatId.each {
-                String hql = "select s.id from Subscription s join s.orgRelations as institution " +
-                    "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.platform  as platform where ie.subscription=s and platform.id=:platform_id)"
-                ArrayList subsWithIssueEntitlements = Subscription.executeQuery(hql, [platform_id: it.id])
-                LinkedHashMap<String,Object> listItem = [:]
-                listItem.id = it.id
-                listItem.name = it.name
-                listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
-                providerList.add(listItem)
-            }
-        }
-        result.providerList = providerList
-        result.institutionsWithFacts = factService.getFactInstitutionList()
-        result.providersWithFacts = factService.getFactProviderList()
-        result.natstatProviders = StatsTripleCursor.withCriteria {
-            projections {
-                distinct("supplierId")
-            }
-            order("supplierId", "asc")
-        }
-        String institutionsForQuery = StatsTripleCursor.withCriteria {
-            projections {
-                distinct("customerId")
-            }
-            order("customerId", "asc")
-        }.collect {"'$it'"}.join(',')
-
-        String hql = "select ident.org, ident from Identifier as ident where ident.value in (${institutionsForQuery})"
-        result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
-        result.cursorCount = factService.getSupplierCursorCount()
-
-        if (statsSyncService.errors) {
-            flash.error = statsSyncService.errors.join('</br>')
-        }
-        statsSyncService.errors = []
-        return result
-    }
-
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def abort()
     {
-        def result = initResult()
+        Map<String, Object> result = usageControllerService.initResult(this, params)
+        if (result.tmpFlashError) {
+            flash.error = result.tmpFlashError
+            result.remove('tmpFlashError')
+        }
+
         statsSyncService.setErrors([])
         statsSyncService.running = false
         redirect(view: "index", model: result)
@@ -155,7 +99,12 @@ class UsageController  {
         // TODO when we switch to global API Key / Requestor, query SUSHI Service status endpoint here
         // Do not continue if service is not active or there is an error with the API Credentials.
         statsSyncService.setErrors([])
-        def result = initResult()
+        Map<String, Object> result = usageControllerService.initResult(this, params)
+        if (result.tmpFlashError) {
+            flash.error = result.tmpFlashError
+            result.remove('tmpFlashError')
+        }
+
         statsSyncService.addFilters(params)
         statsSyncService.doSync()
         if (statsSyncService.errors) {
@@ -169,7 +118,12 @@ class UsageController  {
     def deleteAll()
     {
         statsSyncService.setErrors([])
-        def result = initResult()
+        Map<String, Object> result = usageControllerService.initResult(this, params)
+        if (result.tmpFlashError) {
+            flash.error = result.tmpFlashError
+            result.remove('tmpFlashError')
+        }
+
         Fact.executeUpdate('delete from Fact')
         StatsTripleCursor.executeUpdate('delete from StatsTripleCursor ')
         flash.message = message(code: 'default.usage.delete.success')
@@ -181,7 +135,12 @@ class UsageController  {
     def deleteSelection()
     {
         statsSyncService.setErrors([])
-        def result = initResult()
+        Map<String, Object> result = usageControllerService.initResult(this, params)
+        if (result.tmpFlashError) {
+            flash.error = result.tmpFlashError
+            result.remove('tmpFlashError')
+        }
+
         def wibid, supplier, platform, instOrg
 
         if (params.supplier != 'null'){

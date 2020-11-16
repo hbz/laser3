@@ -65,12 +65,13 @@ class OrganisationControllerService {
 
     Map<String, Object> toggleCombo(OrganisationController controller, GrailsParameterMap params) {
         Locale locale = LocaleContextHolder.getLocale()
-        Map<String, Object> result = getResultGenericsAndCheckAccess(this, params)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
+        Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
+        if (!result) {
+            return [result:null, status:STATUS_ERROR]
         }
-        if(!params.direction) {
+        if (!params.direction) {
             result.error = messageSource.getMessage('org.error.noToggleDirection',null,locale)
+            return [result:result, status:STATUS_ERROR]
         }
         switch(params.direction) {
             case 'add':
@@ -83,11 +84,11 @@ class OrganisationControllerService {
             case 'remove':
                 if(Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
                     result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.sub',null,locale)
-                    [result:result,status:STATUS_ERROR]
+                    return [result:result, status:STATUS_ERROR]
                 }
                 else if(License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
                     result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.sub',null,locale)
-                    [result:result,status:STATUS_ERROR]
+                    return [result:result, status:STATUS_ERROR]
                 }
                 else {
                     Combo cmb = Combo.findWhere(toOrg: result.institution,
@@ -97,7 +98,7 @@ class OrganisationControllerService {
                 }
                 break
         }
-        [result:result,status:STATUS_OK]
+        [result:result, status:STATUS_OK]
     }
 
     //--------------------------------------------- identifier section -------------------------------------------------

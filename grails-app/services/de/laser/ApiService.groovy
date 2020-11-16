@@ -248,15 +248,15 @@ class ApiService {
                 String name = pp.name().replace('_', ' ').toLowerCase()
 
                 PropertyDefinition type = PropertyDefinition.findWhere(
-                        name: name,
-                        type: 'class ' + RefdataValue.class.name,
+                        name:   name,
+                        type:   RefdataValue.class.name,
                         descr:  PropertyDefinition.ORG_PROP,
                         tenant: tenant
                 )
                 if (! type) {
                     type = PropertyDefinition.findWhere(
-                            name: name,
-                            type: 'class ' + String.class.name,
+                            name:   name,
+                            type:   String.class.name,
                             descr:  PropertyDefinition.ORG_PROP,
                             tenant: tenant
                     )

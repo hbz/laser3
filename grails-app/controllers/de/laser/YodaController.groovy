@@ -140,7 +140,7 @@ class YodaController {
         Map<String, Object> map3 = [
                 token       : "EGP Nr.",
                 category    : PropertyDefinition.ORG_PROP,
-                type        : "class java.lang.Integer",
+                type        : "java.lang.Integer",
                 tenant      : contextService.getOrg().globalUID,
                 i10n        : [
                         name_de: "EGP Nr.",
@@ -209,12 +209,12 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def appConfig() {
         Map result = [:]
-        //SystemAdmin should only be created once in BootStrap
-        //result.adminObj = SystemAdmin.list().first()
+
+        result.blacklist = [
+                'jira', 'dataSource', 'dataSource.password'
+        ]
         result.editable = true
-        //if (request.method == "POST") {
-        //    result.adminObj.refresh()
-        //}
+
         result.currentconf = grails.util.Holders.config
 
         result
@@ -318,14 +318,14 @@ class YodaController {
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
                     [day: it])
 
-            String dayKey = (DateUtil.getSDF_NoTime()).format(new Date(it.getTime()))
+            String dayKey = (DateUtils.getSDF_NoTime()).format(new Date(it.getTime()))
             activity.put(dayKey, [])
 
             slots.each { hour ->
                 activity[dayKey].add([
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),   // time.start
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),   // time.min
-                        (DateUtil.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),   // time.max
+                        (DateUtils.getSDF_OnlyTime()).format(new Date(hour[0].getTime())),   // time.start
+                        (DateUtils.getSDF_OnlyTime()).format(new Date(hour[1].getTime())),   // time.min
+                        (DateUtils.getSDF_OnlyTime()).format(new Date(hour[2].getTime())),   // time.max
                         hour[3],    // user.min
                         hour[4],    // user.max
                         hour[5]     // user.avg
@@ -423,12 +423,12 @@ class YodaController {
 
         result.globalTimeline           = [:]
         result.globalTimelineStartDate  = (new Date()).minus(30)
-        result.globalTimelineDates      = (30..0).collect{ (DateUtil.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getSDF_NoTime()).format( (new Date()).minus(it) ) }
 
         Map<String, Integer> ordered = [:]
 
         allUri.each { uri ->
-            result.globalTimeline[uri] = (30..0).collect { 0 }
+            result.globalTimeline[uri] = (25..0).collect { 0 }
 
             String sql = "select to_char(sp.dateCreated, 'dd.mm.yyyy'), count(*) from SystemProfiler sp where sp.uri = :uri and sp.dateCreated >= :dCheck group by to_char(sp.dateCreated, 'dd.mm.yyyy')"
             List hits = SystemProfiler.executeQuery(sql, [uri: uri, dCheck: result.globalTimelineStartDate])

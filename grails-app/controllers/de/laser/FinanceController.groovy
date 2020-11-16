@@ -7,7 +7,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.exceptions.FinancialDataException
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -87,7 +87,7 @@ class FinanceController  {
         if(result.dataToDisplay.any { d -> ["subscr","consAtSubscr"].contains(d) }) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
             SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
@@ -126,7 +126,7 @@ class FinanceController  {
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
-            SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
+            SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
             LinkedHashMap<Subscription,List<Org>> subscribers = [:]
             LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]

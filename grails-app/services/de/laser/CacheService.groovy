@@ -7,6 +7,7 @@ import grails.gorm.transactions.Transactional
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
+import net.sf.ehcache.config.Configuration
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
@@ -132,5 +133,15 @@ class CacheService implements ApplicationContextAware {
 
     def clear(def cache) {
         cache.removeAll()
+    }
+
+    /* --- */
+
+    String getDiskStorePath() {
+
+        CacheManager cm = CacheManager.newInstance()
+        Configuration cfg = cm.getConfiguration()
+
+        cfg.getDiskStoreConfiguration().getPath()
     }
 }

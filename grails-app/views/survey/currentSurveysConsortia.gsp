@@ -253,7 +253,7 @@
                         ${(params.int('offset') ?: 0) + i + 1}
                     </td>
 
-                    <td>
+                    <th scope="row" class="la-th-column">
                             <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
                                 ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
                             </g:link>
@@ -261,14 +261,14 @@
                                 <g:set var="providers" value="${surveyConfig.subscription.getProviders()}"/>
                                 <g:if test="${providers}">
 
-                                    <div class="la-flexbox">
+                                    <div class="la-flexbox la-minor-object">
                                         (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
                                     </div>
                                 </g:if>
                             </g:if>
 
 
-                    </td>
+                    </th>
 
                     <td class="center aligned">
                         <div class="ui label left pointing survey-${surveyInfo.type.value}">

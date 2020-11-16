@@ -46,4 +46,60 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1604920204115-10") {
         dropColumn(columnName: "version", tableName: "system_event")
     }
+
+    changeSet(author: "kloberd (modified)", id: "1604920204115-11") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.Subscription:', 'de.laser.Subscription:') where pc_change_doc_oid is not null")
+                sql.execute("update pending_change set pc_change_target_oid = replace(pc_change_target_oid, 'com.k_int.kbplus.Subscription:', 'de.laser.Subscription:') where pc_change_target_oid is not null")
+
+
+            }
+            rollback {}
+        }
+    }
+    changeSet(author: "kloberd (modified)", id: "1604920204115-12") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.License:', 'de.laser.License:') where pc_change_doc_oid is not null")
+                sql.execute("update pending_change set pc_change_target_oid = replace(pc_change_target_oid, 'com.k_int.kbplus.License:', 'de.laser.License:') where pc_change_target_oid is not null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "kloberd (modified)", id: "1604920204115-13") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.SubscriptionProperty:', 'de.laser.properties.SubscriptionProperty:') where pc_change_doc_oid is not null")
+                sql.execute("update pending_change set pc_change_doc_oid = replace(pc_change_doc_oid, 'com.k_int.kbplus.LicenseProperty:', 'de.laser.properties.LicenseProperty:') where pc_change_doc_oid is not null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "kloberd (modified)", id: "1604920204115-14") {
+        grailsChange {
+            change {
+                sql.execute("update property_definition set pd_type = replace(pd_type, 'class ', '') where pd_type is not null")
+            }
+            rollback {}
+        }
+    }
+    changeSet(author: "kloberd (modified)", id: "1604920204115-15") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_payload = replace(pc_payload, 'type\":\"class ', 'type\":\"') where pc_payload is not null")
+            }
+            rollback {}
+        }
+    }
+    changeSet(author: "kloberd (modified)", id: "1604920204115-16") {
+        grailsChange {
+            change {
+                sql.execute("update survey_property set surpro_type = replace(surpro_type, 'class ', '')  where surpro_type is not null")
+            }
+            rollback {}
+        }
+    }
 }

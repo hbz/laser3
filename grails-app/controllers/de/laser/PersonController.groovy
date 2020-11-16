@@ -427,7 +427,7 @@ class PersonController  {
     def getPossibleTenantsAsJson() {
         def result = []
 
-        Person person = genericOIDService.resolveOID(params.oid)
+        Person person = (Person) genericOIDService.resolveOID(params.oid)
 
         List<Org> orgs = person.roleLinks?.collect{ it.org }
         orgs.add(person.tenant)

@@ -135,7 +135,7 @@ class OrganisationController  {
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         def message = message(code: 'export.all.orgs')
         // Write the output to a file
@@ -228,7 +228,7 @@ class OrganisationController  {
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.all.providers')
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
 
@@ -1255,7 +1255,7 @@ class OrganisationController  {
         if (params.exportXLSX) {
 
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "org.nav.accessPoints")
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""

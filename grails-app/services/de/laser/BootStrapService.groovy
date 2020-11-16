@@ -7,18 +7,15 @@ import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import grails.converters.JSON
-import grails.plugin.springsecurity.SecurityFilterPosition
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
-import net.sf.ehcache.Cache
-import net.sf.ehcache.CacheManager
 import org.hibernate.type.TextType
 
 @Transactional
 class BootStrapService {
 
     def apiService
+    def cacheService
     def dataSource
     def grailsApplication
     def organisationService
@@ -35,10 +32,12 @@ class BootStrapService {
         log.info("--------------------------------------------------------------------------------")
 
         log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
+        log.info("Server: ${ServerUtils.getCurrentServer()}")
         log.info("Database: ${grailsApplication.config.dataSource.url}")
         log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
         log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
         log.info("Documents: ${ConfigUtils.getDocumentStorageLocation()}")
+        log.info("Cache: ${cacheService.getDiskStorePath()}")
 
         log.info("--------------------------------------------------------------------------------")
 
@@ -397,51 +396,42 @@ class BootStrapService {
 
     void updatePsqlRoutines() {
 
-        File dir
-
         try {
-            def folder = this.class.classLoader.getResource('./migrations/functions')
-            dir = new File(folder.file)
-        }
-        catch (Exception e) {
-            log.warn(e.toString() + ' .. trying fallback')
+            def folder = this.class.classLoader.getResource('functions')
+            File dir = new File(folder.file)
 
-            String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
-            dir = new File(dirPath)
-        }
+            if (dir.exists()) {
+                log.debug('scanning ' + dir.getAbsolutePath())
 
-        if (dir.exists()) {
-            log.debug('scanning ' + dir.getAbsolutePath())
+                dir.listFiles().each { file ->
+                    String fileName = file.getName()
+                    if (fileName.endsWith('.sql')) {
+                        String fileSql     = file.readLines().join(System.getProperty("line.separator")).trim()
+                        String validateSql = "SELECT proname, regexp_matches(prosrc, 'VERSION CONSTANT NUMERIC = [0-9]*') FROM pg_proc WHERE proname = '" +
+                                fileName.replace('.sql', '') + "'"
 
-            dir.listFiles().each { file ->
-                String fileName = file.getName()
-                if (fileName.endsWith('.sql')) {
-                    String fileSql     = file.readLines().join(System.getProperty("line.separator")).trim()
-                    String validateSql = "SELECT proname, REGEXP_MATCH(prosrc, 'VERSION CONSTANT NUMERIC = [0-9]*') FROM pg_proc WHERE proname = '" +
-                            fileName.replace('.sql', '') + "'"
+                        if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
 
-                    if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
+                            try {
+                                org.hibernate.SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
+                                org.hibernate.SQLQuery validate = sessionFactory.currentSession
+                                        .createSQLQuery(validateSql)
+                                        .addScalar("regexp_matches", new TextType())
 
-                        try {
-                            org.hibernate.SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
-                            org.hibernate.SQLQuery validate = sessionFactory.currentSession
-                                    .createSQLQuery(validateSql)
-                                    .addScalar("REGEXP_MATCH", new TextType())
-
-                            query.executeUpdate()
-                            log.debug("  -> ${fileName} : " + validate.list()?.get(0))
-                        }
-                        catch(Exception e) {
-                            log.error("  -> ${fileName} : " + e)
+                                query.executeUpdate()
+                                log.debug("  -> ${fileName} : " + validate.list()?.get(0))
+                            }
+                            catch(Exception e) {
+                                log.error("  -> ${fileName} : " + e)
+                            }
                         }
                     }
                 }
             }
         }
-        else {
-            log.warn('.. failed')
+        catch (Exception e) {
+            log.warn('.. failed: ' + e.getMessage())
         }
-
     }
 
     void adjustDatabasePermissions() {
@@ -515,7 +505,7 @@ class BootStrapService {
 
             RefdataValue val = RefdataValue.getByValueAndCategory(token, RDConstants.ORGANISATIONAL_ROLE)
             if (group) {
-                val.setGroup(group) // TODO [ticket=2880]
+                val.setGroup(group)
             }
             val.save()
         }

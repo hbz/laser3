@@ -1,11 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<%@ page import="org.grails.web.util.GrailsApplicationAttributes" %>
 
 <laser:serviceInjection />
 
-<g:set var="user" value="${contextService.user}"/>
-<g:set var="org" value="${contextService.org}"/>
 <%
     List menuArgs
     if(showConsortiaFunctions)
@@ -64,27 +60,27 @@
             </semui:exportDropdownItem>--%>
         </semui:exportDropdown>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
+<g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <semui:actionsDropdown>
-        <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+        <g:if test="${editable}">
             <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
         </g:if>
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
-        <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+        <g:if test="${editable}">
             <div class="divider"></div>
-            <g:if test="${(accessService.checkPerm("ORG_INST") && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (accessService.checkPerm("ORG_CONSORTIUM") && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+            <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
                 <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:else>
 
-            <g:if test="${(accessService.checkPerm("ORG_INST") && !subscription.instanceOf) || accessService.checkPerm("ORG_CONSORTIUM")}">
+            <g:if test="${(contextCustomerType == 'ORG_INST' && !subscription.instanceOf) || contextCustomerType == 'ORG_CONSORTIUM'}">
                 <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_INST") && subscription.instanceOf}">
+            <g:if test="${contextCustomerType == 'ORG_INST' && subscription.instanceOf}">
                 <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
                     <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(navPrevSubscription[0]), targetObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElementsFromPrevSubscription" />
@@ -148,7 +144,7 @@
                 </g:else>
             </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:if test="${contextCustomerType == 'ORG_CONSORTIUM' && showConsortiaFunctions && subscription.instanceOf == null }">
                     <semui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 
@@ -161,7 +157,7 @@
                 <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
             </g:if>
 
-            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && accessService.checkPerm("ORG_CONSORTIUM")}">
+            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && contextCustomerType == 'ORG_CONSORTIUM'}">
 
                   <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                              params="${[id: params.id]}"
@@ -178,7 +174,7 @@
             <g:if test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-                <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(org.id == subscription.getConsortia()?.id && subscription.instanceOf)}">
+                <g:if test="${!(contextOrg.id == subscriptionConsortia?.id && subscription.instanceOf)}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>
@@ -199,6 +195,6 @@
     <g:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
+<g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>

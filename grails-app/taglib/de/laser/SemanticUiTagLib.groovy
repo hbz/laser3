@@ -190,21 +190,21 @@ class SemanticUiTagLib {
 
     def systemInfo = { attrs, body ->
 
-        def systemChecks = systemService?.serviceCheck()
+        def systemChecks = systemService.serviceCheck()
 
         if (systemChecks) {
 
             out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button icon" data-semui="modal">'
-            out << '<i aria-hidden="true" class="red fire extinguisher icon"></i>'
+            out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i aria-hidden="true" class="red fire extinguisher icon"></i> SYSTEM-INFORMATION</h4>'
+            out << '<h4 class="ui red header"> <i aria-hidden="true" class="red exclamation triangle icon"></i> SYSTEM-INFORMATION</h4>'
             out << '<div class="scrolling content">'
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
                 out << '<div class="item">'
-                out << "${systemCheck.key}: ${systemCheck.value}"
+                out << "<strong>${systemCheck.key}</strong>: ${systemCheck.value}"
                 out << '</div>'
             }
             out << '</div>'
@@ -245,7 +245,7 @@ class SemanticUiTagLib {
                     }
                     // inherit (from)
                     else if (obj?.showUIShareButton()) {
-                        String oid = "${obj.getClass().getName()}:${obj.getId()}"
+                        String oid = genericOIDService.getOID(obj)
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
                             out << '<div class="ui simple dropdown icon mini green button la-audit-button" data-content="Wert wird vererbt">'
@@ -368,27 +368,6 @@ class SemanticUiTagLib {
             // CAUTION: inject default mode
             attrs.params.mode = mode
         }
-
-        /*
-
-        out << '<div class="ui tiny buttons">'
-        out << g.link( "${message(code:'profile.simpleView')}",
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params + ['mode':'basic'],
-                class: "ui mini button ${mode == 'basic' ? 'positive' : ''}"
-        )
-
-        //out << '<div class="or"></div>'
-
-        out << g.link( "${message(code:'profile.advancedView')}",
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params + ['mode':'advanced'],
-                class: "ui mini button ${mode == 'advanced' ? 'positive' : ''}"
-        )
-        out << '</div>'
-        */
     }
 
     //<semui:meta> CONTENT <semui:meta>
@@ -599,7 +578,7 @@ class SemanticUiTagLib {
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         def value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value

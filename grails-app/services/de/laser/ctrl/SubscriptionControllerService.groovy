@@ -30,13 +30,13 @@ import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.OrgSetting
-import de.laser.OrgTypeService
 import de.laser.Package
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.Person
 import de.laser.Platform
 import de.laser.PropertyService
+import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionController
@@ -52,7 +52,7 @@ import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
@@ -93,7 +93,6 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     FinanceService financeService
     FinanceControllerService financeControllerService
-    OrgTypeService orgTypeService
     FactService factService
     SubscriptionService subscriptionService
     PropertyService propertyService
@@ -113,7 +112,7 @@ class SubscriptionControllerService {
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
-    Map<String,Object> show(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> show(GrailsParameterMap params) {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('1')
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -124,11 +123,11 @@ class SubscriptionControllerService {
             if (result.institution) {
                 result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             }
-            pu.setBenchmark('links')
-            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
-            pu.setBenchmark('pending changes')
+
+            pu.setBenchmark('packages')
             // ---- pendingChanges : start
-            if (executorWrapperService.hasRunningProcess(result.subscription)) {
+            result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
+            /*if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 log.debug("PendingChange processing in progress")
                 result.processingpc = true
             }
@@ -154,7 +153,7 @@ class SubscriptionControllerService {
                 } else {
                     result.pendingChanges = pendingChanges
                 }
-            }
+            }*/
             // ---- pendingChanges : end
             pu.setBenchmark('tasks')
             // TODO: experimental asynchronous task
@@ -164,13 +163,7 @@ class SubscriptionControllerService {
             Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
             result << preCon
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscription.orgRelations?.each { or ->
-                if (!(or.org.id == result.contextOrg.id) && !(or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
             //}
             pu.setBenchmark('properties')
             // TODO: experimental asynchronous task
@@ -209,45 +202,54 @@ class SubscriptionControllerService {
             // TODO: experimental asynchronous task
             //def task_usage = task {
             // usage
-            List suppliers = Platform.executeQuery('select distinct(plat.id) from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub',[sub:result.subscription])
+            pu.setBenchmark('before platform query')
+            Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub',[sub:result.subscription])
             if (suppliers.size() > 1) {
                 log.debug('Found different content platforms for this subscription, cannot show usage')
             }
             else {
+                pu.setBenchmark('before loading platform')
                 Long supplier_id = suppliers[0]
-                PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr',[owner:supplier_id,name:'NatStat Supplied ID',descr:PropertyDefinition.PLA_PROP])
+                //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                pu.setBenchmark('before institutional usage identifier')
                 result.natStatSupplierId = platform?.stringValue ?: null
-                result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                 if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
-                        def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
-                        def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
-                        def holdingTypes = result.subscription.getHoldingTypes() ?: null
-                        if (!holdingTypes) {
-                            log.debug('No types found, maybe there are no issue entitlements linked to subscription')
-                        } else if (holdingTypes.size() > 1) {
-                            log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                        } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
-                            def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
-                            def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
-                            if (costPerUseMetricValuePair) {
-                                result.costPerUseMetric = costPerUseMetricValuePair[0]
-                                result.totalCostPerUse = costPerUseMetricValuePair[1]
-                                result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
-                            }
-                        }
-                        result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                        if(result.statsWibid && result.natStatSupplierId) {
-                            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-                            result.usage = fsresult?.usage
-                            result.missingMonths = fsresult?.missingMonths
-                            result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
-                            result.x_axis_labels = fsresult?.x_axis_labels
-                            result.y_axis_labels = fsresult?.y_axis_labels
-                            result.lusage = fsLicenseResult?.usage
-                            result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
-                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                    pu.setBenchmark('before usage data')
+                    def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
+                    pu.setBenchmark('before usage data sub period')
+                    def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
+                    Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp join tipp.title ti where ie.subscription = :context',[context:result.subscription])
+                    if (!holdingTypes) {
+                        log.debug('No types found, maybe there are no issue entitlements linked to subscription')
+                    } else if (holdingTypes.size() > 1) {
+                        log.info('Different content type for this license, cannot calculate Cost Per Use.')
+                    } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
+                        def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
+                        pu.setBenchmark('before total cost per use')
+                        def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
+                        if (costPerUseMetricValuePair) {
+                            result.costPerUseMetric = costPerUseMetricValuePair[0]
+                            result.totalCostPerUse = costPerUseMetricValuePair[1]
+                            result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
                         }
                     }
+                    result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
+                    if(result.statsWibid && result.natStatSupplierId) {
+                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+                        result.usage = fsresult?.usage
+                        result.missingMonths = fsresult?.missingMonths
+                        result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
+                        result.x_axis_labels = fsresult?.x_axis_labels
+                        result.y_axis_labels = fsresult?.y_axis_labels
+                        result.lusage = fsLicenseResult?.usage
+                        pu.setBenchmark('before last usage period for report type')
+                        result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
+                        result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                    }
+                }
+                else
+                    log.info('institutional usage identifier not available')
             }
             //}
             pu.setBenchmark('costs')
@@ -270,21 +272,22 @@ class SubscriptionControllerService {
             pu.setBenchmark('provider & agency filter')
             // TODO: experimental asynchronous task
             //def task_providerFilter = task {
-            result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
-                    OrgRole.executeQuery(
-                            "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
-                            [sub: result.subscription.id]
-                    ))
             result.existingProviderIdList = []
+            List availableProviderList = []
             // performance problems: orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
-            result.availableAgencyList = orgTypeService.getOrgsForTypeAgency().minus(
-                    OrgRole.executeQuery(
-                            "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
-                            [sub: result.subscription.id]
-                    ))
             result.existingAgencyIdList = []
+            List availableAgencyList = []
             // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+            Set<Org> providersAgencies = Org.executeQuery('select org from Org org join org.orgType rt where org not in (select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:providerRoles)) and rt in (:providerTypes) order by org.name asc',[sub:result.subscription,providerRoles:[RDStore.OR_AGENCY,RDStore.OR_PROVIDER],providerTypes:[RDStore.OT_PROVIDER,RDStore.OT_AGENCY]])
+            providersAgencies.each { Org org ->
+                if(org.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
+                    availableProviderList.add(org)
+                if(org.getAllOrgTypeIds().contains(RDStore.OT_AGENCY.id))
+                    availableAgencyList.add(org)
+            }
             //}
+            result.availableProviderList = availableProviderList
+            result.availableAgencyList = availableAgencyList
             result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscription, 'Specific subscription editor')
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
                 pu.setBenchmark('non-inherited member properties')
@@ -381,7 +384,7 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(result.editable) {
             Calendar cal = GregorianCalendar.getInstance()
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
             cal.set(Calendar.DAY_OF_MONTH, 1)
@@ -425,7 +428,7 @@ class SubscriptionControllerService {
         //result may be null, change is TODO
         if (result?.editable) {
 
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
@@ -495,14 +498,14 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- document section ----------------------------------------------
 
-    Map<String,Object> notes(SubscriptionController controller) {
+    Map<String,Object> notes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
     }
 
-    Map<String,Object> documents(SubscriptionController controller) {
+    Map<String,Object> documents(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
@@ -622,7 +625,7 @@ class SubscriptionControllerService {
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS)
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
-                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                         Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                         Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                         Subscription memberSub = new Subscription(
@@ -1100,7 +1103,7 @@ class SubscriptionControllerService {
             List selectedMembers = params.list("selectedMembers")
             if(selectedMembers) {
                 Set change = [], noChange = []
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Set<Subscription> subChildren = Subscription.findAllByIdInList(selectedMembers)
@@ -1176,7 +1179,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------- survey section -------------------------------------------
 
-    Map<String,Object> surveys(SubscriptionController controller) {
+    Map<String,Object> surveys(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -1190,7 +1193,7 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> surveysConsortia(SubscriptionController controller) {
+    Map<String,Object> surveysConsortia(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -1340,7 +1343,7 @@ class SubscriptionControllerService {
                     int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
                     int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)).size()
-                    conflictsList.addAll(packageService.listConflicts(result.packages,childSubs,numOfPCsChildSubs,numOfIEsChildSubs,numOfCIsChildSubs))
+                    conflictsList.addAll(packageService.listConflicts(result.package,childSubs,numOfPCsChildSubs,numOfIEsChildSubs,numOfCIsChildSubs))
                 }
             }
             result.conflict_list = conflictsList
@@ -1380,7 +1383,7 @@ class SubscriptionControllerService {
             Map<String,Object> qry_params = [subscription: result.subscription]
             Date date_filter
             if (params.asAt && params.asAt.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 date_filter = sdf.parse(params.asAt)
                 result.as_at_date = date_filter
                 result.editable = false
@@ -1539,14 +1542,14 @@ class SubscriptionControllerService {
                 basequery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and tipp.status = :tippStatus and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) )"
             }
             if (params.endsAfter && params.endsAfter.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date d = sdf.parse(params.endsAfter)
                 basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :endDate"
                 qry_params.endDate = d
                 filterSet = true
             }
             if (params.startsBefore && params.startsBefore.length() > 0) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date d = sdf.parse(params.startsBefore)
                 basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :startDate"
                 qry_params.startDate = d
@@ -1901,7 +1904,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            SimpleDateFormat formatter = DateUtil.getSDF_NoTime()
+            SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
             boolean error = false
             params.each { Map.Entry<Object,Object> p ->
                 if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
@@ -1915,7 +1918,7 @@ class SubscriptionControllerService {
                             ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                         }
                         if (params.bulk_medium.trim().length() > 0) {
-                            RefdataValue selected_refdata = genericOIDService.resolveOID(params.bulk_medium.trim())
+                            RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
                             log.debug("Selected medium is ${selected_refdata}");
                             ie.medium = selected_refdata
                         }
@@ -2163,8 +2166,8 @@ class SubscriptionControllerService {
                 [result:result,status:STATUS_ERROR]
             }
             else {
-                Date sub_startDate = params.subscription.start_date ? DateUtil.parseDateGeneric(params.subscription.start_date) : null
-                Date sub_endDate = params.subscription.end_date ? DateUtil.parseDateGeneric(params.subscription.end_date) : null
+                Date sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
+                Date sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
                 RefdataValue sub_status = params.subStatus ? RefdataValue.get(params.subStatus) : RDStore.SUBSCRIPTION_NO_STATUS
                 boolean sub_isMultiYear = params.subscription.isMultiYear
                 String new_subname = params.subscription.name
@@ -2306,7 +2309,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- admin section -------------------------------------------------
 
-    Map<String,Object> pendingChanges(SubscriptionController controller) {
+    Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -2404,7 +2407,9 @@ class SubscriptionControllerService {
         if (!params.id && params.subscription) {
             result.subscription = Subscription.get(params.subscription)
         }
+        result.subscriptionConsortia = result.subscription.getConsortia()
         result.contextOrg = contextService.org
+        result.contextCustomerType = result.contextOrg.getCustomerType()
         result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
 
         if (result.subscription) {

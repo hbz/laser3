@@ -28,7 +28,7 @@
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
                 <tr>
-                    <td class="la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</td>
+                    <th scope="row" class="la-th-column la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</th>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/></td>
 

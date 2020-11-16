@@ -15,7 +15,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.helper.RDConstants
@@ -112,19 +112,17 @@ class FinanceService {
                     log.error("Non-valid sub-package sent ${params.newPackage}",e)
                 }
             }
-            Date datePaid    = DateUtil.parseDateGeneric(params.newDatePaid)
-            Date startDate   = DateUtil.parseDateGeneric(params.newStartDate)
-            Date endDate     = DateUtil.parseDateGeneric(params.newEndDate)
-            Date invoiceDate = DateUtil.parseDateGeneric(params.newInvoiceDate)
+            Date datePaid    = DateUtils.parseDateGeneric(params.newDatePaid)
+            Date startDate   = DateUtils.parseDateGeneric(params.newStartDate)
+            Date endDate     = DateUtils.parseDateGeneric(params.newEndDate)
+            Date invoiceDate = DateUtils.parseDateGeneric(params.newInvoiceDate)
             Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
-            IssueEntitlement ie = null
-            if(params.newIE) {
-                ie = genericOIDService.resolveOID(params.newIE)
-            }
-            IssueEntitlementGroup issueEntitlementGroup = null
-            if(params.newTitleGroup) {
-                issueEntitlementGroup = genericOIDService.resolveOID(params.newTitleGroup)
-            }
+
+            IssueEntitlement ie =
+                    params.newIE ? (IssueEntitlement) genericOIDService.resolveOID(params.newIE) : null
+            IssueEntitlementGroup issueEntitlementGroup =
+                    params.newTitleGroup ? (IssueEntitlementGroup) genericOIDService.resolveOID(params.newTitleGroup) : null
+
             RefdataValue billing_currency = RefdataValue.get(params.newCostCurrency)
             RefdataValue cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null    //estimate, commitment, etc
             RefdataValue cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
@@ -523,7 +521,7 @@ class FinanceService {
         else {
             String subFilterQuery = "", costItemFilterQuery = ""
             Map<String,Object> queryParams = [:]
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             //subscription filter settings
             //subscription members A (from /subFinance)
             if(params.filterSubMembers) {
@@ -1107,7 +1105,7 @@ class FinanceService {
             }
             //datePaid(nullable: true, blank: false) -> to date paid
             if(colMap.datePaid != null) {
-                Date datePaid = DateUtil.parseDateGeneric(cols[colMap.datePaid])
+                Date datePaid = DateUtils.parseDateGeneric(cols[colMap.datePaid])
                 if(datePaid)
                     costItem.datePaid = datePaid
             }
@@ -1222,7 +1220,7 @@ class FinanceService {
             }
             //invoiceDate(nullable: true, blank: false) -> to invoice date
             if(colMap.invoiceDate != null) {
-                Date invoiceDate = DateUtil.parseDateGeneric(cols[colMap.invoiceDate])
+                Date invoiceDate = DateUtils.parseDateGeneric(cols[colMap.invoiceDate])
                 if(invoiceDate)
                     costItem.invoiceDate = invoiceDate
             }
@@ -1285,13 +1283,13 @@ class FinanceService {
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
-                Date startDate = DateUtil.parseDateGeneric(cols[colMap.dateFrom])
+                Date startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
                 if(startDate)
                     costItem.startDate = startDate
             }
             //endDate(nullable: true, blank: false) -> to date to
             if(colMap.dateTo != null) {
-                Date endDate = DateUtil.parseDateGeneric(cols[colMap.dateTo])
+                Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
                 if(endDate)
                     costItem.endDate = endDate
             }

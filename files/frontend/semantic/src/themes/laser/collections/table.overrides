@@ -47,20 +47,16 @@
 
   tr{
     .la-th-column {
-      padding: 20px 0;
+      //font-weight: normal;
     }
     td, th {
       padding-left:0.9rem;
       padding-right:0.9rem;
     }
     th {
-      font-weight: normal;
       &:not(.la-th-column):not(.la-no-uppercase)
       {
-        font-weight: bold;
-        color: #515151;
         font-size: 0.8rem;
-        text-transform: uppercase;
         a {
           cursor: pointer;
           color: #515151;

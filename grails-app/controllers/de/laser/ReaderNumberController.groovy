@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus
@@ -16,7 +16,7 @@ class ReaderNumberController  {
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
-			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 			if (params.dueDate)
 				params.dueDate = sdf.parse(params.dueDate)
 
@@ -39,7 +39,7 @@ class ReaderNumberController  {
 			if (! numbersInstance) {
 				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 			}
-			SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 			params.referenceGroup = params.referenceGroup.isLong() ? RefdataValue.findById(Long.parseLong(params.referenceGroup)).getI10n('value') : params.referenceGroup
 			if(params.dueDate)
 				params.dueDate = sdf.parse(params.dueDate)
@@ -59,7 +59,7 @@ class ReaderNumberController  {
 			List<Long> numbersToDelete = []
 			Org org = Org.get(params.org)
 			if(params.dueDate) {
-				Date dueDate = DateUtil.parseDateGeneric(params.dueDate)
+				Date dueDate = DateUtils.parseDateGeneric(params.dueDate)
 				numbersToDelete.addAll(ReaderNumber.findAllByDueDateAndOrg(dueDate,org).collect{ ReaderNumber rn -> rn.id })
 			}
 			else if(params.semester) {

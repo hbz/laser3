@@ -1,13 +1,27 @@
 package de.laser.ajax
 
+import com.k_int.kbplus.GenericOIDService
+import de.laser.AccessService
+import de.laser.AddressbookService
+import de.laser.ApiSource
+import de.laser.ContextService
+import de.laser.GokbService
 import de.laser.License
+import de.laser.LinksGenerationService
 import de.laser.Org
+import de.laser.OrgRole
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
+import de.laser.ReportingService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
 import de.laser.Person
 import de.laser.PersonRole
+import de.laser.SubscriptionPackage
+import de.laser.SubscriptionService
 import de.laser.Task
+import de.laser.TaskService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -23,11 +37,15 @@ class AjaxHtmlController {
      *
      */
 
-    def addressbookService
-    def contextService
-    def genericOIDService
-    def taskService
-    def reportingService
+    AddressbookService addressbookService
+    ContextService contextService
+    GenericOIDService genericOIDService
+    TaskService taskService
+    ReportingService reportingService
+    LinksGenerationService linksGenerationService
+    AccessService accessService
+    GokbService gokbService
+    SubscriptionService subscriptionService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -44,6 +62,8 @@ class AjaxHtmlController {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
         render view: '/reporting/_displayConfigurations', model: result
     }
+
+    //------------------------------------------------- reporting tool -------------------------------------------------
 
     @Secured(['ROLE_USER'])
     def loadThirdLevel() {
@@ -99,13 +119,60 @@ class AjaxHtmlController {
         render view: '/reporting/_subscriptionGraphs', model: result
     }
 
+    //-------------------------------------------------- subscription/show ---------------------------------------------
+
     @Secured(['ROLE_USER'])
-    def getLicensePropertiesForSubscription() {
-        License loadFor = License.get(params.loadFor)
-        if (loadFor) {
-            Map<String,Object> derivedPropDefGroups = loadFor._getCalculatedPropDefGroups(contextService.org)
-            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
+    def getLinks() {
+        Map<String,Object> result = [user:contextService.user,contextOrg:contextService.org,subscriptionLicenseLink:params.subscriptionLicenseLink]
+        def entry = genericOIDService.resolveOID(params.entry)
+        result.entry = entry
+        result.editable = entry.isEditableBy(result.user)
+        if(entry instanceof Subscription) {
+            result.subscription = (Subscription) entry
+            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id ? "true" : "false"
         }
+        else if(entry instanceof License) {
+            result.license = (License) entry
+        }
+        List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
+        if(result.subscriptionLicenseLink) {
+            linkTypes.removeIf({ RefdataValue rdv -> (rdv != RDStore.LINKTYPE_LICENSE) })
+        }
+        else linkTypes.remove(RDStore.LINKTYPE_LICENSE)
+        result.links = linksGenerationService.getSourcesAndDestinations(entry, result.user, linkTypes)
+        render template: '/templates/links/linksListing', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getPackageData() {
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
+        Org contextOrg = contextService.org
+        result.contextCustomerType = contextOrg.getCustomerType()
+        ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true) //it is not intended to use several api sources, we take the first one
+        result.subscription.packages.each { SubscriptionPackage sp ->
+            packageMetadata = gokbService.geElasticsearchFindings(api.baseUrl+api.fixToken, "&uuid=${sp.pkg.gokbId}", "Package", null, 1)
+            result.link = api.editUrl+"/resource/show/"
+            if(packageMetadata.warning)
+                packageMetadata = packageMetadata.warning
+            else if(packageMetadata.info)
+                packageMetadata = packageMetadata.info
+            if (packageMetadata.records.size() > 0) {
+                result.curatoryGroups.addAll(packageMetadata.records.get(0).curatoryGroups)
+            }
+        }
+        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
+        result.roleObject = result.subscription
+        result.roleRespValue = 'Specific subscription editor'
+        result.editmode = result.subscription.isEditableBy(contextService.user)
+        result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        render template: '/subscription/packages', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getProperties() {
+        Org contextOrg = contextService.org
+        Subscription subscription = Subscription.get(params.subscription)
+        render template: "/subscription/properties", model: [subscription: subscription, showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription), contextOrg: contextOrg]
     }
 
     @Secured(['ROLE_USER'])

@@ -53,9 +53,9 @@
             <td>
                 ${ (params.int('offset') ?: 0)  + jj + 1 }
             </td>
-            <td>
+            <th scope="row" class="la-th-column">
                 <g:link class="la-main-object"  controller="platform" action="show" id="${platformInstance.id}">${fieldValue(bean: platformInstance, field: "name")}</g:link>
-            </td>
+            </th>
             <td>
                 <g:if test="${platformInstance.org}">
                     <g:link controller="organisation" action="show" id="${platformInstance.org?.id}">${platformInstance.org?.getDesignation()}</g:link>

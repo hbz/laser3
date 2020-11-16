@@ -13,7 +13,7 @@ class PackageService {
     MessageSource messageSource
     LinkGenerator grailsLinkGenerator
 
-    List listConflicts(de.laser.Package pkg, subscription,int numOfPCs,int numOfIEs,int numOfCIs) {
+    List listConflicts(de.laser.Package pkg,subscription,int numOfPCs,int numOfIEs,int numOfCIs) {
         Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> conflict_item_pkg = [name: messageSource.getMessage("subscription.details.unlink.linkedPackage",null,locale),
                                                 details: [['link': grailsLinkGenerator.link(controller: 'package', action: 'show', id: pkg.id), 'text': pkg.name]],

@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.ctrl.AccessPointControllerService
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -267,7 +267,7 @@ class AccessPointController  {
         boolean inContextOrg = (orgId == contextOrg.id)
         if (params.exportXLSX) {
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""

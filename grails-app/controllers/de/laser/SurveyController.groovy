@@ -85,7 +85,7 @@ class SurveyController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
         pu.setBenchmark("after properties")
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtil.getSimpleDateFormatByToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
             params.validOnYear = sdfyear.format(new Date())
         }
         pu.setBenchmark("before surveyYears")
@@ -96,7 +96,7 @@ class SurveyController {
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
         pu.setBenchmark("after subscriptions and before survey config query")
-        Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, DateUtil.getSDF_NoTime(), (Org) result.institution)
+        Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getSDF_NoTime(), (Org) result.institution)
         pu.setBenchmark("after query, before survey config execution")
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
         pu.setBenchmark("after survey config execute")
@@ -104,7 +104,7 @@ class SurveyController {
 
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -112,7 +112,7 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
             }else{
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -156,7 +156,7 @@ class SurveyController {
         params.tab = params.tab ?: 'created'
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtil.getSimpleDateFormatByToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
             params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
         }
 
@@ -168,13 +168,13 @@ class SurveyController {
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
 
 
-        DateFormat sdFormat = DateUtil.getSDF_NoTime()
+        DateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -233,7 +233,7 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
         Date endDate = params.endDate ? sdf.parse(params.endDate) : null
 
@@ -296,7 +296,7 @@ class SurveyController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -376,7 +376,7 @@ class SurveyController {
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -510,7 +510,7 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
         Date endDate = params.endDate ? sdf.parse(params.endDate) : null
 
@@ -597,7 +597,7 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
         Date endDate = params.endDate ? sdf.parse(params.endDate) : null
 
@@ -727,7 +727,7 @@ class SurveyController {
 
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -735,7 +735,7 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             }else{
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1101,7 +1101,7 @@ class SurveyController {
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1109,7 +1109,7 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             }else {
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
                 String datetoday = sdf.format(new Date(System.currentTimeMillis()))
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1190,7 +1190,7 @@ class SurveyController {
             }
             result.newSubs = []
             Integer countNewSubs = 0
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             Date startDate = params.startDate ? sdf.parse(params.startDate) : null
             Date endDate = params.endDate ? sdf.parse(params.endDate) : null
             params.list('selectedOrgs').each { orgId ->
@@ -1400,7 +1400,7 @@ class SurveyController {
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2235,7 +2235,7 @@ class SurveyController {
 
         if(result.surveyInfo && result.surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id, RDStore.SURVEY_SURVEY_COMPLETED.id ]){
             SurveyInfo.withTransaction { TransactionStatus ts ->
-                SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 Date endDate = params.newEndDate ? sdf.parse(params.newEndDate) : null
 
                 if(result.surveyInfo.startDate != null && endDate != null) {
@@ -2789,7 +2789,7 @@ class SurveyController {
 
 
         String message = g.message(code: 'renewalexport.renewals')
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message + "_" + result.surveyConfig.getSurveyName() +"_${datetoday}"
         if (params.exportXLSX) {
@@ -2839,7 +2839,7 @@ class SurveyController {
 
         if(result.workFlow == '1') {
             Date date_restriction = null
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
             if (params.validOn == null || params.validOn.trim() == '') {
                 result.validOn = ""
@@ -3067,8 +3067,8 @@ class SurveyController {
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist')
         } else {
-            def sub_startDate = params.subscription.start_date ? DateUtil.parseDateGeneric(params.subscription.start_date) : null
-            def sub_endDate = params.subscription.end_date ? DateUtil.parseDateGeneric(params.subscription.end_date) : null
+            def sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
+            def sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
             def sub_status = params.subStatus
             def sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
             def sub_kind = params.subKind
@@ -3157,7 +3157,7 @@ class SurveyController {
            def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
 
         if (params.exportXLSX) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -3194,7 +3194,7 @@ class SurveyController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 1)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> newSurveyCostItem() {
-        SimpleDateFormat dateFormat = DateUtil.getSDF_NoTime()
+        SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
 
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -4173,7 +4173,7 @@ class SurveyController {
 
     @DebugAnnotation(wtc = 0)
     private def exportRenewalResult(Map renewalResult) {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         List titles = [g.message(code: 'org.sortname.label'),
                        g.message(code: 'default.name.label'),
 
@@ -4546,7 +4546,7 @@ class SurveyController {
                             println(property.error)
                         }
                     } else if(field == "dateValue") {
-                        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
                         def backup = property."${field}"
                         try {

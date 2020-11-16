@@ -5,7 +5,7 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
@@ -128,7 +128,7 @@ class ControlledListService {
             queryString += " and s.status = :status "
         }
         if(params.propDef) {
-            PropertyDefinition filterPropDef = genericOIDService.resolveOID(params.propDef)
+            PropertyDefinition filterPropDef = (PropertyDefinition) genericOIDService.resolveOID(params.propDef)
             queryString += " and sp.type = :propDef "
             filter.propDef = filterPropDef
             if(params.propVal) {
@@ -158,7 +158,7 @@ class ControlledListService {
                 }
                 propValInput.each { String val ->
                     if(dateFlag) {
-                        filterPropVal << DateUtil.SDF_NoTime.parse(val)
+                        filterPropVal << DateUtils.SDF_NoTime.parse(val)
                     }
                     else if(refFlag) {
                         if(val.contains("de.laser."))
@@ -332,7 +332,7 @@ class ControlledListService {
         }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             log.debug("licenses found")
             result.each { res ->
                 licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:genericOIDService.getOID(res)])
@@ -357,7 +357,7 @@ class ControlledListService {
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
-            Subscription ctx = genericOIDService.resolveOID(params.ctx)
+            Subscription ctx = (Subscription) genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
             if(org.hasPerm("ORG_CONSORTIUM"))
                 queryString += " and (s = :ctx or s.instanceOf = :ctx)"
@@ -462,7 +462,7 @@ class ControlledListService {
     Map getElements(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         if(params.org == "true") {
             List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])
             allOrgs.each { DocContext it ->

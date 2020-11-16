@@ -101,12 +101,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     @Transient
     static def validTypes = [
-            'class java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number' ],
-            'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
-            'class de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
-            'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
-            'class java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
-            'class java.net.URL'                  : ['de': 'Url', 'en': 'Url']
+            'java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number' ],
+            'java.lang.String'              : ['de': 'Text', 'en': 'Text'],
+            'de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
+            'java.net.URL'                  : ['de': 'Url', 'en': 'Url']
     ]
 
     static hasMany = [
@@ -292,7 +292,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static AbstractPropertyWithCalculatedLastUpdated createGenericProperty(String flag, def owner, PropertyDefinition type, Org contextOrg) {
 
         withTransaction {
-            String classString = owner.getClass().toString() // TODO [ticket=2880]
+            String classString = owner.class.name
             String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
             boolean isPublic = false
             if(owner instanceof Subscription)
@@ -491,22 +491,22 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     boolean isBigDecimalType() {
-        type == BigDecimal.toString() // introduced for refactoring -> BigDecimal.class.name
+        type == BigDecimal.class.name
     }
     boolean isDateType() {
-        type == Date.toString() // introduced for refactoring -> Date.class.name
+        type == Date.class.name
     }
     boolean isIntegerType() {
-        type == Integer.toString() // introduced for refactoring -> Integer.class.name
+        type == Integer.class.name
     }
     boolean isRefdataValueType() {
-        type == RefdataValue.toString() // introduced for refactoring -> RefdataValue.class.name
+        type == RefdataValue.class.name
     }
     boolean isStringType() {
-        type == String.toString() // introduced for refactoring -> String.class.name
+        type == String.class.name
     }
     boolean isURLType() {
-        type == URL.toString() // introduced for refactoring -> URL.class.name
+        type == URL.class.name
     }
 
     String getImplClassValueProperty(){

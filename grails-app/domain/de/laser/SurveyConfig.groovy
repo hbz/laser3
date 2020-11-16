@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.finance.CostItem
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import org.grails.web.json.JSONElement
@@ -170,7 +170,7 @@ class SurveyConfig {
     }
 
     String getConfigName() {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         if (type == 'Subscription') {
             return subscription?.name + ' - ' + subscription?.status?.getI10n('value') + ' ' +
@@ -362,7 +362,7 @@ class SurveyConfig {
     }
 
     String dropdownNamingConvention() {
-        SimpleDateFormat sdf = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String period = surveyInfo.startDate ? sdf.format(surveyInfo.startDate)  : ''
 
         period = surveyInfo.endDate ? period + ' - ' + sdf.format(surveyInfo.endDate)  : ''

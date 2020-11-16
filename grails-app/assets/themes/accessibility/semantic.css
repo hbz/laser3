@@ -26835,12 +26835,12 @@ Floated Menu / Item
   cursor: auto;
   background: transparent;
   text-align: inherit;
-  color: rgba(0, 0, 0, 0.87);
+  color: #515151;
   padding: 0.92857143em 1.4em;
   vertical-align: inherit;
   font-style: none;
   font-weight: bold;
-  text-transform: none;
+  text-transform: uppercase;
   border-bottom: none;
   border-left: none;
 }
@@ -28111,25 +28111,14 @@ Floated Menu / Item
   background: #F2F2F2;
 }
 
-.ui.table tr .la-th-column {
-  padding: 20px 0;
-}
-
 .ui.table tr td,
 .ui.table tr th {
   padding-left: 0.9rem;
   padding-right: 0.9rem;
 }
 
-.ui.table tr th {
-  font-weight: normal;
-}
-
 .ui.table tr th:not(.la-th-column):not(.la-no-uppercase) {
-  font-weight: bold;
-  color: #515151;
   font-size: 0.8rem;
-  text-transform: uppercase;
 }
 
 .ui.table tr th:not(.la-th-column):not(.la-no-uppercase) a {

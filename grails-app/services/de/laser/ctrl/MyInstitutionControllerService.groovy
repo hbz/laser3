@@ -3,12 +3,14 @@ package de.laser.ctrl
 import de.laser.MyInstitutionController
 import de.laser.Org
 import de.laser.SurveyConfig
+import de.laser.SurveyInfo
 import de.laser.UserSetting
 import de.laser.auth.User
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.system.SystemAnnouncement
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
@@ -21,6 +23,7 @@ class MyInstitutionControllerService {
     def dashboardDueDatesService
     def filterService
     def pendingChangeService
+    def surveyService
     def taskService
 
     static final int STATUS_OK = 0
@@ -63,7 +66,7 @@ class MyInstitutionControllerService {
 
         // tasks
 
-        SimpleDateFormat sdFormat    = DateUtil.getSDF_NoTime()
+        SimpleDateFormat sdFormat    = DateUtils.getSDF_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         Org contextOrg  = contextService.getOrg()
@@ -105,19 +108,54 @@ class MyInstitutionControllerService {
 
         Map<String, Object> result = [:]
 
-        switch(params.action){
+        User user = contextService.getUser()
+        Org org = contextService.getOrg()
+
+//        switch (params.action){
+//            case 'currentSurveys':
+//            case 'surveyInfos':
+//            case 'surveyInfoFinish':
+//            case 'surveyInfosIssueEntitlements':
+//            case 'surveyResultFinish':
+//                result.user = user
+//                break
+//            default:
+//                result.user = user
+//        }
+
+        result.user = user
+        result.institution = org
+
+        switch (params.action) {
+            case 'processEmptyLicense': //to be moved to LicenseController
+            case 'currentLicenses':
             case 'currentSurveys':
-            case 'surveyInfos':
+            case 'dashboard':
+            case 'emptyLicense': //to be moved to LicenseController
             case 'surveyInfoFinish':
-            case 'surveyInfosIssueEntitlements':
             case 'surveyResultFinish':
-                result.user = contextService.getUser()
+                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
+                break
+            case 'addressbook':
+            case 'budgetCodes':
+            case 'tasks':
+                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                break
+            case 'surveyInfos':
+                result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
+                break
+            case 'surveyInfosIssueEntitlements':
+                result.editable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
+                break
+            case 'userList':
+                result.editable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
+                break
+            case 'managePropertyDefinitions':
+                result.editable = false
                 break
             default:
-                result.user = contextService.getUser()
+                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
         }
-        result.institution = contextService.getOrg()
-        result.editable = controller.checkIsEditable(result.user, result.institution)
 
         result
     }

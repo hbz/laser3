@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.helper.DateUtil
+import de.laser.helper.DateUtils
 import grails.gorm.transactions.Transactional
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
@@ -8,9 +8,6 @@ import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilders
-import org.elasticsearch.search.aggregations.bucket.composite.CompositeAggregationBuilder
-import org.elasticsearch.search.aggregations.bucket.composite.CompositeValuesSourceBuilder
-import org.elasticsearch.search.aggregations.bucket.composite.TermsValuesSourceBuilder
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.FieldSortBuilder
@@ -196,8 +193,8 @@ class ESSearchService{
           sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
         }else{
 
-          if(DateUtil.isDate(params.q)){
-            params.q = DateUtil.parseDateGeneric(params.q).format("yyyy-MM-dd").toString()
+          if(DateUtils.isDate(params.q)){
+            params.q = DateUtils.parseDateGeneric(params.q).format("yyyy-MM-dd").toString()
           }
 
           params.q = params.q.replaceAll('\\"', '')
