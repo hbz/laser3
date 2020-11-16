@@ -14,9 +14,9 @@ class SemanticUiDropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-        out << '<div class="ui icon buttons la-ctrls la-float-right la-js-dont-hide-button">'
+        out << '<nav class="ui icon buttons la-ctrls la-float-right la-js-dont-hide-button" aria-label=' + message(code: 'wcag.label.actionMenu')  +'>'
         out <<   body()
-        out << '</div><br>'
+        out << '</nav><br>'
     }
 
     def exportDropdown = { attrs, body ->
