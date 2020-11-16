@@ -54,32 +54,6 @@ class SwissKnife {
         return false
     }
 
-    static List<PropertyDefinition> getCalculatedPropertiesForPropDefGroups(Map<String, Object> propDefStruct) {
-
-        List<PropertyDefinition> result = []
-
-        propDefStruct.global.each { it ->
-            List<PropertyDefinition> tmp = it.getPropertyDefinitions()
-            result.addAll(tmp)
-        }
-        propDefStruct.local.each {it ->
-            List<PropertyDefinition> tmp = it[0].getPropertyDefinitions()
-            result.addAll(tmp)
-        }
-        propDefStruct.member.each {it ->
-            List<PropertyDefinition> tmp = it[0].getPropertyDefinitions()
-            result.addAll(tmp)
-        }
-
-        if (propDefStruct.orphanedProperties) {
-            result.addAll(propDefStruct.orphanedProperties)
-        }
-
-        //println " >>>>> " + result.unique().collect { it.id }
-
-        result.unique()
-    }
-
     static String toCamelCase(String text, boolean capitalized) {
         text = text.replaceAll( "(_)([A-Za-z0-9])", { Object[] it -> it[2].toUpperCase() } )
         return capitalized ? capitalize(text) : text

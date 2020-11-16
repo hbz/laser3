@@ -320,7 +320,25 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             if (obj) {
                 ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
                 Map<String, Object> calcPropDefGroups = obj._getCalculatedPropDefGroups(contextService.getOrg())
-                propDefsInCalcGroups = SwissKnife.getCalculatedPropertiesForPropDefGroups(calcPropDefGroups)
+
+                calcPropDefGroups.global.each { it ->
+                    List<PropertyDefinition> tmp = it.getPropertyDefinitions()
+                    propDefsInCalcGroups.addAll(tmp)
+                }
+                calcPropDefGroups.local.each {it ->
+                    List<PropertyDefinition> tmp = it[0].getPropertyDefinitions()
+                    propDefsInCalcGroups.addAll(tmp)
+                }
+                calcPropDefGroups.member.each {it ->
+                    List<PropertyDefinition> tmp = it[0].getPropertyDefinitions()
+                    propDefsInCalcGroups.addAll(tmp)
+                }
+
+                if (calcPropDefGroups.orphanedProperties) {
+                    propDefsInCalcGroups.addAll(calcPropDefGroups.orphanedProperties)
+                }
+
+                propDefsInCalcGroups.unique()
             }
         }
 
