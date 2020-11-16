@@ -63,8 +63,14 @@
 
         <h4 class="ui header">${cacheName}
             <span class="ui label">
-                ${cache.class} /
-                hitCount: ${cacheStats.cacheHitCount()}, disk: ${cacheStats.getLocalDiskSize()}kb
+                ${cache.class} (
+                hitCount: ${cacheStats.cacheHitCount()},
+                <g:if test="${cacheService.getDiskStorePath(cache.getCacheManager())}">
+                    disk: ${cacheStats.getLocalDiskSize()}kb
+                </g:if>
+                <g:else>
+                    heap: ${cacheStats.getLocalHeapSize()}kb
+                </g:else> )
             </span>
         </h4>
 

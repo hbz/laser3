@@ -37,7 +37,11 @@ class BootStrapService {
         log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
         log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
         log.info("Documents: ${ConfigUtils.getDocumentStorageLocation()}")
-        log.info("Cache: ${cacheService.getDiskStorePath()}")
+
+        String dsp = cacheService.getDiskStorePath()
+        if (dsp) {
+            log.info("Cache: ${dsp}")
+        }
 
         log.info("--------------------------------------------------------------------------------")
 

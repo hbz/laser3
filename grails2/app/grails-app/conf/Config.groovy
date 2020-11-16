@@ -134,7 +134,7 @@ grails.cache.config = {
 // --- grails ---
 //
 
-grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
+// done:default - grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [
         html:   ['text/html','application/xhtml+xml'],
@@ -152,32 +152,32 @@ grails.mime.types = [
 ]
 
 // What URL patterns should be processed by the resources plugin
-grails.resources.adhoc.patterns = [
-        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*']
-grails.resources.adhoc.includes = [
-        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**']
+// done - grails.resources.adhoc.patterns = [
+// done -         '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*']
+// done - grails.resources.adhoc.includes = [
+// done -         '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "html" // none, html, base64
-grails.views.gsp.encoding  = "UTF-8"
+// done:default - grails.views.gsp.encoding  = "UTF-8"
 grails.converters.encoding = "UTF-8"
 
 // enable Sitemesh preprocessing of GSP pages
-grails.views.gsp.sitemesh.preprocess = true
+// done:default - grails.views.gsp.sitemesh.preprocess = true
 // scaffolding templates configuration
 grails.scaffolding.templates.domainSuffix = 'Instance'
 
 // Set to false to use the new Grails 1.2 JSONBuilder in the render method
 grails.json.legacy.builder = false
 // enabled native2ascii conversion of i18n properties files
-grails.enable.native2ascii = true
+// done:default - grails.enable.native2ascii = true
 // packages to include in Spring bean scanning
 grails.spring.bean.packages = []
 // whether to disable processing of multi part requests
 grails.web.disable.multipart = false
 
 // request parameters to mask when logging exceptions
-grails.exceptionresolver.params.exclude = ['password']
+//done - grails.exceptionresolver.params.exclude = ['password']
 
 grails.project.dependency.resolver = "maven"
 
