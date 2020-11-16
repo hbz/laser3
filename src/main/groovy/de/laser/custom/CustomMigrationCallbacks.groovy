@@ -1,4 +1,4 @@
-package de.laser.dbm
+package de.laser.custom
 
 import de.laser.helper.ConfigUtils
 import liquibase.Liquibase
@@ -6,7 +6,7 @@ import liquibase.changelog.ChangeSet
 import liquibase.changelog.RanChangeSet
 import liquibase.database.Database
 
-class MigrationCallbacks {
+class CustomMigrationCallbacks {
 
 	def grailsApplication
 

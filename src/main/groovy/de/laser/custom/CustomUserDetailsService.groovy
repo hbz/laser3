@@ -1,4 +1,4 @@
-package de.laser.userdetails
+package de.laser.custom
 
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional

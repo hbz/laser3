@@ -1,6 +1,9 @@
-import de.laser.dbm.MigrationCallbacks
-import de.laser.userdetails.CustomUserDetailsService
-import de.laser.web.AuthSuccessHandler
+package spring
+
+import de.laser.custom.CustomMigrationCallbacks
+import de.laser.custom.CustomUserDetailsService
+import de.laser.custom.CustomAuthSuccessHandler
+import de.laser.custom.CustomAuditRequestResolver
 
 import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
@@ -18,7 +21,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 beans = {
 
-    migrationCallbacks( MigrationCallbacks ) {
+    migrationCallbacks( CustomMigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
     }
 
@@ -33,11 +36,6 @@ beans = {
         maximumSessions = -1
         // exceptionIfMaximumExceeded = true
     }
-//    compositeSessionAuthenticationStrategy( CompositeSessionAuthenticationStrategy, [
-//            ref('registerSessionAuthenticationStrategy'),
-//            ref('sessionFixationProtectionStrategy'),
-//            ref('concurrentSessionControlAuthenticationStrategy')
-//    ])
 
     sessionAuthenticationStrategy( CompositeSessionAuthenticationStrategy, [
             ref('concurrentSessionControlAuthenticationStrategy'),
@@ -47,7 +45,7 @@ beans = {
     // .. ]
 
     // [ supporting initMandatorySettings for users ..
-    authenticationSuccessHandler( AuthSuccessHandler ) {
+    authenticationSuccessHandler( CustomAuthSuccessHandler ) {
         ConfigObject conf = SpringSecurityUtils.securityConfig
 
         requestCache                = ref('requestCache')
@@ -57,6 +55,12 @@ beans = {
         targetUrlParameter          = conf.successHandler.targetUrlParameter
         ajaxSuccessUrl              = conf.successHandler.ajaxSuccessUrl
         useReferer                  = conf.successHandler.useReferer
+    }
+    // .. ]
+
+    // [ audit logging ..
+    auditRequestResolver( CustomAuditRequestResolver ) {
+        springSecurityService = ref('springSecurityService')
     }
     // .. ]
 

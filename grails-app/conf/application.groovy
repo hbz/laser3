@@ -1,5 +1,7 @@
 
-// globals
+// --- globals ---
+
+// cache
 
 grails {
     cache {
@@ -15,6 +17,8 @@ grails {
     }
 }
 
+// gorm
+
 grails.gorm.default.mapping = {
     autowire true            // service dependency injection enabled
     id generator: 'identity' // postgresql sequences for primary keys
@@ -24,9 +28,16 @@ grails.gorm.default.mapping = {
 
 grails.plugin.databasemigration.updateOnStart = true
 
-// audit-logging-plugin
+// audit logging plugin
 
-grails.plugin.auditLog.auditDomainClassName = 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
+grails {
+    plugin {
+        auditLog {
+            auditDomainClassName = 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
+            defaultActor = 'SYS'
+        }
+    }
+}
 
 // spring security plugin
 
