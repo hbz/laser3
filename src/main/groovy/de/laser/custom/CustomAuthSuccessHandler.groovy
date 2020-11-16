@@ -1,4 +1,4 @@
-package de.laser.web
+package de.laser.custom
 
 import de.laser.auth.User
 import de.laser.helper.ProfilerUtils
@@ -12,7 +12,7 @@ import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class AuthSuccessHandler extends AjaxAwareAuthenticationSuccessHandler {
+class CustomAuthSuccessHandler extends AjaxAwareAuthenticationSuccessHandler {
 
     def springSecurityService = Holders.grailsApplication.mainContext.getBean('springSecurityService')
     def userService = Holders.grailsApplication.mainContext.getBean('userService')
