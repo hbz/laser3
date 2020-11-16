@@ -4,59 +4,54 @@
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.log4j.RollingFileAppender
 
-grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
-grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
+//done - grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
+//done - grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-System.out.println("!  local config override: ${grails.config.locations}")
+//done - System.out.println("!  local config override: ${grails.config.locations}")
 
 //
 // --- database migration plugin ---
 //
 
-grails.plugin.databasemigration.updateOnStart = false
-grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
-grails.plugin.databasemigration.changelogLocation = "./migrations"
+//done - grails.plugin.databasemigration.updateOnStart = false
+//done - grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
+//done - grails.plugin.databasemigration.changelogLocation = "./migrations"
 
 //
 // --- audit logging plugin ---
 //
 
-auditLog {
-    logFullClassName = true
+//done - auditLog {
+//done -     logFullClassName = true
     stampEnabled = false // 1.1.3
     stampAlways = false // 1.1.3
     cacheDisabled = true // 1.1.3
-
-    actorClosure = { request, session ->
-
-        if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
-            return request.applicationContext.springSecurityService.principal
-        }
-
-        String username = request.applicationContext.springSecurityService.principal?.username
-
-        if (SpringSecurityUtils.isSwitched()){
-            username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
-        }
-
-        return (username in [null, 'anonymousUser', 'system']) ? username : 'anonymised'
-    }
-}
+//done -     actorClosure = { request, session ->
+//done -         if (request.applicationContext.springSecurityService.principal instanceof java.lang.String) {
+//done - return request.applicationContext.springSecurityService.principal
+//done -         }
+//done -         String username = request.applicationContext.springSecurityService.principal?.username
+//done -         if (SpringSecurityUtils.isSwitched()){
+//done -             username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
+//done -         }
+//done -         return (username in [null, 'anonymousUser', 'system']) ? username : 'anonymised'
+//done -     }
+//done - }
 
 //
 // --- spring security core plugin
 //
 
 grails.gsp.tldScanPattern                                      = 'classpath*:/META-INF/*.tld,/WEB-INF/tld/*.tld'
-grails.plugin.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
-grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
-grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
+//done - grails.plugin.springsecurity.userLookup.userDomainClassName    = 'com.k_int.kbplus.auth.User'
+//done - grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbplus.auth.UserRole'
+//done - grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
+//done - grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
 grails.plugin.springsecurity.securityConfigType                = "Annotation"
-grails.plugin.springsecurity.successHandler.alwaysUseDefault   = false //Change on 09.08.18 from true to false MD
-grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
-grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
-grails.plugin.springsecurity.password.hash.iterations          = 1
+//done - grails.plugin.springsecurity.successHandler.alwaysUseDefault   = false //Change on 09.08.18 from true to false MD
+//done - grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
+//done - grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
+//done - grails.plugin.springsecurity.password.hash.iterations          = 1
 
 //grails.plugin.springsecurity.useSessionFixationPrevention      = false // 2.0
 
@@ -67,69 +62,69 @@ grails.plugin.springsecurity.providerNames = [
         // 'rememberMeAuthenticationProvider'
 ]
 
-grails.plugin.springsecurity.roleHierarchy = '''
-    ROLE_YODA > ROLE_ADMIN
-    ROLE_ADMIN > ROLE_GLOBAL_DATA
-    ROLE_GLOBAL_DATA > ROLE_USER
-'''
+//done - grails.plugin.springsecurity.roleHierarchy = '''
+//done - ROLE_YODA > ROLE_ADMIN
+//done - ROLE_ADMIN > ROLE_GLOBAL_DATA
+//done - ROLE_GLOBAL_DATA > ROLE_USER
+//done - '''
 
-grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-        [pattern: '/monitoring',                access: ['ROLE_YODA']],
-        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
-]
+//done - grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+//done - [pattern: '/monitoring',                access: ['ROLE_YODA']],
+//done - [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
+//done - ]
 
 //
 // --- custom ---
 //
 
-laserSystemId = 'local'
-documentStorageLocation = '/tmp/laser' // for uploaded documents
-deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
+//done@config - laserSystemId = 'local'
+//done@config - documentStorageLocation = '/tmp/laser' // for uploaded documents
+//done@config - deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // for database backups in context of deploys
 
-basicDataFileName = 'basicDataDump.xml'
-orgDumpFileNamePattern = 'orgDump_'
-orgDumpFileExtension = '.xml'
+//done@config - basicDataFileName = 'basicDataDump.xml'
+//done@config - orgDumpFileNamePattern = 'orgDump_'
+//done@config - orgDumpFileExtension = '.xml'
 
-systemEmail = 'laser@hbz-nrw.de'
-notifications.email.from = 'laser@hbz-nrw.de'
-notifications.email.replyTo = 'laser@hbz-nrw.de'
-notifications.email.genericTemplate = true // if enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
+//done@config - systemEmail = 'laser@hbz-nrw.de'
+//done@config - notifications.email.from = 'laser@hbz-nrw.de'
+//done@config - notifications.email.replyTo = 'laser@hbz-nrw.de'
+//done@config - notifications.email.genericTemplate = true // if enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
 
-financials.currency = "EUR|GBP|USD|CHF" // list in priority of order
+//done@config - financials.currency = "EUR|GBP|USD|CHF" // list in priority of order
 
-isUpdateDashboardTableInDatabase = true
-isSendEmailsForDueDatesOfAllUsers = true
-//notificationsJobActive = true
-//activateTestJob = true
+//done@config - isUpdateDashboardTableInDatabase = true
+//done@config - isSendEmailsForDueDatesOfAllUsers = true
+//done@config - //notificationsJobActive = true
+//done@config - //activateTestJob = true
 
-quartzHeartbeat = 'Never'
-//showDebugInfo = false
+//done@config - quartzHeartbeat = 'Never'
+//done@config - //showDebugInfo = false
 
-appDefaultPrefs {
-    globalDatepickerFormat    = 'yyyy-mm-dd'
-    globalDateFormat          = 'yyyy-MM-dd'
-    globalDateFormatSQL       = '%Y-%m-%d'
-}
+//done@config - appDefaultPrefs {
+//done@config - globalDatepickerFormat    = 'yyyy-mm-dd'
+//done@config -     globalDateFormat          = 'yyyy-MM-dd'
+//done@config -     globalDateFormatSQL       = '%Y-%m-%d'
+//done@config - }
 
 //
 // ---  cache, gorm & database ---
 //
 
-grails.cache.enabled = true
+//done - grails.cache.enabled = true
 
 grails.cache.config = {
     // affects only cache-plugin caches
     cache {
         name = 'laser_static_pages'
     }
-    cache {
-        name 'message'
-    }
+//done -     cache {
+//done -         name 'message'
+//done -    }
 }
 
-grails.gorm.default.mapping = {
-    id generator: 'identity' // postgresql sequences for primary keys
-}
+//done - grails.gorm.default.mapping = {
+//done -     id generator: 'identity' // postgresql sequences for primary keys
+//done - }
 //grails.gorm.default.constraints = {
 //    '*'(nullable: false)  <- default!
 //}
@@ -208,14 +203,14 @@ boolean environment_dev = false
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.serverURL = "http://localhost:8080/laser"
+//done -         grails.serverURL = "http://localhost:8080/laser"
         environment_dev = true
         logWatchFile = new File("logs/${appName}-${appVersion}.log")
         globalDataSyncLogWatchFile = new File ("logs/globalDataSyncLog-${appVersion}.log")
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://localhost:8080/laser" // override in local config (laser-config.groovy)
+//done -         grails.serverURL = "http://localhost:8080/laser" // override in local config (laser-config.groovy)
         logWatchFile = new File ("${base}/logs/catalina.out")
         globalDataSyncLogWatchFile = new File ("${base}/logs/globalDataSyncLog-${appVersion}.log")
     }
@@ -230,12 +225,12 @@ def globalDataSyncFile = globalDataSyncLogWatchFile.canonicalPath
 log4j = {
   appenders {
     console name: "stdout", threshold: org.apache.log4j.Level.ALL
-    if (environment_dev) {
-      appender new RollingFileAppender(
-          name: 'dailyAppender',
-          fileName: (logFile),
-          layout: pattern(conversionPattern:'%d [%t] %-5p %c{2} %x - %m%n')
-      )
+//done -     if (environment_dev) {
+//done -       appender new RollingFileAppender(
+//done -           name: 'dailyAppender',
+//done -           fileName: (logFile),
+//done -           layout: pattern(conversionPattern:'%d [%t] %-5p %c{2} %x - %m%n')
+//done -       )
     }
       appender new RollingFileAppender(
               name: 'globalDataSyncAppender',
@@ -243,13 +238,13 @@ log4j = {
               layout: pattern(conversionPattern: '%d [%t] %-5p %c{2} %x - %m%n')
       )
   }
-  root {
-    if (environment_dev) {
-      error 'stdout', 'dailyAppender'
-    } else {
-      error 'stdout'
-    }
-  }
+//done -   root {
+//done -     if (environment_dev) {
+//done -       error 'stdout', 'dailyAppender'
+//done -     } else {
+//done -       error 'stdout'
+//done -     }
+//done -   }
 
   debug globalDataSyncAppender: "grails.app.services.com.k_int.kbplus.GlobalSourceSyncService"
   //    // Enable Hibernate SQL logging with param values
@@ -274,14 +269,14 @@ log4j = {
       'grails.plugin.springsecurity' // 2.0
 
 
-  debug  'grails.app.controllers',
-      'grails.app.services',
-      'grails.app.domain',
-      'grails.app.conf',
-      'grails.app.jobs',
-      'grails.app.conf.BootStrap',
-      //'edu.umn.shibboleth.sp',
-      'com.k_int',
-  // 'org.springframework.security'
-      'grails.app.taglib.InplaceTagLib'
+//done -   debug  'grails.app.controllers',
+//done -       'grails.app.services',
+//done -       'grails.app.domain',
+//done -       'grails.app.conf',
+//done -       'grails.app.jobs',
+//done -       'grails.app.conf.BootStrap',
+//done -       //'edu.umn.shibboleth.sp',
+//done -       'com.k_int',
+//done -   // 'org.springframework.security'
+//done -       'grails.app.taglib.InplaceTagLib'
 }
