@@ -397,14 +397,8 @@ class BootStrapService {
     void updatePsqlRoutines() {
 
         try {
-            File dir
-
-            if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_LOCAL) {
-                dir = new File('./grails-app/migrations/functions')
-            } else {
-                def folder = this.class.classLoader.getResource('/functions')
-                dir = new File(folder.file)
-            }
+            def folder = this.class.classLoader.getResource('functions')
+            File dir = new File(folder.file)
 
             if (dir.exists()) {
                 log.debug('scanning ' + dir.getAbsolutePath())
@@ -436,7 +430,7 @@ class BootStrapService {
             }
         }
         catch (Exception e) {
-            log.warn('.. failed')
+            log.warn('.. failed: ' + e.getMessage())
         }
     }
 

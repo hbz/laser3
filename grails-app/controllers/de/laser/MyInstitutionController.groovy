@@ -2900,10 +2900,6 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
-    })
     def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
         PropertyDefinition.withTransaction {
             int deletedProperties = 0

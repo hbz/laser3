@@ -204,7 +204,7 @@ class SemanticUiTagLib {
             out << '<div class="ui list">'
             systemChecks.each {systemCheck ->
                 out << '<div class="item">'
-                out << "${systemCheck.key}: ${systemCheck.value}"
+                out << "<strong>${systemCheck.key}</strong>: ${systemCheck.value}"
                 out << '</div>'
             }
             out << '</div>'
