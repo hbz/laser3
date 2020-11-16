@@ -137,11 +137,12 @@ class CacheService implements ApplicationContextAware {
 
     /* --- */
 
-    String getDiskStorePath() {
-
-        CacheManager cm = CacheManager.newInstance()
+    String getDiskStorePath(CacheManager cm) {
         Configuration cfg = cm.getConfiguration()
+        cfg.getDiskStoreConfiguration()?.getPath()
+    }
 
-        cfg.getDiskStoreConfiguration().getPath()
+    String getDiskStorePath() {
+        getDiskStorePath( CacheManager.newInstance() )
     }
 }

@@ -8,6 +8,10 @@ grails:
             # Whether to translate GORM events into Reactor events
             # Disabled by default for performance reasons
             events: false
+    exceptionresolver:
+        params:
+            exclude:
+                - password
 info:
     app:
         name: '@info.app.name@'
