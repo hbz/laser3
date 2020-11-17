@@ -638,7 +638,7 @@ class SemanticUiTagLib {
 
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def statusType = object.status?.owner?.desc
+        def status = object.status?.value
         def color
         def tooltip
         def startDate
@@ -654,9 +654,9 @@ class SemanticUiTagLib {
         if (object.status) {
             tooltip = object.status.getI10n('value')
             switch (object.status) {
-                case RefdataValue.getByValueAndCategory('Current', statusType): color = 'la-status-active'
+                case 'Current': color = 'la-status-active'
                     break
-                case RefdataValue.getByValueAndCategory('Expired', statusType): color = 'la-status-inactive'
+                case 'Expired': color = 'la-status-inactive'
                     break
                 default: color = 'la-status-else'
                     break

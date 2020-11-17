@@ -1,6 +1,7 @@
 <%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
+<g:set var="start" value="${System.currentTimeMillis()}"/>
 <!doctype html>
 <html>
     <head>
@@ -34,6 +35,7 @@
             %{--<g:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
         </semui:debugInfo>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
+        before actions: ${System.currentTimeMillis()-start}
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
@@ -213,13 +215,12 @@
                                                 property: 'orgs',
                                                 recip_prop: 'sub',
                                                 tmplRole: RDStore.OR_PROVIDER,
+                                                tmplType: RDStore.OT_PROVIDER,
                                                 tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
                                                 tmplText:message(code:'subscription.details.linkProvider.tmplText'),
                                                 tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
                                                 tmplModalID:'modal_add_provider',
-                                                editmode: editable,
-                                                orgList: availableProviderList,
-                                                signedIdList: existingProviderIdList
+                                                editmode: editable
                                       ]}" />
                             <g:render template="/templates/links/orgLinksSimpleModal"
                                       model="${[linkType: subscription.class.name,
@@ -227,13 +228,12 @@
                                                 property: 'orgs',
                                                 recip_prop: 'sub',
                                                 tmplRole: RDStore.OR_AGENCY,
+                                                tmplType: RDStore.OT_AGENCY,
                                                 tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
                                                 tmplText: message(code:'subscription.details.linkAgency.tmplText'),
                                                 tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
                                                 tmplModalID:'modal_add_agency',
-                                                editmode: editable,
-                                                orgList: availableAgencyList,
-                                                signedIdList: existingAgencyIdList
+                                                editmode: editable
                                       ]}" />
 
                         </div><!-- la-js-hide-this-card -->

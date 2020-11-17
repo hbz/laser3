@@ -91,6 +91,14 @@ class LinksGenerationService {
         links
     }
 
+    boolean checkPrevious(checkFor) {
+        Map<String,Object> queryParams = [follows: RDStore.LINKTYPE_FOLLOWS, check: checkFor]
+        if(checkFor instanceof License)
+            Links.executeQuery('select li.sourceLicense.id from Links li where li.linkType = :follows and li.destinationLicense = :check',queryParams).size() > 0
+        else if(checkFor instanceof Subscription)
+            Links.executeQuery('select li.sourceSubscription.id from Links li where li.linkType = :follows and li.destinationSubscription = :check',queryParams).size() > 0
+        false
+    }
 
     List<Subscription> getAllLinkedSubscriptions(List<Subscription> ownerSubscriptions, User user) {
         Set<Links> sources

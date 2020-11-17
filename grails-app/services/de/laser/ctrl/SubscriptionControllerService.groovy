@@ -30,7 +30,6 @@ import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.OrgSetting
-import de.laser.OrgTypeService
 import de.laser.Package
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
@@ -107,7 +106,6 @@ class SubscriptionControllerService {
     GlobalSourceSyncService globalSourceSyncService
     LinksGenerationService linksGenerationService
     ExecutorWrapperService executorWrapperService
-    PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
     MessageSource messageSource
 
@@ -273,22 +271,7 @@ class SubscriptionControllerService {
             pu.setBenchmark('provider & agency filter')
             // TODO: experimental asynchronous task
             //def task_providerFilter = task {
-            result.existingProviderIdList = []
-            List availableProviderList = []
-            // performance problems: orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
-            result.existingAgencyIdList = []
-            List availableAgencyList = []
-            // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
-            Set<Org> providersAgencies = Org.executeQuery('select org from Org org join org.orgType rt where org not in (select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:providerRoles)) and rt in (:providerTypes) order by org.name asc',[sub:result.subscription,providerRoles:[RDStore.OR_AGENCY,RDStore.OR_PROVIDER],providerTypes:[RDStore.OT_PROVIDER,RDStore.OT_AGENCY]])
-            providersAgencies.each { Org org ->
-                if(org.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
-                    availableProviderList.add(org)
-                if(org.getAllOrgTypeIds().contains(RDStore.OT_AGENCY.id))
-                    availableAgencyList.add(org)
-            }
             //}
-            result.availableProviderList = availableProviderList
-            result.availableAgencyList = availableAgencyList
             result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscription, 'Specific subscription editor')
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
                 pu.setBenchmark('non-inherited member properties')
@@ -2415,8 +2398,8 @@ class SubscriptionControllerService {
 
         if (result.subscription) {
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
-
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
+            result.hasPrevious = links.prevLink.size() > 0
             result.navPrevSubscription = links.prevLink
             result.navNextSubscription = links.nextLink
 

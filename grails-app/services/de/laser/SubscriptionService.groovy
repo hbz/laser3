@@ -119,10 +119,6 @@ class SubscriptionService {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         }
         result.allSubscriptions = subscriptions
-        pu.setBenchmark('fetch licenses')
-        if(subscriptions)
-            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(subscriptions,RDStore.LINKTYPE_LICENSE)
-        pu.setBenchmark('after licenses')
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
@@ -137,6 +133,10 @@ class SubscriptionService {
          */
         pu.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        pu.setBenchmark('fetch licenses')
+        if(subscriptions)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
+        pu.setBenchmark('after licenses')
         List bm = pu.stopBenchmark()
         result.benchMark = bm
         result
