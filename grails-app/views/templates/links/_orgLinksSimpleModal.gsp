@@ -12,24 +12,26 @@
         <input type="hidden" name="linkType" value="${linkType}" />
 
         <div class="field">
-            <g:if test="${orgList.size() > 0}">
-                <p>
-                    <g:message code="template.orgLinksModal.found" args="${[orgList.size(),tmplEntity]}"/>
-                    <%--
-                    <br />
-                    Bereits von Ihnen verwendete ${tmplEntity} sind durch ein Symbol (&#10004;) gekennzeichnet.
-                    --%>
-                </p>
-                <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
-
-                <semui:signedDropdown id="orm_orgOid_${tmplModalID}" name="orm_orgOid" noSelection="${varSelectOne}" from="${orgList}" signedIds="${signedIdList}" />
-            </g:if>
-            <g:else>
-                <p>
-                    <g:message code="template.orgLinksModal.noEntityFound" args="${[tmplEntity]}"/>
-                </p>
-            </g:else>
+            <div class="ui search selection dropdown la-full-width" id="orm_orgOid_${tmplModalID}">
+                <input type="hidden" name="orm_orgOid"/>
+                <i class="dropdown icon"></i>
+                <input type="text" class="search"/>
+                <div class="default text"></div>
+            </div>
         </div>
     </g:form>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            //{query} is correct; this is the semantic ui query syntax containing the filter string
+            $("#orm_orgOid_${tmplModalID}").dropdown({
+                apiSettings: {
+                    url: "<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?&query={query}&orgType=${tmplType.id}",
+                    cache: false
+                },
+                clearable: true,
+                minCharacters: 1
+            });
+        });
+    </script>
 </semui:modal>
 

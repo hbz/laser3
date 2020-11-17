@@ -7,15 +7,15 @@
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 
             <tr>
-                <th scope="row" class="control-label la-js-dont-hide-this-card">${role?.roleType?.getI10n("value")}</th>
+                <th scope="row" class="control-label la-js-dont-hide-this-card">${role.roleType.getI10n("value")}</th>
                 <td>
-                    <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
+                    <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
                 </td>
 
                 <td class="right aligned">
                     <g:if test="${editmode}">
-                        <g:if test="${roleObject?.showUIShareButton()}">
-                            <g:if test="${role?.isShared}">
+                        <g:if test="${roleObject.showUIShareButton()}">
+                            <g:if test="${role.isShared}">
                                 <span class="la-js-editmode-container">
                                     <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay test"
                                             controller="ajax" action="toggleShare"
@@ -64,8 +64,8 @@
                                   model="['cssId': cssId,
                                           'orgRole': role,
                                           'roleObject': roleObject,
-                                          parent: roleObject.class.name + ':' + roleObject.id,
-                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
+                                          parent: genericOIDService.getOID(roleObject),
+                                          role: genericOIDService.getOID(modalPrsLinkRole)
                                   ]"/>
                         </g:if>
                     </g:if>
@@ -74,8 +74,8 @@
             </tr>
             <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg()) ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg()))}">
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
                     <td></td>
                     <td>
@@ -120,10 +120,10 @@
                         </g:if><%-- public --%>
 
                         <%-- private --%>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg()) ||
-                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}">
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
                             <div class="ui list">
-                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="func">
+                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
@@ -134,7 +134,7 @@
                                         </div>
                                     </div>
                                 </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}" var="resp">
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
