@@ -245,14 +245,16 @@ class SemanticUiNavigationTagLib {
         }
         // all button
         def allLinkAttrs = linkTagAttrs.clone()
-        allLinkAttrs.class = "item"
-
-        allLinkAttrs.params.remove('offset')
-        allLinkAttrs.params.max = 100000
-        allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, 'Show all', locale)]
-
-        out << link(allLinkAttrs, '<i class="list icon"></i>')
-
+        allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, locale)]
+        if(total <= 200) {
+            allLinkAttrs.class = "item"
+            allLinkAttrs.params.remove('offset')
+            allLinkAttrs.params.max = 200
+            out << link(allLinkAttrs, '<i class="list icon"></i>')
+        }
+        else {
+            out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
+        }
         out << '</div>'
         out << '</div><!--.pagination-->'
     }

@@ -3,11 +3,11 @@
 <%
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
-
+    Org contextOrg = contextOrg ?: contextService.org
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole(contextService.user, contextService.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            editable = accessService.checkMinUserOrgRole(contextService.user, contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
@@ -16,7 +16,7 @@
     boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     Set<DocContext> documentSet = ownobj.documents
 
-    if(ownobj instanceof Org && ownobj.id == contextService.org.id) {
+    if(ownobj instanceof Org && ownobj.id == contextOrg.id) {
         documentSet.addAll(orgDocumentService.getTargettedDocuments(ownobj))
     }
 
@@ -26,11 +26,11 @@
         boolean inTargetOrg = false
         if(it.org) {
 
-            if(it.owner.owner?.id == contextService.org.id){
+            if(it.owner.owner?.id == contextOrg.id){
                 inOwnerOrg = true
             }
 
-            else if(contextService.org.id == it.targetOrg?.id) {
+            else if(contextOrg.id == it.targetOrg?.id) {
                 inTargetOrg = true
             }
 
@@ -48,7 +48,7 @@
                     break
             }
         }
-        else if(it.owner.owner?.id == contextService.org.id || it.sharedFrom)
+        else if(it.owner.owner?.id == contextOrg.id || it.sharedFrom)
             visible = true
         if ((it.sharedFrom || inTargetOrg) && visible) {
             sharedItems << it
@@ -80,7 +80,7 @@
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
-                            <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
@@ -172,7 +172,7 @@
 
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
-                        <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                        <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                             <div class="two wide column">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>

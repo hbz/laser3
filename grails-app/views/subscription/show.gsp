@@ -1,6 +1,7 @@
 <%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.helper.RDStore;de.laser.helper.RDConstants;de.laser.interfaces.CalculatedType;de.laser.PendingChangeConfiguration" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
+<g:set var="start" value="${System.currentTimeMillis()}"/>
 <!doctype html>
 <html>
     <head>
@@ -41,7 +42,7 @@
             <semui:xEditable owner="${subscription}" field="name" />
         </h1>
         <g:if test="${editable}">
-            <semui:auditButton auditable="[subscription, 'name']" />
+            <semui:auditButton auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" />
         </g:if>
         <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
@@ -63,14 +64,14 @@
                                 <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'startDate']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscription}" field="endDate" type="date" validation="datesCheck"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'endDate']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
 
@@ -78,7 +79,7 @@
                                 <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'manualCancellationDate']" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'manualCancellationDate']" auditConfigs="${auditConfigs}" /></dd>
                                 </g:if>
                             </dl>
 
@@ -100,7 +101,7 @@
                                 <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscription}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}" constraint="removeValue_deleted" /></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'status']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
                             <sec:ifAnyGranted roles="ROLE_YODA">
@@ -129,28 +130,28 @@
                                                                 constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
                                         />
                                     </dd>
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'type']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/></dd>
                                 </dl>
                             </sec:ifAnyGranted>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscription}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'kind']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscription}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'form']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscription}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'resource']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
                             <g:if test="${!params.orgBasicMemberView && subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
@@ -177,7 +178,7 @@
                                 <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscription}" field="isPublicForApi" /></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'isPublicForApi']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
 
@@ -185,7 +186,7 @@
                                 <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess" /></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'hasPerpetualAccess']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
 
@@ -213,13 +214,12 @@
                                                 property: 'orgs',
                                                 recip_prop: 'sub',
                                                 tmplRole: RDStore.OR_PROVIDER,
+                                                tmplType: RDStore.OT_PROVIDER,
                                                 tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
                                                 tmplText:message(code:'subscription.details.linkProvider.tmplText'),
                                                 tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
                                                 tmplModalID:'modal_add_provider',
-                                                editmode: editable,
-                                                orgList: availableProviderList,
-                                                signedIdList: existingProviderIdList
+                                                editmode: editable
                                       ]}" />
                             <g:render template="/templates/links/orgLinksSimpleModal"
                                       model="${[linkType: subscription.class.name,
@@ -227,13 +227,12 @@
                                                 property: 'orgs',
                                                 recip_prop: 'sub',
                                                 tmplRole: RDStore.OR_AGENCY,
+                                                tmplType: RDStore.OT_AGENCY,
                                                 tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
                                                 tmplText: message(code:'subscription.details.linkAgency.tmplText'),
                                                 tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
                                                 tmplModalID:'modal_add_agency',
-                                                editmode: editable,
-                                                orgList: availableAgencyList,
-                                                signedIdList: existingAgencyIdList
+                                                editmode: editable
                                       ]}" />
 
                         </div><!-- la-js-hide-this-card -->

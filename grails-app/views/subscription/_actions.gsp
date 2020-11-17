@@ -1,13 +1,12 @@
 <%@ page import="de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
-
+<g:set var="actionStart" value="${System.currentTimeMillis()}"/>
 <%
     List menuArgs
     if(showConsortiaFunctions)
         menuArgs = [message(code:'subscription.details.consortiaMembers.label')]
 %>
-
     <g:if test="${actionName in ['index','addEntitlements']}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
@@ -88,7 +87,6 @@
             </g:if>
 
             <div class="divider"></div>
-
             <g:if test="${editable}">
                 <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
@@ -100,7 +98,6 @@
                     <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
                 </g:else>
             </g:if>
-
             <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <g:if test="${subscription.instanceOf}">
@@ -118,13 +115,9 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndDestinationSubscription(RDStore.LINKTYPE_FOLLOWS, subscription)}"/>
-
-
             <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <div class="divider"></div>
-                <g:if test="${previousSubscriptions}">
+                <g:if test="${hasPrevious}">
                     <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                 </g:if>
@@ -134,7 +127,7 @@
                 </g:else>
             </g:if>
             <g:if test ="${subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
-                <g:if test ="${previousSubscriptions}">
+                <g:if test ="${hasPrevious}">
                     <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
                 </g:if>
@@ -143,7 +136,6 @@
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
-
             <g:if test="${contextCustomerType == 'ORG_CONSORTIUM' && showConsortiaFunctions && subscription.instanceOf == null }">
                     <semui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
@@ -170,7 +162,6 @@
                     <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
                 </g:if>
             </g:if>
-
             <g:if test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>

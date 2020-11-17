@@ -223,13 +223,16 @@ class SemanticUiTagLib {
             try {
                 def obj = attrs.auditable[0]
                 def objAttr = attrs.auditable[1]
+                boolean hasAuditConfig
 
                 if (obj?.getLogIncluded()?.contains(objAttr)) {
 
                     // inherited (to)
                     if (obj.instanceOf) {
-
-                        if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
+                        if(attrs.auditConfigs)
+                            hasAuditConfig = attrs.auditConfigs[objAttr]
+                        else hasAuditConfig = auditService.getAuditConfig(obj.instanceOf, objAttr)
+                        if (hasAuditConfig) {
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
@@ -246,8 +249,11 @@ class SemanticUiTagLib {
                     // inherit (from)
                     else if (obj?.showUIShareButton()) {
                         String oid = genericOIDService.getOID(obj)
+                        if(attrs.auditConfigs)
+                            hasAuditConfig = attrs.auditConfigs[objAttr]
+                        else hasAuditConfig = auditService.getAuditConfig(obj, objAttr)
 
-                        if (auditService.getAuditConfig(obj, objAttr)) {
+                        if (hasAuditConfig) {
                             out << '<div class="ui simple dropdown icon mini green button la-audit-button" data-content="Wert wird vererbt">'
                             out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
 
@@ -617,7 +623,7 @@ class SemanticUiTagLib {
 
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def statusType = object.status?.owner?.desc
+        def status = object.status?.value
         def color
         def tooltip
         def startDate
@@ -633,9 +639,9 @@ class SemanticUiTagLib {
         if (object.status) {
             tooltip = object.status.getI10n('value')
             switch (object.status) {
-                case RefdataValue.getByValueAndCategory('Current', statusType): color = 'la-status-active'
+                case 'Current': color = 'la-status-active'
                     break
-                case RefdataValue.getByValueAndCategory('Expired', statusType): color = 'la-status-inactive'
+                case 'Expired': color = 'la-status-inactive'
                     break
                 default: color = 'la-status-else'
                     break
