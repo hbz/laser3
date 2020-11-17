@@ -43,6 +43,15 @@ class AuditService {
         AuditConfig.getConfig(obj, field)
     }
 
+    Map<String,AuditConfig> getAllAuditConfigs(Auditable obj) {
+        Map<String,AuditConfig> auditConfigMap = [:]
+        List<AuditConfig> auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(obj.class.name,obj.id)
+        auditConfigs.each { AuditConfig ac ->
+            auditConfigMap.put(ac.referenceField,ac)
+        }
+        auditConfigMap
+    }
+
     @Transient
     def beforeDeleteHandler(Auditable obj) {
 

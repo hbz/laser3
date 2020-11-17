@@ -122,7 +122,6 @@ class SubscriptionControllerService {
             if (result.institution) {
                 result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             }
-
             pu.setBenchmark('packages')
             // ---- pendingChanges : start
             result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
@@ -2402,6 +2401,9 @@ class SubscriptionControllerService {
             result.hasPrevious = links.prevLink.size() > 0
             result.navPrevSubscription = links.prevLink
             result.navNextSubscription = links.nextLink
+            if(result.subscription.instanceOf)
+                result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
+            else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
 
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
