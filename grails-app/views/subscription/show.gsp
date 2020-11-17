@@ -35,7 +35,7 @@
             %{--<g:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
         </semui:debugInfo>
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
-        before actions: ${System.currentTimeMillis()-start}
+        <%--before actions: ${System.currentTimeMillis()-start}--%>
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
