@@ -7,11 +7,11 @@
 </head>
 
 <body>
-<section class="section">
-<div class="column is-half container">
+<section class="section custom-section-form">
+<div class="container">
     <g:form method="get" autocomplete="off">
 
-        <div class="field has-addons">
+        <div class="field">
             <div class="control is-expanded">
                 <input id="q" name="q" value="${params.q}"
                        class="input is-medium" autofocus="autofocus" onfocus="this.select()"
@@ -126,8 +126,12 @@
 
 <g:if test="${subscriptions}">
 
-<section class="section">
+<section class="section custom-section-result">
     <div class="container is-widescreen">
+
+        <div class="level">
+            <div class="level-item"><span class="tag is-info">${subscriptions.size()} Treffer</span></div>
+        </div>
 
     <table class="table is-striped is-fullwidth">
         <thead>

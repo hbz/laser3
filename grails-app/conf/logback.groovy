@@ -68,13 +68,15 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
 
     logger("StackTrace",    ERROR, ['FULL_STACKTRACE'], false)
 
-    logger("de.laser",      DEBUG, ['LOGFILE', 'STDOUT'], false)
-    logger("com.k_int",     DEBUG, ['LOGFILE', 'STDOUT'], false)
+    logger("de.laser",      DEBUG, ['LOGFILE'], false)
+    logger("com.k_int",     DEBUG, ['LOGFILE'], false)
 
-    root(INFO, ['LOGFILE', 'STDOUT'])
+    root(INFO, ['LOGFILE'])
 }
-else {
-    //root(ERROR, ['STDOUT'])
-    root(INFO, ['STDOUT'])
-}
+
+logger("de.laser",      DEBUG, ['STDOUT'], false)
+logger("com.k_int",     DEBUG, ['STDOUT'], false)
+
+root(INFO, ['STDOUT'])
+
 
