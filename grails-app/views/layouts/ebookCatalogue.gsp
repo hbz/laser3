@@ -15,10 +15,10 @@
 
 <body>
 
-<section class="hero is-medium is-info is-bold">
-    <div class="hero-body">
+<section class="hero is-info is-bold">
+    <div class="hero-body custom-hero-body">
         <div class="container">
-            <span id="logo"></span>
+            <span id="custom-logo"></span>
             <div>
             <h1 class="title">ebookCatalogue (working title)</h1>
             <h2 class="subtitle">
@@ -26,12 +26,13 @@
             </h2>
             <p>DEMO - DEMO - DEMO</p>
             </div>
-            <div class="card" id="statistics">
+            <div class="card" id="custom-statistics">
                 <div class="card-content has-text-right">
-                    <p class="subtitle"><strong class="has-text-weight-semibold">123456</strong> EBooks</p>
-                    <p class="subtitle"><strong class="has-text-weight-semibold">6543</strong> Produkte</p>
-                    <p class="subtitle"><strong class="has-text-weight-semibold">123</strong> Anbieter</p>
-                    <p class="subtitle"><strong class="has-text-weight-semibold">999999</strong> Suchanfragen</p>
+                    <p class="subtitle"><strong class="has-text-weight-semibold">123456</strong> EBooks,</p>
+                    <p class="subtitle"><strong class="has-text-weight-semibold">6543</strong> Produkte,</p>
+                    <p class="subtitle"><strong class="has-text-weight-semibold">123</strong> Anbieter,</p>
+                    <p class="subtitle"><strong class="has-text-weight-semibold">999999</strong> Suchanfragen,</p>
+                    <p class="subtitle">davon heute <strong class="has-text-weight-semibold">789</strong></p>
                 </div>
             </div>
         </div>
@@ -50,32 +51,36 @@
 
 
 <style>
-    #logo {
-
+    #custom-logo {
         display: inline-block;
         width: 150px;
         height: 150px;
         background-image: url("${resource(dir: 'images', file: 'ebookCatalogue/library-book.svg')}");
+        background-position: center;
+        background-repeat: no-repeat;
     }
-    #statistics {
+    #custom-statistics {
         position: absolute;
-        top: -5rem;
+        top: -3rem;
         right: 0;
         background-color: rgba(255,255,255, 0.2);
         border-radius: 0 0 10px 10px;
         box-shadow: none;
     }
-    #statistics .card-content {
+    #custom-statistics .card-content {
         padding: 1.5rem 2rem;
     }
-    #statistics .subtitle {
+    #custom-statistics .subtitle {
         margin-bottom: 1rem;
     }
-    #statistics .subtitle:last-of-type {
+    #custom-statistics .subtitle:last-of-type {
         margin-bottom: 0;
     }
-    .hero.is-medium .hero-body {
-        padding: 5rem 1.5rem 6rem;
+    .custom-section-form {
+        background-color: #fafafa;
+    }
+    .custom-section-result {
+        border-top: 1px solid #3298dc;
     }
 
 </style>
