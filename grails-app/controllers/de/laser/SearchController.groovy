@@ -1,6 +1,7 @@
 package de.laser
 
- 
+import de.laser.auth.User
+import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -16,8 +17,7 @@ class SearchController  {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        params.max = params.max ?: result.user.getDefaultPageSize()
-        params.offset = params.offset ? params.int('offset') : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.searchObjects = params.searchObjects ?: 'allObjects'
         result.contextOrg = contextService.getOrg()
@@ -52,7 +52,7 @@ class SearchController  {
 
             params.actionName = actionName
 
-            params.availableToOrgs = [contextService.org.id]
+            params.availableToOrgs = [contextService.getOrg().id]
             params.availableToUser = [result.user.id]
 
             result = ESSearchService.search(params)
@@ -123,7 +123,7 @@ class SearchController  {
             params.q = query
             //From the available orgs, see if any belongs to a consortium, and add consortium ID too
             //TMP Bugfix, restrict for now to context org! A proper solution has to be found later!
-            params.availableToOrgs = [contextService.org.id]
+            params.availableToOrgs = [contextService.getOrg().id]
 
             if (query.startsWith("\$")) {
                 if (query.length() > 2) {

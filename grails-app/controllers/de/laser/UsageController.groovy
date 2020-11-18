@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.auth.User
+import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification
@@ -19,8 +21,7 @@ class UsageController  {
             result.remove('tmpFlashError')
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
         // use extra hql query for now, TODO only use hql base query and move the query out of this method

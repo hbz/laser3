@@ -1,9 +1,10 @@
 package de.laser
 
-
+import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional
@@ -29,9 +30,7 @@ class PlatformController  {
     def list() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.max = params.max ?: result.user.getDefaultPageSize()
-
-        result.offset = params.offset ?: 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         RefdataValue deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', RDConstants.PLATFORM_STATUS)
         Map<String, Object> qry_params = [delStatus: deleted_platform_status]

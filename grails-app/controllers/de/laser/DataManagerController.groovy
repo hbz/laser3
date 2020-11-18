@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
+import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -53,10 +54,9 @@ class DataManagerController  {
       result.offset = 0
     }
     else {
-      User user = contextService.getUser()
-      result.max = params.max ?: user.getDefaultPageSize()
-      params.max = result.max
-      result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        User user = contextService.getUser()
+        SwissKnife.setPaginationParams(result, params, user)
+        params.max = result.max
     }
 
     if ( params.startDate == null ) {
@@ -318,8 +318,7 @@ class DataManagerController  {
     Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        result.max = params.max ? Integer.parseInt(params.max): result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String base_qry = " from TitleInstance as t where ( t.status = :status )"
         if (params.sort?.length() > 0) {
@@ -342,9 +341,8 @@ class DataManagerController  {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        result.max = params.max ? Integer.parseInt(params.max): result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.editable = true
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String query = " from Org as o where ( o.status = :status )"
         if (params.sort?.length() > 0) {

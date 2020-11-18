@@ -47,6 +47,7 @@ import de.laser.SurveyService
 import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
+import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
@@ -57,6 +58,7 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SwissKnife
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
@@ -335,8 +337,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.max = params.max ?: result.user.getDefaultPageSizeAsInteger()
-            result.offset = params.offset ?: 0
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
             Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id]
             Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
             result.historyLinesTotal = historyLines.size()
@@ -351,8 +352,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.max = params.max ?: result.user.getDefaultPageSizeAsInteger()
-            result.offset = params.offset ?: 0
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
             Map<String, Object> baseParams = [sub: result.subscription, stats: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]
             Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
             result.todoHistoryLinesTotal = todoHistoryLines.size()
@@ -1355,8 +1355,7 @@ class SubscriptionControllerService {
                 result.offset = 0
             }
             else {
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-                result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
             }
             boolean filterSet = false
             List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
@@ -1496,8 +1495,7 @@ class SubscriptionControllerService {
                 result.offset = 0
             }
             else {
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-                result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
             }
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
@@ -2357,7 +2355,7 @@ class SubscriptionControllerService {
 
     Map<String,Object> setCopyResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        result.user = contextService.user
+        result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         if (params.sourceObjectId == "null")
             params.remove("sourceObjectId")
@@ -2384,14 +2382,14 @@ class SubscriptionControllerService {
 
         Map<String, Object> result = [:]
 
-        result.user = contextService.user
+        result.user = contextService.getUser()
         result.subscription = Subscription.get(params.id)
 
         if (!params.id && params.subscription) {
             result.subscription = Subscription.get(params.subscription)
         }
         result.subscriptionConsortia = result.subscription.getConsortia()
-        result.contextOrg = contextService.org
+        result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
         result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
 

@@ -122,8 +122,9 @@ class OrganisationController  {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSize()
-        result.offset = params.offset ? Long.parseLong(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        println 'org list fail: ' + result
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
@@ -221,8 +222,8 @@ class OrganisationController  {
             fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeAsInteger()
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
@@ -582,7 +583,7 @@ class OrganisationController  {
             memberMap.put(link.fromOrg.id,members)
         }
 
-        Map result = [institution:contextService.org, organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
+        Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
             result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
@@ -984,7 +985,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def editUser() {
-        Map result = [user: User.get(params.id), editor: contextService.user, orgInstance: contextService.org, manipulateAffiliations: false]
+        Map result = [user: User.get(params.id), editor: contextService.getUser(), orgInstance: contextService.getOrg(), manipulateAffiliations: false]
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
         render view: '/globals/user/edit', model: result
@@ -1133,11 +1134,9 @@ class OrganisationController  {
             return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.org = result.orgInstance
-
         params.sort = params.sort ?: 'p.last_name, p.first_name'
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
@@ -1389,8 +1388,7 @@ class OrganisationController  {
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -1430,7 +1428,7 @@ class OrganisationController  {
     
     boolean checkIsEditable(User user, Org org) {
         boolean isEditable
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
         boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') ||user.hasRole('ROLE_ORG_EDITOR') || user.hasAffiliation('INST_EDITOR')
