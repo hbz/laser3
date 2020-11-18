@@ -749,7 +749,7 @@
                 </td>
                 <td></td>
             </g:if>
-        </tr>>
+        </tr>
         </tfoot>
     </g:if>
 </table>
