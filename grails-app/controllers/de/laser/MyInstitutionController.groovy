@@ -587,10 +587,6 @@ join sub.orgRelations or_sub where
         paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
     ])
             orgIds = matches.collect{ it.id }
-
-            // TODO: merge master into dev
-            // TODO: orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )
-
             cache.put('orgIds', orgIds)
         }
 
@@ -601,12 +597,13 @@ join sub.orgRelations or_sub where
 		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
 		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        params.constraint_orgIds = orgIds
-        def fsq  = filterService.getOrgQuery(params)
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
+        tmpParams.constraint_orgIds = orgIds
+        def fsq  = filterService.getOrgQuery(tmpParams)
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
+            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
         }
         List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
         result.orgListTotal = orgListTotal.size()
