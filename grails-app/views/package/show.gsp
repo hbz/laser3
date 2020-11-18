@@ -205,7 +205,7 @@
 
                                 <select class="ui dropdown" name="subid">
                                     <g:each in="${subscriptionList}" var="s">
-                                        <option value="${s.id}">${s.dropdownNamingConvention(contextService.org)}</option>
+                                        <option value="${s.id}">${s.dropdownNamingConvention(contextService.getOrg())}</option>
                                     </g:each>
                                 </select>
 

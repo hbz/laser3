@@ -1,7 +1,7 @@
 <laser:serviceInjection />
 
-<g:set var="user" value="${contextService.user}"/>
-<g:set var="org" value="${contextService.org}"/>
+<g:set var="user" value="${contextService.getUser()}"/>
+<g:set var="org" value="${contextService.getOrg()}"/>
 
 <semui:actionsDropdown>
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
@@ -26,7 +26,7 @@
 </semui:actionsDropdown>
 
 <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
-    <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.org, owntp: 'pkg']}"/>
+    <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
     <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>
 <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">

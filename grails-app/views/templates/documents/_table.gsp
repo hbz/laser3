@@ -4,13 +4,13 @@
     boolean parentAtChild = false
 
     if(instance instanceof Subscription) {
-        if(contextService.org.id == instance.getConsortia()?.id && instance.instanceOf) {
+        if(contextService.getOrg().id == instance.getConsortia()?.id && instance.instanceOf) {
             if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }
     else if(instance instanceof License) {
-        if(contextService.org.id == instance.getLicensingConsortium()?.id && instance.instanceOf) {
+        if(contextService.getOrg().id == instance.getLicensingConsortium()?.id && instance.instanceOf) {
             parentAtChild = true
         }
     }
@@ -50,9 +50,9 @@
                     boolean inOwnerOrg = false
                     boolean inTargetOrg = false
 
-                    if(docctx.owner.owner?.id == contextService.org.id)
+                    if(docctx.owner.owner?.id == contextService.getOrg().id)
                         inOwnerOrg = true
-                    else if(contextService.org.id == docctx.targetOrg?.id)
+                    else if(contextService.getOrg().id == docctx.targetOrg?.id)
                         inTargetOrg = true
                     if(docctx.org) {
                         switch(docctx.shareConf) {
@@ -73,7 +73,7 @@
                         visible = true
                     }
                     else {
-                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.org.id) {
+                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.getOrg().id) {
                             visible = true
                         }
                     }

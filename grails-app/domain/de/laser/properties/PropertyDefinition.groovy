@@ -415,7 +415,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     int countOwnUsages() {
         String table = this.descr.replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
-        Map<String,Long> filterParams = [type:this.id,ctx:contextService.org.id]
+        Map<String,Long> filterParams = [type:this.id,ctx:contextService.getOrg().id]
         if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
         } else if(this.descr == PropertyDefinition.SVY_PROP) {

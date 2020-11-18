@@ -264,7 +264,7 @@
                                    value="${subscription.propertySet.findAll { it.type.tenant?.id == contextOrg.id && it.type == filterPropDef  }}"/>
                             <g:if test="${privateProperties}">
                                 <g:each in="${privateProperties}" var="privateProperty">
-                                    <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
+                                    <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef?.getI10n('name')}</div>
 
                                     <div class="content">
 
@@ -572,7 +572,7 @@
 
                                         <g:if test="${privateProperties}">
                                             <g:each in="${privateProperties}" var="privateProperty">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <g:if test="${privateProperty.type.isIntegerType()}">

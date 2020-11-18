@@ -137,9 +137,8 @@ class MyInstitutionController  {
 		pu.setBenchmark('init')
 
         result.user = contextService.getUser()
-        result.max = params.max ?: result.user.getDefaultPageSize()
-        result.offset = params.offset ?: 0
-        result.contextOrg = contextService.org
+        result.contextOrg = contextService.getOrg()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         pu.setBenchmark("before loading subscription ids")
 
@@ -242,9 +241,9 @@ class MyInstitutionController  {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.org)
-        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.getOrg())
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
         result.compare = params.compare ?: ''
@@ -522,8 +521,7 @@ class MyInstitutionController  {
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -593,9 +591,9 @@ join sub.orgRelations or_sub where
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
 
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.constraint_orgIds = orgIds
@@ -1039,9 +1037,7 @@ join sub.orgRelations or_sub where
             log.debug("Getting titles as of ${checkedDate} (given)")
         }
 
-        // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List filterSub = params.list("filterSub")
         if (filterSub == "all")
@@ -1202,9 +1198,9 @@ join sub.orgRelations or_sub where
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.max = params.max ?: result.user.getDefaultPageSize()
-        result.offset = params.offset ?: 0
-        result.contextOrg = contextService.org
+        result.contextOrg = contextService.getOrg()
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         //def cache = contextService.getCache('MyInstitutionController/currentPackages/', contextService.ORG_SCOPE)
 
@@ -1222,7 +1218,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
         result.filterSet = tmpQ[2]
         currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
@@ -1238,6 +1234,8 @@ join sub.orgRelations or_sub where
         ])
 
         result.subscriptionMap = [:]
+        result.packageList = []
+        result.packageListTotal = 0
 
         if(currentSubIds) {
 
@@ -1284,15 +1282,13 @@ join sub.orgRelations or_sub where
                 }
             }
 
-            result.packageList = (packageSubscriptionList.collect { it[0] }).unique()
+            List tmp = (packageSubscriptionList.collect { it[0] }).unique()
+
+            result.packageListTotal = tmp.size()
+            result.packageList = tmp.drop(result.offset).take(result.max)
         }
-        else {
-            result.packageList = []
-        }
-        result.packagesTotal    = result.packageList.size()
 
         result
-
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
@@ -1331,8 +1327,7 @@ join sub.orgRelations or_sub where
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
 
@@ -1370,8 +1365,7 @@ join sub.orgRelations or_sub where
           result.offset = 0;
         }
         else {
-          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-          result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
         }
 
         PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
@@ -1555,8 +1549,7 @@ join sub.orgRelations or_sub where
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        //SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.tab = params.tab ?: 'new'
 
@@ -1576,7 +1569,7 @@ join sub.orgRelations or_sub where
                         group by o order by lower(o.name) """
         )
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -1879,7 +1872,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
-        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, institution: contextService.org, manipulateAffiliations: true]
+        Map result = [user: User.get(params.id), editor: contextService.getUser(), editable: true, institution: contextService.getOrg(), manipulateAffiliations: true]
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
                 [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
         result.availableComboDeptOrgs << result.institution
@@ -1943,8 +1936,7 @@ join sub.orgRelations or_sub where
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.sort = params.sort ?: 'pr.org.name'
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
@@ -2141,10 +2133,9 @@ join sub.orgRelations or_sub where
             }
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
-        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.filterSet    = params.filterSet ? true : false
 
         params.comboType = result.comboType.value
@@ -2579,8 +2570,7 @@ join sub.orgRelations or_sub where
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         DateFormat sdFormat = DateUtils.getSDF_NoTime()
 

@@ -122,8 +122,8 @@ class CopyElementsService {
 
         result.sourceObject = sourceObject
         result.targetObject = targetObject
-        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceObject)
-        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetObject)
+        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.sourceObject)
+        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.targetObject)
         result
     }
 
@@ -156,7 +156,7 @@ class CopyElementsService {
         }
 
         if(sourceObject instanceof SurveyConfig) {
-            Org contextOrg = contextService.org
+            Org contextOrg = contextService.getOrg()
             objectsToCompare.each { Object obj ->
                         Map customProperties = result.customProperties
                         customProperties = comparisonService.buildComparisonTreePropertyDefintion(customProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant == null }.sort { it.getI10n('name') })
@@ -184,7 +184,7 @@ class CopyElementsService {
         }
 
 
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         *//*objectsToCompare.each { Object obj ->
             Map customProperties = result.customProperties
             customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && it.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
@@ -259,10 +259,10 @@ class CopyElementsService {
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
                     try {
-                        Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                        Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                         Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subMember, RDStore.LINKTYPE_LICENSE)
                         precedingLicenses.each { Links link ->
-                            Map<String, Object> successorLink = [source: link.sourceLicense, destination: newSubscription, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org]
+                            Map<String, Object> successorLink = [source: link.sourceLicense, destination: newSubscription, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.getOrg()]
                             Links.construct(successorLink)
                         }
                     }
@@ -762,7 +762,7 @@ class CopyElementsService {
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
-        def userId = contextService.user.id
+        def userId = contextService.getUser().id
         toDeleteTasks.each { deleteTaskId ->
             Task dTask = Task.get(deleteTaskId)
             if (dTask) {

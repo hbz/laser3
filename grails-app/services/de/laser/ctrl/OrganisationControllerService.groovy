@@ -130,7 +130,7 @@ class OrganisationControllerService {
     Map<String, Object> getResultGenericsAndCheckAccess(OrganisationController controller, GrailsParameterMap params) {
 
         User user = contextService.getUser()
-        Org org = contextService.org
+        Org org = contextService.getOrg()
         Map<String, Object> result = [user:user,
                                       institution:org,
                                       inContextOrg:true,

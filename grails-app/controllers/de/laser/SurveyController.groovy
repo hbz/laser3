@@ -75,8 +75,7 @@ class SurveyController {
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.max = result.max
         params.offset = result.offset
@@ -147,8 +146,7 @@ class SurveyController {
 
         result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.max = result.max
         params.offset = result.offset
@@ -162,7 +160,7 @@ class SurveyController {
 
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
-        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.org )
+        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.getOrg() )
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -292,9 +290,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -321,16 +317,16 @@ class SurveyController {
             }
         }
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
         result.filterSet = tmpQ[2]
         List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
         //,[max: result.max, offset: result.offset]
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
         if (params.sort && params.sort.indexOf("§") >= 0) {
             switch (params.sort) {
@@ -373,8 +369,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -401,16 +396,16 @@ class SurveyController {
             }
         }
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
         result.filterSet = tmpQ[2]
         List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
         //,[max: result.max, offset: result.offset]
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
         if (params.sort && params.sort.indexOf("§") >= 0) {
             switch (params.sort) {
@@ -759,8 +754,7 @@ class SurveyController {
     Map<String,Object> surveyTitles() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String base_qry = null
         Map<String,Object> qry_params = [subscription: result.surveyConfig.subscription]
@@ -808,7 +802,7 @@ class SurveyController {
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
@@ -864,7 +858,7 @@ class SurveyController {
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
@@ -1381,7 +1375,7 @@ class SurveyController {
      def surveyTitlesEvaluation() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
@@ -2824,8 +2818,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if(result.surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id){
             result.workFlow = '2'
@@ -2864,16 +2857,16 @@ class SurveyController {
                 }
             }
 
-            Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.org)
+            Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg())
 
             result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
             result.filterSet = tmpQ[2]
             List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
             //,[max: result.max, offset: result.offset]
 
-            result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+            result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
             if (params.sort && params.sort.indexOf("§") >= 0) {
                 switch (params.sort) {
@@ -3014,7 +3007,7 @@ class SurveyController {
      Map<String,Object> renewSubscriptionConsortiaWithSurvey() {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        result.institution = contextService.org
+        result.institution = contextService.getOrg()
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
@@ -3127,7 +3120,7 @@ class SurveyController {
                         }
                     }
                     //link to previous subscription
-                    Links prevLink = Links.construct([source: newSub, destination: baseSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org])
+                    Links prevLink = Links.construct([source: newSub, destination: baseSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                     if (!prevLink) {
                         log.error("Problem linking to previous subscription: ${prevLink.errors}")
                     }
@@ -4605,7 +4598,7 @@ class SurveyController {
      Map<String,Object> copyElementsIntoSurvey() {
         def result             = [:]
         result.user            = contextService.getUser()
-        result.institution     = contextService.org
+        result.institution     = contextService.getOrg()
         result.contextOrg      = result.institution
 
         flash.error = ""

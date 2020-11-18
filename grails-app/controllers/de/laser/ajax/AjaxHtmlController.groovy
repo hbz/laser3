@@ -67,7 +67,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def loadThirdLevel() {
-        Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.org,queried:params.queried]
+        Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.getOrg(),queried:params.queried]
         switch(result.secondLevel) {
             case 'orgProperty':
                 result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
@@ -84,7 +84,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getGraphsForGeneral() {
         def options = JSON.parse(params.requestOptions)
-        Map<String,Object> result = [:], configMap = [institution: contextService.org,requestParam: options.requestParam]
+        Map<String,Object> result = [:], configMap = [institution: contextService.getOrg(),requestParam: options.requestParam]
         if(options.groupOptions) {
             def groupOptions = options.groupOptions
             if(groupOptions.contains(","))
@@ -105,7 +105,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
-        Map<String, Object> result = [institution:contextService.org]
+        Map<String, Object> result = [institution:contextService.getOrg()]
         def options = JSON.parse(params.requestOptions)
 
         if (params.costItem) {
@@ -123,7 +123,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def getLinks() {
-        Map<String,Object> result = [user:contextService.user,contextOrg:contextService.org,subscriptionLicenseLink:params.subscriptionLicenseLink]
+        Map<String,Object> result = [user:contextService.getUser(),contextOrg:contextService.getOrg(),subscriptionLicenseLink:params.subscriptionLicenseLink]
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
@@ -146,7 +146,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getPackageData() {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
         ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true) //it is not intended to use several api sources, we take the first one
         result.subscription.packages.each { SubscriptionPackage sp ->
@@ -163,14 +163,14 @@ class AjaxHtmlController {
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
-        result.editmode = result.subscription.isEditableBy(contextService.user)
+        result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
     }
 
     @Secured(['ROLE_USER'])
     def getProperties() {
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         Subscription subscription = Subscription.get(params.subscription)
         render template: "/subscription/properties", model: [subscription: subscription, showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription), contextOrg: contextOrg]
     }

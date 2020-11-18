@@ -1,7 +1,9 @@
 package de.laser.helper
 
+import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
 import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -52,6 +54,21 @@ class SwissKnife {
             }
         }
         return false
+    }
+
+    /**
+     * Adds max and offset to given map
+     *
+     * @param result
+     * @param params
+     * @param user
+     * @return
+     */
+    static Map<String, Object> setPaginationParams(Map<String, Object> result, GrailsParameterMap params, User user) {
+        result.max    = params.max    ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result
     }
 
     static String toCamelCase(String text, boolean capitalized) {

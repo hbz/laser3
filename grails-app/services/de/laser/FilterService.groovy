@@ -315,7 +315,7 @@ class FilterService {
         }
         if(params.noTarget) {
             query << "dc.org = :context"
-            queryParams << [context:contextService.org]
+            queryParams << [context:contextService.getOrg()]
         }
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")

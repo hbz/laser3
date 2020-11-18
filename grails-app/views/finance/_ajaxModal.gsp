@@ -640,7 +640,7 @@
                 //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
-                var userLang = "${contextService.user.getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}";
+                var userLang = "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}";
                 //console.log(userLang);
                 if(typeof(input) === 'number') {
                     output = input.toFixed(2);

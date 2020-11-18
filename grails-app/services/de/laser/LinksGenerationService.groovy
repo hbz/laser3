@@ -164,7 +164,7 @@ class LinksGenerationService {
      */
     Map<String,Object> createOrUpdateLink(GrailsParameterMap params) {
         Locale locale = LocaleContextHolder.getLocale()
-        Map<String,Object> result = [institution:contextService.org]
+        Map<String,Object> result = [institution:contextService.getOrg()]
         //error when no pair is given!
         params.keySet().each {
             if(it.contains("pair_")) {

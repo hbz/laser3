@@ -438,7 +438,7 @@ class LicenseController {
                 queryParams.validOn = result.validOn
             }
             result.consAtMember = true
-            result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+            result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
             String query = "select l.destinationSubscription from Links l join l.destinationSubscription s join s.orgRelations oo where l.sourceLicense = :lic and l.linkType = :linkType and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc"
             result.validSubChilds = Subscription.executeQuery( query, queryParams )
             ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
@@ -477,7 +477,7 @@ class LicenseController {
         }
         else {
             params.license = params.id
-            def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
             Set<Subscription> subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
             if(params.subscription) {
                 result.subscriptions = []
@@ -762,7 +762,7 @@ class LicenseController {
     })
     def copyLicense() {
         Map<String,Object> result = [:]
-        result.user = contextService.user
+        result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         flash.error = ""
         flash.message = ""
@@ -858,7 +858,7 @@ class LicenseController {
     def copyElementsIntoLicense() {
         def result             = [:]
         result.user            = contextService.getUser()
-        result.institution     = contextService.org
+        result.institution     = contextService.getOrg()
         result.contextOrg      = result.institution
 
         flash.error = ""

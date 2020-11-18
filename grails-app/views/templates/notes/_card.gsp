@@ -11,13 +11,13 @@
                 sharedItems << it
             }
             else {
-                if(it.owner.owner?.id == contextService.org.id || it.owner.owner == null)
+                if(it.owner.owner?.id == contextService.getOrg().id || it.owner.owner == null)
                     baseItems << it
             }
         }
     }
 
-    boolean editable2 = accessService.checkMinUserOrgRole(contextService.user,contextService.org,"INST_EDITOR")
+    boolean editable2 = accessService.checkMinUserOrgRole(contextService.getUser(),contextService.getOrg(),"INST_EDITOR")
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
@@ -28,7 +28,7 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
-                            <g:if test="${(docctx.owner.owner?.id == contextService.org.id || docctx.owner.owner == null) && (editable || editable2)}">
+                            <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
                                 <a onclick="noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>
@@ -129,7 +129,7 @@
                                 (${docctx.owner.type.getI10n("value")})
                             </div>
                             <div class="four wide column">
-                                <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                     <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                     <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                                 </g:if>

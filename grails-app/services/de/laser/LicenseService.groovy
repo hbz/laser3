@@ -55,7 +55,7 @@ class LicenseService {
 
     //Konsortialverträge
     private List getLicensesConsortiaQuery(Map params) {
-        Map qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org]
+        Map qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
@@ -83,7 +83,7 @@ class LicenseService {
 
     //Teilnehmerverträge
     private List getLicensesConsortialLicenseQuery(Map params) {
-        Map qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.org]
+        Map qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType  AND o.org = :lic_org ) ) 
             )"""
@@ -104,7 +104,7 @@ class LicenseService {
 
     //Lokalverträge
     private List getLicensesLocalLicenseQuery(Map params) {
-        Map qry_params = [roleType: RDStore.OR_LICENSEE, lic_org: contextService.org]
+        Map qry_params = [roleType: RDStore.OR_LICENSEE, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""

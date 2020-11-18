@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.DebugAnnotation
+import de.laser.auth.User
 import de.laser.ctrl.SubscriptionControllerService
 
 import de.laser.exceptions.CreationException
@@ -188,7 +189,7 @@ class SubscriptionController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
-        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.org]
+        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
         result.ownobj = Subscription.get(params.instanceId)
         result.owntp = 'subscription'
         if(params.id) {
@@ -934,11 +935,12 @@ class SubscriptionController {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
         Map<String, Object> result = [:]
-        result.institution = contextService.org
-        result.user = contextService.user
+        result.institution = contextService.getOrg()
+        result.user = contextService.getUser()
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset  ? Integer.parseInt(params.offset) : 0
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
         Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
         params.id = newSub.id

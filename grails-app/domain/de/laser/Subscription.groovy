@@ -765,7 +765,7 @@ select distinct oap from OrgAccessPoint oap
   }
 
   String dropdownNamingConvention() {
-      dropdownNamingConvention(contextService.org)
+      dropdownNamingConvention(contextService.getOrg())
   }
 
   String dropdownNamingConvention(contextOrg){
@@ -805,7 +805,7 @@ select distinct oap from OrgAccessPoint oap
   }
 
     String dropdownNamingConventionWithoutOrg() {
-        dropdownNamingConventionWithoutOrg(contextService.org)
+        dropdownNamingConventionWithoutOrg(contextService.getOrg())
     }
 
     String dropdownNamingConventionWithoutOrg(Org contextOrg){

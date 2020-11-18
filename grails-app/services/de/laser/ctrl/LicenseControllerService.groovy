@@ -7,6 +7,8 @@ import de.laser.License
 import de.laser.LicenseController
 import de.laser.LinksGenerationService
 import de.laser.Task
+import de.laser.auth.User
+import de.laser.helper.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -65,7 +67,7 @@ class LicenseControllerService {
         Map<String, Object> result = [:]
 
         result.user            = contextService.getUser()
-        result.institution     = contextService.org
+        result.institution     = contextService.getOrg()
         result.contextOrg      = result.institution
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
@@ -80,8 +82,7 @@ class LicenseControllerService {
 
         result.showConsortiaFunctions = controller.showConsortiaFunctions(result.license)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ?: 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.license.isVisibleBy(result.user)) {
