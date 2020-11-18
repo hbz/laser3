@@ -504,7 +504,7 @@ class SubscriptionControllerService {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
         Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
-        result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+        result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -739,7 +739,7 @@ class SubscriptionControllerService {
             if(result.parentLicenses) {
                 result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
             }
-            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
             [result:result,status:STATUS_OK]
         }
     }
@@ -811,7 +811,8 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             result.validPackages = result.subscription.packages
-            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+            result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren)',[filteredSubChildren:result.filteredSubChilds.collect { row -> row.sub }])
             [result:result,status:STATUS_OK]
         }
     }
@@ -1066,7 +1067,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
             if(params.tab == 'providerAgency') {
                 result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
                 result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
@@ -2317,7 +2318,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
-    List<Map> getFilteredSubscribers(SubscriptionController controller, GrailsParameterMap params, Subscription parentSub) {
+    List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         params.remove("max")
         params.remove("offset")
