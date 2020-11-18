@@ -230,9 +230,9 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${contextService.org.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
+                                <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
                                     <g:set var="surveysSub" value="${SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
-                                            [sub: s.instanceOf, org: contextService.org, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
+                                            [sub: s.instanceOf, org: contextService.getOrg(), invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon button">
@@ -242,7 +242,7 @@
                                         </g:link>
                                     </g:if>
                                 </g:if>
-                                <g:if test="${contextService.org.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
                                         <g:link controller="subscription" action="surveysConsortia" id="${s.id}"

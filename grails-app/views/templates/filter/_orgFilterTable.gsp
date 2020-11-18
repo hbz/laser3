@@ -300,7 +300,7 @@
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
-                    <g:if test="${contextService.user.hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
+                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
@@ -403,7 +403,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <td class="center aligned">
                     <div class="la-flexbox">
-                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.org)
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
@@ -431,7 +431,7 @@
                         <div class="la-flexbox">
 
                             <g:set var="participantSurveys"
-                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.org, org, new Date(System.currentTimeMillis()))}"/>
+                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
                             <g:set var="numberOfSurveys"
                                    value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%

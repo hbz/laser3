@@ -835,7 +835,7 @@ class FinanceService {
      * @return a {@link Map} with the data red off
      */
     Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
         Map<Integer,String> budgetCodes = [:]
@@ -1304,7 +1304,7 @@ class FinanceService {
 
     Map<String,Object> importCostItems(GrailsParameterMap params) {
         Map<String,Object> result = [error:[]]
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         def candidates = JSON.parse(params.candidates)
         def bcJSON = JSON.parse(params.budgetCodes)

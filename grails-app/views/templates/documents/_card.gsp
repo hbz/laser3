@@ -3,11 +3,11 @@
 <%
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
-    Org contextOrg = contextOrg ?: contextService.org
+    Org contextOrg = contextOrg ?: contextService.getOrg()
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole(contextService.user, contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            editable = accessService.checkMinUserOrgRole(contextService.getUser(), contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             break
         default: documentMessage = "license.documents"
             break

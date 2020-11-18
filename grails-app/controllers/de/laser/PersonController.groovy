@@ -181,7 +181,7 @@ class PersonController  {
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Person personInstance = Person.get(params.id)
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
 
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])

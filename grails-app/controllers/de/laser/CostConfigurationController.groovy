@@ -100,7 +100,7 @@ class CostConfigurationController {
     })
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
-        Org org = contextService.org
+        Org org = contextService.getOrg()
         def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfigurationAndCostItemStatusNotEqual(org,cie,null, RDStore.COST_ITEM_DELETED).collect {it.id}
         def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {

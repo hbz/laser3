@@ -1,7 +1,7 @@
 <%@ page import="de.laser.License; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
-<g:set var="org" value="${contextService.org}"/>
-<g:set var="user" value="${contextService.user}" />
+<g:set var="org" value="${contextService.getOrg()}"/>
+<g:set var="user" value="${contextService.getUser()}" />
 
 <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
     <semui:actionsDropdown>

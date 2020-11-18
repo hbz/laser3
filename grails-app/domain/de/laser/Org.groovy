@@ -606,7 +606,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     String dropdownNamingConvention() {
-        return dropdownNamingConvention(contextService.org)
+        return dropdownNamingConvention(contextService.getOrg())
     }
 
     String dropdownNamingConvention(Org contextOrg){

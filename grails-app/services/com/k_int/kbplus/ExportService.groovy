@@ -496,7 +496,7 @@ class ExportService {
 				childObjects.get(target).each { childObj ->
 					if(childObj.hasProperty("propertySet")) {
 						childObj.propertySet.each { AbstractPropertyWithCalculatedLastUpdated childProp ->
-							if(childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextService.org || childProp.isPublic)) {
+							if(childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextService.getOrg() || childProp.isPublic)) {
 								if(childProp.refValue)
 									value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childObj)})"
 								else

@@ -40,7 +40,7 @@ class PropertyService {
             PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
             base_qry += ' and ( exists ( select gProp from '+hqlVar+'.propertySet as gProp where gProp.type = :propDef and (gProp.tenant = :tenant or (gProp.tenant != :tenant and gProp.isPublic = true) or gProp.tenant is null) '
             base_qry_params.put('propDef', pd)
-            base_qry_params.put('tenant', contextService.org)
+            base_qry_params.put('tenant', contextService.getOrg())
             if(params.filterProp) {
                 if (pd.isRefdataValueType()) {
                         List<String> selFilterProps = params.filterProp.split(',')
@@ -207,7 +207,7 @@ class PropertyService {
                 }
 
                 String query2 = "select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
-                multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.org] ))
+                multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
             else if(SurveyResult.class.name.contains(dc.name)) {
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery('select distinct type from SurveyResult')
@@ -216,7 +216,7 @@ class PropertyService {
                     usedPdList << pd.id
                 }
                 String query2 = "select p.type.id from SurveyResult p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
-                multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.org] ))
+                multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
         }
 

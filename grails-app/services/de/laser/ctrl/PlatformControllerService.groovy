@@ -130,7 +130,7 @@ class PlatformControllerService {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        result.institution = contextService.org
+        result.institution = contextService.getOrg()
         result.contextOrg = result.institution //temp fix
 
         result

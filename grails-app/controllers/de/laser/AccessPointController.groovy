@@ -93,9 +93,9 @@ class AccessPointController  {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
-        result.institution = contextService.org
+        result.institution = contextService.getOrg()
         result.orgInstance = organisation
-        result.inContextOrg = result.orgInstance.id == contextService.org.id
+        result.inContextOrg = result.orgInstance.id == contextService.getOrg().id
         result.availableOptions = accessPointService.availableOptions(organisation)
         if (params.template) {
             RefdataValue accessMethod = RefdataValue.getByValueAndCategory(params.template, RDConstants.ACCESS_POINT_TYPE)
@@ -263,7 +263,7 @@ class AccessPointController  {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         boolean inContextOrg = (orgId == contextOrg.id)
         if (params.exportXLSX) {
             SXSSFWorkbook wb
@@ -272,7 +272,7 @@ class AccessPointController  {
             String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], contextService.org)
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], contextService.getOrg())
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
