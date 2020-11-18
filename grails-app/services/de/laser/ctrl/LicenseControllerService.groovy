@@ -1,6 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.AccessService
+import de.laser.AuditService
 import de.laser.ContextService
 import de.laser.License
 import de.laser.LicenseController
@@ -17,6 +18,7 @@ class LicenseControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    AuditService auditService
     ContextService contextService
     MessageSource messageSource
     LinksGenerationService linksGenerationService
@@ -67,6 +69,10 @@ class LicenseControllerService {
         result.contextOrg      = result.institution
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
+
+        if(result.license.instanceOf)
+            result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
+        else result.auditConfigs = auditService.getAllAuditConfigs(result.license)
 
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
