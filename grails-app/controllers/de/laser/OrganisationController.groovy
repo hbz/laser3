@@ -124,7 +124,6 @@ class OrganisationController  {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        println 'org list fail: ' + result
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')

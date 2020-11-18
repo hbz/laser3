@@ -75,7 +75,7 @@
                                        'libraryNetwork', 'libraryType']
               ]"/>
 
-        <semui:paginate total="${orgListTotal}" params="${params}" />
+        <semui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
     </body>
 </html>

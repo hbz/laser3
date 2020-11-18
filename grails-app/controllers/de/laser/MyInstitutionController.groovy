@@ -1234,6 +1234,8 @@ join sub.orgRelations or_sub where
         ])
 
         result.subscriptionMap = [:]
+        result.packageList = []
+        result.packageListTotal = 0
 
         if(currentSubIds) {
 
@@ -1280,15 +1282,13 @@ join sub.orgRelations or_sub where
                 }
             }
 
-            result.packageList = (packageSubscriptionList.collect { it[0] }).unique()
+            List tmp = (packageSubscriptionList.collect { it[0] }).unique()
+
+            result.packageListTotal = tmp.size()
+            result.packageList = tmp.drop(result.offset).take(result.max)
         }
-        else {
-            result.packageList = []
-        }
-        result.packagesTotal    = result.packageList.size()
 
         result
-
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
