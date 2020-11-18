@@ -87,7 +87,7 @@ class OrganisationControllerService {
                     return [result:result, status:STATUS_ERROR]
                 }
                 else if(License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
-                    result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.sub',null,locale)
+                    result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.lic',null,locale)
                     return [result:result, status:STATUS_ERROR]
                 }
                 else {

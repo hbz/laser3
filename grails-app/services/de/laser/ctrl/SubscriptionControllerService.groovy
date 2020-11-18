@@ -338,7 +338,7 @@ class SubscriptionControllerService {
         }
         else {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id]
+            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id.toString()] //persistentObjectId is of type String
             Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
             result.historyLinesTotal = historyLines.size()
             result.historyLines = historyLines.drop(result.offset).take(result.max)

@@ -507,29 +507,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('country')}">
                 <td>${org.country?.getI10n('value')}</td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('consortiaToggle')}">
-                <td>
-                <%-- here: switch if in consortia or not --%>
-                    <g:if test="${!consortiaMemberIds.contains(org.id)}">
-                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                data-content="${message(code: 'org.consortiaToggle.add.label')}"
-                                controller="organisation"
-                                action="toggleCombo" params="${params + [direction: 'add', fromOrg: org.id]}">
-                            <i class="plus icon"></i>
-                        </g:link>
-                    </g:if>
-                    <g:elseif test="${consortiaMemberIds.contains(org.id)}">
-                        <g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
-                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [org.name])}"
-                                data-confirm-term-how="unlink"
-                                data-content="${message(code: 'org.consortiaToggle.remove.label')}"
-                                controller="organisation" action="toggleCombo"
-                                params="${params + [direction: 'remove', fromOrg: org.id]}">
-                            <i class="minus icon"></i>
-                        </g:link>
-                    </g:elseif>
-                </td>
-            </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('addSubMembers')}">
                 <g:if test="${subInstance?.packages}">

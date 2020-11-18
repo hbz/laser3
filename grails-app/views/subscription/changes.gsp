@@ -18,7 +18,7 @@
     <semui:anualRings object="${subscription}" controller="subscription" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-    <g:render template="nav" contextPath="." />
+    <g:render template="nav" />
 
     <g:if test="${subscription.instanceOf && (contextOrg.id == subscription.getConsortia()?.id)}">
         <g:render template="message" />
@@ -48,7 +48,7 @@
             <tr>
               <td>
 
-                  <g:if test="${hl.msgToken}">
+                  <g:if test="${hl.msgToken && hl.msgParams}">
                       <g:message code="${hl.msgToken}" args="${hl.getParsedParams()}" default="${hl.desc}" />
                   </g:if>
                   <g:else>
