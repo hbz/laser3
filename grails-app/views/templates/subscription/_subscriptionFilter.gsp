@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
-
+<g:set var="start" value="${System.currentTimeMillis()}"/>
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
@@ -16,6 +16,7 @@
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
+                    ${System.currentTimeMillis()-start}
                 </label>
 
                 <div class="ui input">
@@ -30,6 +31,7 @@
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
                         <i class="question circle icon"></i>
                     </span>
+                    ${System.currentTimeMillis()-start}
                 </label>
 
                 <div class="ui input">
@@ -40,7 +42,7 @@
             </div>
             <% /* 1-3 */ %>
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" start="${start}"/>
             </div>
             <% /*
             <!-- 1-4 -->
@@ -56,7 +58,10 @@
             */ %>
             <% /* 1-4 */ %>
             <div class="field fieldcontain">
-                <label>${message(code: 'default.status.label')}</label>
+                <label>
+                    ${message(code: 'default.status.label')}
+                    ${System.currentTimeMillis()-start}
+                </label>
                 <laser:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
@@ -96,7 +101,7 @@
                        --%>
             <% /* 2-3 */ %>
             <div class="field">
-                <label>${message(code:'subscription.form.label')}</label>
+                <label>${message(code:'subscription.form.label')} ${System.currentTimeMillis()-start}</label>
                 <laser:select class="ui fluid dropdown" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
@@ -106,7 +111,7 @@
             </div>
             <% /* 2-4 */ %>
             <div class="field">
-                <label>${message(code:'subscription.resource.label')}</label>
+                <label>${message(code:'subscription.resource.label')} ${System.currentTimeMillis()-start}</label>
                 <laser:select class="ui fluid dropdown" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
@@ -135,7 +140,7 @@
                             <g:each in="${subTypes}" var="subType">
                                 <div class="inline field">
                                     <div class="ui checkbox">
-                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')} ${System.currentTimeMillis()-start}</label>
                                         <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
                                             <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
                                                tabindex="0">
@@ -148,7 +153,7 @@
             </g:if>
             <% /* 3-2 */ %>
             <div class="field">
-                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')} ${System.currentTimeMillis()-start}</legend>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -163,7 +168,7 @@
             </div>
             <% /* 3-3 */ %>
             <div class="field">
-                <label>${message(code:'subscription.isPublicForApi.label')}</label>
+                <label>${message(code:'subscription.isPublicForApi.label')} ${System.currentTimeMillis()-start}</label>
                 <laser:select class="ui fluid dropdown" name="isPublicForApi"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
@@ -173,7 +178,7 @@
             </div>
             <% /* 3-4 */ %>
             <div class="field">
-                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                <label>${message(code:'subscription.hasPerpetualAccess.label')} ${System.currentTimeMillis()-start}</label>
                 <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
@@ -197,14 +202,14 @@
             <div class="inline fields la-filter-inline">
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                        <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')} ${System.currentTimeMillis()-start}</label>
                         <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
                                tabindex="0">
                     </div>
                 </div>
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                        <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')} ${System.currentTimeMillis()-start}</label>
                         <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
                                tabindex="0">
                     </div>
@@ -215,7 +220,7 @@
         <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
             <div class="field">
                 <fieldset>
-                    <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
+                    <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')} ${System.currentTimeMillis()-start}</legend>
 
                     <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                               optionKey="${{ Org.class.name + ':' + it.id }}"

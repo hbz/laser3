@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Subscription; de.laser.finance.CostItem; de.laser.helper.ConfigUtils; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType;de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
-
+<g:set var="start" value="${System.currentTimeMillis()}"/>
 <g:form action="compareSubscriptions" controller="compare" method="post">
 
 <div class="subscription-results subscription-results la-clear-before">
@@ -83,7 +83,7 @@
                             </td>
                         </g:if>
                         <td class="center aligned">
-                            ${ (params.int('offset') ?: 0)  + i + 1 }
+                            ${ (params.int('offset') ?: 0)  + i + 1 } - ${System.currentTimeMillis()-start} ms
                         </td>
                         <th scope="row" class="la-th-column">
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">

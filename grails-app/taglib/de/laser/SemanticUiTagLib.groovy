@@ -586,6 +586,7 @@ class SemanticUiTagLib {
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
         def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
+        def start = attrs.start ? System.currentTimeMillis()-attrs.start : 0
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         def value = ''
@@ -610,7 +611,7 @@ class SemanticUiTagLib {
 
         out << '<div class="' + classes + '">'
         if (hideLabel) {
-            out << '<label for="' + id + '">' + label + '</label>'
+            out << '<label for="' + id + '">' + label + ' ' + start + '</label>'
         }
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'

@@ -8,6 +8,7 @@
         <span class="ui  popup ">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
         </span>
+        ${System.currentTimeMillis()-start}
     </label>
     <asset:script type="text/javascript">
         $(".la-popup").popup({
@@ -42,7 +43,7 @@
 
 <g:if test="${!hideFilterProp}">
 <div class="field">
-    <label for="filterProp">${message(code: 'subscription.property.value')}</label>
+    <label for="filterProp">${message(code: 'subscription.property.value')} ${System.currentTimeMillis()-start}</label>
 
     <input  id="filterProp" name="filterProp" type="text"
            placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>
