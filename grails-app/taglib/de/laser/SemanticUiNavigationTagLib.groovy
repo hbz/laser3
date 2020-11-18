@@ -139,7 +139,7 @@ class SemanticUiNavigationTagLib {
         int laststep = Math.round(Math.ceil(total / max))
 
         out << '<div class="ui center aligned basic segment">'
-        out << '<div class="ui pagination menu">'
+        out << '<nav class="ui pagination menu" aria-label=' + message(code:'wcag.label.pagination') + '>'
 
         if (steps && laststep > firststep) {
             if (maxsteps > laststep) { // | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | > |
@@ -255,7 +255,7 @@ class SemanticUiNavigationTagLib {
         else {
             out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
         }
-        out << '</div>'
+        out << '</nav>'
         out << '</div><!--.pagination-->'
     }
 
