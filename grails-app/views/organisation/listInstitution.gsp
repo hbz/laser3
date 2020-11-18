@@ -51,12 +51,11 @@
                       consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'legalInformation',
-                              (editable ? 'consortiaToggle' : '')
+                              'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'legalInformation'
                       ]
               ]"/>
 
-
+    <semui:paginate action="listInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaMemberTotal}" />
 
   </body>
 </html>

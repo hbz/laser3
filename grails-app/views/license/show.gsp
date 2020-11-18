@@ -72,7 +72,7 @@
                                         <semui:xEditable owner="${license}" type="date" field="startDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
@@ -81,7 +81,7 @@
                                         <semui:xEditable owner="${license}" type="date" field="endDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
@@ -90,7 +90,7 @@
                                         <semui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'openEnded']" /></dd>
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'openEnded']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                             </div>
@@ -103,7 +103,7 @@
                                         <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']"/></dd>
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
@@ -112,7 +112,7 @@
                                         <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'licenseCategory']"/></dd>
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'licenseCategory']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
 
@@ -136,7 +136,7 @@
                                     <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
                                     <dd><semui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']"/></dd>
+                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
 
@@ -248,9 +248,8 @@
                                             tmplText: message(code:'license.details.tmplText'),
                                             tmplButtonText: message(code:'license.details.tmplButtonText'),
                                             tmplModalID:'osel_add_modal_lizenzgeber',
-                                            editmode: editable,
-                                            orgList: availableLicensorList,
-                                            signedIdList: existingLicensorIdList
+                                            tmplType: RDStore.OT_LICENSOR,
+                                            editmode: editable
                                   ]}" />
                         </div>
                     </div>

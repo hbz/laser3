@@ -187,17 +187,12 @@ class OrganisationController  {
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
-        }
-
-        result.consortiaMemberTotal = result.availableOrgs.size()
-
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
+        result.consortiaMemberTotal = availableOrgs.size()
+        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
         result
     }
 
