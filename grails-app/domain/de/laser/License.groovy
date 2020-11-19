@@ -310,38 +310,26 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     Org getLicensingConsortium() {
-        Org result
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType == RDStore.OR_LICENSING_CONSORTIUM )
-                result = or.org
-            }
-        result
+        orgRelations.find { OrgRole or ->
+            or.roleType == RDStore.OR_LICENSING_CONSORTIUM
+        }.org
     }
 
     Org getLicensor() {
-        Org result
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType == RDStore.OR_LICENSOR )
-                result = or.org
-        }
-        result
+        orgRelations.find { OrgRole or ->
+            or.roleType == RDStore.OR_LICENSOR
+        }.org
     }
 
     Org getLicensee() {
-        Org result
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] )
-                result = or.org
-        }
-        result
+        orgRelations.find { OrgRole or ->
+            or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
+        }.org
     }
     List<Org> getAllLicensee() {
-        List<Org> result = []
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] )
-                result << or.org
-        }
-        result
+        orgRelations.findAll { OrgRole or ->
+            or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
+        }.collect { OrgRole or -> or.org }
   }
 
     DocContext getNote(String domain) {

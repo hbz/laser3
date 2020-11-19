@@ -7,6 +7,7 @@ import de.laser.SurveyInfo
 import de.laser.UserSetting
 import de.laser.auth.User
 import de.laser.helper.DateUtils
+import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.system.SystemAnnouncement
@@ -31,7 +32,8 @@ class MyInstitutionControllerService {
     static final int STATUS_ERROR = 1
 
     Map<String, Object> dashboard(MyInstitutionController controller, GrailsParameterMap params) {
-
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
@@ -53,16 +55,16 @@ class MyInstitutionControllerService {
                 break
         }
 
-        def periodInDays = contextService.getUser().getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
         // changes
 
         Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,pendingOffset:result.pendingOffset,acceptedOffset:result.acceptedOffset,pending:true,notifications:true]
-
+        pu.setBenchmark('pending changes')
         result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         // systemAnnouncements
-
+        pu.setBenchmark('system announcements')
         result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
@@ -70,8 +72,8 @@ class MyInstitutionControllerService {
         SimpleDateFormat sdFormat    = DateUtils.getSDF_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
-        Org contextOrg  = contextService.getOrg()
-        result.tasks    = taskService.getTasksByResponsibles(contextService.getUser(), contextOrg, query)
+        pu.setBenchmark('tasks')
+        result.tasks    = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
 
@@ -79,10 +81,10 @@ class MyInstitutionControllerService {
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
-
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates( contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( contextService.getUser(), contextService.getOrg(), false, false).size()
-
+        pu.setBenchmark('due dates')
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.org, false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( result.user, result.org, false, false).size()
+        pu.setBenchmark('surveys')
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
                 " or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.finishDate is null and surResult.participant = :org) " +
                 " order by surConfig.surveyInfo.endDate",
@@ -99,7 +101,7 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
 
-
+        result.benchMark = pu.stopBenchmark()
         [status: STATUS_OK, result: result]
     }
 
@@ -126,7 +128,7 @@ class MyInstitutionControllerService {
 
         result.user = user
         result.institution = org
-
+        result.contextCustomerType = org.getCustomerType()
         switch (params.action) {
             case 'processEmptyLicense': //to be moved to LicenseController
             case 'currentLicenses':
