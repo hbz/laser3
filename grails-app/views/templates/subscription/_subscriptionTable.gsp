@@ -60,7 +60,7 @@
                                 </a>
                             </th>
                         </g:if>
-                        <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
                             <th class="la-no-uppercase" scope="col" rowspan="2" >
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.label')}">
@@ -189,27 +189,24 @@
                             <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <g:set var="childSubs" value="${Subscription.findAllByInstanceOf(s)}"/>
+                            <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
                             <td>
-                                <g:if test="${childSubs.size() > 0}">
-                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">${childSubs.size()}</g:link>
+                                <g:if test="${childSubIds.size() > 0}">
+                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">${childSubIds.size()}</g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">${childSubs.size()}</g:link>
+                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">${childSubIds.size()}</g:link>
                                 </g:else>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                                    <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED).size()}
+                                    <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                     </g:if>
-                                    <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
-                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true).size()}
-                                    </g:elseif>
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
@@ -230,9 +227,9 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
-                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
-                                            [sub: s.instanceOf, org: contextService.getOrg(), invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
+                                <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
+                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                                            [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon button">
@@ -242,12 +239,12 @@
                                         </g:link>
                                     </g:if>
                                 </g:if>
-                                <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
                                         <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
                                                 class="ui icon button">
-                                            <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
+                                            <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                     <i class="ui icon envelope green"></i>

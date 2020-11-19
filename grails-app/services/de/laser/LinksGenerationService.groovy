@@ -56,8 +56,15 @@ class LinksGenerationService {
     Map<String,Object> getSourcesAndDestinations(obj,User user,List<RefdataValue> linkTypes) {
         Map<String,Set<Links>> links = [:]
         // links
-        Set<Links> sources = Links.executeQuery('select li from Links li where :context in (li.sourceSubscription,li.sourceLicense) and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes])
-        Set<Links> destinations = Links.executeQuery('select li from Links li where :context in (li.destinationSubscription,li.destinationLicense) and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes])
+        Set<Links> sources = [], destinations = []
+        if(obj instanceof Subscription) {
+            sources.addAll(Links.executeQuery('select li from Links li where :context = li.sourceSubscription and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
+            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.destinationSubscription and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
+        }
+        else if(obj instanceof License) {
+            sources.addAll(Links.executeQuery('select li from Links li where :context = li.sourceLicense and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
+            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.destinationLicense and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
+        }
         //IN is from the point of view of the context object (= obj)
 
         sources.each { Links link ->

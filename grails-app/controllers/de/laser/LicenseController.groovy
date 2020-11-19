@@ -777,7 +777,7 @@ class LicenseController {
         }
 
 
-        result.showConsortiaFunctions = showConsortiaFunctions(result.sourceObject)
+        result.showConsortiaFunctions = licenseControllerService.showConsortiaFunctions(result.sourceObject)
         result.consortialView = result.showConsortiaFunctions
 
         result.editable = result.sourceObject?.isEditableBy(result.user)
@@ -929,10 +929,6 @@ class LicenseController {
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
 
         result
-    }
-    
-    boolean showConsortiaFunctions(License license) {
-        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
 }

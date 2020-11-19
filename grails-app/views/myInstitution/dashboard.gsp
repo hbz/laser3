@@ -1,7 +1,6 @@
 <%@ page import="de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
-<g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
+
 <!doctype html>
-<html>
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
@@ -16,7 +15,6 @@
         </semui:breadcrumbs>
         <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name}</h1>
-
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -55,7 +53,6 @@
         </div>
 
         <semui:messages data="${flash}" />
-
         <br />
     <%-- should be made overridable by pagination setting --%>
     <%
@@ -121,7 +118,6 @@
 
 
     </div><!-- secondary -->
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <g:render template="/user/dueDatesView"
@@ -206,7 +202,6 @@
                 </div>
             </div>
         </g:if>
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
             <div class="la-float-right">
                 <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
@@ -257,7 +252,6 @@
                 <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
             </div>
         </div>
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
@@ -342,7 +336,6 @@
         </div>--%>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
@@ -422,7 +415,6 @@
 
         </g:if>
 
-
         <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
@@ -496,5 +488,8 @@
 
             })
         </asset:script>
+    <semui:debugInfo>
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </semui:debugInfo>
     </body>
 </html>
