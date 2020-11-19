@@ -133,7 +133,6 @@ License Property,Walk-in User Term Note,Walk-In User Bedingungen,Walk-in User Te
 License Property,Wifi Access,WLAN-Zugriff,Wifi Access,de.laser.RefdataValue,y.n.o,,,,"Aussagen darüber, inwieweit über WLAN auf das lizenzierte Material zugegriffen werden darf.",Internet is provided without using wires.,,,,
 Organisation Property,Shibboleth Identity Provider Entity-ID,Shibboleth: Identity Provider Entity-ID,Shibboleth Identity Provider Entity-ID,java.lang.String,,,true,true,Wie lautet die Entity-ID der Organisation?,Wie lautet die Entity-ID der Organisation?,,,,
 Organisation Property,Shibboleth Usage,Shibboleth: Nutzung für Bibliotheksangebote,Shibboleth Usage,de.laser.RefdataValue,y.n.u,,,,Nutzt die Organisation Shibboleth für Bibliotheksangebote?,Nutzt die Organisation Shibboleth für Bibliotheksangebote?,,,,
-Organisation Property,TaxExemption,Steuerbefreiung,TaxExemption,de.laser.RefdataValue,y.n,,,,Liegt eine Steuerbefreiung für den Anbieter vor?,Liegt eine Steuerbefreiung für den Anbieter vor?,,,,
 Platform Property,COUNTER R3: Reports supported,COUNTER R3: Reports unterstützt,COUNTER R3: Reports supported,de.laser.RefdataValue,y.n,,,true,,,,,,
 Platform Property,COUNTER R4: COUNTER_SUSHI API supported,COUNTER R4: COUNTER_SUSHI API unterstützt,COUNTER R4: COUNTER_SUSHI API supported,de.laser.RefdataValue,y.n,,,,,,,,,
 Platform Property,COUNTER R4: Reports supported,COUNTER R4: Reports unterstützt,COUNTER R4: Reports supported,de.laser.RefdataValue,y.n,,,true,,,,,,
