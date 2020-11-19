@@ -47,9 +47,9 @@
             </div>
 
             <div class="three wide column left aligned">
-                <h4 class="ui inverted header">
+                <h2 class="ui inverted header">
                     ${message(code: 'landingpage.footer.1.head')}
-                </h4>
+                </h2>
 
                 <div class="ui inverted link list">
                     <div class="item">
@@ -68,9 +68,9 @@
             </div>
 
             <div class="four wide column left aligned">
-               <h4 class="ui inverted header">
+               <h2 class="ui inverted header">
                    ${message(code: 'landingpage.footer.4.head')}
-               </h4>
+               </h2>
 
                <div class="ui inverted link list">
                    <div class="item">
@@ -96,7 +96,7 @@
                </div>
            </div>
             <div class="four wide column left aligned">
-                <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h4>
+                <h2 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h2>
                 <div class="ui inverted link list">
 
                     <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">

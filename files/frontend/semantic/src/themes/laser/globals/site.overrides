@@ -173,10 +173,6 @@ aside.ui.accordion .title:not(.ui) {
         font-weight: 900;
         display: block;
     }
-
-    h3 {
-        color: #2d6697 !important;
-    }
     .la-feature {
         display: flex;
         justify-content: center;
@@ -184,7 +180,11 @@ aside.ui.accordion .title:not(.ui) {
     .la-feature svg {
         height: 108px;
     }
-
+    footer {
+        h2 {
+            font-size: 1.07142857rem!important;
+        }
+    }
 
     @media only screen and (max-width: 700px) {
         .ui.fixed.menu {

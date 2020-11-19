@@ -956,10 +956,6 @@ aside.ui.accordion .title:not(.ui) {
   display: block;
 }
 
-.landingpage h3 {
-  color: #2d6697 !important;
-}
-
 .landingpage .la-feature {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -971,6 +967,10 @@ aside.ui.accordion .title:not(.ui) {
 
 .landingpage .la-feature svg {
   height: 108px;
+}
+
+.landingpage footer h2 {
+  font-size: 1.07142857rem!important;
 }
 
 @media only screen and (max-width: 700px) {
