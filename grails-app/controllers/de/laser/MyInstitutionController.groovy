@@ -398,9 +398,18 @@ class MyInstitutionController  {
         pu.setBenchmark('get subscriptions')
 
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
-        if(result.licenses)
-            result.allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status",[licenses:result.licenses,linkType:RDStore.LINKTYPE_LICENSE,status:qry_params.subStatus])
-
+        if(result.licenses) {
+            Set<Links> allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status", [licenses: result.licenses, linkType: RDStore.LINKTYPE_LICENSE, status: qry_params.subStatus])
+            Map<License,Set<Subscription>> subscriptionLicenseMap = [:]
+            allLinkedSubscriptions.each { Links li ->
+                Set<Subscription> subscriptions = subscriptionLicenseMap.get(li.sourceLicense)
+                if(!subscriptions)
+                    subscriptions = []
+                subscriptions << li.destinationSubscription
+                subscriptionLicenseMap.put(li.sourceLicense,subscriptions)
+            }
+            result.allLinkedSubscriptions = subscriptionLicenseMap
+        }
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
         orgRoles.each { OrgRole oo ->

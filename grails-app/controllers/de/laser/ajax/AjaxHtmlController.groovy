@@ -22,6 +22,7 @@ import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -46,6 +47,7 @@ class AjaxHtmlController {
     AccessService accessService
     GokbService gokbService
     SubscriptionService subscriptionService
+    LicenseControllerService licenseControllerService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -133,6 +135,7 @@ class AjaxHtmlController {
         }
         else if(entry instanceof License) {
             result.license = (License) entry
+            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() ? "true" : "false"
         }
         List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
         if(result.subscriptionLicenseLink) {
@@ -171,8 +174,14 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getProperties() {
         Org contextOrg = contextService.getOrg()
-        Subscription subscription = Subscription.get(params.subscription)
-        render template: "/subscription/properties", model: [subscription: subscription, showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription), contextOrg: contextOrg]
+        if(params.subscription) {
+            Subscription subscription = Subscription.get(params.subscription)
+            render template: "/subscription/properties", model: [subscription: subscription, showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription), contextOrg: contextOrg]
+        }
+        else if(params.license) {
+            License license = License.get(params.license)
+            render template: "/license/properties", model: [license: license, showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license), contextOrg: contextOrg, institution: contextOrg]
+        }
     }
 
     @Secured(['ROLE_USER'])

@@ -9,6 +9,7 @@ import de.laser.LinksGenerationService
 import de.laser.Task
 import de.laser.auth.User
 import de.laser.helper.SwissKnife
+import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -69,6 +70,7 @@ class LicenseControllerService {
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
         result.contextOrg      = result.institution
+        result.contextCustomerType = result.institution.getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
 
@@ -80,7 +82,7 @@ class LicenseControllerService {
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
 
-        result.showConsortiaFunctions = controller.showConsortiaFunctions(result.license)
+        result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -100,5 +102,9 @@ class LicenseControllerService {
         }
 
         result
+    }
+
+    boolean showConsortiaFunctions(License license) {
+        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 }
