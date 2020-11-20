@@ -121,7 +121,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     static transients = [
             'nameConcatenated', 'isSlavedAsString', 'provider', 'collective', 'multiYearSubscription',
             'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
-            'commaSeperatedPackagesIsilList', 'allocationTerm',
+            'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
             'subscriber', 'providers', 'agencies', 'consortia'
     ] // mark read-only accessor methods
 
@@ -561,78 +561,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Subscription.where { instanceOf == this }.findAll()
     }
 
-    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
-
-        // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name, [sort:'name', order:'asc'])
-        groups.each{ PropertyDefinitionGroup it ->
-
-            // cons_members
-            if (this.instanceOf) {
-                Long subId
-                if(this.getConsortia().id == contextOrg.id)
-                    subId = this.instanceOf.id
-                else subId = this.id
-                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: subId,ctxOrg:contextOrg])
-                PropertyDefinitionGroupBinding binding = null
-                if(bindings)
-                    binding = bindings.get(0)
-
-                // global groups
-                if (it.tenant == null) {
-                    if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
-                    } else {
-                        result.global << it // TODO: remove
-                        result.sorted << ['global', it, null]
-                    }
-                }
-                // consortium @ member or single user; getting group by tenant (and instanceOf.binding)
-                if (it.tenant?.id == contextOrg.id) {
-                    if (binding) {
-                        if(contextOrg.id == this.getConsortia().id) {
-                            result.member << [it, binding] // TODO: remove
-                            result.sorted << ['member', it, binding]
-                        }
-                        else {
-                            result.local << [it, binding]
-                            result.sorted << ['local', it, binding]
-                        }
-                    } else {
-                        result.global << it // TODO: remove
-                        result.sorted << ['global', it, null]
-                    }
-                }
-                // subscriber consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.getConsortia()?.id) {
-                    if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
-                    }
-                }
-            }
-            // consortium or locals
-            else {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
-
-                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
-                    if (binding) {
-                        result.local << [it, binding] // TODO: remove
-                        result.sorted << ['local', it, binding]
-                    } else {
-                        result.global << it // TODO: remove
-                        result.sorted << ['global', it, null]
-                    }
-                }
-            }
-        }
-
-        // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
-
-        result
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
   String toString() {

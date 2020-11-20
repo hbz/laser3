@@ -10,9 +10,12 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat
 
@@ -330,6 +333,142 @@ class PropertyService {
         //log.debug('object             : ' + obj.class.simpleName + ' - ' + obj)
         //log.debug('orphanedIds        : ' + orphanedIds)
         //log.debug('orphaned Properties: ' + result)
+
+        result
+    }
+
+    Map<String, Object> getCalculatedPropDefGroups(Object obj, Org contextOrg) {
+
+        obj = GrailsHibernateUtil.unwrapIfProxy(obj)
+
+        boolean isLic = obj.class.name == License.class.name
+        boolean isOrg = obj.class.name == Org.class.name
+        boolean isPlt = obj.class.name == Platform.class.name
+        boolean isSub = obj.class.name == Subscription.class.name
+
+        if ( ! (isLic || isOrg || isPlt || isSub)) {
+            log.warn('unsupported call of getCalculatedPropDefGroups(): ' + obj.class)
+            return [:]
+        }
+
+        Map<String, Object> result = [
+                'sorted':[],
+                'global':[],
+                'local':[],
+                'orphanedProperties':[]
+        ]
+
+        // ALL type depending groups without checking tenants or bindings
+        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(obj.class.name, [sort:'name', order:'asc'])
+
+        if (isOrg || isPlt) {
+            groups.each{ PropertyDefinitionGroup it ->
+
+                PropertyDefinitionGroupBinding binding
+                if (isOrg) {
+                    binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, (Org) obj)
+                }
+                else {
+                    binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, contextOrg)
+                }
+
+                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
+                    if (binding) {
+                        result.local << [it, binding] // TODO: remove
+                        result.sorted << ['local', it, binding]
+                    } else {
+                        result.global << it // TODO: remove
+                        result.sorted << ['global', it, null]
+                    }
+                }
+            }
+        }
+
+        else if (isLic || isSub) {
+            result.member = []
+
+            groups.each{ PropertyDefinitionGroup it ->
+
+                // cons_members
+                if (obj.instanceOf) {
+                    Org consortium
+                    Long objId
+                    String query
+
+                    if (isLic) {
+                        consortium = obj.getLicensingConsortium()
+                        objId = (consortium.id == contextOrg.id) ? obj.instanceOf.id : obj.id
+                        query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg'
+                    }
+                    else {
+                        consortium = obj.getConsortia()
+                        objId = (consortium.id == contextOrg.id) ? obj.instanceOf.id : obj.id
+                        query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg'
+                    }
+                    List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery( query, [pdg:it, id: objId, ctxOrg:contextOrg] )
+
+                    PropertyDefinitionGroupBinding binding = bindings ? (PropertyDefinitionGroupBinding) bindings.get(0) : null
+
+                    // global groups
+                    if (it.tenant == null) {
+                        if (binding) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        } else {
+                            result.global << it // TODO: remove
+                            result.sorted << ['global', it, null]
+                        }
+                    }
+                    // consortium @ member or single user; getting group by tenant (and instanceOf.binding)
+                    if (it.tenant?.id == contextOrg.id) {
+                        if (binding) {
+                            if (consortium.id == contextOrg.id) {
+                                result.member << [it, binding] // TODO: remove
+                                result.sorted << ['member', it, binding]
+                            }
+                            else {
+                                result.local << [it, binding]
+                                result.sorted << ['local', it, binding]
+                            }
+                        } else {
+                            result.global << it // TODO: remove
+                            result.sorted << ['global', it, null]
+                        }
+                    }
+                    // licensee consortial; getting group by consortia and instanceOf.binding
+                    // subscriber consortial; getting group by consortia and instanceOf.binding
+                    else if (it.tenant?.id == consortium.id) {
+                        if (binding) {
+                            result.member << [it, binding] // TODO: remove
+                            result.sorted << ['member', it, binding]
+                        }
+                    }
+                }
+                // consortium or locals
+                else {
+                    PropertyDefinitionGroupBinding binding
+                    if (isLic) {
+                        binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, (License) obj)
+                    }
+                    else {
+                        binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, (Subscription) obj)
+                    }
+
+                    if (it.tenant == null || it.tenant?.id == contextOrg.id) {
+                        if (binding) {
+                            result.local << [it, binding] // TODO: remove
+                            result.sorted << ['local', it, binding]
+                        } else {
+                            result.global << it // TODO: remove
+                            result.sorted << ['global', it, null]
+                        }
+                    }
+                }
+            }
+        }
+
+        // storing properties without groups
+        result.orphanedProperties = getOrphanedProperties(obj, result.sorted)
 
         result
     }

@@ -34,7 +34,7 @@ class CompareService {
         Org contextOrg = contextService.getOrg()
         objects.each { object ->
 
-            Map<String, Object> allPropDefGroups = object._getCalculatedPropDefGroups(contextOrg)
+            Map<String, Object> allPropDefGroups = object.getCalculatedPropDefGroups(contextOrg)
             allPropDefGroups.entrySet().each { propDefGroupWrapper ->
                 /*
                   group group level

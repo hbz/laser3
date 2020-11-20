@@ -104,7 +104,7 @@
                             <tr>
                                 <td style="border-top: none;" colspan="3">
                                     <div>
-                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair._getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
+                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
                                     </div>
                                 </td>
                             </tr>
