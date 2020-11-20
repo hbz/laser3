@@ -4,7 +4,7 @@
 bb8 = {
 
     go: function() {
-
+        console.log('bb8.go()')
         bb8.init('body');
     },
 

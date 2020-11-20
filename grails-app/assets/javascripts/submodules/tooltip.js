@@ -6,6 +6,7 @@ tooltip = {
         tooltipTrigger: $('.la-popup-tooltip')
     },
     go : function() {
+        console.log('tooltip.go()')
         tooltip.configs.tooltipTrigger =  $('.la-popup-tooltip');
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
         //tooltip.acccessViaKeys();

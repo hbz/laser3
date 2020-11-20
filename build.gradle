@@ -48,7 +48,7 @@ dependencies {
     compile "org.hibernate:hibernate-core:5.1.16.Final"
     compile "org.grails.plugins:gsp"
     console "org.grails:grails-console"
-    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.15.1" // change: runtime -> compile
+    compile "com.bertramlabs.plugins:asset-pipeline-grails:3.0.9" // change: runtime -> compile
     profile "org.grails.profiles:web"
     //runtime "org.glassfish.web:el-impl:2.1.2-b03"
     //runtime "com.h2database:h2"
