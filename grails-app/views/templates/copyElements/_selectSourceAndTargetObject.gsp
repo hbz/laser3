@@ -111,11 +111,17 @@
     });
 
     function adjustDropdown() {
-        var status = $("#status").val();
+
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
-        var url = '<g:createLink controller="ajaxJson"
-                                 action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'+'?valueAsOID=true&status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs
+        var url = '<g:createLink controller="ajaxJson" action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'
+
+        url = url + '?valueAsOID=true&showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
 
         $.ajax({
             url: url,

@@ -695,7 +695,7 @@ ${surveyInfo.name}
 </g:if>
 </div>
 
-<script language="JavaScript">
+<script>
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSub]").prop('checked', true)

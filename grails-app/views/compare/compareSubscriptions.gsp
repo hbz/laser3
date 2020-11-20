@@ -92,16 +92,21 @@
        adjustDropdown()
     });
     function adjustDropdown() {
-        var status = $( "select#status").val();
+
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
-        var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedObjs='+showConnectedObjs
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
 
         var dropdownSelectedObjects = $('#selectedObjects');
         var selectedObjects = ${raw(objects?.id as String)};
 
         dropdownSelectedObjects.empty();
-        dropdownSelectedObjects.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
+        dropdownSelectedObjects.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
         dropdownSelectedObjects.prop('selectedIndex', 0);
 
         $.ajax({
