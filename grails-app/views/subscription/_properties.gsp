@@ -41,7 +41,7 @@
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscription._getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 

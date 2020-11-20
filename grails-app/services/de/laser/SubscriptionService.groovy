@@ -794,7 +794,7 @@ class SubscriptionService {
     Map regroupSubscriptionProperties(List<Subscription> subsToCompare, Org org) {
         LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
         subsToCompare.each{ sub ->
-            Map allPropDefGroups = sub._getCalculatedPropDefGroups(org)
+            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
             allPropDefGroups.entrySet().each { propDefGroupWrapper ->
                 //group group level
                 //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group

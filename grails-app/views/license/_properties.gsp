@@ -41,7 +41,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license._getCalculatedPropDefGroups(institution)}" />
+    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(institution)}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 

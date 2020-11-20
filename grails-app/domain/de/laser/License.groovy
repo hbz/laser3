@@ -70,7 +70,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    static transients = ['referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'genericLabel', 'nonDeletedDerivedLicenses'] // mark read-only accessor methods
+    static transients = [
+            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee',
+            'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
+    ] // mark read-only accessor methods
 
   static hasMany = [
           ids            : Identifier,
@@ -489,79 +492,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         License.where{ instanceOf == this }
     }
 
-    Map<String, Object> _getCalculatedPropDefGroups(Org contextOrg) {
-        Map<String, Object> result = [ 'sorted':[], 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
-
-        // ALL type depending groups without checking tenants or bindings
-        List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name, [sort:'name', order:'asc'])
-        groups.each{ it ->
-
-            // cons_members
-            if (this.instanceOf) {
-                Long licId
-                if(this.getLicensingConsortium().id == contextOrg.id)
-                    licId = this.instanceOf.id
-                else licId = this.id
-                List<PropertyDefinitionGroupBinding> bindings = PropertyDefinitionGroupBinding.executeQuery('select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg',[pdg:it, id: licId,ctxOrg:contextOrg])
-                PropertyDefinitionGroupBinding binding = null
-                if(bindings)
-                    binding = bindings.get(0)
-
-                // global groups
-                if (it.tenant == null) {
-                    if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
-                    } else {
-                        result.global << it // TODO: remove
-                        result.sorted << ['global', it, null]
-                    }
-                }
-                // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextOrg.id) {
-                    if (binding) {
-                        if(contextOrg.id == this.getLicensingConsortium().id) {
-                            result.member << [it, binding] // TODO: remove
-                            result.sorted << ['member', it, binding]
-                        }
-                        else {
-                            result.local << [it, binding] // TODO: remove
-                            result.sorted << ['local', it, binding]
-                        }
-                    }
-                    else {
-                        result.global << it // TODO: remove
-                        result.sorted << ['global', it, null]
-                    }
-                }
-                // licensee consortial; getting group by consortia and instanceOf.binding
-                else if (it.tenant?.id == this.getLicensingConsortium().id) {
-                    if (binding) {
-                        result.member << [it, binding] // TODO: remove
-                        result.sorted << ['member', it, binding]
-                    }
-                }
-            }
-            // consortium or locals
-            else {
-                PropertyDefinitionGroupBinding binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
-
-                if (it.tenant == null || it.tenant?.id == contextOrg.id) {
-                    if (binding) {
-                        result.local << [it, binding] // TODO: remove
-                        result.sorted << ['local', it, binding]
-                    } else {
-                        result.global << it // TODO: remove
-                        result.sorted << ['global', it, null]
-                    }
-                }
-            }
-        }
-
-        // storing properties without groups
-        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.sorted)
-
-        result
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
 

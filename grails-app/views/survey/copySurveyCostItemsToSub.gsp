@@ -238,7 +238,7 @@ ${surveyInfo.name}
     </g:form>
 </semui:form>
 
-<script language="JavaScript">
+<script>
     $('#costItemsToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', true)

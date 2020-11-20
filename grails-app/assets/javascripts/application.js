@@ -83,6 +83,7 @@ r2d2 = {
     },
 
     go : function() {
+        console.log('r2d2.go()')
 
         r2d2.initGlobalAjaxLogin();
 

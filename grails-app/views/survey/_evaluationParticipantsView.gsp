@@ -517,7 +517,7 @@
 </semui:form>
 
 <g:if test="${showCheckbox}">
-    <script language="JavaScript">
+    <script>
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
@@ -537,8 +537,13 @@
     });
 
     function adjustDropdown() {
-        var status = $("#status").val();
-        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'+'?status='+JSON.stringify(status)
+
+        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '?' + status
+        }
 
         $.ajax({
             url: url,

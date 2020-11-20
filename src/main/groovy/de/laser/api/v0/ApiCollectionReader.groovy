@@ -138,8 +138,8 @@ class ApiCollectionReader {
     static Collection<Object> getCustomPropertyCollection(Collection<Object> list, def generic, Org context) {
         Collection<Object> result = []
 
-        if (generic.metaClass.getMetaMethod("_getCalculatedPropDefGroups")) {
-            def groups = generic._getCalculatedPropDefGroups(context)
+        if (generic.metaClass.getMetaMethod("getCalculatedPropDefGroups")) {
+            def groups = generic.getCalculatedPropDefGroups(context)
             List tmp = []
 
             // [PropertyDefinitionGroup, ..]

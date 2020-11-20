@@ -74,7 +74,7 @@
     </g:form>
 </semui:form>
 
-<script language="JavaScript">
+<script>
         $('#subSurveyUseForTransfer').click(function () {
             if ($(this).prop('checked')) {
                 $('#mandatory').prop('checked', true)

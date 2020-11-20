@@ -80,11 +80,15 @@
        adjustDropdown()
     });
     function adjustDropdown() {
-        var status = $("#status").val();
+
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
-        var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>?showSubscriber=' + showSubscriber + '&showConnectedLics=' + showConnectedLics
 
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
 
         var dropdownSelectedObjects = $('#selectedObjects');
         var selectedObjects = ${raw(objects?.id as String)};

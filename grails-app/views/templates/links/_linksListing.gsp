@@ -49,7 +49,7 @@
                                             <i class="ui angle double down icon"></i>
                                         </button>
                                     </span>
-                                    <script type="text/javascript">
+                                    <script>
                                         $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
                                             //$("#derived-license-properties${link.id}").toggleClass('hidden');
@@ -104,7 +104,7 @@
                             <tr>
                                 <td style="border-top: none;" colspan="3">
                                     <div>
-                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair._getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
+                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
                                     </div>
                                 </td>
                             </tr>

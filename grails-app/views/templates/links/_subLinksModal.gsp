@@ -142,7 +142,7 @@
 </semui:modal>
 <g:if test="${!link}">
     <%-- for that one day, we may move away from that ... --%>
-    <script type="text/javascript">
+    <script>
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
