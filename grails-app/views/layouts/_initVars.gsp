@@ -10,7 +10,7 @@
     currentServer   = ServerUtils.getCurrentServer()
     currentUser     = contextService.getUser()
     currentLang     = 'de'
-    currentTheme    = 'semanticUI'
+    currentTheme    = 'laser'
 
     if (currentUser) {
         RefdataValue rdvLocale = currentUser.getSetting(UserSetting.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))?.getValue()

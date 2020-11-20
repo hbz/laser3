@@ -7,30 +7,63 @@
 // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
 deckSaver = {
     configs: {
+        editMode : null, // from external
+        ajaxUrl : null,  // from external
         // the trigger
-        toggleButton: $(".ui.toggle.button"),
-        toggleIcon: $(".ui.toggle.button .icon"),
+        toggleButton : null,
+        toggleIcon : null,
         // the target area
-        //areaThatIsAffected: $("#collapseableSubDetails"),
-        areaThatIsAffected: $(".la-show-context-orgMenu"),
-
+        areaThatIsAffected : null,
         card: {
-            hidable: $(".la-js-hideable"),
+            hidable : null
         },
         element: {
-            hide: $(".la-js-hideMe"),
-            dontHideSurroundingCard: $(".la-js-dont-hide-this-card"),
-            hideSurroundingCard: $(".la-js-hide-this-card"),
+            hide : null,
+            dontHideSurroundingCard : null,
+            hideSurroundingCard : null,
         },
         button: {
-            dontHide: $(".la-js-dont-hide-button")
+            dontHide : null
         },
-        icon: $(".la-js-editmode-icon")
-
+        icon : null
     },
     go: function() {
         console.log('deckSaver.go()')
+        deckSaver.init();
         deckSaver.toggleEditableElements();
+    },
+    init: function() {
+        deckSaver.configs.toggleButton = $(".ui.toggle.button")
+        deckSaver.configs.toggleIcon = $(".ui.toggle.button .icon")
+
+        deckSaver.configs.areaThatIsAffected = $(".la-show-context-orgMenu") // $("#collapseableSubDetails")
+        deckSaver.configs.card = {
+            hidable: $(".la-js-hideable")
+        }
+        deckSaver.configs.element = {
+            hide: $(".la-js-hideMe"),
+            dontHideSurroundingCard: $(".la-js-dont-hide-this-card"),
+            hideSurroundingCard: $(".la-js-hide-this-card"),
+        }
+        deckSaver.configs.button = {
+            dontHide: $(".la-js-dont-hide-button")
+        }
+        deckSaver.configs.icon = $(".la-js-editmode-icon")
+
+        deckSaver.configs.toggleButton.click(function(){
+            deckSaver.configs.editMode = !deckSaver.configs.editMode;
+            $.ajax({
+                url: deckSaver.configs.ajaxUrl,
+                data: {
+                    showEditMode: deckSaver.configs.editMode
+                },
+                success: function(){
+                    deckSaver.toggleEditableElements();
+                },
+                complete: function () {
+                }
+            })
+        });
     },
     removeClone: function () {
         $('.la-clone').remove();

@@ -574,40 +574,6 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
-
-                            <asset:script type="text/javascript">
-                                $(function(){
-                                    <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
-                                        <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
-                                            deckSaver.configs.editMode  = true;
-                                        </g:if>
-                                        <g:else>
-                                            deckSaver.configs.editMode  = false;
-                                        </g:else>
-                                    </g:if>
-                                    <g:else>
-                                        deckSaver.configs.editMode  = false;
-                                    </g:else>
-                                    deckSaver.go();
-
-                                    $(".ui.toggle.button").click(function(){
-                                        deckSaver.configs.editMode = !deckSaver.configs.editMode;
-                                         $.ajax({
-                                            url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
-                                                        data: {
-                                                            showEditMode: deckSaver.configs.editMode
-                                                        },
-                                                        success: function(){
-                                                            deckSaver.toggleEditableElements();
-                                                        },
-                                                        complete: function () {
-                                                        }
-                                         })
-                                    });
-                                })
-                            </asset:script>
-                        </g:if>
                         <g:if test="${(params.mode)}">
                             <div class="item">
                                 <g:if test="${params.mode=='advanced'}">
@@ -621,20 +587,16 @@
                                     </div>
                                 </g:else>
                             </div>
-                            <script>
-                            var LaToggle = {};
-                            LaToggle.advanced = {};
-                            LaToggle.advanced.button = {};
+                            <asset:script type="text/javascript">
+                                var LaToggle = {};
+                                LaToggle.advanced = {};
+                                LaToggle.advanced.button = {};
 
-                            // ready event
-                            LaToggle.advanced.button.ready = function() {
-
-                                // selector cache
-                                var
-                                    $button = $('.button.la-toggle-advanced'),
-
-                                    // alias
-                                    handler = {
+                                // ready event
+                                LaToggle.advanced.button.ready = function() {
+                                    // selector cache
+                                    var $button = $('.button.la-toggle-advanced');
+                                    var handler = {
                                         activate: function() {
                                             $icon = $(this).find('.icon');
                                             if ($icon.hasClass("slash")) {
@@ -646,21 +608,16 @@
                                                 window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
                                             }
                                         }
-                                    }
-                                ;
-                                $button
-                                    .on('click', handler.activate)
-                                ;
-                            };
+                                    };
+                                    $button.on('click', handler.activate);
+                                };
 
-                            // attach ready event
-                            $(document).ready(LaToggle.advanced.button.ready);
-                        </script>
+                                LaToggle.advanced.button.ready();
+                            </asset:script>
                         </g:if>
                 </div>
 
             </div>
-                    <%--semui:editableLabel editable="${editable}" /--%>
 
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
@@ -683,8 +640,13 @@
                 </div>
             </g:if>
 
+            %{-- content --}%
+
             <g:layoutBody/>
+
         </main><!-- .main -->
+
+        %{-- footer --}%
 
         <sec:ifNotGranted roles="ROLE_USER">
             <!-- Footer -->
@@ -692,20 +654,47 @@
             <!-- Footer End -->
         </sec:ifNotGranted>
 
-        <%-- global container for modals and ajax --%>
+        %{-- global container for modals and ajax --}%
+
         <div id="dynamicModalContainer"></div>
 
-        <%-- global loading indicator --%>
+        %{-- global loading indicator --}%
+
         <div id="loadingIndicator" style="display: none">
             <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
         </div>
 
-        <%-- global confirmation modal --%>
+        %{-- global confirmation modal --}%
+
         <semui:confirmationModal  />
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+        %{-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --}%
 
-        <%-- maintenance --%>
+        %{-- decksaver --}%
+
+        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
+            <asset:script type="text/javascript">
+
+                <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
+                    <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
+                        deckSaver.configs.editMode  = true;
+                    </g:if>
+                    <g:else>
+                        deckSaver.configs.editMode  = false;
+                    </g:else>
+                </g:if>
+                <g:else>
+                    deckSaver.configs.editMode  = false;
+                </g:else>
+
+                $(document).ready(function() {
+                    deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';
+                    deckSaver.go();
+                })
+            </asset:script>
+        </g:if>
+
+        %{-- maintenance --}%
 
         <g:if test="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}">
             <div id="maintenance">
@@ -718,13 +707,13 @@
             </div>
         </g:if>
 
-        <%-- ajax login --%>
+        %{-- ajax login --}%
 
         <g:if test="${controllerName != 'login'}">
             <g:render template="/templates/ajax/login" />
         </g:if>
 
-        <%-- --%>
+        %{-- system info --}%
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
 
@@ -737,9 +726,13 @@
             </div>
         </sec:ifAnyGranted>
 
+        %{-- javascript loading --}%
+
         <asset:javascript src="${currentTheme}.js"/>%{-- dont move --}%
 
         <asset:deferredScripts/>%{-- dont move --}%
+
+        %{-- profiler --}%
 
         <script>
             $(document).ready(function() {

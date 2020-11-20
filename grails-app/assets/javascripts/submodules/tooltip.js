@@ -3,13 +3,16 @@
 
 tooltip = {
     configs : {
-        tooltipTrigger: $('.la-popup-tooltip')
+        tooltipTrigger: null
     },
     go : function() {
         console.log('tooltip.go()')
-        tooltip.configs.tooltipTrigger =  $('.la-popup-tooltip');
+        tooltip.init()
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
         //tooltip.acccessViaKeys();
+    },
+    init: function() {
+        tooltip.configs.tooltipTrigger = $('.la-popup-tooltip')
     },
     initializePopup: function(obj) {
 
