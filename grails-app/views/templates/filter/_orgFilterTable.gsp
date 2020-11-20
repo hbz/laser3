@@ -755,7 +755,7 @@
 </table>
 
 <g:if test="${tmplShowCheckbox}">
-    <script language="JavaScript">
+    <script>
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)

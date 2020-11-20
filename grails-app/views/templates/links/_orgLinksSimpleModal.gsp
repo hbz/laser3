@@ -20,7 +20,7 @@
             </div>
         </div>
     </g:form>
-    <script type="text/javascript">
+    <script>
         $(document).ready(function(){
             //{query} is correct; this is the semantic ui query syntax containing the filter string
             $("#orm_orgOid_${tmplModalID}").dropdown({

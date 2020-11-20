@@ -47,6 +47,7 @@ class AjaxJsonController {
     def dataConsistencyService
     def genericOIDService
     def licenseService
+    def linksGenerationService
     def subscriptionService
 
     @Secured(['ROLE_USER'])
@@ -63,11 +64,11 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        queryParams.status = []
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
-        }
 
+        queryParams.status = []
+        if (params.get('status[]')){
+            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
+        }
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
 
@@ -93,9 +94,10 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
+
         queryParams.status = []
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        if (params.get('status[]')){
+            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -123,8 +125,8 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        if (params.get('status[]')){
+            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -159,8 +161,8 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        if (params.get('status[]')){
+            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
