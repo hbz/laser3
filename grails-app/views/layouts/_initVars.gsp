@@ -24,7 +24,7 @@
         RefdataValue rdvTheme = currentUser.getSetting(UserSetting.KEYS.THEME, RefdataValue.getByValueAndCategory('semanticUI', RDConstants.USER_SETTING_THEME))?.getValue()
 
         if (rdvTheme) {
-            currentTheme = rdvTheme.value
+            currentTheme = (rdvTheme.value == 'semanticUI') ? 'laser' : rdvTheme.value // TODO: DBM
         }
     }
 

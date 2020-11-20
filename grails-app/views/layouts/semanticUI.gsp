@@ -28,12 +28,13 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <script>
-        <g:render template="/templates/javascript/laser.js" />
-        <g:render template="/templates/javascript/dict.js" />
-    </script>
+    <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
 
-    <asset:stylesheet src="laser.css"/><asset:javascript src="laser.js"/>
+    <script>
+        <g:render template="/templates/javascript/laser.js" />%{-- dont move --}%
+        <g:render template="/templates/javascript/dict.js" />%{-- dont move --}%
+    </script>
+    <asset:javascript src="base.js"/>%{-- dont move --}%
 
     <g:layoutHead/>
 
@@ -588,8 +589,8 @@
                                     <g:else>
                                         deckSaver.configs.editMode  = false;
                                     </g:else>
+                                    deckSaver.go();
 
-                                    deckSaver.toggleEditableElements();
                                     $(".ui.toggle.button").click(function(){
                                         deckSaver.configs.editMode = !deckSaver.configs.editMode;
                                          $.ajax({
@@ -704,10 +705,6 @@
 
         <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
-        <asset:script type="text/javascript">
-
-        </asset:script>
-
         <%-- maintenance --%>
 
         <g:if test="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}">
@@ -729,8 +726,6 @@
 
         <%-- --%>
 
-        <asset:deferredScripts/>
-
         <% if(! flash.redirectFrom) { flash.clear() } %>
 
         <sec:ifAnyGranted roles="ROLE_ADMIN">
@@ -741,6 +736,10 @@
                 <span></span>
             </div>
         </sec:ifAnyGranted>
+
+        <asset:javascript src="${currentTheme}.js"/>%{-- dont move --}%
+
+        <asset:deferredScripts/>%{-- dont move --}%
 
         <script>
             $(document).ready(function() {
