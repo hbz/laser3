@@ -85,7 +85,7 @@
         var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>?showSubscriber=' + showSubscriber + '&showConnectedLics=' + showConnectedLics
 
-        var status = $.param({status: $("select#status").val()})
+        var status = $("select#status").serialize()
         if (status) {
             url = url + '&' + status
         }

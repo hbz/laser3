@@ -97,7 +97,7 @@
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
 
-        var status = $.param({status: $("select#status").val()})
+        var status = $("select#status").serialize()
         if (status) {
             url = url + '&' + status
         }

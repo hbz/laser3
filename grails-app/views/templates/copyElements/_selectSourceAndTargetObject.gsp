@@ -118,7 +118,7 @@
 
         url = url + '?valueAsOID=true&showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
 
-        var status = $.param({status: $("#status").val()})
+        var status = $("select#status").serialize()
         if (status) {
             url = url + '&' + status
         }

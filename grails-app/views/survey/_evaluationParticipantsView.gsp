@@ -540,7 +540,7 @@
 
         var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
 
-        var status = $.param({status: $("#status").val()})
+        var status = $("select#status").serialize()
         if (status) {
             url = url + '?' + status
         }

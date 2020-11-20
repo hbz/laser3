@@ -66,8 +66,8 @@ class AjaxJsonController {
         Map queryParams = [:]
 
         queryParams.status = []
-        if (params.get('status[]')){
-            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
@@ -96,8 +96,8 @@ class AjaxJsonController {
         Map queryParams = [:]
 
         queryParams.status = []
-        if (params.get('status[]')){
-            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -125,8 +125,8 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        if (params.get('status[]')){
-            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -161,8 +161,8 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
-        if (params.get('status[]')){
-            queryParams.status = params.list('status[]').collect{ Long.parseLong(it) }
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
