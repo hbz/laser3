@@ -301,7 +301,7 @@
             </g:else>
                     <laser:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
                                   name="cust_prop_add_value_custom"
-                                  class="ui form"
+                                  class="ui properties form"
                                   data-update="${custom_props_div}"
                                   data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                   data-always="c3po.loadJsAfterAjax()"
@@ -311,7 +311,6 @@
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
-                        <input type="hidden" name="showCollectiveFunctions" value="${showCollectiveFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 

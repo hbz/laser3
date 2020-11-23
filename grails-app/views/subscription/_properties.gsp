@@ -26,12 +26,6 @@
                         prop_desc: PropertyDefinition.SUB_PROP,
                         ownobj: subscription,
                         custom_props_div: "member_props_div"]}"/>
-
-                <%--<asset:script type="text/javascript">
-                    $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
-                    });
-                </asset:script>--%>
             </div>
         </div>
     </div>
@@ -119,17 +113,17 @@
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (controllerName == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
+                    editable: (calledFrom == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-    $(document).ready(function(){
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
-    });
-    </asset:script>
+    <script>
+        $(document).ready(function(){
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
+        });
+    </script>
 
 </div><!--.card -->
 
@@ -146,13 +140,33 @@
                     custom_props_div: "custom_props_div_${contextOrg.id}",
                     tenant: contextOrg]}"/>
 
-            <asset:script type="text/javascript">
+            <script>
                     $(document).ready(function(){
                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
                     });
-            </asset:script>
+            </script>
         </div>
     </div>
 </div>
+
+<script>
+    //workaround for being able to add property values without needing to reload the whole page
+    $(document).ready(function () {
+        $("form.properties").on("submit",function(e) {
+            let updateDiv = $(this).parents("div[id~='props']");
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                data: $(this).serialize()
+            }).done(function(response) {
+                console.log(updateDiv);
+                $(updateDiv).html(response);
+            }).fail(function() {
+
+            });
+        });
+    })
+</script>
 
 <!-- _properties -->

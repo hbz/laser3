@@ -458,7 +458,7 @@ class PendingChangeService extends AbstractLockableService {
                 String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
                 if(queryClauses)
                     queryMember += ' and '+queryClauses.join(" and ")
-                Set<PendingChange> memberChanges = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: queryStatus] )
+                Set<PendingChange> memberChanges = PendingChange.executeQuery( queryMember + " and pc.status in (:queryStatus)", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: queryStatus] )
                 pending.addAll(memberChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_PENDING })
                 accepted.addAll(memberChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_ACCEPTED })
             }

@@ -22,6 +22,7 @@ import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -174,13 +175,23 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getProperties() {
         Org contextOrg = contextService.getOrg()
+        User user = contextService.getUser()
         if(params.subscription) {
             Subscription subscription = Subscription.get(params.subscription)
-            render template: "/subscription/properties", model: [subscription: subscription, showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription), contextOrg: contextOrg]
+            render template: "/subscription/properties", model: [calledFrom: 'subscription',
+                                                                 subscription: subscription,
+                                                                 showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription),
+                                                                 contextOrg: contextOrg,
+                                                                 editable: subscription.isEditableBy(user)]
         }
         else if(params.license) {
             License license = License.get(params.license)
-            render template: "/license/properties", model: [license: license, showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license), contextOrg: contextOrg, institution: contextOrg]
+            render template: "/license/properties", model: [calledFrom: 'license',
+                                                            license: license,
+                                                            showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license),
+                                                            contextOrg: contextOrg,
+                                                            institution: contextOrg,
+                                                            editable: license.isEditableBy(user)]
         }
     }
 

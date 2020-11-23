@@ -26,12 +26,6 @@
                         prop_desc: PropertyDefinition.LIC_PROP,
                         ownobj: license,
                         custom_props_div: "member_props_div"]}"/>
-
-                <%--<asset:script type="text/javascript">
-                    $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
-                    });
-                </asset:script>--%>
             </div>
         </div>
     </div>
@@ -126,39 +120,52 @@
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${license.class.simpleName}:${license.id}"]'/>", "#custom_props_div_props");
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
         });
-    </asset:script>
+    </script>
 
 </div><!-- .card -->
 
 <%-- private properties --%>
 
+<div class="ui card la-dl-no-table la-js-hideable">
+    <div class="content">
+        <h5 class="ui header">${message(code:'license.properties.private')} ${contextOrg.name}</h5>
+        <div id="custom_props_div_${contextOrg.id}">
+            <g:render template="/templates/properties/private" model="${[
+                    prop_desc: PropertyDefinition.LIC_PROP,
+                    ownobj: license,
+                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                    tenant: contextOrg]}"/>
 
-<g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == institution.name}">
-        <div class="ui card la-dl-no-table la-js-hideable">
-            <div class="content">
-                <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+                });
+            </script>
+        </div>
+    </div>
+</div><!--.card-->
 
-                <div id="custom_props_div_${authOrg.id}">
-                    <g:render template="/templates/properties/private" model="${[
-                            prop_desc: PropertyDefinition.LIC_PROP,
-                            ownobj: license,
-                            custom_props_div: "custom_props_div_${authOrg.id}",
-                            tenant: authOrg]}"/>
+<script>
+    //workaround for being able to add property values without needing to reload the whole page
+    $(document).ready(function () {
+        $("form.properties").on("submit",function(e) {
+            let updateDiv = $(this).parents("div[id~='props']");
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                data: $(this).serialize()
+            }).done(function(response) {
+                $(updateDiv).html(response);
+            }).fail(function() {
 
-                    <asset:script type="text/javascript">
-                            $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                            });
-                    </asset:script>
-                </div>
-            </div>
-        </div><!--.card-->
-    </g:if>
-</g:each>
+            });
+        });
+    })
+</script>
 
 <!-- _properties -->
