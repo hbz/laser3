@@ -1,5 +1,5 @@
 
-// submodules/bb8.js
+// modules/bb8.js
 
 bb8 = {
 

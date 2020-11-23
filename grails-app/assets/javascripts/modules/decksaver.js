@@ -1,5 +1,5 @@
 
-// submodules/decksaver.js
+// modules/decksaver.js
 
 // for future handling on other views
 // 1. add class 'hidden' via markup to all cards that might be toggled

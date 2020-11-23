@@ -1,5 +1,5 @@
 
-// application.js
+// modules/r2d2.js
 
 var currLanguage = $('html').attr('lang');
 

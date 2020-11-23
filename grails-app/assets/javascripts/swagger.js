@@ -1,4 +1,4 @@
-// FileName: application.js
+// FileName: swagger.js
 //
 //= require libs/jquery-3.2.1.min.js
 //= require /swagger-ui/swagger-ui-bundle.js                    // vendor

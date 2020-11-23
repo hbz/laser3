@@ -1,4 +1,6 @@
 
+// modules/c3po.js
+
 c3po = {
     loadJsAfterAjax: function () {
         console.log('c3po.loadJsAfterAjax()')

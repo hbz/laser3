@@ -1,3 +1,6 @@
+
+// modules/a11y/elements/icon.js
+
 a11yIcon = {
     configs: {
     },

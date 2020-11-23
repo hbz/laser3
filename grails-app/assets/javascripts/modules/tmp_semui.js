@@ -1,3 +1,6 @@
+
+// modules/tmp_semui.js
+
 /*
 $.fn.tooltip = function ( option ) {
     console.log('tooltip() stub called @ tmp_semui.js')
