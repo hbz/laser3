@@ -6,7 +6,6 @@
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.appConfig')} </title>
     <%-- r:require module="annotations" / --%>
-    <asset:javascript src="properties.js"/>
 </head>
 <body>
 

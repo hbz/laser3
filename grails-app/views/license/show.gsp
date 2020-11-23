@@ -5,7 +5,6 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-     <asset:javascript src="properties.js"/>
     <title>${message(code:'laser')} : ${message(code:'license.details.label')}</title>
   </head>
 

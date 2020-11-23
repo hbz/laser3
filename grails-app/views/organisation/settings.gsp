@@ -6,8 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-            <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
-            <asset:javascript src="properties.js"/>
+        <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
     </head>
     <body>
 
