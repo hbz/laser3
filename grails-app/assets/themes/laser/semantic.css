@@ -965,10 +965,6 @@ aside.ui.accordion .title:not(.ui) {
   height: 108px;
 }
 
-.landingpage footer h2 {
-  font-size: 1.07142857rem!important;
-}
-
 @media only screen and (max-width: 700px) {
   .landingpage .ui.fixed.menu {
     display: none !important;
@@ -19127,6 +19123,10 @@ dd {
 
 .ui.segment.la-footer {
   padding: 3em 1em;
+}
+
+.ui.segment.la-footer h2 {
+  font-size: 1.07142857rem!important;
 }
 /*!
  * # Semantic UI 2.3.1 - Step
