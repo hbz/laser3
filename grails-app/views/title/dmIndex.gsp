@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} ${message(code:'title.plural')} - ${message(code:'default.search.label')}</title>
   </head>
 

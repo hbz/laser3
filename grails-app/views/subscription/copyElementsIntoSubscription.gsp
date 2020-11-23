@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <g:if test="${isRenewSub}">
         <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
     </g:if>

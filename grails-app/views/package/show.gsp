@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'package.details')}</title>
         <asset:stylesheet src="datatables.css"/><asset:javascript src="datatables.js"/>
     </head>

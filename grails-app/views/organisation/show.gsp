@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
 
     <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>

@@ -2,7 +2,7 @@
 <html>
     <laser:serviceInjection/>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code: 'laser')} : Paket-Duplikate</title>
     </head>
     <body>

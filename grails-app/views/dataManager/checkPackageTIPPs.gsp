@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : Package Tipps LAS:eR and GOKB</title>
 </head>
 

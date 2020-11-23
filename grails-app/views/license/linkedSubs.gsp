@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-  <meta name="layout" content="semanticUI"/>
+  <meta name="layout" content="laser">
   <title>${message(code:'laser')} : ${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 <body>

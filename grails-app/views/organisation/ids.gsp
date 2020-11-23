@@ -5,7 +5,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     %{--<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}" />--}%
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
 

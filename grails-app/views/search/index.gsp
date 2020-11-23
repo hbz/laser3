@@ -11,7 +11,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'search.advancedSearch')}</title>
 </head>
 

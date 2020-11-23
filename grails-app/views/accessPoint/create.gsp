@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="semanticUI">
+		<meta name="layout" content="laser">
 		<g:set var="entityName" value="${message(code: 'accessPoint.label')}" />
 		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
     <asset:script type="text/javascript">

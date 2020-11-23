@@ -9,6 +9,7 @@ bb8 = {
     },
 
     init: function(ctxSel) {
+        console.log('bb8.init(' + ctxSel + ')')
 
         $(ctxSel + " .la-js-remoteLink").click(function (event) {
             event.preventDefault();

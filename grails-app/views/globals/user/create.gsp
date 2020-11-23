@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'user.create_new.label')}</title>
     </head>
     <body>

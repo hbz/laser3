@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.details.linkLicenseMembers.label', args: args.memberTypeGenitive)}</title>
 </head>
 

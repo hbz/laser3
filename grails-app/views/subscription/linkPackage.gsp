@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.details.linkPackage.heading')}</title>
 </head>
 

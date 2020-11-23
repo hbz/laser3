@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} - ${message(code: 'serverCode.notFound.message1')}</title>
 </head>
 

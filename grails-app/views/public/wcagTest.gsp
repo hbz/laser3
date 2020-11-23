@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : Komponenten zur Überprüfung der Barrierefreiheit</title>
 </head>
 

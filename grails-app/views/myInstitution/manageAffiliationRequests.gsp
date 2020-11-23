@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'myinst.reporting', default:'Institutional Admin Dash')}</title>
 </head>
 

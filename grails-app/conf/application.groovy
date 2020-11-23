@@ -54,7 +54,7 @@ grails.plugin.springsecurity.successHandler.alwaysUseDefault        = false
 grails.plugin.springsecurity.successHandler.defaultTargetUrl        = '/home/index'
 grails.plugin.springsecurity.successHandler.logout.afterLogoutUrl   = '/'
 grails.plugin.springsecurity.logout.postOnly                        = false
-//grails.plugin.springsecurity.gsp.layoutAuth                         = 'semanticUI'
+//grails.plugin.springsecurity.gsp.layoutAuth                         = 'laser'
 
 grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_YODA > ROLE_ADMIN
