@@ -1,8 +1,9 @@
 a11yIcon = {
     configs: {
-
     },
     go: function () {
+        console.log('a11yIcon.go()')
+
         $('.ui.sortable.table thead .sorted.asc').attr( {
             'aria-sort' : 'ascending'
         });

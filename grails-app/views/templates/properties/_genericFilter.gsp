@@ -5,14 +5,10 @@
 <div class="field">
     <label for="filterPropDef">${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
-        <span class="ui  popup ">
+        <span class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
         </span>
     </label>
-    <asset:script type="text/javascript">
-        $(".la-popup").popup({
-        });
-    </asset:script>
     <%-- value="${params.filterPropDef}" --%>
     <semui:dropdown id="filterPropDef" name="filterPropDef"
                     class="la-filterPropDef"
@@ -24,20 +20,7 @@
                                  "${it}"
                     }}"
                     optionValue="${{ it.name_de }}"
-                    noSelection="${message(code: 'default.select.choose.label')}"/>
-    <asset:script type="text/javascript">
-        $(function() {
-            $.each($(".la-filterPropDef"), function(i, dropdown) {
-                var val = $(dropdown).find(".item.active").data("value");
-                var text = $(dropdown).find(".item.active").html();
-                if (val != undefined) {
-                    $(dropdown)
-                            .dropdown("set value", val)
-                            .dropdown("set text", text);
-                }
-            });
-        });
-    </asset:script>
+                    noSelection="${message(code: 'default.select.choose.label')}" />
 </div>
 
 <g:if test="${!hideFilterProp}">
@@ -51,8 +34,20 @@
 
 
 
-<script>
+<asset:script type="text/javascript">
+    $(".la-popup").popup({});
 
+    $(function() {
+        $.each($(".la-filterPropDef"), function(i, dropdown) {
+            var val = $(dropdown).find(".item.active").data("value");
+            var text = $(dropdown).find(".item.active").html();
+            if (val != undefined) {
+                $(dropdown)
+                        .dropdown("set value", val)
+                        .dropdown("set text", text);
+            }
+        });
+    });
 
     $(function () {
 
@@ -205,5 +200,5 @@
         propertyFilterController.init()
     });
 
-</script>
+</asset:script>
 <!-- O: templates/properties/_genericFilter -->

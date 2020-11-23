@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title><g:message code="laser"/> : Check License - Subscription - Org links</title>
     </head>
 

@@ -1,5 +1,5 @@
 <head>
-<meta name='layout' content='semanticUI' />
+<meta name="layout" content="laser">
 <title><g:message code="springSecurity.denied.title" /></title>
 </head>
 

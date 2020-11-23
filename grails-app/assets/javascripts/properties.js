@@ -1,6 +1,7 @@
 
 c3po = {
     loadJsAfterAjax: function () {
+        console.log('c3po.loadJsAfterAjax()')
         r2d2.go();
         bb8.go();
         tooltip.go();

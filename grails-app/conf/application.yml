@@ -1,5 +1,7 @@
 ---
 grails:
+    assets:
+        bundle: true
     profile: web
     codegen:
         defaultPackage: de.laser

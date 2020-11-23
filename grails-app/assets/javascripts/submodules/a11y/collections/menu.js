@@ -2,9 +2,10 @@ a11yMenu = {
     configs: {
         menuSelector        : '#mainMenue',
         menuSelectorTest    : '#mainMenueTest'
-
     },
     go: function () {
+        console.log('a11yMenu.go()')
+
         // for Main Menu
         $('.ui.dropdown' , a11yMenu.configs.menuSelector ).dropdown({
             action: 'nothing',

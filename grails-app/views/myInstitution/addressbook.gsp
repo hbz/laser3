@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.myAddressbook')}</title>
 </head>
 

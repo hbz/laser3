@@ -15,24 +15,30 @@
 
 <body>
 
-<section class="hero is-info is-bold">
+<section id="custom-hero" class="hero is-info is-bold">
     <div class="hero-body custom-hero-body">
         <div class="container">
-            <span id="custom-logo"></span>
-            <div>
-            <h1 class="title">ebookCatalogue (working title)</h1>
-            <h2 class="subtitle">
-                give us some time, but <strong>here</strong> we go ..
-            </h2>
-            <p>DEMO - DEMO - DEMO</p>
-            </div>
-            <div class="card" id="custom-statistics">
-                <div class="card-content has-text-right">
-                    <p class="subtitle"><strong class="has-text-weight-semibold">123456</strong> EBooks,</p>
-                    <p class="subtitle"><strong class="has-text-weight-semibold">6543</strong> Produkte,</p>
-                    <p class="subtitle"><strong class="has-text-weight-semibold">123</strong> Anbieter,</p>
-                    <p class="subtitle"><strong class="has-text-weight-semibold">999999</strong> Suchanfragen,</p>
-                    <p class="subtitle">davon heute <strong class="has-text-weight-semibold">789</strong></p>
+            <div class="columns">
+                <div class="column is-2">
+                    <span id="custom-logo"></span>
+                </div>
+                <div class="column is-7">
+                    <h1 class="title">ebookCatalogue (working title)</h1>
+                    <h2 class="subtitle">
+                        give us some time, but <strong>here</strong> we go ..
+                    </h2>
+                    <p>DEMO - DEMO - DEMO</p>
+                </div>
+                <div class="column is-3">
+                    <div id="custom-statistics">
+                        <div class="has-text-right">
+                            <p class="subtitle"><strong class="has-text-weight-semibold">123456</strong> EBooks,</p>
+                            <p class="subtitle"><strong class="has-text-weight-semibold">6543</strong> Produkte,</p>
+                            <p class="subtitle"><strong class="has-text-weight-semibold">123</strong> Anbieter,</p>
+                            <p class="subtitle"><strong class="has-text-weight-semibold">999999</strong> Suchanfragen,</p>
+                            <p class="subtitle">davon heute <strong class="has-text-weight-semibold">789</strong></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,6 +57,9 @@
 
 
 <style>
+
+    #custom-hero {
+    }
     #custom-logo {
         display: inline-block;
         width: 150px;
@@ -59,19 +68,8 @@
         background-position: center;
         background-repeat: no-repeat;
     }
-    #custom-statistics {
-        position: absolute;
-        top: -3rem;
-        right: 0;
-        background-color: rgba(255,255,255, 0.2);
-        border-radius: 0 0 10px 10px;
-        box-shadow: none;
-    }
-    #custom-statistics .card-content {
-        padding: 1.5rem 2rem;
-    }
     #custom-statistics .subtitle {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     #custom-statistics .subtitle:last-of-type {
         margin-bottom: 0;

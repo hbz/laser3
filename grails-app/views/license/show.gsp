@@ -4,7 +4,7 @@
 <laser:serviceInjection />
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
      <asset:javascript src="properties.js"/>
     <title>${message(code:'laser')} : ${message(code:'license.details.label')}</title>
   </head>
@@ -197,7 +197,8 @@
             r2d2.initDynamicSemuiStuff("#new-dynamic-properties-block");
             r2d2.initDynamicXEditableStuff("#new-dynamic-properties-block");
             tooltip.go();
-        }).fail();
+        })
+
         $.ajax({
             url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
             data: {
@@ -206,7 +207,7 @@
         }).done(function(response){
             $("#links").html(response);
             r2d2.initDynamicSemuiStuff('#links');
-        }).fail();
+        })
     </asset:script>
   </body>
 </html>

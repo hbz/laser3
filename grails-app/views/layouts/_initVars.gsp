@@ -10,7 +10,7 @@
     currentServer   = ServerUtils.getCurrentServer()
     currentUser     = contextService.getUser()
     currentLang     = 'de'
-    currentTheme    = 'semanticUI'
+    currentTheme    = 'laser'
 
     if (currentUser) {
         RefdataValue rdvLocale = currentUser.getSetting(UserSetting.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))?.getValue()
@@ -21,8 +21,7 @@
             localeResolver.setLocale(request, response, new Locale(currentLang, currentLang.toUpperCase()))
         }
 
-        RefdataValue rdvTheme = currentUser.getSetting(UserSetting.KEYS.THEME, RefdataValue.getByValueAndCategory('semanticUI', RDConstants.USER_SETTING_THEME))?.getValue()
-
+        RefdataValue rdvTheme = currentUser.getSetting(UserSetting.KEYS.THEME, RefdataValue.getByValueAndCategory('laser', RDConstants.USER_SETTING_THEME))?.getValue()
         if (rdvTheme) {
             currentTheme = rdvTheme.value
         }

@@ -4,7 +4,7 @@
 <r:require module="chartist"/>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title><g:message code="laser"/> : <g:message code="myinst.reporting"/></title>
     </head>
 

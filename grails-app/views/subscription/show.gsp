@@ -5,7 +5,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'subscription.details.label')}</title>
         <asset:javascript src="properties.js"/>
         <style>
@@ -422,7 +422,7 @@
               }).done(function(response){
                   $("#links").html(response);
                   r2d2.initDynamicSemuiStuff('#links');
-              }).fail();
+              })
           }
           function loadLicenses() {
               $.ajax({
@@ -434,7 +434,7 @@
               }).done(function(response){
                   $("#licenses").html(response);
                   r2d2.initDynamicSemuiStuff("#licenses");
-              }).fail();
+              })
           }
           function loadPackages() {
               $.ajax({
@@ -445,7 +445,7 @@
               }).done(function(response){
                   $("#packages").html(response);
                   r2d2.initDynamicSemuiStuff("#packages");
-              }).fail();
+              })
           }
           function loadProperties() {
               $.ajax({
@@ -458,7 +458,7 @@
                   r2d2.initDynamicSemuiStuff("#new-dynamic-properties-block");
                   r2d2.initDynamicXEditableStuff("#new-dynamic-properties-block");
                   tooltip.go();
-              }).fail();
+              })
           }
         });
 
