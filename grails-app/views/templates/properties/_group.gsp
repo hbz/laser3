@@ -282,7 +282,7 @@
                 </g:else>
                     <laser:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
                                   name="cust_prop_add_value_group_${propDefGroup.id}"
-                                  class="ui form"
+                                  class="ui properties form"
                                   data-update="${custom_props_div}"
                                   data-always="c3po.loadJsAfterAjax()"
                                   data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')">

@@ -457,6 +457,7 @@
                   $("#new-dynamic-properties-block").html(response);
                   r2d2.initDynamicSemuiStuff("#new-dynamic-properties-block");
                   r2d2.initDynamicXEditableStuff("#new-dynamic-properties-block");
+                  tooltip.go();
               }).fail();
           }
         });
