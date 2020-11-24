@@ -16,11 +16,9 @@ tooltip = {
     },
     initializePopup: function(obj) {
         $('.la-popup-tooltip').each(function() {
-                console.log("-------------------------------------------------------");
-                $(this).attr('aria-label',$(this).attr('data-content'));
-                // add aria-label to container-span
-                //
-            });
+            // add aria-label
+            $(this).attr('aria-label',$(this).attr('data-content'));
+        });
         $('.ui.toggle.button').next('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
