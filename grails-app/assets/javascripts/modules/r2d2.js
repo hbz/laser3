@@ -210,7 +210,6 @@ r2d2 = {
             return html;
         };
 
-
         // spotlight
 
         $('.ui.search.spotlight').search({
@@ -470,53 +469,6 @@ r2d2 = {
         });
     },
 
-    countSettedFilters: function () {
-        // DROPDOWN AND INPUT FIELDS
-        $( document ).ready(function() {
-            var dropdownFilter  = $('main > .la-filter .la-filter-dropdown-selected').length;
-            var inputTextFilter = $('main > .la-filter .la-filter-selected').length;
-            var calendarFilter  = $('main > .la-filter .la-calendar-selected').length;
-            var checkboxFilter  = 0;
-
-            // CHECKBOXES
-            // LOOP TROUGH CHECKBOXES
-            var allCheckboxes = [];
-            $('.la-filter .checkbox').each(function() {
-                allCheckboxes.push($(this).children('input').attr("name"));
-            });
-            // ELIMINATE DUPLICATES
-            var eliminateDuplicates = function (uniquecheckboxNames){
-                return uniquecheckboxNames.filter (function(v,i) {
-                    return uniquecheckboxNames.indexOf(v) === i
-                });
-            };
-            var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
-            // COUNT SELECTED CHECKBOXES
-            countSettedCheckboxes(uniquecheckboxNames);
-            function countSettedCheckboxes(params) {
-                var sumCheck = 0;
-                for (i=0; i<params.length; i++) {
-                    var checkboxName = params[i];
-                    $('input[name='+ checkboxName +']').is(':checked')? sumCheck=sumCheck+1: sumCheck= sumCheck;
-                }
-                checkboxFilter = sumCheck;
-            }
-
-            // COUNT ALL SELECTIONS IN TOTAL
-            var total = dropdownFilter + inputTextFilter + calendarFilter +checkboxFilter;
-
-            if (total == 0) {
-                $('.la-js-filter-total').addClass('hidden');
-                $('.la-js-filterButton i').removeClass('hidden');
-
-            } else {
-                $('.la-js-filter-total').text(total);
-                $('.la-js-filter-total').removeClass('hidden');
-                $('.la-js-filterButton i').addClass('hidden');
-            }
-        });
-    },
-
 
     initDynamicSemuiStuff : function(ctxSel) {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
@@ -535,7 +487,7 @@ r2d2 = {
             inline     : true,
             lastResort: true
         });*/
-        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
 
@@ -650,7 +602,7 @@ r2d2 = {
             }
         });
 
-        $('.la-filter .ui.dropdown').each(function(index,elem){
+        $(ctxSel + ' .la-filter .ui.dropdown').each(function(index,elem){
             if ($(elem).dropdown('get value') != "") {
                 addFilterDropdown(elem)
             }
@@ -665,7 +617,7 @@ r2d2 = {
             $(elem).is('select') ? $( elem ).parent().removeClass("la-filter-dropdown-selected" ) : $( elem ).removeClass("la-filter-dropdown-selected" );
         }
 
-        $('.la-filter .checkbox').checkbox({
+        $(ctxSel + '.la-filter .checkbox').checkbox({
             onChange: function() {
                 // r2d2.countSettedFilters();
             }
@@ -855,6 +807,52 @@ r2d2 = {
     },
 
 
+    countSettedFilters: function () {
+        // DROPDOWN AND INPUT FIELDS
+        $( document ).ready(function() {
+            var dropdownFilter  = $('main > .la-filter .la-filter-dropdown-selected').length;
+            var inputTextFilter = $('main > .la-filter .la-filter-selected').length;
+            var calendarFilter  = $('main > .la-filter .la-calendar-selected').length;
+            var checkboxFilter  = 0;
+
+            // CHECKBOXES
+            // LOOP TROUGH CHECKBOXES
+            var allCheckboxes = [];
+            $('.la-filter .checkbox').each(function() {
+                allCheckboxes.push($(this).children('input').attr("name"));
+            });
+            // ELIMINATE DUPLICATES
+            var eliminateDuplicates = function (uniquecheckboxNames){
+                return uniquecheckboxNames.filter (function(v,i) {
+                    return uniquecheckboxNames.indexOf(v) === i
+                });
+            };
+            var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
+            // COUNT SELECTED CHECKBOXES
+            countSettedCheckboxes(uniquecheckboxNames);
+            function countSettedCheckboxes(params) {
+                var sumCheck = 0;
+                for (i=0; i<params.length; i++) {
+                    var checkboxName = params[i];
+                    $('input[name='+ checkboxName +']').is(':checked')? sumCheck=sumCheck+1: sumCheck= sumCheck;
+                }
+                checkboxFilter = sumCheck;
+            }
+
+            // COUNT ALL SELECTIONS IN TOTAL
+            var total = dropdownFilter + inputTextFilter + calendarFilter +checkboxFilter;
+
+            if (total == 0) {
+                $('.la-js-filter-total').addClass('hidden');
+                $('.la-js-filterButton i').removeClass('hidden');
+
+            } else {
+                $('.la-js-filter-total').text(total);
+                $('.la-js-filter-total').removeClass('hidden');
+                $('.la-js-filterButton i').addClass('hidden');
+            }
+        });
+    }
 }
 
 // used as storage for dynamic callbacks

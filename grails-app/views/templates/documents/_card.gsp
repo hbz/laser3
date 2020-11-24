@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.helper.AjaxUtils; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
@@ -186,13 +186,11 @@
     </semui:card>
 </g:if>
 
-<script>
-    $( document ).ready(function() {
-        if (r2d2) {
-            r2d2.initDynamicSemuiStuff('#container-documents');
-        }
+<g:if test="${AjaxUtils.isAjaxCall(request)}">
+    <script>
+        console.log('AjaxCall detected') // TODO: remove
+        r2d2.initDynamicSemuiStuff('#container-documents')
+    </script>
+</g:if>
 
 
-    });
-
-</script>

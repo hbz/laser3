@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -43,11 +43,11 @@
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-        $(document).ready(function(){
+    <g:if test="${AjaxUtils.isAjaxCall(request)}">
+        <script>
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
-        });
-    </asset:script>
+        </script>
+    </g:if>
 
 </div><!-- .card -->
 <!-- _properties -->

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -90,11 +90,11 @@
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-        $(document).ready(function(){
+    <g:if test="${AjaxUtils.isAjaxCall(request)}">
+        <script>
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
-        });
-    </asset:script>
+        </script>
+    </g:if>
 
 </div><!-- .card -->
 
@@ -115,11 +115,12 @@
                             tenant: authOrg
                     ]}"/>
 
-                    <asset:script type="text/javascript">
-                            $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                            });
-                    </asset:script>
+        <g:if test="${AjaxUtils.isAjaxCall(request)}">
+            <script>
+                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+            </script>
+        </g:if>
+
                 </div>
             </div>
         </div><!--.card-->

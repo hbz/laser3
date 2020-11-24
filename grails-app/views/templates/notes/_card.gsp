@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DocContext; de.laser.Doc; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.DocContext; de.laser.Doc; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <%
@@ -167,9 +167,12 @@
                 }
             });
         }
-        $( document ).ready(function() {
-            if (r2d2) {
-                r2d2.initDynamicSemuiStuff('#container-notes');
-            }
-        });
     </script>
+
+<g:if test="${AjaxUtils.isAjaxCall(request)}">
+    <script>
+        console.log('AjaxCall detected') // TODO: remove
+        r2d2.initDynamicSemuiStuff('#container-notes')
+    </script>
+</g:if>
+
