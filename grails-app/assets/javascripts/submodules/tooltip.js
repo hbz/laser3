@@ -9,13 +9,16 @@ tooltip = {
         console.log('tooltip.go()')
         tooltip.init()
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
-        //tooltip.acccessViaKeys();
+        tooltip.acccessViaKeys();
     },
     init: function() {
         tooltip.configs.tooltipTrigger = $('.la-popup-tooltip')
     },
     initializePopup: function(obj) {
-
+        $('.la-popup-tooltip').each(function() {
+            // add aria-label
+            $(this).attr('aria-label',$(this).attr('data-content'));
+        });
         $('.ui.toggle.button').next('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
@@ -27,11 +30,11 @@ tooltip = {
                 show: 300,
                 hide: 500
             },
+
             onShow: function() {
                 // generate a random ID
                 var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
-                // add aria-label to container-span
-                $(this).prev(tooltip.configs.tooltipTrigger).attr('aria-labelledby',id);
+
                 //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
                 $(this).children('.content').attr({role:'tooltip',id:id});
             },

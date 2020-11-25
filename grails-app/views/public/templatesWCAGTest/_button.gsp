@@ -49,7 +49,6 @@
                         action='wcagTest'
                         data-content="Wert wird nicht vererbt"
                         class="ui icon mini button la-audit-button la-popup-tooltip la-delay meinToggleButton"
-                        aria-labelledby="wcag_mlbbjc4mb"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
                         <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash "></i>
