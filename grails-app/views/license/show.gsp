@@ -171,7 +171,9 @@
                         </div>
                     </div>
 
-                    <div id="new-dynamic-properties-block"></div><!-- #new-dynamic-properties-block -->
+                <div id="new-dynamic-properties-block">
+                    <g:render template="properties" model="${[ license: license ]}" />
+                </div><!-- #new-dynamic-properties-block -->
 
                 </div>
 
@@ -186,18 +188,6 @@
 
         </div><!-- .grid -->
     <asset:script type="text/javascript">
-        $.ajax({
-            url: "<g:createLink controller="ajaxHtml" action="getProperties" />",
-            data: {
-                license: "${license.id}"
-            }
-        }).done(function(response){
-            $("#new-dynamic-properties-block").html(response);
-            r2d2.initDynamicSemuiStuff("#new-dynamic-properties-block");
-            r2d2.initDynamicXEditableStuff("#new-dynamic-properties-block");
-            tooltip.go();
-        })
-
         $.ajax({
             url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
             data: {
