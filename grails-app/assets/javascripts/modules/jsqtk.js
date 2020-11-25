@@ -5,8 +5,10 @@ var jsqtk = {
     result: {},
     keys: [],
     idCounter: 0,
+    blackList: [],
 
-    elem: function (jsqtk_id) {
+    info: function (jsqtk_id) {
+        console.log('jsqtk.info()')
         let elem = $('*[data-jsqtk-id="' + jsqtk_id + '"]')
 
         if (elem) {
@@ -14,13 +16,14 @@ var jsqtk = {
             let evs = $._data(elem[0], 'events')
             $.each(evs, function (i, elist) {
                 $.each(elist, function (ii, oo) {
-                    console.log(oo.handler)
+                    console.log(oo)
                 })
             })
         }
     },
 
     history: function () {
+        console.log('jsqtk.history()')
         $.each(jsqtk.keys, function (i, e) {
             console.log(e)
         })
@@ -45,6 +48,7 @@ var jsqtk = {
     },
 
     go: function () {
+        console.log('jsqtk.go()')
         let evsCounter = 0
 
         $.each($('*'), function (i, elem) {
@@ -57,23 +61,21 @@ var jsqtk = {
                 evsCounter = evsCounter + Object.keys(evs).length
 
                 $.each(evs, function (ii, elist) {
-                    if (elist.length > 1) {
+                    if ($.inArray(ii, jsqtk.blackList) < 0 && elist.length > 1) {
                         let checkList = jsqtk._check(elist)
 
                         if (checkList.length > 0) {
-                            let eType
-
                             if ($(elem).attr('data-jsqtk-id')) {
                                 jsqtkEid = $(elem).attr('data-jsqtk-id')
                             } else {
                                 $(elem).attr('data-jsqtk-id', jsqtkEid)
                             }
 
-                            if (! jsqtk.result[jsqtkEid]) {
+                            if (!jsqtk.result[jsqtkEid]) {
                                 jsqtk.result[jsqtkEid] = [elem]
                             }
 
-                            jsqtk.result[jsqtkEid][eType] = checkList
+                            jsqtk.result[jsqtkEid][ii] = checkList
                         }
                     }
                 })
@@ -85,16 +87,23 @@ var jsqtk = {
         })
         jsqtk.keys.push(keys)
 
-        console.log('[jsqtk] event listener found: ' + evsCounter)
-        console.log('[jsqtk] candidates found: ' + Object.keys(jsqtk.result).length)
-        console.log('[jsqtk] keys: ' + keys)
-
-        keys.forEach(function (k) {
-            console.log(jsqtk.result[k])
-        })
+        console.group('[jsqtk]')
+        console.log('event listeners found overall: ' + evsCounter)
+        if (jsqtk.blackList.length > 0) {
+            console.log('blacklist: ' + jsqtk.blackList)
+        }
+        if (keys.length > 0) {
+            console.log('used data-jsqtk-ids: ' + keys)
+            console.groupCollapsed('elements with doublets: ' + Object.keys(jsqtk.result).length)
+            keys.forEach(function (k) {
+                console.log(jsqtk.result[k])
+            })
+            console.groupEnd()
+        }
+        console.groupEnd()
     }
 }
 
-console.log('[jsqtk] loaded .. use jsqtk.go() / jsqtk.elem(jsqtk-id) / jsqtk.history() ')
+console.log('[jsqtk] loaded .. use jsqtk.go() / jsqtk.info(jsqtk-id) / jsqtk.history() ')
 
 

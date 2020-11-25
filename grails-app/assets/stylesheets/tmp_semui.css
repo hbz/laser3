@@ -274,3 +274,9 @@ h1 .icon.h1-icon-overwrite {
     right: 1px;
 }
 
+#system-jsqtk {
+    position: fixed;
+    bottom: 3px;
+    left: 1px;
+}
+
