@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.License; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -120,11 +120,11 @@
     </div>
     <%--</div>--%>
 
-    <script type="text/javascript">
-        $(document).ready(function(){
+    <g:if test="${AjaxUtils.isAjaxCall(request)}">
+        <script>
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
-        });
-    </script>
+        </script>
+    </g:if>
 
 </div><!-- .card -->
 
@@ -140,11 +140,12 @@
                     custom_props_div: "custom_props_div_${contextOrg.id}",
                     tenant: contextOrg]}"/>
 
-            <script type="text/javascript">
-                $(document).ready(function(){
-                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
-                });
-            </script>
+    <g:if test="${AjaxUtils.isAjaxCall(request)}">
+        <script>
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+        </script>
+    </g:if>
+
         </div>
     </div>
 </div><!--.card-->

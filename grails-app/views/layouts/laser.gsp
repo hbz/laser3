@@ -752,5 +752,23 @@
                 })
             })
         </script>
+
+        %{-- jsqtk --}%
+
+        <sec:ifAnyGranted roles="ROLE_YODA">
+            <div id="system-jsqtk" class="ui button">
+                <i class="terminal icon"></i>
+                <span>jsqtk.go()</span>
+            </div>
+            <script>
+                $(document).ready(function() {
+                    jsqtk.go()
+                    $('#system-jsqtk').on('click', function(){
+                        jsqtk.go()
+                    })
+                })
+            </script>
+        </sec:ifAnyGranted>
+
     </body>
 </html>

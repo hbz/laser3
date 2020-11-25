@@ -349,7 +349,6 @@
                 </div><!-- .card -->
             </g:if>
 
-            <asset:javascript src="properties.js"/>
             <div class="ui grid">
                 <div class="sixteen wide column">
                     <div class="la-inline-lists">

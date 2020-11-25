@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_custom -->
-%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
+%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx --}%
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
 

@@ -7,7 +7,6 @@
     <head>
         <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'subscription.details.label')}</title>
-        <asset:javascript src="properties.js"/>
         <style>
             .ui.table tr th {
                 border-top: 1px solid #d3dae3;

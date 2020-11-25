@@ -1,5 +1,5 @@
 
-// submodules/tooltip.js
+// modules/tooltip.js
 
 tooltip = {
     configs : {

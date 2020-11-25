@@ -22,8 +22,6 @@
         %{--<g:set var="entityName" value="${message(code: 'org.label')}"/>--}%
     %{--</g:else>--}%
     <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-
-    <asset:javascript src="properties.js"/>
 </head>
 
 <body>

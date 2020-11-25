@@ -5,7 +5,6 @@
     <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
     <title>${message(code: 'laser')} : <g:message code="platform.details"/></title>
-    <asset:javascript src="properties.js"/>
 </head>
 
 <body>

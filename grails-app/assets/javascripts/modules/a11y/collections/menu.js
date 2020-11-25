@@ -1,3 +1,6 @@
+
+// modules/a11y/collections/menu.js
+
 a11yMenu = {
     configs: {
         menuSelector        : '#mainMenue',
