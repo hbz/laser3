@@ -142,7 +142,7 @@
                             <g:if test="${s.packages.size() > 10}">
                                 <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
                             </g:if>
-                            <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
+                            <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
                                     <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
