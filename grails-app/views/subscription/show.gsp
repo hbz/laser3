@@ -380,7 +380,11 @@
                         </div>
                     </div>
                 </g:if>
-                <div id="new-dynamic-properties-block"></div><!-- #new-dynamic-properties-block -->
+
+                <div id="new-dynamic-properties-block">
+                    <g:render template="properties" model="${[ subscription: subscription ]}" />
+                </div><!-- #new-dynamic-properties-block -->
+
                <div class="clear-fix"></div>
             </div>
         </div><!-- .twelve -->
@@ -388,7 +392,6 @@
             <g:render template="/templates/aside1" model="${[ownobj:subscription, owntp:'subscription']}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
-
 
     <div id="magicArea"></div>
 
@@ -398,7 +401,6 @@
           loadLinks();
           loadLicenses();
           loadPackages();
-          loadProperties();
 
           function unlinkPackage(pkg_id){
             var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscription.id])}&package="+pkg_id
@@ -446,22 +448,7 @@
                   r2d2.initDynamicSemuiStuff("#packages");
               })
           }
-          function loadProperties() {
-              $.ajax({
-                  url: "<g:createLink controller="ajaxHtml" action="getProperties" />",
-                  data: {
-                      subscription: "${subscription.id}"
-                  }
-              }).done(function(response){
-                  $("#new-dynamic-properties-block").html(response);
-                  r2d2.initDynamicSemuiStuff("#new-dynamic-properties-block");
-                  r2d2.initDynamicXEditableStuff("#new-dynamic-properties-block");
-                  tooltip.go();
-              })
-          }
-        });
-
-
+      })
     </asset:script>
   </body>
 </html>

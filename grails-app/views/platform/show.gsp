@@ -107,12 +107,7 @@
             </div>
           </div>
             <div id="new-dynamic-properties-block">
-
-                <g:render template="properties" model="${[
-                    platform: platformInstance,
-                    /*authorizedOrgs: authorizedOrgs*/
-                ]}"/>
-
+                <g:render template="properties" model="${[ platform: platformInstance ]}"/>
             </div><!-- #new-dynamic-properties-block -->
 
             <div class="ui card">

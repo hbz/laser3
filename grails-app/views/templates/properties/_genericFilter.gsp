@@ -181,22 +181,14 @@
                     // sets the URL Parameter on the hidden input field
                     var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
-
-
                     propertyFilterController.updateProp(selOpt);
-
 
                     // set filterProp by params
                     var paramFilterProp = "${params.filterProp}";
 
                     $('#filterProp').val(paramFilterProp);
-
-
-
             }
         }
-
-
         propertyFilterController.init()
     });
 

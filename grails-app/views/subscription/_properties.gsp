@@ -119,11 +119,10 @@
     </div>
     <%--</div>--%>
 
-    <g:if test="${AjaxUtils.isAjaxCall(request)}">
-        <script>
+        <laser:xhrScript>
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
-        </script>
-    </g:if>
+        </laser:xhrScript>
+    %{--</g:if>--}%
 
 </div><!--.card -->
 
@@ -140,18 +139,15 @@
                     custom_props_div: "custom_props_div_${contextOrg.id}",
                     tenant: contextOrg]}"/>
 
-            <g:if test="${AjaxUtils.isAjaxCall(request)}">
-                <script>
-                   c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
-                </script>
-            </g:if>
+            <laser:xhrScript>
+               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+            </laser:xhrScript>
         </div>
     </div>
 </div>
 
-<script>
+<laser:xhrScript>
     //workaround for being able to add property values without needing to reload the whole page
-    $(document).ready(function () {
         $("form.properties").on("submit",function(e) {
             let updateDiv = $(this).parents("div[id~='props']");
             e.preventDefault();
@@ -164,7 +160,6 @@
                 $(updateDiv).html(response);
             });
         });
-    })
-</script>
+</laser:xhrScript>
 
 <!-- _properties -->

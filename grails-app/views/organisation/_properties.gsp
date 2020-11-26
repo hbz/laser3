@@ -90,11 +90,9 @@
     </div>
     <%--</div>--%>
 
-    <g:if test="${AjaxUtils.isAjaxCall(request)}">
-        <script>
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
-        </script>
-    </g:if>
+    <laser:xhrScript>
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
+    </laser:xhrScript>
 
 </div><!-- .card -->
 
@@ -115,11 +113,9 @@
                             tenant: authOrg
                     ]}"/>
 
-        <g:if test="${AjaxUtils.isAjaxCall(request)}">
-            <script>
-                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-            </script>
-        </g:if>
+                    <laser:xhrScript>
+                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+                    </laser:xhrScript>
 
                 </div>
             </div>

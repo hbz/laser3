@@ -115,8 +115,7 @@ Mind the convention of data-confirm-id in form element and inner button element
                         class="ui form"
                         data-update="${wrapper}"
                         data-before="alert('before')"
-                        data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${wrapper}')"
-                        data-always="c3po.loadJsAfterAjax()">
+                        data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${wrapper}')">
 
                             <input type="hidden" name="blah" value="blubb"/>
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
@@ -135,7 +134,6 @@ Mind the convention of data-confirm-id in form element and inner button element
                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                   data-confirm-term-how="delete"
                   data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                  data-always="c3po.loadJsAfterAjax()"
                   data-update="${custom_props_div}"
                   role="button"
 >

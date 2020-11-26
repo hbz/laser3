@@ -33,9 +33,7 @@
     </div>
 <%--</div><!--.card-->--%>
 
-<script>
-        $(document).ready(function(){
-            c3po.initGroupedProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${custom_props_div}");
-        });
-</script>
+<laser:xhrScript>
+    c3po.initGroupedProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${custom_props_div}");
+</laser:xhrScript>
 <!-- O: templates/properties/_groupWrapper -->
