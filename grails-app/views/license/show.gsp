@@ -185,17 +185,18 @@
                 <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
             </aside><!-- .four -->
 
-
         </div><!-- .grid -->
     <asset:script type="text/javascript">
-        $.ajax({
-            url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
-            data: {
-                entry:"${genericOIDService.getOID(license)}"
-            }
-        }).done(function(response){
-            $("#links").html(response);
-            r2d2.initDynamicSemuiStuff('#links');
+        $(document).ready(function(){
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
+                data: {
+                    entry:"${genericOIDService.getOID(license)}"
+                }
+            }).done(function(response){
+                $("#links").html(response);
+                r2d2.initDynamicSemuiStuff('#links');
+            })
         })
     </asset:script>
   </body>

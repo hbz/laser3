@@ -292,9 +292,7 @@ r2d2 = {
     initDynamicXEditableStuff : function(ctxSel) {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
 
-        if (! ctxSel) {
-            ctxSel = 'body'
-        }
+        if (! ctxSel) { return null }
 
         // DEPRECATED ?? never used
         $(ctxSel + ' .xEditable').editable({
@@ -321,9 +319,7 @@ r2d2 = {
             error: function (xhr, status, error) {
                 return xhr.status + ": " + xhr.statusText
             },
-        }).on('hidden', function() {
-            c3po.loadJsAfterAjax();
-        });
+        })
 
         $(ctxSel + ' .xEditableValue').editable({
 
@@ -402,9 +398,7 @@ r2d2 = {
             }
 
             $(".table").trigger('reflow')
-        }).on('hidden', function() {
-            c3po.loadJsAfterAjax();
-        });
+        })
 
         function formatDate(input) {
             if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
@@ -416,24 +410,18 @@ r2d2 = {
             }
         }
 
-        $(ctxSel + ' .xEditableDatepicker').editable({
-        });
+        $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui dropdown"></select>',
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
-        }).on('shown', function() {
-            $(".table").trigger('reflow');
-            $('.ui.dropdown')
-                .dropdown({
-                    clearable: true
-                })
-            ;
-        }).on('hidden', function() {
-            c3po.loadJsAfterAjax();
-        });
+        }).on('shown', function(e, obj) {
+
+            $('.table').trigger('reflow');
+            obj.input.$input.dropdown({clearable: true}) // reference to current dropdown
+        })
 
         $(ctxSel + ' .simpleHiddenRefdata').editable({
             language: laser.gspLocale,
@@ -443,9 +431,7 @@ r2d2 = {
                 $("#" + hidden_field_id).val(params.value);
                 // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
             }
-        }).on('hidden', function() {
-            c3po.loadJsAfterAjax();
-        });
+        })
 
         $(ctxSel + ' .simpleReferenceTypedown').select2({
             placeholder: "Search for...",
@@ -464,29 +450,15 @@ r2d2 = {
                     return {results: data.values};
                 }
             }
-        }).on('hidden', function() {
-            c3po.loadJsAfterAjax();
-        });
+        })
     },
 
 
     initDynamicSemuiStuff : function(ctxSel) {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
-        if (! ctxSel) {
-            ctxSel = 'body'
-        }
 
-        //popup tooltips
-        /*$(ctxSel + ' .la-delay').popup({delay: {
-            show: 300,
-            hide: 1000
-        }
-        });
-        $(ctxSel + ' .la-popup-tooltip.la-delay').popup( {
-            hoverable: true,
-            inline     : true,
-            lastResort: true
-        });*/
+        if (! ctxSel) { return null }
+
         $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });

@@ -3,12 +3,12 @@
 
 c3po = {
     loadJsAfterAjax: function () {
-        console.log('c3po.loadJsAfterAjax()')
-        r2d2.go();
-        bb8.go();
-        tooltip.go();
-        a11yMenu.go();
-        a11yIcon.go();
+        console.log('c3po.loadJsAfterAjax() -> DEPRECATED')
+        // r2d2.go();
+        // bb8.go();
+        // tooltip.go();
+        // a11yMenu.go();
+        // a11yIcon.go();
     },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
@@ -25,10 +25,9 @@ c3po = {
         c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
         c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
-        c3po.hideModalOnSubmit(cssId)
         //Needs to run to make the xEditable visible
-        $('.xEditableValue').editable()
-        $('.xEditableManyToOne').editable()
+        $(cssId + ' .xEditableValue').editable()
+        $(cssId + ' .xEditableManyToOne').editable()
     },
 
     initGroupedProperties: function (ajaxurl, cssId, tenantId) {
@@ -42,10 +41,9 @@ c3po = {
         c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
         c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
-        c3po.hideModalOnSubmit(cssId)
         //Needs to run to make the xEditable visible
-        $('.xEditableValue').editable()
-        $('.xEditableManyToOne').editable()
+        $(cssId + ' .xEditableValue').editable()
+        $(cssId + ' .xEditableManyToOne').editable()
     },
 
     refdataCatSearch: function (ajaxurl, cssId) {
@@ -140,15 +138,6 @@ c3po = {
             } else {
                 $("#cust_prop_ref_data_name").hide();
             }
-        });
-    },
-
-    // TODO -refactoring
-    hideModalOnSubmit: function (cssId) {
-        console.log("c3po.hideModalOnSubmit() " + cssId)
-
-        $("#new_cust_prop_add_btn").click(function () {
-            $('#cust_prop_add_modal').modal('hide');
         });
     }
 }
