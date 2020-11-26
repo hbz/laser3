@@ -13970,15 +13970,15 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.input > input::-moz-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 /*******************************
@@ -20299,15 +20299,15 @@ dd {
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.form :-ms-input-placeholder {
-  color: rgba(115, 115, 115, 0.87) !important;
+  color: rgba(64, 64, 64, 0.87) !important;
 }
 
 .ui.form ::-moz-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.form :focus::-webkit-input-placeholder {
@@ -33849,7 +33849,7 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,

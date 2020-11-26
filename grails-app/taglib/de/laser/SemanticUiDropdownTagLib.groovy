@@ -144,7 +144,7 @@ class SemanticUiDropdownTagLib {
         }
 
 
-        out << "<div class='ui dropdown selection ${attrs.class}' id='${attrs.id}'>"
+        out << "<div class='ui dropdown selection ${attrs.class}' id='${attrs.id}' aria-expanded='false'>"
         out << "<input type='hidden' name='${attrs.name}' "
         if(attrs.value)
             out << "value='${attrs.value}'"

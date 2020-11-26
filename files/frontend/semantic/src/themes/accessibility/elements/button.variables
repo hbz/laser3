@@ -323,8 +323,8 @@
 @primaryBoxShadow: @coloredBoxShadow;
 
 @secondaryBackgroundImage: @coloredBackgroundImage;
-@secondaryTextColor: @invertedTextColor;
-@secondaryTextShadow: @invertedTextShadow;
+@secondaryTextColor: @black;
+@secondaryTextShadow: @black;
 @secondaryBoxShadow: @coloredBoxShadow;
 
 @positiveBackgroundImage: @coloredBackgroundImage;
