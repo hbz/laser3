@@ -91,6 +91,7 @@ class LaserAjaxTagLib {
             out << "</script>"
         }
         else {
+            //asset.script([type:"text/javascript"], '//xhrScript\n' + body())
             asset.script([type:"text/javascript"], '//xhrScript\n$(function() { ' + body() + ' });')
         }
     }

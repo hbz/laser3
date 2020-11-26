@@ -836,6 +836,12 @@ dcbStore = {
     }
 }
 
+// pageController
+
+JSPC = {}
+
+//
+
 $(document).ready(function() {
     r2d2.go();
     bb8.go();

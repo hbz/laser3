@@ -119,10 +119,9 @@
     </div>
     <%--</div>--%>
 
-        <laser:xhrScript>>
+        <laser:xhrScript>
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
         </laser:xhrScript>
-    %{--</g:if>--}%
 
 </div><!--.card -->
 

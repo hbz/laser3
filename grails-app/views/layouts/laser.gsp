@@ -623,10 +623,12 @@
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
-        <%-- global content container --%>
-        <main class="ui main container ${visibilityContextOrgMenu} ">
+    %{-- global content container --}%
 
-            <%-- system messages --%>
+    <main class="ui main container ${visibilityContextOrgMenu} ">
+
+            %{-- system messages --}%
+
             <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
             <g:if test="${systemMessages}">
                 <div class="ui segment center aligned orange">
@@ -669,8 +671,6 @@
 
         <semui:confirmationModal  />
 
-        %{-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --}%
-
         %{-- decksaver --}%
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
@@ -703,15 +703,8 @@
                     <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>
 
                     ${message(code:'system.maintenanceMode.message')}
-
                 <div>
             </div>
-        </g:if>
-
-        %{-- ajax login --}%
-
-        <g:if test="${controllerName != 'login'}">
-            <g:render template="/templates/ajax/login" />
         </g:if>
 
         %{-- system info --}%
@@ -726,6 +719,29 @@
                 <span></span>
             </div>
         </sec:ifAnyGranted>
+
+         %{-- jsqtk --}%
+
+        <sec:ifAnyGranted roles="ROLE_YODA">
+            <div id="system-jsqtk" class="ui button">
+                <i class="terminal icon"></i>
+                <span>jsqtk.go()</span>
+            </div>
+            <script>
+                $(document).ready(function() {
+                    jsqtk.go()
+                    $('#system-jsqtk').on('click', function(){
+                        jsqtk.go()
+                    })
+                })
+            </script>
+        </sec:ifAnyGranted>
+
+        %{-- ajax login --}%
+
+        <g:if test="${controllerName != 'login'}">
+            <g:render template="/templates/ajax/login" />
+        </g:if>
 
         %{-- javascript loading --}%
 
@@ -752,23 +768,6 @@
                 })
             })
         </script>
-
-        %{-- jsqtk --}%
-
-        <sec:ifAnyGranted roles="ROLE_YODA">
-            <div id="system-jsqtk" class="ui button">
-                <i class="terminal icon"></i>
-                <span>jsqtk.go()</span>
-            </div>
-            <script>
-                $(document).ready(function() {
-                    jsqtk.go()
-                    $('#system-jsqtk').on('click', function(){
-                        jsqtk.go()
-                    })
-                })
-            </script>
-        </sec:ifAnyGranted>
 
     </body>
 </html>
