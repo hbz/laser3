@@ -43,11 +43,9 @@
     </div>
     <%--</div>--%>
 
-    <g:if test="${AjaxUtils.isAjaxCall(request)}">
-        <script>
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
-        </script>
-    </g:if>
+    <laser:xhrScript>
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
+    </laser:xhrScript>
 
 </div><!-- .card -->
 <!-- _properties -->

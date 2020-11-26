@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.AjaxUtils
 import de.laser.helper.SwissKnife
 import org.springframework.web.util.HtmlUtils
 
@@ -79,5 +80,18 @@ class LaserAjaxTagLib {
         out << ", success:function(data,textStatus){jQuery('" + update + "').html(data);}"
         out << ", error:function(XMLHttpRequest,textStatus,errorThrown){jQuery('" + updateOnFailure + "').html(XMLHttpRequest.responseText)}"
         out <<"});"
+    }
+
+    def xhrScript = { attrs, body ->
+
+        if (AjaxUtils.isAjaxCall(request)) {
+            out << "<script type=\"text/javascript\">"
+            out << "//xhrScript"
+            out << body
+            out << "</script>"
+        }
+        else {
+            asset.script([type:"text/javascript"], '//xhrScript\n$(function() { ' + body() + ' });')
+        }
     }
 }
