@@ -39,7 +39,7 @@
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
                                     <input type="checkbox" data-action="copy"
-                                           onClick="toggleAllCheckboxes(this)" checked/>
+                                           onClick="JSPC.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>
@@ -96,7 +96,7 @@
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
                                     <input type="checkbox" data-action="copy"
-                                           onClick="toggleAllCheckboxes(this)" checked/>
+                                           onClick="JSPC.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>

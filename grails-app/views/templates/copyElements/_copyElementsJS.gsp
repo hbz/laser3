@@ -1,11 +1,11 @@
-<asset:script type="text/javascript">
-    function jsConfirmation() {
+<laser:xhrScript>
+    JSPC.jsConfirmation = function () {
         if ($("td input[data-action='delete']").is(":checked")) {
             return confirm("${g.message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}")
         }
     }
     // FOR ALL THE OTHER TABLES THEN PROPERTIES
-    function toggleAllCheckboxes(source) {
+    JSPC.toggleAllCheckboxes = function (source) {
         var action = $(source).attr("data-action")
         var checkboxes = document.querySelectorAll('input[data-action="' + action + '"]');
         for (var i = 0; i < checkboxes.length; i++) {
@@ -16,10 +16,10 @@
             }
         }
     }
-</asset:script>
+</laser:xhrScript>
 
 <g:if test="${!copyObject}">
-    <asset:script type="text/javascript">
+    <laser:xhrScript>
         // ONLY FOR PROPERIES
         var takeProperty = $('input[name="copyObject.takeProperty"]');
         var deleteProperty = $('input[name="copyObject.deleteProperty"]');
@@ -126,5 +126,5 @@
                 markAffectedTake(elem)
             }
         });
-    </asset:script>
+    </laser:xhrScript>
 </g:if>

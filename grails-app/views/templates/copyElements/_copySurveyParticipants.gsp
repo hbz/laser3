@@ -36,7 +36,7 @@
                                 <th>${message(code: 'default.name.label')}</th>
                                 <th class=" center aligned">
                                     <input type="checkbox" data-action="copy"
-                                           onClick="toggleAllCheckboxes(this)" checked/>
+                                           onClick="JSPC.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>
@@ -119,7 +119,7 @@
                                 <th class=" center aligned">
                                     <g:if test="${targetObject}">
                                         <input type="checkbox" data-action="delete"
-                                               onClick="toggleAllCheckboxes(this)"/>
+                                               onClick="JSPC.toggleAllCheckboxes(this)"/>
                                     </g:if>
                                 </th>
                             </tr>
@@ -222,7 +222,6 @@ table {
     table-layout: fixed;
     width: 100%;
 }
-
 table td {
     vertical-align: top;
 }

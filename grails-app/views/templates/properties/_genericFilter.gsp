@@ -34,10 +34,9 @@
 
 
 
-<asset:script type="text/javascript">
+<laser:xhrScript>
     $(".la-popup").popup({});
 
-    $(function() {
         $.each($(".la-filterPropDef"), function(i, dropdown) {
             var val = $(dropdown).find(".item.active").data("value");
             var text = $(dropdown).find(".item.active").html();
@@ -47,11 +46,8 @@
                         .dropdown("set text", text);
             }
         });
-    });
 
-    $(function () {
-
-        var propertyFilterController = {
+        JSPC.propertyFilterController = {
 
             updateProp: function (selOpt) {
 
@@ -148,7 +144,7 @@
                 // register change event
                 $('#filterPropDef').change(function (e) {
                     var selOpt = $('option:selected', this);
-                    propertyFilterController.updateProp(selOpt);
+                    JSPC.propertyFilterController.updateProp(selOpt);
                 });
              */
                 $(document).ready(function() {
@@ -160,7 +156,7 @@
                             value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                             if ((typeof $selectedItem != 'undefined')){
                                 var selOpt = $selectedItem;
-                                propertyFilterController.updateProp(selOpt);
+                                JSPC.propertyFilterController.updateProp(selOpt);
                             }
                             else {
                                 $('#filterProp').dropdown ('clear', true)
@@ -181,7 +177,7 @@
                     // sets the URL Parameter on the hidden input field
                     var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
-                    propertyFilterController.updateProp(selOpt);
+                    JSPC.propertyFilterController.updateProp(selOpt);
 
                     // set filterProp by params
                     var paramFilterProp = "${params.filterProp}";
@@ -189,8 +185,7 @@
                     $('#filterProp').val(paramFilterProp);
             }
         }
-        propertyFilterController.init()
-    });
+        JSPC.propertyFilterController.init()
 
-</asset:script>
+</laser:xhrScript>
 <!-- O: templates/properties/_genericFilter -->
