@@ -41,7 +41,7 @@
     <tmpl:/layouts/favicon />
 </head>
 
-<body class="${controllerName}_${actionName}" id="globalJumpMark">
+<body class="${controllerName}_${actionName}">
 
     <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
         <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">

@@ -234,7 +234,7 @@
                             r2d2.initDynamicSemuiStuff('#addressFormModal');
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                            // JSPC.ajaxPostFunc()
+                            // JSPC.CB.ajaxPostFunc()
                         }
                     }).modal('show');
                 }

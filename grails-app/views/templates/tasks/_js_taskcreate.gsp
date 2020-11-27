@@ -10,7 +10,7 @@
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                            JSPC.ajaxPostFunc();
+                            JSPC.CB.ajaxPostFunc();
                     }
                 }).modal('show');
             }

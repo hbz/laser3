@@ -1,8 +1,6 @@
 
 // modules/r2d2.js
 
-var currLanguage = $('html').attr('lang');
-
 r2d2 = {
 
     configs : {
@@ -56,27 +54,27 @@ r2d2 = {
             },
             text: {
                 days: [
-                    dict.get('loc.weekday.short.Sunday',currLanguage),
-                    dict.get('loc.weekday.short.Monday',currLanguage),
-                    dict.get('loc.weekday.short.Tuesday',currLanguage),
-                    dict.get('loc.weekday.short.Wednesday',currLanguage),
-                    dict.get('loc.weekday.short.Thursday',currLanguage),
-                    dict.get('loc.weekday.short.Friday',currLanguage),
-                    dict.get('loc.weekday.short.Saturday',currLanguage)
+                    dict.get('loc.weekday.short.Sunday', JSPC.currLanguage),
+                    dict.get('loc.weekday.short.Monday', JSPC.currLanguage),
+                    dict.get('loc.weekday.short.Tuesday', JSPC.currLanguage),
+                    dict.get('loc.weekday.short.Wednesday', JSPC.currLanguage),
+                    dict.get('loc.weekday.short.Thursday', JSPC.currLanguage),
+                    dict.get('loc.weekday.short.Friday', JSPC.currLanguage),
+                    dict.get('loc.weekday.short.Saturday', JSPC.currLanguage)
                 ],
                 months: [
-                    dict.get('loc.January',currLanguage),
-                    dict.get('loc.February',currLanguage),
-                    dict.get('loc.March',currLanguage),
-                    dict.get('loc.April',currLanguage),
-                    dict.get('loc.May',currLanguage),
-                    dict.get('loc.June',currLanguage),
-                    dict.get('loc.July',currLanguage),
-                    dict.get('loc.August',currLanguage),
-                    dict.get('loc.September',currLanguage),
-                    dict.get('loc.October',currLanguage),
-                    dict.get('loc.November',currLanguage),
-                    dict.get('loc.December',currLanguage)
+                    dict.get('loc.January', JSPC.currLanguage),
+                    dict.get('loc.February', JSPC.currLanguage),
+                    dict.get('loc.March', JSPC.currLanguage),
+                    dict.get('loc.April', JSPC.currLanguage),
+                    dict.get('loc.May', JSPC.currLanguage),
+                    dict.get('loc.June', JSPC.currLanguage),
+                    dict.get('loc.July', JSPC.currLanguage),
+                    dict.get('loc.August', JSPC.currLanguage),
+                    dict.get('loc.September', JSPC.currLanguage),
+                    dict.get('loc.October', JSPC.currLanguage),
+                    dict.get('loc.November', JSPC.currLanguage),
+                    dict.get('loc.December', JSPC.currLanguage)
                 ]
             }
         }
@@ -187,8 +185,8 @@ r2d2 = {
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
-            lessLink: '<a href="#">' + dict.get('link.readless', currLanguage) + '</a>',
-            moreLink: '<a href="#">' + dict.get('link.readmore', currLanguage) + '</a>',
+            lessLink: '<a href="#">' + dict.get('link.readless', JSPC.currLanguage) + '</a>',
+            moreLink: '<a href="#">' + dict.get('link.readmore', JSPC.currLanguage) + '</a>',
             collapsedHeight: 115
         });
         //overwriting the template for input search (spotlight)
@@ -201,7 +199,7 @@ r2d2 = {
                 html += '' + '<div class="message ' + type + '">';
                 // message type
                 if (type == 'empty') {
-                    html += '' + '<div class="header">' + dict.get('search.API.heading.noResults', currLanguage) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
+                    html += '' + '<div class="header">' + dict.get('search.API.heading.noResults', JSPC.currLanguage) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
                 } else {
                     html += ' <div class="description">' + message + '</div>';
                 }
@@ -214,14 +212,14 @@ r2d2 = {
 
         $('.ui.search.spotlight').search({
             error : {
-                source          : '"' + dict.get('search.API.source', currLanguage) + '"',
+                source          : '"' + dict.get('search.API.source', JSPC.currLanguage) + '"',
                 noResults       : '',
-                logging         : '"' + dict.get('search.API.logging', currLanguage) + '"',
-                noEndpoint      : '"' + dict.get('search.API.noEndpoint', currLanguage) + '"',
-                noTemplate      : '"' + dict.get('search.API.noTemplate', currLanguage) + '"',
-                serverError     : '"' + dict.get('search.API.serverError', currLanguage) + '"',
-                maxResults      : '"' + dict.get('search.API.maxResults', currLanguage) + '"',
-                method          : '"' + dict.get('search.API.method', currLanguage) + '"'
+                logging         : '"' + dict.get('search.API.logging', JSPC.currLanguage) + '"',
+                noEndpoint      : '"' + dict.get('search.API.noEndpoint', JSPC.currLanguage) + '"',
+                noTemplate      : '"' + dict.get('search.API.noTemplate', JSPC.currLanguage) + '"',
+                serverError     : '"' + dict.get('search.API.serverError', JSPC.currLanguage) + '"',
+                maxResults      : '"' + dict.get('search.API.maxResults', JSPC.currLanguage) + '"',
+                method          : '"' + dict.get('search.API.method', JSPC.currLanguage) + '"'
             },
 
             type: 'category',
@@ -266,8 +264,8 @@ r2d2 = {
         console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button aria-label="' + dict.get('xEditable.button.ok', currLanguage) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
-            '<button aria-label="' + dict.get('xEditable.button.cancel', currLanguage) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
+        $.fn.editableform.buttons = '<button aria-label="' + dict.get('xEditable.button.ok', JSPC.currLanguage) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
+            '<button aria-label="' + dict.get('xEditable.button.cancel', JSPC.currLanguage) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
         $.fn.editableform.template =
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +
@@ -649,25 +647,25 @@ r2d2 = {
 
                 switch (how) {
                     case "delete":
-                        $jscb.html(dict.get('confirm.dialog.delete',currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
                         break;
                     case "unlink":
-                        $jscb.html(dict.get('confirm.dialog.unlink',currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.unlink', JSPC.currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $jscb.html(dict.get('confirm.dialog.share',currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.share', JSPC.currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
                         break;
                     case "inherit":
-                        $jscb.html(dict.get('confirm.dialog.inherit',currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.inherit', JSPC.currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
                         break;
                     case "ok":
-                        $jscb.html(dict.get('confirm.dialog.ok',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.ok', JSPC.currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "concludeBinding":
-                        $jscb.html(dict.get('confirm.dialog.concludeBinding',currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.concludeBinding', JSPC.currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
                         break;
                     case "clearUp":
-                        $jscb.html(dict.get('confirm.dialog.clearUp',currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
+                        $jscb.html(dict.get('confirm.dialog.clearUp', JSPC.currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');

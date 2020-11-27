@@ -99,7 +99,7 @@
 
     <laser:xhrScript>
 
-        JSPC.ajaxPostFunc = function () {
+        JSPC.CB.ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();

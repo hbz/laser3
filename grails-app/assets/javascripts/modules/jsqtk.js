@@ -1,7 +1,7 @@
 
 // modules/jsqtk.js
 
-var jsqtk = {
+jsqtk = {
     result: {},
     keys: [],
     idCounter: 0,

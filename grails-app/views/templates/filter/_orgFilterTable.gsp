@@ -797,7 +797,7 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                JSPC.ajaxPostFunc();
+                                JSPC.CB.ajaxPostFunc();
                                 setupCalendar();
                             },
                             detachable: true,

@@ -2,6 +2,7 @@
 //
 //= require /javascript/semantic.min.js         // themes
 //= require modules/tmp_semui.js
+//= require modules/JSPC.js
 //= require modules/r2d2.js
 //= require modules/c3po.js
 //= require modules/decksaver.js
@@ -13,20 +14,9 @@
 
 console.log('+ laser.js')
 
-// javascript page controller
-
-JSPC = {
-    CB : { // storage for dynamic callbacks
-        modal : {
-            show : {
-            }
-        }
-    }
-}
-
 // here we go ..
 
-$(document).ready(function() {
+$(function () {
     r2d2.go();
     bb8.go();
     tooltip.go();

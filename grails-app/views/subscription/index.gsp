@@ -596,7 +596,7 @@
                         r2d2.initDynamicSemuiStuff('#editEntitlementGroupItemModal');
                         r2d2.initDynamicXEditableStuff('#editEntitlementGroupItemModal');
                         $("html").css("cursor", "auto");
-                        JSPC.ajaxPostFunc()
+                        JSPC.CB.ajaxPostFunc()
                     },
                     detachable: true,
                     autofocus: false,
