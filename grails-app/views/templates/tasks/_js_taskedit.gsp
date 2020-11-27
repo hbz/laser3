@@ -1,5 +1,5 @@
-<asset:script type="text/javascript">
-    function taskedit(id) {
+<laser:xhrScript>
+    JSPC.taskedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
@@ -16,4 +16,4 @@
             }
         });
     }
-</asset:script>
+</laser:xhrScript>

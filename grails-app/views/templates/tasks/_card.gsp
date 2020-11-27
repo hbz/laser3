@@ -7,7 +7,7 @@
     <g:each in="${tasks}" var="tsk">
         <div class="ui grid">
             <div class="twelve wide column summary">
-                <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+                <a onclick="JSPC.taskedit(${tsk?.id});">${tsk?.title}</a>
                 <br />
                 <div class="content">
                     ${message(code:'task.endDate.label')}
@@ -24,8 +24,8 @@
     </g:each>
 </semui:card>
 
-<asset:script type="text/javascript">
-    function taskedit(id) {
+<laser:xhrScript>
+    JSPC.taskedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
@@ -44,4 +44,4 @@
             }
         });
     }
-</asset:script>
+</laser:xhrScript>

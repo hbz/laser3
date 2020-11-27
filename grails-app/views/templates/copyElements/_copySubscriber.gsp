@@ -136,9 +136,7 @@
     </g:form>
 </semui:form>
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-
+<laser:xhrScript>
         $("#firstTable .titleCell").each(function (k) {
             var v = $(this).height();
             $("#secondTable .titleCell").eq(k).height(v);
@@ -148,16 +146,13 @@
             var v = $(this).height();
             $("#firstTable .titleCell").eq(k).height(v);
         });
-
-    });
-</asset:script>
+</laser:xhrScript>
 
 <style>
 table {
     table-layout: fixed;
     width: 100%;
 }
-
 table td {
     vertical-align: top;
 }

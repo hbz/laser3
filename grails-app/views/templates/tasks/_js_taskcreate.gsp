@@ -1,5 +1,5 @@
-<asset:script type="text/javascript">
-    function taskcreate() {
+<laser:xhrScript>
+    JSPC.taskcreate = function () {
 
         $.ajax({
             url: '<g:createLink controller="myInstitution" action="modal_create"/>',
@@ -16,4 +16,4 @@
             }
         });
     }
-</asset:script>
+</laser:xhrScript>
