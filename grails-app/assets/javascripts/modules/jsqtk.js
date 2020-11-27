@@ -103,7 +103,3 @@ var jsqtk = {
         console.groupEnd()
     }
 }
-
-console.log('¯\\_(ツ)_/¯ .. use jsqtk.go() / jsqtk.info(jsqtk-id) / jsqtk.history() ')
-
-

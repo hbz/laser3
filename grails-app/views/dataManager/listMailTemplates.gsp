@@ -114,7 +114,7 @@
     </g:form>
 
     <asset:script type="text/javascript">
-        dcbStore.modal.show.editMailTemplate = function(trigger) {
+        JSPC.CB.modal.show.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))
             $('#editMailTemplate #mailTemplateTextEdit').text($(trigger).attr('data-mailTemplateText'))

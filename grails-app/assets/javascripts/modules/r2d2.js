@@ -493,7 +493,7 @@ r2d2 = {
                     return false;
                 },
                 onShow : function() {
-                    var modalCallbackFunction = dcbStore.modal.show[$(this).attr('id')];
+                    var modalCallbackFunction = JSPC.CB.modal.show[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
                         modalCallbackFunction(triggerElement)
                     }
@@ -826,26 +826,3 @@ r2d2 = {
         });
     }
 }
-
-// used as storage for dynamic callbacks
-
-dcbStore = {
-    modal : {
-        show : {
-        }
-    }
-}
-
-// pageController
-
-JSPC = {}
-
-//
-
-$(document).ready(function() {
-    r2d2.go();
-    bb8.go();
-    tooltip.go();
-    a11yMenu.go();
-    a11yIcon.go();
-})

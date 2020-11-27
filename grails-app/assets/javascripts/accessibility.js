@@ -9,3 +9,26 @@
 //= require modules/bb8.js
 //= require modules/a11y/collections/menu.js
 //= require modules/a11y/elements/icon.js
+
+console.log('+ accessibility.js')
+
+// javascript page controller
+
+JSPC = {
+    CB : { // storage for dynamic callbacks
+        modal : {
+            show : {
+            }
+        }
+    }
+}
+
+// here we go ..
+
+$(document).ready(function() {
+    r2d2.go();
+    bb8.go();
+    tooltip.go();
+    a11yMenu.go();
+    a11yIcon.go();
+})

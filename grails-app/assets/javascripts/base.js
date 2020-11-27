@@ -8,3 +8,5 @@
 //= require libs/moment.min.js
 //= require libs/readmore.min.js
 //= require /select2/js/select2.min.js      // vendor
+
+console.log('+ base.js')
