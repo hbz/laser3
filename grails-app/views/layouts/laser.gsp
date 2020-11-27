@@ -723,18 +723,16 @@
          %{-- jsqtk --}%
 
         <sec:ifAnyGranted roles="ROLE_YODA">
-            <div id="system-jsqtk" class="ui button">
-                <i class="terminal icon"></i>
-                <span>jsqtk.go()</span>
+            <div id="yoda-helper">
+                <div id="system-jsqtk" class="ui button">
+                    <i class="terminal icon"></i>
+                    <span>jsqtk.go()</span>
+                </div>
+                <div id="system-jspc" class="ui button">
+                    <i class="terminal icon"></i>
+                    <span>jspc</span>
+                </div>
             </div>
-            <script>
-                $(document).ready(function() {
-                    jsqtk.go()
-                    $('#system-jsqtk').on('click', function(){
-                        jsqtk.go()
-                    })
-                })
-            </script>
         </sec:ifAnyGranted>
 
         %{-- ajax login --}%
@@ -753,6 +751,9 @@
 
         <script>
             $(document).ready(function() {
+                $('#system-jsqtk').on('click', function(){ jsqtk.go() })
+                $('#system-jspc').on('click',  function(){ console.log(jspc) })
+
                 $.ajax({
                     url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
                     <%--data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},--%>
@@ -766,6 +767,9 @@
                         }
                     }
                 })
+
+                jsqtk.go()
+                console.log(JSPC); // debug
             })
         </script>
 

@@ -1,6 +1,6 @@
 // templates/javascript/_laser.js.gsp
 
-var laser = {
+laser = {
     gspLocale: "${message(code:'default.locale.label')}",
     gspDateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
     gspAjaxLookupUrl: "<g:createLink controller='ajaxJson' action='lookup'/>",

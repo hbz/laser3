@@ -682,13 +682,13 @@
                                 (${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notimeShort'))})
                             </g:if>
 
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
+                            <g:link onclick="JSPC.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
+                            <g:link onclick="JSPC.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
@@ -784,7 +784,7 @@
 
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-    <asset:script type="text/javascript">
+    <laser:xhrScript>
    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();
 
@@ -813,7 +813,7 @@
                     })
                 });
 
-        function addEditSurveyCostItem(id, surveyConfigID, participant, costItem) {
+        JSPC.addEditSurveyCostItem = function (id, surveyConfigID, participant, costItem) {
             event.preventDefault();
             $.ajax({
                 url: "<g:createLink controller='survey' action='editSurveyCostItem'/>",
@@ -843,6 +843,6 @@
             })
         };
 
-    </asset:script>
+    </laser:xhrScript>
 </g:if>
 

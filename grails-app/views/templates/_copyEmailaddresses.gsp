@@ -55,17 +55,43 @@
         <div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>
-        <button class="ui icon button right floated" onclick="copyToClipboard()">
+        <button class="ui icon button right floated" onclick="JSPC.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
-        <button class="ui icon button right floated" onclick="copyToEmailProgram()">
+        <button class="ui icon button right floated" onclick="JSPC.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
         <br />
     </div>
 
-    <asset:script type="text/javascript">
-            var jsonOrgIdList
+    <laser:xhrScript>
+        JSPC.jsonOrgIdList = null
+
+        JSPC.copyToEmailProgram = function () {
+            var emailAdresses = $("#emailAddressesTextArea").val();
+            window.location.href = "mailto:"+emailAdresses;
+        }
+
+        JSPC.copyToClipboard = function () {
+            $("#emailAddressesTextArea").select();
+            document.execCommand("copy");
+        }
+
+        JSPC.updateTextArea = function () {
+            var isPrivate = $("#privateContacts").is(":checked")
+            var isPublic = $("#publicContacts").is(":checked")
+            $("#emailAddressesTextArea").val("")
+            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
+
+            $.ajax({
+                url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
+                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.jsonOrgIdList,
+                success: function (data) {
+                    $("#emailAddressesTextArea").val(data.join('; '));
+                }
+            });
+        }
+
         // modals
         $("*[data-semui='modal']").click(function() {
 
@@ -75,13 +101,13 @@
             }
 
              if($(this).attr('data-orgIdList')){
-                jsonOrgIdList = $(this).attr('data-orgIdList').split(',');
+                JSPC.jsonOrgIdList = $(this).attr('data-orgIdList').split(',');
             }else {
-                jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
+                JSPC.jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
             }
             $(href + '.ui.modal').modal({
                 onVisible: function() {
-                    updateTextArea();
+                    JSPC.updateTextArea();
                     // $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
@@ -95,38 +121,12 @@
             }).modal('show')
         });
 
+        $("#prsFunctionMultiSelect").change(function()  { JSPC.updateTextArea(); });
+        $("#prsPositionMultiSelect").change(function()  { JSPC.updateTextArea(); });
+        $("#privateContacts").change(function()         { JSPC.updateTextArea(); });
+        $("#publicContacts").change(function()          { JSPC.updateTextArea(); });
 
-        $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
-        $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
-        $("#privateContacts").change(function() { updateTextArea(); });
-        $("#publicContacts").change(function() { updateTextArea(); });
-
-        function copyToEmailProgram() {
-            var emailAdresses = $("#emailAddressesTextArea").val();
-            window.location.href = "mailto:"+emailAdresses;
-        }
-
-        function copyToClipboard() {
-            $("#emailAddressesTextArea").select();
-            document.execCommand("copy");
-        }
-
-        function updateTextArea() {
-            var isPrivate = $("#privateContacts").is(":checked")
-            var isPublic = $("#publicContacts").is(":checked")
-            $("#emailAddressesTextArea").val("")
-            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
-
-            $.ajax({
-                url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
-                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + jsonOrgIdList,
-                success: function (data) {
-                    $("#emailAddressesTextArea").val(data.join('; '));
-                }
-            });
-
-        }
-    </asset:script>
+    </laser:xhrScript>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->
