@@ -150,6 +150,5 @@
             clearable: true,
             minCharacters: 1
         });
-    });
     </laser:xhrScript>
 </g:if>

@@ -86,7 +86,7 @@ class LaserAjaxTagLib {
 
         if (AjaxUtils.isAjaxCall(request)) {
             out << "<script type=\"text/javascript\">"
-            out << "//xhrScript "
+            out << "//xhrScript\n"
             out << body()
             out << "</script>"
         }

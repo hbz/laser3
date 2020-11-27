@@ -131,15 +131,16 @@
 <div class="ui card la-dl-no-table ">
     <div class="content">
         <h5 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h5>
-        <div id="custom_props_div_${contextOrg.id}">
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <div id="${propertyWrapper}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
-                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                    propertyWrapper: "${propertyWrapper}",
                     tenant: contextOrg]}"/>
 
             <laser:xhrScript>
-               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
             </laser:xhrScript>
         </div>
     </div>

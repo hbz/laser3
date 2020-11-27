@@ -322,16 +322,17 @@
                 <div class="la-inline-lists">
                     <div class="ui card">
                         <div class="content">
-                            <div id="custom_props_div_${contextOrg.id}">
-                                <h5 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h5>
+                            <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+                            <h5 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h5>
+                            <div id="${propertyWrapper}">
                                 <g:render template="/templates/properties/private" model="${[
                                         prop_desc       : PropertyDefinition.PRS_PROP,
                                         ownobj          : personInstance,
-                                        custom_props_div: "custom_props_div_${contextOrg.id}",
+                                        propertyWrapper: "${propertyWrapper}",
                                         tenant          : contextOrg,
                                         withoutRender   : true]}"/>
                                 <laser:xhrScript>
-                                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+                                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
                                 </laser:xhrScript>
                             </div>
                         </div>
