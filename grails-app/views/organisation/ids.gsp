@@ -193,7 +193,7 @@
                                 r2d2.initDynamicSemuiStuff('#modalCreateCustomerIdentifier');
                                 r2d2.initDynamicXEditableStuff('#modalCreateCustomerIdentifier');
 
-                                // ajaxPostFunc()
+                                // JSPC.ajaxPostFunc()
                             }
                         }).modal('show');
                     }

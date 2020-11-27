@@ -729,7 +729,7 @@
                     <span>jsqtk.go()</span>
                 </div>
                 <div id="system-jspc" class="ui button">
-                    <i class="terminal icon"></i>
+                    <i class="info icon"></i>
                     <span>jspc</span>
                 </div>
             </div>

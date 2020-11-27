@@ -49,7 +49,7 @@
                                             <i class="ui angle double down icon"></i>
                                         </button>
                                     </span>
-                                    <script>
+                                    <laser:xhrScript>
                                         $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
                                             //$("#derived-license-properties${link.id}").toggleClass('hidden');
@@ -60,7 +60,7 @@
                                                 $(this).html('<i class="ui angle double up icon"></i>');
                                             }
                                         })
-                                    </script>
+                                    </laser:xhrScript>
                                 </g:if>
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),

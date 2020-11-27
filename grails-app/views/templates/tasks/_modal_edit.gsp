@@ -97,9 +97,9 @@
     </g:form>
 
 
-    <script>
+    <laser:xhrScript>
 
-        var ajaxPostFunc = function () {
+        JSPC.ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();
@@ -142,6 +142,6 @@
                     }
                 });
         }
-    </script>
+    </laser:xhrScript>
 </semui:modal>
 

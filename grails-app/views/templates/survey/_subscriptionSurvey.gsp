@@ -270,7 +270,7 @@
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
                             class="ui button blue">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
-                    <script>
+                    <laser:xhrScript>
                         $('#subscription-info-toggle').on('click', function () {
                             $("#subscription-info").transition('slide down');
                             if ($("#subscription-info").hasClass('visible')) {
@@ -279,7 +279,7 @@
                                 $(this).html('Lizenzinformationen ausblenden <i class="ui angle double up icon"></i>')
                             }
                         })
-                    </script>
+                    </laser:xhrScript>
                 </div>
 
             </div>
