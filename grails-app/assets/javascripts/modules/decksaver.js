@@ -105,7 +105,7 @@ deckSaver = {
 
             deckSaver.configs.toggleButton.removeAttr("data-content");
             deckSaver.configs.toggleButton.attr("data-content", dict.get('statusbar.showButtons.tooltip', JSPC.currLanguage));
-            tooltip.initializePopup(deckSaver.configs.toggleButton);
+            tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
             deckSaver.configs.toggleIcon.removeClass("slash");
             deckSaver.configs.toggleButton.addClass('active');
 
@@ -133,7 +133,7 @@ deckSaver = {
                 var dataContent = button.attr("data-content");
 
                 clone.attr('data-content', dataContent);
-                tooltip.initializePopup(clone);
+                tooltip.initializePopup_deprecated(clone);
             });
 
             $('.card').not('.ui.modal .card').removeClass('hidden');
@@ -145,7 +145,7 @@ deckSaver = {
 
             deckSaver.configs.toggleButton.removeAttr("data-content");
             deckSaver.configs.toggleButton.attr("data-content", dict.get('statusbar.hideButtons.tooltip', JSPC.currLanguage));
-            tooltip.initializePopup(deckSaver.configs.toggleButton);
+            tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
 
 
             deckSaver.configs.toggleIcon.addClass("slash");

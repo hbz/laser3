@@ -360,7 +360,7 @@
                 }
             });
 
-            tooltip.go()
+            tooltip.go()  // TODO: set ctxSel @ tooltip.init()
 
             JSPC.addressElementCount = 0;
             JSPC.contactElementCount = 0;

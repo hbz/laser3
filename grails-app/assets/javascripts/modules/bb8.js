@@ -5,7 +5,7 @@ bb8 = {
 
     go: function() {
         console.log('bb8.go()')
-        bb8.init('body');
+        bb8.init('body')
     },
 
     init: function(ctxSel) {
@@ -39,33 +39,25 @@ bb8 = {
             url: url,
             beforeSend: function (xhr) {
                 $('#loadingIndicator').show()
-                if (before) {
-                    eval(before)
-                }
+                if (before) { eval(before) }
             }
         })
             .done(function (data) {
                 $(update).empty()
                 $(update).html(data)
 
-                bb8.init(update);
-                tooltip.go();
-                a11yMenu.go();
+                bb8.init(update)
+                tooltip.init(update)
+                a11yMenu.go(update)
 
-                if (done) {
-                    eval(done)
-                }
+                if (done) { eval(done) }
             })
             .fail(function () {
-                if (fail) {
-                    eval(fail)
-                }
+                if (fail) { eval(fail) }
             })
             .always(function () {
                 $('#loadingIndicator').hide()
-                if (always) {
-                    eval(always)
-                }
+                if (always) { eval(always) }
             });
     },
 
@@ -84,9 +76,7 @@ bb8 = {
             data : data,
             beforeSend: function (xhr) {
                 $('#loadingIndicator').show()
-                if (before) {
-                    eval(before)
-                }
+                if (before) { eval(before) }
             }
         })
             .done(function (data) {
@@ -94,23 +84,17 @@ bb8 = {
                 $(update).html(data)
 
                 bb8.init(update);
-                //tooltip.go();
-                //a11yMenu.go();
+                //tooltip.init(update);
+                //a11yMenu.go(update);
 
-                if (done) {
-                    eval(done)
-                }
+                if (done) { eval(done) }
             })
             .fail(function () {
-                if (fail) {
-                    eval(fail)
-                }
+                if (fail) { eval(fail) }
             })
             .always(function () {
                 $('#loadingIndicator').hide()
-                if (always) {
-                    eval(always)
-                }
+                if (always) { eval(always) }
             });
     }
 }
