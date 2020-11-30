@@ -752,7 +752,7 @@
         <script>
             $(document).ready(function() {
                 $('#system-jsqtk').on('click', function(){ jsqtk.go() })
-                $('#system-jspc').on('click',  function(){ console.log(JSPC) })
+                $('#system-jspc').on('click',  function(){ console.log('JSPC: %o', JSPC) })
 
                 $.ajax({
                     url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
@@ -769,7 +769,7 @@
                 })
 
                 jsqtk.go()
-                console.log(JSPC); // debug
+                console.log('JSPC: %o', JSPC);
             })
         </script>
 

@@ -7,13 +7,10 @@ tooltip = {
     },
     go : function() {
         console.log('tooltip.go()')
-        tooltip.init()
-        tooltip.initializePopup(tooltip.configs.tooltipTrigger);
+        tooltip.initializePopup($('.la-popup-tooltip'));
         tooltip.acccessViaKeys();
     },
-    init: function() {
-        tooltip.configs.tooltipTrigger = $('.la-popup-tooltip')
-    },
+
     initializePopup: function(obj) {
         $('.la-popup-tooltip').each(function() {
             // add aria-label
@@ -40,18 +37,20 @@ tooltip = {
             },
         });
     },
+
     acccessViaKeys: function(){
-        // for click and focus
-        $(tooltip.configs.tooltipTrigger).on('click focus', function(){$(this).popup('show'); })
 
-        // for unfocus
-        $(tooltip.configs.tooltipTrigger).on('focusout', function(){$(this).popup('hide'); })
-
-        // for ESC
-        $(tooltip.configs.tooltipTrigger).on('keydown', function(){
-            if(event.keyCode==27){
+        $('.la-popup-tooltip')
+            .on('click focus', function(){
+                $(this).popup('show');
+            }) // for click and focus
+            .on('focusout', function(){
                 $(this).popup('hide');
-            }
-        })
+            }) // for unfocus
+            .on('keydown', function(){  // for ESC
+                if(event.keyCode==27){
+                    $(this).popup('hide');
+                }
+            })
     },
 }
