@@ -151,7 +151,7 @@
                                             <g:if test="${editable && !hasCostItems}">
                                                 <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
-                                                            onclick="unlinkPackage(${Package.findByGokbId(hit.uuid)?.id})">
+                                                            onclick="JSPC.unlinkPackage(${Package.findByGokbId(hit.uuid)?.id})">
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
@@ -207,7 +207,7 @@
                         <g:if test="${editable && !hasCostItems}">
                             <div class="ui mini icon buttons">
                                 <button class="ui button la-selectable-button"
-                                        onclick="unlinkPackage(${sp.pkg.id})">
+                                        onclick="JSPC.unlinkPackage(${sp.pkg.id})">
                                     <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
                                 </button>
                             </div>
@@ -231,7 +231,7 @@
 
 <asset:script type="text/javascript">
 
-      function unlinkPackage(pkg_id){
+      JSPC.unlinkPackage = function (pkg_id){
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
@@ -243,6 +243,10 @@
           }
         });
       }
+      JSPC.toggleAlert = function() {
+        $('#durationAlert').toggle();
+      }
+
       $(document).ready(function () {
         $(".packageLink").click(function(evt) {
 
@@ -251,7 +255,7 @@
             var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
             console.log(check)
             if (check == true) {
-                toggleAlert();
+                JSPC.toggleAlert();
                 window.open($(this).attr('href'), "_self");
             }
         });
@@ -263,14 +267,10 @@
             var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm')}');
             console.log(check)
             if (check == true) {
-                toggleAlert();
+                JSPC.toggleAlert();
                 window.open($(this).attr('href'), "_self");
             }
         });
-
-         function toggleAlert() {
-            $('#durationAlert').toggle();
-        }
       });
 </asset:script>
 <!-- ES Query String: ${es_query} -->

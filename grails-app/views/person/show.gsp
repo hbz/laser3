@@ -129,7 +129,7 @@
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
-                                       onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                       onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >
                             </g:if>
                         </dd>
@@ -453,12 +453,12 @@
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
-        function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
+        JSPC.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
-            private_address_modal(url);
+            JSPC.private_address_modal(url);
         }
 
-        function private_address_modal(url) {
+        JSPC.private_address_modal = function(url) {
             $.ajax({
                 url: url,
                 success: function(result){

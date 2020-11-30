@@ -359,7 +359,7 @@
                                     <div class="item">
 
                                         <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
-                                           onclick="personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
+                                           onclick="JSPC.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
                                                 code="personFormModalTechnichalSupport"/></a>
 
                                     </div>
@@ -549,12 +549,12 @@
             });
         }
 <g:if test="${isProviderOrAgency}">
-    function personCreate(contactFor, org) {
+    JSPC.personCreate = function(contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml"
                                  action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
-        createPersonModal(url)
+        JSPC.createPersonModal(url)
     }
-    function createPersonModal(url) {
+    JSPC.createPersonModal = function (url) {
         $.ajax({
             url: url,
             success: function(result){

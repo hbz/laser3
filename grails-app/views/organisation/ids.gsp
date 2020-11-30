@@ -137,7 +137,7 @@
                                                     Combo.findByFromOrgAndToOrg(ci.customer, contextService.getOrg()))
                                         %>
                                         <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                            <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
+                                            <button class="ui icon button" onclick="JSPC.IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
                                             <g:link controller="organisation"
                                                     action="deleteCustomerIdentifier"
                                                     id="${orgInstance.id}"
@@ -162,22 +162,22 @@
 </html>
 <g:if test="${actionName == 'ids'}">
     <asset:script type="text/javascript">
-        IdContoller =  {
+        JSPC.IdContoller =  {
             createIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
             createCustomerIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createCustomerIdentifier"/>?id='+id;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
             editIdentifier : function(identifier) {
                 var urlString = '<g:createLink controller="organisation" action="editIdentifier"/>?identifier='+identifier;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
             editCustomerIdentifier : function(customeridentifier) {
                 var urlString = '<g:createLink controller="organisation" action="editCustomerIdentifier"/>?customeridentifier='+customeridentifier;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
 
             _doAjax : function(url) {
