@@ -14,14 +14,14 @@ bb8 = {
         $(ctxSel + " .la-js-remoteLink").click(function (event) {
             event.preventDefault();
             if (! $(this).hasClass('js-open-confirm-modal')) {
-                bb8.ajax4remoteLink(this);
+                bb8.ajax4remoteLink(this)
             }
         })
 
         $(ctxSel + " .la-js-remoteForm").unbind('submit').submit(function (event) {
             event.preventDefault();
             if (! $(this).hasClass('js-open-confirm-modal')) {
-                bb8.ajax4remoteForm(this);
+                bb8.ajax4remoteForm(this)
             }
         })
     },
@@ -46,12 +46,15 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
 
-                r2d2.initDynamicSemuiStuff(update);
-                r2d2.initDynamicXEditableStuff(update);
+                r2d2.initDynamicSemuiStuff(update)
+                r2d2.initDynamicXEditableStuff(update)
 
                 bb8.init(update)
                 tooltip.init(update)
                 a11yMenu.init(update)
+                a11yIcon.init(update)
+
+                $("html").css("cursor", "auto")
 
                 if (done) { eval(done) }
             })
@@ -86,12 +89,15 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
 
-                r2d2.initDynamicSemuiStuff(update);
-                r2d2.initDynamicXEditableStuff(update);
+                r2d2.initDynamicSemuiStuff(update)
+                r2d2.initDynamicXEditableStuff(update)
 
-                bb8.init(update);
-                tooltip.init(update);
-                a11yMenu.init(update);
+                bb8.init(update)
+                tooltip.init(update)
+                a11yMenu.init(update)
+                a11yIcon.init(update)
+
+                $("html").css("cursor", "auto")
 
                 if (done) { eval(done) }
             })
