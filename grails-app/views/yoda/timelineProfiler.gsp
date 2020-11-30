@@ -32,8 +32,7 @@
 
                         <script>
                             $(document).ready(function(){
-
-                                var chartData = {
+                                JSPC.chartData_${index} = {
                                     labels: [
                                         <% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>
                                     ],
@@ -42,7 +41,7 @@
                                     ]
                                 };
 
-                                new Chartist.Bar('#ct-chart-${index}', chartData, {
+                                new Chartist.Bar('#ct-chart-${index}', JSPC.chartData_${index}, {
                                     stackBars: true,
                                     fullWidth: true,
                                     chartPadding: {
