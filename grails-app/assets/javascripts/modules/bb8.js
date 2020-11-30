@@ -46,9 +46,12 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
 
+                r2d2.initDynamicSemuiStuff(update);
+                r2d2.initDynamicXEditableStuff(update);
+
                 bb8.init(update)
                 tooltip.init(update)
-                a11yMenu.go(update)
+                a11yMenu.init(update)
 
                 if (done) { eval(done) }
             })
@@ -83,9 +86,12 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
 
+                r2d2.initDynamicSemuiStuff(update);
+                r2d2.initDynamicXEditableStuff(update);
+
                 bb8.init(update);
-                //tooltip.init(update);
-                //a11yMenu.go(update);
+                tooltip.init(update);
+                a11yMenu.init(update);
 
                 if (done) { eval(done) }
             })
