@@ -11,7 +11,9 @@ a11yMenu = {
 
         // for Main Menu
         $('.ui.dropdown' , a11yMenu.configs.menuSelector ).dropdown({
-            action: 'nothing',
+            action: function (text, value, element) {
+                element.click();
+            },
             selectOnKeydown        : false,
             on: 'hover',
             onHide         : function() {

@@ -44,7 +44,7 @@
 
 /* definition list in cards */
 .control-label {
-  color: gray;
+  color: #4f4f4f;
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: .9rem;

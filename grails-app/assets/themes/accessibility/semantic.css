@@ -19296,10 +19296,6 @@ dd {
   font-size: 1.07142857rem!important;
 }
 
-.la-filter .ui.selection.dropdown {
-  color: #FFFFFF;
-}
-
 .la-filter .ui.form .field > label {
   color: #FFFFFF;
 }
@@ -19332,6 +19328,7 @@ dd {
 
 .ui.selection.dropdown.la-filter-dropdown-selected,
 .ui.selection.dropdown.la-filter-selected {
+  color: white;
   background: #004678 !important;
   border: 1px solid #FFFFFF;
 }
@@ -29756,7 +29753,7 @@ a.ui.card:hover,
 /* definition list in cards */
 
 .control-label {
-  color: gray;
+  color: #4f4f4f;
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: .9rem;

@@ -93,7 +93,9 @@
 
         </select>
     </div>
-
+    <label for="license">
+        Das ist das Label
+    </label>
     <select  id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">>
         <option value="1116">Allianzlizenz</option>
         <option value="1214">Deal-Lizenz</option>

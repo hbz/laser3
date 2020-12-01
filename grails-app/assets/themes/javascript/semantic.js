@@ -6105,9 +6105,8 @@ $.fn.dropdown = function(parameters) {
                 .addClass(className.search)
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
-                  .attr('aria-controls',id+'_listBox') // a11y
-                  .attr('aria-labelledby',id+'_formLabel') // a11y
-                  .attr('aria-expanded','false') // a11y
+                  //.attr('aria-controls',id+'_listBox') // a11y
+                  //.attr('aria-labelledby',id+'_formLabel') // a11y
                 .insertBefore($text)
               ;
             }
@@ -6144,10 +6143,9 @@ $.fn.dropdown = function(parameters) {
                     .attr('class', $input.attr('class') )
                     .addClass(className.selection)
                     .addClass(className.dropdown)
-                    .attr('role', 'combobox') //a11y
+                    .attr('role', 'button') //a11y
                     .attr('aria-haspopup','listbox') //a11y
                     .attr('aria-owns',id + '_listBox') //a11y
-                  .attr('aria-autocomplete','list') // a11y
                         .attr('aria-controls',id+'_listBox') // a11y
                         .attr('aria-labelledby',id+'_formLabel')
                         .attr('aria-expanded','false')
@@ -6163,6 +6161,7 @@ $.fn.dropdown = function(parameters) {
                     .attr('role', 'combobox') //a11y
                     .attr('aria-haspopup','listbox') //a11y
                     .attr('aria-owns',id + '_listBox') //a11y
+                    .attr('aria-expanded','false') //a11y
                     .html( templates.dropdown(selectValues,id) )
                     .insertBefore($input)
                 ;
