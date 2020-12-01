@@ -146,20 +146,4 @@
     </div>
 </div>
 
-<laser:xhrScript>
-    //workaround for being able to add property values without needing to reload the whole page
-        $("form.properties").on("submit",function(e) {
-            let updateDiv = $(this).parents("div[id~='props']");
-            e.preventDefault();
-            $.ajax({
-                url: $(this).attr('action'),
-                type: "POST",
-                data: $(this).serialize()
-            }).done(function(response) {
-                console.log(updateDiv);
-                $(updateDiv).html(response);
-            });
-        });
-</laser:xhrScript>
-
 <!-- _properties -->
