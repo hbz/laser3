@@ -264,7 +264,7 @@
                                       optionKey="${{Subscription.class.name + ':' + it.id}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                                       value="${Subscription.class.name + ':' + costItem?.sub?.id}"
-                                      onchange="onSubscriptionUpdate()"
+                                      onchange="JSPC.onSubscriptionUpdate()"
                             />
                         </g:else>
                     </g:if>
@@ -369,29 +369,31 @@
         bc:   "#newCostInBillingCurrency"
     }*/
 
-            var costItemElementConfigurations = ${raw(orgConfigurations as String)};
-            console.log(costItemElementConfigurations);
-            var selLinks = {
+            JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
+            console.log(JSPC.costItemElementConfigurations);
+
+            JSPC.selLinks = {
                 "newSubscription": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
                 "newPackage": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
                 "newIE": "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
                 "newTitleGroup": "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
             };
-            var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+            JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+
             if($("[name='newSubscription']").val().length > 0) {
-                selLinks.newPackage += "&sub="+$("[name='newSubscription']").val();
-                selLinks.newIE += "&sub="+$("[name='newSubscription']").val();
-                selLinks.newTitleGroup += "&sub="+$("[name='newSubscription']").val();
+                JSPC.selLinks.newPackage += "&sub="+$("[name='newSubscription']").val();
+                JSPC.selLinks.newIE += "&sub="+$("[name='newSubscription']").val();
+                JSPC.selLinks.newTitleGroup += "&sub="+$("[name='newSubscription']").val();
             }
             $("#costButton1").click(function() {
-                if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
+                if (! JSPC.isError("#newCostInBillingCurrency") && ! JSPC.isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val().trim());
-                    input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val().trim()));
+                    var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val().trim());
+                    input.val(JSPC.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val().trim()));
 
                     $(".la-account-currency").find(".field").removeClass("error");
-                    calcTaxResults()
+                    JSPC.calcTaxResults()
                 }
             });
             $("#newCostInBillingCurrency").change(function(){
@@ -401,36 +403,36 @@
                 }
             });
             $("#costButton2").click(function() {
-                if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
+                if (! JSPC.isError("#newCostInLocalCurrency") && ! JSPC.isError("#newCostInBillingCurrency")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val().trim());
-                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val().trim());
+                    var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency").val().trim());
+                    var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val().trim());
                     input.val((parsedLocalCurrency / parsedBillingCurrency));
 
                     $(".la-account-currency").find(".field").removeClass("error");
-                    calcTaxResults()
+                    JSPC.calcTaxResults()
                 }
             });
             $("#costButton3").click(function() {
-                if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
+                if (! JSPC.isError("#newCostInLocalCurrency") && ! JSPC.isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val().trim());
-                    input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val().trim()));
+                    var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency").val().trim());
+                    input.val(JSPC.convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val().trim()));
 
                     $(".la-account-currency").find(".field").removeClass("error");
-                    calcTaxResults()
+                    JSPC.calcTaxResults()
                 }
             });
             $("#newCostItemElement").change(function() {
-                console.log(costItemElementConfigurations[$(this).val()]);
-                if(typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
-                    $("[name='ciec']").dropdown('set selected',costItemElementConfigurations[$(this).val()]);
+                console.log(JSPC.costItemElementConfigurations[$(this).val()]);
+                if(typeof(JSPC.costItemElementConfigurations[$(this).val()]) !== 'undefined')
+                    $("[name='ciec']").dropdown('set selected', JSPC.costItemElementConfigurations[$(this).val()]);
                 else
                     $("[name='ciec']").dropdown('set selected','null');
             });
-            var isError = function(cssSel)  {
+            JSPC.isError = function(cssSel)  {
                 if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
                     $(".la-account-currency").children(".field").removeClass("error");
                     $(cssSel).parent(".field").addClass("error");
@@ -440,29 +442,29 @@
             };
 
             $('.calc').on('change', function() {
-                calcTaxResults()
+                JSPC.calcTaxResults()
             });
 
-            var calcTaxResults = function() {
+            JSPC.calcTaxResults = function () {
                 var roundF = $('*[name=newFinalCostRounding]').prop('checked');
                 console.log($("*[name=newTaxRate]").val());
                 var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
-                var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val().trim());
-                var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val().trim());
+                var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val().trim());
+                var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency").val().trim());
 
                 $('#newCostInBillingCurrencyAfterTax').val(
-                    roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
+                    roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
                 );
                 $('#newCostInLocalCurrencyAfterTax').val(
-                    roundF ? Math.round(parsedLocalCurrency * taxF ) : convertDouble(parsedLocalCurrency * taxF )
+                    roundF ? Math.round(parsedLocalCurrency * taxF ) : JSPC.convertDouble(parsedLocalCurrency * taxF )
                 );
             };
 
-            var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency");
+            JSPC.costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency");
 
-            costElems.on('change', function(){
-                checkValues();
+            JSPC.costElems.on('change', function(){
+                JSPC.checkValues();
                 if($("[name='newCostCurrency']").val() != 0) {
                     $("#newCostCurrency").parent(".field").removeClass("error");
                 }
@@ -475,7 +477,7 @@
                 //console.log("eee");
                 e.preventDefault();
                 if($("[name='newCostCurrency']").val() != 0) {
-                    let valuesCorrect = checkValues();
+                    let valuesCorrect = JSPC.checkValues();
                     if(valuesCorrect) {
                         $("#newCostCurrency").parent(".field").removeClass("error");
                         if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
@@ -504,31 +506,31 @@
 
             $("#newCostCurrency").change(function(){
                 //console.log("event listener succeeded, picked value is: "+$(this).val());
-                if($(this).val() === eurVal)
+                if($(this).val() === JSPC.eurVal)
                     $("#newCostCurrencyRate").val(1.0);
                 else $("#newCostCurrencyRate").val(0.0);
                 $("#costButton1").click();
             });
 
             $("[name='newSubscription']").change(function(){
-                onSubscriptionUpdate();
+                JSPC.onSubscriptionUpdate();
                 JSPC.CB.ajaxPostFunc();
             });
 
-            function onSubscriptionUpdate() {
+            JSPC.onSubscriptionUpdate = function () {
                 let context;
                 //console.log($("[name='newLicenseeTarget']~a").length);
                 if($("[name='newLicenseeTarget']~a").length === 1){
-                    let values = collect($("[name='newLicenseeTarget']~a"));
+                    let values = JSPC.collect($("[name='newLicenseeTarget']~a"));
                     if(!values[0].match(/:null|:for/)) {
                         context = values[0];
                     }
                 }
                 else if($("[name='newLicenseeTarget']").length === 0)
                     context = $("[name='newSubscription']").val();
-                selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
-                selLinks.newTitleGroup = "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub="+context;
-                selLinks.newPackage = "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
+                JSPC.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
+                JSPC.selLinks.newTitleGroup = "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub="+context;
+                JSPC.selLinks.newPackage = "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
                 $("#newIE").dropdown('clear');
                 $("#newTitleGroup").dropdown('clear');
                 $("#newPackage").dropdown('clear');
@@ -538,20 +540,20 @@
             $("#newPackage").change(function(){
                 let context;
                 if($("[name='newLicenseeTarget']~a").length === 1) {
-                    let values = collect($("[name='newLicenseeTarget']~a"));
+                    let values = JSPC.collect($("[name='newLicenseeTarget']~a"));
                     if(!values[0].match(/:null|:for/)) {
                         context = values[0];
                     }
                 }
                 else if($("[name='newLicenseeTarget']").length === 0)
                     context = $("[name='newSubscription']").val();
-                selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
+                JSPC.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
                 $("#newIE").dropdown('clear');
                 JSPC.CB.ajaxPostFunc();
             });
 
             $("#newIE").change(function(){
-                checkPackageBelongings();
+                JSPC.checkPackageBelongings();
             });
 
         $("[name='newTitleGroup']").change(function(){
@@ -562,7 +564,7 @@
                 $(".newCISelect").each(function(k,v){
                     $(this).dropdown({
                         apiSettings: {
-                            url: selLinks[$(this).attr("id")],
+                            url: JSPC.selLinks[$(this).attr("id")],
                             cache: false
                         },
                         clearable: true,
@@ -584,7 +586,7 @@
                 <%  }  %>
             }
 
-            function setupCalendar() {
+            JSPC.setupCalendar = function () {
                 $("[name='newFinancialYear']").parents(".datepicker").calendar({
                     type: 'year',
                     minDate: new Date('1582-10-15'),
@@ -592,21 +594,21 @@
                 });
             }
 
-            function checkValues() {
-                if ( (convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2) !== convertDouble($("#newCostInLocalCurrency").val()).toFixed(2) ) {
-                    console.log("inserted values are: "+convertDouble($("#newCostInBillingCurrency").val())+" * "+$("#newCostCurrencyRate").val()+" = "+convertDouble($("#newCostInLocalCurrency").val()).toFixed(2)+", correct would be: "+(convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
-                    costElems.parent('.field').addClass('error');
+            JSPC.checkValues = function () {
+                if ( (JSPC.convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2) !== JSPC.convertDouble($("#newCostInLocalCurrency").val()).toFixed(2) ) {
+                    console.log("inserted values are: "+JSPC.convertDouble($("#newCostInBillingCurrency").val())+" * "+$("#newCostCurrencyRate").val()+" = "+JSPC.convertDouble($("#newCostInLocalCurrency").val()).toFixed(2)+", correct would be: "+(JSPC.convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
+                    JSPC.costElems.parent('.field').addClass('error');
                     return false;
                 }
                 else {
-                    costElems.parent('.field').removeClass('error');
+                    JSPC.costElems.parent('.field').removeClass('error');
                     return true;
                 }
             }
 
-            function checkPackageBelongings() {
+            JSPC.checkPackageBelongings = function () {
                 var subscription = $("[name='newSubscription'], #pickedSubscription").val();
-                let values = collect($("[name='newLicenseeTarget']~a"))
+                let values = JSPC.collect($("[name='newLicenseeTarget']~a"))
                 if(values.length === 1) {
                     subscription = values[0];
                     $.ajax({
@@ -625,7 +627,7 @@
                 }
             }
 
-            function collect(fields) {
+            JSPC.collect = function (fields) {
                 let values = [];
                 for(let i = 0;i < fields.length;i++) {
                     let value = fields[i];
@@ -636,7 +638,7 @@
                 return values;
             }
 
-            function convertDouble(input) {
+            JSPC.convertDouble = function (input) {
                 //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
@@ -665,7 +667,7 @@
                 return output;
             }
 
-            function preselectMembers() {
+            JSPC.preselectMembers = function () {
                 <g:if test="${pickedSubscriptions}">
                     $("#newLicenseeTarget").dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
                     <g:if test="${pickedSubscriptions.size() > 9}">
