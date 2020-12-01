@@ -82,6 +82,8 @@
     </style>
 
     <asset:stylesheet src="swagger.css"/><asset:javascript src="swagger.js"/>
+
+    <tmpl:/layouts/favicon />
 </head>
 
 <body>
