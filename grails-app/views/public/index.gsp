@@ -4,9 +4,11 @@
 <head>
     <meta name="layout" content="public"/>
     <title>${message(code: 'laser')}</title>
+
+    <asset:javascript src="base.js"/>%{-- dont move --}%
     <script>
-        <g:render template="/templates/javascript/laser.js" />
-        <g:render template="/templates/javascript/dict.js" />
+        <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
+        <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
     </script>
 </head>
 

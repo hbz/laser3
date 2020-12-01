@@ -514,7 +514,7 @@
 
             $("[name='newSubscription']").change(function(){
                 JSPC.onSubscriptionUpdate();
-                JSPC.CB.ajaxPostFunc();
+                JSPC.callbacks.ajaxPostFunc();
             });
 
             JSPC.onSubscriptionUpdate = function () {
@@ -534,7 +534,7 @@
                 $("#newIE").dropdown('clear');
                 $("#newTitleGroup").dropdown('clear');
                 $("#newPackage").dropdown('clear');
-                JSPC.CB.ajaxPostFunc();
+                JSPC.callbacks.ajaxPostFunc();
             }
 
             $("#newPackage").change(function(){
@@ -549,7 +549,7 @@
                     context = $("[name='newSubscription']").val();
                 JSPC.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
                 $("#newIE").dropdown('clear');
-                JSPC.CB.ajaxPostFunc();
+                JSPC.callbacks.ajaxPostFunc();
             });
 
             $("#newIE").change(function(){
@@ -557,10 +557,10 @@
             });
 
         $("[name='newTitleGroup']").change(function(){
-            JSPC.CB.ajaxPostFunc();
+            JSPC.callbacks.ajaxPostFunc();
         });
 
-            JSPC.CB.ajaxPostFunc = function() {
+            JSPC.callbacks.ajaxPostFunc = function() {
                 $(".newCISelect").each(function(k,v){
                     $(this).dropdown({
                         apiSettings: {

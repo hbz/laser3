@@ -443,7 +443,7 @@
                             r2d2.initDynamicSemuiStuff('#modalCreateTask');
                             r2d2.initDynamicXEditableStuff('#modalCreateTask');
 
-                            JSPC.CB.ajaxPostFunc()
+                            JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 }
@@ -463,7 +463,7 @@
                             r2d2.initDynamicSemuiStuff('#modalEditTask');
                             r2d2.initDynamicXEditableStuff('#modalEditTask');
 
-                            JSPC.CB.ajaxPostFunc()
+                            JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 }

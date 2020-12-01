@@ -283,7 +283,7 @@
         }
         JSPC.chooseRequiredDropdown('status.id');
 
-        JSPC.CB.ajaxPostFunc = function () {
+        JSPC.callbacks.ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();
