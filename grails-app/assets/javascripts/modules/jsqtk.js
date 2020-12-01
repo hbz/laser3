@@ -52,6 +52,9 @@ jsqtk = {
         console.log('jsqtk.go()')
         let evsCounter = 0
 
+        jsqtk.result = {}
+        jsqtk.resultCounter = {}
+
         $.each($('*'), function (i, elem) {
             jsqtk.idCounter = jsqtk.idCounter + 1
 
