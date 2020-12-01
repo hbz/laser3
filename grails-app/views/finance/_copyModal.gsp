@@ -45,7 +45,7 @@
     </g:form>
 
     <script>
-        var ajaxPostFunc = function () {
+        JSPC.CB.ajaxPostFunc = function () {
             console.log("ajaxPostFunc")
         }
     </script>

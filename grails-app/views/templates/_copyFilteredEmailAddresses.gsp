@@ -11,26 +11,26 @@
             <g:textArea id="filteredEmailAddressesTextArea" name="filteredEmailAddresses" readonly="false"
                         rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" >${emailAddresses ? emailAddresses.join('; '): ''}</g:textArea>
         </div>
-        <button class="ui icon button right floated" onclick="copyToClipboard()">
+        <button class="ui icon button right floated" onclick="JSPC.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
-        <button class="ui icon button right floated" onclick="copyToEmailProgram()">
+        <button class="ui icon button right floated" onclick="JSPC.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
         <br />
     </div>
 
-    <asset:script type="text/javascript">
-        function copyToEmailProgram() {
+    <laser:xhrScript>
+        JSPC.copyToEmailProgram = function() {
             var emailAdresses = $("#filteredEmailAddressesTextArea").val();
             window.location.href = "mailto:"+emailAdresses;
         }
 
-        function copyToClipboard() {
+        JSPC.copyToClipboard = function() {
             $("#filteredEmailAddressesTextArea").select();
             document.execCommand("copy");
         }
-    </asset:script>
+    </laser:xhrScript>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->

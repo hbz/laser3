@@ -227,9 +227,9 @@
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="formFilter(event)" />
-            <asset:script type="text/javascript">
-                formFilter = function(e) {
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="JSPC.formFilter(event)" />
+            <laser:xhrScript>
+                JSPC.formFilter = function (e) {
                     e.preventDefault()
 
                     var form = $(e.target).parents('form')
@@ -239,7 +239,7 @@
 
                     form.submit()
                 }
-            </asset:script>
+            </laser:xhrScript>
         </g:if>
         <g:else>
             <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>

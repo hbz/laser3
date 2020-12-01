@@ -319,18 +319,15 @@
                     total="${num_sub_rows}"/>
 </g:if>
 
-<asset:script type="text/javascript">
-        $(document).ready(function(){
+<laser:xhrScript>
               // initialize the form and fields
-              $('.ui.form')
-              .form();
+              $('.ui.form').form();
             var val = "${params.dateBeforeFilter}";
             if(val == "null"){
                 $(".dateBefore").addClass("hidden");
             }else{
                 $(".dateBefore").removeClass("hidden");
             }
-        });
 
         $("[name='dateBeforeFilter']").change(function(){
             var val = $(this)['context']['selectedOptions'][0]['label'];
@@ -341,4 +338,4 @@
                 $(".dateBefore").addClass("hidden");
             }
         })
-</asset:script>
+</laser:xhrScript>

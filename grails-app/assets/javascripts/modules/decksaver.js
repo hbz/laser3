@@ -104,7 +104,7 @@ deckSaver = {
 
 
             deckSaver.configs.toggleButton.removeAttr("data-content");
-            deckSaver.configs.toggleButton.attr("data-content", dict.get('statusbar.showButtons.tooltip', currLanguage));
+            deckSaver.configs.toggleButton.attr("data-content", dict.get('statusbar.showButtons.tooltip', JSPC.currLanguage));
             tooltip.initializePopup(deckSaver.configs.toggleButton);
             deckSaver.configs.toggleIcon.removeClass("slash");
             deckSaver.configs.toggleButton.addClass('active');
@@ -115,7 +115,7 @@ deckSaver = {
             deckSaver.enableXeditable('.xEditableDatepicker');
             deckSaver.enableXeditable('.xEditableManyToOne');
 
-            $('.la-action-info').css('text-align', 'left').text(dict.get('default.actions.label', currLanguage))
+            $('.la-action-info').css('text-align', 'left').text(dict.get('default.actions.label', JSPC.currLanguage))
         } else {
 
             // ***************************
@@ -144,7 +144,7 @@ deckSaver = {
             deckSaver.configs.areaThatIsAffected.not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
             deckSaver.configs.toggleButton.removeAttr("data-content");
-            deckSaver.configs.toggleButton.attr("data-content", dict.get('statusbar.hideButtons.tooltip', currLanguage));
+            deckSaver.configs.toggleButton.attr("data-content", dict.get('statusbar.hideButtons.tooltip', JSPC.currLanguage));
             tooltip.initializePopup(deckSaver.configs.toggleButton);
 
 
@@ -157,7 +157,7 @@ deckSaver = {
             deckSaver.disableXeditable('.xEditableDatepicker');
             deckSaver.disableXeditable('.xEditableManyToOne');
 
-            $('.la-action-info').css('text-align', 'right').text(dict.get('default.informations', currLanguage))
+            $('.la-action-info').css('text-align', 'right').text(dict.get('default.informations', JSPC.currLanguage))
         }
     }
 }

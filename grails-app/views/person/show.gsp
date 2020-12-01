@@ -354,16 +354,17 @@
                     <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <div id="custom_props_div_${institution.id}">
-                                    <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <g:set var="propertyWrapper" value="private-property-wrapper-${institution.id}" />
+                                <div id="${propertyWrapper}">
                                     <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.PRS_PROP,
                                             ownobj: personInstance,
-                                            custom_props_div: "custom_props_div_${institution.id}",
+                                            propertyWrapper: "${propertyWrapper}",
                                             tenant: institution]}"/>
                                     <asset:script type="text/javascript">
                                         $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
                                         });
                                     </asset:script>
                                 </div>
@@ -470,7 +471,7 @@
                             r2d2.initDynamicSemuiStuff('#addressFormModal');
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                            // ajaxPostFunc()
+                            // JSPC.CB.ajaxPostFunc()
                         }
                     }).modal('show');
                 },

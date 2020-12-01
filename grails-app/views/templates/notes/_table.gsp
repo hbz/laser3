@@ -53,7 +53,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="noteedit(${docctx.owner.id});" class="ui icon button">
+                            <a onclick="JSPC.noteedit(${docctx.owner.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
@@ -70,8 +70,8 @@
 </g:form>
 
 
-<asset:script type="text/javascript">
-    function noteedit(id) {
+<laser:xhrScript>
+    JSPC.noteedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
@@ -84,4 +84,4 @@
             }
         });
     }
-</asset:script>
+</laser:xhrScript>

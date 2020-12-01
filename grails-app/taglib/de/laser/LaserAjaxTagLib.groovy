@@ -86,11 +86,12 @@ class LaserAjaxTagLib {
 
         if (AjaxUtils.isAjaxCall(request)) {
             out << "<script type=\"text/javascript\">"
-            out << "//xhrScript"
-            out << body
+            out << "//xhrScript\n"
+            out << body()
             out << "</script>"
         }
         else {
+            //asset.script([type:"text/javascript"], '//xhrScript\n' + body())
             asset.script([type:"text/javascript"], '//xhrScript\n$(function() { ' + body() + ' });')
         }
     }

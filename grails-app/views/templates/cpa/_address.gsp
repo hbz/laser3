@@ -56,7 +56,7 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
-                    <a class="ui icon button" onclick="editAddress(${address.id});">
+                    <a class="ui icon button" onclick="JSPC.editAddress(${address.id});">
                         <i class="pencil icon"></i>
                     </a>
 
@@ -72,12 +72,12 @@
         </div>
 	</div>
 </g:if>
-<asset:script type="text/javascript">
-    function editAddress(id) {
+<laser:xhrScript>
+    JSPC.editAddress = function (id) {
         var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
-        private_address_modal(url)
+        JSPC.private_address_modal(url)
     }
-    function private_address_modal(url) {
+    JSPC.private_address_modal = function (url) {
         $.ajax({
             url: url,
             success: function(result){
@@ -90,10 +90,10 @@
                         r2d2.initDynamicSemuiStuff('#addressFormModal');
                         r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                        // ajaxPostFunc()
+                        // JSPC.CB.ajaxPostFunc()
                     }
                 }).modal('show');
             }
         });
     }
-</asset:script>
+</laser:xhrScript>

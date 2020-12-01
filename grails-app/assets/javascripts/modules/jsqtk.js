@@ -1,7 +1,7 @@
 
 // modules/jsqtk.js
 
-var jsqtk = {
+jsqtk = {
     result: {},
     keys: [],
     idCounter: 0,
@@ -87,7 +87,7 @@ var jsqtk = {
         })
         jsqtk.keys.push(keys)
 
-        console.group('[jsqtk]')
+        console.group('¯\\_(ツ)_/¯ .. jsqtk')
         console.log('event listeners found overall: ' + evsCounter)
         if (jsqtk.blackList.length > 0) {
             console.log('blacklist: ' + jsqtk.blackList)
@@ -103,7 +103,3 @@ var jsqtk = {
         console.groupEnd()
     }
 }
-
-console.log('[jsqtk] loaded .. use jsqtk.go() / jsqtk.info(jsqtk-id) / jsqtk.history() ')
-
-

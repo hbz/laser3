@@ -115,7 +115,7 @@
                                    onVisible: function () {
                                        r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                        r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-                                       ajaxPostFunc();
+                                       JSPC.CB.ajaxPostFunc();
                                        setupCalendar();
                                        preselectMembers();
                                        },
@@ -148,7 +148,7 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                ajaxPostFunc();
+                                JSPC.CB.ajaxPostFunc();
                                 setupCalendar();
                             },
                             detachable: true,

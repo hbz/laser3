@@ -78,7 +78,7 @@
             <td class="x">
                 <g:if test="${editable && tmplShowDeleteButton}">
 
-                    <button type="button" onclick="editAddress(${address.id})" class="ui icon button">
+                    <button type="button" onclick="JSPC.editAddress(${address.id})" class="ui icon button">
                         <i class="write icon"></i>
                     </button>
                     <g:link class="ui negative button js-open-confirm-modal"
@@ -94,12 +94,12 @@
     </tbody>
 </table>
 
-<asset:script type="text/javascript">
-    function editAddress(id) {
+<laser:xhrScript>
+    JSPC.editAddress = function (id) {
         var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
-        private_address_modal(url)
+        JSPC.private_address_modal(url)
     }
-    function private_address_modal(url) {
+    JSPC.private_address_modal = function (url) {
         $.ajax({
             url: url,
             success: function(result){
@@ -112,10 +112,10 @@
                         r2d2.initDynamicSemuiStuff('#addressFormModal');
                         r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                        // ajaxPostFunc()
+                        // JSPC.CB.ajaxPostFunc()
                     }
                 }).modal('show');
             }
         });
     }
-</asset:script>
+</laser:xhrScript>

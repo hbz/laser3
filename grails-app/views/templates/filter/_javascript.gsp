@@ -1,7 +1,7 @@
 <%@ page import="de.laser.UserSetting" %>
 <g:set var="uri" value="${controllerName}/${actionName}" />
 
-<asset:script type="text/javascript">
+<laser:xhrScript>
     $('.la-js-filterButton').on('click', function(){
         $( ".la-filter").toggle( "fast" );
         $(this).toggleClass("blue");
@@ -17,4 +17,4 @@
             }
         });
     });
-</asset:script>
+</laser:xhrScript>

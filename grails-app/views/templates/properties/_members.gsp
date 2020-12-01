@@ -98,7 +98,7 @@
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
                             <input type="hidden" name="editable"   value="${editable}"/>
-                            <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                            <input type="hidden" name="ownerClass" value="${ownobj?.class?.name}"/>
 
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                         </g:if>

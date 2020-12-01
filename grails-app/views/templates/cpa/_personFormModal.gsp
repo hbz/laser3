@@ -322,20 +322,18 @@
                 <div class="la-inline-lists">
                     <div class="ui card">
                         <div class="content">
-                            <div id="custom_props_div_${contextOrg.id}">
-                                <h5 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h5>
+                            <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+                            <h5 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h5>
+                            <div id="${propertyWrapper}">
                                 <g:render template="/templates/properties/private" model="${[
                                         prop_desc       : PropertyDefinition.PRS_PROP,
                                         ownobj          : personInstance,
-                                        custom_props_div: "custom_props_div_${contextOrg.id}",
+                                        propertyWrapper: "${propertyWrapper}",
                                         tenant          : contextOrg,
                                         withoutRender   : true]}"/>
-                                <script>
-                                        $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajaxJson'
-                                                                               action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
-                                    });
-                                </script>
+                                <laser:xhrScript>
+                                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+                                </laser:xhrScript>
                             </div>
                         </div>
                     </div><!-- .card -->
@@ -344,9 +342,7 @@
         </div>
     </g:if>
 
-    <script>
-
-        $(document).ready(function () {
+    <laser:xhrScript>
             $('#person_form').form({
                 on: 'blur',
                 inline: true,
@@ -366,27 +362,27 @@
 
             tooltip.go()
 
-            var contactElementCount = 0;
-            var addressElementCount = 0;
+            JSPC.addressElementCount = 0;
+            JSPC.contactElementCount = 0;
 
-            var contactContainer = $(document.createElement('div'));
-            $(contactContainer).attr('id', 'contactElementsContainer');
+            JSPC.addressContainer = $(document.createElement('div'));
+            JSPC.contactContainer = $(document.createElement('div'));
 
-            var addressContainer = $(document.createElement('div'));
-            $(addressContainer).attr('id', 'addressElementsContainer');
+            $(JSPC.addressContainer).attr('id', 'addressElementsContainer');
+            $(JSPC.contactContainer).attr('id', 'contactElementsContainer');
 
             $('#addContactElement').click(function () {
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
                     type: "POST",
                     success: function (data) {
-                        if (contactElementCount <= 3) {
+                        if (JSPC.contactElementCount <= 3) {
 
-                            contactElementCount = contactElementCount + 1;
-                            $(contactContainer).append(data);
-                            $('#contactFields').attr('id', 'contactFields' + contactElementCount);
+                            JSPC.contactElementCount = JSPC.contactElementCount + 1;
+                            $(JSPC.contactContainer).append(data);
+                            $('#contactFields').attr('id', 'contactFields' + JSPC.contactElementCount);
 
-                            $('#contactElements').after(contactContainer);
+                            $('#contactElements').after(JSPC.contactContainer);
                         } else {
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
@@ -400,13 +396,13 @@
             });
 
             $('#removeContactElement').click(function () {
-                if (contactElementCount != 0) {
-                    $('#contactFields' + contactElementCount).remove();
-                    contactElementCount = contactElementCount - 1;
+                if (JSPC.contactElementCount != 0) {
+                    $('#contactFields' + JSPC.contactElementCount).remove();
+                    JSPC.contactElementCount = JSPC.contactElementCount - 1;
                 }
 
-                if (contactElementCount == 0) {
-                    $(contactContainer).empty().remove();
+                if (JSPC.contactElementCount == 0) {
+                    $(JSPC.contactContainer).empty().remove();
                     $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });
@@ -416,13 +412,13 @@
                     url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
                     type: "POST",
                     success: function (data) {
-                        if (addressElementCount <= 3) {
+                        if (JSPC.addressElementCount <= 3) {
 
-                            addressElementCount = addressElementCount + 1;
-                            $(addressContainer).append(data);
-                            $('#addressFields').attr('id', 'addressFields' + addressElementCount);
+                            JSPC.addressElementCount = JSPC.addressElementCount + 1;
+                            $(JSPC.addressContainer).append(data);
+                            $('#addressFields').attr('id', 'addressFields' + JSPC.addressElementCount);
 
-                            $('#addressElements').after(addressContainer);
+                            $('#addressElements').after(JSPC.addressContainer);
                         } else {
                             $('#addAddressElement').attr('class', 'ui icon button disable');
                             $('#addAddressElement').attr('disabled', 'disabled');
@@ -436,18 +432,17 @@
             });
 
             $('#removeAddressElement').click(function () {
-                if (addressElementCount != 0) {
-                    $('#addressFields' + addressElementCount).remove();
-                    addressElementCount = addressElementCount - 1;
+                if (JSPC.addressElementCount != 0) {
+                    $('#addressFields' + JSPC.addressElementCount).remove();
+                    JSPC.addressElementCount = JSPC.addressElementCount - 1;
                 }
 
-                if (addressElementCount == 0) {
-                    $(addressContainer).empty().remove();
+                if (JSPC.addressElementCount == 0) {
+                    $(JSPC.addressContainer).empty().remove();
                     $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });
-        });
 
-    </script>
+    </laser:xhrScript>
 
 </semui:modal>
