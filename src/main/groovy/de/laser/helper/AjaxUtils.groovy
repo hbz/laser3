@@ -4,7 +4,11 @@ import javax.servlet.http.HttpServletRequest
 
 class AjaxUtils {
 
-    static boolean isAjaxCall(HttpServletRequest request) {
+    static boolean isXHR(HttpServletRequest request) {
+        request.xhr
+    }
+
+    static boolean isAjax(HttpServletRequest request) {
         request.getRequestURI().startsWith('/ajax')
     }
 }

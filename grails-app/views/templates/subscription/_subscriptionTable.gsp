@@ -101,7 +101,7 @@
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
                                 <%--<div id="${s.id}linkedLicenses">
-                                    <script>
+                                    <laser:xhrScript>
                                         $.ajax({
                                             url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
                                             data: {
@@ -113,7 +113,7 @@
                                                     $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br />');
                                                 });
                                             });
-                                    </script>
+                                    </laser:xhrScript>
                                 </div>--%>
                                 <g:each in="${allLinkedLicenses}" var="row">
                                     <g:if test="${s == row.destinationSubscription}">
