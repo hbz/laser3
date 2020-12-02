@@ -335,6 +335,7 @@ class ChangeNotificationService extends AbstractLockableService {
         }
     }
 
+    @Transactional
     def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
         /*
             decision tree:
@@ -375,8 +376,9 @@ class ChangeNotificationService extends AbstractLockableService {
                 }
                 else if(AuditConfig.getConfig(subscriptionPackage.subscription.instanceOf,msgToken)) {
                     //case two
-                    SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
-                    settingValue = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken }.settingValue
+                    List<RefdataValue> parentSPConfig = PendingChangeConfiguration.executeQuery('select pcc.settingValue from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where sp.subscription.instanceOf = :parent and sp.pkg = :pkg and pcc.settingKey = :msgToken',[parent:subscriptionPackage.subscription.instanceOf,pkg:subscriptionPackage.pkg,msgToken:msgToken])
+                    if(parentSPConfig)
+                        settingValue = parentSPConfig.get(0)
                 }
                 if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
                     //case four, then fallback or explicitly set as such

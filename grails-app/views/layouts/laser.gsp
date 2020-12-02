@@ -406,17 +406,18 @@
                                     </div>
                                 </div>
 
-                                <div class="item" role="menuitem" aria-haspopup="true">
-                                    ${message(code:'menu.admin.syncManagement')}
-                                    <i aria-hidden="true" class="dropdown icon"></i>
-                                    <div class="menu" role="menu">
-                                        <g:link elementId="yoda-globalSync" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
-                                        <g:link elementId="yoda-manageGlobalSources" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
-                                        <g:link elementId="yoda-getTIPPsWithoutGOKBId" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
-                                        <g:link elementId="yoda-getTIsWithoutGOKBId" class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</g:link>
-                                        <g:link elementId="yoda-titlesUpdate" class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</g:link>
-                                    </div>
+                            <div class="item" role="menuitem" aria-haspopup="true">
+                                ${message(code:'menu.admin.syncManagement')}
+                                <i aria-hidden="true" class="dropdown icon"></i>
+                                <div class="menu" role="menu">
+                                    <g:link elementId="yoda-globalSync" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
+                                    <g:link elementId="yoda-globalMultithreadSync" class="item" role="menuitem" controller="yoda" action="globalMultithreadSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync.multithread')}</g:link>
+                                    <g:link elementId="yoda-manageGlobalSources" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
+                                    <g:link elementId="yoda-getTIPPsWithoutGOKBId" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
+                                    <g:link elementId="yoda-getTIsWithoutGOKBId" class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</g:link>
+                                    <g:link elementId="yoda-titlesUpdate" class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</g:link>
                                 </div>
+                            </div>
 
                                 <div class="divider"></div>
 

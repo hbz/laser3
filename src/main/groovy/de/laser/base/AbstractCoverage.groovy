@@ -36,7 +36,7 @@ abstract class AbstractCoverage {
             'endVolume'
     ]
 
-    Set<Map<String,Object>> compareWith(Map<String,Object> covB) {
+    Set<Map<String,Object>> compareWith(covB) {
         Set<Map<String,Object>> diffs = []
         controlledProperties.each { cp ->
             if(cp in ['startDate','endDate']) {

@@ -719,6 +719,15 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def globalMultithreadSync() {
+        log.debug("start global sync ..")
+        globalSourceSyncService.startMultithreadSync()
+        log.debug("done global sync ..")
+
+        redirect controller: 'package'
+    }
+
+    @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
         Map<String, Object> result = [:]
         log.debug("manageGlobalSources ..")
