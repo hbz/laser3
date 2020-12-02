@@ -68,12 +68,12 @@ c3po = {
         }
 
         $(cssId + " .customPropSelect").select2({
-            placeholder: dict.get('property.select.placeholder', JSPC.currLanguage),
+            placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
             minimumInputLength: 0,
             width: 300,
-            formatSearching: function ()           { return dict.get('property.select.searching', JSPC.currLanguage); },
-            formatLoadMore:  function (pageNumber) { return dict.get('property.select.loadMore', JSPC.currLanguage); },
-            formatNoMatches: function ()           { return dict.get('property.select.noMatches', JSPC.currLanguage); },
+            formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
+            formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
+            formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
 
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
                 url: ajaxurl,

@@ -372,7 +372,7 @@
         <pre aria-hidden="true">
 Javascript:
 
-JSPC.CB.modal.show.customerTypeModal = function(trigger) {
+JSPC.callbacks.modal.show.customerTypeModal = function(trigger) {
     $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<strong>attr('data-orgName')</strong>)
     $('#customerTypeModal input[name=target]').attr('value', $(trigger).<strong>attr('data-ctTarget')</strong>)
                 .

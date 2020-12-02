@@ -101,9 +101,13 @@ jsqtk = {
             console.log('- blacklist: ' + jsqtk.blackList)
         }
         if (keys.length > 0) {
-            console.log('- used data-jsqtk-ids: ' + keys)
-            console.log('- doublets found: %o', jsqtk.resultCounter)
-            console.groupCollapsed('- elements with doublets: ' + Object.keys(jsqtk.result).length)
+            let history = []
+            jsqtk.keys.forEach(function(i){ history.push(i.length) })
+
+            console.log('- data-jsqtk-ids in use: ' + keys)
+            console.log('- history of used data-jsqtk-ids: [' + history + ']')
+            console.log('- el doublets found: %o', jsqtk.resultCounter)
+            console.groupCollapsed('- elements with el doublets: ' + Object.keys(jsqtk.result).length)
             keys.forEach(function (k) {
                 console.log(jsqtk.result[k])
             })

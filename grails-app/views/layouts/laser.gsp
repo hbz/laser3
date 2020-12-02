@@ -30,11 +30,11 @@
 
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
 
-    <script>
-        <g:render template="/templates/javascript/laser.js" />%{-- dont move --}%
-        <g:render template="/templates/javascript/dict.js" />%{-- dont move --}%
-    </script>
     <asset:javascript src="base.js"/>%{-- dont move --}%
+    <script>
+        <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
+        <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
+    </script>
 
     <g:layoutHead/>
 

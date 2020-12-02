@@ -16,12 +16,11 @@
 
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 
-    <script>
-        <g:render template="/templates/javascript/laser.js" />%{-- dont move --}%
-        <g:render template="/templates/javascript/dict.js" />%{-- dont move --}%
-    </script>
     <asset:javascript src="base.js"/>%{-- dont move --}%
-
+    <script>
+        <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
+        <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
+    </script>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -43,7 +42,7 @@
 
         <asset:javascript src="laser.js"/>%{-- dont move --}%
 
-        <asset:deferredScripts/>
+        <asset:deferredScripts/>%{-- dont move --}%
 
     </body>
 </html>
