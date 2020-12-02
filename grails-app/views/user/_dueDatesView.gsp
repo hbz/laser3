@@ -21,11 +21,9 @@
             %{--</g:else>--}%
 
     </g:if>
-<asset:script type="text/javascript">
-    $('#noData')
-            .popup()
-    ;
-</asset:script>
+<laser:xhrScript>
+    $('#noData').popup();
+</laser:xhrScript>
 
     <g:if test="${dueDates}">
         <div id="container-table">

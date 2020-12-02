@@ -41,22 +41,21 @@ class ServerCodesController {
                 result.mailString += "Cause: " + root.message + nl
             }
         }
-
-        result
+        render view:'error' , model: result
     }
 
     def forbidden() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        result
+        render view:'forbidden' , model: result
     }
 
     def notFound() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        result
+        render view:'notFound' , model: result
     }
 
     def unavailable() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        result
+        render view:'unavailable' , model: result
     }
 }

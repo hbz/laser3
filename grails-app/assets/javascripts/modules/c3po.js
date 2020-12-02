@@ -2,14 +2,6 @@
 // modules/c3po.js
 
 c3po = {
-    loadJsAfterAjax: function () {
-        console.log('c3po.loadJsAfterAjax() -> DEPRECATED')
-        // r2d2.go();
-        // bb8.go();
-        // tooltip.go();
-        // a11yMenu.go();
-        // a11yIcon.go();
-    },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
     PROP_SEARCH_GROUPED: 'PROP_SEARCH_GROUPED',
@@ -25,9 +17,6 @@ c3po = {
         c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
         c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
-        //Needs to run to make the xEditable visible
-        $(cssId + ' .xEditableValue').editable()
-        $(cssId + ' .xEditableManyToOne').editable()
     },
 
     initGroupedProperties: function (ajaxurl, cssId, tenantId) {
@@ -41,9 +30,6 @@ c3po = {
         c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
         c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
-        //Needs to run to make the xEditable visible
-        $(cssId + ' .xEditableValue').editable()
-        $(cssId + ' .xEditableManyToOne').editable()
     },
 
     refdataCatSearch: function (ajaxurl, cssId) {

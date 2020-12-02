@@ -72,8 +72,7 @@
 
     </g:form>
 </semui:modal>
-<asset:script type="text/javascript">
-    $(document).ready(function(){
+<laser:xhrScript>
         $("#newContact").form({
             on: 'blur',
             inline: true,
@@ -89,5 +88,4 @@
                 }
             }
         });
-    });
-</asset:script>
+</laser:xhrScript>

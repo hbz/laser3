@@ -2,14 +2,15 @@
 // modules/jsqtk.js
 
 jsqtk = {
-    result: {},
-    keys: [],
-    idCounter: 0,
     blackList: [],
+    keys: [],
+    result: {},
+    resultCounter: {},
+    idCounter: 0,
 
-    info: function (jsqtk_id) {
+    info: function (id) {
         console.log('jsqtk.info()')
-        let elem = $('*[data-jsqtk-id="' + jsqtk_id + '"]')
+        let elem = $('*[data-jsqtk-id="jsqtk-' + id + '"]')
 
         if (elem) {
             console.log(elem)
@@ -51,6 +52,9 @@ jsqtk = {
         console.log('jsqtk.go()')
         let evsCounter = 0
 
+        jsqtk.result = {}
+        jsqtk.resultCounter = {}
+
         $.each($('*'), function (i, elem) {
             jsqtk.idCounter = jsqtk.idCounter + 1
 
@@ -74,8 +78,12 @@ jsqtk = {
                             if (!jsqtk.result[jsqtkEid]) {
                                 jsqtk.result[jsqtkEid] = [elem]
                             }
-
                             jsqtk.result[jsqtkEid][ii] = checkList
+
+                            if (!jsqtk.resultCounter[ii]) {
+                                jsqtk.resultCounter[ii] = 0
+                            }
+                            jsqtk.resultCounter[ii]++
                         }
                     }
                 })
@@ -87,19 +95,19 @@ jsqtk = {
         })
         jsqtk.keys.push(keys)
 
-        console.group('¯\\_(ツ)_/¯ .. jsqtk')
-        console.log('event listeners found overall: ' + evsCounter)
+        console.log('¯\\_(ツ)_/¯ .. jsqtk')
+        console.log('- event listeners found overall: ' + evsCounter)
         if (jsqtk.blackList.length > 0) {
-            console.log('blacklist: ' + jsqtk.blackList)
+            console.log('- blacklist: ' + jsqtk.blackList)
         }
         if (keys.length > 0) {
-            console.log('used data-jsqtk-ids: ' + keys)
-            console.groupCollapsed('elements with doublets: ' + Object.keys(jsqtk.result).length)
+            console.log('- used data-jsqtk-ids: ' + keys)
+            console.log('- doublets found: %o', jsqtk.resultCounter)
+            console.groupCollapsed('- elements with doublets: ' + Object.keys(jsqtk.result).length)
             keys.forEach(function (k) {
                 console.log(jsqtk.result[k])
             })
             console.groupEnd()
         }
-        console.groupEnd()
     }
 }

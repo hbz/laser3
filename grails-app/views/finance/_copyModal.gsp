@@ -43,11 +43,5 @@
         </div><!-- .field -->
 
     </g:form>
-
-    <script>
-        JSPC.CB.ajaxPostFunc = function () {
-            console.log("ajaxPostFunc")
-        }
-    </script>
 </semui:modal>
 <!-- _copyModal.gsp -->
