@@ -4,7 +4,7 @@
 tooltip = {
 
     go : function() {
-        console.log('tooltip.go()')
+        // console.log('tooltip.go()')
 
         tooltip.initDynamicPopups('body')
         tooltip.initDynamicAccessViaKeys('body')

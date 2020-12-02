@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.helper.AjaxUtils
 import de.laser.helper.SwissKnife
-import org.springframework.web.util.HtmlUtils
 
 class LaserAjaxTagLib {
 
@@ -84,7 +83,7 @@ class LaserAjaxTagLib {
 
     def xhrScript = { attrs, body ->
 
-        if (AjaxUtils.isAjaxCall(request)) {
+        if (AjaxUtils.isXHR(request)) {
             out << "<script type=\"text/javascript\">"
             out << "//xhrScript\n"
             out << body()

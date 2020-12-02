@@ -49,7 +49,7 @@ jsqtk = {
     },
 
     go: function () {
-        console.log('jsqtk.go()')
+        // console.log('jsqtk.go()')
         let evsCounter = 0
 
         jsqtk.result = {}

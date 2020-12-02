@@ -57,8 +57,7 @@
 
                     <div class="field">
                         <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
-                        <input type="button" class="ui button js-click-control" onclick="window.history.back();" value="${message(code:'default.button.cancel.label')}" />
-                    </div>
+                        <input type="button" class="ui button js-click-control" onclick="JSPC.goBack();" value="${message(code:'default.button.cancel.label')}" />
                     </div>
 
                 </fieldset>

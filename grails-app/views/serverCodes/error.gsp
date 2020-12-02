@@ -39,7 +39,7 @@
 
                 <br />
                 <p>
-                    <button class="ui button" onclick="window.history.back()">${message(code: 'default.button.back')}</button>
+                    <button class="ui button" onclick="JSPC.goBack()">${message(code: 'default.button.back')}</button>
                 </p>
             </div>
         </g:if>

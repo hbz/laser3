@@ -193,7 +193,7 @@
 	</div>
 
 
-	<script>
+	<laser:xhrScript>
 		$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
 			$('.person-role-function-manager .workspace .existing').append(data);
 		});
@@ -217,6 +217,6 @@
 				$('.person-role-responsibility-manager .workspace .adding').append(data);
 			});
 		})
-	</script>
+	</laser:xhrScript>
 
 </div>

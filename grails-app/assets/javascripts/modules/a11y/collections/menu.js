@@ -4,7 +4,7 @@
 a11yMenu = {
 
     go: function () {
-        console.log('a11yMenu.go()')
+        // console.log('a11yMenu.go()')
 
         a11yMenu.initMainMenue()
         a11yMenu.init('body')
