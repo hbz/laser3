@@ -16,5 +16,9 @@ JSPC = {
             }
         },
         ajaxPostFunc : function () { console.log('JSPC.callbacks.ajaxPostFunc - default') }
+    },
+
+    goBack : function() {
+        window.history.back();
     }
 }
