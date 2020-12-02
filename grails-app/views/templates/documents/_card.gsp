@@ -186,11 +186,6 @@
     </semui:card>
 </g:if>
 
-<g:if test="${AjaxUtils.isAjaxCall(request)}">
-    <script>
-        console.log('AjaxCall detected') // TODO: remove
-        r2d2.initDynamicSemuiStuff('#container-documents')
-    </script>
-</g:if>
-
-
+<laser:xhrScript>
+    r2d2.initDynamicSemuiStuff('#container-documents')
+</laser:xhrScript>

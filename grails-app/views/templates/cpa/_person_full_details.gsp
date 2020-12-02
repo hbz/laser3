@@ -15,7 +15,7 @@
 
             <g:if test="${overwriteEditable}">
                         <div class="content la-space-right">
-                        <button class="ui mini icon button" type="button" onclick="editPerson(${person.id})" >
+                        <button class="ui mini icon button" type="button" onclick="JSPC.editPerson(${person.id})" >
                             <i class="write icon"></i>
                         </button>
                         </div>
@@ -63,7 +63,7 @@
                         model.hideType = true%>
                         <input class="ui mini icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
-                               onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
+                               onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>
 
                 </g:if>
@@ -216,13 +216,12 @@
     </g:if>
 </g:if>
 
-<asset:script type="text/javascript">
-        function addresscreate_prs(prsId, typeId, redirect, hideType) {
+<laser:xhrScript>
+        JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            private_address_modal(url);
+            JSPC.private_address_modal(url);
         }
-
-        function private_address_modal(url) {
+        JSPC.private_address_modal = function (url) {
             $.ajax({
                 url: url,
                 success: function(result){
@@ -235,18 +234,18 @@
                             r2d2.initDynamicSemuiStuff('#addressFormModal');
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                            // ajaxPostFunc()
+                            // JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 }
             });
         }
 
-        function editPerson(id) {
+        JSPC.editPerson = function (id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
-            person_editModal(url)
+            JSPC.person_editModal(url)
         }
-        function person_editModal(url) {
+        JSPC.person_editModal = function (url) {
             $.ajax({
                 url: url,
                 success: function(result){
@@ -263,6 +262,6 @@
                 }
             });
         }
-</asset:script>
+</laser:xhrScript>
 
 							

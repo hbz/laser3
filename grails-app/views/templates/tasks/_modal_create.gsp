@@ -193,12 +193,12 @@
 
     </g:form>
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
-        <script>
+        <laser:xhrScript>
             // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
 
-            function showHideRequire (taskType) {
+            JSPC.showHideRequire = function (taskType) {
                 var arr = [ 'license', 'org', 'pkg', 'subscription' ];
                 $('#'+ taskType +'radio').change(function () {
 
@@ -211,33 +211,20 @@
 
                     $(hide).hide();
                     $('#' + taskType + 'div').show();
-                    chooseRequiredDropdown(taskType);
+                    JSPC.chooseRequiredDropdown(taskType);
                 });
             }
-            showHideRequire (
-                'general'
-            );
 
-            showHideRequire (
-                    'license'
-            );
-            showHideRequire (
-                    'pkg'
-            );
-            showHideRequire (
-                    'subscription'
-            );
-            showHideRequire (
-                    'org'
-            );
-
-
-        </script>
+            JSPC.showHideRequire ( 'general' );
+            JSPC.showHideRequire ( 'license' );
+            JSPC.showHideRequire ( 'pkg' );
+            JSPC.showHideRequire ( 'subscription' );
+            JSPC.showHideRequire ( 'org' );
+        </laser:xhrScript>
     </g:if>
-    <script>
+    <laser:xhrScript>
             $("#radioresponsibleOrg").change(function () {
                 $('#radioGroup').find("#responsibleUser").toggle();
-
             });
             $("#radioresponsibleUser").change(function () {
                 $('#radioGroup').find("#responsibleUser").toggle();
@@ -248,13 +235,10 @@
                 $("#responsibleUser").hide();
             }
 
-
-
-        function chooseRequiredDropdown(opt) {
+        JSPC.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
                 $('#create_task')
                     .form({
-
                         inline: true,
                         fields: {
                             title: {
@@ -266,7 +250,6 @@
                                     }
                                 ]
                             },
-
                             endDate: {
                                 identifier: 'endDate',
                                 rules: [
@@ -298,14 +281,9 @@
                     });
             })
         }
-        chooseRequiredDropdown('status.id');
+        JSPC.chooseRequiredDropdown('status.id');
 
-
-
-
-    </script>
-    <script>
-        var ajaxPostFunc = function () {
+        JSPC.callbacks.ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();
@@ -335,7 +313,6 @@
                                 }
                             ]
                         },
-
                         endDate: {
                             identifier: 'endDate',
                             rules: [
@@ -348,6 +325,6 @@
                     }
                 });
         }
-    </script>
+    </laser:xhrScript>
 
 </semui:modal>

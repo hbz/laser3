@@ -43,11 +43,5 @@
         </div><!-- .field -->
 
     </g:form>
-
-    <script>
-        var ajaxPostFunc = function () {
-            console.log("ajaxPostFunc")
-        }
-    </script>
 </semui:modal>
 <!-- _copyModal.gsp -->

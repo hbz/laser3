@@ -1,4 +1,4 @@
-// templates/javascript/_dict.js.gsp
+// templates/javascript/_jspc.dict.js.gsp
 
 <%@ page import="java.util.Locale;java.util.List" %>
 <%
@@ -39,9 +39,9 @@
 
     println """
 
-dict = {
+JSPC.dict = {
     get: function (key, lang) {
-        return dict[key][lang]
+        return JSPC.dict[key][lang]
     },"""
 
     translations.eachWithIndex { it, index ->

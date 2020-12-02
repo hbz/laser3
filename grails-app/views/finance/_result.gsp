@@ -39,7 +39,7 @@
                             <div class="field" style="text-align: right;">
                                 <button id="bulkCostItems-toggle"
                                         class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
-                                <script>
+                                <laser:xhrScript>
                                     $('#bulkCostItems-toggle').on('click', function () {
                                         $('#bulkCostItems').toggleClass('hidden')
                                         if ($('#bulkCostItems').hasClass('hidden')) {
@@ -48,7 +48,7 @@
                                             $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
                                         }
                                     })
-                                </script>
+                                </laser:xhrScript>
                             </div>
 
                             <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
@@ -73,19 +73,19 @@
         </div>
 
     </div>
-    <asset:script type="text/javascript">
-            $(document).ready(function() {
-                var tab = "${showView}";
-                var rawHref = $(".exportCSV").attr("href");
-                var isClicked = false;
-                $("[data-tab='"+tab+"']").addClass("active");
-                $(".exportCSV").attr("href",rawHref+"&showView="+tab);
+    <laser:xhrScript>
+                JSPC.tab = "${showView}";
+                JSPC.rawHref = $(".exportCSV").attr("href");
+                JSPC.isClicked = false;
+
+                $("[data-tab='" + JSPC.tab + "']").addClass("active");
+                $(".exportCSV").attr("href", JSPC.rawHref + "&showView=" + JSPC.tab);
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
-                        $(".exportCSV").attr("href",rawHref+"&showView="+tabPath);
+                        $(".exportCSV").attr("href", JSPC.rawHref + "&showView=" + tabPath);
                         $("#showView").val(tabPath);
                     }
                 });
@@ -94,8 +94,8 @@
                     event.preventDefault();
 
                     // prevent 2 Clicks open 2 Modals
-                    if (!isClicked) {
-                        isClicked = true;
+                    if (! JSPC.isClicked) {
+                        JSPC.isClicked = true;
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty();
                         let preselectedSubscriptions = []
@@ -115,9 +115,9 @@
                                    onVisible: function () {
                                        r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                        r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-                                       ajaxPostFunc();
-                                       setupCalendar();
-                                       preselectMembers();
+                                       JSPC.callbacks.ajaxPostFunc();
+                                       JSPC.setupCalendar();
+                                       JSPC.preselectMembers();
                                        },
                                    detachable: true,
                                    closable: false,
@@ -129,7 +129,7 @@
                             }).modal('show');
                         });
                         setTimeout(function () {
-                            isClicked = false;
+                            JSPC.isClicked = false;
                             }, 800);
                     }
                 });
@@ -148,8 +148,8 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                ajaxPostFunc();
-                                setupCalendar();
+                                JSPC.callbacks.ajaxPostFunc();
+                                JSPC.setupCalendar();
                             },
                             detachable: true,
                             closable: false,
@@ -161,5 +161,4 @@
                         }).modal('show');
                     })
                 });
-            });
-        </asset:script>
+    </laser:xhrScript>

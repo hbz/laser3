@@ -11,7 +11,7 @@
             <div class='errors'>
                 <h3 class="ui header"><g:message code="springSecurity.denied.message" /></h3>
                 <p>
-                    <button class="ui button" onclick="window.history.back()">Zurück</button>
+                    <button class="ui button" onclick="JSPC.goBack()">Zurück</button>
                 </p>
             </div>
         </div>

@@ -34,51 +34,55 @@
         </div>
     </g:form>
 </semui:filter>
-<asset:script type="text/javascript">
-    $(document).ready(function(){
-        var org = false, license = false, subscription = false, pkg = false;
+<laser:xhrScript>
+    JSPC.cfg = {}
+    JSPC.cfg.org = false;
+    JSPC.cfg.lic = false
+    JSPC.cfg.sub = false;
+    JSPC.cfg.pkg = false;
 
-        setupDropdown();
-        function setupDropdown() {
-            $("#docTarget").dropdown({
-               apiSettings: {
-                   url: "<g:createLink controller="ajaxJson" action="lookupCombined"/>?query={query}&org="+org+"&license="+license+"&subscription="+subscription+"&package="+pkg,
-                   cache: false
+    JSPC.setupDropdown = function () {
+        $("#docTarget").dropdown({
+           apiSettings: {
+                url: "<g:createLink controller="ajaxJson" action="lookupCombined"/>?query={query}&org="+ JSPC.cfg.org +"&license="+ JSPC.cfg.lic +"&subscription="+ JSPC.cfg.sub +"&package="+ JSPC.cfg.pkg,
+                cache: false
                },
                clearable: true,
                minCharacters: 0
             });
-        }
+    };
+        
+    JSPC.setupDropdown();
 
         $(".targetList").checkbox({
             onChecked: function() {
                 $("#docTarget").dropdown('destroy');
                 switch($(this).attr("id")){
-                    case "org": org = true;
+                    case "org": JSPC.cfg.org = true;
                     break;
-                    case "license": license = true;
+                    case "license": JSPC.cfg.lic = true;
                     break;
-                    case "subscription": subscription = true;
+                    case "subscription": JSPC.cfg.sub = true;
                     break;
-                    case "pkg": pkg = true;
+                    case "pkg": JSPC.cfg.pkg = true;
                     break;
                 }
-                setupDropdown();
+                JSPC.setupDropdown();
             },
             onUnchecked: function() {
                 $("#docTarget").dropdown('destroy');
                 switch($(this).attr("id")){
-                    case "org": org = false;
+                    case "org": JSPC.cfg.org = false;
                     break;
-                    case "license": license = false;
+                    case "license": JSPC.cfg.lic = false;
                     break;
-                    case "subscription": subscription = false;
+                    case "subscription": JSPC.cfg.sub = false;
                     break;
-                    case "pkg": pkg = false;
+                    case "pkg": JSPC.cfg.pkg = false;
                     break;
                 }
-                setupDropdown();
+                JSPC.setupDropdown();
             }
         });
-    });
-</asset:script>
+
+</laser:xhrScript>

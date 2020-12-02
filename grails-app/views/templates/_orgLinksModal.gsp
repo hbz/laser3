@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
-    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
+    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return JSPC.validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
@@ -42,14 +42,19 @@
 
 </semui:modal>
 
-<asset:script type="text/javascript">
-    var oOrTable;
+<laser:xhrScript>
+    JSPC.oOrTable = null
 
-    $(document).ready(function(){
+    JSPC.validateAddOrgRole = function () {
+      if ( $('#orm_orgRole').val() == '' ) {
+        return confirm("${message(code:'template.orgLinksModal.warn')}");
+      }
+      return true;
+    }
 
-        $('#add_org_head_row').empty()
+    $('#add_org_head_row').empty()
 
-        oOrTable = $('#org_role_tab').dataTable( {
+        JSPC.oOrTable = $('#org_role_tab').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
             "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="allOrgs" params="${[format:'json']}"/>",
@@ -94,15 +99,5 @@
             }
         } );
 
-        oOrTable.fnAdjustColumnSizing();
-
-    });
-
-    function validateAddOrgRole() {
-      if ( $('#orm_orgRole').val() == '' ) {
-        return confirm("${message(code:'template.orgLinksModal.warn')}");
-      }
-      return true;
-    }
-
-</asset:script>
+        JSPC.oOrTable.fnAdjustColumnSizing();
+</laser:xhrScript>

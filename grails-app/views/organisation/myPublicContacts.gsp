@@ -48,7 +48,7 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable}">
-                <a href="#createPersonModal" class="item" data-semui="modal" onclick="personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
+                <a href="#createPersonModal" class="item" data-semui="modal" onclick="JSPC.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
             </g:if><g:else>
             <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
         </g:else>
@@ -193,7 +193,7 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable}">
-                <a href="#addressFormModal" class="item" data-semui="modal" onclick="addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
+                <a href="#addressFormModal" class="item" data-semui="modal" onclick="JSPC.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
             </g:if><g:else>
             <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="address.add.label"/>
@@ -225,11 +225,12 @@
         $('.tabular.menu .item').tab()
     });
 
-    function personCreate(contactFor) {
+    JSPC.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
-        createPersonModal(url)
+        JSPC.createPersonModal(url)
     }
-    function createPersonModal(url) {
+
+    JSPC.createPersonModal = function (url) {
         $.ajax({
             url: url,
             success: function(result){
@@ -247,12 +248,12 @@
         });
     }
 
-    function addresscreate_org(orgId) {
+    JSPC.addresscreate_org = function (orgId) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId;
-            address_modal(url);
+            JSPC.address_modal(url);
     }
 
-    function address_modal(url) {
+    JSPC.address_modal = function (url) {
             $.ajax({
                 url: url,
                 success: function(result){
@@ -265,7 +266,7 @@
                             r2d2.initDynamicSemuiStuff('#addressFormModal');
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                            // ajaxPostFunc()
+                            // JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 }

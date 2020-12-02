@@ -966,7 +966,7 @@ class AjaxController {
                       newProp         : newProp,
                       error           : error,
                       contextOrg      : contextService.getOrg(),
-                      custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
+                      propertyWrapper: "private-property-wrapper-${tenant.id}", // JS markup id
                       prop_desc       : type.descr // form data
               ])
           }
@@ -1282,7 +1282,7 @@ class AjaxController {
             tenant: tenant,
             newProp: property,
             contextOrg: contextService.getOrg(),
-            custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
+            propertyWrapper: "private-property-wrapper-${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
   }

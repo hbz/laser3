@@ -135,11 +135,9 @@
 
 </semui:subNav>
 
-<asset:script type="text/javascript">
-    $(document).ready(function(){
+<laser:xhrScript>
         $(document).on('click','.dropdown .item',function(e){
             $('.ui .item').removeClass('active');
             $(this).addClass('active');
         });
-    });
-</asset:script>
+</laser:xhrScript>

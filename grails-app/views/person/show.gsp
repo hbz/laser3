@@ -129,7 +129,7 @@
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
-                                       onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                       onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >
                             </g:if>
                         </dd>
@@ -354,16 +354,17 @@
                     <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <div id="custom_props_div_${institution.id}">
-                                    <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <g:set var="propertyWrapper" value="private-property-wrapper-${institution.id}" />
+                                <div id="${propertyWrapper}">
                                     <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.PRS_PROP,
                                             ownobj: personInstance,
-                                            custom_props_div: "custom_props_div_${institution.id}",
+                                            propertyWrapper: "${propertyWrapper}",
                                             tenant: institution]}"/>
                                     <asset:script type="text/javascript">
                                         $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
+                                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
                                         });
                                     </asset:script>
                                 </div>
@@ -452,12 +453,12 @@
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
-        function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
+        JSPC.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
-            private_address_modal(url);
+            JSPC.private_address_modal(url);
         }
 
-        function private_address_modal(url) {
+        JSPC.private_address_modal = function(url) {
             $.ajax({
                 url: url,
                 success: function(result){
@@ -470,7 +471,7 @@
                             r2d2.initDynamicSemuiStuff('#addressFormModal');
                             r2d2.initDynamicXEditableStuff('#addressFormModal');
 
-                            // ajaxPostFunc()
+                            // JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 },

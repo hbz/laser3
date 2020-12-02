@@ -122,7 +122,6 @@
         <laser:xhrScript>
             c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
         </laser:xhrScript>
-    %{--</g:if>--}%
 
 </div><!--.card -->
 
@@ -132,34 +131,19 @@
 <div class="ui card la-dl-no-table ">
     <div class="content">
         <h5 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h5>
-        <div id="custom_props_div_${contextOrg.id}">
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <div id="${propertyWrapper}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
-                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                    propertyWrapper: "${propertyWrapper}",
                     tenant: contextOrg]}"/>
 
             <laser:xhrScript>
-               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
+               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
             </laser:xhrScript>
         </div>
     </div>
 </div>
-
-<laser:xhrScript>
-    //workaround for being able to add property values without needing to reload the whole page
-        $("form.properties").on("submit",function(e) {
-            let updateDiv = $(this).parents("div[id~='props']");
-            e.preventDefault();
-            $.ajax({
-                url: $(this).attr('action'),
-                type: "POST",
-                data: $(this).serialize()
-            }).done(function(response) {
-                console.log(updateDiv);
-                $(updateDiv).html(response);
-            });
-        });
-</laser:xhrScript>
 
 <!-- _properties -->

@@ -2,18 +2,22 @@
 // modules/a11y/elements/icon.js
 
 a11yIcon = {
-    configs: {
-    },
-    go: function () {
-        console.log('a11yIcon.go()')
 
-        $('.ui.sortable.table thead .sorted.asc').attr( {
+    go: function () {
+        // console.log('a11yIcon.go()')
+        a11yIcon.init('body')
+    },
+
+    init: function (ctxSel) {
+        console.log('a11yIcon.init(' + ctxSel + ')')
+
+        $(ctxSel + ' .ui.sortable.table thead .sorted.asc').attr( {
             'aria-sort' : 'ascending'
         });
-        $('.ui.sortable.table thead .sorted.desc').attr( {
+        $(ctxSel + ' .ui.sortable.table thead .sorted.desc').attr( {
             'aria-sort' : 'descending'
         });
-        $('i.icon').attr( {
+        $(ctxSel + ' i.icon').attr( {
             'aria-hidden' : 'true'
         });
     }

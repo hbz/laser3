@@ -341,7 +341,7 @@
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <a onclick="taskcreate();" class="ui icon button">
+                        <a onclick="JSPC.taskcreate();" class="ui icon button">
                             ${message(code:'task.create.new')}
                         </a>
                     </div>
@@ -365,7 +365,7 @@
                             <div class="meta">
                                 <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
                             </div>
-                            <a class="header" onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+                            <a class="header" onclick="JSPC.taskedit(${tsk?.id});">${tsk?.title}</a>
 
                             <div class="description">
                                 <g:if test="${tsk.description}">
@@ -429,7 +429,7 @@
         </div>
 
     <asset:script type="text/javascript">
-        function taskcreate() {
+        JSPC.taskcreate = function() {
 
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="createTask"/>',
@@ -443,13 +443,13 @@
                             r2d2.initDynamicSemuiStuff('#modalCreateTask');
                             r2d2.initDynamicXEditableStuff('#modalCreateTask');
 
-                            ajaxPostFunc()
+                            JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 }
             });
         }
-        function taskedit(id) {
+        JSPC.taskedit = function(id) {
 
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
@@ -463,14 +463,13 @@
                             r2d2.initDynamicSemuiStuff('#modalEditTask');
                             r2d2.initDynamicXEditableStuff('#modalEditTask');
 
-                            ajaxPostFunc()
+                            JSPC.callbacks.ajaxPostFunc()
                         }
                     }).modal('show');
                 }
             });
         }
-    </asset:script>
-        <asset:script type="text/javascript">
+
             $(document).ready( function(){
                 $('.tabular.menu .item').tab();
                 /* $('.item .widget-content').readmore({
@@ -487,7 +486,8 @@
 
 
             })
-        </asset:script>
+    </asset:script>
+
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>

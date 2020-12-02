@@ -1,5 +1,5 @@
-<asset:script type="text/javascript">
-    function taskedit(id) {
+<laser:xhrScript>
+    JSPC.taskedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
@@ -10,10 +10,10 @@
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                            ajaxPostFunc();
+                            JSPC.callbacks.ajaxPostFunc();
                     }
                 }).modal('show');
             }
         });
     }
-</asset:script>
+</laser:xhrScript>

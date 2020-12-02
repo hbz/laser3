@@ -172,11 +172,11 @@
 
     </g:form>
 
-    <script>
+    <laser:xhrScript>
 
-        var costItemElementConfigurations = ${raw(orgConfigurations as String)};
-        console.log(costItemElementConfigurations);
-        var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+        JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
+        console.log(JSPC.costItemElementConfigurations);
+        JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
         $("#newCostInBillingCurrency").change(function(){
             var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
@@ -186,25 +186,25 @@
         });
 
         $("#costButton1").click(function () {
-            if (!isError("#newCostInBillingCurrency") && !isError("#newCostCurrencyRate")) {
+            if (! JSPC.isError("#newCostInBillingCurrency") && ! JSPC.isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
+                var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val());
+                input.val(JSPC.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
 
                 $(".la-account-currency").find(".field").removeClass("error");
-                calcTaxResults()
+                JSPC.calcTaxResults()
             }
         });
 
 
         $("#newCostItemElement").change(function () {
-            if (typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
-                $("[name='ciec']").dropdown('set selected', costItemElementConfigurations[$(this).val()]);
+            if (typeof(JSPC.costItemElementConfigurations[$(this).val()]) !== 'undefined')
+                $("[name='ciec']").dropdown('set selected', JSPC.costItemElementConfigurations[$(this).val()]);
             else
                 $("[name='ciec']").dropdown('set selected', 'null');
         });
-        var isError = function (cssSel) {
+        JSPC.isError = function (cssSel) {
             if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
                 $(".la-account-currency").children(".field").removeClass("error");
                 $(cssSel).parent(".field").addClass("error");
@@ -214,24 +214,24 @@
         };
 
         $('.calc').on('change', function () {
-            calcTaxResults()
+            JSPC.calcTaxResults()
         });
 
-        var calcTaxResults = function () {
+        JSPC.calcTaxResults = function () {
             var roundF = $('*[name=newFinalCostRounding]').prop('checked');
             console.log($("*[name=newTaxRate]").val());
             var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
+            var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val());
 
             $('#newCostInBillingCurrencyAfterTax').val(
-                roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
+                roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
             );
         };
 
-        var costElems = $("#newCostInBillingCurrency");
+        JSPC.costElems = $("#newCostInBillingCurrency");
 
-        costElems.on('change', function () {
+        JSPC.costElems.on('change', function () {
             if($("[name='newCostCurrency']").val() != 0) {
                 $("#newCostCurrency").parent(".field").removeClass("error");
             }
@@ -252,7 +252,7 @@
         });
 
 
-        function convertDouble(input) {
+        JSPC.convertDouble = function (input) {
             //console.log("input: "+input+", typeof: "+typeof(input));
             var output;
             //determine locale from server
@@ -281,7 +281,7 @@
             return output;
         }
 
-    </script>
+    </laser:xhrScript>
 
 </semui:modal>
 <!-- _ajaxModal.gsp -->

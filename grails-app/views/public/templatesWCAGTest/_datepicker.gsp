@@ -8,26 +8,24 @@
     </div>
 </g:form>
 
-<asset:script type="text/javascript">
-        $(document).ready(function(){
-              // initialize the form and fields
-              $('.ui.form')
-              .form();
-            var val = "${params.dateBeforeFilter}";
-            if(val == "null"){
-                $(".dateBefore").addClass("hidden");
-            }else{
-                $(".dateBefore").removeClass("hidden");
-            }
-        });
+<laser:xhrScript>
+    // initialize the form and fields
+    $('.ui.form').form();
+    var val = "${params.dateBeforeFilter}";
 
-        $("[name='dateBeforeFilter']").change(function(){
-            var val = $(this)['context']['selectedOptions'][0]['label'];
+    if(val == "null"){
+        $(".dateBefore").addClass("hidden");
+    } else {
+        $(".dateBefore").removeClass("hidden");
+    }
 
-            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
-                $(".dateBefore").removeClass("hidden");
-            }else{
-                $(".dateBefore").addClass("hidden");
-            }
-        })
-</asset:script>
+    $("[name='dateBeforeFilter']").change(function(){
+        var val = $(this)['context']['selectedOptions'][0]['label'];
+
+        if (val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+            $(".dateBefore").removeClass("hidden");
+        } else {
+            $(".dateBefore").addClass("hidden");
+        }
+    })
+</laser:xhrScript>

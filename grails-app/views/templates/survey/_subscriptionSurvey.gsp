@@ -270,7 +270,7 @@
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
                             class="ui button blue">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
-                    <script>
+                    <laser:xhrScript>
                         $('#subscription-info-toggle').on('click', function () {
                             $("#subscription-info").transition('slide down');
                             if ($("#subscription-info").hasClass('visible')) {
@@ -279,7 +279,7 @@
                                 $(this).html('Lizenzinformationen ausblenden <i class="ui angle double up icon"></i>')
                             }
                         })
-                    </script>
+                    </laser:xhrScript>
                 </div>
 
             </div>
@@ -449,7 +449,7 @@
                                                     <g:if test="${pair.propertySet}">
                                                         <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
                                                             <i class="ui angle double down icon"></i></button>
-                                                        <asset:script type="text/javascript">
+                                                        <laser:xhrScript>
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
@@ -460,7 +460,7 @@
                                                             $(this).html('<i class="ui angle double up icon"></i>')
                                                         }
                                                     })
-                                                        </asset:script>
+                                                        </laser:xhrScript>
                                                     </g:if>
                                                 </td>
                                             </tr>
@@ -1096,7 +1096,7 @@
     <br />
 </g:if>
 
-<asset:script type="text/javascript">
+<laser:xhrScript>
                                    $('body #participation').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
@@ -1132,4 +1132,4 @@
        </g:each>
     </g:if>
 
-</asset:script>
+</laser:xhrScript>

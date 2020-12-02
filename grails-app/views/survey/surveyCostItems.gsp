@@ -445,11 +445,11 @@ function addForAllSurveyCostItem(orgsIDs) {
 
 <script>
 
-    var costItemElementConfigurations = ${raw(orgConfigurations as String)};
+    JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
 
-    var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+    JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
-    var isError = function (cssSel) {
+    JSPC.isError = function (cssSel) {
         if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
             $(".la-account-currency").children(".field").removeClass("error");
             $(cssSel).parent(".field").addClass("error");
@@ -459,26 +459,26 @@ function addForAllSurveyCostItem(orgsIDs) {
     };
 
     $('.calc').on('change', function () {
-        calcTaxResults()
+        JSPC.calcTaxResults()
     });
 
-    var calcTaxResults = function () {
+    JSPC.calcTaxResults = function () {
         var roundF = $('*[name=newFinalCostRounding2]').prop('checked');
         console.log($("*[name=newTaxRate2]").val());
         var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
 
-        var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
+        var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
 
 
         $('#newCostInBillingCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
+            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
         );
 
     };
 
-    var costElems = $("#newCostInBillingCurrency2");
+    JSPC.costElems = $("#newCostInBillingCurrency2");
 
-    costElems.on('change', function () {
+    JSPC.costElems.on('change', function () {
         if ($("[name='newCostCurrency2']").val() != 0) {
             $("#newCostCurrency2").parent(".field").removeClass("error");
         } else {
@@ -486,7 +486,7 @@ function addForAllSurveyCostItem(orgsIDs) {
         }
     });
 
-    function convertDouble(input) {
+    JSPC.convertDouble = function (input) {
         console.log("input: " + input + ", typeof: " + typeof (input))
         var output;
         //determine locale from server

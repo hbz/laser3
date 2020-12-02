@@ -514,13 +514,13 @@
                         <g:checkBox type="text" id="selectedPackage_${org.id + it.pkg.id}"
                                     name="selectedPackage_${org.id + it.pkg.id}" value="1"
                                     checked="false"
-                                    onclick="checkselectedPackage(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
+                                    onclick="JSPC.checkselectedPackage(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
                     </g:each>
                     </td>
                     <td><g:each in="${subInstance?.packages}">
                         <g:checkBox type="text" id="selectedIssueEntitlement_${org.id + it.pkg.id}"
                                     name="selectedIssueEntitlement_${org.id + it.pkg.id}" value="1" checked="false"
-                                    onclick="checkselectedIssueEntitlement(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
+                                    onclick="JSPC.checkselectedIssueEntitlement(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
                     </g:each>
                     </td>
                 </g:if><g:else>
@@ -682,13 +682,13 @@
                                 (${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notimeShort'))})
                             </g:if>
 
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
+                            <g:link onclick="JSPC.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
+                            <g:link onclick="JSPC.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
@@ -755,7 +755,7 @@
 </table>
 
 <g:if test="${tmplShowCheckbox}">
-    <script>
+    <laser:xhrScript>
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
@@ -765,13 +765,12 @@
         })
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
 
-        function checkselectedIssueEntitlement(selectedid) {
+        JSPC.checkselectedIssueEntitlement = function (selectedid) {
             if ($('#selectedIssueEntitlement_' + selectedid).prop('checked')) {
                 $('#selectedPackage_' + selectedid).prop('checked', false);
             }
         }
-
-        function checkselectedPackage(selectedid) {
+        JSPC.checkselectedPackage = function (selectedid) {
             if ($('#selectedPackage_' + selectedid).prop('checked')) {
                 $('#selectedIssueEntitlement_' + selectedid).prop('checked', false);
             }
@@ -779,12 +778,11 @@
         }
 
         </g:if>
-
-    </script>
+    </laser:xhrScript>
 
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-    <asset:script type="text/javascript">
+    <laser:xhrScript>
    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();
 
@@ -799,8 +797,8 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                ajaxPostFunc();
-                                setupCalendar();
+                                JSPC.callbacks.ajaxPostFunc();
+                                JSPC.setupCalendar();
                             },
                             detachable: true,
                             closable: false,
@@ -813,7 +811,7 @@
                     })
                 });
 
-        function addEditSurveyCostItem(id, surveyConfigID, participant, costItem) {
+        JSPC.addEditSurveyCostItem = function (id, surveyConfigID, participant, costItem) {
             event.preventDefault();
             $.ajax({
                 url: "<g:createLink controller='survey' action='editSurveyCostItem'/>",
@@ -843,6 +841,6 @@
             })
         };
 
-    </asset:script>
+    </laser:xhrScript>
 </g:if>
 

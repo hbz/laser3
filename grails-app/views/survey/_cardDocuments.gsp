@@ -95,13 +95,6 @@
               model="${[ownobj: ownobj , owntp: 'surveyConfig']}"/>
 </g:if>
 
-<script>
-    $(document).ready(function () {
-        if (r2d2) {
-            r2d2.initDynamicSemuiStuff('#container-documents');
-        }
-
-
-    });
-
-</script>
+<laser:xhrScript>
+    r2d2.initDynamicSemuiStuff('#container-documents')
+</laser:xhrScript>
