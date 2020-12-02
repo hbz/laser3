@@ -4,8 +4,7 @@
 a11yIcon = {
 
     go: function () {
-        console.log('a11yIcon.go()')
-
+        // console.log('a11yIcon.go()')
         a11yIcon.init('body')
     },
 

@@ -81,7 +81,7 @@ r2d2 = {
     },
 
     go : function() {
-        console.log('r2d2.go()')
+        // console.log('r2d2.go()')
 
         r2d2.initGlobalAjaxLogin();
 
@@ -92,8 +92,6 @@ r2d2 = {
         r2d2.initDynamicXEditableStuff('body');
 
         $("html").css("cursor", "auto");
-
-        console.log("r2d2 - JSPC.gsp.locale: " + JSPC.gsp.locale + ", JSPC.gsp.dateFormat: " + JSPC.gsp.dateFormat);
     },
 
     initGlobalAjaxLogin : function() {
