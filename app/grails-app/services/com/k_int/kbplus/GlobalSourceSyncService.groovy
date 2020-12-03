@@ -816,7 +816,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(providerOAI) {
             GPathResult providerRecord = providerOAI.record.metadata.gokb.org
             log.info("provider record loaded, converting XML record and reconciling title record for UUID ${providerUUID} ...")
-            Org.withTransaction {
+            Org.withTransaction { TransactionStatus ts ->
                 Org provider = Org.findByGokbId(providerUUID)
                 if(provider) {
                     provider.name = providerRecord.name.text()
@@ -842,6 +842,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             platform.save()
                         }
                     }
+                    ts.flush()
                 }
                 else throw new SyncException(provider.errors)
             }
@@ -894,7 +895,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     void createOrUpdatePlatform(Map<String,String> platformParams) throws SyncException {
-        Platform.withTransaction {
+        Platform.withTransaction { TransactionStatus ts ->
             Platform platform = Platform.findByGokbId(platformParams.gokbId)
             if(platform) {
                 platform.name = platformParams.name
@@ -910,6 +911,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(!platform.save()) {
                 throw new SyncException("Error on saving platform: ${platform.errors}")
             }
+            ts.flush()
         }
     }
 
