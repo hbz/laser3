@@ -2389,12 +2389,12 @@ class SubscriptionControllerService {
         if (!params.id && params.subscription) {
             result.subscription = Subscription.get(params.subscription)
         }
-        result.subscriptionConsortia = result.subscription.getConsortia()
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
+        result.institution = result.subscription ? result.subscription?.subscriber : result.contextOrg //TODO temp, remove the duplicate
 
         if (result.subscription) {
+            result.subscriptionConsortia = result.subscription.getConsortia()
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
             result.hasPrevious = links.prevLink.size() > 0

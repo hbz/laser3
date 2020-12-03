@@ -5337,8 +5337,8 @@ aside.ui.accordion .title:not(.ui) {
 .ui.secondary.buttons .button,
 .ui.secondary.button {
   background-color: #fa820a;
-  color: #FFFFFF;
-  text-shadow: none;
+  color: #1B1C1D;
+  text-shadow: #1B1C1D;
   background-image: none;
 }
 
@@ -5350,22 +5350,22 @@ aside.ui.accordion .title:not(.ui) {
 .ui.secondary.buttons .button:hover,
 .ui.secondary.button:hover {
   background-color: #ff8f1f;
-  color: #FFFFFF;
-  text-shadow: none;
+  color: #1B1C1D;
+  text-shadow: #1B1C1D;
 }
 
 .ui.secondary.buttons .button:focus,
 .ui.secondary.button:focus {
   background-color: #ff962e;
-  color: #FFFFFF;
-  text-shadow: none;
+  color: #1B1C1D;
+  text-shadow: #1B1C1D;
 }
 
 .ui.secondary.buttons .button:active,
 .ui.secondary.button:active {
   background-color: #fb9b3c;
-  color: #FFFFFF;
-  text-shadow: none;
+  color: #1B1C1D;
+  text-shadow: #1B1C1D;
 }
 
 .ui.secondary.buttons .active.button,
@@ -5373,8 +5373,8 @@ aside.ui.accordion .title:not(.ui) {
 .ui.secondary.active.button,
 .ui.secondary.button .active.button:active {
   background-color: #ff8f1f;
-  color: #FFFFFF;
-  text-shadow: none;
+  color: #1B1C1D;
+  text-shadow: #1B1C1D;
 }
 
 /* Basic */
@@ -14133,15 +14133,15 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.input > input::-moz-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 /*******************************
@@ -14226,17 +14226,17 @@ img.ui.bordered.image {
 
 .ui.input.focus > input::-webkit-input-placeholder,
 .ui.input > input:focus::-webkit-input-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: white;
 }
 
 .ui.input.focus > input::-moz-placeholder,
 .ui.input > input:focus::-moz-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: white;
 }
 
 .ui.input.focus > input:-ms-input-placeholder,
 .ui.input > input:focus:-ms-input-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: white;
 }
 
 /*--------------------
@@ -19296,10 +19296,6 @@ dd {
   font-size: 1.07142857rem!important;
 }
 
-.la-filter .ui.selection.dropdown {
-  color: #FFFFFF;
-}
-
 .la-filter .ui.form .field > label {
   color: #FFFFFF;
 }
@@ -19330,7 +19326,9 @@ dd {
   background: #004678 !important;
 }
 
-.ui.selection.dropdown.la-filter-dropdown-selected {
+.ui.selection.dropdown.la-filter-dropdown-selected,
+.ui.selection.dropdown.la-filter-selected {
+  color: white;
   background: #004678 !important;
   border: 1px solid #FFFFFF;
 }
@@ -20505,15 +20503,15 @@ dd {
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.form :-ms-input-placeholder {
-  color: rgba(115, 115, 115, 0.87) !important;
+  color: rgba(64, 64, 64, 0.87) !important;
 }
 
 .ui.form ::-moz-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.form :focus::-webkit-input-placeholder {
@@ -29755,7 +29753,7 @@ a.ui.card:hover,
 /* definition list in cards */
 
 .control-label {
-  color: gray;
+  color: #4f4f4f;
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: .9rem;
@@ -33780,7 +33778,7 @@ select.ui.dropdown {
 }
 
 .ui.active.search.dropdown input.search:focus + .text {
-  color: rgba(64, 64, 64, 0.87) !important;
+  color: white !important;
 }
 
 /* Search Menu */
@@ -34048,12 +34046,12 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,
 .ui.default.dropdown:not(.button) > input:focus ~ .text {
-  color: rgba(64, 64, 64, 0.87);
+  color: white;
 }
 
 /*--------------------

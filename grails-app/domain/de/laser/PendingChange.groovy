@@ -125,12 +125,22 @@ class PendingChange {
      */
     static PendingChange construct(Map<String,Object> configMap) throws CreationException {
         if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem)) {
-            PendingChange pc = new PendingChange()
+            PendingChange pc
             if(configMap.prop) {
-                executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.targetProperty = :prop',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,prop:configMap.prop])
+                Map<String,Object> changeParams = [target:configMap.target,oid:configMap.oid,prop:configMap.prop]
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.targetProperty = :prop',changeParams+[processed:[RDStore.PENDING_CHANGE_ACCEPTED,RDStore.PENDING_CHANGE_PENDING]])
+                if(pendingChangeCheck)
+                    return pendingChangeCheck[0]
+                else pc = new PendingChange()
+                executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.targetProperty = :prop',changeParams+[superseded:RDStore.PENDING_CHANGE_SUPERSEDED])
             }
             else {
-                executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.msgToken = :msgToken',[superseded:RDStore.PENDING_CHANGE_SUPERSEDED,target:configMap.target,oid:configMap.oid,msgToken:configMap.msgToken])
+                Map<String,Object> changeParams = [target:configMap.target,oid:configMap.oid,msgToken:configMap.msgToken]
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.msgToken = :msgToken',changeParams+[processed:[RDStore.PENDING_CHANGE_ACCEPTED,RDStore.PENDING_CHANGE_PENDING]])
+                if(pendingChangeCheck)
+                    return pendingChangeCheck[0]
+                else pc = new PendingChange()
+                executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.oid = :oid and pc.msgToken = :msgToken',changeParams+[superseded:RDStore.PENDING_CHANGE_SUPERSEDED])
             }
             if(configMap.target instanceof Subscription)
                 pc.subscription = (Subscription) configMap.target

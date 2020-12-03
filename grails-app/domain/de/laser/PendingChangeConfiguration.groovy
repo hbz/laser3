@@ -7,8 +7,6 @@ import de.laser.annotations.RefdataAnnotation
 
 class PendingChangeConfiguration {
 
-    def messageSource
-
     static final String NEW_TITLE = "pendingChange.message_TP01"
     static final String TITLE_UPDATED = "pendingChange.message_TP02"
     static final String TITLE_DELETED = "pendingChange.message_TP03"

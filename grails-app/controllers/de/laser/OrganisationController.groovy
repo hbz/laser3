@@ -1447,7 +1447,7 @@ class OrganisationController  {
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
-                    isEditable = false
+                    isEditable = user.hasRole('ROLE_YODA')
                 }
                 break
             case 'show':
@@ -1463,17 +1463,17 @@ class OrganisationController  {
                     switch (contextOrg.getCustomerType()){
                         case 'ORG_BASIC_MEMBER':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = false; break
-                                case 'ORG_INST':            isEditable = false; break
-                                case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = false; break
+                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
+                                default:                    isEditable = user.hasRole('ROLE_YODA'); break
                             }
                             break
                         case 'ORG_INST':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = false; break
-                                case 'ORG_INST':            isEditable = false; break
-                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
@@ -1481,7 +1481,7 @@ class OrganisationController  {
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
                                 case 'ORG_INST':            isEditable = userHasEditableRights; break
-                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
