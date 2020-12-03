@@ -11,4 +11,14 @@ class DevController  {
         Map<String, Object> result = [test:123]
         result
     }
+
+    @Secured(['ROLE_ADMIN'])
+    def jse() {
+        if (params.xhr) {
+            render template: 'jse_xhr'
+        }
+        else {
+            render view: 'jse'
+        }
+    }
 }
