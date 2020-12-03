@@ -14,7 +14,10 @@ class DevController  {
 
     @Secured(['ROLE_ADMIN'])
     def jse() {
-        if (params.xhr) {
+        if (params.xhr_full) {
+            render template: 'jse_xhr_full'
+        }
+        else if (params.xhr) {
             render template: 'jse_xhr'
         }
         else {
