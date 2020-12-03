@@ -48,6 +48,22 @@
                       data-update="jse_xhr"
     >XHR</laser:remoteLink>
 
-    <div id="jse_xhr"></div>
+    <div id="jse_xhr">
+    &nbsp;
+    </div>
+
+    <laser:remoteLink class="ui icon positive button" role="button"
+                      controller="dev" action="jse" params="[xhr_full:true]"
+                      data-before="console.log('-- XHR_full CALL --')"
+                      data-update="jse_xhr_full"
+    >XHR full</laser:remoteLink>
+
+    <div id="jse_xhr_full">
+    &nbsp;
+    </div>
+
+    <laser:xhrScript>
+        console.log('laser:xhrScript @ body > 9')
+    </laser:xhrScript>
 </body>
 </html>

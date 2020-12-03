@@ -1,5 +1,6 @@
 package de.laser
 
+import asset.pipeline.grails.AssetsTagLib
 import de.laser.helper.AjaxUtils
 import de.laser.helper.SwissKnife
 
@@ -88,13 +89,32 @@ class LaserAjaxTagLib {
 
         if (AjaxUtils.isXHR(request)) {
             out << "<script type=\"text/javascript\">"
-            out << "//xhrScript\n"
+            out << "//xhrScript\n\$(function() { "
             out << body()
-            out << "</script>"
+            out << "});</script>"
         }
         else {
             //asset.script([type:"text/javascript"], '//xhrScript\n' + body())
             asset.script([type:"text/javascript"], '//xhrScript\n$(function() { ' + body() + ' });')
         }
+    }
+
+    // instead of AssetsTagLib.deferredScripts ..
+    // in progress .. DO NOT USE
+
+    def deferredScripts = {attrs ->
+        def assetBlocks = request.getAttribute('assetScriptBlocks')
+        if (!assetBlocks) {
+            return
+        }
+
+        out << "<script type=\"text/javascript\">\n "
+
+        assetBlocks.each {assetBlock ->
+            out << "\n // -- new script ${assetBlock.attrs} \n"
+            out << assetBlock.body
+        }
+
+        out << " \n</script>"
     }
 }

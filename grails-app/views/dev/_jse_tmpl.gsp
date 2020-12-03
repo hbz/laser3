@@ -15,4 +15,8 @@
             console.log('[TMPL_${pos}] asset:script + $(doc).rdy() @ body > 8')
         })
     </asset:script>
+
+    <laser:xhrScript>
+        console.log('[TMPL_${pos}] laser:xhrScript @ body > 9')
+    </laser:xhrScript>
 </div>
