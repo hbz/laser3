@@ -20,7 +20,6 @@ a11yMenu = {
 
         // for Main Menu
         $(ctxSel + ' .ui.dropdown').dropdown({
-            action: 'nothing',
             selectOnKeydown: false,
             on: 'hover',
             onHide: function() {
