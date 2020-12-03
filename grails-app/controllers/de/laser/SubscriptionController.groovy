@@ -867,7 +867,7 @@ class SubscriptionController {
     Map renewEntitlements() {
         params.id = params.targetObjectId
         params.sourceObjectId = genericOIDService.resolveOID(params.targetObjectId)?.instanceOf?.id
-        Map result = copyElementsService.loadDataFor_PackagesEntitlements()
+        //Map result = copyElementsService.loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
     }

@@ -46,6 +46,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -1476,34 +1477,36 @@ join sub.orgRelations or_sub where
         out.close()
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processFinanceImport() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        CommonsMultipartFile tsvFile = params.tsvFile
-        if(tsvFile && tsvFile.size > 0) {
-            String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-            if(encoding == "UTF-8") {
-                result.filename = tsvFile.originalFilename
-                Map<String,Map> financialData = financeService.financeImport(tsvFile)
-                result.candidates = financialData.candidates
-                result.budgetCodes = financialData.budgetCodes
-                result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
-                                         'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
-                                         'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                         'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
-                render view: 'postProcessingFinanceImport', model: result
+        CostItem.withTransaction { TransactionStatus ts ->
+            Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+            MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
+            if(tsvFile && tsvFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+                if(encoding == "UTF-8") {
+                    result.filename = tsvFile.originalFilename
+                    Map<String,Map> financialData = financeService.financeImport(tsvFile)
+                    result.candidates = financialData.candidates
+                    result.budgetCodes = financialData.budgetCodes
+                    result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
+                                             'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
+                                             'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
+                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
+                    render view: 'postProcessingFinanceImport', model: result
+                }
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                    redirect(url: request.getHeader('referer'))
+                }
             }
             else {
-                flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                flash.error = message(code:'default.import.error.noFileProvided')
                 redirect(url: request.getHeader('referer'))
             }
-        }
-        else {
-            flash.error = message(code:'default.import.error.noFileProvided')
-            redirect(url: request.getHeader('referer'))
         }
     }
 
@@ -1518,37 +1521,40 @@ join sub.orgRelations or_sub where
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        CommonsMultipartFile tsvFile = params.tsvFile
-        if(tsvFile && tsvFile.size > 0) {
-            String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-            log.debug(Charset.defaultCharset())
-            if(encoding == "UTF-8") {
-                result.filename = tsvFile.originalFilename
-                Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
-                if(subscriptionData.globalErrors) {
-                    flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
-                    redirect(action: 'subscriptionImport')
+        Subscription.withTransaction { TransactionStatus ts ->
+            Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+            CommonsMultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
+            if(tsvFile && tsvFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+                log.debug(Charset.defaultCharset())
+                if(encoding == "UTF-8") {
+                    result.filename = tsvFile.originalFilename
+                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
+                    if(subscriptionData.globalErrors) {
+                        flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
+                        redirect(action: 'subscriptionImport')
+                    }
+                    result.candidates = subscriptionData.candidates
+                    result.parentSubType = subscriptionData.parentSubType
+                    result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
+                    render view: 'postProcessingSubscriptionImport', model: result
                 }
-                result.candidates = subscriptionData.candidates
-                result.parentSubType = subscriptionData.parentSubType
-                result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
-                render view: 'postProcessingSubscriptionImport', model: result
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                    redirect(url: request.getHeader('referer'))
+                }
             }
             else {
-                flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                flash.error = message(code:'default.import.error.noFileProvided')
                 redirect(url: request.getHeader('referer'))
             }
         }
-        else {
-            flash.error = message(code:'default.import.error.noFileProvided')
-            redirect(url: request.getHeader('referer'))
-        }
+
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")

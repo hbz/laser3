@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      13.11.2020  rc1.6   1.6.5       Moe     Bug         Titelumfrage für Teilnehmer wird nicht angezeigt
+
+--      13.11.2020  rc1.6   1.6.5       Moe     Bug         Beim Import von Kbart-File werden Zahlen nicht richtig übernommen (Probleme beim Anreicherung von PriceItems)
+
+2978    04.11.2020  rc1.6   1.6.5       Andreas Bug         falsche Berechtigungsprüfung in Lizenztabelle unter "Meine Lizenzen"
+
 --      03.11.2020  rc1.6   1.6.3       Moe     Bug         Lizenzen werden für Vollnutzer nicht als Lokal Lizenz geflagt
 
 --      03.11.2020  rc1.6   1.6.3       Moe     Bug         Lizenzen werden bei Verlängerungsumfrage nicht "zentral verhandelt" gesetzt

@@ -63,24 +63,11 @@
             </tbody>
           </table>
 
-          <g:form action="processFinanceImport" method="post" enctype="multipart/form-data">
-            <dl>
-              <div class="field">
-                <dt>${message(code:'myinst.financeImport.upload')}</dt>
-                <dd>
-                  <input type="file" name="tsvFile" />
-                </dd>
-              </div>
-              <%-- <div class="field">
-                <dt>Dry Run</dt>
-                <dt>${message(code:'myinst.financeImport.dryrun', default:'Dry Run')}</dt>
-                <dd>
-                  <input class="ui button" type="checkbox" name="dryRun" checked value="true" />
-                </dd>
-              </div> --%>
-              <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload")}</button>
-            </dl>
-          </g:form>
+          <g:uploadForm action="processFinanceImport" method="POST">
+              <label for="tsvFile">${message(code:'myinst.financeImport.upload')}</label>
+              <input class="ui input" type="file" name="tsvFile" id="tsvFile"/>
+              <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
+          </g:uploadForm>
 
   </body>
 </html>
