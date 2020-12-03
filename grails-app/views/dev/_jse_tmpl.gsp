@@ -12,7 +12,7 @@
     </asset:script>
     <asset:script type="text/javascript">
         $(function(){
-            console.log('[TMPL_${pos}] asset:script + $(doc).rdy() @ body > 7')
+            console.log('[TMPL_${pos}] asset:script + $(doc).rdy() @ body > 8')
         })
     </asset:script>
 </div>

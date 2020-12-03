@@ -36,7 +36,7 @@
     </asset:script>
     <asset:script type="text/javascript">
         $(function(){
-            console.log('asset:script + $(doc).rdy() @ body > 7')
+            console.log('asset:script + $(doc).rdy() @ body > 8')
         })
     </asset:script>
 

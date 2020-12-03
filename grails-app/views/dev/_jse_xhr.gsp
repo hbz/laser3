@@ -33,7 +33,7 @@
     </asset:script>
     <asset:script type="text/javascript">
         $(function(){
-            console.log('[XHR] asset:script + $(doc).rdy() @ body > 7')
+            console.log('[XHR] asset:script + $(doc).rdy() @ body > 8')
         })
     </asset:script>
     <p><strong>SUCCESS</strong></p>
