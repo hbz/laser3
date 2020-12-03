@@ -315,24 +315,24 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     Org getLicensingConsortium() {
         orgRelations.find { OrgRole or ->
             or.roleType == RDStore.OR_LICENSING_CONSORTIUM
-        }.org
+        }?.org
     }
 
     Org getLicensor() {
         orgRelations.find { OrgRole or ->
             or.roleType == RDStore.OR_LICENSOR
-        }.org
+        }?.org
     }
 
     Org getLicensee() {
         orgRelations.find { OrgRole or ->
             or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
-        }.org
+        }?.org
     }
     List<Org> getAllLicensee() {
         orgRelations.findAll { OrgRole or ->
             or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
-        }.collect { OrgRole or -> or.org }
+        }?.collect { OrgRole or -> or.org }
   }
 
     DocContext getNote(String domain) {

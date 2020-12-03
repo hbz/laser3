@@ -22,29 +22,14 @@ class LinksGenerationService {
     ContextService contextService
 
     LinkedHashMap<String,List> generateNavigation(context) {
-        List prevLink = []
-        List nextLink = []
-        List previous = Links.executeQuery('select li from Links li where :context in (li.sourceLicense,li.sourceSubscription) and linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS])
-        List next = Links.executeQuery('select li from Links li where :context in (li.destinationLicense,li.destinationSubscription) and linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS])
-        if(previous.size() > 0) {
-            previous.each { Links li ->
-                def obj
-                if(li.destinationLicense)
-                    obj = li.destinationLicense
-                else if(li.destinationSubscription)
-                    obj = li.destinationSubscription
-                prevLink.add(obj)
-            }
+        List prevLink = [], nextLink = []
+        if(context instanceof Subscription) {
+            prevLink.addAll(Links.executeQuery('select li.destinationSubscription from Links li where li.sourceSubscription = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
+            nextLink.addAll(Links.executeQuery('select li.sourceSubscription from Links li where li.destinationSubscription = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
         }
-        if(next.size() > 0) {
-            next.each { Links li ->
-                def obj
-                if(li.sourceLicense)
-                    obj = li.sourceLicense
-                else if(li.sourceSubscription)
-                    obj = li.sourceSubscription
-                nextLink.add(obj)
-            }
+        else if(context instanceof License) {
+            prevLink.addAll(Links.executeQuery('select li.destinationLicense from Links li where li.sourceLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
+            nextLink.addAll(Links.executeQuery('select li.sourceLicense from Links li where li.destinationLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
         }
         return [prevLink:prevLink,nextLink:nextLink]
     }
