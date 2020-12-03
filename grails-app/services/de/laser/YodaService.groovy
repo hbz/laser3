@@ -25,7 +25,6 @@ import org.springframework.transaction.TransactionStatus
 //@Transactional
 class YodaService {
 
-    def sessionRegistry = Holders.grailsApplication.mainContext.getBean('sessionRegistry')
     def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
     GlobalSourceSyncService globalSourceSyncService = Holders.grailsApplication.mainContext.getBean('globalSourceSyncService')
     DeletionService deletionService

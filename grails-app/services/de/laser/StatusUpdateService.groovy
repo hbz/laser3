@@ -8,6 +8,7 @@ import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.Session
+import org.springframework.transaction.TransactionStatus
 
 @Transactional
 class StatusUpdateService extends AbstractLockableService {
@@ -296,8 +297,8 @@ class StatusUpdateService extends AbstractLockableService {
         Package pkg = Package.findByGokbId(packageUUID)
         Set<SubscriptionPackage> allSPs = SubscriptionPackage.findAllByPkg(pkg)
         //Set<SubscriptionPackage> allSPs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.subscription.status = :status and sp.pkg = :pkg and sp.subscription.instanceOf is null',[status:RDStore.SUBSCRIPTION_CURRENT,pkg:pkg]) //activate for debugging
-        allSPs.each { SubscriptionPackage sp ->
-            SubscriptionPackage.withNewSession { Session sess ->
+        SubscriptionPackage.withTransaction { TransactionStatus stat ->
+            allSPs.each { SubscriptionPackage sp ->
                 //for session refresh
                 Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :deleted and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,deleted:RDStore.TIPP_STATUS_DELETED])
                 //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
@@ -374,7 +375,7 @@ class StatusUpdateService extends AbstractLockableService {
                     log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
                     changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
                 }
-                sess.flush()
+                stat.flush()
                 //sess.clear()
                 // //propertyInstanceMap.get().clear()
             }
