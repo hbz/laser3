@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -48,9 +48,10 @@
                             break
                         case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
                             break
-                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).collect { it -> it.getI10n('value') })
+                        //as of December 3rd '20, Micha said that no reverse charge should be made possible by tax type in order to avoid confusion with users of the interface
+                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).minus(RDStore.TAX_REVERSE_CHARGE).collect { it -> it.getI10n('value') })
                             break
-                        case 'taxRate': args.addAll([0,7,19])
+                        case 'taxRate': args.addAll([0,5,7,16,19])
                             break
                     }
                 %>
