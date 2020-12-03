@@ -34,7 +34,7 @@ class EscapeService {
     }
 
     BigDecimal parseFinancialValue(String input) {
-        String uniformedThousandSeparator = input.replaceAll("[',.]/d{3}","")
+        String uniformedThousandSeparator = input.replaceAll('(.|,)(\\d{3})', '$2')
         BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
         output
     }

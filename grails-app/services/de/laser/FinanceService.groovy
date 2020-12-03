@@ -24,6 +24,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.NumberFormat
@@ -834,7 +835,7 @@ class FinanceService {
      * @param tsvFile - the input file
      * @return a {@link Map} with the data red off
      */
-    Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
+    Map<String,Map> financeImport(MultipartFile tsvFile) {
         Org contextOrg = contextService.getOrg()
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
@@ -1176,7 +1177,7 @@ class FinanceService {
             taxKey(nullable: true, blank: false) -> to combination of tax type and tax rate
              */
             if(colMap.taxType != null && colMap.taxRate != null) {
-                String taxTypeKey = cols[colMap.taxType]
+                String taxTypeKey = cols[colMap.taxType].toLowerCase()
                 int taxRate
                 try {
                     taxRate = Integer.parseInt(cols[colMap.taxRate])
@@ -1207,6 +1208,8 @@ class FinanceService {
                             case RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                                 break
                             case RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                                break
+                            case RefdataValue.getByValueAndCategory('reverse charge', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                                 break
                             default: mappingErrorBag.invalidTaxType = true
                                 break
@@ -1372,7 +1375,7 @@ class FinanceService {
                 }
             }
         }
-        if(result.errors.size() > 0)
+        if(result.errors)
             [result:result,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
     }
