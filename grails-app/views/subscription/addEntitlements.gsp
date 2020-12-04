@@ -416,9 +416,29 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 </g:form>
 
-<asset:script type="text/javascript">
+<laser:script>
 
-     $(document).ready(function() {
+    JSPC.selectAll = function () {
+        $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+        JSPC.updateSelectionCache("all",$('#select-all').prop('checked'));
+    }
+
+    JSPC.updateSelectionCache = function (index,checked) {
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="updateChecked" />",
+                data: {
+                    sub: ${subscription.id},
+                    index: index,
+                    referer: "${actionName}",
+                    checked: checked
+                }
+            }).done(function(result){
+
+            }).fail(function(xhr,status,message){
+                console.log("error occurred, consult logs!");
+            });
+    }
+
       $("simpleHiddenRefdata").editable({
         url: function(params) {
           var hidden_field_id = $(this).data('hidden-id');
@@ -428,7 +448,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
       });
 
     $(".bulkcheck").change(function() {
-        updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
+        JSPC.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
     });
 
     $(".ieOverwrite td").click(function() {
@@ -452,30 +472,9 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             console.log("error occurred, consult logs!");
         });
     });
-     });
 
 
-    function selectAll() {
-      $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
-      updateSelectionCache("all",$('#select-all').prop('checked'));
-    }
-
-    function updateSelectionCache(index,checked) {
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="updateChecked" />",
-            data: {
-                sub: ${subscription.id},
-                index: index,
-                referer: "${actionName}",
-                checked: checked
-            }
-        }).done(function(result){
-
-        }).fail(function(xhr,status,message){
-            console.log("error occurred, consult logs!");
-        });
-    }
-</asset:script>
+</laser:script>
 
 </body>
 </html>

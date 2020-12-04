@@ -212,10 +212,10 @@
     </g:form>
 </semui:modal>
 
-<asset:script type="text/javascript">
+<laser:script>
 
 $('#pd_descr').change(function() {
-$('#cust_prop_modal_select').trigger('change');
+    $('#cust_prop_modal_select').trigger('change');
 });
 
 $('#cust_prop_modal_select').change(function() {
@@ -264,6 +264,7 @@ return {results: data.values};
 }
 }
 });
+
 $(".la-popup").popup({
 });
-</asset:script>
+</laser:script>

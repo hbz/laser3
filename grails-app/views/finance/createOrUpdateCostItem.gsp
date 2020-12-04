@@ -132,16 +132,16 @@
     </div>
   </body>
 
-  <asset:script type="text/javascript">
+  <laser:script>
 
-    function filtersUpdated() {
+    JSPC.filtersUpdated = function () {
       $('#newInvoiceNumber').val($('#filterInvoiceNumber').val());
       $('#newOrderNumber').val($('#filterOrderNumber').val());
       $('#newSubscription').val($('#filterSubscription').val());
       $('#newPackage').val($('#filterPackage').val());
     }
 
-    function filterSubUpdated() {
+    JSPC.filterSubUpdated = function () {
       // Fetch packages for the selected subscription
       var selectedSub = $('#filterSubscription').val();
 
@@ -163,11 +163,8 @@
         }
       });
 
-
-      filtersUpdated();
+      JSPC.filtersUpdated();
     }
-
-  $(document).ready(function() {
 
     $("#newIE").select2({
       placeholder: "Identifier..",
@@ -194,9 +191,6 @@
       language:"${message(code:'default.locale.label')}",
       autoclose:true
     });
-  });
 
-
-
-  </asset:script>
+  </laser:script>
 </html>

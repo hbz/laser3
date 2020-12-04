@@ -244,7 +244,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
+<laser:script>
         $('#membersListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
@@ -255,10 +255,10 @@
         });
 
       $('.unlinkPackages').on('click',function() {
-          unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
+          JSPC.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
       });
 
-      function unlinkPackage(pkg_id, subscriptionID){
+      JSPC.unlinkPackage = function (pkg_id, subscriptionID) {
 
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionID+"&package="+pkg_id
 
@@ -269,8 +269,7 @@
           }
         });
       }
-
-</asset:script>
+</laser:script>
 
 </body>
 </html>

@@ -501,13 +501,12 @@
 
 </body>
 </html>
-<asset:script type="text/javascript">
+<laser:script>
     $('#country').on('save', function(e, params) {
-        showRegionsdropdown(params.newValue);
+        JSPC.showRegionsdropdown(params.newValue);
     });
 
-
-    function showRegionsdropdown(newValue) {
+    JSPC.showRegionsdropdown = function (newValue) {
         $("*[id^=regions_]").hide();
         if(newValue){
             var id = newValue.split(':')[1]
@@ -516,20 +515,16 @@
         }
     };
 
-    $(document).ready(function(){
-        var country = $("#country").editable('getValue', true);
-        showRegionsdropdown(country);
-    });
-        function addresscreate_org(orgId, typeId, redirect, hideType) {
+        JSPC.addresscreate_org = function (orgId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            private_address_modal(url);
+            JSPC.private_address_modal(url);
         }
-        function addresscreate_prs(prsId, typeId, redirect, hideType) {
+        JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            private_address_modal(url);
+            JSPC.private_address_modal(url);
         }
 
-        function private_address_modal(url) {
+        JSPC.private_address_modal = function (url) {
             $.ajax({
                 url: url,
                 success: function(result){
@@ -548,6 +543,9 @@
                 }
             });
         }
+
+        JSPC.showRegionsdropdown( $("#country").editable('getValue', true) );
+
 <g:if test="${isProviderOrAgency}">
     JSPC.personCreate = function(contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml"
@@ -572,4 +570,4 @@
         });
     }
 </g:if>
-</asset:script>
+</laser:script>

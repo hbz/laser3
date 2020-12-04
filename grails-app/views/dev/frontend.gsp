@@ -457,18 +457,15 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
 
-        <pre aria-hidden="true">
-            &ltr:require module="chartist" /&gt;
+        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/>&ltasset:javascript src="chartist.js"/>
         </pre>
 
     </div>
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Chartis-Objekt mit Javascript aufrufen innerhalb r:script</div>
-        <pre aria-hidden="true"> &ltr:script /&gt;
-        </pre>
-        <pre aria-hidden="true">    new Chartist.Line('.ct-chart', data);
-        </pre>
-        <pre aria-hidden="true">&lt/r:script&gt;
+        <pre aria-hidden="true">        &ltscript&gt;
+                new Chartist.Line('.ct-chart', data);
+        &lt/script&gt;
         </pre>
     </div>
     <div class="html ui top attached segment example">
