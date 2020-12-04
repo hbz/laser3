@@ -698,10 +698,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
+<laser:script>
 
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
@@ -711,7 +708,7 @@
         }
     });
 
-    function formatDate(input) {
+    JSPC.formatDate = function (input) {
         if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
             var inArr = input.split(/[\.\/-]/g);
             return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
@@ -723,8 +720,8 @@
 
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
         if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
-            var startDate = Date.parse(formatDate($("#valid_from").val()));
-            var endDate = Date.parse(formatDate($("#valid_to").val()));
+            var startDate = Date.parse(JSPC.formatDate($("#valid_from").val()));
+            var endDate = Date.parse(JSPC.formatDate($("#valid_to").val()));
             return (startDate < endDate);
         }
         else return true;
@@ -754,7 +751,9 @@
             }
         }
     });
-</asset:script>
+
+    $('.tabular.menu .item').tab()
+</laser:script>
 
 </body>
 </html>

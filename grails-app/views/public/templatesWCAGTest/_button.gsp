@@ -80,23 +80,23 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <asset:script type="text/javascript">
+                        <laser:script>
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
                             $('.la-js-editmode-icon').addClass('thumbtack');
                             $('.meinToggleButton').attr('data-content','Wert wird vererbt');
-                        </asset:script>
+                        </laser:script>
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <asset:script type="text/javascript">
+                            <laser:script>
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');
                                 $('.la-js-editmode-icon').removeClass('thumbtack');
                                 $('.meinToggleButton').attr('data-content','Wert nicht wird vererbt');
-                            </asset:script>
+                            </laser:script>
                         </g:if>
                     </g:else>
                     <g:set var="test" value='true' />

@@ -78,7 +78,7 @@
         </g:form>
     </semui:form>
 
-<asset:script type="text/javascript">
+<laser:script>
     $('.license-results input[type="radio"]').click(function () {
         $('.license-options').slideDown('fast');
     });
@@ -90,7 +90,7 @@
         })
     });
 
-    function formatDate(input) {
+    JSPC.formatDate = function (input) {
         if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
             var inArr = input.split(/[\.\/-]/g);
             return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
@@ -102,8 +102,8 @@
     }
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
                 if($("#licenseStartDate").val() !== '' && $("#licenseEndDate").val() !== '') {
-                    var startDate = Date.parse(formatDate($("#licenseStartDate").val()));
-                    var endDate = Date.parse(formatDate($("#licenseEndDate").val()));
+                    var startDate = Date.parse(JSPC.formatDate($("#licenseStartDate").val()));
+                    var endDate = Date.parse(JSPC.formatDate($("#licenseEndDate").val()));
                     return (startDate < endDate);
                 }
                 else return true;
@@ -150,7 +150,7 @@
                             }
                          }
                     });
-</asset:script>
+</laser:script>
 
 </body>
 </html>

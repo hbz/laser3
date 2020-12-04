@@ -115,8 +115,8 @@
 
 
 
-<asset:script type="text/javascript">
-        function chooseRequiredDropdown(opt) {
+<laser:script>
+        JSPC.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
                 $('#create_task')
                     .form({
@@ -155,5 +155,5 @@
                     });
             })
         }
-        chooseRequiredDropdown('status.id');
-</asset:script>
+        JSPC.chooseRequiredDropdown('status.id');
+</laser:script>

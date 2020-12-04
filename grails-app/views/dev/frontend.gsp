@@ -457,7 +457,7 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
 
-        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/>&ltasset:javascript src="chartist.js"/>
+        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/&gt;&ltasset:javascript src="chartist.js"/&gt;
         </pre>
 
     </div>

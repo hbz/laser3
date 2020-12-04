@@ -284,7 +284,7 @@
                     <tr>
                         <g:if test="${editable}">
                             <th>
-                                <input id="select-all" type="checkbox" name="chkall" onClick="selectAll()"/>
+                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.selectAll()"/>
                             </th>
                             <th colspan="2">
                                 <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
@@ -353,7 +353,7 @@
 
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
-                                        type="submit" onClick="return confirmSubmit()"
+                                        type="submit" onClick="return JSPC.confirmSubmit()"
                                         class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
                                 </button>
 
@@ -534,24 +534,21 @@
 </div>
 
 
-<asset:script type="text/javascript">
-      function hideModal(){
+<laser:script>
+      JSPC.hideModal = function () {
         $("[name='coreAssertionEdit']").modal('hide');
       }
-
-      function showCoreAssertionModal(){
-
+      JSPC.showCoreAssertionModal = function () {
         $("[name='coreAssertionEdit']").modal('show');
-
       }
 
       <g:if test="${editable}">
 
-    function selectAll() {
+    JSPC.selectAll = function () {
       $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
     }
 
-    function confirmSubmit() {
+    JSPC.confirmSubmit = function () {
       if ( $('#bulkOperationSelect').val() === 'remove' ) {
         var agree=confirm('${message(code: 'default.continue.confirm')}');
           if (agree)
@@ -562,26 +559,18 @@
       }
 </g:if>
 
-    <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() {
-        document.body.style.background = "#fcf8e3";
-      });</g:if>
-
-    $('.la-books.icon')
-      .popup({
+    $('.la-books.icon').popup({
         delay: {
             show: 150,
             hide: 0
         }
       });
-
-    $('.la-notebook.icon')
-      .popup({
+    $('.la-notebook.icon').popup({
         delay: {
             show: 150,
             hide: 0
         }
       });
-
     $('.trigger-modal').on('click', function(e) {
             e.preventDefault();
 
@@ -609,6 +598,8 @@
                 }).modal('show');
             })
         })
-</asset:script>
+
+    <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
+</laser:script>
 </body>
 </html>
