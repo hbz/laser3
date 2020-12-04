@@ -395,14 +395,9 @@
 
     <div id="magicArea"></div>
 
-    <asset:script type="text/javascript">
-      $(document).ready(function() {
+    <laser:script>
 
-          loadLinks();
-          loadLicenses();
-          loadPackages();
-
-          function unlinkPackage(pkg_id){
+          JSPC.unlinkPackage = function(pkg_id) {
             var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscription.id])}&package="+pkg_id
 
             $.ajax({url: req_url,
@@ -414,7 +409,7 @@
               }
             });
           }
-          function loadLinks() {
+          JSPC.loadLinks = function () {
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                   data: {
@@ -425,7 +420,7 @@
                   r2d2.initDynamicSemuiStuff('#links');
               })
           }
-          function loadLicenses() {
+          JSPC.loadLicenses = function () {
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                   data: {
@@ -437,7 +432,7 @@
                   r2d2.initDynamicSemuiStuff("#licenses");
               })
           }
-          function loadPackages() {
+          JSPC.loadPackages = function () {
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getPackageData" />",
                   data: {
@@ -448,7 +443,10 @@
                   r2d2.initDynamicSemuiStuff("#packages");
               })
           }
-      })
-    </asset:script>
+
+          JSPC.loadLinks();
+          JSPC.loadLicenses();
+          JSPC.loadPackages();
+    </laser:script>
   </body>
 </html>

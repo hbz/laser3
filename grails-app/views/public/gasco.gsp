@@ -89,10 +89,8 @@
             <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
         </div>
     </div>
-    <asset:script type="text/javascript">
-        $(document).ready(function() {
-
-            function toggleFilterPart() {
+    <laser:script>
+            JSPC.toggleFilterPart = function () {
                 if ($('.js-consortiallicence input').prop('checked')) {
                     $('#js-consotial-authority .dropdown').removeClass('disabled')
                     $('#js-consotial-authority select').removeAttr('disabled')
@@ -101,7 +99,7 @@
                     $('#js-consotial-authority select').attr('disabled', 'disabled')
                 }
             }
-            function toggleTableHeading() {
+            JSPC.toggleTableHeading = function () {
                 if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -110,15 +108,15 @@
                     $('#js-consortium-header').show()
                 }
             }
-            toggleFilterPart()
-            $('.js-nationallicence').on('click', toggleFilterPart)
-            $('.js-alliancelicence').on('click', toggleFilterPart)
-            $('.js-consortiallicence').on('click', toggleFilterPart)
-            toggleTableHeading()
-            $('.ui secondary button').on('click', toggleTableHeading)
+            JSPC.toggleFilterPart()
+            $('.js-nationallicence').on('click', JSPC.toggleFilterPart)
+            $('.js-alliancelicence').on('click', JSPC.toggleFilterPart)
+            $('.js-consortiallicence').on('click', JSPC.toggleFilterPart)
+            JSPC.toggleTableHeading()
+            $('.ui secondary button').on('click', JSPC.toggleTableHeading)
 
-        });
-    </asset:script>
+    </laser:script>
+
     <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">

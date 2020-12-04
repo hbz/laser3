@@ -65,18 +65,18 @@
         </g:if>
     </body>
 </html>
-<asset:script type="text/javascript">
-    $(document).ready(function() {
+<laser:script>
+
         $("#username").keyup(function() {
-            checkUsername();
+            JSPC.checkUsername();
         });
 
         $(".validateNotEmpty").keyup(function(){
             if($(this).val().length === 0) {
-                addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+                JSPC.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
             }
             else {
-                removeError($(this),$("#"+$(this).attr("id")+"Error"));
+                JSPC.removeError($(this),$("#"+$(this).attr("id")+"Error"));
             }
         });
 
@@ -85,32 +85,32 @@
             e.preventDefault();
             $(".validateNotEmpty").each(function(k) {
                 if($(this).val().length === 0) {
-                    addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+                    JSPC.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
                 }
             });
-            checkUsername();
+            JSPC.checkUsername();
             if($(".error").length === 0)
                 $(this).unbind('submit').submit();
         });
 
-        function checkUsername() {
+        JSPC.checkUsername = function () {
             $.ajax({
                 url: "<g:createLink controller="ajaxJson" action="checkExistingUser" />",
                 data: {input: $("#username").val()},
                 method: 'POST'
             }).done(function(response){
                 if(response.result) {
-                    addError($("#username"),"<span id=\"usernameError\"><g:message code="user.not.created.message"/></span>");
+                    JSPC.addError($("#username"),"<span id=\"usernameError\"><g:message code="user.not.created.message"/></span>");
                 }
                 else if($("#username").val().length > 0) {
-                    removeError($("#username"),$("#usernameError"));
+                    JSPC.removeError($("#username"),$("#usernameError"));
                 }
             }).fail(function(request,status,error){
                 console.log("Error occurred, verify logs: "+status+", error: "+error);
             });
         }
 
-        function addError(element,errorMessage) {
+        JSPC.addError = function (element,errorMessage) {
             if($("#"+element.attr("id")+"Error").length === 0) {
                 element.after(errorMessage);
                 element.parent("div").addClass("error");
@@ -118,11 +118,10 @@
             }
         }
 
-        function removeError(element,errorSpan) {
+        JSPC.removeError = function (element,errorSpan) {
             errorSpan.remove();
             element.parent("div").removeClass("error");
             if($(".error").length === 0)
                 $("#userSubmit").removeAttr("disabled");
         }
-    });
-</asset:script>
+</laser:script>

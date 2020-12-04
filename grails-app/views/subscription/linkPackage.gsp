@@ -229,8 +229,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
-
+<laser:script>
       JSPC.unlinkPackage = function (pkg_id){
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 
@@ -247,9 +246,8 @@
         $('#durationAlert').toggle();
       }
 
-      $(document).ready(function () {
-        $(".packageLink").click(function(evt) {
 
+        $(".packageLink").click(function(evt) {
             evt.preventDefault();
 
             var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
@@ -261,7 +259,6 @@
         });
 
         $(".packageLinkWithoutIE").click(function(evt) {
-
             evt.preventDefault();
 
             var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm')}');
@@ -271,8 +268,7 @@
                 window.open($(this).attr('href'), "_self");
             }
         });
-      });
-</asset:script>
+</laser:script>
 <!-- ES Query String: ${es_query} -->
 </body>
 </html>

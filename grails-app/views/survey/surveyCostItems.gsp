@@ -107,14 +107,14 @@
             <div class="four wide column">
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">
-                    <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
+                    <g:link onclick="JSPC.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </g:link>
                 </g:if>
 
                 <g:if test="${params.tab == 'selectedParticipants'}">
-                    <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
+                    <g:link onclick="JSPC.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </g:link>
@@ -396,16 +396,16 @@
     <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
 </g:else>
 
-<asset:script type="text/javascript">
+<laser:script>
 
-var isClicked = false;
+JSPC.isClicked = false;
 
-function addForAllSurveyCostItem(orgsIDs) {
+JSPC.addForAllSurveyCostItem = function(orgsIDs) {
                         event.preventDefault();
 
                         // prevent 2 Clicks open 2 Modals
-                        if (!isClicked) {
-                            isClicked = true;
+                        if (!JSPC.isClicked) {
+                            JSPC.isClicked = true;
                             $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
                             $('#dynamicModalContainer').empty()
 
@@ -436,14 +436,10 @@ function addForAllSurveyCostItem(orgsIDs) {
                                 }).modal('show');
                             })
                             setTimeout(function () {
-                                isClicked = false;
+                                JSPC.isClicked = false;
                             }, 800);
                         }
                     }
-
-</asset:script>
-
-<laser:script>
 
     JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
 

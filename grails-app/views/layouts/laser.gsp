@@ -675,8 +675,7 @@
         %{-- decksaver --}%
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
-            <asset:script type="text/javascript">
-
+            <laser:script>
                 <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                     <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
                         deckSaver.configs.editMode  = true;
@@ -689,11 +688,9 @@
                     deckSaver.configs.editMode  = false;
                 </g:else>
 
-                $(document).ready(function() {
-                    deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';
-                    deckSaver.go();
-                })
-            </asset:script>
+                deckSaver.configs.ajaxUrl = '<g:createLink controller="ajax" action="toggleEditMode"/>';
+                deckSaver.go();
+            </laser:script>
         </g:if>
 
         %{-- maintenance --}%
