@@ -102,7 +102,7 @@ class AjaxHtmlController {
         if(configMap.groupOptions)
             result.growth = reportingService.generateGrowth(configMap)
         result.requestObject = configMap.requestParam
-        log.debug(result)
+        log.debug(result.toMapString())
         render view: '/reporting/_generalGraphs', model: result
     }
 
@@ -118,7 +118,7 @@ class AjaxHtmlController {
             result.entry = entry
             result.displayConfig = options.displayConfiguration
         }
-        log.debug(result)
+        log.debug(result.toMapString())
         render view: '/reporting/_subscriptionGraphs', model: result
     }
 
