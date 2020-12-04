@@ -88,7 +88,9 @@ class Identifier implements CalculatedLastUpdated {
         Object reference    = map.get('reference')
         def namespace       = map.get('namespace')
         String nsType       = map.get('nsType')
-        boolean isUnique    = map.containsKey('isUnique') && map.get('isUnique') == false
+        boolean isUnique    = true
+        if(map.containsKey('isUnique') && map.get('isUnique') == false)
+            isUnique = false
 
         IdentifierNamespace ns
 		if (namespace instanceof IdentifierNamespace) {
