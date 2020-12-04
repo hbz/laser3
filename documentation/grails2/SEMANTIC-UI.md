@@ -35,7 +35,6 @@ But:
     
   
 
-Our custom themes and the default theme override the *.less in 'src/definitions'. The folder 'src/side' is not used yet.
 
  
     
@@ -43,6 +42,9 @@ Our custom themes and the default theme override the *.less in 'src/definitions'
 
 
 # How to customize CSS
+
+Our custom themes and the default theme override the *.less in 'src/definitions'. The folder 'src/side' is not used yet.
+
 
 ## Theming
 
