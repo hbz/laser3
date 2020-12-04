@@ -611,9 +611,9 @@ class OrganisationController  {
         result.missing = [:]
 
         if(result.inContextOrg && result.institution.eInvoice) {
-            if(!institution.eInvoicePortal)
+            if(!result.institution.eInvoicePortal)
                 result.missing.eInvoicePortal = message(code: 'org.eInvoice.info.missing.eInvoicePortal')
-            if(!institution.getLeitID())
+            if(!result.institution.getLeitID())
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
