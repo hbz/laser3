@@ -74,13 +74,13 @@
     </g:form>
 </semui:form>
 
-<script>
+<laser:script>
         $('#subSurveyUseForTransfer').click(function () {
             if ($(this).prop('checked')) {
                 $('#mandatory').prop('checked', true)
             }
         })
-</script>
+</laser:script>
 
 </body>
 </html>

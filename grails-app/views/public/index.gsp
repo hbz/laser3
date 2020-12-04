@@ -155,9 +155,7 @@
 </div>
 
 
-    <script>
-        $(document)
-            .ready(function () {
+    <laser:script>
                 // fix menu when passed
                 $('.masthead')
                     .visibility({
@@ -175,9 +173,7 @@
                 $('.ui.sidebar')
                     .sidebar('attach events', '.toc.item')
                 ;
-            })
-        ;
-    </script>
+    </laser:script>
 
 </body>
 </html>

@@ -264,7 +264,7 @@
     </table>
 </div>
 
-<laser:xhrScript>
+<laser:script>
     $("simpleHiddenRefdata").editable({
         url: function(params) {
             var hidden_field_id = $(this).data('hidden-id');
@@ -272,4 +272,4 @@
             // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
         }
     });
-</laser:xhrScript>
+</laser:script>

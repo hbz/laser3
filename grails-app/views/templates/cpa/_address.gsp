@@ -72,7 +72,7 @@
         </div>
 	</div>
 </g:if>
-<laser:xhrScript>
+<laser:script>
     JSPC.editAddress = function (id) {
         var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
         JSPC.private_address_modal(url)
@@ -96,4 +96,4 @@
             }
         });
     }
-</laser:xhrScript>
+</laser:script>

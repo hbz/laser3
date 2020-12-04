@@ -17,13 +17,13 @@
     <div class="ui la-float-right">
         <g:select name="archive" id="archive" class="ui dropdown"
                   from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
-        <script>
+        <laser:script>
             $('#archive').on('change', function() {
                 var selection = $(this).val()
                 var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
                 window.location.href = link
             })
-        </script>
+        </laser:script>
     </div>
 
     <div class="ui secondary pointing tabular menu">

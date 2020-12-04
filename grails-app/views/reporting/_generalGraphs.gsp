@@ -18,8 +18,8 @@
     </div>
 
     <g:applyCodec encodeAs="none">
-        <script>
-            $(document).ready(function(){
+        <laser:script>
+            JSPC.genGraph = function() {
                 let result = ${graph};
                 let labels = [];
                 let seriesObj = {};
@@ -53,7 +53,9 @@
                     $(this).parent("div").hide();
                     $('.generalLoadingParam[data-display="${key}"]').removeClass('red');
                 });
-            });
-        </script>
+            };
+
+            JSPC.genGraph();
+        </laser:script>
     </g:applyCodec>
 </g:each>

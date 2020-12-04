@@ -70,7 +70,7 @@
 </g:form>
 
 
-<laser:xhrScript>
+<laser:script>
     JSPC.noteedit = function (id) {
 
         $.ajax({
@@ -84,4 +84,4 @@
             }
         });
     }
-</laser:xhrScript>
+</laser:script>

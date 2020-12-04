@@ -519,7 +519,7 @@ if (customerType) {
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 
-<asset:script type="text/javascript">
+<laser:script>
     new Chartist.Line('.ct-chart', {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         series: [
@@ -540,8 +540,8 @@ if (customerType) {
             })
         ]
     });
-</asset:script>
-<asset:script type="text/javascript">
+</laser:script>
+<laser:script>
     new Chartist.Pie('.ct-chart-pie', {
         labels: ['Piece A', 'Piece B', 'Piece C', 'Piece D'],
         series: [20, 10, 30, 40]
@@ -553,8 +553,8 @@ if (customerType) {
             })
         ]
     });
-</asset:script>
-<asset:script type="text/javascript">
+</laser:script>
+<laser:script>
     new Chartist.Bar('.ct-chart-bar', {
         labels: ['First quarter of the year', 'Second quarter of the year', 'Third quarter of the year', 'Fourth quarter of the year'],
         series: [
@@ -569,7 +569,7 @@ if (customerType) {
             })
         ]
     });
-</asset:script>
+</laser:script>
 
 
 </body>

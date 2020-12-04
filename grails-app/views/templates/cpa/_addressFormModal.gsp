@@ -145,7 +145,7 @@
     </g:form>
 
     <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
-    <laser:xhrScript>
+    <laser:script>
 
         JSPC.updateDropdown = function() {
             var dropdownRegion = $('#region');
@@ -174,6 +174,6 @@
         if($("#country").val()) { JSPC.updateDropdown(); }
 
         $("#country").change(function() { JSPC.updateDropdown(); });
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>

@@ -101,7 +101,7 @@
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
                                 <%--<div id="${s.id}linkedLicenses">
-                                    <laser:xhrScript>
+                                    <laser:script>
                                         $.ajax({
                                             url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
                                             data: {
@@ -113,7 +113,7 @@
                                                     $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br />');
                                                 });
                                             });
-                                    </laser:xhrScript>
+                                    </laser:script>
                                 </div>--%>
                                 <g:each in="${allLinkedLicenses}" var="row">
                                     <g:if test="${s == row.destinationSubscription}">
@@ -319,7 +319,7 @@
                     total="${num_sub_rows}"/>
 </g:if>
 
-<laser:xhrScript>
+<laser:script>
               // initialize the form and fields
               $('.ui.form').form();
             var val = "${params.dateBeforeFilter}";
@@ -338,4 +338,4 @@
                 $(".dateBefore").addClass("hidden");
             }
         })
-</laser:xhrScript>
+</laser:script>

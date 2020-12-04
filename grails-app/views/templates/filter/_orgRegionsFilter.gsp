@@ -22,7 +22,7 @@
 </div>
 
 
-<laser:xhrScript>
+<laser:script>
 
         JSPC.updateDropdown = function () {
             var dropdownRegion = $('#filterRegion');
@@ -50,4 +50,4 @@
         if ($("#filterCountry").val()) { JSPC.updateDropdown(); }
 
         $("#filterCountry").change(function() { JSPC.updateDropdown(); });
-</laser:xhrScript>
+</laser:script>

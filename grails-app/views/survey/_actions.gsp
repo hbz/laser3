@@ -154,7 +154,7 @@
     </semui:modal>
 </g:if>
 
-<laser:xhrScript>
+<laser:script>
 
 $('.trigger-modal').on('click', function(e) {
     e.preventDefault();
@@ -198,4 +198,4 @@ $('.trigger-modal').on('click', function(e) {
     }
 })
 
-</laser:xhrScript>
+</laser:script>

@@ -5,7 +5,7 @@
 
             <dd>
                 <a href="#" class="myXeditable"   id="status" data-type="select" data-pk="1" data-url="" data-title="Select status"></a>
-                <laser:xhrScript>
+                <laser:script>
                         $('#status').editable({
                             value: 2,
                             source: [
@@ -17,7 +17,7 @@
                                 {value: 6, text: 'In Verhandlung'}
                             ]
                         });
-                </laser:xhrScript>
+                </laser:script>
             </dd>
         </dl>
     </div>

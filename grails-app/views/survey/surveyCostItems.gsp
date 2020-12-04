@@ -443,7 +443,7 @@ function addForAllSurveyCostItem(orgsIDs) {
 
 </asset:script>
 
-<script>
+<laser:script>
 
     JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
 
@@ -507,7 +507,7 @@ function addForAllSurveyCostItem(orgsIDs) {
         return output;
     }
 
-</script>
+</laser:script>
 
 </body>
 </html>

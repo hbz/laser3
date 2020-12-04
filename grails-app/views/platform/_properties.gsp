@@ -43,9 +43,9 @@
     </div>
     <%--</div>--%>
 
-    <laser:xhrScript>
+    <laser:script>
         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
-    </laser:xhrScript>
+    </laser:script>
 
 </div><!-- .card -->
 <!-- _properties -->

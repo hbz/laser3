@@ -17,7 +17,7 @@
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 
     <asset:javascript src="base.js"/>%{-- dont move --}%
-    <script>
+    <script data-type="inline">
         <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
     </script>
@@ -34,7 +34,7 @@
 </head>
     <body class="public">
 
-        <g:layoutBody/><!-- body here -->
+        <g:layoutBody/>%{-- body here --}%
     
         <div id="Footer">
             <div class="clearfix"></div>
@@ -42,7 +42,7 @@
 
         <asset:javascript src="laser.js"/>%{-- dont move --}%
 
-        <asset:deferredScripts/>%{-- dont move --}%
+        <laser:scriptBlock/>%{-- dont move --}%
 
     </body>
 </html>

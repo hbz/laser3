@@ -116,7 +116,7 @@
     </g:form>
 </semui:modal>
 
-%{--<laser:xhrScript>
+%{-- <laser:script>
 
         JSPC.prop_descr_selector_controller = function() {
             init: function () {
@@ -136,5 +136,5 @@
         }
         JSPC.prop_descr_selector_controller.init()
         setTimeout( function(){ $(window).trigger('resize')}, 500);
-</laser:xhrScript>--}%
+</laser:script> --}%
 <!-- O: templates/properties/_propertyGroupModal -->

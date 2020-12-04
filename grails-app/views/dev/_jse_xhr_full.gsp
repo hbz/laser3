@@ -38,8 +38,8 @@
     </asset:script>
     <p><strong>SUCCESS</strong></p>
 
-    <laser:xhrScript>
-        console.log('[XHR_full] laser:xhrScript @ body > 9')
-    </laser:xhrScript>
+    <laser:script>
+        console.log('[XHR_full] laser:script @ body > 9')
+    </laser:script>
 </body>
 </html>

@@ -142,7 +142,7 @@
         </semui:card>
     </g:if>
 
-    <laser:xhrScript>
+    <laser:script>
         JSPC.noteedit = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
@@ -169,5 +169,5 @@
         }
 
         r2d2.initDynamicSemuiStuff('#container-notes')
-    </laser:xhrScript>
+    </laser:script>
 

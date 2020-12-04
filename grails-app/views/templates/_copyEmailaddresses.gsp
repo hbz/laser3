@@ -64,7 +64,7 @@
         <br />
     </div>
 
-    <laser:xhrScript>
+    <laser:script>
         JSPC.jsonOrgIdList = null
 
         JSPC.copyToEmailProgram = function () {
@@ -126,7 +126,7 @@
         $("#privateContacts").change(function()         { JSPC.updateTextArea(); });
         $("#publicContacts").change(function()          { JSPC.updateTextArea(); });
 
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->

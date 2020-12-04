@@ -120,9 +120,9 @@
     </div>
     <%--</div>--%>
 
-    <laser:xhrScript>
+    <laser:script>
         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
-    </laser:xhrScript>
+    </laser:script>
 
 </div><!-- .card -->
 
@@ -139,9 +139,9 @@
                     propertyWrapper: "${propertyWrapper}",
                     tenant: contextOrg]}"/>
 
-            <laser:xhrScript>
+            <laser:script>
                 c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
-            </laser:xhrScript>
+            </laser:script>
 
         </div>
     </div>

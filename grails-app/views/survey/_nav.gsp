@@ -135,9 +135,9 @@
 
 </semui:subNav>
 
-<laser:xhrScript>
+<laser:script>
         $(document).on('click','.dropdown .item',function(e){
             $('.ui .item').removeClass('active');
             $(this).addClass('active');
         });
-</laser:xhrScript>
+</laser:script>

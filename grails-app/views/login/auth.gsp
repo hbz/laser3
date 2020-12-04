@@ -48,10 +48,8 @@
     </semui:card>
     </div>
 </div>
-<asset:script type="text/javascript">
-    (function () {
-        document.forms['loginForm'].elements['username'].focus();
-    })();
+<laser:script>
+    document.forms['loginForm'].elements['username'].focus();
 
     $("#forgotten").click(function(e){
         e.preventDefault();
@@ -62,6 +60,6 @@
             $("#forgottenPassword").submit();
         }
     });
-</asset:script>
+</laser:script>
 </body>
 </html>

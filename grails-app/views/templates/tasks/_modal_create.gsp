@@ -193,7 +193,7 @@
 
     </g:form>
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
-        <laser:xhrScript>
+        <laser:script>
             // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
@@ -220,9 +220,9 @@
             JSPC.showHideRequire ( 'pkg' );
             JSPC.showHideRequire ( 'subscription' );
             JSPC.showHideRequire ( 'org' );
-        </laser:xhrScript>
+        </laser:script>
     </g:if>
-    <laser:xhrScript>
+    <laser:script>
             $("#radioresponsibleOrg").change(function () {
                 $('#radioGroup').find("#responsibleUser").toggle();
             });
@@ -325,6 +325,6 @@
                     }
                 });
         }
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>

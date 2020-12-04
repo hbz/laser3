@@ -34,7 +34,7 @@
         </div>
     </g:form>
 </semui:filter>
-<laser:xhrScript>
+<laser:script>
     JSPC.cfg = {}
     JSPC.cfg.org = false;
     JSPC.cfg.lic = false
@@ -85,4 +85,4 @@
             }
         });
 
-</laser:xhrScript>
+</laser:script>

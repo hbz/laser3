@@ -90,9 +90,9 @@
     </div>
     <%--</div>--%>
 
-    <laser:xhrScript>
+    <laser:script>
         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
-    </laser:xhrScript>
+    </laser:script>
 
 </div><!-- .card -->
 
@@ -113,9 +113,9 @@
                             tenant: authOrg
                     ]}"/>
 
-                    <laser:xhrScript>
+                    <laser:script>
                         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${authOrg.id});
-                    </laser:xhrScript>
+                    </laser:script>
 
                 </div>
             </div>

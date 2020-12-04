@@ -186,8 +186,7 @@
             </aside><!-- .four -->
 
         </div><!-- .grid -->
-    <asset:script type="text/javascript">
-        $(document).ready(function(){
+    <laser:script>
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                 data: {
@@ -197,7 +196,6 @@
                 $("#links").html(response);
                 r2d2.initDynamicSemuiStuff('#links');
             })
-        })
-    </asset:script>
+    </laser:script>
   </body>
 </html>

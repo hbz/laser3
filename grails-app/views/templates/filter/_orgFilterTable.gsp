@@ -755,7 +755,7 @@
 </table>
 
 <g:if test="${tmplShowCheckbox}">
-    <laser:xhrScript>
+    <laser:script>
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
@@ -778,11 +778,11 @@
         }
 
         </g:if>
-    </laser:xhrScript>
+    </laser:script>
 
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-    <laser:xhrScript>
+    <laser:script>
    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();
 
@@ -841,6 +841,6 @@
             })
         };
 
-    </laser:xhrScript>
+    </laser:script>
 </g:if>
 

@@ -60,12 +60,12 @@
                 </g:if>
             </tbody>
         </table>
-        <laser:xhrScript>
+        <laser:script>
             $('#prsLinksModal form input[type=submit]').click( function(){
                 var val = $(this).parents('tr').find('select[name=ignore-org-selector]').val()
                 $(this).parents('form').find('input[name=org]').val(val)
             })
-        </laser:xhrScript>
+        </laser:script>
     </div>
 
 </semui:modal>

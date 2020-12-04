@@ -99,7 +99,7 @@
     </g:form>
 </g:if>
 <g:if test="${sourceObject instanceof Subscription || sourceObject instanceof License}">
-    <laser:xhrScript>
+    <laser:script>
 
     JSPC.adjustDropdown = function () {
 
@@ -155,5 +155,5 @@
 
     JSPC.adjustDropdown()
 
-    </laser:xhrScript>
+    </laser:script>
 </g:if>

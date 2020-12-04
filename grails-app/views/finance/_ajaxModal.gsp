@@ -361,7 +361,7 @@
 
     </g:form>
 
-    <laser:xhrScript>
+    <laser:script>
 
     /*var costSelectors = {
         lc:   "#newCostInLocalCurrency",
@@ -677,7 +677,7 @@
 
             }
 
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>
 <!-- _ajaxModal.gsp -->

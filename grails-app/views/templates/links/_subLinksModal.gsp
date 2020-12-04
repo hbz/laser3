@@ -141,7 +141,7 @@
     </g:form>
 </semui:modal>
 <g:if test="${!link}">
-    <laser:xhrScript>
+    <laser:script>
         $("#${selectPair}").dropdown({
             apiSettings: {
                 url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
@@ -150,5 +150,5 @@
             clearable: true,
             minCharacters: 1
         });
-    </laser:xhrScript>
+    </laser:script>
 </g:if>

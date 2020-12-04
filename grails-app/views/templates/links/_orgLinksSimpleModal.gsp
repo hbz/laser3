@@ -20,7 +20,7 @@
             </div>
         </div>
     </g:form>
-    <laser:xhrScript>
+    <laser:script>
             //{query} is correct; this is the semantic ui query syntax containing the filter string
             $("#orm_orgOid_${tmplModalID}").dropdown({
                 apiSettings: {
@@ -30,6 +30,6 @@
                 clearable: true,
                 minCharacters: 1
             });
-    </laser:xhrScript>
+    </laser:script>
 </semui:modal>
 

@@ -34,7 +34,7 @@
 
 
 
-<laser:xhrScript>
+<laser:script>
     $(".la-popup").popup({});
 
         $.each($(".la-filterPropDef"), function(i, dropdown) {
@@ -187,5 +187,5 @@
         }
         JSPC.propertyFilterController.init()
 
-</laser:xhrScript>
+</laser:script>
 <!-- O: templates/properties/_genericFilter -->

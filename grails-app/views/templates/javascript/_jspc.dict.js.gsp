@@ -45,9 +45,10 @@ JSPC.dict = {
     },"""
 
     translations.eachWithIndex { it, index ->
-        println "    '${it}' : {"
-        println "        de: '" + message(code: "${it}", locale: localeDe) + "', en: '" + message(code: "${it}", locale: localeEn) + "' "
-        println (index < translations.size() - 1 ? "    }, " : "    }")
+        String tmp = "    '${it}' : { "
+        tmp =  tmp + "de: '" + message(code: "${it}", locale: localeDe) + "', en: '" + message(code: "${it}", locale: localeEn) + "'"
+        tmp =  tmp + (index < translations.size() - 1 ? " }, " : " }")
+        println tmp
     }
     println "} "
 

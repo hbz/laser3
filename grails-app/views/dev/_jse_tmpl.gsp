@@ -16,7 +16,7 @@
         })
     </asset:script>
 
-    <laser:xhrScript>
-        console.log('[TMPL_${pos}] laser:xhrScript @ body > 9')
-    </laser:xhrScript>
+    <laser:script>
+        console.log('[TMPL_${pos}] laser:script @ body > 9')
+    </laser:script>
 </div>

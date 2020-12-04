@@ -172,7 +172,7 @@
 
     </g:form>
 
-    <laser:xhrScript>
+    <laser:script>
 
         JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
         console.log(JSPC.costItemElementConfigurations);
@@ -281,7 +281,7 @@
             return output;
         }
 
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>
 <!-- _ajaxModal.gsp -->

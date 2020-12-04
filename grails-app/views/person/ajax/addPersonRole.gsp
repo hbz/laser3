@@ -44,7 +44,7 @@
 	</div>
 </div>
 
-<laser:xhrScript>
+<laser:script>
     $('.ui.search.dropdown').dropdown({
         fullTextSearch: 'exact'
     });
@@ -54,6 +54,6 @@
     })
 
     $('.template-element-${timestamp} .ui.dropdown').dropdown({duration: 150, transition: 'fade'})
-</laser:xhrScript>
+</laser:script>
 
 
