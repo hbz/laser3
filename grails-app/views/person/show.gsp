@@ -34,11 +34,11 @@
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
-                            <asset:script type="text/javascript">
+                            <laser:script>
                                 $('a[data-name=contactType]').on('save', function(e, params) {
                                     window.location.reload()
                                 });
-                            </asset:script>
+                            </laser:script>
                         </dd>
                     </dl>
 
@@ -362,11 +362,9 @@
                                             ownobj: personInstance,
                                             propertyWrapper: "${propertyWrapper}",
                                             tenant: institution]}"/>
-                                    <asset:script type="text/javascript">
-                                        $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
-                                        });
-                                    </asset:script>
+                                    <laser:script>
+                                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
+                                    </laser:script>
                                 </div>
                             </div>
                         </div><!-- .card -->
@@ -448,7 +446,7 @@
 
 </body>
 </html>
-<asset:script type="text/javascript">
+<laser:script>
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
@@ -480,4 +478,4 @@
                 }
             });
         }
-</asset:script>
+</laser:script>

@@ -108,12 +108,12 @@
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
                                       name="generateSlavedLicsReference"/>
                         </div>
-                        <asset:script type="text/javascript">
+                        <laser:script>
                             $('*[name=generateSlavedLics]').change(function () {
                                 $('*[name=generateSlavedLics][value=partial]').prop('checked') ? $('.generateSlavedLicsReference-wrapper').removeClass('hidden') : $('.generateSlavedLicsReference-wrapper').addClass('hidden');
                             })
                             $('*[name=generateSlavedLics]').trigger('change')
-                        </asset:script>
+                        </laser:script>
                     </g:if>
                     <g:else>
                         <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>

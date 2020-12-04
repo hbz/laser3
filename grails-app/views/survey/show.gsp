@@ -240,15 +240,11 @@
 
 
 <div id="magicArea"></div>
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('#finishProcess').progress();
-    });
 
-    $(document).ready(function () {
-        $('#finishProcess2').progress();
-    });
-</asset:script>
+<laser:script>
+    $('#finishProcess').progress();
+    $('#finishProcess2').progress();
+</laser:script>
 
 </body>
 </html>

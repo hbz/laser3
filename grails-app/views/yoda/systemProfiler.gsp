@@ -118,7 +118,7 @@
         </table>
     </div>
 
-<asset:script type="text/javascript">
+<laser:script>
      $('.secondary.menu > a').tab();
 
      $('#filterTable').change( function(){
@@ -147,7 +147,7 @@
     $('.table tr td').mouseout( function(){
        $('.table tr').removeClass('trHover')
     })
-</asset:script>
+</laser:script>
 
 <style>
     table tr.trHover td {

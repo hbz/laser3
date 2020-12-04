@@ -161,7 +161,7 @@
 </body>
 </html>
 <g:if test="${actionName == 'ids'}">
-    <asset:script type="text/javascript">
+    <laser:script>
         JSPC.IdContoller =  {
             createIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;
@@ -200,5 +200,5 @@
                 });
             }
         }
-    </asset:script>
+    </laser:script>
 </g:if>

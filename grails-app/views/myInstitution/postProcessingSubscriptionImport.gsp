@@ -110,8 +110,7 @@
             </table>
         </g:form>
     </body>
-    <asset:script type="text/javascript">
-        $(document).ready(function() {
+    <laser:script>
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
                     $(".ciSelect").prop('checked',true);
@@ -120,6 +119,5 @@
                     $(".ciSelect").prop('checked',false);
                 }
             });
-        });
-    </asset:script>
+    </laser:script>
 </html>

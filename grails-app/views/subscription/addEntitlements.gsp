@@ -123,7 +123,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
     </div>
 </g:form>
-<asset:script type="text/javascript">
+<laser:script>
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });
@@ -132,7 +132,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         var name = e.target.files[0].name;
         $('input:text', $(e.target).parent()).val(name);
     });
-</asset:script>
+</laser:script>
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscription.id}"/>
     <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>

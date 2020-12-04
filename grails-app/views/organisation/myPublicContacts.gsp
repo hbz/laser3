@@ -220,10 +220,9 @@
 </body>
 
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
+<laser:script>
+
+    $('.tabular.menu .item').tab()
 
     JSPC.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
@@ -272,6 +271,5 @@
                 }
             });
     }
-
-</asset:script>
+</laser:script>
 </html>

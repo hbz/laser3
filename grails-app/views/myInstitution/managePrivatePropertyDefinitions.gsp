@@ -260,7 +260,7 @@
         </g:form>
     </semui:modal>
 
-    <asset:script type="text/javascript">
+    <laser:script>
 
     $('#pd_descr').change(function() {
         $('#cust_prop_modal_select').trigger('change');
@@ -313,7 +313,7 @@
         }
     });
 
-    </asset:script>
+    </laser:script>
 
   </body>
 </html>

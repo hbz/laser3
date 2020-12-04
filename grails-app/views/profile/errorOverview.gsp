@@ -134,13 +134,11 @@
             </tbody>
         </table>
 
-        <asset:script type="text/javascript">
-            $(function(){
-                $('tr[class*=ticket-row] .button').click( function(){
-                    $('.' + $(this).attr('data-target')).toggle()
-                })
+        <laser:script>
+            $('tr[class*=ticket-row] .button').click( function(){
+                $('.' + $(this).attr('data-target')).toggle()
             })
-        </asset:script>
+        </laser:script>
     </div>
 </div>
 
