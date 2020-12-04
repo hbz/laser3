@@ -48,7 +48,7 @@
                                 <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
                                 <laser:script>
 
-                                    $('body #oamonitor_server_access').editable({
+                                    $('body #oamonitor_server_access').editable('destroy').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_YES.id}") {
                                                 var r = confirm("Mit der Auswahl der Option >>Datenweitergabe an OA-Monitor<< stimmen Sie der Weitergabe der Lizenz- und Kostendaten Ihrer Einrichtung an den OA-Monitor\n- https://open-access-monitor.de -\n zu.\n\n" +
