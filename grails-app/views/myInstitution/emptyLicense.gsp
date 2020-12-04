@@ -73,7 +73,7 @@
 
 
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
-            <input type="button" class="ui button js-click-control" onclick="JSPC.goBack();" value="${message(code:'default.button.cancel.label')}" />
+            <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
 
         </g:form>
     </semui:form>
@@ -90,20 +90,10 @@
         })
     });
 
-    JSPC.formatDate = function (input) {
-        if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
-            var inArr = input.split(/[\.\/-]/g);
-            return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
-        }
-        else {
-            console.log(input);
-            return input;
-        }
-    }
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
                 if($("#licenseStartDate").val() !== '' && $("#licenseEndDate").val() !== '') {
-                    var startDate = Date.parse(JSPC.formatDate($("#licenseStartDate").val()));
-                    var endDate = Date.parse(JSPC.formatDate($("#licenseEndDate").val()));
+                    var startDate = Date.parse(JSPC.helper.formatDate($("#licenseStartDate").val()));
+                    var endDate = Date.parse(JSPC.helper.formatDate($("#licenseEndDate").val()));
                     return (startDate < endDate);
                 }
                 else return true;

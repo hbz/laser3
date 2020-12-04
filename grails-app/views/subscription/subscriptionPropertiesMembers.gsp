@@ -708,20 +708,10 @@
         }
     });
 
-    JSPC.formatDate = function (input) {
-        if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
-            var inArr = input.split(/[\.\/-]/g);
-            return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
-        }
-        else {
-            return input;
-        }
-    }
-
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
         if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
-            var startDate = Date.parse(JSPC.formatDate($("#valid_from").val()));
-            var endDate = Date.parse(JSPC.formatDate($("#valid_to").val()));
+            var startDate = Date.parse(JSPC.helper.formatDate($("#valid_from").val()));
+            var endDate = Date.parse(JSPC.helper.formatDate($("#valid_to").val()));
             return (startDate < endDate);
         }
         else return true;
