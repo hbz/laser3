@@ -1,11 +1,11 @@
 <%@page import="de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition; de.laser.ReportingService" %>
 <laser:serviceInjection/>
 <!doctype html>
-<r:require module="chartist"/>
 <html>
     <head>
         <meta name="layout" content="laser">
         <title><g:message code="laser"/> : <g:message code="myinst.reporting"/></title>
+        <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>
     </head>
 
     <body>
