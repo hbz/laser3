@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3011    04.12.2020  rc1.6   1.6.6       Andreas Bug         verschiedene Bugs im Sync korrigiert
+
 --      13.11.2020  rc1.6   1.6.5       Moe     Bug         Titelumfrage für Teilnehmer wird nicht angezeigt
 
 --      13.11.2020  rc1.6   1.6.5       Moe     Bug         Beim Import von Kbart-File werden Zahlen nicht richtig übernommen (Probleme beim Anreicherung von PriceItems)
