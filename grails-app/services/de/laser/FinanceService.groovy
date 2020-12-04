@@ -1202,14 +1202,13 @@ class FinanceService {
                         RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
                         if(!taxType)
                             taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
+                        //reverse charge must not be displayed here according to Micha, December 3rd, '20!
                         switch(taxType) {
                             case RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                 break
                             case RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                                 break
                             case RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
-                                break
-                            case RefdataValue.getByValueAndCategory('reverse charge', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                                 break
                             default: mappingErrorBag.invalidTaxType = true
                                 break
