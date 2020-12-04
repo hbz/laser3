@@ -46,7 +46,7 @@
                                 </thead>
                                 <tbody>
                                 <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
-                                <asset:script type="text/javascript">
+                                <laser:script>
 
                                     $('body #oamonitor_server_access').editable({
                                         validate: function (value) {
@@ -72,7 +72,7 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
-                                </asset:script>
+                                </laser:script>
 
                                 <g:each in="${settings}" var="os">
                                     <tr>

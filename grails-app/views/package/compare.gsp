@@ -209,7 +209,7 @@
 			
 			<td>
 				<semui:listIcon type="${currentTitle[0].medium?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
-                          <i onclick="showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
+                          <i onclick="JSPC.showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
                               <br />${id.ns.ns}: ${id.value}
@@ -258,8 +258,8 @@
 		 pkgBName:pkgInsts.get(1).name ]"/>
 </g:each>
 
-<asset:script type="text/javascript">
-    function applySelect2(filter) {
+<laser:script>
+	JSPC.applySelect2 = function (filter) {
       var pkgA = {id:'${pkgInsts?.get(0)?.id}',text:"${pkgInsts?.get(0)?.name}"};
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};
 
@@ -311,17 +311,14 @@
 	    $(this).closest('form').submit();
 	});
 
-    function showMore(ident) {
+    JSPC.showMore = function (ident) {
 		$("#compare_details"+ident).modal('show')
     }
 
-    $(function(){
-    	applySelect2("A")
-     	applySelect2("B")
-    });
+	JSPC.applySelect2("A")
+	JSPC.applySelect2("B")
 
-
-</asset:script>
+</laser:script>
 
   </body>
 </html>

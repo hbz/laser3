@@ -589,13 +589,13 @@
                                     </div>
                                 </g:else>
                             </div>
-                            <asset:script type="text/javascript">
-                                var LaToggle = {};
-                                LaToggle.advanced = {};
-                                LaToggle.advanced.button = {};
+                            <laser:script>
+                                JSPC.LaToggle = {};
+                                JSPC.LaToggle.advanced = {};
+                                JSPC.LaToggle.advanced.button = {};
 
                                 // ready event
-                                LaToggle.advanced.button.ready = function() {
+                                JSPC.LaToggle.advanced.button.ready = function() {
                                     // selector cache
                                     var $button = $('.button.la-toggle-advanced');
                                     var handler = {
@@ -614,8 +614,8 @@
                                     $button.on('click', handler.activate);
                                 };
 
-                                LaToggle.advanced.button.ready();
-                            </asset:script>
+                                JSPC.LaToggle.advanced.button.ready();
+                            </laser:script>
                         </g:if>
                 </div>
 
