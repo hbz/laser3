@@ -331,9 +331,9 @@
                                         propertyWrapper: "${propertyWrapper}",
                                         tenant          : contextOrg,
                                         withoutRender   : true]}"/>
-                                <laser:xhrScript>
+                                <laser:script>
                                     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
-                                </laser:xhrScript>
+                                </laser:script>
                             </div>
                         </div>
                     </div><!-- .card -->
@@ -342,7 +342,7 @@
         </div>
     </g:if>
 
-    <laser:xhrScript>
+    <laser:script>
             $('#person_form').form({
                 on: 'blur',
                 inline: true,
@@ -443,6 +443,6 @@
                 }
             });
 
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>

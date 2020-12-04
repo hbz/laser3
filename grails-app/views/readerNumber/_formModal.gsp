@@ -66,7 +66,7 @@
 
     </g:form>
 
-    <laser:xhrScript>
+    <laser:script>
             $(".referenceGroup").dropdown({
                 allowAdditions: true,
                 clearable: true
@@ -106,6 +106,6 @@
                     }
                  }
             });
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>

@@ -1,4 +1,4 @@
-<laser:xhrScript>
+<laser:script>
     JSPC.taskcreate = function () {
 
         $.ajax({
@@ -16,4 +16,4 @@
             }
         });
     }
-</laser:xhrScript>
+</laser:script>

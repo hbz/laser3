@@ -27,12 +27,8 @@
             <input  id="filterProp" name="filterProp" type="text" class="generalLoadingParam" data-requestParam="${queried}"
                     placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>--%>
         </div>
-        <script>
-
-
-            $(function () {
-
-                var propertyFilterController = {
+        <laser:script>
+                JSPC.propertyFilterController = {
 
                     updateProp: function (selOpt) {
 
@@ -62,9 +58,7 @@
                                         '   </div>' +
                                         '</div>';
 
-
                                     $('label[for=filterProp]').next().replaceWith(select);
-
 
                                     $('.la-filterProp').dropdown({
                                         duration: 150,
@@ -100,9 +94,7 @@
                                         '   </div>' +
                                         '</div>';
 
-
                                     $('label[for=filterProp]').next().replaceWith(select);
-
 
                                     $('.la-filterProp').dropdown({
                                         duration: 150,
@@ -129,27 +121,26 @@
                         // register change event
                         $('#filterPropDef').change(function (e) {
                             var selOpt = $('option:selected', this);
-                            propertyFilterController.updateProp(selOpt);
+                            JSPC.propertyFilterController.updateProp(selOpt);
                         });
                      */
-                        $(document).ready(function() {
-                            $(".la-filterPropDef").dropdown({
-                                clearable: true,
-                                forceSelection: false,
-                                selectOnKeydown: false,
-                                onChange: function (value, text, $selectedItem) {
-                                    value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
-                                    if ((typeof $selectedItem != 'undefined')){
-                                        var selOpt = $selectedItem;
-                                        propertyFilterController.updateProp(selOpt);
-                                    }
-                                    else {
-                                        $('#filterProp').dropdown ('clear', true)
-                                    }
 
+                        $(".la-filterPropDef").dropdown({
+                            clearable: true,
+                            forceSelection: false,
+                            selectOnKeydown: false,
+                            onChange: function (value, text, $selectedItem) {
+                                value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
+                                if ((typeof $selectedItem != 'undefined')){
+                                    var selOpt = $selectedItem;
+                                    JSPC.propertyFilterController.updateProp(selOpt);
                                 }
-                            });
-                        })
+                                else {
+                                    $('#filterProp').dropdown ('clear', true)
+                                }
+                            }
+                        });
+
                         // set filterPropDef by params
                         // iterates through all the items and set the item class on 'active selected' when value and URL Parameter for filterPropDef match
                         var item = $( ".la-filterPropDef .item" );
@@ -162,26 +153,17 @@
                         // sets the URL Parameter on the hidden input field
                         var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
-
-
-                        propertyFilterController.updateProp(selOpt);
-
+                        JSPC.propertyFilterController.updateProp(selOpt);
 
                         // set filterProp by params
                         var paramFilterProp = "${params.filterProp}";
 
                         $('#filterProp').val(paramFilterProp);
-
-
-
                     }
                 }
 
-
-                propertyFilterController.init()
-            });
-
-        </script>
+                JSPC.propertyFilterController.init()
+        </laser:script>
     </g:if>
     <g:elseif test="${secondLevel == 'subscription'}">
         <div id="subscriptionSelection">

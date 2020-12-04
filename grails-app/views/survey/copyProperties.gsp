@@ -695,7 +695,7 @@ ${surveyInfo.name}
 </g:if>
 </div>
 
-<script>
+<laser:script>
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSub]").prop('checked', true)
@@ -703,6 +703,6 @@ ${surveyInfo.name}
             $("tr[class!=disabled] input[name=selectedSub]").prop('checked', false)
         }
     })
-</script>
+</laser:script>
 </body>
 </html>

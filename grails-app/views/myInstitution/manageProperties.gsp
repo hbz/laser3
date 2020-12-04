@@ -526,7 +526,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
+<laser:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedObjects]:visible").prop('checked', true);
@@ -564,7 +564,7 @@
     $.expr[':'].icontains = function(a,i,m) {
         return $(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
     }
-</asset:script>
+</laser:script>
 
 </body>
 </html>

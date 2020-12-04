@@ -119,10 +119,9 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 </body>
 
-<asset:script type="text/javascript">
+<laser:script>
     JSPC.personCreate = function (contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml"
-                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
         JSPC.createPersonModal(url)
     }
     JSPC.createPersonModal = function (url) {
@@ -142,5 +141,5 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
             }
         });
     }
-</asset:script>
+</laser:script>
 </html>

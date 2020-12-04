@@ -146,7 +146,7 @@
 
 </semui:form>
 
-<laser:xhrScript>
+<laser:script>
 
     JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
@@ -289,4 +289,4 @@
         return output;
     }
 
-</laser:xhrScript>
+</laser:script>

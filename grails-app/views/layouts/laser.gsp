@@ -31,7 +31,7 @@
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
 
     <asset:javascript src="base.js"/>%{-- dont move --}%
-    <script>
+    <script data-type="inline">
         <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
     </script>
@@ -746,11 +746,11 @@
 
         <asset:javascript src="${currentTheme}.js"/>%{-- dont move --}%
 
-        <asset:deferredScripts/>%{-- dont move --}%
+        <laser:scriptBlock/>%{-- dont move --}%
 
         %{-- profiler --}%
 
-        <script>
+        <script data-type="inline">
             $(document).ready(function() {
                 $('#system-jsqtk').on('click', function(){ jsqtk.go() })
                 $('#system-jspc').on('click',  function(){ console.log('JSPC: %o', JSPC) })

@@ -393,7 +393,7 @@
 <!-- _result_tab_cons.gsp -->
 
 <g:if test="${tmplShowCheckbox}">
-    <laser:xhrScript>
+    <laser:script>
         $('#costItemListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedCostItems]").prop('checked', true)
@@ -401,5 +401,5 @@
                 $("tr[class!=disabled] input[name=selectedCostItems]").prop('checked', false)
             }
         })
-    </laser:xhrScript>
+    </laser:script>
 </g:if>

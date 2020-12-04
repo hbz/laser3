@@ -17,7 +17,7 @@
     </asset:script>
     <p><strong>SUCCESS</strong></p>
 
-    <laser:xhrScript>
-        console.log('[XHR] laser:xhrScript @ body > 5')
-    </laser:xhrScript>
+    <laser:script>
+        console.log('[XHR] laser:script @ body > 5')
+    </laser:script>
 </div>

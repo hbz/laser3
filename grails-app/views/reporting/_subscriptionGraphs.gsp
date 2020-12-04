@@ -9,8 +9,8 @@
 </div>
 
 <g:applyCodec encodeAs="none">
-    <script>
-        $(document).ready(function(){
+    <laser:script>
+        JSPC.goSubGraph = function() {
             let result, labels, seriesObj, series
                 <g:if test="${costItemDevelopment}">
                     result = ${costItemDevelopment};
@@ -99,6 +99,8 @@
                 $('div[data-entry="'+$(this).attr('data-entry')+'"]').remove();
                 $('.pickSubscription[data-entry="'+$(this).attr('data-entry')+'"]').removeClass('blue');
             });
-        });
-    </script>
+        };
+
+        JSPC.goSubGraph();
+    </laser:script>
 </g:applyCodec>

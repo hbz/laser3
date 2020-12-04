@@ -428,9 +428,8 @@
                     <g:render template="surveys"/>
         </div>
 
-    <asset:script type="text/javascript">
+    <laser:script>
         JSPC.taskcreate = function() {
-
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="createTask"/>',
                 success: function(result){
@@ -449,8 +448,8 @@
                 }
             });
         }
-        JSPC.taskedit = function(id) {
 
+        JSPC.taskedit = function(id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
                 success: function(result){
@@ -470,7 +469,6 @@
             });
         }
 
-            $(document).ready( function(){
                 $('.tabular.menu .item').tab();
                 /* $('.item .widget-content').readmore({
                     speed: 250,
@@ -482,11 +480,9 @@
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {
                         //location.reload();
-                 });
+                });
 
-
-            })
-    </asset:script>
+    </laser:script>
 
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />

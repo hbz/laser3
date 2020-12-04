@@ -9,9 +9,9 @@
 </head>
 
 <body>
-<laser:xhrScript>
+<laser:script>
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
-</laser:xhrScript>
+</laser:script>
 
 <div>
     <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
@@ -210,8 +210,8 @@
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
 </div>
 
-<asset:script type="text/javascript">
+<laser:script>
     $('.menu .item').tab();
-</asset:script>
+</laser:script>
 </body>
 </html>

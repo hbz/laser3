@@ -416,9 +416,7 @@ ${surveyInfo.name}
     </g:link>
 </div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function() {
-
+<laser:script>
         $("#parentSubscription .titleCell").each(function(k) {
             var v = $(this).height();
             $("#parentSuccessorSubscription .titleCell").eq(k).height(v);
@@ -428,9 +426,7 @@ ${surveyInfo.name}
             var v = $(this).height();
             $("#parentSubscription .titleCell").eq(k).height(v);
         });
-
-    });
-</asset:script>
+</laser:script>
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer && parentSuccessorSubscription}">
 

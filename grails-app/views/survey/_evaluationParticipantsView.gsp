@@ -516,7 +516,7 @@
 
 </semui:form>
 
-<laser:xhrScript>
+<laser:script>
 <g:if test="${showCheckbox}">
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
@@ -577,5 +577,5 @@
 
     JSPC.adjustDropdown()
 </g:if>
-</laser:xhrScript>
+</laser:script>
 

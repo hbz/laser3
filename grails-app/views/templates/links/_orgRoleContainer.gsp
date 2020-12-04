@@ -68,7 +68,7 @@
 </g:each>
 
 
-<laser:xhrScript>
+<laser:script>
         $("#orgRoleContainer .button").on('click', function() {
             var ajaxUrl = "<g:createLink controller="organisation" action="show" id="${orgInstance.id}" />"
                         + "?ajax=true&" + $(this).attr('data-params')
@@ -79,6 +79,6 @@
                 $("#orgRoleContainer").empty().append(html)
             })
         })
-</laser:xhrScript>
+</laser:script>
 
 </div>

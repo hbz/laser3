@@ -186,6 +186,6 @@
     </semui:card>
 </g:if>
 
-<laser:xhrScript>
+<laser:script>
     r2d2.initDynamicSemuiStuff('#container-documents')
-</laser:xhrScript>
+</laser:script>

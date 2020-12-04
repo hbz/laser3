@@ -52,7 +52,7 @@
                 </div>
             </div>
         </form>
-        <asset:script type="text/javascript">
+        <laser:script>
             $('#filterButton').on('click', function() {
 
                 var fCat = $('#filter_category').val()
@@ -73,7 +73,7 @@
             })
 
             $('#filterButton').trigger('click')
-        </asset:script>
+        </laser:script>
     </semui:filter>
 
 <div>

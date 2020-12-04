@@ -81,9 +81,9 @@
 
 
   <g:if test="${userRoles}">
-      <asset:script type="text/javascript">
-      $('#user_merge_modal').modal('show');
-    </asset:script>
+    <laser:script>
+        $('#user_merge_modal').modal('show');
+    </laser:script>
   </g:if>
   </body>
 </html>

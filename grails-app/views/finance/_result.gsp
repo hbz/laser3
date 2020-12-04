@@ -39,7 +39,7 @@
                             <div class="field" style="text-align: right;">
                                 <button id="bulkCostItems-toggle"
                                         class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
-                                <laser:xhrScript>
+                                <laser:script>
                                     $('#bulkCostItems-toggle').on('click', function () {
                                         $('#bulkCostItems').toggleClass('hidden')
                                         if ($('#bulkCostItems').hasClass('hidden')) {
@@ -48,7 +48,7 @@
                                             $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
                                         }
                                     })
-                                </laser:xhrScript>
+                                </laser:script>
                             </div>
 
                             <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
@@ -73,7 +73,7 @@
         </div>
 
     </div>
-    <laser:xhrScript>
+    <laser:script>
                 JSPC.tab = "${showView}";
                 JSPC.rawHref = $(".exportCSV").attr("href");
                 JSPC.isClicked = false;
@@ -161,4 +161,4 @@
                         }).modal('show');
                     })
                 });
-    </laser:xhrScript>
+    </laser:script>

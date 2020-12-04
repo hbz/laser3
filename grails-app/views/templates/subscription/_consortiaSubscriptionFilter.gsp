@@ -183,7 +183,7 @@
     </g:form>
 </semui:filter>
 
-<laser:xhrScript>
+<laser:script>
     JSPC.subStatus = "FETCH_ALL"
     if ($("#status").length > 0) {
         JSPC.subStatus = $("#status").val();
@@ -202,4 +202,4 @@
             minCharacters: 1
         });
     </g:if>
-</laser:xhrScript>
+</laser:script>

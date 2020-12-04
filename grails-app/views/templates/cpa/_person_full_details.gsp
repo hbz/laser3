@@ -216,7 +216,7 @@
     </g:if>
 </g:if>
 
-<laser:xhrScript>
+<laser:script>
         JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
             JSPC.private_address_modal(url);
@@ -262,6 +262,6 @@
                 }
             });
         }
-</laser:xhrScript>
+</laser:script>
 
 							

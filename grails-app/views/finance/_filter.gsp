@@ -268,7 +268,7 @@
 
 <!-- _filter.gsp -->
 
-<laser:xhrScript>
+<laser:script>
 
     $.fn.dropdown.settings.message = {
         noResults: "<g:message code="select2.noMatchesFound" />"
@@ -354,4 +354,4 @@
                 $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",false);
         });
 
-</laser:xhrScript>
+</laser:script>

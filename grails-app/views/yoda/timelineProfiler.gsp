@@ -30,8 +30,7 @@
 
                         <div id="ct-chart-${index}"></div>
 
-                        <script>
-                            $(document).ready(function(){
+                        <laser:script>
                                 JSPC.chartData_${index} = {
                                     labels: [
                                         <% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>
@@ -57,8 +56,7 @@
                                         });
                                     }
                                 });
-                            })
-                        </script>
+                        </laser:script>
                     </td>
                 </tr>
             </g:each>

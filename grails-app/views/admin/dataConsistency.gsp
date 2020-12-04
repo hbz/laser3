@@ -79,7 +79,7 @@
     </form>
 </semui:modal>
 
-<asset:script type="text/javascript">
+<laser:script>
     $('.x button').on('click', function(){
 
         var key = $(this).attr('data-key')
@@ -136,7 +136,7 @@
             }
         });
     })
-</asset:script>
+</laser:script>
 
 </body>
 </html>

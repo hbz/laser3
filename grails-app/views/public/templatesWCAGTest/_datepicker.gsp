@@ -8,7 +8,7 @@
     </div>
 </g:form>
 
-<laser:xhrScript>
+<laser:script>
     // initialize the form and fields
     $('.ui.form').form();
     var val = "${params.dateBeforeFilter}";
@@ -28,4 +28,4 @@
             $(".dateBefore").addClass("hidden");
         }
     })
-</laser:xhrScript>
+</laser:script>

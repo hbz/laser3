@@ -189,7 +189,7 @@
     <br /><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
-<asset:script type="text/javascript">
+<laser:script>
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
@@ -197,7 +197,7 @@
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', false)
         }
     });
-</asset:script>
+</laser:script>
 </body>
 </html>
 

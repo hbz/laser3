@@ -584,11 +584,9 @@
     </div>
 </div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
-</asset:script>
+<laser:script>
+    $('.tabular.menu .item').tab()
+</laser:script>
 
 </body>
 </html>

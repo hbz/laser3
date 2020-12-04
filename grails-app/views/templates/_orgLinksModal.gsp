@@ -42,7 +42,7 @@
 
 </semui:modal>
 
-<laser:xhrScript>
+<laser:script>
     JSPC.oOrTable = null
 
     JSPC.validateAddOrgRole = function () {
@@ -100,4 +100,4 @@
         } );
 
         JSPC.oOrTable.fnAdjustColumnSizing();
-</laser:xhrScript>
+</laser:script>

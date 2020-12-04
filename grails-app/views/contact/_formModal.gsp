@@ -72,7 +72,7 @@
 
     </g:form>
 </semui:modal>
-<laser:xhrScript>
+<laser:script>
         $("#newContact").form({
             on: 'blur',
             inline: true,
@@ -88,4 +88,4 @@
                 }
             }
         });
-</laser:xhrScript>
+</laser:script>

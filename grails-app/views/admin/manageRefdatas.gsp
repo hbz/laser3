@@ -166,7 +166,7 @@
 
             </g:form>
 
-            <asset:script type="text/javascript">
+            <laser:script>
                     $('button[data-xcg-rdv]').on('click', function(){
 
                         var rdv = $(this).attr('data-xcg-rdv');
@@ -197,7 +197,7 @@
                             }, async: false
                         });
                     })
-            </asset:script>
+            </laser:script>
 
         </semui:modal>
 

@@ -20,7 +20,7 @@
         <br />
     </div>
 
-    <laser:xhrScript>
+    <laser:script>
         JSPC.copyToEmailProgram = function() {
             var emailAdresses = $("#filteredEmailAddressesTextArea").val();
             window.location.href = "mailto:"+emailAdresses;
@@ -30,7 +30,7 @@
             $("#filteredEmailAddressesTextArea").select();
             document.execCommand("copy");
         }
-    </laser:xhrScript>
+    </laser:script>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->

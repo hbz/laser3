@@ -118,7 +118,7 @@
     </g:if>
     </div><!-- .la-flex-list -->
 </g:if>
-<laser:xhrScript>
+<laser:script>
     JSPC.editPerson = function (id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
             JSPC.person_editModal(url)
@@ -140,5 +140,5 @@
                 }
             });
         }
-</laser:xhrScript>
+</laser:script>
 							

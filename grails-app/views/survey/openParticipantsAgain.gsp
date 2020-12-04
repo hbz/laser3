@@ -538,10 +538,8 @@
     </div>
 </div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
+<laser:script>
+    $('.tabular.menu .item').tab()
 
     $('#orgListToggler').click(function () {
         if ($(this).prop('checked')) {
@@ -550,7 +548,7 @@
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
         }
     })
-</asset:script>
+</laser:script>
 
 </body>
 </html>

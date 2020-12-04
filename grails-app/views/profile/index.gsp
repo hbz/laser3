@@ -87,10 +87,7 @@
                 </div>
 
             </g:form>
-            <asset:script type="text/javascript">
 
-
-            </asset:script>
         </div><!-- .segment -->
 
     </div><!-- .column -->

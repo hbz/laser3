@@ -61,7 +61,7 @@
                     </dd>
                 </dl>
 
-                <laser:xhrScript>
+                <laser:script>
                     $('#modalCreateDocument .action .icon.button').click( function() {
                         $(this).parent('.action').find('input:file').click();
                     });
@@ -70,7 +70,7 @@
                         var name = e.target.files[0].name;
                         $('input:text', $(e.target).parent()).val(name);
                     });
-                </laser:xhrScript>
+                </laser:script>
             </g:if>
             <dl>
                 <dt>

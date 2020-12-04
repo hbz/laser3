@@ -353,7 +353,7 @@
     </g:form>
 </semui:form>
 <g:if test="${!copyObject}">
-    <laser:xhrScript>
+    <laser:script>
 
         JSPC.subCopyController = {
 
@@ -473,5 +473,5 @@
         }
 
         JSPC.subCopyController.init()
-    </laser:xhrScript>
+    </laser:script>
 </g:if>

@@ -59,7 +59,7 @@
         </g:each>
       </div>
 
-    <asset:script type="text/javascript">
+    <laser:script>
         $('.ann-content').readmore({
             speed: 250,
             collapsedHeight: 21,
@@ -67,7 +67,7 @@
             moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
             lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
         })
-    </asset:script>
+    </laser:script>
 
     <style>
         .ann-content {

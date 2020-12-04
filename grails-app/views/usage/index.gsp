@@ -199,12 +199,10 @@
             </g:each>
         </td></tr>
 </table>
-<asset:script type="text/javascript">
-  $(function(){
+<laser:script>
     $('tr[class*=stats-error-row] .button').click( function(){
       $('.' + $(this).attr('data-target')).toggle()
     })
-  })
-</asset:script>
+</laser:script>
 </body>
 </html>

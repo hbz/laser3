@@ -156,7 +156,7 @@
 </body>
 
 
-<asset:script type="text/javascript">
+<laser:script>
     JSPC.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
         JSPC.createPersonModal(url)
@@ -178,6 +178,6 @@
             }
         });
     }
-</asset:script>
+</laser:script>
 
 </html>

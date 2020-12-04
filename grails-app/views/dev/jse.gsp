@@ -62,8 +62,8 @@
     &nbsp;
     </div>
 
-    <laser:xhrScript>
-        console.log('laser:xhrScript @ body > 9')
-    </laser:xhrScript>
+    <laser:script>
+        console.log('laser:script @ body > 9')
+    </laser:script>
 </body>
 </html>

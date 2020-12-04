@@ -60,7 +60,7 @@
 
         <div id="packageDetails_div"></div>
 
-        <asset:script type="text/javascript">
+        <laser:script>
         JSPC.showDetails = function (id) {
             jQuery.ajax({type:'get', url:"${createLink(controller:'admin', action:'hardDeletePkgs')}"+"/"+id,
                 success: function(data,textStatus){
@@ -70,7 +70,7 @@
                 error: function(XMLHttpRequest,textStatus,errorThrown){}
             });
         }
-        </asset:script>
+        </laser:script>
 
   </body>
 </html>     

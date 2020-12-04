@@ -87,10 +87,7 @@
     </div>
 </g:if>
 
-<asset:script type="text/javascript">
-    $(document).ready(function(){
-       JSPC.adjustDropdown()
-    });
+<laser:script>
     JSPC.adjustDropdown = function () {
 
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
@@ -122,7 +119,9 @@
                 }
         });
     }
-</asset:script>
+
+    JSPC.adjustDropdown()
+</laser:script>
 
 </body>
 </html>

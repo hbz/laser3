@@ -99,11 +99,11 @@
 <br />
 
     <%-- TODO: implement ajax calls --%>
-    <script>
+    <laser:script>
         setTimeout(function() {
             window.document.location.reload();
         }, (30 * 1000)); // refresh ~ 30 Seconds
-    </script>
+    </laser:script>
 
 </body>
 </html>

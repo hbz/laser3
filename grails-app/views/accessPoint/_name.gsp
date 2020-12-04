@@ -32,7 +32,7 @@
     </div>
     <g:field readonly="${name != ''}" type="text" name="name" value="${name}"/>
 </div>
-<laser:xhrScript>
+<laser:script>
     JSPC.fillNameField = function (name) {
         $('#name').val(name);
         if (name !== '') {
@@ -41,4 +41,4 @@
             document.getElementById('name').readOnly = false;
         }
     }
-</laser:xhrScript>
+</laser:script>

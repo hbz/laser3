@@ -224,11 +224,9 @@
     </g:if>
 
     <div id="magicArea"></div>
-    <asset:script type="text/javascript">
-        $(document).ready(function () {
-            $('#finishProcess').progress();
-        });
-    </asset:script>
+    <laser:script>
+        $('#finishProcess').progress();
+    </laser:script>
 
     </body>
     </html>

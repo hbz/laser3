@@ -24,7 +24,7 @@
     </g:each>
 </semui:card>
 
-<laser:xhrScript>
+<laser:script>
     JSPC.taskedit = function (id) {
 
         $.ajax({
@@ -44,4 +44,4 @@
             }
         });
     }
-</laser:xhrScript>
+</laser:script>

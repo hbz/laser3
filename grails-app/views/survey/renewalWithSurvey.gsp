@@ -334,10 +334,8 @@ ${surveyInfo.name}
 </g:if>
 
 
-<asset:script type="text/javascript">
-    $('.menu .item')
-            .tab()
-    ;
-</asset:script>
+<laser:script>
+    $('.menu .item').tab();
+</laser:script>
 </body>
 </html>

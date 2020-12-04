@@ -1,4 +1,4 @@
-<laser:xhrScript>
+<laser:script>
     JSPC.jsConfirmation = function () {
         if ($("td input[data-action='delete']").is(":checked")) {
             return confirm("${g.message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}")
@@ -16,10 +16,10 @@
             }
         }
     }
-</laser:xhrScript>
+</laser:script>
 
 <g:if test="${!copyObject}">
-    <laser:xhrScript>
+    <laser:script>
         // ONLY FOR PROPERIES
         JSPC.takeProperty = $('input[name="copyObject.takeProperty"]');
         JSPC.deleteProperty = $('input[name="copyObject.deleteProperty"]');
@@ -126,5 +126,5 @@
                 JSPC.markAffectedTake(elem)
             }
         });
-    </laser:xhrScript>
+    </laser:script>
 </g:if>

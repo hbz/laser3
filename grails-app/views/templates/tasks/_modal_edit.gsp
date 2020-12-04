@@ -97,7 +97,7 @@
     </g:form>
 
 
-    <laser:xhrScript>
+    <laser:script>
 
         JSPC.callbacks.ajaxPostFunc = function () {
 
@@ -142,6 +142,6 @@
                     }
                 });
         }
-    </laser:xhrScript>
+    </laser:script>
 </semui:modal>
 

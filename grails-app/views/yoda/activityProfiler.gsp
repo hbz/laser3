@@ -30,8 +30,7 @@
                     <td colspan="4">
                         <div id="ct-chart-${index}"></div>
 
-                        <script>
-                            $(document).ready(function(){
+                        <laser:script>
 
                                 <g:if test="${index == 0}">
                                     setTimeout( function(){ console.log(".."); window.dispatchEvent(new Event('resize')) }, 99);
@@ -67,8 +66,8 @@
                                         });
                                     }
                                 });
-                            })
-                        </script>
+
+                        </laser:script>
                     </td>
                 </tr>
             </g:each>

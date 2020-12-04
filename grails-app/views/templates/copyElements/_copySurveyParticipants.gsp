@@ -205,7 +205,7 @@
     </g:form>
 </semui:form>
 
-<laser:xhrScript>
+<laser:script>
         $("#firstTable .titleCell").each(function(k) {
             var v = $(this).height();
             $("#secondTable .titleCell").eq(k).height(v);
@@ -215,7 +215,7 @@
             var v = $(this).height();
             $("#firstTable .titleCell").eq(k).height(v);
         });
-</laser:xhrScript>
+</laser:script>
 
 <style>
 table {

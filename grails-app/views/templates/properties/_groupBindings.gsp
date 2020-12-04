@@ -115,10 +115,10 @@
 
     </div><!-- #propDefGroupBindingConfig -->
 
-<laser:xhrScript>
+<laser:script>
         $('#propDefGroupBindings .actions .button.propDefGroupBindings').on('click', function(e){
             e.preventDefault()
             window.location.reload()
         })
-</laser:xhrScript>
+</laser:script>
 <!-- O: templates/properties/_groupBindings -->

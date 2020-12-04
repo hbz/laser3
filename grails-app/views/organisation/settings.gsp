@@ -150,11 +150,9 @@
                         </div><!-- .content -->
                     </div><!-- .card -->
 
-                    <asset:script type="text/javascript">
-                                $(document).ready(function(){
-                                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                                });
-                    </asset:script>
+                    <laser:script>
+                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
+                    </laser:script>
 
                 </div><!-- .la-inline-lists -->
 

@@ -71,7 +71,7 @@
                 </tbody>
             </table>
         </div>
-        <script>
+        <laser:script>
             $('.trigger-modal').on('click', function(e) {
                 e.preventDefault();
 
@@ -97,6 +97,6 @@
                     }).modal('show');
                 })
             })
-        </script>
+        </laser:script>
     </body>
 </html>

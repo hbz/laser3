@@ -113,7 +113,7 @@
         </div>
     </g:form>
 
-    <asset:script type="text/javascript">
+    <laser:script>
         JSPC.callbacks.modal.show.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))
@@ -122,7 +122,7 @@
             $('#editMailTemplate select[name=type]').dropdown('set selected', $(trigger).attr('data-mailTemplateType'))
             $('#editMailTemplate select[name=language]').dropdown('set selected', $(trigger).attr('data-mailTemplateLanguage'))
         }
-    </asset:script>
+    </laser:script>
 
 </semui:modal>
 

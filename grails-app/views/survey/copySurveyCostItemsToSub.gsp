@@ -238,7 +238,7 @@ ${surveyInfo.name}
     </g:form>
 </semui:form>
 
-<script>
+<laser:script>
     $('#costItemsToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', true)
@@ -246,6 +246,6 @@ ${surveyInfo.name}
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', false)
         }
     })
-</script>
+</laser:script>
 </body>
 </html>

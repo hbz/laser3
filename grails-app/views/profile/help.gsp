@@ -91,8 +91,6 @@
 
 </body>
 </html>
-<asset:script type="text/javascript">
-    $(document).ready(function() {
-            $('.ui.accordion').accordion('exclusive', false);
-    });
-</asset:script>
+<laser:script>
+    $('.ui.accordion').accordion('exclusive', false);
+</laser:script>

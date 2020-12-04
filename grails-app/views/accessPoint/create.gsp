@@ -8,9 +8,9 @@
 	</head>
 
 <body>
-<laser:xhrScript>
+<laser:script>
     $('body').attr('class', 'organisation_accessPoint_create');
-</laser:xhrScript>
+</laser:script>
 
 <div>
   <semui:breadcrumbs>
