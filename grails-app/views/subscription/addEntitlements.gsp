@@ -123,7 +123,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
     </div>
 </g:form>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });
@@ -416,7 +416,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 </g:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.selectAll = function () {
         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);

@@ -396,7 +396,7 @@
     <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
 </g:else>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
 JSPC.isClicked = false;
 

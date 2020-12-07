@@ -156,7 +156,7 @@
 </body>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
         JSPC.createPersonModal(url)

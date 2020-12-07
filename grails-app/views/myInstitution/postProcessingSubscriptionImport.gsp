@@ -110,7 +110,7 @@
             </table>
         </g:form>
     </body>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
                     $(".ciSelect").prop('checked',true);

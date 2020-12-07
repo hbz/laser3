@@ -516,7 +516,7 @@
 
 </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 <g:if test="${showCheckbox}">
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {

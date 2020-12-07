@@ -38,7 +38,7 @@
     </asset:script>
     <p><strong>SUCCESS</strong></p>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         console.log('[XHR_full] laser:script @ body > 9')
     </laser:script>
 </body>

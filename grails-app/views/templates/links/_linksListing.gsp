@@ -49,7 +49,7 @@
                                             <i class="ui angle double down icon"></i>
                                         </button>
                                     </span>
-                                    <laser:script>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
                                         $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
                                             //$("#derived-license-properties${link.id}").toggleClass('hidden');

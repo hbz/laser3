@@ -39,7 +39,7 @@
                             <div class="field" style="text-align: right;">
                                 <button id="bulkCostItems-toggle"
                                         class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
-                                <laser:script>
+                                <laser:script file="${this.getGroovyPageFileName()}">
                                     $('#bulkCostItems-toggle').on('click', function () {
                                         $('#bulkCostItems').toggleClass('hidden')
                                         if ($('#bulkCostItems').hasClass('hidden')) {
@@ -73,7 +73,7 @@
         </div>
 
     </div>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.tab = "${showView}";
                 JSPC.rawHref = $(".exportCSV").attr("href");
                 JSPC.isClicked = false;

@@ -97,7 +97,7 @@
     </g:form>
 
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.callbacks.dynPostFunc = function () {
             console.log('dynPostFunc @ tasks/_modal_edit.gsp');

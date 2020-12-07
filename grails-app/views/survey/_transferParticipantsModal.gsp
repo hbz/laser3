@@ -163,7 +163,7 @@
                                   noSelection="${['' : message(code:'default.select.all.label')]}"
                                   name="generateSlavedLicsReference"/>
                     </div>
-                    <laser:script>
+                    <laser:script file="${this.getGroovyPageFileName()}">
                         $('*[name=generateSlavedLics]').change(function () {
                             $('*[name=generateSlavedLics][value=partial]').prop('checked') ? $('.generateSlavedLicsReference-wrapper').removeClass('hidden') : $('.generateSlavedLicsReference-wrapper').addClass('hidden');
                         })

@@ -268,7 +268,7 @@
 
 <!-- _filter.gsp -->
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
     $.fn.dropdown.settings.message = {
         noResults: "<g:message code="select2.noMatchesFound" />"

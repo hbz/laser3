@@ -101,7 +101,7 @@
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
                                 <%--<div id="${s.id}linkedLicenses">
-                                    <laser:script>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
                                         $.ajax({
                                             url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
                                             data: {
@@ -319,7 +319,7 @@
                     total="${num_sub_rows}"/>
 </g:if>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
               // initialize the form and fields
               $('.ui.form').form();
             var val = "${params.dateBeforeFilter}";

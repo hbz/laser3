@@ -34,7 +34,7 @@
         </div>
     </g:form>
 </semui:filter>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.cfg = {}
     JSPC.cfg.org = false;
     JSPC.cfg.lic = false

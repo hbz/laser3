@@ -24,7 +24,7 @@
     </g:each>
 </semui:card>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.taskedit = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
         func();

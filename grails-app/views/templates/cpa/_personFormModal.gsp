@@ -331,7 +331,7 @@
                                         propertyWrapper: "${propertyWrapper}",
                                         tenant          : contextOrg,
                                         withoutRender   : true]}"/>
-                                <laser:script>
+                                <laser:script file="${this.getGroovyPageFileName()}">
                                     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
                                 </laser:script>
                             </div>
@@ -342,7 +342,7 @@
         </div>
     </g:if>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $('#person_form').form({
                 on: 'blur',
                 inline: true,

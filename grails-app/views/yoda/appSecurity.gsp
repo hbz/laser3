@@ -82,7 +82,7 @@
 
 <button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.resultViewModes = [
         'Sichtbar: Alle Methoden',
         'ToDo: Nicht transaktionsgesicherte Methoden',

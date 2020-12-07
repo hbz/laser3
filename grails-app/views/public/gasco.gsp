@@ -92,7 +92,7 @@
             <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/GASCO-Logo-2_klein.jpg')}"/>
         </div>
     </div>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.toggleFilterPart = function () {
                 if ($('.js-consortiallicence input').prop('checked')) {
                     $('#js-consotial-authority .dropdown').removeClass('disabled')

@@ -43,7 +43,7 @@
 </g:form>
 
 </body>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         JSPC.tippsToAdd = [];
         JSPC.tippsToDelete = [];
 

@@ -141,7 +141,7 @@
     </g:form>
 </semui:modal>
 <g:if test="${!link}">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         $("#${selectPair}").dropdown({
             apiSettings: {
                 url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",

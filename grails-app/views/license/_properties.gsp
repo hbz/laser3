@@ -120,7 +120,7 @@
     </div>
     <%--</div>--%>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
     </laser:script>
 
@@ -139,7 +139,7 @@
                     propertyWrapper: "${propertyWrapper}",
                     tenant: contextOrg]}"/>
 
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                 c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
             </laser:script>
 

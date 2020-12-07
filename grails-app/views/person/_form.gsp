@@ -193,7 +193,7 @@
 	</div>
 
 
-	<laser:script>
+	<laser:script file="${this.getGroovyPageFileName()}">
 		$.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
 			$('.person-role-function-manager .workspace .existing').append(data);
 		});

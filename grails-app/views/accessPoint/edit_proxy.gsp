@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
 </laser:script>
 
@@ -209,7 +209,7 @@
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
 </div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.menu .item').tab();
 </laser:script>
 </body>

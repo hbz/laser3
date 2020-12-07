@@ -146,7 +146,7 @@
 
 </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 

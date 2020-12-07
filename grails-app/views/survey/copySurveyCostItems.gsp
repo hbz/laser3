@@ -490,7 +490,7 @@ ${surveyInfo.name}
         </div>
     </g:form>
 </semui:form>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#costItemsToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', true)

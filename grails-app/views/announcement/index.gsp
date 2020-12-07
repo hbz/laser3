@@ -59,7 +59,7 @@
         </g:each>
       </div>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('.ann-content').readmore({
             speed: 250,
             collapsedHeight: 21,

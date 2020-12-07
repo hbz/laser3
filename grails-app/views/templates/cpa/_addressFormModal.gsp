@@ -145,7 +145,7 @@
     </g:form>
 
     <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.updateDropdown = function() {
             var dropdownRegion = $('#region');

@@ -265,7 +265,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:form>
 
 </body>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         JSPC.iesToAdd = [];
 
         $(".select-all").click(function () {

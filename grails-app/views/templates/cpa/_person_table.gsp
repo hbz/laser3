@@ -222,7 +222,7 @@
     </tbody>
 </table>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.editPerson = function (id) {
         var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
         JSPC.person_editModal(url)

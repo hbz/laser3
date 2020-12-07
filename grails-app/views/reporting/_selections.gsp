@@ -27,7 +27,7 @@
             <input  id="filterProp" name="filterProp" type="text" class="generalLoadingParam" data-requestParam="${queried}"
                     placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>--%>
         </div>
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.propertyFilterController = {
 
                     updateProp: function (selOpt) {

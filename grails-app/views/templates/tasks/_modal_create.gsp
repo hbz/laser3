@@ -193,7 +193,7 @@
 
     </g:form>
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
@@ -222,7 +222,7 @@
             JSPC.showHideRequire ( 'org' );
         </laser:script>
     </g:if>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $("#radioresponsibleOrg").change(function () {
                 $('#radioGroup').find("#responsibleUser").toggle();
             });

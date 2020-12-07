@@ -270,7 +270,7 @@
     </table>
 </div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $("simpleHiddenRefdata").editable({
         url: function (params) {
             var hidden_field_id = $(this).data('hidden-id');

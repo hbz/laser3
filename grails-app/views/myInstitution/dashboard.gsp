@@ -428,7 +428,7 @@
                     <g:render template="surveys"/>
         </div>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
 
         JSPC.taskedit = function(id) {

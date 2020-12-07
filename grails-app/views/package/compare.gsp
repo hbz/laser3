@@ -258,7 +258,7 @@
 		 pkgBName:pkgInsts.get(1).name ]"/>
 </g:each>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 	JSPC.applySelect2 = function (filter) {
       var pkgA = {id:'${pkgInsts?.get(0)?.id}',text:"${pkgInsts?.get(0)?.name}"};
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};

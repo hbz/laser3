@@ -361,7 +361,7 @@
 
     </g:form>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
     /*var costSelectors = {
         lc:   "#newCostInLocalCurrency",

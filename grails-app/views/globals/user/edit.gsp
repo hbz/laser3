@@ -175,7 +175,7 @@
             </g:if>
           </table>
 
-                  <laser:script>
+                  <laser:script file="${this.getGroovyPageFileName()}">
                       $("#userRoleSelect").select2({
                         placeholder: "${message(code:'user.role.search.ph')}",
                         minimumInputLength: 0,

@@ -241,7 +241,7 @@
 
 <div id="magicArea"></div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#finishProcess').progress();
     $('#finishProcess2').progress();
 </laser:script>

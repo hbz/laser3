@@ -17,7 +17,7 @@
     </asset:script>
     <p><strong>SUCCESS</strong></p>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         console.log('[XHR] laser:script @ body > 5')
     </laser:script>
 </div>

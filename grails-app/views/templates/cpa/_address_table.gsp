@@ -94,7 +94,7 @@
     </tbody>
 </table>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.editAddress = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", "<g:createLink controller="ajaxHtml" action="editAddress"/>?id=" + id, false);
         func();

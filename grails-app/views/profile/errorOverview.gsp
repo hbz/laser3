@@ -134,7 +134,7 @@
             </tbody>
         </table>
 
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('tr[class*=ticket-row] .button').click( function(){
                 $('.' + $(this).attr('data-target')).toggle()
             })

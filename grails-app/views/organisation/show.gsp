@@ -500,7 +500,7 @@
 
 </body>
 </html>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#country').on('save', function(e, params) {
         JSPC.showRegionsdropdown(params.newValue);
     });
