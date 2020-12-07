@@ -194,7 +194,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         propertySet    batchSize: 10
         //privateProperties   batchSize: 10
         documents           batchSize: 10
-        platforms           batchSize: 10
+        platforms           sort:'name', order:'asc', batchSize: 10
         hasCreated          batchSize: 10
         hasLegallyObliged   batchSize: 10
     }

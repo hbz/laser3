@@ -152,11 +152,9 @@ class OrganisationControllerService {
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)
-            result.targetCustomerType = result.orgInstance.getCustomerType()
-            result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
             result.isProviderOrAgency = RDStore.OT_PROVIDER.id in result.allOrgTypeIds || RDStore.OT_AGENCY.id in result.allOrgTypeIds
             result.editable = controller.checkIsEditable(user, result.orgInstance)
-            result.inContextOrg = result.orgInstance?.id == org.id
+            result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
             if (checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM) {
@@ -172,7 +170,11 @@ class OrganisationControllerService {
         }
         else {
             result.editable = controller.checkIsEditable(user, org)
+            result.orgInstance = result.institution
+            result.inContextOrg = true
         }
+        result.targetCustomerType = result.orgInstance.getCustomerType()
+        result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
 
         result
     }
