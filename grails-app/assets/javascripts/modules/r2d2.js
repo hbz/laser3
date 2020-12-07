@@ -39,11 +39,10 @@ r2d2 = {
                     var year = date.getFullYear();
 
                     if ('dd.mm.yyyy' == JSPC.vars.dateFormat) {
-                        console.log('dd.mm.yyyy');
                         return day + '.' + month + '.' + year;
                     }
                     else if ('yyyy-mm-dd' == JSPC.vars.dateFormat) {
-                        console.log('yyyy-mm-dd');
+                        //console.log('yyyy-mm-dd');
                         return year + '-' + month + '-' + day;
                     }
                     else {

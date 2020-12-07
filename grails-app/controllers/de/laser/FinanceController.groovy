@@ -381,10 +381,8 @@ class FinanceController  {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
         result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
-        if(!result.dataToDisplay.contains('subscr')) {
-            if(result.costItem.taxKey)
-                result.taxKey = result.costItem.taxKey
-        }
+        if(result.costItem.taxKey)
+            result.taxKey = result.costItem.taxKey
         result.modalText = message(code: 'financials.editCost')
         result.submitButtonLabel = message(code:'default.button.save.label')
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
