@@ -142,7 +142,7 @@
         </semui:card>
     </g:if>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.noteedit = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,

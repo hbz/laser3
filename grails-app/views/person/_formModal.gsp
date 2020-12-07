@@ -288,7 +288,7 @@
 
     </g:form>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.fc = "${RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
 

@@ -78,7 +78,7 @@
         </g:form>
     </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.license-results input[type="radio"]').click(function () {
         $('.license-options').slideDown('fast');
     });

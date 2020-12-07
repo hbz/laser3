@@ -52,7 +52,7 @@
                 </div>
             </div>
         </form>
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('#filterButton').on('click', function() {
 
                 var fCat = $('#filter_category').val()

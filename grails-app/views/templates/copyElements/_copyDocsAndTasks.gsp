@@ -353,7 +353,7 @@
     </g:form>
 </semui:form>
 <g:if test="${!copyObject}">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.subCopyController = {
 

@@ -9,7 +9,7 @@
 </div>
 
 <g:applyCodec encodeAs="none">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.goSubGraph = function() {
             let result, labels, seriesObj, series
                 <g:if test="${costItemDevelopment}">

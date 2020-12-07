@@ -66,7 +66,7 @@
 
     </g:form>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $(".referenceGroup").dropdown({
                 allowAdditions: true,
                 clearable: true

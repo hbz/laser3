@@ -135,7 +135,7 @@
 
 </semui:subNav>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $(document).on('click','.dropdown .item',function(e){
             $('.ui .item').removeClass('active');
             $(this).addClass('active');

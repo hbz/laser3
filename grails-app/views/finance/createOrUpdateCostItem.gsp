@@ -132,7 +132,7 @@
     </div>
   </body>
 
-  <laser:script>
+  <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.filtersUpdated = function () {
       $('#newInvoiceNumber').val($('#filterInvoiceNumber').val());

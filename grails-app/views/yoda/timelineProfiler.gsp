@@ -30,7 +30,7 @@
 
                         <div id="ct-chart-${index}"></div>
 
-                        <laser:script>
+                        <laser:script file="${this.getGroovyPageFileName()}">
                                 JSPC.chartData_${index} = {
                                     labels: [
                                         <% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>

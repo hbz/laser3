@@ -64,7 +64,7 @@
         <br />
     </div>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.jsonOrgIdList = null
 
         JSPC.copyToEmailProgram = function () {

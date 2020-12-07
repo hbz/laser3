@@ -22,7 +22,7 @@
 </div>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.updateDropdown = function () {
             var dropdownRegion = $('#filterRegion');

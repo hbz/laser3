@@ -228,7 +228,7 @@
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
             <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="JSPC.formFilter(event)" />
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.formFilter = function (e) {
                     e.preventDefault()
 

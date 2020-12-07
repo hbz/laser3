@@ -183,7 +183,7 @@
     </g:form>
 </semui:filter>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.subStatus = "FETCH_ALL"
     if ($("#status").length > 0) {
         JSPC.subStatus = $("#status").val();

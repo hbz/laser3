@@ -8,7 +8,7 @@
     </div>
 </g:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     // initialize the form and fields
     $('.ui.form').form();
     var val = "${params.dateBeforeFilter}";

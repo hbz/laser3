@@ -172,7 +172,7 @@
 
     </g:form>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
         console.log(JSPC.costItemElementConfigurations);

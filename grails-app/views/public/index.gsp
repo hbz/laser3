@@ -155,7 +155,7 @@
 </div>
 
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
                 // fix menu when passed
                 $('.masthead')
                     .visibility({

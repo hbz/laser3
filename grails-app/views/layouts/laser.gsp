@@ -589,7 +589,7 @@
                                     </div>
                                 </g:else>
                             </div>
-                            <laser:script>
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 JSPC.LaToggle = {};
                                 JSPC.LaToggle.advanced = {};
                                 JSPC.LaToggle.advanced.button = {};
@@ -675,7 +675,7 @@
         %{-- decksaver --}%
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                 <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                     <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
                         deckSaver.configs.editMode  = true;

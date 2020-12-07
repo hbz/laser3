@@ -199,7 +199,7 @@
             </g:each>
         </td></tr>
 </table>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('tr[class*=stats-error-row] .button').click( function(){
       $('.' + $(this).attr('data-target')).toggle()
     })

@@ -65,7 +65,7 @@
         </g:if>
     </body>
 </html>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
         $("#username").keyup(function() {
             JSPC.checkUsername();

@@ -113,7 +113,7 @@
         </div>
     </g:form>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.callbacks.modal.show.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))

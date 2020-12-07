@@ -16,7 +16,7 @@
         })
     </asset:script>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         console.log('[TMPL_${pos}] laser:script @ body > 9')
     </laser:script>
 </div>

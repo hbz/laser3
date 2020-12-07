@@ -1,4 +1,4 @@
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.taskcreate = function () {
 
         $.ajax({

@@ -126,7 +126,7 @@
                         </div>
                     </div>
                 </g:form>
-                <laser:script>
+                <laser:script file="${this.getGroovyPageFileName()}">
                     $('.action .icon.button').click(function () {
                         $(this).parent('.action').find('input:file').click();
                     });
@@ -534,7 +534,7 @@
 </div>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
       JSPC.hideModal = function () {
         $("[name='coreAssertionEdit']").modal('hide');
       }

@@ -224,7 +224,7 @@
     </g:if>
 
     <div id="magicArea"></div>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('#finishProcess').progress();
     </laser:script>
 

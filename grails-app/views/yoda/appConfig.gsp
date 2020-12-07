@@ -18,7 +18,7 @@
 
 <p>${message(code:'sys.properties')}</p>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
 </laser:script>
 

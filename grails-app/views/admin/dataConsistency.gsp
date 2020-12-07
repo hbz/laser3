@@ -79,7 +79,7 @@
     </form>
 </semui:modal>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.x button').on('click', function(){
 
         var key = $(this).attr('data-key')

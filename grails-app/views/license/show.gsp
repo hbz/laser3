@@ -186,7 +186,7 @@
             </aside><!-- .four -->
 
         </div><!-- .grid -->
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                 data: {

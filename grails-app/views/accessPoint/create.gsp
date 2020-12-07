@@ -8,7 +8,7 @@
 	</head>
 
 <body>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_create');
 </laser:script>
 

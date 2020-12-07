@@ -115,7 +115,7 @@
 
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         JSPC.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
                 $('#create_task')

@@ -24,7 +24,7 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <laser:script>
+                        <laser:script file="${this.getGroovyPageFileName()}">
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
@@ -34,7 +34,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <laser:script>
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');
@@ -80,7 +80,7 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <laser:script>
+                        <laser:script file="${this.getGroovyPageFileName()}">
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
@@ -90,7 +90,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <laser:script>
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');

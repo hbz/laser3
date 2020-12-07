@@ -74,7 +74,7 @@
     </g:form>
 </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $('#subSurveyUseForTransfer').click(function () {
             if ($(this).prop('checked')) {
                 $('#mandatory').prop('checked', true)

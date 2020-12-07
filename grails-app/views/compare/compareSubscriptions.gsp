@@ -87,7 +87,7 @@
     </div>
 </g:if>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.adjustDropdown = function () {
 
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
