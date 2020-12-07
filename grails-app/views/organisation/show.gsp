@@ -316,7 +316,7 @@
                             <dd>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance.platforms.sort { it?.name }}" var="platform">
+                                    <g:each in="${orgInstance.platforms}" var="platform">
                                         <div class="ui item">
                                             <div class="content la-space-right">
                                                 <strong><g:link controller="platform" action="show"
@@ -340,7 +340,7 @@
                     </g:if>
 
                     <div class="ui la-float-right">
-                        <g:if test="${(orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -387,7 +387,6 @@
                                         <div class="card">
                                             <div class="content">
                                                 <div class="header">${typeName}</div>
-
                                                 <div class="description">
                                                     <div class="ui divided middle aligned list la-flex-list">
                                                         <% List addresses = typeAddressMap.get(typeName) %>
@@ -417,7 +416,7 @@
                 </div>
             </div><!-- .card -->
 
-                <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM') && (contextService.getOrg() != orgInstance)}">
+                <g:if test="${(user.isAdmin() || institution.getCustomerType()  == 'ORG_CONSORTIUM') && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">

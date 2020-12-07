@@ -13,7 +13,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <g:if test="${orgInstance.id != contextService.getOrg().id}">
+    <g:if test="${inContextOrg}">
         <semui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show" params="[id: orgInstance.id]" />
     </g:if>
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
@@ -25,7 +25,6 @@
 
 <semui:messages data="${flash}"/>
 
-<%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
 <g:render template="/organisation/nav"/>
 
 
@@ -68,7 +67,7 @@
                     <label for="prs">${message(code: 'person.filter.name')}</label>
 
                     <div class="ui input">
-                        <input type="text" name="prs" value="${params.prs}"
+                        <input type="text" id="prs" name="prs" value="${params.prs}"
                                placeholder="${message(code: 'person.filter.name')}"/>
                     </div>
                 </div>

@@ -30,9 +30,9 @@
         </g:if>
         <g:elseif test="${ accessService.checkForeignOrgComboPermAffiliation([
                 org: orgInstance,
-                comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
+                comboPerm: "ORG_CONSORTIUM",
                 comboAffiliation: "INST_ADM"
-        ]) && orgInstance.getAllValidInstAdmins().isEmpty() }">
+        ]) && organisationService.hasInstAdmin(orgInstance) }">
             <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
         </g:elseif>
         <g:else>
