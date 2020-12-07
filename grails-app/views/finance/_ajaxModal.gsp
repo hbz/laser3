@@ -561,6 +561,8 @@
         });
 
             JSPC.callbacks.ajaxPostFunc = function() {
+                console.log('ajaxPostFunc @ finance/_ajaxModal.gsp')
+
                 $(".newCISelect").each(function(k,v){
                     $(this).dropdown({
                         apiSettings: {

@@ -284,6 +284,10 @@
         JSPC.chooseRequiredDropdown('status.id');
 
         JSPC.callbacks.ajaxPostFunc = function () {
+            console.log('ajaxPostFunc @ tasks/_modal_create.gsp')
+
+            r2d2.initDynamicSemuiStuff('#modalCreateTask');
+            r2d2.initDynamicXEditableStuff('#modalCreateTask');
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();
