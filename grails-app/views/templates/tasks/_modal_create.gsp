@@ -283,7 +283,8 @@
         }
         JSPC.chooseRequiredDropdown('status.id');
 
-        JSPC.callbacks.ajaxPostFunc = function () {
+        JSPC.callbacks.dynPostFunc = function () {
+            console.log('dynPostFunc @ tasks/_modal_create.gsp');
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();

@@ -81,8 +81,7 @@
         }
     </style>
 
-    <asset:stylesheet src="swagger.css"/>%{-- dont move --}%
-    <asset:javascript src="swagger.js"/>%{-- dont move --}%
+    <asset:stylesheet src="swagger.css"/><asset:javascript src="swagger.js"/>%{-- dont move --}%
 
     <tmpl:/layouts/favicon />
 </head>

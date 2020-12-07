@@ -7,8 +7,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <asset:stylesheet src="ebookCatalogue.css"/>%{-- dont move --}%
-    <asset:javascript src="ebookCatalogue.js"/>%{-- dont move --}%
+    <asset:stylesheet src="ebookCatalogue.css"/><asset:javascript src="ebookCatalogue.js"/>%{-- dont move --}%
 
     <tmpl:/layouts/favicon />
 </head>

@@ -9,12 +9,6 @@
 
         <h3 class="ui header">${message(code: 'task.myTasks.header')} <semui:totalNumber total="${taskInstanceCount}"/></h3>
 
-        <%--
-        <g:if test="${editable && controllerName != 'myInstitution'}">
-            <input type="button" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask"/>
-        </g:if>
-        --%>
-
         <table class="ui sortable celled la-table table">
             <thead>
             <tr>

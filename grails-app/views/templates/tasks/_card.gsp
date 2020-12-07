@@ -26,22 +26,7 @@
 
 <laser:script>
     JSPC.taskedit = function (id) {
-
-        $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalEditTask").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function() {
-                        $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                        JSPC.callbacks.ajaxPostFunc();
-                        $('.dropdown').dropdown();
-                    }
-                }).modal('show')
-            }
-        });
+        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+        func();
     }
 </laser:script>

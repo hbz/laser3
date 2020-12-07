@@ -3,7 +3,7 @@
 JSPC = {
     currLanguage : $('html').attr('lang'),
 
-    gsp : { // -- var injection
+    vars : { // -- var injection
         locale: "${message(code:'default.locale.label')}",
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
         ajaxLookupUrl: "<g:createLink controller='ajaxJson' action='lookup'/>",
@@ -15,7 +15,7 @@ JSPC = {
             show : {
             }
         },
-        ajaxPostFunc : function () { console.log('JSPC.callbacks.ajaxPostFunc - default') }
+        dynPostFunc : function () { console.log('JSPC.callbacks.dynPostFunc - default') }
     },
 
     helper : { // -- often used snippets

@@ -10,36 +10,41 @@
 
 ## install semantic-ui
 
-    cd [laser]/app 
+    cd [laser]/files/frontend/semantic/
     npm install semantic-ui --save
     
 The File semantic.json is automaticly build from your choises in the intallation prozess.
 You have to choose the Folders for the source and the build
     
-Result: app/nodes_moules 
-    
-## change CSS or JS in source ([laser]/app/semantic/src/..)
 
-Our custom theme overrides some optional packaged themes, which override default theme.
+
+# How to update semantic ui
+!!!!! Do not use the otherwise recommended update function of a node module 
+
+But:
+
+ - install the newest version of semantic ui anywhere else
+ - rename the folder
+ - put the renamed copy of the semantic folder in your IDE on the same level as the to updated semantic folder
+ - and compare the semantic folder in your IDE
+ - update the files by hand
+ - be carefully and keep the old code here:
+    - /files/frontend/semantic/src/definitions/modules/dropdown.js --> changes for accessibility
+    - /files/frontend/semantic/src/definitions/modules/calendar --> for added UI convenience
+    - /files/frontend/semantic/src/tasks/ --> changed for opportunity of two parallel themes at the same time
+    
+  
+
 
  
-##  overwrite (build) the files in destination: ([laser]/app/web-app/semantic/..)
- 
-    cd [laser]/app/semantic
-    gulp build --> build all JS, CSS and other Resources
-    
-or
-    
-    gulp build-css -->like build but only css
-    
-or
-    
-    gulp watch -->Watch every change in folder [laser]/app/semantic and build 
     
 -----------------------------------------------------
 
 
 # How to customize CSS
+
+Our custom themes and the default theme override the *.less in 'src/definitions'. The folder 'src/side' is not used yet.
+
 
 ## Theming
 
@@ -64,7 +69,9 @@ I would like to change the padding between an icon and content in a list
 
 4.) Change the theme.config 
 
-    app/semantic/src/theme.config
+    /files/frontend/semantic/src/definitions/themes/laser/theme.config
+
+    /files/frontend/semantic/src/definitions/themes/accessibility/theme.config
     
 old:
 
@@ -79,10 +86,11 @@ new:
     cd semantic
     gulp build
 
+
 # Important Informations
 
 ## Datepicker
 
 - 'by hand' implemented the sementic-ui datepicker
-- it is not in current semantic-ui version (2.2)
+- it is not in current semantic-ui version (2.4.2)
 - https://github.com/Semantic-Org/Semantic-UI/pull/3256/files

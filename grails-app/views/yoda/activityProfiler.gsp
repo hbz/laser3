@@ -3,7 +3,7 @@
 <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
-    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>
+    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>%{-- dont move --}%
 </head>
 <body>
 

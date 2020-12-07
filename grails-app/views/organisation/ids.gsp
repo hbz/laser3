@@ -190,8 +190,6 @@
                             onVisible: function () {
                                 r2d2.initDynamicSemuiStuff('#modalCreateCustomerIdentifier');
                                 r2d2.initDynamicXEditableStuff('#modalCreateCustomerIdentifier');
-
-                                // JSPC.callbacks.ajaxPostFunc()
                             }
                         }).modal('show');
                     }

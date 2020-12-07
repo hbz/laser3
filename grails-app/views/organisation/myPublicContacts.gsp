@@ -220,55 +220,18 @@
 
 
 <laser:script>
-
     $('.tabular.menu .item').tab()
 
     JSPC.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
-        JSPC.createPersonModal(url)
-    }
-
-    JSPC.createPersonModal = function (url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#personModal").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personModal');
-                        r2d2.initDynamicXEditableStuff('#personModal');
-                    }
-                }).modal('show');
-            }
-        });
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showAddresses=false&showContacts=true';
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        func();
     }
 
     JSPC.addresscreate_org = function (orgId) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId;
-            JSPC.address_modal(url);
-    }
-
-    JSPC.address_modal = function (url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
     }
 </laser:script>
 </html>

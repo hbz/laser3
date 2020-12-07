@@ -514,59 +514,26 @@
         }
     };
 
-        JSPC.addresscreate_org = function (orgId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            JSPC.private_address_modal(url);
-        }
-        JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            JSPC.private_address_modal(url);
-        }
+    JSPC.addresscreate_org = function (orgId, typeId, redirect, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
+    }
 
-        JSPC.private_address_modal = function (url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
+    JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
+    }
 
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
-
-        JSPC.showRegionsdropdown( $("#country").editable('getValue', true) );
+    JSPC.showRegionsdropdown( $("#country").editable('getValue', true) );
 
 <g:if test="${isProviderOrAgency}">
-    JSPC.personCreate = function(contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml"
-                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
-        JSPC.createPersonModal(url)
-    }
-    JSPC.createPersonModal = function (url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#personModal").remove();
 
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personModal');
-                        r2d2.initDynamicXEditableStuff('#personModal');
-                    }
-                }).modal('show');
-            }
-        });
+    JSPC.personCreate = function (contactFor, org) {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true';
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        func();
     }
 </g:if>
 </laser:script>
