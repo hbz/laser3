@@ -43,6 +43,16 @@ class OrganisationService {
         // does not work unless session is not flushed what causes crashes in sync
     }
 
+    boolean hasInstAdmin(Org org) {
+        //selecting IDs is much more performant than whole objects
+        List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
+                        "uo.org = :org and role.authority = :role and uo.status = :approved and u.enabled = true",
+                [org: org,
+                 role: 'INST_ADM',
+                 approved: UserOrg.STATUS_APPROVED])
+        admins > 0
+    }
+
     /**
      * Exports organisation data in the given format. It can be specified if higher education titles should be outputted or not.
      * Do NOT mix this method with exportOrgs of MyInstitutionController which is for consortia subscription members! That method should be generalised as well!!

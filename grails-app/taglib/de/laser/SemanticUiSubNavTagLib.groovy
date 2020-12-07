@@ -1,7 +1,7 @@
 package de.laser
 
+import de.laser.auth.User
 import de.laser.helper.SwissKnife
-import org.springframework.web.servlet.support.RequestContextUtils
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 class SemanticUiSubNavTagLib {
@@ -83,6 +83,7 @@ class SemanticUiSubNavTagLib {
 
     def securedSubNavItem = { attrs, body ->
 
+        User user = contextService.getUser()
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def linkBody = (text && message) ? text + " - " + message : text + message
 
@@ -91,11 +92,11 @@ class SemanticUiSubNavTagLib {
         if (!check) {
 
             if (attrs.affiliation && attrs.orgPerm) {
-                if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
+                if (user?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
                     check = true
                 }
             }
-            else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
+            else if (attrs.affiliation && user?.hasAffiliation(attrs.affiliation)) {
                 check = true
             }
             else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
@@ -103,7 +104,7 @@ class SemanticUiSubNavTagLib {
             }
 
             if (attrs.affiliation && attrs.affiliationOrg && check) {
-                check = contextService.getUser()?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
+                check = user?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
             }
         }
 
