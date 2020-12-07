@@ -342,7 +342,7 @@ $.fn.dropdown = function(parameters) {
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
                   //.attr('aria-controls',id+'_listBox') // a11y
-                  //.attr('aria-labelledby',id+'_formLabel') // a11y
+                  .attr('aria-labelledby',id+'_formLabel') // a11y
                 .insertBefore($text)
               ;
             }
@@ -397,6 +397,7 @@ $.fn.dropdown = function(parameters) {
                     .attr('aria-haspopup','listbox') //a11y
                     .attr('aria-owns',id + '_listBox') //a11y
                     .attr('aria-expanded','false') //a11y
+                    .attr('aria-labelledby',id+'_formLabel')
                     .html( templates.dropdown(selectValues,id) )
                     .insertBefore($input)
                 ;
