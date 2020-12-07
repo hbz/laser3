@@ -40,7 +40,7 @@ ${currentAnnouncement?.getCleanContent()}
                 </textarea>
             </div>
 
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.updateSysAnnPreview = function() {
                     $('#saPreview').text(
                         $('form #saTitle').val().replace(/<.*?>/gm,"") + '\n\n' +

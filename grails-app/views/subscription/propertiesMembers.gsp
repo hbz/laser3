@@ -668,7 +668,7 @@
 
 <div id="magicArea"></div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)

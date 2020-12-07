@@ -71,7 +71,7 @@
                 </tbody>
             </table>
         </div>
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('.trigger-modal').on('click', function(e) {
                 e.preventDefault();
 

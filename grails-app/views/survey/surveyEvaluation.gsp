@@ -108,7 +108,7 @@
 
 </g:else>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.tabular.menu .item').tab()
 </laser:script>
 

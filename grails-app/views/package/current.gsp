@@ -206,7 +206,7 @@
               contextPath="../templates" 
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />--%>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
        JSPC.selectAll = function () {
          $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
 

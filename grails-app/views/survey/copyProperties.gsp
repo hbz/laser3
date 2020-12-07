@@ -695,7 +695,7 @@ ${surveyInfo.name}
 </g:if>
 </div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSub]").prop('checked', true)

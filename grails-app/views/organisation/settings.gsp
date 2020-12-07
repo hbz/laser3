@@ -46,7 +46,7 @@
                                 </thead>
                                 <tbody>
                                 <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
-                                <laser:script>
+                                <laser:script file="${this.getGroovyPageFileName()}">
 
                                     $('body #oamonitor_server_access').editable('destroy').editable({
                                         validate: function (value) {
@@ -150,7 +150,7 @@
                         </div><!-- .content -->
                     </div><!-- .card -->
 
-                    <laser:script>
+                    <laser:script file="${this.getGroovyPageFileName()}">
                         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
                     </laser:script>
 

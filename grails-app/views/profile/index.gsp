@@ -526,7 +526,7 @@
 
 </div><!-- .grid -->
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.setupUnitAmount = function (type, amount) {
         console.log(type);

@@ -32,7 +32,7 @@
     </div>
     <g:field readonly="${name != ''}" type="text" name="name" value="${name}"/>
 </div>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.fillNameField = function (name) {
         $('#name').val(name);
         if (name !== '') {

@@ -20,7 +20,7 @@
         <br />
     </div>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.copyToEmailProgram = function() {
             var emailAdresses = $("#filteredEmailAddressesTextArea").val();
             window.location.href = "mailto:"+emailAdresses;

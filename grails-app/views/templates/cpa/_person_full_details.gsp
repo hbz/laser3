@@ -216,7 +216,7 @@
     </g:if>
 </g:if>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
             var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);

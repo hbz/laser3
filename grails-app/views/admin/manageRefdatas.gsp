@@ -166,7 +166,7 @@
 
             </g:form>
 
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                     $('button[data-xcg-rdv]').on('click', function(){
 
                         var rdv = $(this).attr('data-xcg-rdv');

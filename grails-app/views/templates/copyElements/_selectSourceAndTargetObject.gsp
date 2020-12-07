@@ -99,7 +99,7 @@
     </g:form>
 </g:if>
 <g:if test="${sourceObject instanceof Subscription || sourceObject instanceof License}">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.adjustDropdown = function () {
 

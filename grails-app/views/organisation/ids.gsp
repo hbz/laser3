@@ -161,7 +161,7 @@
 </body>
 </html>
 <g:if test="${actionName == 'ids'}">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.IdContoller =  {
             createIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;

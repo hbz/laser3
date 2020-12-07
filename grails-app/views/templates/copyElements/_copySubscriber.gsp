@@ -136,7 +136,7 @@
     </g:form>
 </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $("#firstTable .titleCell").each(function (k) {
             var v = $(this).height();
             $("#secondTable .titleCell").eq(k).height(v);

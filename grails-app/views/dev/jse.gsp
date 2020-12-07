@@ -62,7 +62,7 @@
     &nbsp;
     </div>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         console.log('laser:script @ body > 9')
     </laser:script>
 </body>

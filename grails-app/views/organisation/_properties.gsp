@@ -90,7 +90,7 @@
     </div>
     <%--</div>--%>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
     </laser:script>
 
@@ -113,7 +113,7 @@
                             tenant: authOrg
                     ]}"/>
 
-                    <laser:script>
+                    <laser:script file="${this.getGroovyPageFileName()}">
                         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${authOrg.id});
                     </laser:script>
 

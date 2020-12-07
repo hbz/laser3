@@ -18,7 +18,7 @@
     </div>
 
     <g:applyCodec encodeAs="none">
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.genGraph = function() {
                 let result = ${graph};
                 let labels = [];

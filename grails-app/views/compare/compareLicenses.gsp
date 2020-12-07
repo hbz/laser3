@@ -75,7 +75,7 @@
     </g:if>
 </g:if>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.adjustDropdown = function () {
 

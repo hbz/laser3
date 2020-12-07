@@ -60,7 +60,7 @@
 
         <div id="packageDetails_div"></div>
 
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.showDetails = function (id) {
             jQuery.ajax({type:'get', url:"${createLink(controller:'admin', action:'hardDeletePkgs')}"+"/"+id,
                 success: function(data,textStatus){

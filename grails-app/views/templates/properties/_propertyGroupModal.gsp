@@ -116,7 +116,7 @@
     </g:form>
 </semui:modal>
 
-%{-- <laser:script>
+%{-- <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.prop_descr_selector_controller = function() {
             init: function () {

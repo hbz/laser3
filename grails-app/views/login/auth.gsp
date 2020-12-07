@@ -48,7 +48,7 @@
     </semui:card>
     </div>
 </div>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     document.forms['loginForm'].elements['username'].focus();
 
     $("#forgotten").click(function(e){

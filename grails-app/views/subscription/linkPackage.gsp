@@ -229,7 +229,7 @@
 
 <div id="magicArea"></div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
       JSPC.unlinkPackage = function (pkg_id){
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 

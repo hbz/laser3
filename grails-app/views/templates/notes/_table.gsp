@@ -70,7 +70,7 @@
 </g:form>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.noteedit = function (id) {
 
         $.ajax({

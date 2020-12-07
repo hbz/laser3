@@ -85,6 +85,18 @@
 
     <semui:messages data="${flash}" />
 
+    <laser:script file="${this.getGroovyPageFileName()}">
+        console.log('just 4 testing')
+    </laser:script>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        console.log('just 5 testing')
+    </laser:script>
+
+    <laser:script file="nonsense">
+        console.log('just 6 testing')
+    </laser:script>
+
     <%--
     <p>TODO: Offene Beitrittsanfragen</p>
 

@@ -416,7 +416,7 @@ ${surveyInfo.name}
     </g:link>
 </div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $("#parentSubscription .titleCell").each(function(k) {
             var v = $(this).height();
             $("#parentSuccessorSubscription .titleCell").eq(k).height(v);

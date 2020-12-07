@@ -28,7 +28,7 @@
     </g:form>
 </semui:modal>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     JSPC.oOrTable = null;
 
     JSPC.validateAddOrgRole = function () {

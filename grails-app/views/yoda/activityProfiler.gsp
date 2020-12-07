@@ -30,7 +30,7 @@
                     <td colspan="4">
                         <div id="ct-chart-${index}"></div>
 
-                        <laser:script>
+                        <laser:script file="${this.getGroovyPageFileName()}">
 
                                 <g:if test="${index == 0}">
                                     setTimeout( function(){ console.log(".."); window.dispatchEvent(new Event('resize')) }, 99);

@@ -81,7 +81,7 @@
 
 
   <g:if test="${userRoles}">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('#user_merge_modal').modal('show');
     </laser:script>
   </g:if>

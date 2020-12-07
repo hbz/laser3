@@ -34,7 +34,7 @@
 
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $(".la-popup").popup({});
 
         $.each($(".la-filterPropDef"), function(i, dropdown) {

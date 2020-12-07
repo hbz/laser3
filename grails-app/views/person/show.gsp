@@ -34,7 +34,7 @@
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
-                            <laser:script>
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('a[data-name=contactType]').on('save', function(e, params) {
                                     window.location.reload()
                                 });
@@ -362,7 +362,7 @@
                                             ownobj: personInstance,
                                             propertyWrapper: "${propertyWrapper}",
                                             tenant: institution]}"/>
-                                    <laser:script>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
                                         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
                                     </laser:script>
                                 </div>
@@ -446,7 +446,7 @@
 
 </body>
 </html>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
