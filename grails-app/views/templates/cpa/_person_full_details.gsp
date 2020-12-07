@@ -218,49 +218,15 @@
 
 <laser:script>
         JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            JSPC.private_address_modal(url);
-        }
-        JSPC.private_address_modal = function (url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
+            var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+            func();
         }
 
         JSPC.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
-            JSPC.person_editModal(url)
-        }
-        JSPC.person_editModal = function (url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#personModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#personModal');
-                            r2d2.initDynamicXEditableStuff('#personModal');
-                        }
-                    }).modal('show');
-                }
-            });
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
+            var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+            func();
         }
 </laser:script>
 

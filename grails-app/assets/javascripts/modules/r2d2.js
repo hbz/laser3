@@ -775,7 +775,7 @@ r2d2 = {
     },
 
 
-    countSettedFilters: function () {
+    countSettedFilters : function () {
         // DROPDOWN AND INPUT FIELDS
         $( document ).ready(function() {
             var dropdownFilter  = $('main > .la-filter .la-filter-dropdown-selected').length;

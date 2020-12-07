@@ -99,7 +99,7 @@
                         r2d2.initDynamicSemuiStuff('#propDefGroupModal');
                         r2d2.initDynamicXEditableStuff('#propDefGroupModal');
                         $("html").css("cursor", "auto");
-                        JSPC.callbacks.ajaxPostFunc()
+                        JSPC.callbacks.dynPostFunc()
                     },
                     detachable: true,
                     autofocus: false,

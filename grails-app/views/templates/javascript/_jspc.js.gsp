@@ -15,7 +15,7 @@ JSPC = {
             show : {
             }
         },
-        ajaxPostFunc : function () { console.log('JSPC.callbacks.ajaxPostFunc - default') }
+        dynPostFunc : function () { console.log('JSPC.callbacks.dynPostFunc - default') }
     },
 
     helper : { // -- often used snippets
