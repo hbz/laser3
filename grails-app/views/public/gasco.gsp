@@ -86,7 +86,7 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images/gasco', file: 'GASCO-Logo-2_klein.jpg')}"/>
         </div>
     </div>
     <laser:script>
