@@ -1097,7 +1097,7 @@
 </g:if>
 
 <laser:script>
-                                   $('body #participation').editable({
+                                   $('body #participation').editable('destroy').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );

@@ -20,7 +20,7 @@
         <semui:messages data="${flash}"/>
 
         <semui:form>
-            <g:form action="processEmptySubscription" method="post" class="ui form">
+            <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>
@@ -79,7 +79,7 @@
                 }
                 else return true;
              };
-                    $('.newLicence')
+                    $('.newSubscription')
                             .form({
                         on: 'blur',
                         inline: true,
