@@ -514,7 +514,7 @@
 
             $("[name='newSubscription']").change(function(){
                 JSPC.onSubscriptionUpdate();
-                JSPC.callbacks.ajaxPostFunc();
+                JSPC.callbacks.dynPostFunc();
             });
 
             JSPC.onSubscriptionUpdate = function () {
@@ -534,7 +534,7 @@
                 $("#newIE").dropdown('clear');
                 $("#newTitleGroup").dropdown('clear');
                 $("#newPackage").dropdown('clear');
-                JSPC.callbacks.ajaxPostFunc();
+                JSPC.callbacks.dynPostFunc();
             }
 
             $("#newPackage").change(function(){
@@ -549,7 +549,7 @@
                     context = $("[name='newSubscription']").val();
                 JSPC.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
                 $("#newIE").dropdown('clear');
-                JSPC.callbacks.ajaxPostFunc();
+                JSPC.callbacks.dynPostFunc();
             });
 
             $("#newIE").change(function(){
@@ -557,11 +557,11 @@
             });
 
         $("[name='newTitleGroup']").change(function(){
-            JSPC.callbacks.ajaxPostFunc();
+            JSPC.callbacks.dynPostFunc();
         });
 
-            JSPC.callbacks.ajaxPostFunc = function() {
-                console.log('ajaxPostFunc @ finance/_ajaxModal.gsp')
+            JSPC.callbacks.dynPostFunc = function() {
+                console.log('dynPostFunc @ finance/_ajaxModal.gsp')
 
                 $(".newCISelect").each(function(k,v){
                     $(this).dropdown({

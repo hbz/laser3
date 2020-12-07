@@ -99,8 +99,8 @@
 
     <laser:script>
 
-        JSPC.callbacks.ajaxPostFunc = function () {
-            console.log('ajaxPostFunc @ tasks/_modal_edit.gsp')
+        JSPC.callbacks.dynPostFunc = function () {
+            console.log('dynPostFunc @ tasks/_modal_edit.gsp');
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();

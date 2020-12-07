@@ -96,26 +96,7 @@
 
 <laser:script>
     JSPC.editAddress = function (id) {
-        var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
-        JSPC.private_address_modal(url)
-    }
-    JSPC.private_address_modal = function (url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#addressFormModal").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#addressFormModal');
-                        r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                        // JSPC.callbacks.ajaxPostFunc()
-                    }
-                }).modal('show');
-            }
-        });
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", "<g:createLink controller="ajaxHtml" action="editAddress"/>?id=" + id, false);
+        func();
     }
 </laser:script>

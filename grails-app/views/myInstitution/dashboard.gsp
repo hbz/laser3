@@ -429,44 +429,11 @@
         </div>
 
     <laser:script>
-        JSPC.taskcreate = function() {
-            $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="createTask"/>',
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateTask").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateTask');
-                            r2d2.initDynamicXEditableStuff('#modalCreateTask');
-
-                            JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
+        JSPC.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
 
         JSPC.taskedit = function(id) {
-            $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalEditTask").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalEditTask');
-                            r2d2.initDynamicXEditableStuff('#modalEditTask');
-
-                            JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+            var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+            func();
         }
 
                 $('.tabular.menu .item').tab();
