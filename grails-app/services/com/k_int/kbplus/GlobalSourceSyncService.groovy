@@ -518,7 +518,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 packageData.identifiers.identifier.each { id ->
                     if(id.'@namespace'.text().toLowerCase() != 'originediturl') {
                         Identifier.withTransaction {
-                            Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result, isUnique: false])
+                            Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result, isUnique: false, nsType: Package.class.name])
                         }
                     }
                 }
@@ -738,7 +738,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             titleRecord.identifiers.identifier.each { idData ->
                                 if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
                                     Identifier.withTransaction { TransactionStatus transactionStatus ->
-                                        Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance, isUnique: false])
+                                        Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance, isUnique: false, nsType: TitleInstance.class.name])
                                     }
                                 }
                             }
@@ -844,13 +844,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     particData.identifiers.identifier.each { idData ->
                         if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
                             Identifier.withTransaction {
-                                Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: participant, isUnique: false])
+                                Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: participant, isUnique: false, nsType: TitleInstance.class.name])
                             }
                         }
                     }
                 }
                 Identifier.withTransaction {
-                    Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant, isUnique: false])
+                    Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant, isUnique: false, nsType: TitleInstance.class.name])
                 }
                 participant
             }
@@ -934,6 +934,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         publisherParams.identifiers.each { Map<String,Object> pubId ->
                             pubId.reference = publisher
                             pubId.isUnique = false
+                            pubId.nsType = Org.class.name
                             Identifier.construct(pubId)
                         }
                     }
