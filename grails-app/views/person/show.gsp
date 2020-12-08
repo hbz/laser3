@@ -129,7 +129,7 @@
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
-                                       onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                       onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >
                             </g:if>
                         </dd>
@@ -452,7 +452,7 @@
             %{--private_address_modal(url);--}%
         %{--}--}%
 
-    JSPC.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
+    JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
         func();

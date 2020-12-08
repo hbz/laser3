@@ -493,7 +493,7 @@
                                           multiple="true"
                                           value="${RDStore.SUBSCRIPTION_CURRENT.id}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          onchange="JSPC.adjustDropdown()"/>
+                                          onchange="JSPC.app.adjustDropdown()"/>
                         </div>
                         <br />
                         <br id="element-vor-target-dropdown" />
@@ -527,7 +527,7 @@
         })
 </g:if>
 <g:if test="${showTransferFields}">
-    JSPC.adjustDropdown = function () {
+    JSPC.app.adjustDropdown = function () {
 
         var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
 
@@ -575,7 +575,7 @@
         });
     }
 
-    JSPC.adjustDropdown()
+    JSPC.app.adjustDropdown()
 </g:if>
 </laser:script>
 

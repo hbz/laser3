@@ -10,7 +10,7 @@
 
 <g:applyCodec encodeAs="none">
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.goSubGraph = function() {
+        JSPC.app.goSubGraph = function() {
             let result, labels, seriesObj, series
                 <g:if test="${costItemDevelopment}">
                     result = ${costItemDevelopment};
@@ -101,6 +101,6 @@
             });
         };
 
-        JSPC.goSubGraph();
+        JSPC.app.goSubGraph();
     </laser:script>
 </g:applyCodec>

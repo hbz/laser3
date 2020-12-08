@@ -93,7 +93,7 @@
         </div>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.toggleFilterPart = function () {
+            JSPC.app.toggleFilterPart = function () {
                 if ($('.js-consortiallicence input').prop('checked')) {
                     $('#js-consotial-authority .dropdown').removeClass('disabled')
                     $('#js-consotial-authority select').removeAttr('disabled')
@@ -102,7 +102,7 @@
                     $('#js-consotial-authority select').attr('disabled', 'disabled')
                 }
             }
-            JSPC.toggleTableHeading = function () {
+            JSPC.app.toggleTableHeading = function () {
                 if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -111,12 +111,12 @@
                     $('#js-consortium-header').show()
                 }
             }
-            JSPC.toggleFilterPart()
-            $('.js-nationallicence').on('click', JSPC.toggleFilterPart)
-            $('.js-alliancelicence').on('click', JSPC.toggleFilterPart)
-            $('.js-consortiallicence').on('click', JSPC.toggleFilterPart)
-            JSPC.toggleTableHeading()
-            $('.ui secondary button').on('click', JSPC.toggleTableHeading)
+            JSPC.app.toggleFilterPart()
+            $('.js-nationallicence').on('click', JSPC.app.toggleFilterPart)
+            $('.js-alliancelicence').on('click', JSPC.app.toggleFilterPart)
+            $('.js-consortiallicence').on('click', JSPC.app.toggleFilterPart)
+            JSPC.app.toggleTableHeading()
+            $('.ui secondary button').on('click', JSPC.app.toggleTableHeading)
 
     </laser:script>
 

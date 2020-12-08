@@ -7,7 +7,7 @@
     <g:each in="${tasks}" var="tsk">
         <div class="ui grid">
             <div class="twelve wide column summary">
-                <a onclick="JSPC.taskedit(${tsk?.id});">${tsk?.title}</a>
+                <a onclick="JSPC.app.taskedit(${tsk?.id});">${tsk?.title}</a>
                 <br />
                 <div class="content">
                     ${message(code:'task.endDate.label')}
@@ -25,7 +25,7 @@
 </semui:card>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.taskedit = function (id) {
+    JSPC.app.taskedit = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
         func();
     }

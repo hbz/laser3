@@ -44,8 +44,8 @@
 
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.tippsToAdd = [];
-        JSPC.tippsToDelete = [];
+        JSPC.app.tippsToAdd = [];
+        JSPC.app.tippsToDelete = [];
 
         $(".select-all").click(function() {
             var id = $(this).parents("table").attr("id");
@@ -71,21 +71,21 @@
             if(this.checked) {
                 if(corresp.attr("data-empty")) {
                     $("tr[data-index='"+index+"'").addClass("positive");
-                    if(JSPC.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId")) < 0)
-                        JSPC.tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
+                    if(JSPC.app.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId")) < 0)
+                        JSPC.app.tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
                 }
                 else if(corresp.find(".bulkcheck:checked")) {
-                    var delIdx = JSPC.tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                    if (~delIdx) JSPC.tippsToDelete.splice(delIdx,1);
+                    var delIdx = JSPC.app.tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
+                    if (~delIdx) JSPC.app.tippsToDelete.splice(delIdx,1);
                     $("tr[data-index='"+index+"'").removeClass("negative").addClass("positive");
                     corresp.find(".bulkcheck:checked").prop("checked", false);
-                    JSPC.tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
+                    JSPC.app.tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
                 }
             }
             else {
                 $("tr[data-index='"+index+"'").removeClass("positive");
-                var delIdx = JSPC.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) JSPC.tippsToAdd.splice(delIdx,1);
+                var delIdx = JSPC.app.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
+                if (~delIdx) JSPC.app.tippsToAdd.splice(delIdx,1);
             }
         });
 
@@ -93,22 +93,22 @@
             var index = $(this).parents("tr").attr("data-index");
             var corresp = $("#source tr[data-index='"+index+"']");
             if(this.checked) {
-                var delIdx = JSPC.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) JSPC.tippsToAdd.splice(delIdx,1);
+                var delIdx = JSPC.app.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
+                if (~delIdx) JSPC.app.tippsToAdd.splice(delIdx,1);
                 $("tr[data-index='"+index+"'").removeClass("positive").addClass("negative");
                 corresp.find(".bulkcheck:checked").prop("checked", false);
-                JSPC.tippsToDelete.push($(this).parents("tr").attr("data-gokbId"));
+                JSPC.app.tippsToDelete.push($(this).parents("tr").attr("data-gokbId"));
             }
             else {
                 $("tr[data-index='"+index+"'").removeClass("negative");
-                var delIdx = JSPC.tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) JSPC.tippsToDelete.splice(delIdx,1);
+                var delIdx = JSPC.app.tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
+                if (~delIdx) JSPC.app.tippsToDelete.splice(delIdx,1);
             }
         });
 
         $("#renewEntitlements").submit(function(){
-            $("#tippsToAdd").val(JSPC.tippsToAdd.join(','));
-            $("#tippsToDelete").val(JSPC.tippsToDelete.join(','));
+            $("#tippsToAdd").val(JSPC.app.tippsToAdd.join(','));
+            $("#tippsToDelete").val(JSPC.app.tippsToDelete.join(','));
         });
 </laser:script>
 </html>

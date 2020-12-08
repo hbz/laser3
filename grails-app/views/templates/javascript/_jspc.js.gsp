@@ -10,6 +10,9 @@ JSPC = {
         spotlightSearchUrl: "<g:createLink controller='search' action='spotlightSearch'/>",
     },
 
+    app : { // -- logic container
+    },
+
     callbacks : {
         modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
             show : {

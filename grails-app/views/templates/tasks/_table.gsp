@@ -64,7 +64,7 @@
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.taskedit(${taskInstance.id});" class="ui icon button">
+                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>
                         </g:if>

@@ -31,7 +31,7 @@
                         <div id="ct-chart-${index}"></div>
 
                         <laser:script file="${this.getGroovyPageFileName()}">
-                                JSPC.chartData_${index} = {
+                                JSPC.app.chartData_${index} = {
                                     labels: [
                                         <% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>
                                     ],
@@ -40,7 +40,7 @@
                                     ]
                                 };
 
-                                new Chartist.Bar('#ct-chart-${index}', JSPC.chartData_${index}, {
+                                new Chartist.Bar('#ct-chart-${index}', JSPC.app.chartData_${index}, {
                                     stackBars: true,
                                     fullWidth: true,
                                     chartPadding: {

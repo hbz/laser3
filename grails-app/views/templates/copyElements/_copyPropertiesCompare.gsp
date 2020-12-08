@@ -149,7 +149,7 @@
 
         <div class="sixteen wide field" style="text-align: right;">
             <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                   onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
+                   onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
         </div>
     </g:form>
 </semui:form>

@@ -266,7 +266,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.iesToAdd = [];
+        JSPC.app.iesToAdd = [];
 
         $(".select-all").click(function () {
             var id = $(this).parents("table").attr("id");
@@ -284,16 +284,16 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             var index = $(this).parents("tr").attr("data-index");
             if (this.checked) {
                 $("tr[data-index='" + index + "'").addClass("positive");
-                JSPC.iesToAdd.push($(this).parents("tr").attr("data-ieId"));
+                JSPC.app.iesToAdd.push($(this).parents("tr").attr("data-ieId"));
             } else {
                 $("tr[data-index='" + index + "'").removeClass("positive");
-                var delIdx = JSPC.iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) JSPC.iesToAdd.splice(delIdx, 1);
+                var delIdx = JSPC.app.iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
+                if (~delIdx) JSPC.app.iesToAdd.splice(delIdx, 1);
             }
         });
 
         $("#renewEntitlements").submit(function () {
-            $("#iesToAdd").val(JSPC.iesToAdd.join(','));
+            $("#iesToAdd").val(JSPC.app.iesToAdd.join(','));
         });
 </laser:script>
 </html>

@@ -116,7 +116,7 @@
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.chooseRequiredDropdown = function (opt) {
+        JSPC.app.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
                 $('#create_task')
                     .form({
@@ -155,5 +155,5 @@
                     });
             })
         }
-        JSPC.chooseRequiredDropdown('status.id');
+        JSPC.app.chooseRequiredDropdown('status.id');
 </laser:script>

@@ -72,11 +72,11 @@
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
     <laser:script file="${this.getGroovyPageFileName()}">
-      JSPC.selectAll = function () {
+      JSPC.app.selectAll = function () {
         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
-      JSPC.confirmSubmit = function () {
+      JSPC.app.confirmSubmit = function () {
         if ( $('#bulkOperationSelect').val() === 'remove' ) {
           var agree=confirm("${message(code:'default.continue.confirm', default:'Are you sure you wish to continue?')}");
           if (agree)

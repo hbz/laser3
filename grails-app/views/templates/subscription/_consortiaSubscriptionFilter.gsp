@@ -184,18 +184,18 @@
 </semui:filter>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.subStatus = "FETCH_ALL"
+    JSPC.app.subStatus = "FETCH_ALL"
     if ($("#status").length > 0) {
-        JSPC.subStatus = $("#status").val();
-        if (JSPC.subStatus.length === 0) {
-            JSPC.subStatus = "FETCH_ALL";
+        JSPC.app.subStatus = $("#status").val();
+        if (JSPC.app.subStatus.length === 0) {
+            JSPC.app.subStatus = "FETCH_ALL";
         }
     }
     <g:if test="${'onlyMemberSubs' in tableConfig && params.selSubscription}">
         $("#selSubscription").dropdown('set value',[<g:each in="${params.selSubscription.split(',')}" var="sub" status="i">'${sub}'<g:if test="${i < params.selSubscription.split(',').size()-1}">,</g:if></g:each>]);
         $("#selSubscription").dropdown({
             apiSettings: {
-                url: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+ JSPC.subStatus +"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
+                url: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+ JSPC.app.subStatus +"&query={query}&ltype=${de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}",
                 cache: false
             },
             clearable: true,
