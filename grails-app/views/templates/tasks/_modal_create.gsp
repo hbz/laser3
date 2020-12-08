@@ -223,17 +223,22 @@
         </laser:script>
     </g:if>
     <laser:script file="${this.getGroovyPageFileName()}">
-            $("#radioresponsibleOrg").change(function () {
-                $('#radioGroup').find("#responsibleUser").toggle();
-            });
-            $("#radioresponsibleUser").change(function () {
-                $('#radioGroup').find("#responsibleUser").toggle();
-            });
+        $("#radioresponsibleOrg").change(function () {
+            JSPC.app.toggleResponsibleUser();
+        });
+        $("#radioresponsibleUser").change(function () {
+            JSPC.app.toggleResponsibleUser();
+        });
+
+        JSPC.app.toggleResponsibleUser = function () {
             if ($("#radioresponsibleUser").is(':checked')) {
                 $("#responsibleUser").show();
             } else {
                 $("#responsibleUser").hide();
             }
+        }
+        
+        JSPC.app.toggleResponsibleUser();
 
         JSPC.app.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
