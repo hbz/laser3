@@ -8,7 +8,10 @@
 </head>
 
 <body>
-    <br />
+
+<h1 class="ui icon header la-clear-before">
+    ${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}
+</h1>
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">
@@ -65,7 +68,7 @@
                     </div>
                     <div class="field" id="js-consotial-authority">
                         <fieldset>
-                            <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
+                            <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
                             <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                                 optionKey="${{ Org.class.name + ':' + it.id }}"
@@ -86,7 +89,7 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/GASCO-Logo-2_klein.jpg')}"/>
         </div>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
