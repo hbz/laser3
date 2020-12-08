@@ -7,7 +7,6 @@
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
-
     <div class="ui la-filter segment la-clear-before">
         <div class="field">
             <div>
@@ -65,11 +64,12 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
         JSPC.jsonOrgIdList = null
 
         JSPC.copyToEmailProgram = function () {
             var emailAdresses = $("#emailAddressesTextArea").val();
-            window.location.href = "mailto:"+emailAdresses;
+            window.location.href = "mailto:" + emailAdresses;
         }
 
         JSPC.copyToClipboard = function () {
@@ -92,34 +92,14 @@
             });
         }
 
-        // modals
-        $("*[data-semui='modal']").click(function() {
-
-            var href = $(this).attr('data-href')
-            if (! href) {
-                href = $(this).attr('href')
+        JSPC.callbacks.modal.show.${modalID ?: 'copyEmailaddresses_ajaxModal'} = function(trigger) {
+            if ($(trigger).attr('data-orgIdList')) {
+                JSPC.jsonOrgIdList = $(trigger).attr('data-orgIdList').split(',');
+            } else {
+                JSPC.jsonOrgIdList = JSPC.jsonOrgIdListDefault;
             }
-
-             if($(this).attr('data-orgIdList')){
-                JSPC.jsonOrgIdList = $(this).attr('data-orgIdList').split(',');
-            }else {
-                JSPC.jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
-            }
-            $(href + '.ui.modal').modal({
-                onVisible: function() {
-                    JSPC.updateTextArea();
-                    // $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                },
-                detachable: true,
-                autofocus: false,
-                closable: false,
-                transition: 'scale',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show')
-        });
+            JSPC.updateTextArea();
+        };
 
         $("#prsFunctionMultiSelect").change(function()  { JSPC.updateTextArea(); });
         $("#prsPositionMultiSelect").change(function()  { JSPC.updateTextArea(); });

@@ -160,7 +160,7 @@
                 url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
-                    $("#modalEditNote").remove();
+                    $("#modalReadNote").remove();
 
                     $("#dynamicModalContainer").html(result);
                     $("#dynamicModalContainer .ui.modal").modal('show');
