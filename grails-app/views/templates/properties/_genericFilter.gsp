@@ -34,7 +34,7 @@
 
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $(".la-popup").popup({});
 
         $.each($(".la-filterPropDef"), function(i, dropdown) {
@@ -47,7 +47,7 @@
             }
         });
 
-        JSPC.propertyFilterController = {
+        JSPC.app.propertyFilterController = {
 
             updateProp: function (selOpt) {
 
@@ -144,7 +144,7 @@
                 // register change event
                 $('#filterPropDef').change(function (e) {
                     var selOpt = $('option:selected', this);
-                    JSPC.propertyFilterController.updateProp(selOpt);
+                    JSPC.app.propertyFilterController.updateProp(selOpt);
                 });
              */
                 $(document).ready(function() {
@@ -156,7 +156,7 @@
                             value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                             if ((typeof $selectedItem != 'undefined')){
                                 var selOpt = $selectedItem;
-                                JSPC.propertyFilterController.updateProp(selOpt);
+                                JSPC.app.propertyFilterController.updateProp(selOpt);
                             }
                             else {
                                 $('#filterProp').dropdown ('clear', true)
@@ -177,7 +177,7 @@
                     // sets the URL Parameter on the hidden input field
                     var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
-                    JSPC.propertyFilterController.updateProp(selOpt);
+                    JSPC.app.propertyFilterController.updateProp(selOpt);
 
                     // set filterProp by params
                     var paramFilterProp = "${params.filterProp}";
@@ -185,7 +185,7 @@
                     $('#filterProp').val(paramFilterProp);
             }
         }
-        JSPC.propertyFilterController.init()
+        JSPC.app.propertyFilterController.init()
 
 </laser:script>
 <!-- O: templates/properties/_genericFilter -->

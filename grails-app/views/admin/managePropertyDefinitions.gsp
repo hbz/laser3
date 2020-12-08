@@ -222,7 +222,7 @@
 
             </g:form>
 
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                         $('button[data-xcg-pd]').on('click', function(){
 
                             var pd = $(this).attr('data-xcg-pd');
@@ -310,7 +310,7 @@
 
         </semui:modal>
 
-		<laser:script>
+		<laser:script file="${this.getGroovyPageFileName()}">
 
             if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.CLASS}") {
                 $("#cust_prop_ref_data_name").show();

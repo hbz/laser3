@@ -5,7 +5,7 @@
 
             <dd>
                 <a href="#" class="myXeditable"   id="status" data-type="select" data-pk="1" data-url="" data-title="Select status"></a>
-                <laser:script>
+                <laser:script file="${this.getGroovyPageFileName()}">
                         $('#status').editable({
                             value: 2,
                             source: [

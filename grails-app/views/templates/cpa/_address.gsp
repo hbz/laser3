@@ -56,7 +56,7 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
-                    <a class="ui icon button" onclick="JSPC.editAddress(${address.id});">
+                    <a class="ui icon button" onclick="JSPC.app.editAddress(${address.id});">
                         <i class="pencil icon"></i>
                     </a>
 
@@ -72,28 +72,9 @@
         </div>
 	</div>
 </g:if>
-<laser:script>
-    JSPC.editAddress = function (id) {
-        var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
-        JSPC.private_address_modal(url)
-    }
-    JSPC.private_address_modal = function (url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#addressFormModal").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#addressFormModal');
-                        r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                        // JSPC.callbacks.ajaxPostFunc()
-                    }
-                }).modal('show');
-            }
-        });
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.editAddress = function (id) {
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", "<g:createLink controller="ajaxHtml" action="editAddress"/>?id=" + id, false);
+        func();
     }
 </laser:script>

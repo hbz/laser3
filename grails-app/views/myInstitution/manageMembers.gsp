@@ -105,5 +105,6 @@
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
+
 </body>
 </html>

@@ -589,13 +589,13 @@
                                     </div>
                                 </g:else>
                             </div>
-                            <asset:script type="text/javascript">
-                                var LaToggle = {};
-                                LaToggle.advanced = {};
-                                LaToggle.advanced.button = {};
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                JSPC.app.LaToggle = {};
+                                JSPC.app.LaToggle.advanced = {};
+                                JSPC.app.LaToggle.advanced.button = {};
 
                                 // ready event
-                                LaToggle.advanced.button.ready = function() {
+                                JSPC.app.LaToggle.advanced.button.ready = function() {
                                     // selector cache
                                     var $button = $('.button.la-toggle-advanced');
                                     var handler = {
@@ -614,8 +614,8 @@
                                     $button.on('click', handler.activate);
                                 };
 
-                                LaToggle.advanced.button.ready();
-                            </asset:script>
+                                JSPC.app.LaToggle.advanced.button.ready();
+                            </laser:script>
                         </g:if>
                 </div>
 
@@ -675,7 +675,7 @@
         %{-- decksaver --}%
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
-            <laser:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
                 <g:if test="${editable} || ${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                     <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
                         deckSaver.configs.editMode  = true;
@@ -750,7 +750,7 @@
         <script data-type="inline">
             $(document).ready(function() {
                 $('#system-jsqtk').on('click', function(){ jsqtk.go() })
-                $('#system-jspc').on('click',  function(){ console.log('JSPC: %o', JSPC) })
+                $('#system-jspc').on('click',  function(){ console.dir('JSPC:', JSPC) })
 
                 $.ajax({
                     url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
@@ -767,7 +767,7 @@
                 })
 
                 jsqtk.go()
-                console.log('JSPC: %o', JSPC);
+                console.dir('JSPC:', JSPC);
             })
         </script>
 

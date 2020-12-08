@@ -95,6 +95,6 @@
               model="${[ownobj: ownobj , owntp: 'surveyConfig']}"/>
 </g:if>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     r2d2.initDynamicSemuiStuff('#container-documents')
 </laser:script>

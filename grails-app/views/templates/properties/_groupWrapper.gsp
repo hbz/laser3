@@ -33,7 +33,7 @@
     </div>
 <%--</div><!--.card-->--%>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     c3po.initGroupedProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${custom_props_div}");
 </laser:script>
 <!-- O: templates/properties/_groupWrapper -->

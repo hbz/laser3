@@ -46,7 +46,7 @@
     </div>
 </g:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });

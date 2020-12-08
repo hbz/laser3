@@ -18,8 +18,8 @@
     </div>
 
     <g:applyCodec encodeAs="none">
-        <laser:script>
-            JSPC.genGraph = function() {
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.app.genGraph = function() {
                 let result = ${graph};
                 let labels = [];
                 let seriesObj = {};
@@ -55,7 +55,7 @@
                 });
             };
 
-            JSPC.genGraph();
+            JSPC.app.genGraph();
         </laser:script>
     </g:applyCodec>
 </g:each>

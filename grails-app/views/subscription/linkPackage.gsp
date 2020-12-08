@@ -151,7 +151,7 @@
                                             <g:if test="${editable && !hasCostItems}">
                                                 <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
-                                                            onclick="JSPC.unlinkPackage(${Package.findByGokbId(hit.uuid)?.id})">
+                                                            onclick="JSPC.app.unlinkPackage(${Package.findByGokbId(hit.uuid)?.id})">
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
@@ -207,7 +207,7 @@
                         <g:if test="${editable && !hasCostItems}">
                             <div class="ui mini icon buttons">
                                 <button class="ui button la-selectable-button"
-                                        onclick="JSPC.unlinkPackage(${sp.pkg.id})">
+                                        onclick="JSPC.app.unlinkPackage(${sp.pkg.id})">
                                     <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
                                 </button>
                             </div>
@@ -229,8 +229,8 @@
 
 <div id="magicArea"></div>
 
-<laser:script>
-      JSPC.unlinkPackage = function (pkg_id){
+<laser:script file="${this.getGroovyPageFileName()}">
+      JSPC.app.unlinkPackage = function (pkg_id){
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
@@ -242,7 +242,7 @@
           }
         });
       }
-      JSPC.toggleAlert = function() {
+      JSPC.app.toggleAlert = function() {
         $('#durationAlert').toggle();
       }
 
@@ -253,7 +253,7 @@
             var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
             console.log(check)
             if (check == true) {
-                JSPC.toggleAlert();
+                JSPC.app.toggleAlert();
                 window.open($(this).attr('href'), "_self");
             }
         });
@@ -264,7 +264,7 @@
             var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm')}');
             console.log(check)
             if (check == true) {
-                JSPC.toggleAlert();
+                JSPC.app.toggleAlert();
                 window.open($(this).attr('href'), "_self");
             }
         });

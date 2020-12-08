@@ -68,7 +68,7 @@
 </g:each>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $("#orgRoleContainer .button").on('click', function() {
             var ajaxUrl = "<g:createLink controller="organisation" action="show" id="${orgInstance.id}" />"
                         + "?ajax=true&" + $(this).attr('data-params')

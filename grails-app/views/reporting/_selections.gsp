@@ -27,8 +27,8 @@
             <input  id="filterProp" name="filterProp" type="text" class="generalLoadingParam" data-requestParam="${queried}"
                     placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>--%>
         </div>
-        <laser:script>
-                JSPC.propertyFilterController = {
+        <laser:script file="${this.getGroovyPageFileName()}">
+                JSPC.app.propertyFilterController = {
 
                     updateProp: function (selOpt) {
 
@@ -121,7 +121,7 @@
                         // register change event
                         $('#filterPropDef').change(function (e) {
                             var selOpt = $('option:selected', this);
-                            JSPC.propertyFilterController.updateProp(selOpt);
+                            JSPC.app.propertyFilterController.updateProp(selOpt);
                         });
                      */
 
@@ -133,7 +133,7 @@
                                 value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 if ((typeof $selectedItem != 'undefined')){
                                     var selOpt = $selectedItem;
-                                    JSPC.propertyFilterController.updateProp(selOpt);
+                                    JSPC.app.propertyFilterController.updateProp(selOpt);
                                 }
                                 else {
                                     $('#filterProp').dropdown ('clear', true)
@@ -153,7 +153,7 @@
                         // sets the URL Parameter on the hidden input field
                         var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
-                        JSPC.propertyFilterController.updateProp(selOpt);
+                        JSPC.app.propertyFilterController.updateProp(selOpt);
 
                         // set filterProp by params
                         var paramFilterProp = "${params.filterProp}";
@@ -162,7 +162,7 @@
                     }
                 }
 
-                JSPC.propertyFilterController.init()
+                JSPC.app.propertyFilterController.init()
         </laser:script>
     </g:if>
     <g:elseif test="${secondLevel == 'subscription'}">

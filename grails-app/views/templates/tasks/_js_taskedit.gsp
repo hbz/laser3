@@ -1,5 +1,5 @@
-<laser:script>
-    JSPC.taskedit = function (id) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.taskedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
@@ -10,7 +10,7 @@
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                            JSPC.callbacks.ajaxPostFunc();
+                            JSPC.callbacks.dynPostFunc();
                     }
                 }).modal('show');
             }

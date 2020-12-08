@@ -22,9 +22,9 @@
 </div>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.updateDropdown = function () {
+        JSPC.app.updateDropdown = function () {
             var dropdownRegion = $('#filterRegion');
             var selectedCountry = $("#filterCountry").val();
             var selectedRegions = ${raw(params.list('region') as String)};
@@ -47,7 +47,7 @@
             });
         }
 
-        if ($("#filterCountry").val()) { JSPC.updateDropdown(); }
+        if ($("#filterCountry").val()) { JSPC.app.updateDropdown(); }
 
-        $("#filterCountry").change(function() { JSPC.updateDropdown(); });
+        $("#filterCountry").change(function() { JSPC.app.updateDropdown(); });
 </laser:script>

@@ -108,5 +108,35 @@ bb8 = {
                 $('#loadingIndicator').hide()
                 if (always) { eval(always) }
             });
+    },
+
+    ajax4SimpleModalFunction : function (cssId, url, callDynPostFunc) {
+
+        console.log("bb8.ajaxSimpleModalFunction( " + cssId + ", " + url + ", " + callDynPostFunc + " )")
+
+        return function () {
+            $.ajax({
+                url: url,
+                success: function (result) {
+                    $("#dynamicModalContainer").empty();
+                    $(cssId).remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicSemuiStuff(cssId);
+                            r2d2.initDynamicXEditableStuff(cssId);
+
+                            if (callDynPostFunc) {
+                                JSPC.callbacks.dynPostFunc()
+                            }
+                        }
+                    }).modal('show');
+                },
+                error: function (request, status, error) {
+                    alert(request.status + ": " + request.statusText);
+                }
+            });
+        }
     }
 }

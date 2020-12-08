@@ -526,8 +526,16 @@
 
 </div><!-- .grid -->
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
+<laser:script file="${this.getGroovyPageFileName()}">
+
+    JSPC.app.setupUnitAmount = function (type, amount) {
+        console.log(type);
+        type.children().remove()
+        for (var i = 1; i <= amount; i++) {
+            type.append('<option value="' + i + '">' + i + '</option>');
+        }
+    }
+
                     $('.updateProfile')
                             .form({
                         on: 'blur',
@@ -598,6 +606,7 @@
                             }
                         }
                     });
+
         $('#passwordToggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
         })
@@ -622,13 +631,13 @@
             if (unit) {
                 switch (unit) {
                     case 'Day':
-                        setupUnitAmount(val,7)
+                        JSPC.app.setupUnitAmount(val,7)
                         break;
                     case 'Week':
-                        setupUnitAmount(val,4)
+                        JSPC.app.setupUnitAmount(val,4)
                         break;
                     case 'Month':
-                        setupUnitAmount(val,12)
+                        JSPC.app.setupUnitAmount(val,12)
                         break
                     default :
                         console.log('Impossible selection made!');
@@ -646,16 +655,8 @@
         });
 
         $('#isRemindByEmail').trigger('change');
-    });
 
-    function setupUnitAmount(type, amount) {
-        console.log(type);
-        type.children().remove()
-        for (var i = 1; i <= amount; i++) {
-            type.append('<option value="' + i + '">' + i + '</option>');
-        }
-    }
-</asset:script>
+</laser:script>
 
 </body>
 </html>

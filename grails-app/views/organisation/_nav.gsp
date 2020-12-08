@@ -25,17 +25,18 @@
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">
-            <semui:securedSubNavItem controller="myInstitution" action="userList"
-                                     message="org.nav.users" affiliation="INST_ADM"/>
+            <semui:securedSubNavItem controller="myInstitution" action="userList" message="org.nav.users" affiliation="INST_ADM"/>
         </g:if>
+        <%-- deactivated as of ERMS-2934
         <g:elseif test="${ accessService.checkForeignOrgComboPermAffiliation([
                 org: orgInstance,
-                comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
+                comboPerm: "ORG_CONSORTIUM",
                 comboAffiliation: "INST_ADM"
-        ]) && orgInstance.getAllValidInstAdmins().isEmpty() }">
+        ]) && !instAdmService.hasInstAdmin(orgInstance) }">
             <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
-        </g:elseif>
+        </g:elseif>--%>
         <g:else>
+            <%-- this kind of check is necessary because it should not be displayed at all if user has no specRoles --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                 <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
             </sec:ifAnyGranted>

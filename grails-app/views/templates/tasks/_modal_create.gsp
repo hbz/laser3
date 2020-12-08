@@ -193,12 +193,12 @@
 
     </g:form>
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
 
-            JSPC.showHideRequire = function (taskType) {
+            JSPC.app.showHideRequire = function (taskType) {
                 var arr = [ 'license', 'org', 'pkg', 'subscription' ];
                 $('#'+ taskType +'radio').change(function () {
 
@@ -211,18 +211,18 @@
 
                     $(hide).hide();
                     $('#' + taskType + 'div').show();
-                    JSPC.chooseRequiredDropdown(taskType);
+                    JSPC.app.chooseRequiredDropdown(taskType);
                 });
             }
 
-            JSPC.showHideRequire ( 'general' );
-            JSPC.showHideRequire ( 'license' );
-            JSPC.showHideRequire ( 'pkg' );
-            JSPC.showHideRequire ( 'subscription' );
-            JSPC.showHideRequire ( 'org' );
+            JSPC.app.showHideRequire ( 'general' );
+            JSPC.app.showHideRequire ( 'license' );
+            JSPC.app.showHideRequire ( 'pkg' );
+            JSPC.app.showHideRequire ( 'subscription' );
+            JSPC.app.showHideRequire ( 'org' );
         </laser:script>
     </g:if>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $("#radioresponsibleOrg").change(function () {
                 $('#radioGroup').find("#responsibleUser").toggle();
             });
@@ -235,7 +235,7 @@
                 $("#responsibleUser").hide();
             }
 
-        JSPC.chooseRequiredDropdown = function (opt) {
+        JSPC.app.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
                 $('#create_task')
                     .form({
@@ -281,9 +281,10 @@
                     });
             })
         }
-        JSPC.chooseRequiredDropdown('status.id');
+        JSPC.app.chooseRequiredDropdown('status.id');
 
-        JSPC.callbacks.ajaxPostFunc = function () {
+        JSPC.callbacks.dynPostFunc = function () {
+            console.log('dynPostFunc @ tasks/_modal_create.gsp');
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();

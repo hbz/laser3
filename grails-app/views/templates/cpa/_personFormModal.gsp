@@ -331,7 +331,7 @@
                                         propertyWrapper: "${propertyWrapper}",
                                         tenant          : contextOrg,
                                         withoutRender   : true]}"/>
-                                <laser:script>
+                                <laser:script file="${this.getGroovyPageFileName()}">
                                     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
                                 </laser:script>
                             </div>
@@ -342,7 +342,7 @@
         </div>
     </g:if>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             $('#person_form').form({
                 on: 'blur',
                 inline: true,
@@ -362,27 +362,27 @@
 
             tooltip.go()  // TODO: set ctxSel @ tooltip.init()
 
-            JSPC.addressElementCount = 0;
-            JSPC.contactElementCount = 0;
+            JSPC.app.addressElementCount = 0;
+            JSPC.app.contactElementCount = 0;
 
-            JSPC.addressContainer = $(document.createElement('div'));
-            JSPC.contactContainer = $(document.createElement('div'));
+            JSPC.app.addressContainer = $(document.createElement('div'));
+            JSPC.app.contactContainer = $(document.createElement('div'));
 
-            $(JSPC.addressContainer).attr('id', 'addressElementsContainer');
-            $(JSPC.contactContainer).attr('id', 'contactElementsContainer');
+            $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');
+            $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
 
             $('#addContactElement').click(function () {
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
                     type: "POST",
                     success: function (data) {
-                        if (JSPC.contactElementCount <= 3) {
+                        if (JSPC.app.contactElementCount <= 3) {
 
-                            JSPC.contactElementCount = JSPC.contactElementCount + 1;
-                            $(JSPC.contactContainer).append(data);
-                            $('#contactFields').attr('id', 'contactFields' + JSPC.contactElementCount);
+                            JSPC.app.contactElementCount = JSPC.app.contactElementCount + 1;
+                            $(JSPC.app.contactContainer).append(data);
+                            $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
 
-                            $('#contactElements').after(JSPC.contactContainer);
+                            $('#contactElements').after(JSPC.app.contactContainer);
                         } else {
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
@@ -396,13 +396,13 @@
             });
 
             $('#removeContactElement').click(function () {
-                if (JSPC.contactElementCount != 0) {
-                    $('#contactFields' + JSPC.contactElementCount).remove();
-                    JSPC.contactElementCount = JSPC.contactElementCount - 1;
+                if (JSPC.app.contactElementCount != 0) {
+                    $('#contactFields' + JSPC.app.contactElementCount).remove();
+                    JSPC.app.contactElementCount = JSPC.app.contactElementCount - 1;
                 }
 
-                if (JSPC.contactElementCount == 0) {
-                    $(JSPC.contactContainer).empty().remove();
+                if (JSPC.app.contactElementCount == 0) {
+                    $(JSPC.app.contactContainer).empty().remove();
                     $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });
@@ -412,13 +412,13 @@
                     url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
                     type: "POST",
                     success: function (data) {
-                        if (JSPC.addressElementCount <= 3) {
+                        if (JSPC.app.addressElementCount <= 3) {
 
-                            JSPC.addressElementCount = JSPC.addressElementCount + 1;
-                            $(JSPC.addressContainer).append(data);
-                            $('#addressFields').attr('id', 'addressFields' + JSPC.addressElementCount);
+                            JSPC.app.addressElementCount = JSPC.app.addressElementCount + 1;
+                            $(JSPC.app.addressContainer).append(data);
+                            $('#addressFields').attr('id', 'addressFields' + JSPC.app.addressElementCount);
 
-                            $('#addressElements').after(JSPC.addressContainer);
+                            $('#addressElements').after(JSPC.app.addressContainer);
                         } else {
                             $('#addAddressElement').attr('class', 'ui icon button disable');
                             $('#addAddressElement').attr('disabled', 'disabled');
@@ -432,13 +432,13 @@
             });
 
             $('#removeAddressElement').click(function () {
-                if (JSPC.addressElementCount != 0) {
-                    $('#addressFields' + JSPC.addressElementCount).remove();
-                    JSPC.addressElementCount = JSPC.addressElementCount - 1;
+                if (JSPC.app.addressElementCount != 0) {
+                    $('#addressFields' + JSPC.app.addressElementCount).remove();
+                    JSPC.app.addressElementCount = JSPC.app.addressElementCount - 1;
                 }
 
-                if (JSPC.addressElementCount == 0) {
-                    $(JSPC.addressContainer).empty().remove();
+                if (JSPC.app.addressElementCount == 0) {
+                    $(JSPC.app.addressContainer).empty().remove();
                     $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });

@@ -20,7 +20,7 @@
             </div>
         </div>
     </g:form>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
             //{query} is correct; this is the semantic ui query syntax containing the filter string
             $("#orm_orgOid_${tmplModalID}").dropdown({
                 apiSettings: {

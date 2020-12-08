@@ -29,7 +29,7 @@
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="JSPC.noteedit(${docctx.owner.id});">
+                                <a onclick="JSPC.app.noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>
                                     </g:if>
@@ -39,7 +39,7 @@
                                 </a>
                             </g:if>
                             <g:else>
-                                <a onclick="JSPC.noteread(${docctx.owner.id});">
+                                <a onclick="JSPC.app.noteread(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>
                                     </g:if>
@@ -121,10 +121,10 @@
                         <div class="ui grid summary">
                             <div class="twelve wide column">
                                 <g:if test="${docctx.owner.title}">
-                                    <a onclick="JSPC.noteread(${docctx.owner.id});">${docctx.owner.title}</a>
+                                    <a onclick="JSPC.app.noteread(${docctx.owner.id});">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
-                                    <a onclick="JSPC.noteread(${docctx.owner.id});">Ohne Titel</a>
+                                    <a onclick="JSPC.app.noteread(${docctx.owner.id});">Ohne Titel</a>
                                 </g:else>
                                 (${docctx.owner.type.getI10n("value")})
                             </div>
@@ -142,8 +142,8 @@
         </semui:card>
     </g:if>
 
-    <laser:script>
-        JSPC.noteedit = function (id) {
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.app.noteedit = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
                 success: function(result){
@@ -155,12 +155,12 @@
                 }
             });
         }
-        JSPC.noteread = function (id) {
+        JSPC.app.noteread = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
-                    $("#modalEditNote").remove();
+                    $("#modalReadNote").remove();
 
                     $("#dynamicModalContainer").html(result);
                     $("#dynamicModalContainer .ui.modal").modal('show');

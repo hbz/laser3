@@ -13,7 +13,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <g:if test="${orgInstance.id != contextService.getOrg().id}">
+    <g:if test="${inContextOrg}">
         <semui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show" params="[id: orgInstance.id]" />
     </g:if>
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
@@ -25,7 +25,6 @@
 
 <semui:messages data="${flash}"/>
 
-<%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
 <g:render template="/organisation/nav"/>
 
 
@@ -48,7 +47,7 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable}">
-                <a href="#createPersonModal" class="item" data-semui="modal" onclick="JSPC.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
+                <a href="#createPersonModal" class="item" data-semui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
             </g:if><g:else>
             <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
         </g:else>
@@ -68,7 +67,7 @@
                     <label for="prs">${message(code: 'person.filter.name')}</label>
 
                     <div class="ui input">
-                        <input type="text" name="prs" value="${params.prs}"
+                        <input type="text" id="prs" name="prs" value="${params.prs}"
                                placeholder="${message(code: 'person.filter.name')}"/>
                     </div>
                 </div>
@@ -193,7 +192,7 @@
     <semui:controlButtons>
         <semui:actionsDropdown>
             <g:if test="${editable}">
-                <a href="#addressFormModal" class="item" data-semui="modal" onclick="JSPC.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
+                <a href="#addressFormModal" class="item" data-semui="modal" onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
             </g:if><g:else>
             <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="address.add.label"/>
@@ -220,56 +219,19 @@
 </body>
 
 
-<laser:script>
-
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.tabular.menu .item').tab()
 
-    JSPC.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
-        JSPC.createPersonModal(url)
+    JSPC.app.personCreate = function (contactFor) {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showAddresses=false&showContacts=true';
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        func();
     }
 
-    JSPC.createPersonModal = function (url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#personModal").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personModal');
-                        r2d2.initDynamicXEditableStuff('#personModal');
-                    }
-                }).modal('show');
-            }
-        });
-    }
-
-    JSPC.addresscreate_org = function (orgId) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId;
-            JSPC.address_modal(url);
-    }
-
-    JSPC.address_modal = function (url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+    JSPC.app.addresscreate_org = function (orgId) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
     }
 </laser:script>
 </html>

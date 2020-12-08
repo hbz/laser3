@@ -244,7 +244,7 @@
 
 <div id="magicArea"></div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $('#membersListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
@@ -255,10 +255,10 @@
         });
 
       $('.unlinkPackages').on('click',function() {
-          JSPC.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
+          JSPC.app.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
       });
 
-      JSPC.unlinkPackage = function (pkg_id, subscriptionID) {
+      JSPC.app.unlinkPackage = function (pkg_id, subscriptionID) {
 
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionID+"&package="+pkg_id
 

@@ -145,9 +145,9 @@
     </g:form>
 
     <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.updateDropdown = function() {
+        JSPC.app.updateDropdown = function() {
             var dropdownRegion = $('#region');
             var selectedCountry = $("#country").val();
             var selectedRegions = ${raw(params.list('region') as String)};
@@ -171,9 +171,9 @@
             });
         }
 
-        if($("#country").val()) { JSPC.updateDropdown(); }
+        if($("#country").val()) { JSPC.app.updateDropdown(); }
 
-        $("#country").change(function() { JSPC.updateDropdown(); });
+        $("#country").change(function() { JSPC.app.updateDropdown(); });
     </laser:script>
 
 </semui:modal>

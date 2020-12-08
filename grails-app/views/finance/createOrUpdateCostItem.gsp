@@ -132,16 +132,16 @@
     </div>
   </body>
 
-  <laser:script>
+  <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.filtersUpdated = function () {
+    JSPC.app.filtersUpdated = function () {
       $('#newInvoiceNumber').val($('#filterInvoiceNumber').val());
       $('#newOrderNumber').val($('#filterOrderNumber').val());
       $('#newSubscription').val($('#filterSubscription').val());
       $('#newPackage').val($('#filterPackage').val());
     }
 
-    JSPC.filterSubUpdated = function () {
+    JSPC.app.filterSubUpdated = function () {
       // Fetch packages for the selected subscription
       var selectedSub = $('#filterSubscription').val();
 
@@ -163,7 +163,7 @@
         }
       });
 
-      JSPC.filtersUpdated();
+      JSPC.app.filtersUpdated();
     }
 
     $("#newIE").select2({

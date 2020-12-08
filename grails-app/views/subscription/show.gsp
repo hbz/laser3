@@ -395,9 +395,9 @@
 
     <div id="magicArea"></div>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-          JSPC.unlinkPackage = function(pkg_id) {
+          JSPC.app.unlinkPackage = function(pkg_id) {
             var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscription.id])}&package="+pkg_id
 
             $.ajax({url: req_url,
@@ -409,7 +409,7 @@
               }
             });
           }
-          JSPC.loadLinks = function () {
+          JSPC.app.loadLinks = function () {
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                   data: {
@@ -420,7 +420,7 @@
                   r2d2.initDynamicSemuiStuff('#links');
               })
           }
-          JSPC.loadLicenses = function () {
+          JSPC.app.loadLicenses = function () {
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getLinks" />",
                   data: {
@@ -432,7 +432,7 @@
                   r2d2.initDynamicSemuiStuff("#licenses");
               })
           }
-          JSPC.loadPackages = function () {
+          JSPC.app.loadPackages = function () {
               $.ajax({
                   url: "<g:createLink controller="ajaxHtml" action="getPackageData" />",
                   data: {
@@ -444,9 +444,9 @@
               })
           }
 
-          JSPC.loadLinks();
-          JSPC.loadLicenses();
-          JSPC.loadPackages();
+          JSPC.app.loadLinks();
+          JSPC.app.loadLicenses();
+          JSPC.app.loadPackages();
     </laser:script>
   </body>
 </html>

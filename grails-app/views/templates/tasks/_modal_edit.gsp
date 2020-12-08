@@ -97,9 +97,10 @@
     </g:form>
 
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.callbacks.ajaxPostFunc = function () {
+        JSPC.callbacks.dynPostFunc = function () {
+            console.log('dynPostFunc @ tasks/_modal_edit.gsp');
 
             $("#radioresponsibleOrgEdit").change(function () {
                 $("#responsibleUserEdit").hide();

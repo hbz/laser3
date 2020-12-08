@@ -21,7 +21,7 @@
             %{--</g:else>--}%
 
     </g:if>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#noData').popup();
 </laser:script>
 

@@ -123,7 +123,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
     </div>
 </g:form>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });
@@ -416,14 +416,14 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 </g:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.selectAll = function () {
+    JSPC.app.selectAll = function () {
         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
-        JSPC.updateSelectionCache("all",$('#select-all').prop('checked'));
+        JSPC.app.updateSelectionCache("all",$('#select-all').prop('checked'));
     }
 
-    JSPC.updateSelectionCache = function (index,checked) {
+    JSPC.app.updateSelectionCache = function (index,checked) {
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
@@ -448,7 +448,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
       });
 
     $(".bulkcheck").change(function() {
-        JSPC.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
+        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
     });
 
     $(".ieOverwrite td").click(function() {

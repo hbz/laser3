@@ -20,12 +20,12 @@
     <g:if test="${editable}">
         <g:if test="${(institution.getCustomerType() == 'ORG_CONSORTIUM') && !isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-semui="modal"
-               onclick="JSPC.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
+               onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForInstitution.label"/></a>
         </g:if>
         <g:if test="${isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-semui="modal"
-               onclick="JSPC.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message
+               onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForProviderAgency.label"/></a>
         </g:if>
     </g:if>
@@ -119,12 +119,12 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 </body>
 
-<laser:script>
-    JSPC.personCreate = function (contactFor, org) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.personCreate = function (contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
-        JSPC.createPersonModal(url)
+        JSPC.app.createPersonModal(url)
     }
-    JSPC.createPersonModal = function (url) {
+    JSPC.app.createPersonModal = function (url) {
         $.ajax({
             url: url,
             success: function(result){

@@ -99,7 +99,7 @@
 <br />
 
     <%-- TODO: implement ajax calls --%>
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         setTimeout(function() {
             window.document.location.reload();
         }, (30 * 1000)); // refresh ~ 30 Seconds

@@ -5,7 +5,7 @@
     <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : Frontend for Developers</title>
 
-    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>
+    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>%{-- dont move --}%
 
     <style>
     #example .example .column .icon {
@@ -457,7 +457,7 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
 
-        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/>&ltasset:javascript src="chartist.js"/>
+        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/&gt;&ltasset:javascript src="chartist.js"/&gt;
         </pre>
 
     </div>
@@ -516,7 +516,7 @@ if (customerType) {
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     new Chartist.Line('.ct-chart', {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         series: [
@@ -538,7 +538,7 @@ if (customerType) {
         ]
     });
 </laser:script>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     new Chartist.Pie('.ct-chart-pie', {
         labels: ['Piece A', 'Piece B', 'Piece C', 'Piece D'],
         series: [20, 10, 30, 40]
@@ -551,7 +551,7 @@ if (customerType) {
         ]
     });
 </laser:script>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     new Chartist.Bar('.ct-chart-bar', {
         labels: ['First quarter of the year', 'Second quarter of the year', 'Third quarter of the year', 'Fourth quarter of the year'],
         series: [

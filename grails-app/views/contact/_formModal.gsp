@@ -72,7 +72,7 @@
 
     </g:form>
 </semui:modal>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $("#newContact").form({
             on: 'blur',
             inline: true,

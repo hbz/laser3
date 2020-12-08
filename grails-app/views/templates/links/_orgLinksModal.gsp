@@ -5,7 +5,7 @@
 
 <semui:modal id="${tmplModalID}" text="${tmplText}"  isEditModal="isEditModal">
     <g:set var="ajaxID" value="${tmplID ?:'allOrgs'}"/>
-    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return JSPC.validateAddOrgRole();">
+    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return JSPC.app.validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}" />
         <input type="hidden" name="property" value="${property}" />
         <input type="hidden" name="recip_prop" value="${recip_prop}" />
@@ -28,10 +28,10 @@
     </g:form>
 </semui:modal>
 
-<laser:script>
-    JSPC.oOrTable = null;
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.oOrTable = null;
 
-    JSPC.validateAddOrgRole = function () {
+    JSPC.app.validateAddOrgRole = function () {
       if ( $('#orm_orgRole').val() == '' ) {
         return confirm("${message(code:'template.orgLinksModal.warn')}");
       }
@@ -40,7 +40,7 @@
 
     $('#add_org_head_row').empty()
 
-        JSPC.oOrTable = $('#org_role_tab_${tmplModalID}').dataTable( {
+        JSPC.app.oOrTable = $('#org_role_tab_${tmplModalID}').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
             "sAjaxSource": "<g:createLink controller="ajaxJson" action="getProvidersWithPrivateContacts" id="${ajaxID}" params="${[oid:"${contextOrg.class.name}:${contextOrg.id}"]}"/>",
@@ -85,5 +85,5 @@
             }
         } );
 
-        JSPC.oOrTable.fnAdjustColumnSizing();
+        JSPC.app.oOrTable.fnAdjustColumnSizing();
 </laser:script>

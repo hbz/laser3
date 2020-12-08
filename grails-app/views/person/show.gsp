@@ -34,7 +34,7 @@
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
-                            <laser:script>
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('a[data-name=contactType]').on('save', function(e, params) {
                                     window.location.reload()
                                 });
@@ -129,7 +129,7 @@
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
-                                       onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                       onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >
                             </g:if>
                         </dd>
@@ -362,7 +362,7 @@
                                             ownobj: personInstance,
                                             propertyWrapper: "${propertyWrapper}",
                                             tenant: institution]}"/>
-                                    <laser:script>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
                                         c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
                                     </laser:script>
                                 </div>
@@ -446,36 +446,15 @@
 
 </body>
 </html>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
-        JSPC.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
-            JSPC.private_address_modal(url);
-        }
 
-        JSPC.private_address_modal = function(url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // JSPC.callbacks.ajaxPostFunc()
-                        }
-                    }).modal('show');
-                },
-                error: function (request, status, error) {
-                    alert(request.status + ": " + request.statusText);
-                }
-            });
-        }
+    JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
+    }
 </laser:script>

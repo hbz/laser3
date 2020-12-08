@@ -212,7 +212,7 @@
     </g:form>
 </semui:modal>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
 $('#pd_descr').change(function() {
     $('#cust_prop_modal_select').trigger('change');

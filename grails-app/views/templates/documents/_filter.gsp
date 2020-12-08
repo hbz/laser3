@@ -34,17 +34,17 @@
         </div>
     </g:form>
 </semui:filter>
-<laser:script>
-    JSPC.cfg = {}
-    JSPC.cfg.org = false;
-    JSPC.cfg.lic = false
-    JSPC.cfg.sub = false;
-    JSPC.cfg.pkg = false;
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.cfg = {}
+    JSPC.app.cfg.org = false;
+    JSPC.app.cfg.lic = false
+    JSPC.app.cfg.sub = false;
+    JSPC.app.cfg.pkg = false;
 
-    JSPC.setupDropdown = function () {
+    JSPC.app.setupDropdown = function () {
         $("#docTarget").dropdown({
            apiSettings: {
-                url: "<g:createLink controller="ajaxJson" action="lookupCombined"/>?query={query}&org="+ JSPC.cfg.org +"&license="+ JSPC.cfg.lic +"&subscription="+ JSPC.cfg.sub +"&package="+ JSPC.cfg.pkg,
+                url: "<g:createLink controller="ajaxJson" action="lookupCombined"/>?query={query}&org="+ JSPC.app.cfg.org +"&license="+ JSPC.app.cfg.lic +"&subscription="+ JSPC.app.cfg.sub +"&package="+ JSPC.app.cfg.pkg,
                 cache: false
                },
                clearable: true,
@@ -52,36 +52,36 @@
             });
     };
         
-    JSPC.setupDropdown();
+    JSPC.app.setupDropdown();
 
         $(".targetList").checkbox({
             onChecked: function() {
                 $("#docTarget").dropdown('destroy');
                 switch($(this).attr("id")){
-                    case "org": JSPC.cfg.org = true;
+                    case "org": JSPC.app.cfg.org = true;
                     break;
-                    case "license": JSPC.cfg.lic = true;
+                    case "license": JSPC.app.cfg.lic = true;
                     break;
-                    case "subscription": JSPC.cfg.sub = true;
+                    case "subscription": JSPC.app.cfg.sub = true;
                     break;
-                    case "pkg": JSPC.cfg.pkg = true;
+                    case "pkg": JSPC.app.cfg.pkg = true;
                     break;
                 }
-                JSPC.setupDropdown();
+                JSPC.app.setupDropdown();
             },
             onUnchecked: function() {
                 $("#docTarget").dropdown('destroy');
                 switch($(this).attr("id")){
-                    case "org": JSPC.cfg.org = false;
+                    case "org": JSPC.app.cfg.org = false;
                     break;
-                    case "license": JSPC.cfg.lic = false;
+                    case "license": JSPC.app.cfg.lic = false;
                     break;
-                    case "subscription": JSPC.cfg.sub = false;
+                    case "subscription": JSPC.app.cfg.sub = false;
                     break;
-                    case "pkg": JSPC.cfg.pkg = false;
+                    case "pkg": JSPC.app.cfg.pkg = false;
                     break;
                 }
-                JSPC.setupDropdown();
+                JSPC.app.setupDropdown();
             }
         });
 

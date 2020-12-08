@@ -8,7 +8,10 @@
 </head>
 
 <body>
-    <br />
+
+<h1 class="ui icon header la-clear-before">
+    ${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}
+</h1>
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">
@@ -65,7 +68,7 @@
                     </div>
                     <div class="field" id="js-consotial-authority">
                         <fieldset>
-                            <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
+                            <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
                             <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                                 optionKey="${{ Org.class.name + ':' + it.id }}"
@@ -86,11 +89,11 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/GASCO-Logo-2_klein.jpg')}"/>
         </div>
     </div>
-    <laser:script>
-            JSPC.toggleFilterPart = function () {
+    <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.app.toggleFilterPart = function () {
                 if ($('.js-consortiallicence input').prop('checked')) {
                     $('#js-consotial-authority .dropdown').removeClass('disabled')
                     $('#js-consotial-authority select').removeAttr('disabled')
@@ -99,7 +102,7 @@
                     $('#js-consotial-authority select').attr('disabled', 'disabled')
                 }
             }
-            JSPC.toggleTableHeading = function () {
+            JSPC.app.toggleTableHeading = function () {
                 if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -108,12 +111,12 @@
                     $('#js-consortium-header').show()
                 }
             }
-            JSPC.toggleFilterPart()
-            $('.js-nationallicence').on('click', JSPC.toggleFilterPart)
-            $('.js-alliancelicence').on('click', JSPC.toggleFilterPart)
-            $('.js-consortiallicence').on('click', JSPC.toggleFilterPart)
-            JSPC.toggleTableHeading()
-            $('.ui secondary button').on('click', JSPC.toggleTableHeading)
+            JSPC.app.toggleFilterPart()
+            $('.js-nationallicence').on('click', JSPC.app.toggleFilterPart)
+            $('.js-alliancelicence').on('click', JSPC.app.toggleFilterPart)
+            $('.js-consortiallicence').on('click', JSPC.app.toggleFilterPart)
+            JSPC.app.toggleTableHeading()
+            $('.ui secondary button').on('click', JSPC.app.toggleTableHeading)
 
     </laser:script>
 

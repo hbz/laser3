@@ -175,12 +175,7 @@
             </g:if>
           </table>
 
-                  <asset:script type="text/javascript">
-
-                    $(function(){
-                      $.fn.editable.defaults.mode = 'inline';
-                      $('.xEditableValue').editable();
-
+                  <laser:script file="${this.getGroovyPageFileName()}">
                       $("#userRoleSelect").select2({
                         placeholder: "${message(code:'user.role.search.ph')}",
                         minimumInputLength: 0,
@@ -202,9 +197,7 @@
                           }
                         }
                       });
-                    });
-
-                  </asset:script>
+                  </laser:script>
 </sec:ifAnyGranted>
 </body>
 </html>

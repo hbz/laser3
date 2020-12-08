@@ -44,7 +44,7 @@
 	</div>
 </div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.ui.search.dropdown').dropdown({
         fullTextSearch: 'exact'
     });

@@ -40,18 +40,18 @@ ${currentAnnouncement?.getCleanContent()}
                 </textarea>
             </div>
 
-            <laser:script>
-                JSPC.updateSysAnnPreview = function() {
+            <laser:script file="${this.getGroovyPageFileName()}">
+                JSPC.app.updateSysAnnPreview = function() {
                     $('#saPreview').text(
                         $('form #saTitle').val().replace(/<.*?>/gm,"") + '\n\n' +
                         $('form #saContent').val().replace(/<.*?>/gm,"")
                     )
                 }
                 $('form #saTitle').on('change', function(){
-                    JSPC.updateSysAnnPreview()
+                    JSPC.app.updateSysAnnPreview()
                 })
                 $('form #saContent').on('change', function(){
-                    JSPC.updateSysAnnPreview()
+                    JSPC.app.updateSysAnnPreview()
                 })
             </laser:script>
 

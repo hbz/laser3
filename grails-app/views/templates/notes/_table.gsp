@@ -53,7 +53,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="JSPC.noteedit(${docctx.owner.id});" class="ui icon button">
+                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
@@ -70,8 +70,8 @@
 </g:form>
 
 
-<laser:script>
-    JSPC.noteedit = function (id) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.noteedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,

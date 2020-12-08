@@ -39,7 +39,7 @@
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
                                     <input type="checkbox" data-action="copy"
-                                           onClick="JSPC.toggleAllCheckboxes(this)" checked/>
+                                           onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>
@@ -96,7 +96,7 @@
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
                                     <input type="checkbox" data-action="copy"
-                                           onClick="JSPC.toggleAllCheckboxes(this)" checked/>
+                                           onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>
@@ -136,7 +136,7 @@
     </g:form>
 </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
         $("#firstTable .titleCell").each(function (k) {
             var v = $(this).height();
             $("#secondTable .titleCell").eq(k).height(v);

@@ -20,7 +20,7 @@
         <semui:messages data="${flash}"/>
 
         <semui:form>
-            <g:form action="processEmptySubscription" method="post" class="ui form">
+            <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>
@@ -65,30 +65,21 @@
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
                 </g:if>--%>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
-                <input type="button" class="ui button js-click-control" onclick="JSPC.goBack();" value="${message(code:'default.button.cancel.label')}" />
+                <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
             </g:form>
         </semui:form>
 
     <hr />
-        <asset:script type="text/javascript">
-            function formatDate(input) {
-                if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
-                    var inArr = input.split(/[\.\/-]/g);
-                    return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
-                }
-                else {
-                    return input;
-                }
-            }
+        <laser:script file="${this.getGroovyPageFileName()}">
              $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
                 if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
-                    var startDate = Date.parse(formatDate($("#valid_from").val()));
-                    var endDate = Date.parse(formatDate($("#valid_to").val()));
+                    var startDate = Date.parse(JSPC.helper.formatDate($("#valid_from").val()));
+                    var endDate = Date.parse(JSPC.helper.formatDate($("#valid_to").val()));
                     return (startDate < endDate);
                 }
                 else return true;
              };
-                    $('.newLicence')
+                    $('.newSubscription')
                             .form({
                         on: 'blur',
                         inline: true,
@@ -131,6 +122,6 @@
                             }
                          }
                     });
-        </asset:script>
+        </laser:script>
     </body>
 </html>

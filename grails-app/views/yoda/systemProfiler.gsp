@@ -17,7 +17,7 @@
     <div class="ui la-float-right">
         <g:select name="archive" id="archive" class="ui dropdown"
                   from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
-        <laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('#archive').on('change', function() {
                 var selection = $(this).val()
                 var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
@@ -118,7 +118,7 @@
         </table>
     </div>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
      $('.secondary.menu > a').tab();
 
      $('#filterTable').change( function(){

@@ -334,7 +334,7 @@ ${surveyInfo.name}
 </g:if>
 
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.menu .item').tab();
 </laser:script>
 </body>

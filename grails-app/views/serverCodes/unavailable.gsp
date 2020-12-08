@@ -27,7 +27,7 @@
                     <br />
 
                     <p>
-                        <button class="ui button" onclick="JSPC.goBack()">${message(code: 'default.button.back')}</button>
+                        <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                     </p>
                 </div>
             </g:if>

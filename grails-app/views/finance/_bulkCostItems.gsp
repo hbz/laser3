@@ -146,9 +146,9 @@
 
 </semui:form>
 
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+    JSPC.app.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
     $("#newCostInBillingCurrency2").change(function () {
         var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
@@ -158,40 +158,40 @@
     });
 
     $("#costButton12").click(function () {
-        if (! JSPC.isError("#newCostInBillingCurrency2") && ! JSPC.isError("#newCostCurrencyRate2")) {
+        if (! JSPC.app.isError("#newCostInBillingCurrency2") && ! JSPC.app.isError("#newCostCurrencyRate2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
-            input.val(JSPC.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate2").val()));
+            var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency2").val());
+            input.val(JSPC.app.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate2").val()));
 
             $(".la-account-currency").find(".field").removeClass("error");
-            JSPC.calcTaxResults()
+            JSPC.app.calcTaxResults()
         }
     });
     $("#costButton22").click(function () {
-        if (! JSPC.isError("#newCostInLocalCurrency2") && ! JSPC.isError("#newCostInBillingCurrency2")) {
+        if (! JSPC.app.isError("#newCostInLocalCurrency2") && ! JSPC.app.isError("#newCostInBillingCurrency2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency2").val());
-            var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
+            var parsedLocalCurrency = JSPC.app.convertDouble($("#newCostInLocalCurrency2").val());
+            var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency2").val());
             input.val((parsedLocalCurrency / parsedBillingCurrency));
 
             $(".la-account-currency").find(".field").removeClass("error");
-            JSPC.calcTaxResults()
+            JSPC.app.calcTaxResults()
         }
     });
     $("#costButton32").click(function () {
-        if (! JSPC.isError("#newCostInLocalCurrency2") && ! JSPC.isError("#newCostCurrencyRate2")) {
+        if (! JSPC.app.isError("#newCostInLocalCurrency2") && ! JSPC.app.isError("#newCostCurrencyRate2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency2").val());
-            input.val(JSPC.convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate2").val()));
+            var parsedLocalCurrency = JSPC.app.convertDouble($("#newCostInLocalCurrency2").val());
+            input.val(JSPC.app.convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate2").val()));
 
             $(".la-account-currency").find(".field").removeClass("error");
-            JSPC.calcTaxResults()
+            JSPC.app.calcTaxResults()
         }
     });
-    JSPC.isError = function (cssSel) {
+    JSPC.app.isError = function (cssSel) {
         if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
             $(".la-account-currency").children(".field").removeClass("error");
             $(cssSel).parent(".field").addClass("error");
@@ -201,29 +201,29 @@
     };
 
     $('.calc').on('change', function () {
-        JSPC.calcTaxResults()
+        JSPC.app.calcTaxResults()
     });
 
-    JSPC.calcTaxResults = function () {
+    JSPC.app.calcTaxResults = function () {
         var roundF = $('*[name=newFinalCostRounding2]').prop('checked');
         console.log($("*[name=newTaxRate2]").val());
         var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
 
-        var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
-        var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency2").val());
+        var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency2").val());
+        var parsedLocalCurrency = JSPC.app.convertDouble($("#newCostInLocalCurrency2").val());
 
         $('#newCostInBillingCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
+            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.app.convertDouble(parsedBillingCurrency * taxF)
         );
         $('#newCostInLocalCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedLocalCurrency * taxF) : JSPC.convertDouble(parsedLocalCurrency * taxF)
+            roundF ? Math.round(parsedLocalCurrency * taxF) : JSPC.app.convertDouble(parsedLocalCurrency * taxF)
         );
     };
 
-    JSPC.costElems = $("#newCostInLocalCurrency2, #newCostCurrencyRate2, #newCostInBillingCurrency2");
+    JSPC.app.costElems = $("#newCostInLocalCurrency2, #newCostCurrencyRate2, #newCostInBillingCurrency2");
 
-    JSPC.costElems.on('change', function () {
-        JSPC.checkValues();
+    JSPC.app.costElems.on('change', function () {
+        JSPC.app.checkValues();
         if ($("[name='newCostCurrency2']").val() != 0) {
             $("#newCostCurrency2").parent(".field").removeClass("error");
         } else {
@@ -234,7 +234,7 @@
     $("#costItemsBulk").submit(function (e) {
         e.preventDefault();
         //if ($("[name='newCostCurrency2']").val() != 0 && $("[name='newCostCurrency2']").val() != null) {
-            var valuesCorrect = JSPC.checkValues();
+            var valuesCorrect = JSPC.app.checkValues();
             if (valuesCorrect) {
                 $("#newCostCurrency2").parent(".field").removeClass("error");
                 if ($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
@@ -252,23 +252,23 @@
 
     $("#newCostCurrency2").change(function () {
         //console.log("event listener succeeded, picked value is: "+$(this).val());
-        if ($(this).val() === JSPC.eurVal)
+        if ($(this).val() === JSPC.app.eurVal)
             $("#newCostCurrencyRate2").val(1.0);
         else $("#newCostCurrencyRate2").val(0.0);
         $("#costButton12").click();
     });
 
-    JSPC.checkValues = function() {
-        if (JSPC.convertDouble($("#newCostInBillingCurrency2").val()) * $("#newCostCurrencyRate2").val() !== JSPC.convertDouble($("#newCostInLocalCurrency2").val())) {
-            JSPC.costElems.parent('.field').addClass('error');
+    JSPC.app.checkValues = function() {
+        if (JSPC.app.convertDouble($("#newCostInBillingCurrency2").val()) * $("#newCostCurrencyRate2").val() !== JSPC.app.convertDouble($("#newCostInLocalCurrency2").val())) {
+            JSPC.app.costElems.parent('.field').addClass('error');
             return false;
         } else {
-            JSPC.costElems.parent('.field').removeClass('error');
+            JSPC.app.costElems.parent('.field').removeClass('error');
             return true;
         }
     }
 
-    JSPC.convertDouble = function (input) {
+    JSPC.app.convertDouble = function (input) {
         console.log("input: " + input + ", typeof: " + typeof (input))
         var output;
         //determine locale from server

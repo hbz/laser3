@@ -71,16 +71,12 @@
     <g:render template="/templates/orgLinksModal"
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 
-    <asset:script type="text/javascript">
-      $(function(){
-        $.fn.editable.defaults.mode = 'inline';
-        $('.xEditableValue').editable();
-      });
-      function selectAll() {
+    <laser:script file="${this.getGroovyPageFileName()}">
+      JSPC.app.selectAll = function () {
         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }
 
-      function confirmSubmit() {
+      JSPC.app.confirmSubmit = function () {
         if ( $('#bulkOperationSelect').val() === 'remove' ) {
           var agree=confirm("${message(code:'default.continue.confirm', default:'Are you sure you wish to continue?')}");
           if (agree)
@@ -89,8 +85,7 @@
             return false ;
         }
       }
-
-    </asset:script>
+    </laser:script>
 
   </body>
 </html>

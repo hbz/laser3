@@ -31,18 +31,18 @@
                                       multiple="true"
                                       value="${RDStore.SUBSCRIPTION_CURRENT.id}"
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
-                                      onchange="JSPC.adjustDropdown()"/>
+                                      onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
-                                        onchange="JSPC.adjustDropdown()"/>
+                                        onchange="JSPC.app.adjustDropdown()"/>
                             <label for="show.subscriber">${message(code: 'copyElementsIntoObject.show.subscriber.sub')}</label>
                         </div><br/>
                     </g:if>
                     <div class="ui checkbox">
                         <g:checkBox name="show.connectedObjects" value="true" checked="false"
-                                    onchange="JSPC.adjustDropdown()"/>
+                                    onchange="JSPC.app.adjustDropdown()"/>
                         <label for="show.connectedObjects">${message(code: 'copyElementsIntoObject.show.connectedObjects.sub')}</label>
                     </div>
                     <br>
@@ -59,18 +59,18 @@
                                       multiple="true"
                                       value="${RDStore.LICENSE_CURRENT.id}"
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
-                                      onchange="JSPC.adjustDropdown()"/>
+                                      onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
-                                        onchange="JSPC.adjustDropdown()"/>
+                                        onchange="JSPC.app.adjustDropdown()"/>
                             <label for="show.subscriber">${message(code: 'copyElementsIntoObject.show.subscriber.lic')}</label>
                         </div><br/>
                     </g:if>
                     <div class="ui checkbox">
                         <g:checkBox name="show.connectedObjects" value="true" checked="false"
-                                    onchange="JSPC.adjustDropdown()"/>
+                                    onchange="JSPC.app.adjustDropdown()"/>
                         <label for="show.connectedObjects">${message(code: 'copyElementsIntoObject.show.connectedObjects.lic')}</label>
                     </div>
                     <br />
@@ -99,9 +99,9 @@
     </g:form>
 </g:if>
 <g:if test="${sourceObject instanceof Subscription || sourceObject instanceof License}">
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.adjustDropdown = function () {
+    JSPC.app.adjustDropdown = function () {
 
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
@@ -153,7 +153,7 @@
         });
     }
 
-    JSPC.adjustDropdown()
+    JSPC.app.adjustDropdown()
 
     </laser:script>
 </g:if>

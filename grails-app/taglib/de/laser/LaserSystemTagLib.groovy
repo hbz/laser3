@@ -2,6 +2,8 @@ package de.laser
 
 
 import de.laser.helper.AjaxUtils
+import de.laser.helper.ServerUtils
+import org.grails.io.support.GrailsResourceUtils
 
 class LaserSystemTagLib {
 
@@ -16,7 +18,17 @@ class LaserSystemTagLib {
             out << "\n});</script>"
         }
         else {
-            asset.script([requestURI:request.getRequestURI()], body())
+            Map<String, Object> map = [:]
+
+            if (ServerUtils.getCurrentServer() != ServerUtils.SERVER_PROD) {
+                if (attrs.file) {
+                    map = [file: GrailsResourceUtils.getPathFromBaseDir(attrs.file)]
+                }
+                else {
+                    map = [uri: request.getRequestURI()]
+                }
+            }
+            asset.script(map, body())
         }
     }
 
@@ -32,7 +44,7 @@ class LaserSystemTagLib {
         out << "\n\$(function() {"
 
         assetBlocks.each {assetBlock ->
-            out << "\n//-> new asset: ${assetBlock.attrs}"
+            out << "\n//-> new asset: ${assetBlock.attrs ?: ''}"
             out << "\n ${assetBlock.body}"
         }
 

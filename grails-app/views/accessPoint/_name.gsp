@@ -18,7 +18,7 @@
         <div class="grouped fields">
             <g:each status="i" in="${nameOptions}" var="nameOption">
                 <div class="field">
-                    <div class="ui radio checkbox" onclick="JSPC.fillNameField('${nameOption.value}');">
+                    <div class="ui radio checkbox" onclick="JSPC.app.fillNameField('${nameOption.value}');">
                         <input type="radio" name="frequency" ${(i) == 0 ? 'checked=checked' : ''}>
                         <label>${message(code: "${nameOption.key}")}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
@@ -32,8 +32,8 @@
     </div>
     <g:field readonly="${name != ''}" type="text" name="name" value="${name}"/>
 </div>
-<laser:script>
-    JSPC.fillNameField = function (name) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.fillNameField = function (name) {
         $('#name').val(name);
         if (name !== '') {
             document.getElementById('name').readOnly = true;

@@ -116,12 +116,12 @@
     </g:form>
 </semui:modal>
 
-%{-- <laser:script>
+%{-- <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.prop_descr_selector_controller = function() {
+        JSPC.app.prop_descr_selector_controller = function() {
             init: function () {
                 $('#propDefGroupModal #prop_descr_selector').on('change', function () {
-                    JSPC.prop_descr_selector_controller.changeTable($(this).val())
+                    JSPC.app.prop_descr_selector_controller.changeTable($(this).val())
                 })
 
                 $('#propDefGroupModal #prop_descr_selector').trigger('change')
@@ -134,7 +134,7 @@
                 $('#propDefGroupModal .table[data-propDefTable="' + target + '"] input').removeAttr('disabled')
             }
         }
-        JSPC.prop_descr_selector_controller.init()
+        JSPC.app.prop_descr_selector_controller.init()
         setTimeout( function(){ $(window).trigger('resize')}, 500);
 </laser:script> --}%
 <!-- O: templates/properties/_propertyGroupModal -->

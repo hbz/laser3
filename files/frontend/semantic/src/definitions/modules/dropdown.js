@@ -342,11 +342,10 @@ $.fn.dropdown = function(parameters) {
                 .prop('autocomplete', 'off')
                   .attr('aria-autocomplete','list') // a11y
                   //.attr('aria-controls',id+'_listBox') // a11y
-                  //.attr('aria-labelledby',id+'_formLabel') // a11y
+                  .attr('aria-labelledby',id+'_formLabel') // a11y
                 .insertBefore($text)
               ;
             }
-
             if( module.is.multiple() && module.is.searchSelection() && !module.has.sizer()) {
               module.create.sizer();
             }
@@ -398,6 +397,7 @@ $.fn.dropdown = function(parameters) {
                     .attr('aria-haspopup','listbox') //a11y
                     .attr('aria-owns',id + '_listBox') //a11y
                     .attr('aria-expanded','false') //a11y
+                    .attr('aria-labelledby',id+'_formLabel')
                     .html( templates.dropdown(selectValues,id) )
                     .insertBefore($input)
                 ;
@@ -958,10 +958,10 @@ $.fn.dropdown = function(parameters) {
           else {
             if(settings.allowAdditions) {
               module.set.selected(module.get.query());
-               module.remove.searchTerm(); // a11y
+              module.remove.searchTerm();
             }
             else {
-               module.remove.searchTerm(); // a11y
+              module.remove.searchTerm();
             }
           }
         },
@@ -1423,7 +1423,7 @@ $.fn.dropdown = function(parameters) {
                 module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                 module.event.item.click.call($selectedItem, event);
                 if(module.is.searchSelection()) {
-                   module.remove.searchTerm();
+                  module.remove.searchTerm();
                 }
               }
 
@@ -1440,7 +1440,7 @@ $.fn.dropdown = function(parameters) {
                     module.verbose('Selecting item from keyboard shortcut', $selectedItem);
                     module.event.item.click.call($selectedItem, event);
                     if(module.is.searchSelection()) {
-                       module.remove.searchTerm();
+                      module.remove.searchTerm();
                     }
                   }
                   event.preventDefault();
@@ -2414,7 +2414,7 @@ $.fn.dropdown = function(parameters) {
                 }
                 module.debug('Changing text', text, $text);
                 $text
-                    .removeClass(className.filtered)
+                  .removeClass(className.filtered)
                 ;
                 if(settings.preserveHTML) {
                   $text.html(text);
@@ -2437,7 +2437,7 @@ $.fn.dropdown = function(parameters) {
             module.set.activeItem($item);
             module.set.selected(value, $item);
             module.set.text(text);
-            },
+          },
           selectedLetter: function(letter) {
             var
               $selectedItem         = $item.filter('.' + className.selected),
@@ -2653,7 +2653,7 @@ $.fn.dropdown = function(parameters) {
           },
           clearable: function() {
             $icon.addClass(className.clear);
-          }
+          },
         },
 
         add: {
@@ -2851,7 +2851,7 @@ $.fn.dropdown = function(parameters) {
             }
             module.set.value(newValue, addedValue, addedText, $selectedItem);
             module.check.maxSelections();
-          }
+          },
         },
 
         remove: {
@@ -3526,7 +3526,7 @@ $.fn.dropdown = function(parameters) {
         },
 
         hideAndClear: function() {
-          module.remove.searchTerm(); // a11y
+          module.remove.searchTerm();
           if( module.has.maxSelections() ) {
             return;
           }
