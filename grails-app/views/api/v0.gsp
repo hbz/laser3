@@ -159,7 +159,7 @@ console.log('(http-header) x-authorization: ' + authorization)
 
     <div id="main-container"></div>
 
-    <script data-type="inline">
+    <script>
         window.onload = function() {
 
             var selectors = {

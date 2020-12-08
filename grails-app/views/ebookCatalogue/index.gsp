@@ -92,7 +92,7 @@
 </div>
 </section>
 
-    <script data-type="inline">
+    <script>
         $(document).ready(function() {
 
             function toggleFilterPart() {

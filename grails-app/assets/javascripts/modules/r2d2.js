@@ -432,7 +432,7 @@ r2d2 = {
             placeholder: "Search for...",
             minimumInputLength: 1,
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                url: JSPC.vars.ajaxLookupUrl,
+                url: JSPC.vars.ajaxJsonLookupUrl,
                 dataType: 'json',
                 data: function (term, page) {
                     return {
