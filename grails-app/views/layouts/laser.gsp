@@ -590,12 +590,12 @@
                                 </g:else>
                             </div>
                             <laser:script file="${this.getGroovyPageFileName()}">
-                                JSPC.LaToggle = {};
-                                JSPC.LaToggle.advanced = {};
-                                JSPC.LaToggle.advanced.button = {};
+                                JSPC.app.LaToggle = {};
+                                JSPC.app.LaToggle.advanced = {};
+                                JSPC.app.LaToggle.advanced.button = {};
 
                                 // ready event
-                                JSPC.LaToggle.advanced.button.ready = function() {
+                                JSPC.app.LaToggle.advanced.button.ready = function() {
                                     // selector cache
                                     var $button = $('.button.la-toggle-advanced');
                                     var handler = {
@@ -614,7 +614,7 @@
                                     $button.on('click', handler.activate);
                                 };
 
-                                JSPC.LaToggle.advanced.button.ready();
+                                JSPC.app.LaToggle.advanced.button.ready();
                             </laser:script>
                         </g:if>
                 </div>

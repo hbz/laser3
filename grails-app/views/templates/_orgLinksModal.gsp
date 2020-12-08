@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
-    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return JSPC.validateAddOrgRole();">
+    <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return JSPC.app.validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
@@ -43,9 +43,9 @@
 </semui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.oOrTable = null
+    JSPC.app.oOrTable = null
 
-    JSPC.validateAddOrgRole = function () {
+    JSPC.app.validateAddOrgRole = function () {
       if ( $('#orm_orgRole').val() == '' ) {
         return confirm("${message(code:'template.orgLinksModal.warn')}");
       }
@@ -54,7 +54,7 @@
 
     $('#add_org_head_row').empty()
 
-        JSPC.oOrTable = $('#org_role_tab').dataTable( {
+        JSPC.app.oOrTable = $('#org_role_tab').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
             "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="allOrgs" params="${[format:'json']}"/>",
@@ -99,5 +99,5 @@
             }
         } );
 
-        JSPC.oOrTable.fnAdjustColumnSizing();
+        JSPC.app.oOrTable.fnAdjustColumnSizing();
 </laser:script>

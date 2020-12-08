@@ -35,7 +35,7 @@
                     message(code: 'copyElementsIntoObject.copyProperties.button')}"/>
             <div class="sixteen wide field" style="text-align: right;">
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
+                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:if>
         <g:else>
@@ -47,7 +47,7 @@
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
                         message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
+                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:else>
 

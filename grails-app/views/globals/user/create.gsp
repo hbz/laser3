@@ -68,15 +68,15 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
         $("#username").keyup(function() {
-            JSPC.checkUsername();
+            JSPC.app.checkUsername();
         });
 
         $(".validateNotEmpty").keyup(function(){
             if($(this).val().length === 0) {
-                JSPC.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+                JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
             }
             else {
-                JSPC.removeError($(this),$("#"+$(this).attr("id")+"Error"));
+                JSPC.app.removeError($(this),$("#"+$(this).attr("id")+"Error"));
             }
         });
 
@@ -85,32 +85,32 @@
             e.preventDefault();
             $(".validateNotEmpty").each(function(k) {
                 if($(this).val().length === 0) {
-                    JSPC.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+                    JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
                 }
             });
-            JSPC.checkUsername();
+            JSPC.app.checkUsername();
             if($(".error").length === 0)
                 $(this).unbind('submit').submit();
         });
 
-        JSPC.checkUsername = function () {
+        JSPC.app.checkUsername = function () {
             $.ajax({
                 url: "<g:createLink controller="ajaxJson" action="checkExistingUser" />",
                 data: {input: $("#username").val()},
                 method: 'POST'
             }).done(function(response){
                 if(response.result) {
-                    JSPC.addError($("#username"),"<span id=\"usernameError\"><g:message code="user.not.created.message"/></span>");
+                    JSPC.app.addError($("#username"),"<span id=\"usernameError\"><g:message code="user.not.created.message"/></span>");
                 }
                 else if($("#username").val().length > 0) {
-                    JSPC.removeError($("#username"),$("#usernameError"));
+                    JSPC.app.removeError($("#username"),$("#usernameError"));
                 }
             }).fail(function(request,status,error){
                 console.log("Error occurred, verify logs: "+status+", error: "+error);
             });
         }
 
-        JSPC.addError = function (element,errorMessage) {
+        JSPC.app.addError = function (element,errorMessage) {
             if($("#"+element.attr("id")+"Error").length === 0) {
                 element.after(errorMessage);
                 element.parent("div").addClass("error");
@@ -118,7 +118,7 @@
             }
         }
 
-        JSPC.removeError = function (element,errorSpan) {
+        JSPC.app.removeError = function (element,errorSpan) {
             errorSpan.remove();
             element.parent("div").removeClass("error");
             if($(".error").length === 0)

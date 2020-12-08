@@ -174,9 +174,9 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
-        console.log(JSPC.costItemElementConfigurations);
-        JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+        JSPC.app.costItemElementConfigurations = ${raw(orgConfigurations as String)};
+        console.log(JSPC.app.costItemElementConfigurations);
+        JSPC.app.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
         $("#newCostInBillingCurrency").change(function(){
             var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
@@ -186,25 +186,25 @@
         });
 
         $("#costButton1").click(function () {
-            if (! JSPC.isError("#newCostInBillingCurrency") && ! JSPC.isError("#newCostCurrencyRate")) {
+            if (! JSPC.app.isError("#newCostInBillingCurrency") && ! JSPC.app.isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val());
-                input.val(JSPC.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
+                var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency").val());
+                input.val(JSPC.app.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
 
                 $(".la-account-currency").find(".field").removeClass("error");
-                JSPC.calcTaxResults()
+                JSPC.app.calcTaxResults()
             }
         });
 
 
         $("#newCostItemElement").change(function () {
-            if (typeof(JSPC.costItemElementConfigurations[$(this).val()]) !== 'undefined')
-                $("[name='ciec']").dropdown('set selected', JSPC.costItemElementConfigurations[$(this).val()]);
+            if (typeof(JSPC.app.costItemElementConfigurations[$(this).val()]) !== 'undefined')
+                $("[name='ciec']").dropdown('set selected', JSPC.app.costItemElementConfigurations[$(this).val()]);
             else
                 $("[name='ciec']").dropdown('set selected', 'null');
         });
-        JSPC.isError = function (cssSel) {
+        JSPC.app.isError = function (cssSel) {
             if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
                 $(".la-account-currency").children(".field").removeClass("error");
                 $(cssSel).parent(".field").addClass("error");
@@ -214,24 +214,24 @@
         };
 
         $('.calc').on('change', function () {
-            JSPC.calcTaxResults()
+            JSPC.app.calcTaxResults()
         });
 
-        JSPC.calcTaxResults = function () {
+        JSPC.app.calcTaxResults = function () {
             var roundF = $('*[name=newFinalCostRounding]').prop('checked');
             console.log($("*[name=newTaxRate]").val());
             var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
-            var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency").val());
+            var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency").val());
 
             $('#newCostInBillingCurrencyAfterTax').val(
-                roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
+                roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.app.convertDouble(parsedBillingCurrency * taxF)
             );
         };
 
-        JSPC.costElems = $("#newCostInBillingCurrency");
+        JSPC.app.costElems = $("#newCostInBillingCurrency");
 
-        JSPC.costElems.on('change', function () {
+        JSPC.app.costElems.on('change', function () {
             if($("[name='newCostCurrency']").val() != 0) {
                 $("#newCostCurrency").parent(".field").removeClass("error");
             }
@@ -252,7 +252,7 @@
         });
 
 
-        JSPC.convertDouble = function (input) {
+        JSPC.app.convertDouble = function (input) {
             //console.log("input: "+input+", typeof: "+typeof(input));
             var output;
             //determine locale from server

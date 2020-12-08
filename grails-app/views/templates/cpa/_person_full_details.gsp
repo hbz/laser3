@@ -15,7 +15,7 @@
 
             <g:if test="${overwriteEditable}">
                         <div class="content la-space-right">
-                        <button class="ui mini icon button" type="button" onclick="JSPC.editPerson(${person.id})" >
+                        <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})" >
                             <i class="write icon"></i>
                         </button>
                         </div>
@@ -63,7 +63,7 @@
                         model.hideType = true%>
                         <input class="ui mini icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
-                               onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
+                               onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>
 
                 </g:if>
@@ -217,13 +217,13 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
+        JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
             var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
             func();
         }
 
-        JSPC.editPerson = function (id) {
+        JSPC.app.editPerson = function (id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
             var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
             func();

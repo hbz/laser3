@@ -284,7 +284,7 @@
                     <tr>
                         <g:if test="${editable}">
                             <th>
-                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.selectAll()"/>
+                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
                             </th>
                             <th colspan="2">
                                 <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
@@ -353,7 +353,7 @@
 
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
-                                        type="submit" onClick="return JSPC.confirmSubmit()"
+                                        type="submit" onClick="return JSPC.app.confirmSubmit()"
                                         class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
                                 </button>
 
@@ -535,20 +535,20 @@
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
-      JSPC.hideModal = function () {
+      JSPC.app.hideModal = function () {
         $("[name='coreAssertionEdit']").modal('hide');
       }
-      JSPC.showCoreAssertionModal = function () {
+      JSPC.app.showCoreAssertionModal = function () {
         $("[name='coreAssertionEdit']").modal('show');
       }
 
       <g:if test="${editable}">
 
-    JSPC.selectAll = function () {
+    JSPC.app.selectAll = function () {
       $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
     }
 
-    JSPC.confirmSubmit = function () {
+    JSPC.app.confirmSubmit = function () {
       if ( $('#bulkOperationSelect').val() === 'remove' ) {
         var agree=confirm('${message(code: 'default.continue.confirm')}');
           if (agree)

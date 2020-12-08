@@ -1,5 +1,5 @@
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.taskcreate = function () {
+    JSPC.app.taskcreate = function () {
 
         $.ajax({
             url: '<g:createLink controller="myInstitution" action="modal_create"/>',

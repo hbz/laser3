@@ -255,10 +255,10 @@
         });
 
       $('.unlinkPackages').on('click',function() {
-          JSPC.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
+          JSPC.app.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
       });
 
-      JSPC.unlinkPackage = function (pkg_id, subscriptionID) {
+      JSPC.app.unlinkPackage = function (pkg_id, subscriptionID) {
 
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionID+"&package="+pkg_id
 

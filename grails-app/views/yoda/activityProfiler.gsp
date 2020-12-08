@@ -36,7 +36,7 @@
                                     setTimeout( function(){ console.log(".."); window.dispatchEvent(new Event('resize')) }, 99);
                                 </g:if>
 
-                                JSPC.chartData = {
+                                JSPC.app.chartData = {
                                     labels: [
                                         <% println '"' + labels.collect{ it.length() ? it.substring(0,3) + '00' : it }.join('","') + '"' %>
                                     ],
@@ -46,7 +46,7 @@
                                     ]
                                 };
 
-                                new Chartist.Bar('#ct-chart-${index}', JSPC.chartData, {
+                                new Chartist.Bar('#ct-chart-${index}', JSPC.app.chartData, {
                                     stackBars: true,
                                     fullWidth: true,
                                     chartPadding: {

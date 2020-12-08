@@ -146,7 +146,7 @@
             <tr>
 
               <td>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="JSPC.selectAll()"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/></g:if>
               </td>
 
               <td colspan="7">
@@ -207,13 +207,13 @@
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />--%>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-       JSPC.selectAll = function () {
+       JSPC.app.selectAll = function () {
          $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
 
         //$('#select-all').is( ':checked' )? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
       }
 
-      JSPC.confirmSubmit = function () {
+      JSPC.app.confirmSubmit = function () {
         if ( $('#bulkOperationSelect').val() === 'remove' ) {
           var agree=confirm("${message(code:'default.continue.confirm')}");
           if (agree)

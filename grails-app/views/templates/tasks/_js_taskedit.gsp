@@ -1,5 +1,5 @@
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.taskedit = function (id) {
+    JSPC.app.taskedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,

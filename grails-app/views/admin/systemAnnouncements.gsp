@@ -41,17 +41,17 @@ ${currentAnnouncement?.getCleanContent()}
             </div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
-                JSPC.updateSysAnnPreview = function() {
+                JSPC.app.updateSysAnnPreview = function() {
                     $('#saPreview').text(
                         $('form #saTitle').val().replace(/<.*?>/gm,"") + '\n\n' +
                         $('form #saContent').val().replace(/<.*?>/gm,"")
                     )
                 }
                 $('form #saTitle').on('change', function(){
-                    JSPC.updateSysAnnPreview()
+                    JSPC.app.updateSysAnnPreview()
                 })
                 $('form #saContent').on('change', function(){
-                    JSPC.updateSysAnnPreview()
+                    JSPC.app.updateSysAnnPreview()
                 })
             </laser:script>
 

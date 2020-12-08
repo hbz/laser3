@@ -56,7 +56,7 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
-                    <a class="ui icon button" onclick="JSPC.editAddress(${address.id});">
+                    <a class="ui icon button" onclick="JSPC.app.editAddress(${address.id});">
                         <i class="pencil icon"></i>
                     </a>
 
@@ -73,7 +73,7 @@
 	</div>
 </g:if>
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.editAddress = function (id) {
+    JSPC.app.editAddress = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", "<g:createLink controller="ajaxHtml" action="editAddress"/>?id=" + id, false);
         func();
     }
