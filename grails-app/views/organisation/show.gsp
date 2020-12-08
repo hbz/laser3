@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
 
     <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
@@ -16,8 +16,6 @@
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
     <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-
-    <asset:javascript src="properties.js"/>
 </head>
 
 <body>
@@ -318,7 +316,7 @@
                             <dd>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance.platforms.sort { it?.name }}" var="platform">
+                                    <g:each in="${orgInstance.platforms}" var="platform">
                                         <div class="ui item">
                                             <div class="content la-space-right">
                                                 <strong><g:link controller="platform" action="show"
@@ -342,7 +340,7 @@
                     </g:if>
 
                     <div class="ui la-float-right">
-                        <g:if test="${(orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -361,7 +359,7 @@
                                     <div class="item">
 
                                         <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
-                                           onclick="personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
+                                           onclick="JSPC.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
                                                 code="personFormModalTechnichalSupport"/></a>
 
                                     </div>
@@ -389,7 +387,6 @@
                                         <div class="card">
                                             <div class="content">
                                                 <div class="header">${typeName}</div>
-
                                                 <div class="description">
                                                     <div class="ui divided middle aligned list la-flex-list">
                                                         <% List addresses = typeAddressMap.get(typeName) %>
@@ -419,7 +416,7 @@
                 </div>
             </div><!-- .card -->
 
-                <g:if test="${(contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM') && (contextService.getOrg() != orgInstance)}">
+                <g:if test="${(user.isAdmin() || institution.getCustomerType()  == 'ORG_CONSORTIUM') && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -503,13 +500,12 @@
 
 </body>
 </html>
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#country').on('save', function(e, params) {
-        showRegionsdropdown(params.newValue);
+        JSPC.showRegionsdropdown(params.newValue);
     });
 
-
-    function showRegionsdropdown(newValue) {
+    JSPC.showRegionsdropdown = function (newValue) {
         $("*[id^=regions_]").hide();
         if(newValue){
             var id = newValue.split(':')[1]
@@ -518,60 +514,26 @@
         }
     };
 
-    $(document).ready(function(){
-        var country = $("#country").editable('getValue', true);
-        showRegionsdropdown(country);
-    });
-        function addresscreate_org(orgId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            private_address_modal(url);
-        }
-        function addresscreate_prs(prsId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&hideType='+hideType;
-            private_address_modal(url);
-        }
-
-        function private_address_modal(url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
-<g:if test="${isProviderOrAgency}">
-    function personCreate(contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml"
-                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
-        createPersonModal(url)
+    JSPC.addresscreate_org = function (orgId, typeId, redirect, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
     }
-    function createPersonModal(url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#personModal").remove();
 
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personModal');
-                        r2d2.initDynamicXEditableStuff('#personModal');
-                    }
-                }).modal('show');
-            }
-        });
+    JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
+    }
+
+    JSPC.showRegionsdropdown( $("#country").editable('getValue', true) );
+
+<g:if test="${isProviderOrAgency}">
+
+    JSPC.personCreate = function (contactFor, org) {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true';
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        func();
     }
 </g:if>
-</asset:script>
+</laser:script>

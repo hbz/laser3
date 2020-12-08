@@ -146,9 +146,9 @@
 
 </semui:form>
 
-<script>
+<laser:script file="${this.getGroovyPageFileName()}">
 
-    var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+    JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
     $("#newCostInBillingCurrency2").change(function () {
         var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
@@ -158,40 +158,40 @@
     });
 
     $("#costButton12").click(function () {
-        if (!isError("#newCostInBillingCurrency2") && !isError("#newCostCurrencyRate2")) {
+        if (! JSPC.isError("#newCostInBillingCurrency2") && ! JSPC.isError("#newCostCurrencyRate2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
-            input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate2").val()));
+            var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
+            input.val(JSPC.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate2").val()));
 
             $(".la-account-currency").find(".field").removeClass("error");
-            calcTaxResults()
+            JSPC.calcTaxResults()
         }
     });
     $("#costButton22").click(function () {
-        if (!isError("#newCostInLocalCurrency2") && !isError("#newCostInBillingCurrency2")) {
+        if (! JSPC.isError("#newCostInLocalCurrency2") && ! JSPC.isError("#newCostInBillingCurrency2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
-            var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
+            var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency2").val());
+            var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
             input.val((parsedLocalCurrency / parsedBillingCurrency));
 
             $(".la-account-currency").find(".field").removeClass("error");
-            calcTaxResults()
+            JSPC.calcTaxResults()
         }
     });
     $("#costButton32").click(function () {
-        if (!isError("#newCostInLocalCurrency2") && !isError("#newCostCurrencyRate2")) {
+        if (! JSPC.isError("#newCostInLocalCurrency2") && ! JSPC.isError("#newCostCurrencyRate2")) {
             var input = $(this).siblings("input");
             input.transition('glow');
-            var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
-            input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate2").val()));
+            var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency2").val());
+            input.val(JSPC.convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate2").val()));
 
             $(".la-account-currency").find(".field").removeClass("error");
-            calcTaxResults()
+            JSPC.calcTaxResults()
         }
     });
-    var isError = function (cssSel) {
+    JSPC.isError = function (cssSel) {
         if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
             $(".la-account-currency").children(".field").removeClass("error");
             $(cssSel).parent(".field").addClass("error");
@@ -201,29 +201,29 @@
     };
 
     $('.calc').on('change', function () {
-        calcTaxResults()
+        JSPC.calcTaxResults()
     });
 
-    var calcTaxResults = function () {
+    JSPC.calcTaxResults = function () {
         var roundF = $('*[name=newFinalCostRounding2]').prop('checked');
         console.log($("*[name=newTaxRate2]").val());
         var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
 
-        var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency2").val());
-        var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency2").val());
+        var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
+        var parsedLocalCurrency = JSPC.convertDouble($("#newCostInLocalCurrency2").val());
 
         $('#newCostInBillingCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
+            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
         );
         $('#newCostInLocalCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedLocalCurrency * taxF) : convertDouble(parsedLocalCurrency * taxF)
+            roundF ? Math.round(parsedLocalCurrency * taxF) : JSPC.convertDouble(parsedLocalCurrency * taxF)
         );
     };
 
-    var costElems = $("#newCostInLocalCurrency2, #newCostCurrencyRate2, #newCostInBillingCurrency2");
+    JSPC.costElems = $("#newCostInLocalCurrency2, #newCostCurrencyRate2, #newCostInBillingCurrency2");
 
-    costElems.on('change', function () {
-        checkValues();
+    JSPC.costElems.on('change', function () {
+        JSPC.checkValues();
         if ($("[name='newCostCurrency2']").val() != 0) {
             $("#newCostCurrency2").parent(".field").removeClass("error");
         } else {
@@ -234,7 +234,7 @@
     $("#costItemsBulk").submit(function (e) {
         e.preventDefault();
         //if ($("[name='newCostCurrency2']").val() != 0 && $("[name='newCostCurrency2']").val() != null) {
-            var valuesCorrect = checkValues();
+            var valuesCorrect = JSPC.checkValues();
             if (valuesCorrect) {
                 $("#newCostCurrency2").parent(".field").removeClass("error");
                 if ($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
@@ -252,24 +252,23 @@
 
     $("#newCostCurrency2").change(function () {
         //console.log("event listener succeeded, picked value is: "+$(this).val());
-        if ($(this).val() === eurVal)
+        if ($(this).val() === JSPC.eurVal)
             $("#newCostCurrencyRate2").val(1.0);
         else $("#newCostCurrencyRate2").val(0.0);
         $("#costButton12").click();
     });
 
-
-    function checkValues() {
-        if (convertDouble($("#newCostInBillingCurrency2").val()) * $("#newCostCurrencyRate2").val() !== convertDouble($("#newCostInLocalCurrency2").val())) {
-            costElems.parent('.field').addClass('error');
+    JSPC.checkValues = function() {
+        if (JSPC.convertDouble($("#newCostInBillingCurrency2").val()) * $("#newCostCurrencyRate2").val() !== JSPC.convertDouble($("#newCostInLocalCurrency2").val())) {
+            JSPC.costElems.parent('.field').addClass('error');
             return false;
         } else {
-            costElems.parent('.field').removeClass('error');
+            JSPC.costElems.parent('.field').removeClass('error');
             return true;
         }
     }
 
-    function convertDouble(input) {
+    JSPC.convertDouble = function (input) {
         console.log("input: " + input + ", typeof: " + typeof (input))
         var output;
         //determine locale from server
@@ -290,4 +289,4 @@
         return output;
     }
 
-</script>
+</laser:script>

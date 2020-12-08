@@ -32,7 +32,7 @@ class DocstoreControllerService {
                 Doc doc_content = doc_context.owner
                 doc_content.title = params.upload_title ?: doc_content.filename
                 doc_content.type = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
-                doc_content.owner = contextService.org
+                doc_content.owner = contextService.getOrg()
                 doc_content.save()
                 doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 if(params.targetOrg)

@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_members -->
-%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
+%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx --}%
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
@@ -92,15 +92,13 @@
                                       name="cust_prop_add_value_private"
                                       class="ui form"
                                       data-update="${custom_props_div}"
-                                      data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                      data-always="c3po.loadJsAfterAjax()"
-                        >
+                                      data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
                         <g:if test="${!(actionName.contains('survey') || controllerName.contains('survey'))}">
                             <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
                             <input type="hidden" name="editable"   value="${editable}"/>
-                            <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                            <input type="hidden" name="ownerClass" value="${ownobj?.class?.name}"/>
 
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                         </g:if>

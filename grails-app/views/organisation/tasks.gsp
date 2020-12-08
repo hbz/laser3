@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
 </head>
 <body>
@@ -14,7 +14,7 @@
     <semui:controlButtons>
         <g:render template="actions" model="${[org:org]}"/>
     </semui:controlButtons>
-    <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />${orgInstance.name}"</h1>
+    <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
     <g:render template="nav" />
 

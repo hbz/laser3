@@ -22,25 +22,19 @@
 </div>
 
 
-<asset:script type="text/javascript">
-         $(document).ready(function () {
-            if($("#filterCountry").val()) updateDropdown();
-        });
+<laser:script file="${this.getGroovyPageFileName()}">
 
-        $("#filterCountry").change(function() { updateDropdown(); });
-
-        function updateDropdown() {
+        JSPC.updateDropdown = function () {
             var dropdownRegion = $('#filterRegion');
             var selectedCountry = $("#filterCountry").val();
             var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
-            dropdownRegion.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
+            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
             dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
-                url: '<g:createLink controller="ajaxJson" action="getRegions"/>'
-                + '?country=' + selectedCountry + '&format=json',
+                url: '<g:createLink controller="ajaxJson" action="getRegions"/>' + '?country=' + selectedCountry + '&format=json',
                 success: function (data) {
                     $.each(data, function (key, entry) {
                         if(jQuery.inArray(entry.id, selectedRegions) >=0 ){
@@ -52,4 +46,8 @@
                 }
             });
         }
-</asset:script>
+
+        if ($("#filterCountry").val()) { JSPC.updateDropdown(); }
+
+        $("#filterCountry").change(function() { JSPC.updateDropdown(); });
+</laser:script>

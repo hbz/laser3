@@ -89,7 +89,7 @@ class TaskController  {
 		def result      = taskService.getPreconditions(contextOrg)
 		result.validSubscriptionsList = new ArrayList()
 		result.validSubscriptions.each{
-			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
+			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.getOrg())])
 		}
 		render template: "/templates/tasks/modal_create", model: result
     }

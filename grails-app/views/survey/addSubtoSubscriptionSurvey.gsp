@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'createSubscriptionSurvey.label')}</title>
 </head>
 
@@ -74,13 +74,13 @@
     </g:form>
 </semui:form>
 
-<script language="JavaScript">
+<laser:script file="${this.getGroovyPageFileName()}">
         $('#subSurveyUseForTransfer').click(function () {
             if ($(this).prop('checked')) {
                 $('#mandatory').prop('checked', true)
             }
         })
-</script>
+</laser:script>
 
 </body>
 </html>

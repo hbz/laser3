@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.propertiesMembers.label', args: args.memberTypeGenitive)}</title>
 </head>
 
@@ -264,7 +264,7 @@
                                    value="${subscription.propertySet.findAll { it.type.tenant?.id == contextOrg.id && it.type == filterPropDef  }}"/>
                             <g:if test="${privateProperties}">
                                 <g:each in="${privateProperties}" var="privateProperty">
-                                    <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
+                                    <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef?.getI10n('name')}</div>
 
                                     <div class="content">
 
@@ -572,7 +572,7 @@
 
                                         <g:if test="${privateProperties}">
                                             <g:each in="${privateProperties}" var="privateProperty">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <g:if test="${privateProperty.type.isIntegerType()}">
@@ -668,7 +668,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
@@ -676,7 +676,7 @@
             $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', false)
         }
     });
-</asset:script>
+</laser:script>
 
 </body>
 </html>

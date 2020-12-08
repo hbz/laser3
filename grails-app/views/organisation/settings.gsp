@@ -5,9 +5,8 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
-            <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
-            <asset:javascript src="properties.js"/>
+        <meta name="layout" content="laser">
+        <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
     </head>
     <body>
 
@@ -47,9 +46,9 @@
                                 </thead>
                                 <tbody>
                                 <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
-                                <asset:script type="text/javascript">
+                                <laser:script file="${this.getGroovyPageFileName()}">
 
-                                    $('body #oamonitor_server_access').editable({
+                                    $('body #oamonitor_server_access').editable('destroy').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_YES.id}") {
                                                 var r = confirm("Mit der Auswahl der Option >>Datenweitergabe an OA-Monitor<< stimmen Sie der Weitergabe der Lizenz- und Kostendaten Ihrer Einrichtung an den OA-Monitor\n- https://open-access-monitor.de -\n zu.\n\n" +
@@ -73,7 +72,7 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
-                                </asset:script>
+                                </laser:script>
 
                                 <g:each in="${settings}" var="os">
                                     <tr>
@@ -151,11 +150,9 @@
                         </div><!-- .content -->
                     </div><!-- .card -->
 
-                    <asset:script type="text/javascript">
-                                $(document).ready(function(){
-                                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                                });
-                    </asset:script>
+                    <laser:script file="${this.getGroovyPageFileName()}">
+                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
+                    </laser:script>
 
                 </div><!-- .la-inline-lists -->
 

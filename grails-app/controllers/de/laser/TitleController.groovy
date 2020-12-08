@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.SwissKnife
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance
 import de.laser.auth.User
@@ -208,9 +208,8 @@ class TitleController  {
     }
     else {
         User user = contextService.getUser()
-      result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
-      params.max = result.max
-      result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, user)
+        params.max = result.max
     }
 
     result.titleInstance = TitleInstance.get(params.id)
@@ -274,10 +273,9 @@ class TitleController  {
       params.offset = 0
       params.remove("search")
     }
+      Map<String, Object> result = [:]
       User user = contextService.getUser()
-    Map<String, Object> result = [:]
-    result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
-    result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+      SwissKnife.setPaginationParams(result, params, user)
 
     result.availableStatuses = RefdataCategory.getAllRefdataValues(RDConstants.TITLE_STATUS)
     def ti_status = null

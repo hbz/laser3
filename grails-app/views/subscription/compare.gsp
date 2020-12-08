@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="semanticUI">
+		<meta name="layout" content="laser">
 		<g:set var="entityName" value="${message(code: 'default.subscription.label')}"/>
 		<title>${message(code:'laser')} : ${message(code:'subscription.compare.label')}</title>
 	</head>
@@ -230,8 +230,7 @@
 		 model="[subA:subAIE,subB:subBIE,currentTitle:currentTitle, subAName:subInsts.get(0).name, subBName:subInsts.get(1).name]"/>
 </g:each>
 
-		<asset:script type="text/javascript">
-$(document).ready(function(){
+		<laser:script file="${this.getGroovyPageFileName()}">
 			$("div.dropdown").dropdown({
 				apiSettings: {
 				    url: "${createLink([controller: "ajaxJson", action: "lookupSubscriptions"])}",
@@ -239,7 +238,6 @@ $(document).ready(function(){
 				},
 				clearable: true
 			});
-			});
-		</asset:script>
+		</laser:script>
 	</body>
 </html>

@@ -3,12 +3,15 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
 </head>
 
 <body>
-    <br />
+
+<h1 class="ui icon header la-clear-before">
+    ${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}
+</h1>
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">
@@ -65,7 +68,7 @@
                     </div>
                     <div class="field" id="js-consotial-authority">
                         <fieldset>
-                            <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
+                            <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
                             <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                                 optionKey="${{ Org.class.name + ':' + it.id }}"
@@ -86,13 +89,11 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/GASCO-Logo-2_klein.jpg')}"/>
         </div>
     </div>
-    <asset:script type="text/javascript">
-        $(document).ready(function() {
-
-            function toggleFilterPart() {
+    <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.toggleFilterPart = function () {
                 if ($('.js-consortiallicence input').prop('checked')) {
                     $('#js-consotial-authority .dropdown').removeClass('disabled')
                     $('#js-consotial-authority select').removeAttr('disabled')
@@ -101,7 +102,7 @@
                     $('#js-consotial-authority select').attr('disabled', 'disabled')
                 }
             }
-            function toggleTableHeading() {
+            JSPC.toggleTableHeading = function () {
                 if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -110,15 +111,15 @@
                     $('#js-consortium-header').show()
                 }
             }
-            toggleFilterPart()
-            $('.js-nationallicence').on('click', toggleFilterPart)
-            $('.js-alliancelicence').on('click', toggleFilterPart)
-            $('.js-consortiallicence').on('click', toggleFilterPart)
-            toggleTableHeading()
-            $('.ui secondary button').on('click', toggleTableHeading)
+            JSPC.toggleFilterPart()
+            $('.js-nationallicence').on('click', JSPC.toggleFilterPart)
+            $('.js-alliancelicence').on('click', JSPC.toggleFilterPart)
+            $('.js-consortiallicence').on('click', JSPC.toggleFilterPart)
+            JSPC.toggleTableHeading()
+            $('.ui secondary button').on('click', JSPC.toggleTableHeading)
 
-        });
-    </asset:script>
+    </laser:script>
+
     <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">

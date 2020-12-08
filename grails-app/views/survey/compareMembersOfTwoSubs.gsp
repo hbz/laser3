@@ -6,7 +6,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} :  ${message(code: 'surveyInfo.transferMembers')}</title>
 
 </head>
@@ -416,9 +416,7 @@ ${surveyInfo.name}
     </g:link>
 </div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function() {
-
+<laser:script file="${this.getGroovyPageFileName()}">
         $("#parentSubscription .titleCell").each(function(k) {
             var v = $(this).height();
             $("#parentSuccessorSubscription .titleCell").eq(k).height(v);
@@ -428,9 +426,7 @@ ${surveyInfo.name}
             var v = $(this).height();
             $("#parentSubscription .titleCell").eq(k).height(v);
         });
-
-    });
-</asset:script>
+</laser:script>
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer && parentSuccessorSubscription}">
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -20,7 +20,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${orgInstance._getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${orgInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -90,11 +90,9 @@
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-        $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
-        });
-    </asset:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
+    </laser:script>
 
 </div><!-- .card -->
 
@@ -106,20 +104,19 @@
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
-
-                <div id="custom_props_div_${authOrg.id}">
+                <g:set var="propertyWrapper" value="private-property-wrapper-${authOrg.id}" />
+                <div id="${propertyWrapper}">
                     <g:render template="/templates/properties/private" model="${[
                             prop_desc: PropertyDefinition.ORG_PROP, // TODO: change
                             ownobj: orgInstance,
-                            custom_props_div: "custom_props_div_${authOrg.id}",
+                            propertyWrapper: "${propertyWrapper}",
                             tenant: authOrg
                     ]}"/>
 
-                    <asset:script type="text/javascript">
-                            $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                            });
-                    </asset:script>
+                    <laser:script file="${this.getGroovyPageFileName()}">
+                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${authOrg.id});
+                    </laser:script>
+
                 </div>
             </div>
         </div><!--.card-->

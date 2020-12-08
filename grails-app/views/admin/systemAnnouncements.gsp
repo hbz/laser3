@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'menu.admin.announcements')}</title>
     </head>
 
@@ -40,20 +40,20 @@ ${currentAnnouncement?.getCleanContent()}
                 </textarea>
             </div>
 
-            <script>
-                updateSysAnnPreview = function() {
+            <laser:script file="${this.getGroovyPageFileName()}">
+                JSPC.updateSysAnnPreview = function() {
                     $('#saPreview').text(
                         $('form #saTitle').val().replace(/<.*?>/gm,"") + '\n\n' +
                         $('form #saContent').val().replace(/<.*?>/gm,"")
                     )
                 }
                 $('form #saTitle').on('change', function(){
-                    updateSysAnnPreview()
+                    JSPC.updateSysAnnPreview()
                 })
                 $('form #saContent').on('change', function(){
-                    updateSysAnnPreview()
+                    JSPC.updateSysAnnPreview()
                 })
-            </script>
+            </laser:script>
 
             <div class="field">
                 <g:if test="${currentAnnouncement}">

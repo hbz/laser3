@@ -115,12 +115,10 @@
 
     </div><!-- #propDefGroupBindingConfig -->
 
-<script>
-    $(function(){
+<laser:script file="${this.getGroovyPageFileName()}">
         $('#propDefGroupBindings .actions .button.propDefGroupBindings').on('click', function(e){
             e.preventDefault()
             window.location.reload()
         })
-    })
-</script>
+</laser:script>
 <!-- O: templates/properties/_groupBindings -->

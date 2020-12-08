@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'menu.institutions.manage_prop_groups')}</title>
     </head>
     <body>
@@ -84,7 +84,7 @@
         </tbody>
     </table>
 
-    <script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('.trigger-modal').on('click', function(e) {
             e.preventDefault();
 
@@ -99,7 +99,7 @@
                         r2d2.initDynamicSemuiStuff('#propDefGroupModal');
                         r2d2.initDynamicXEditableStuff('#propDefGroupModal');
                         $("html").css("cursor", "auto");
-                        ajaxPostFunc()
+                        JSPC.callbacks.dynPostFunc()
                     },
                     detachable: true,
                     autofocus: false,
@@ -112,7 +112,7 @@
                 }).modal('show');
             })
         })
-    </script>
+    </laser:script>
 
   </body>
 </html>

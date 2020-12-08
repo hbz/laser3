@@ -32,12 +32,17 @@
 ***********************************/
 .ui.segment.la-footer {
   padding: 3em 1em;
+
+  h2 {
+    font-size: 1.07142857rem!important;
+  }
+
 }
 
 .la-filter {
 
   .ui.selection.dropdown {
-    color: @white;
+    //color: @white;
   }
   .ui.form .field>label {
     color: @white;
@@ -72,7 +77,9 @@
   background: @laFilterChosen!important;
 }
 .ui.selection.dropdown{
-  &.la-filter-dropdown-selected {
+  &.la-filter-dropdown-selected,
+  &.la-filter-selected{
+    color: white;
     background: @laFilterChosen!important;
     border: 1px solid @white;
   }

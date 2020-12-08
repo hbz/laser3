@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 </head>
@@ -20,12 +20,12 @@
     <g:if test="${editable}">
         <g:if test="${(institution.getCustomerType() == 'ORG_CONSORTIUM') && !isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-semui="modal"
-               onclick="personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
+               onclick="JSPC.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForInstitution.label"/></a>
         </g:if>
         <g:if test="${isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-semui="modal"
-               onclick="personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message
+               onclick="JSPC.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForProviderAgency.label"/></a>
         </g:if>
     </g:if>
@@ -119,13 +119,12 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 </body>
 
-<asset:script type="text/javascript">
-    function personCreate(contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml"
-                                 action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
-        createPersonModal(url)
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.personCreate = function (contactFor, org) {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
+        JSPC.createPersonModal(url)
     }
-    function createPersonModal(url) {
+    JSPC.createPersonModal = function (url) {
         $.ajax({
             url: url,
             success: function(result){
@@ -142,5 +141,5 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
             }
         });
     }
-</asset:script>
+</laser:script>
 </html>

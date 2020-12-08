@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="semanticUI">
+		<meta name="layout" content="laser">
 		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
@@ -166,7 +166,7 @@
 
             </g:form>
 
-            <asset:script type="text/javascript">
+            <laser:script file="${this.getGroovyPageFileName()}">
                     $('button[data-xcg-rdv]').on('click', function(){
 
                         var rdv = $(this).attr('data-xcg-rdv');
@@ -197,7 +197,7 @@
                             }, async: false
                         });
                     })
-            </asset:script>
+            </laser:script>
 
         </semui:modal>
 

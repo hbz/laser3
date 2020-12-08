@@ -1,7 +1,8 @@
+<%@page import="com.k_int.kbplus.GlobalSourceSyncService" %>
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : Manage Global Sorces</title>
   </head>
 
@@ -48,7 +49,12 @@
               <td>${source.fullPrefix}</td>
               <td>${source.principal}</td>
               <td>${source.credentials}</td>
-              <td>${source.rectype==0?'Package':'Title'}</td>
+              <td>
+                  <g:if test="${source.rectype == GlobalSourceSyncService.RECTYPE_PACKAGE}">Package</g:if>
+                  <g:elseif test="${source.rectype == GlobalSourceSyncService.RECTYPE_TITLE}">Title</g:elseif>
+                  <g:elseif test="${source.rectype == GlobalSourceSyncService.RECTYPE_ORG}">Org</g:elseif>
+                  <g:elseif test="${source.rectype == GlobalSourceSyncService.RECTYPE_TIPP}">TIPP</g:elseif>
+              </td>
               <td>
                 <g:link class="ui button"
                         controller="yoda"
@@ -97,8 +103,10 @@
                 <div class="field">
                     <label>Record Type</label>
                     <select name="rectype">
-                        <option value="0">Package</option>
-                        <option value="1">Title</option>
+                        <option value="${GlobalSourceSyncService.RECTYPE_PACKAGE}">Package</option>
+                        <option value="${GlobalSourceSyncService.RECTYPE_TITLE}">Title</option>
+                        <option value="${GlobalSourceSyncService.RECTYPE_ORG}">Org</option>
+                        <option value="${GlobalSourceSyncService.RECTYPE_TIPP}">TIPP</option>
                     </select>
                 </div>
             </div>

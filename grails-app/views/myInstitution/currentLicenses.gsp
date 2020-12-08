@@ -2,11 +2,10 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'license.current')}</title>
   </head>
   <body>
-
   <laser:serviceInjection />
 
   <semui:breadcrumbs>
@@ -46,7 +45,6 @@
   </h1>
 
   <g:render template="/templates/filter/javascript" />
-
   <semui:filter showFilterButton="true" class="license-searches">
       <form class="ui form">
           <div class="four fields">
@@ -54,7 +52,6 @@
                   <label for="keyword-search"><g:message code="default.search.text"/>
                       <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.license')}">
                           <i class="question circle icon"></i>
-                      </span>
                   </label>
                   <input type="text" id="keyword-search" name="keyword-search" placeholder="${message(code:'default.search.ph')}" value="${params['keyword-search']?:''}" />
               </div>
@@ -178,31 +175,26 @@
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
-                              <g:each in="${allLinkedSubscriptions}" var="row">
-                                  <g:if test="${l == row.sourceLicense}">
-                                      <g:set var="sub" value="${row.destinationSubscription}"></g:set>
-                                      <div class="la-flexbox la-minor-object">
-                                          <i class="icon clipboard outline outline la-list-icon"></i>
-                                          <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
-                                      </div>
-                                  </g:if>
+                              <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
+                                  <div class="la-flexbox la-minor-object">
+                                      <i class="icon clipboard outline outline la-list-icon"></i>
+                                      <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
+                                  </div>
                               </g:each>
                           </th>
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
-
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          ${lChild}
+                                          <p>${lChild}</p>
                                       </g:link>
-                                      <br />
-
                                   </g:each>
                               </td>
                           </g:if>
                           <td>
-                              <g:if test="${l.licensor}">
-                                  <g:link controller="organisation" action="show" id="${l.licensor.id}">${l.licensor.name}</g:link>
+                              <g:set var="licensor" value="${l.getLicensor()}"/>
+                              <g:if test="${licensor}">
+                                  <g:link controller="organisation" action="show" id="${licensor.id}">${licensor.name}</g:link>
                               </g:if>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
@@ -211,7 +203,7 @@
                           <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br /><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
-                              <g:if test="${(accessService.checkPerm("ORG_INST") && l._getCalculatedType() == License.TYPE_LOCAL) || (accessService.checkPerm("ORG_CONSORTIUM") && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
+                              <g:if test="${(contextCustomerType == "ORG_INST" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                                   <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button">
                                           <i class="copy icon"></i>
@@ -227,26 +219,22 @@
         </g:if>
         <g:else>
             <g:if test="${filterSet}">
-                <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
+                <strong><g:message code="filter.result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:if>
             <g:else>
-                <br /><strong><g:message code="result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
+                <strong><g:message code="result.empty.object" args="${[message(code:"license.plural")]}"/></strong>
             </g:else>
         </g:else>
     </div>
 
   <g:if test="${licenses && compare}">
-      <br />
       <input type="submit" class="ui button" value="${message(code:'menu.my.comp_lic')}" />
   </g:if>
 
   </g:form>
-
       <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${licenseCount}" />
-
       <semui:debugInfo>
           <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
       </semui:debugInfo>
-
   </body>
 </html>

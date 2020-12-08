@@ -202,7 +202,7 @@
         </g:each>
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" onclick="editPerson(${person.id})" class="ui icon button">
+                    <button type="button" onclick="JSPC.editPerson(${person.id})" class="ui icon button">
                         <i class="write icon"></i>
                     </button>
 
@@ -222,12 +222,12 @@
     </tbody>
 </table>
 
-<script>
-    function editPerson(id) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.editPerson = function (id) {
         var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
-        person_editModal(url)
+        JSPC.person_editModal(url)
     }
-    function person_editModal(url) {
+    JSPC.person_editModal = function (url) {
         $.ajax({
             url: url,
             success: function(result){
@@ -244,6 +244,6 @@
             }
         });
     }
-</script>
+</laser:script>
 
 

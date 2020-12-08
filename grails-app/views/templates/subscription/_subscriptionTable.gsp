@@ -60,7 +60,7 @@
                                 </a>
                             </th>
                         </g:if>
-                        <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
                             <th class="la-no-uppercase" scope="col" rowspan="2" >
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.label')}">
@@ -101,7 +101,7 @@
                             </g:link>
                             <g:if test="${'showLicense' in tableConfig}">
                                 <%--<div id="${s.id}linkedLicenses">
-                                    <script>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
                                         $.ajax({
                                             url: "<g:createLink controller="ajaxJson" action="getLinkedLicenses" />",
                                             data: {
@@ -113,7 +113,7 @@
                                                     $("#${s.id}linkedLicenses").append('<i class="icon balance scale la-list-icon"></i><a href="'+link+'/'+v.id+'">'+v.name+'</a><br />');
                                                 });
                                             });
-                                    </script>
+                                    </laser:script>
                                 </div>--%>
                                 <g:each in="${allLinkedLicenses}" var="row">
                                     <g:if test="${s == row.destinationSubscription}">
@@ -142,7 +142,7 @@
                             <g:if test="${s.packages.size() > 10}">
                                 <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
                             </g:if>
-                            <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
+                            <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
                                     <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
@@ -189,27 +189,24 @@
                             <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <g:set var="childSubs" value="${Subscription.findAllByInstanceOf(s)}"/>
+                            <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
                             <td>
-                                <g:if test="${childSubs.size() > 0}">
-                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">${childSubs.size()}</g:link>
+                                <g:if test="${childSubIds.size() > 0}">
+                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">${childSubIds.size()}</g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">${childSubs.size()}</g:link>
+                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">${childSubIds.size()}</g:link>
                                 </g:else>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                                    <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(childSubs, institution, RDStore.COST_ITEM_DELETED).size()}
+                                    <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                     </g:if>
-                                    <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST_COLLECTIVE'}">
-                                        ${childSubs.isEmpty() ? 0 : CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqualAndIsVisibleForSubscriber(childSubs, institution, RDStore.COST_ITEM_DELETED,true).size()}
-                                    </g:elseif>
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:if test="${!(contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
@@ -230,9 +227,9 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${contextService.org.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
-                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
-                                            [sub: s.instanceOf, org: contextService.org, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
+                                <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
+                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                                            [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon button">
@@ -242,12 +239,12 @@
                                         </g:link>
                                     </g:if>
                                 </g:if>
-                                <g:if test="${contextService.org.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
                                         <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
                                                 class="ui icon button">
-                                            <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
+                                            <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                     <i class="ui icon envelope green"></i>
@@ -322,18 +319,15 @@
                     total="${num_sub_rows}"/>
 </g:if>
 
-<asset:script type="text/javascript">
-        $(document).ready(function(){
+<laser:script file="${this.getGroovyPageFileName()}">
               // initialize the form and fields
-              $('.ui.form')
-              .form();
+              $('.ui.form').form();
             var val = "${params.dateBeforeFilter}";
             if(val == "null"){
                 $(".dateBefore").addClass("hidden");
             }else{
                 $(".dateBefore").removeClass("hidden");
             }
-        });
 
         $("[name='dateBeforeFilter']").change(function(){
             var val = $(this)['context']['selectedOptions'][0]['label'];
@@ -344,4 +338,4 @@
                 $(".dateBefore").addClass("hidden");
             }
         })
-</asset:script>
+</laser:script>

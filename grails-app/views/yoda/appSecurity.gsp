@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.security')}</title>
 </head>
 <body>
@@ -82,35 +82,35 @@
 
 <button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>
 
-<asset:script>
-    var resultViewModes = [
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.resultViewModes = [
         'Sichtbar: Alle Methoden',
         'ToDo: Nicht transaktionsgesicherte Methoden',
         'Sichtbar: Überarbeitete Methoden',
     ]
-    var resultViewMode = 0
+    JSPC.resultViewMode = 0
 
     $('#resultToggle').on('click', function(){
 
-        if (++resultViewMode >= resultViewModes.length) {
-            resultViewMode = 0
+        if (++JSPC.resultViewMode >= JSPC.resultViewModes.length) {
+            JSPC.resultViewMode = 0
         }
-        $('#resultToggle').html(resultViewModes[resultViewMode])
+        $('#resultToggle').html(JSPC.resultViewModes[JSPC.resultViewMode])
 
-        if (resultViewMode == 0) {
+        if (JSPC.resultViewMode == 0) {
             $('.secInfoWrapper2 .list .item').removeClass('hidden')
         }
-        else if (resultViewMode == 1) {
+        else if (JSPC.resultViewMode == 1) {
             $('.secInfoWrapper2 .list .item.refactoring-done').addClass('hidden')
             $('.secInfoWrapper2 .list .item:not(.refactoring-done)').removeClass('hidden')
 
         }
-        else if (resultViewMode == 2) {
+        else if (JSPC.resultViewMode == 2) {
             $('.secInfoWrapper2 .list .item:not(.refactoring-done)').addClass('hidden')
             $('.secInfoWrapper2 .list .item.refactoring-done').removeClass('hidden')
         }
     })
-</asset:script>
+</laser:script>
 
 <br />
 <br />

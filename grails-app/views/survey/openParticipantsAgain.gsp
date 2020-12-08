@@ -5,7 +5,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
 </head>
 
@@ -538,10 +538,8 @@
     </div>
 </div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.tabular.menu .item').tab()
 
     $('#orgListToggler').click(function () {
         if ($(this).prop('checked')) {
@@ -550,7 +548,7 @@
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
         }
     })
-</asset:script>
+</laser:script>
 
 </body>
 </html>

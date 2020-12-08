@@ -2,17 +2,16 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="semanticUI">
+		<meta name="layout" content="laser">
 		<g:set var="entityName" value="${message(code: 'accessPoint.label')}" />
 		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
-    <asset:script type="text/javascript">
-      $(function() {
-        $('body').attr('class', 'organisation_accessPoint_create');
-     });
-    </asset:script>
 	</head>
 
 <body>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('body').attr('class', 'organisation_accessPoint_create');
+</laser:script>
+
 <div>
   <semui:breadcrumbs>
     <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}"/>

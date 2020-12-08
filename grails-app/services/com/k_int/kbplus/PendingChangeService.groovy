@@ -427,10 +427,11 @@ class PendingChangeService extends AbstractLockableService {
 
     Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Set<Map<String,Object>> pendingChanges = [], acceptedChanges = []
-        String queryOwn = "select pc from PendingChange pc where pc.owner = :contextOrg"
-        //String queryCount = "select count(distinct pc.oid) from PendingChange pc where pc.owner = :contextOrg"
-        Set<RefdataValue> queryStatus = [RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED]
+        int pendingCount = 0, notificationsCount = 0
         List queryClauses = []
+        Set<RefdataValue> queryStatus = [RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED]
+        String queryOwn = "select pc from PendingChange pc where pc.owner = :contextOrg"
+        String queryCount = "select count(distinct pc.oid) from PendingChange pc join pc.status status where pc.owner = :contextOrg and status in (:queryStatus)"
         Map<String,Object> queryParams = [contextOrg:configMap.contextOrg]
         if(configMap.periodInDays) {
             queryClauses << "pc.ts > :time"
@@ -439,30 +440,32 @@ class PendingChangeService extends AbstractLockableService {
         if(configMap.consortialView) {
             queryClauses << "(pc.subscription = null or pc.subscription.instanceOf = null)"
         }
+        else queryClauses << "pc.subscription = null"
         if(queryClauses) {
             queryOwn += ' and ' + queryClauses.join(" and ")
-            //queryCount += ' and ' + queryClauses.join(" and ")
+            queryCount += ' and ' + queryClauses.join(" and ")
         }
-        Set<PendingChange> result = []
-        Set<PendingChange> pending = PendingChange.executeQuery( queryOwn + " and pc.status = :queryStatus order by pc.ts desc", queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING] )
-        Set<PendingChange> accepted = PendingChange.executeQuery( queryOwn + " and pc.status = :queryStatus order by pc.ts desc", queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED] )
-        //int pendingCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])[0]
-        //int notificationsCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])[0]
         Set<SubscriptionPackage> pendingChangePackages = []
-        if(!configMap.consortialView) {
-            String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
-            if(queryClauses)
-                queryMember += ' and '+queryClauses.join(" and ")
-            Set<PendingChange> memberPCs = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_PENDING] )
-            Set<PendingChange> memberACs = PendingChange.executeQuery( queryMember + " and pc.status = :queryStatus", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: RDStore.PENDING_CHANGE_ACCEPTED] )
-            pending.addAll(memberPCs)
-            accepted.addAll(memberACs)
-        }
-        result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
-        if(configMap.notifications)
-            result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
-        result.each { PendingChange change ->
-
+        List counts = PendingChange.executeQuery(queryCount,queryParams+[queryStatus:queryStatus])
+        if(counts) {
+            Set<PendingChange> parentChanges = PendingChange.executeQuery( queryOwn + " and pc.status in (:queryStatus) order by pc.status asc, pc.ts desc", queryParams+[queryStatus:queryStatus] )
+            Set<PendingChange> result = []
+            Set<PendingChange> pending = parentChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_PENDING }
+            Set<PendingChange> accepted = parentChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_ACCEPTED }
+            //int pendingCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])[0]
+            //int notificationsCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])[0]
+            if(!configMap.consortialView) {
+                String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
+                if(queryClauses)
+                    queryMember += ' and '+queryClauses.join(" and ")
+                Set<PendingChange> memberChanges = PendingChange.executeQuery( queryMember + " and pc.status in (:queryStatus)", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: queryStatus] )
+                pending.addAll(memberChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_PENDING })
+                accepted.addAll(memberChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_ACCEPTED })
+            }
+            result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
+            if(configMap.notifications)
+                result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
+            result.each { PendingChange change ->
                 //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
                 if(change.subscription) {
                     def changedObject = genericOIDService.resolveOID(change.oid)
@@ -535,8 +538,9 @@ class PendingChangeService extends AbstractLockableService {
                         acceptedChanges << entry
                 }
             }
-        int pendingCount = pending.size()
-        int notificationsCount = accepted.size()
+            pendingCount = pending.size()
+            notificationsCount = accepted.size()
+        }
         [pending:pendingChanges,packages:pendingChangePackages,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
     }
 

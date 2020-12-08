@@ -274,3 +274,8 @@ h1 .icon.h1-icon-overwrite {
     right: 1px;
 }
 
+#yoda-helper {
+    position: fixed;
+    bottom: 0.5rem;
+    left: 0.5rem;
+}

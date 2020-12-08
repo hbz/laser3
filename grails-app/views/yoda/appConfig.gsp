@@ -3,10 +3,9 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.appConfig')} </title>
     <%-- r:require module="annotations" / --%>
-    <asset:javascript src="properties.js"/>
 </head>
 <body>
 
@@ -19,11 +18,9 @@
 
 <p>${message(code:'sys.properties')}</p>
 
-<asset:script type="text/javascript">
-    $(document).ready(function(){
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-    });
-</asset:script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
+</laser:script>
 
 <g:form action="appConfig" method="POST" class="ui form">
     <input type="submit" name="one"class="ui button" value="Refresh"  />

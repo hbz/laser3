@@ -5,7 +5,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     %{--<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}" />--}%
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
 
@@ -22,8 +22,6 @@
         %{--<g:set var="entityName" value="${message(code: 'org.label')}"/>--}%
     %{--</g:else>--}%
     <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-
-    <asset:javascript src="properties.js"/>
 </head>
 
 <body>
@@ -35,7 +33,7 @@
 </semui:debugInfo>
 
 <g:render template="breadcrumb"
-          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
+          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 <g:if test="${editable_identifier || editable_customeridentifier}">
     <semui:controlButtons>
@@ -77,7 +75,6 @@
         </div>
 
         <div class="content">
-            <% int tableIdentifierRowNr = 0 %>
             <table class="ui table la-table">
                 <thead>
                     <tr>
@@ -90,11 +87,12 @@
                 </thead>
                 <tbody>
                     <g:render template="idTableRow"
-                              model="[orgInstance:orgInstance, tableRowNr:++tableIdentifierRowNr, showGlobalUid:true, editable:false]"
+                              model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
                     />
-                    <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id">
+                    <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id" status="rowno">
+                        <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=1}"/></g:if>
                         <g:render template="idTableRow"
-                                  model="[orgInstance:orgInstance, tableRowNr:++tableIdentifierRowNr, id:id, editable:editable_identifier]"
+                                  model="[orgInstance:orgInstance, tableRowNr:rowno+1, id:id, editable:editable_identifier]"
                          />
                 </g:each>
                 </tbody>
@@ -110,7 +108,6 @@
                     <div class="header"><g:message code="org.customerIdentifier.plural"/></div>
                 </div>
                 <div class="content">
-                    <% int tableCustomerRowNr = 0 %>
 
                     <table class="ui la-table table">
                         <thead>
@@ -124,26 +121,25 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${customerIdentifier}" var="ci">
+                        <g:each in="${customerIdentifier}" var="ci" status="rowno">
                             <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
                                 <tr>
-                                    <td>${++tableCustomerRowNr}</td>
+                                    <td>${rowno+1}</td>
                                     <td>
                                         ${ci.getProvider()} : ${ci.platform}
                                     </td>
                                     <td>${ci.value}</td>
                                     <td>${ci.note}</td>
                                     <td>
-                                        <%  boolean editable_this_ci = (ci.owner.id == contextService.org.id) &&
-                                            (ci.customer.id == contextService.org.id ||
-                                                    Combo.findByFromOrgAndToOrg(ci.customer, contextService.org))
+                                        <%  boolean editable_this_ci = (ci.owner.id == institution.id) &&
+                                            (ci.customer.id == institution.id || isComboRelated)
                                         %>
                                         <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                            <button class="ui icon button" onclick="IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
+                                            <button class="ui icon button" onclick="JSPC.IdContoller.editCustomerIdentifier(${ci.id});"><i class="write icon"></i></button>
                                             <g:link controller="organisation"
                                                     action="deleteCustomerIdentifier"
                                                     id="${orgInstance.id}"
-                                                    params="${[deleteCI:ci.class.name + ':' + ci.id]}"
+                                                    params="${[deleteCI:genericOIDService.getOID(ci)]}"
                                                     class="ui button icon red js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                     data-confirm-term-how="delete"
@@ -163,23 +159,23 @@
 </body>
 </html>
 <g:if test="${actionName == 'ids'}">
-    <asset:script type="text/javascript">
-        IdContoller =  {
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.IdContoller =  {
             createIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createIdentifier"/>?id='+id;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
             createCustomerIdentifier : function(id) {
                 var urlString = '<g:createLink controller="organisation" action="createCustomerIdentifier"/>?id='+id;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
             editIdentifier : function(identifier) {
                 var urlString = '<g:createLink controller="organisation" action="editIdentifier"/>?identifier='+identifier;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
             editCustomerIdentifier : function(customeridentifier) {
                 var urlString = '<g:createLink controller="organisation" action="editCustomerIdentifier"/>?customeridentifier='+customeridentifier;
-                IdContoller._doAjax(urlString);
+                JSPC.IdContoller._doAjax(urlString);
             },
 
             _doAjax : function(url) {
@@ -194,13 +190,11 @@
                             onVisible: function () {
                                 r2d2.initDynamicSemuiStuff('#modalCreateCustomerIdentifier');
                                 r2d2.initDynamicXEditableStuff('#modalCreateCustomerIdentifier');
-
-                                // ajaxPostFunc()
                             }
                         }).modal('show');
                     }
                 });
             }
         }
-    </asset:script>
+    </laser:script>
 </g:if>

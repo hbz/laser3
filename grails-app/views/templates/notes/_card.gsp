@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DocContext; de.laser.Doc; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.DocContext; de.laser.Doc; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <%
@@ -11,13 +11,13 @@
                 sharedItems << it
             }
             else {
-                if(it.owner.owner?.id == contextService.org.id || it.owner.owner == null)
+                if(it.owner.owner?.id == contextService.getOrg().id || it.owner.owner == null)
                     baseItems << it
             }
         }
     }
 
-    boolean editable2 = accessService.checkMinUserOrgRole(contextService.user,contextService.org,"INST_EDITOR")
+    boolean editable2 = accessService.checkMinUserOrgRole(contextService.getUser(),contextService.getOrg(),"INST_EDITOR")
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
@@ -28,8 +28,8 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
-                            <g:if test="${(docctx.owner.owner?.id == contextService.org.id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="noteedit(${docctx.owner.id});">
+                            <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
+                                <a onclick="JSPC.noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>
                                     </g:if>
@@ -39,7 +39,7 @@
                                 </a>
                             </g:if>
                             <g:else>
-                                <a onclick="noteread(${docctx.owner.id});">
+                                <a onclick="JSPC.noteread(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>
                                     </g:if>
@@ -121,15 +121,15 @@
                         <div class="ui grid summary">
                             <div class="twelve wide column">
                                 <g:if test="${docctx.owner.title}">
-                                    <a onclick="noteread(${docctx.owner.id});">${docctx.owner.title}</a>
+                                    <a onclick="JSPC.noteread(${docctx.owner.id});">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
-                                    <a onclick="noteread(${docctx.owner.id});">Ohne Titel</a>
+                                    <a onclick="JSPC.noteread(${docctx.owner.id});">Ohne Titel</a>
                                 </g:else>
                                 (${docctx.owner.type.getI10n("value")})
                             </div>
                             <div class="four wide column">
-                                <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                     <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                     <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                                 </g:if>
@@ -142,8 +142,8 @@
         </semui:card>
     </g:if>
 
-    <script>
-        function noteedit(id) {
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.noteedit = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
                 success: function(result){
@@ -155,21 +155,19 @@
                 }
             });
         }
-        function noteread(id) {
+        JSPC.noteread = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
-                    $("#modalEditNote").remove();
+                    $("#modalReadNote").remove();
 
                     $("#dynamicModalContainer").html(result);
                     $("#dynamicModalContainer .ui.modal").modal('show');
                 }
             });
         }
-        $( document ).ready(function() {
-            if (r2d2) {
-                r2d2.initDynamicSemuiStuff('#container-notes');
-            }
-        });
-    </script>
+
+        r2d2.initDynamicSemuiStuff('#container-notes')
+    </laser:script>
+

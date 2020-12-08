@@ -48,7 +48,7 @@
                     </th>
                 </g:if>
             <th class="one wide center aligned"><input type="checkbox"
-                                                       data-action="copy" onClick="toggleAllCheckboxes(this)"
+                                                       data-action="copy" onClick="JSPC.toggleAllCheckboxes(this)"
                                                        checked/>
                 <g:if test="${!copyObject}">
                     <th class="six wide">
@@ -58,7 +58,7 @@
                     </th>
                     <th class="one wide center aligned">
                         <g:if test="${targetObject}">
-                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)"/>
+                            <input type="checkbox" data-action="delete" onClick="JSPC.toggleAllCheckboxes(this)"/>
                         </g:if>
                     </th>
                 </g:if>
@@ -622,7 +622,7 @@
                     <g:set var="submitDisabled"
                            value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
                     <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                           onclick="return jsConfirmation()" ${submitDisabled}/>
+                           onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
                 </div>
             </div>
         </g:if>
@@ -636,16 +636,16 @@
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return jsConfirmation()" ${submitDisabled}/>
+                       onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:else>
     </g:form>
 </semui:form>
 
 <g:if test="${!copyObject}">
-    <asset:script type="text/javascript">
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-        var subCopyController = {
+        JSPC.subCopyController = {
 
             checkboxes: {
                 $takeLicenses: $('input:checkbox[name="copyObject.takeLicenses"]'),
@@ -659,50 +659,50 @@
             },
 
             init: function () {
-                var ref = subCopyController.checkboxes
+                var ref = JSPC.subCopyController.checkboxes
 
                 ref.$takeLicenses.change(function (event) {
-                    subCopyController.takeLicenses(this);
+                    JSPC.subCopyController.takeLicenses(this);
                 }).trigger('change')
 
                 ref.$deleteLicenses.change(function (event) {
-                    subCopyController.deleteLicenses(this);
+                    JSPC.subCopyController.deleteLicenses(this);
                 }).trigger('change')
 
                 ref.$takeOrgRelations.change(function (event) {
-                    subCopyController.takeOrgRelations(this);
+                    JSPC.subCopyController.takeOrgRelations(this);
                 }).trigger('change')
 
                 ref.$deleteOrgRelations.change(function (event) {
-                    subCopyController.deleteOrgRelations(this);
+                    JSPC.subCopyController.deleteOrgRelations(this);
                 }).trigger('change')
 
                 ref.$takeSpecificSubscriptionEditors.change(function (event) {
-                    subCopyController.takeSpecificSubscriptionEditors(this);
+                    JSPC.subCopyController.takeSpecificSubscriptionEditors(this);
                 }).trigger('change')
 
                 ref.$deleteSpecificSubscriptionEditors.change(function (event) {
-                    subCopyController.deleteSpecificSubscriptionEditors(this);
+                    JSPC.subCopyController.deleteSpecificSubscriptionEditors(this);
                 }).trigger('change')
 
                 ref.$takeSpecificSubscriptionEditors.change(function (event) {
-                    subCopyController.takeSpecificSubscriptionEditors(this);
+                    JSPC.subCopyController.takeSpecificSubscriptionEditors(this);
                 }).trigger('change')
 
                 ref.$deleteSpecificSubscriptionEditors.change(function (event) {
-                    subCopyController.deleteSpecificSubscriptionEditors(this);
+                    JSPC.subCopyController.deleteSpecificSubscriptionEditors(this);
                 }).trigger('change')
 
                 ref.$takeIdentifier.change(function (event) {
-                    subCopyController.takeIdentifier(this);
+                    JSPC.subCopyController.takeIdentifier(this);
                 }).trigger('change')
 
                 ref.$deleteIdentifier.change(function (event) {
-                    subCopyController.deleteIdentifier(this);
+                    JSPC.subCopyController.deleteIdentifier(this);
                 }).trigger('change')
 
                 $("input:checkbox[name^='copyObject']").change(function () {
-                    subCopyController.checkCheckBoxesOfProperties(this);
+                    JSPC.subCopyController.checkCheckBoxesOfProperties(this);
                 }).trigger('change');
 
 
@@ -714,7 +714,7 @@
                     $('.table tr td[name="copyObject.takeLicenses.target"] div div').addClass('willStay');
                 } else {
                     $('.table tr td[name="copyObject.takeLicenses.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeLicenses') < 1) {
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeLicenses') < 1) {
                         $('.table tr td[name="copyObject.takeLicenses.target"] div div').removeClass('willStay');
                     }
                 }
@@ -734,7 +734,7 @@
                     $('.table tr td[name="copyObject.takeOrgRelations.target"] div div').addClass('willStay');
                 } else {
                     $('.table tr td[name="copyObject.takeOrgRelations.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeOrgRelations') < 1) {
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeOrgRelations') < 1) {
                         $('.table tr td[name="copyObject.takeOrgRelations.target"] div div').removeClass('willStay');
                     }
                 }
@@ -754,7 +754,7 @@
                     $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeSpecificSubscriptionEditors') < 1) {
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeSpecificSubscriptionEditors') < 1) {
                         $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div').removeClass('willStay');
                     }
                 }
@@ -774,7 +774,7 @@
                     $('.table tr td[name="copyObject.takeIdentifier.target"] div div').addClass('willStay');
                 } else {
                     $('.table tr td[name="copyObject.takeIdentifier.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeIdentifierIds') < 1) {
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeIdentifierIds') < 1) {
                         $('.table tr td[name="copyObject.takeIdentifier.target"] div div').removeClass('willStay');
                     }
                 }
@@ -824,9 +824,9 @@
             }
         }
 
-        subCopyController.init()
+        JSPC.subCopyController.init()
 
-    </asset:script>
+    </laser:script>
 </g:if>
 
 

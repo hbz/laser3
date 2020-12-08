@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'license.nav.edit_history')}</title>
 </head>
 <body>
@@ -18,7 +18,7 @@
     <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-    <g:render template="nav" contextPath="." />
+    <g:render template="nav" />
 
     <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
         <g:render template="message" />

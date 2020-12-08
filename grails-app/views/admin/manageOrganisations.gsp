@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <meta name="layout" content="semanticUI" />
+        <meta name="layout" content="laser" />
         <title>${message(code:'laser')} : ${message(code:'menu.admin.manageOrganisations')}</title>
     </head>
     <body>
@@ -230,13 +230,13 @@
             </div>
         </g:form>
 
-        <asset:script type="text/javascript">
-            dcbStore.modal.show.gascoEntryModal = function(trigger) {
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.callbacks.modal.show.gascoEntryModal = function(trigger) {
                 $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
                 $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
                 $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
             }
-        </asset:script>
+        </laser:script>
 
     </semui:modal>
 
@@ -275,8 +275,8 @@
             </div>
         </g:form>
 
-        <asset:script type="text/javascript">
-            dcbStore.modal.show.legalInformationModal = function(trigger) {
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.callbacks.modal.show.legalInformationModal = function(trigger) {
                 $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
                 $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
 
@@ -293,7 +293,7 @@
                     $('#legalInformationModal select[name=legallyObligedBy]').dropdown('clear')
                 }
             }
-        </asset:script>
+        </laser:script>
 
     </semui:modal>
 
@@ -327,8 +327,8 @@
             <input type="hidden" name="target" value=""/>
         </g:form>
 
-        <asset:script type="text/javascript">
-            dcbStore.modal.show.customerTypeModal = function(trigger) {
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.callbacks.modal.show.customerTypeModal = function(trigger) {
                 $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
                 $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
 
@@ -339,7 +339,7 @@
                     $('#customerTypeModal select[name=customerType]').dropdown('clear')
                 }
             }
-        </asset:script>
+        </laser:script>
 
     </semui:modal>
 
@@ -365,8 +365,8 @@
             </div>
         </g:form>
 
-        <asset:script type="text/javascript">
-            dcbStore.modal.show.apiLevelModal = function(trigger) {
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.callbacks.modal.show.apiLevelModal = function(trigger) {
                 $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
                 $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
 
@@ -377,7 +377,7 @@
                     $('#apiLevelModal select[name=apiLevel]').dropdown('clear')
                 }
             }
-        </asset:script>
+        </laser:script>
 
     </semui:modal>
 

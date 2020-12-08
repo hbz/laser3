@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} Manage Usage Stats</title>
 </head>
 
@@ -199,12 +199,10 @@
             </g:each>
         </td></tr>
 </table>
-<asset:script type="text/javascript">
-  $(function(){
+<laser:script file="${this.getGroovyPageFileName()}">
     $('tr[class*=stats-error-row] .button').click( function(){
       $('.' + $(this).attr('data-target')).toggle()
     })
-  })
-</asset:script>
+</laser:script>
 </body>
 </html>

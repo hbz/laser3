@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'mailTemplate.plural.label')}</title>
 </head>
 
@@ -113,8 +113,8 @@
         </div>
     </g:form>
 
-    <asset:script type="text/javascript">
-        dcbStore.modal.show.editMailTemplate = function(trigger) {
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.callbacks.modal.show.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))
             $('#editMailTemplate #mailTemplateTextEdit').text($(trigger).attr('data-mailTemplateText'))
@@ -122,7 +122,7 @@
             $('#editMailTemplate select[name=type]').dropdown('set selected', $(trigger).attr('data-mailTemplateType'))
             $('#editMailTemplate select[name=language]').dropdown('set selected', $(trigger).attr('data-mailTemplateLanguage'))
         }
-    </asset:script>
+    </laser:script>
 
 </semui:modal>
 

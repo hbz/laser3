@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title><g:message code="tipp.show.label"
                       args="${[titleInstanceInstance?.title, tipp.pkg.name, tipp.platform.name]}"/></title>
 </head>

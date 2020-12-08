@@ -25,7 +25,6 @@ class OrganisationController  {
     def contextService
     def addressbookService
     def filterService
-    def genericOIDService
     def propertyService
     def docstoreService
     def instAdmService
@@ -122,8 +121,8 @@ class OrganisationController  {
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSize()
-        result.offset = params.offset ? Long.parseLong(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
@@ -187,17 +186,12 @@ class OrganisationController  {
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.getByValueAndCategory('Consortium', RDConstants.COMBO_TYPE)
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
-        }
-
-        result.consortiaMemberTotal = result.availableOrgs.size()
-
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
+        result.consortiaMemberTotal = availableOrgs.size()
+        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
         result
     }
 
@@ -221,8 +215,8 @@ class OrganisationController  {
             fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeAsInteger()
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
@@ -582,7 +576,7 @@ class OrganisationController  {
             memberMap.put(link.fromOrg.id,members)
         }
 
-        Map result = [institution:contextService.org, organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
+        Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
             result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
@@ -616,9 +610,9 @@ class OrganisationController  {
         result.missing = [:]
 
         if(result.inContextOrg && result.institution.eInvoice) {
-            if(!institution.eInvoicePortal)
+            if(!result.institution.eInvoicePortal)
                 result.missing.eInvoicePortal = message(code: 'org.eInvoice.info.missing.eInvoicePortal')
-            if(!institution.getLeitID())
+            if(!result.institution.getLeitID())
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
@@ -688,8 +682,6 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def ids() {
 
-        User user = contextService.getUser()
-        Org org   = Org.get(params.id)
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('this-n-that')
 
@@ -706,7 +698,7 @@ class OrganisationController  {
         pu.setBenchmark('editable_identifier')
 
         //IF ORG is a Provider
-        if(result.orgInstance?.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.orgInstance?.getAllOrgTypeIds()) {
+        if(result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds) {
             pu.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -714,17 +706,8 @@ class OrganisationController  {
         else {
             pu.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                List<Long> consortia = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
-                    it.toOrg.id
-                }
-                if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
-                    result.editable_identifier = true
-            }
-            else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                List<Long> department = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
-                    it.toOrg.id
-                }
-                if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
+                List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
+                if(consortia.size() == 1 && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
                     result.editable_identifier = true
             }
             else
@@ -742,35 +725,31 @@ class OrganisationController  {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
-        if(!Combo.findByFromOrgAndType(result.orgInstance,RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in result.orgInstance.getAllOrgTypeIds())){
+        if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
 //------------------------orgSettings --------------------
         pu.setBenchmark('orgsettings')
-        Boolean inContextOrg = contextService.getOrg().id == org.id
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg())
+        Boolean inContextOrg = result.inContextOrg
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
+        result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_USER')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_USER')) ||
+        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         if (result.hasAccessToCustomeridentifier) {
 
-            result.user = user
-            result.orgInstance = org
-
-            result.inContextOrg = inContextOrg
-            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) ||
-                    (isComboRelated && accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')) ||
+            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) ||
+                    (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-            result.isComboRelated = isComboRelated
 
             // adding default settings
-            organisationService.initMandatorySettings(org)
+            organisationService.initMandatorySettings(result.institution)
 
             // collecting visible settings by customer type, role and/or combo
-            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(org)
+            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.institution)
 
             List<OrgSetting.KEYS> ownerSet = [
                     OrgSetting.KEYS.API_LEVEL,
@@ -794,24 +773,24 @@ class OrganisationController  {
                 result.settings.addAll(allSettings.findAll { it.key in ownerSet })
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
             } else if (inContextOrg) {
                 log.debug('settings for own org')
                 result.settings.addAll(allSettings.findAll { it.key in ownerSet })
 
-                if (org.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                     result.settings.addAll(allSettings.findAll { it.key in accessSet })
                     result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
-                } else if (['ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
+                } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
                     result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
-                } else if (['FAKE'].contains(org.getCustomerType())) {
+                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
+                } else if (['FAKE'].contains(result.institution.getCustomerType())) {
                     result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
                 }
             } else if (isComboRelated) {
                 log.debug('settings for combo related org: consortia or collective')
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(org, [sort: 'platform'])
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
             }
         }
         List bm = pu.stopBenchmark()
@@ -984,7 +963,7 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def editUser() {
-        Map result = [user: User.get(params.id), editor: contextService.user, orgInstance: contextService.org, manipulateAffiliations: false]
+        Map result = [user: User.get(params.id), editor: contextService.getUser(), orgInstance: contextService.getOrg(), manipulateAffiliations: false]
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
         render view: '/globals/user/edit', model: result
@@ -1133,11 +1112,9 @@ class OrganisationController  {
             return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.org = result.orgInstance
-
         params.sort = params.sort ?: 'p.last_name, p.first_name'
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
@@ -1389,8 +1366,7 @@ class OrganisationController  {
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -1430,7 +1406,7 @@ class OrganisationController  {
     
     boolean checkIsEditable(User user, Org org) {
         boolean isEditable
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
         boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') ||user.hasRole('ROLE_ORG_EDITOR') || user.hasAffiliation('INST_EDITOR')
@@ -1455,7 +1431,7 @@ class OrganisationController  {
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
-                    isEditable = false
+                    isEditable = user.hasRole('ROLE_YODA')
                 }
                 break
             case 'show':
@@ -1471,17 +1447,17 @@ class OrganisationController  {
                     switch (contextOrg.getCustomerType()){
                         case 'ORG_BASIC_MEMBER':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = false; break
-                                case 'ORG_INST':            isEditable = false; break
-                                case 'ORG_CONSORTIUM':      isEditable = false; break
-                                default:                    isEditable = false; break
+                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
+                                default:                    isEditable = user.hasRole('ROLE_YODA'); break
                             }
                             break
                         case 'ORG_INST':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = false; break
-                                case 'ORG_INST':            isEditable = false; break
-                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
@@ -1489,7 +1465,7 @@ class OrganisationController  {
                             switch (orgInstance.getCustomerType()){
                                 case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
                                 case 'ORG_INST':            isEditable = userHasEditableRights; break
-                                case 'ORG_CONSORTIUM':      isEditable = false; break
+                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break

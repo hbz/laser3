@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName ?: message(code:'license.label')]" /></title>
   </head>
   <body>

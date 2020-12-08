@@ -1,7 +1,7 @@
 <%@ page import="de.laser.RefdataValue" contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : Kostenposten berechnen</title>
     </head>
 

@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'menu.my.comp_lic')}</title>
 </head>
 
@@ -23,7 +23,7 @@
 
         <label>${message(code: 'filter.status')}</label>
 
-        <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="adjustDropdown()">
+        <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="JSPC.adjustDropdown()">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }" var="status">
                 <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
@@ -34,12 +34,12 @@
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
-                                onchange="adjustDropdown()"/>
+                                onchange="JSPC.adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                 </div><br />
             </g:if>
         %{--<div class="ui checkbox">
-            <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="adjustDropdown()"/>
+            <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="JSPC.adjustDropdown()"/>
             <label for="show.connectedLicenses">${message(code:'default.compare.show.connectedLicenses.name')}</label>
         </div>--}%
         <br/>
@@ -75,16 +75,18 @@
     </g:if>
 </g:if>
 
-<asset:script type="text/javascript">
- $(document).ready(function(){
-       adjustDropdown()
-    });
-    function adjustDropdown() {
-        var status = $("#status").val();
+<laser:script file="${this.getGroovyPageFileName()}">
+
+    JSPC.adjustDropdown = function () {
+
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
-        var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>'+'?status='+JSON.stringify(status)+'&showSubscriber='+showSubscriber+'&showConnectedLics='+showConnectedLics
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>?showSubscriber=' + showSubscriber + '&showConnectedLics=' + showConnectedLics
 
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
 
         var dropdownSelectedObjects = $('#selectedObjects');
         var selectedObjects = ${raw(objects?.id as String)};
@@ -105,9 +107,10 @@
                      });
                 }
         });
-
     }
-</asset:script>
+
+    JSPC.adjustDropdown()
+</laser:script>
 
 
 </body>

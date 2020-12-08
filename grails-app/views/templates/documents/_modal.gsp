@@ -61,7 +61,7 @@
                     </dd>
                 </dl>
 
-                <script>
+                <laser:script file="${this.getGroovyPageFileName()}">
                     $('#modalCreateDocument .action .icon.button').click( function() {
                         $(this).parent('.action').find('input:file').click();
                     });
@@ -70,7 +70,7 @@
                         var name = e.target.files[0].name;
                         $('input:text', $(e.target).parent()).val(name);
                     });
-                </script>
+                </laser:script>
             </g:if>
             <dl>
                 <dt>

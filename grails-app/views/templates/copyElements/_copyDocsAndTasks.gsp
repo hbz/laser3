@@ -26,7 +26,7 @@
                         <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
-                        <input type="checkbox"  data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
+                        <input type="checkbox"  data-action="copy" onClick="JSPC.toggleAllCheckboxes(this)" checked />
                     </th>
                     <g:if test="${!copyObject}">
                                 <th class="six wide">
@@ -34,7 +34,7 @@
                                 </th>
                                 <th class="one wide center aligned">
                                     <g:if test="${targetObject}">
-                                        <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
+                                        <input type="checkbox" data-action="delete" onClick="JSPC.toggleAllCheckboxes(this)" />
                                     </g:if>
                                 </th>
                     </g:if>
@@ -45,7 +45,7 @@
                     <td  name="copyObject.takeDocs.source">
                         <strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.org.id))}">
+                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:link controller="docstore" id="${docctx.owner.uuid}">
@@ -85,7 +85,7 @@
                     <td class="center aligned">
                         <br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.org.id))}">
+                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
                                     <g:checkBox name="copyObject.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
@@ -101,7 +101,7 @@
                             <div>
                                 <g:if test="${targetObject}">
                                     <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                        <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.org.id))}">
+                                        <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                             <div data-id="${docctx.id}" class="la-element">
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}">
                                                     <g:if test="${docctx.owner?.title}">
@@ -142,7 +142,7 @@
                         <td>
                             <br />
                             <g:each in="${targetObject.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.org.id))}">
+                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                     %{--<div class="ui checkbox">--}%
                                     <div class="ui checkbox la-toggle-radio la-noChange">
                                         <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
@@ -159,7 +159,7 @@
                     <td name="copyObject.takeAnnouncements.source">
                         <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
@@ -197,7 +197,7 @@
                     <td class="center aligned">
                     <br />
                         <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
@@ -214,7 +214,7 @@
                                         <div>
                                             <g:if test="${targetObject}">
                                                 <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                                         <div data-id="${docctx.id}" class="la-element">
                                                             <g:if test="${docctx.owner.title}">
                                                                 <strong>${docctx.owner.title}</strong>
@@ -253,7 +253,7 @@
                                         <div>
                                             <g:if test="${targetObject}">
                                                 <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
-                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.org.id)}">
+                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                                         %{--<div class="ui checkbox">--}%
                                                         <div class="ui checkbox la-toggle-radio la-noChange">
                                                             <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
@@ -328,7 +328,7 @@
         <g:if test="${!fromSurvey && !copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return JSPC.jsConfirmation()"  ${submitDisabled}/>
             </div>
         </g:if>
         <g:elseif test="${copyObject}">
@@ -346,16 +346,16 @@
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return JSPC.jsConfirmation()"  ${submitDisabled}/>
                 </div>
             </div>
         </g:else>
     </g:form>
 </semui:form>
 <g:if test="${!copyObject}">
-    <asset:script type="text/javascript">
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-        var subCopyController = {
+        JSPC.subCopyController = {
 
             checkboxes : {
                 $takeDocIds: $('input[name="copyObject.takeDocIds"]'),
@@ -367,30 +367,30 @@
             },
 
             init: function (elem) {
-                var ref = subCopyController.checkboxes
+                var ref = JSPC.subCopyController.checkboxes
 
                 ref.$takeDocIds.change( function(event) {
-                    subCopyController.takeDocIds(this);
+                    JSPC.subCopyController.takeDocIds(this);
                 }).trigger('change')
 
                 ref.$deleteDocIds.change( function(event) {
-                    subCopyController.deleteDocIds(this);
+                    JSPC.subCopyController.deleteDocIds(this);
                 }).trigger('change')
 
                 ref.$takeAnnouncementIds.change( function(event) {
-                    subCopyController.takeAnnouncementIds(this);
+                    JSPC.subCopyController.takeAnnouncementIds(this);
                 }).trigger('change')
 
                 ref.$deleteAnnouncementIds.change( function(event) {
-                    subCopyController.deleteAnnouncementIds(this);
+                    JSPC.subCopyController.deleteAnnouncementIds(this);
                 }).trigger('change')
 
                 ref.$takeTaskIds.change( function(event) {
-                    subCopyController.takeTaskIds(this);
+                    JSPC.subCopyController.takeTaskIds(this);
                 }).trigger('change')
 
                 ref.$deleteTaskIds.change( function(event) {
-                    subCopyController.deleteTaskIds(this);
+                    JSPC.subCopyController.deleteTaskIds(this);
                 }).trigger('change')
             },
 
@@ -401,7 +401,7 @@
                 }
                 else {
                     $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
                         $('.table tr td[name="copyObject.takeDocs.target"] div').removeClass('willStay');
                     }
                 }
@@ -423,7 +423,7 @@
                 }
                 else {
                     $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
                         $('.table tr td[name="copyObject.takeAnnouncements.target"] div').removeClass('willStay');
                     }
                 }
@@ -445,7 +445,7 @@
                 }
                 else {
                     $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                    if (subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
+                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
                         $('.table tr td[name="copyObject.takeTasks.target"] div').removeClass('willStay');
                     }
                 }
@@ -472,6 +472,6 @@
             }
         }
 
-        subCopyController.init()
-    </asset:script>
+        JSPC.subCopyController.init()
+    </laser:script>
 </g:if>

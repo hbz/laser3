@@ -60,12 +60,12 @@
                 </g:if>
             </tbody>
         </table>
-        <script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('#prsLinksModal form input[type=submit]').click( function(){
                 var val = $(this).parents('tr').find('select[name=ignore-org-selector]').val()
                 $(this).parents('form').find('input[name=org]').val(val)
             })
-        </script>
+        </laser:script>
     </div>
 
 </semui:modal>

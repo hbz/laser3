@@ -1,5 +1,5 @@
-<asset:script type="text/javascript">
-    function taskcreate() {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.taskcreate = function () {
 
         $.ajax({
             url: '<g:createLink controller="myInstitution" action="modal_create"/>',
@@ -10,10 +10,10 @@
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                            ajaxPostFunc();
+                            JSPC.callbacks.dynPostFunc();
                     }
                 }).modal('show');
             }
         });
     }
-</asset:script>
+</laser:script>

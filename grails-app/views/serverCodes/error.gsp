@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} - ${message(code: 'serverCode.error.message1')}</title>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
 </head>
@@ -39,7 +39,7 @@
 
                 <br />
                 <p>
-                    <button class="ui button" onclick="window.history.back()">${message(code: 'default.button.back')}</button>
+                    <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                 </p>
             </div>
         </g:if>

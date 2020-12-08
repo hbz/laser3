@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
         <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
     </head>
@@ -80,7 +80,16 @@
                                 boolean missing = students == 0 || FTEs == 0 || staff == 0
                                 //int allOthers = sumRow.findAll { row -> !RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect { rdv -> rdv.getI10n("value") }.contains(row.key) }.collect { row -> row.value }.sum()
                             %>
-                            <td><g:formatNumber number="${students+FTEs}"/>/<g:formatNumber number="${students+staff}"/></td>
+                            <td>
+                                <g:if test="${FTEs > 0}">
+                                    <g:formatNumber number="${students+FTEs}"/>
+                                </g:if>
+                                <g:if test="${FTEs > 0 && staff > 0}">/</g:if>
+                                <g:if test="${staff > 0}">
+                                    <g:formatNumber number="${students+staff}"/>
+                                </g:if>
+
+                            </td>
                             <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">

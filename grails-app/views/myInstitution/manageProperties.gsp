@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.manage_props')}</title>
 </head>
 
@@ -202,7 +202,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -440,7 +440,7 @@
                                             <g:set var="privateProperty" value="${row.propertySet.find { it.type.id == filterPropDef.id }}"/>
 
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -526,7 +526,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedObjects]:visible").prop('checked', true);
@@ -564,7 +564,7 @@
     $.expr[':'].icontains = function(a,i,m) {
         return $(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
     }
-</asset:script>
+</laser:script>
 
 </body>
 </html>

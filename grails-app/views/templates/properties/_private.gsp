@@ -1,7 +1,7 @@
 <!-- A: templates/properties/_private -->
-%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
+%{-- To use, add the g:render custom_props inside a div with id=private-property-wrapper-xxx --}%
 %{-- on head of container page, and on window load execute  --}%
-%{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
+%{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
 <%@ page import="de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
@@ -106,9 +106,8 @@
                                               id="${prop.id}"
                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                               data-confirm-term-how="delete"
-                                              data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                              data-always="c3po.loadJsAfterAjax()"
-                                              data-update="${custom_props_div}"
+                                              data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${propertyWrapper}', ${tenant?.id})"
+                                              data-update="${propertyWrapper}"
                                               role="button"
                             >
                                 <i class="trash alternate icon"></i>
@@ -131,17 +130,15 @@
                 </g:else>
                         <laser:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
                                       name="cust_prop_add_value_private"
-                                      class="ui form"
-                                      data-update="${custom_props_div}"
-                                      data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                      data-always="c3po.loadJsAfterAjax()"
-                        >
+                                      class="ui properties form"
+                                      data-update="${propertyWrapper}"
+                                      data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${propertyWrapper}', ${tenant?.id})">
                         <g:if test="${!(actionName.contains('survey') || controllerName.contains('survey'))}">
                             <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
                             <input type="hidden" name="editable"   value="${editable}"/>
-                            <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                            <input type="hidden" name="ownerClass" value="${ownobj?.class?.name}"/>
                             <input type="hidden" name="withoutRender" value="${withoutRender}"/>
 
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
@@ -156,4 +153,5 @@
 <g:if test="${error}">
     <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
+
 <!-- O: templates/properties/_private -->

@@ -145,20 +145,15 @@
     </g:form>
 
     <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
-    <asset:script type="text/javascript">
-         $(document).ready(function () {
-            if($("#country").val()) updateDropdown();
-        });
+    <laser:script file="${this.getGroovyPageFileName()}">
 
-        $("#country").change(function() { updateDropdown(); });
-
-        function updateDropdown() {
+        JSPC.updateDropdown = function() {
             var dropdownRegion = $('#region');
             var selectedCountry = $("#country").val();
             var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
-            dropdownRegion.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
+            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
             dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
@@ -175,6 +170,10 @@
                 }
             });
         }
-    </asset:script>
+
+        if($("#country").val()) { JSPC.updateDropdown(); }
+
+        $("#country").change(function() { JSPC.updateDropdown(); });
+    </laser:script>
 
 </semui:modal>

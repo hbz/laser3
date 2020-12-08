@@ -6,7 +6,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} :  ${message(code: 'surveyInfo.copyProperties')}</title>
 
 </head>
@@ -695,7 +695,7 @@ ${surveyInfo.name}
 </g:if>
 </div>
 
-<script language="JavaScript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#propertiesToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSub]").prop('checked', true)
@@ -703,6 +703,6 @@ ${surveyInfo.name}
             $("tr[class!=disabled] input[name=selectedSub]").prop('checked', false)
         }
     })
-</script>
+</laser:script>
 </body>
 </html>

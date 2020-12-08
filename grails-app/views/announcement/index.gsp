@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'menu.datamanager.ann')}</title>
     </head>
 
@@ -59,7 +59,7 @@
         </g:each>
       </div>
 
-    <asset:script type="text/javascript">
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('.ann-content').readmore({
             speed: 250,
             collapsedHeight: 21,
@@ -67,7 +67,7 @@
             moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
             lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
         })
-    </asset:script>
+    </laser:script>
 
     <style>
         .ann-content {

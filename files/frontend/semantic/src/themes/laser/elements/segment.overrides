@@ -43,4 +43,7 @@
 ***********************************/
 .ui.segment.la-footer {
   padding: 3em 1em;
+  h2 {
+    font-size: 1.07142857rem!important;
+  }
 }

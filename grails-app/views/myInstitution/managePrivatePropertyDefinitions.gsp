@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <g:set var="entityName" value="${message(code: 'org.label')}" />
         <title>${message(code:'laser')} : ${message(code: 'menu.institutions.private_props')}</title>
     </head>
@@ -260,7 +260,7 @@
         </g:form>
     </semui:modal>
 
-    <asset:script type="text/javascript">
+    <laser:script file="${this.getGroovyPageFileName()}">
 
     $('#pd_descr').change(function() {
         $('#cust_prop_modal_select').trigger('change');
@@ -313,7 +313,7 @@
         }
     });
 
-    </asset:script>
+    </laser:script>
 
   </body>
 </html>

@@ -80,8 +80,8 @@ class UserController  {
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = message(code:'user.show_all.label')
         result.breadcrumb = 'breadcrumb'
-        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.org])
-        availableComboOrgs.add(contextService.org)
+        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.getOrg()])
+        availableComboOrgs.add(contextService.getOrg())
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user','global']), orgField: true, availableComboOrgs: availableComboOrgs]
         result.tableConfig = [
                 editable:result.editable,

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code: 'menu.institutions.costConfiguration')}</title>
     </head>
     <body>
@@ -71,7 +71,7 @@
                 </tbody>
             </table>
         </div>
-        <script>
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('.trigger-modal').on('click', function(e) {
                 e.preventDefault();
 
@@ -97,6 +97,6 @@
                     }).modal('show');
                 })
             })
-        </script>
+        </laser:script>
     </body>
 </html>

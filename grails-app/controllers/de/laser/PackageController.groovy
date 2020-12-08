@@ -7,6 +7,7 @@ import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -108,12 +109,9 @@ class PackageController  {
     def list() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-
         result.editable = true
 
-        def paginate_after = params.paginate_after ?: ((2 * result.max) - 1)
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         RefdataValue deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
         //def qry_params = [deleted_package_status]
@@ -196,8 +194,7 @@ class PackageController  {
         result.unionList = []
 
         result.user = contextService.getUser()
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (params.pkgA?.length() > 0 && params.pkgB?.length() > 0) {
 
@@ -373,11 +370,10 @@ class PackageController  {
         }
 
         result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub and sp.pkg = :pkg)',
-                [contextOrg: contextService.org, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT,pkg:packageInstance])
+                [contextOrg: contextService.getOrg(), roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT,pkg:packageInstance])
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map<String,Object> limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
@@ -476,10 +472,8 @@ class PackageController  {
                 [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
         )
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
-        //def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
         Map<String,Object> qry_params = [pkgInstance: packageInstance]
@@ -555,7 +549,7 @@ class PackageController  {
     def documents() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.institution = contextService.org
+        result.institution = contextService.getOrg()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 
@@ -576,10 +570,10 @@ class PackageController  {
     def previous_expected(params, func) {
         log.debug("previous_expected ${params}");
         Map<String, Object> result = [:]
-        boolean showDeletedTipps = false
         result.user = contextService.getUser()
         result.editable = isEditable()
-        def packageInstance = Package.get(params.id)
+
+        Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'list'
@@ -587,10 +581,8 @@ class PackageController  {
         }
         result.packageInstance = packageInstance
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
-        def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
@@ -606,9 +598,9 @@ class PackageController  {
 
         base_qry += " order by ${params.sort ?: 'tipp.title.sortTitle'} ${params.order ?: 'asc'} "
 
-    log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-    result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
+        log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
+        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits)
+        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -840,9 +832,8 @@ class PackageController  {
             result.offset = 0
         } else {
             User user = contextService.getUser()
-            result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
+            SwissKnife.setPaginationParams(result, params, user)
             params.max = result.max
-            result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
     result.packageInstance = Package.get(params.id)

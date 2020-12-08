@@ -46,6 +46,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -137,9 +138,8 @@ class MyInstitutionController  {
 		pu.setBenchmark('init')
 
         result.user = contextService.getUser()
-        result.max = params.max ?: result.user.getDefaultPageSize()
-        result.offset = params.offset ?: 0
-        result.contextOrg = contextService.org
+        result.contextOrg = contextService.getOrg()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         pu.setBenchmark("before loading subscription ids")
 
@@ -242,9 +242,9 @@ class MyInstitutionController  {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.org)
-        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.getOrg())
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
         result.compare = params.compare ?: ''
@@ -399,9 +399,18 @@ class MyInstitutionController  {
         pu.setBenchmark('get subscriptions')
 
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
-        if(result.licenses)
-            result.allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status",[licenses:result.licenses,linkType:RDStore.LINKTYPE_LICENSE,status:qry_params.subStatus])
-
+        if(result.licenses) {
+            Set<Links> allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status", [licenses: result.licenses, linkType: RDStore.LINKTYPE_LICENSE, status: qry_params.subStatus])
+            Map<License,Set<Subscription>> subscriptionLicenseMap = [:]
+            allLinkedSubscriptions.each { Links li ->
+                Set<Subscription> subscriptions = subscriptionLicenseMap.get(li.sourceLicense)
+                if(!subscriptions)
+                    subscriptions = []
+                subscriptions << li.destinationSubscription
+                subscriptionLicenseMap.put(li.sourceLicense,subscriptions)
+            }
+            result.allLinkedSubscriptions = subscriptionLicenseMap
+        }
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
         result.orgRoles = [:]
         orgRoles.each { OrgRole oo ->
@@ -522,8 +531,7 @@ class MyInstitutionController  {
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
@@ -587,26 +595,23 @@ join sub.orgRelations or_sub where
         paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
     ])
             orgIds = matches.collect{ it.id }
-
-            // TODO: merge master into dev
-            // TODO: orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )
-
             cache.put('orgIds', orgIds)
         }
 
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
 
-        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-		result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-		result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.constraint_orgIds = orgIds
-        def fsq  = filterService.getOrgQuery(params)
+        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+
+        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
+        tmpParams.constraint_orgIds = orgIds
+        def fsq  = filterService.getOrgQuery(tmpParams)
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
+            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
         }
         List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
         result.orgListTotal = orgListTotal.size()
@@ -1042,9 +1047,7 @@ join sub.orgRelations or_sub where
             log.debug("Getting titles as of ${checkedDate} (given)")
         }
 
-        // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List filterSub = params.list("filterSub")
         if (filterSub == "all")
@@ -1205,9 +1208,9 @@ join sub.orgRelations or_sub where
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.max = params.max ?: result.user.getDefaultPageSize()
-        result.offset = params.offset ?: 0
-        result.contextOrg = contextService.org
+        result.contextOrg = contextService.getOrg()
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         //def cache = contextService.getCache('MyInstitutionController/currentPackages/', contextService.ORG_SCOPE)
 
@@ -1225,7 +1228,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
         result.filterSet = tmpQ[2]
         currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
@@ -1241,6 +1244,8 @@ join sub.orgRelations or_sub where
         ])
 
         result.subscriptionMap = [:]
+        result.packageList = []
+        result.packageListTotal = 0
 
         if(currentSubIds) {
 
@@ -1287,15 +1292,13 @@ join sub.orgRelations or_sub where
                 }
             }
 
-            result.packageList = (packageSubscriptionList.collect { it[0] }).unique()
+            List tmp = (packageSubscriptionList.collect { it[0] }).unique()
+
+            result.packageListTotal = tmp.size()
+            result.packageList = tmp.drop(result.offset).take(result.max)
         }
-        else {
-            result.packageList = []
-        }
-        result.packagesTotal    = result.packageList.size()
 
         result
-
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
@@ -1334,8 +1337,7 @@ join sub.orgRelations or_sub where
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
 
@@ -1373,8 +1375,7 @@ join sub.orgRelations or_sub where
           result.offset = 0;
         }
         else {
-          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-          result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
         }
 
         PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
@@ -1476,34 +1477,36 @@ join sub.orgRelations or_sub where
         out.close()
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processFinanceImport() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        CommonsMultipartFile tsvFile = params.tsvFile
-        if(tsvFile && tsvFile.size > 0) {
-            String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-            if(encoding == "UTF-8") {
-                result.filename = tsvFile.originalFilename
-                Map<String,Map> financialData = financeService.financeImport(tsvFile)
-                result.candidates = financialData.candidates
-                result.budgetCodes = financialData.budgetCodes
-                result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
-                                         'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
-                                         'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                         'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
-                render view: 'postProcessingFinanceImport', model: result
+        CostItem.withTransaction { TransactionStatus ts ->
+            Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+            MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
+            if(tsvFile && tsvFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+                if(encoding == "UTF-8") {
+                    result.filename = tsvFile.originalFilename
+                    Map<String,Map> financialData = financeService.financeImport(tsvFile)
+                    result.candidates = financialData.candidates
+                    result.budgetCodes = financialData.budgetCodes
+                    result.criticalErrors = [/*'ownerMismatchError',*/'noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
+                                             'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
+                                             'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
+                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
+                    render view: 'postProcessingFinanceImport', model: result
+                }
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                    redirect(url: request.getHeader('referer'))
+                }
             }
             else {
-                flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                flash.error = message(code:'default.import.error.noFileProvided')
                 redirect(url: request.getHeader('referer'))
             }
-        }
-        else {
-            flash.error = message(code:'default.import.error.noFileProvided')
-            redirect(url: request.getHeader('referer'))
         }
     }
 
@@ -1518,37 +1521,40 @@ join sub.orgRelations or_sub where
         result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        CommonsMultipartFile tsvFile = params.tsvFile
-        if(tsvFile && tsvFile.size > 0) {
-            String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-            log.debug(Charset.defaultCharset())
-            if(encoding == "UTF-8") {
-                result.filename = tsvFile.originalFilename
-                Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
-                if(subscriptionData.globalErrors) {
-                    flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
-                    redirect(action: 'subscriptionImport')
+        Subscription.withTransaction { TransactionStatus ts ->
+            Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+            CommonsMultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
+            if(tsvFile && tsvFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+                log.debug(Charset.defaultCharset())
+                if(encoding == "UTF-8") {
+                    result.filename = tsvFile.originalFilename
+                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
+                    if(subscriptionData.globalErrors) {
+                        flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
+                        redirect(action: 'subscriptionImport')
+                    }
+                    result.candidates = subscriptionData.candidates
+                    result.parentSubType = subscriptionData.parentSubType
+                    result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
+                    render view: 'postProcessingSubscriptionImport', model: result
                 }
-                result.candidates = subscriptionData.candidates
-                result.parentSubType = subscriptionData.parentSubType
-                result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
-                render view: 'postProcessingSubscriptionImport', model: result
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                    redirect(url: request.getHeader('referer'))
+                }
             }
             else {
-                flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                flash.error = message(code:'default.import.error.noFileProvided')
                 redirect(url: request.getHeader('referer'))
             }
         }
-        else {
-            flash.error = message(code:'default.import.error.noFileProvided')
-            redirect(url: request.getHeader('referer'))
-        }
+
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
@@ -1558,8 +1564,7 @@ join sub.orgRelations or_sub where
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        //SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.tab = params.tab ?: 'new'
 
@@ -1579,7 +1584,7 @@ join sub.orgRelations or_sub where
                         group by o order by lower(o.name) """
         )
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.org )
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
 
@@ -1882,7 +1887,7 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
-        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, institution: contextService.org, manipulateAffiliations: true]
+        Map result = [user: User.get(params.id), editor: contextService.getUser(), editable: true, institution: contextService.getOrg(), manipulateAffiliations: true]
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
                 [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
         result.availableComboDeptOrgs << result.institution
@@ -1946,8 +1951,7 @@ join sub.orgRelations or_sub where
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.sort = params.sort ?: 'pr.org.name'
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
@@ -2144,10 +2148,9 @@ join sub.orgRelations or_sub where
             }
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
-        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.filterSet    = params.filterSet ? true : false
 
         params.comboType = result.comboType.value
@@ -2582,8 +2585,7 @@ join sub.orgRelations or_sub where
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         DateFormat sdFormat = DateUtils.getSDF_NoTime()
 

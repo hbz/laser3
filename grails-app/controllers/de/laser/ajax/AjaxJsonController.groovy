@@ -47,6 +47,7 @@ class AjaxJsonController {
     def dataConsistencyService
     def genericOIDService
     def licenseService
+    def linksGenerationService
     def subscriptionService
 
     @Secured(['ROLE_USER'])
@@ -63,11 +64,11 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        queryParams.status = []
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
-        }
 
+        queryParams.status = []
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
+        }
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
 
@@ -93,9 +94,10 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
+
         queryParams.status = []
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -123,8 +125,8 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -140,7 +142,7 @@ class AjaxJsonController {
         }
 
         if (showConnectedObjs){
-            data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.user))
+            data.addAll(linksGenerationService.getAllLinkedSubscriptions(data, contextService.getUser()))
         }
 
         if (data) {
@@ -159,8 +161,8 @@ class AjaxJsonController {
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedLics = params.showConnectedLics == 'true'
         Map queryParams = [:]
-        if (params.status){
-            queryParams.status = JSON.parse(params.status).collect{Long.parseLong(it)}
+        if (params.get('status')){
+            queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
 
         queryParams.showSubscriber = showSubscriber
@@ -259,29 +261,29 @@ class AjaxJsonController {
 
                 if (propDef.tenant) {
                     switch (propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                             break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                             break
-                        case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                             break
                         case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                             break
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                             break
                     }
                 }
                 else {
                     switch (propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.getOrg()])
                             break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.org])
+                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
                             break
                     /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
                         break
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.org])
+                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.getOrg()])
                             break
                     }
                 }
@@ -611,13 +613,13 @@ class AjaxJsonController {
 
             if (showPublicContactEmails && showPrivateContactEmails){
                 query += "and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) "
-                queryParams << [ctx: contextService.org]
+                queryParams << [ctx: contextService.getOrg()]
             } else {
                 if (showPublicContactEmails){
                     query += "and p.isPublic = true "
                 } else if (showPrivateContactEmails){
                     query += "and (p.isPublic = false and p.tenant = :ctx) "
-                    queryParams << [ctx: contextService.org]
+                    queryParams << [ctx: contextService.getOrg()]
                 } else {
                     return [] as JSON
                 }

@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'surveyShow.label')}</title>
 
 </head>
@@ -240,15 +240,11 @@
 
 
 <div id="magicArea"></div>
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('#finishProcess').progress();
-    });
 
-    $(document).ready(function () {
-        $('#finishProcess2').progress();
-    });
-</asset:script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#finishProcess').progress();
+    $('#finishProcess2').progress();
+</laser:script>
 
 </body>
 </html>

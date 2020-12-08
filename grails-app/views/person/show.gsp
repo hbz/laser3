@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'person.label')}"/>
     <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
@@ -34,11 +34,11 @@
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
-                            <asset:script type="text/javascript">
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('a[data-name=contactType]').on('save', function(e, params) {
                                     window.location.reload()
                                 });
-                            </asset:script>
+                            </laser:script>
                         </dd>
                     </dl>
 
@@ -129,7 +129,7 @@
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
-                                       onclick="addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
+                                       onclick="JSPC.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >
                             </g:if>
                         </dd>
@@ -349,24 +349,22 @@
                 </div><!-- .card -->
             </g:if>
 
-            <asset:javascript src="properties.js"/>
             <div class="ui grid">
                 <div class="sixteen wide column">
                     <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <div id="custom_props_div_${institution.id}">
-                                    <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <g:set var="propertyWrapper" value="private-property-wrapper-${institution.id}" />
+                                <div id="${propertyWrapper}">
                                     <g:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.PRS_PROP,
                                             ownobj: personInstance,
-                                            custom_props_div: "custom_props_div_${institution.id}",
+                                            propertyWrapper: "${propertyWrapper}",
                                             tenant: institution]}"/>
-                                    <asset:script type="text/javascript">
-                                        $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
-                                        });
-                                    </asset:script>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
+                                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
+                                    </laser:script>
                                 </div>
                             </div>
                         </div><!-- .card -->
@@ -448,36 +446,15 @@
 
 </body>
 </html>
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
             %{--private_address_modal(url);--}%
         %{--}--}%
-        function addresscreate_prs(prsId, typeId, redirect, modalId, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?prsId='+prsId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;
-            private_address_modal(url);
-        }
 
-        function private_address_modal(url) {
-            $.ajax({
-                url: url,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#addressFormModal").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#addressFormModal');
-                            r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                            // ajaxPostFunc()
-                        }
-                    }).modal('show');
-                },
-                error: function (request, status, error) {
-                    alert(request.status + ": " + request.statusText);
-                }
-            });
-        }
-</asset:script>
+    JSPC.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        func();
+    }
+</laser:script>

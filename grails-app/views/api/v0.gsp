@@ -81,7 +81,9 @@
         }
     </style>
 
-    <asset:stylesheet src="swagger.css"/><asset:javascript src="swagger.js"/>
+    <asset:stylesheet src="swagger.css"/><asset:javascript src="swagger.js"/>%{-- dont move --}%
+
+    <tmpl:/layouts/favicon />
 </head>
 
 <body>
@@ -157,7 +159,7 @@ console.log('(http-header) x-authorization: ' + authorization)
 
     <div id="main-container"></div>
 
-    <script>
+    <script data-type="inline">
         window.onload = function() {
 
             var selectors = {
@@ -276,7 +278,7 @@ console.log('(http-header) x-authorization: ' + authorization)
         }
     </script>
 
-    <asset:deferredScripts/>
+    <laser:scriptBlock/>%{-- dont move --}%
 
 </body>
 </html>

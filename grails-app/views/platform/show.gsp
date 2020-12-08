@@ -2,10 +2,9 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
     <title>${message(code: 'laser')} : <g:message code="platform.details"/></title>
-    <asset:javascript src="properties.js"/>
 </head>
 
 <body>
@@ -108,12 +107,7 @@
             </div>
           </div>
             <div id="new-dynamic-properties-block">
-
-                <g:render template="properties" model="${[
-                    platform: platformInstance,
-                    /*authorizedOrgs: authorizedOrgs*/
-                ]}"/>
-
+                <g:render template="properties" model="${[ platform: platformInstance ]}"/>
             </div><!-- #new-dynamic-properties-block -->
 
             <div class="ui card">

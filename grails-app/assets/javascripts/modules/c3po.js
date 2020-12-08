@@ -1,12 +1,7 @@
 
+// modules/c3po.js
+
 c3po = {
-    loadJsAfterAjax: function () {
-        r2d2.go();
-        bb8.go();
-        tooltip.go();
-        a11yMenu.go();
-        a11yIcon.go();
-    },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
     PROP_SEARCH_GROUPED: 'PROP_SEARCH_GROUPED',
@@ -22,10 +17,6 @@ c3po = {
         c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
         c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
-        c3po.hideModalOnSubmit(cssId)
-        //Needs to run to make the xEditable visible
-        $('.xEditableValue').editable()
-        $('.xEditableManyToOne').editable()
     },
 
     initGroupedProperties: function (ajaxurl, cssId, tenantId) {
@@ -39,10 +30,6 @@ c3po = {
         c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
         c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
-        c3po.hideModalOnSubmit(cssId)
-        //Needs to run to make the xEditable visible
-        $('.xEditableValue').editable()
-        $('.xEditableManyToOne').editable()
     },
 
     refdataCatSearch: function (ajaxurl, cssId) {
@@ -81,12 +68,12 @@ c3po = {
         }
 
         $(cssId + " .customPropSelect").select2({
-            placeholder: dict.get('property.select.placeholder', currLanguage),
+            placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
             minimumInputLength: 0,
             width: 300,
-            formatSearching: function ()           { return dict.get('property.select.searching', currLanguage); },
-            formatLoadMore:  function (pageNumber) { return dict.get('property.select.loadMore', currLanguage); },
-            formatNoMatches: function ()           { return dict.get('property.select.noMatches', currLanguage); },
+            formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
+            formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
+            formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
 
             ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
                 url: ajaxurl,
@@ -137,15 +124,6 @@ c3po = {
             } else {
                 $("#cust_prop_ref_data_name").hide();
             }
-        });
-    },
-
-    // TODO -refactoring
-    hideModalOnSubmit: function (cssId) {
-        console.log("c3po.hideModalOnSubmit() " + cssId)
-
-        $("#new_cust_prop_add_btn").click(function () {
-            $('#cust_prop_add_modal').modal('hide');
         });
     }
 }

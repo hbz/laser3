@@ -247,38 +247,35 @@ class TaskService {
         validResponsibleUsers
     }
 
-    private List<Map> getOrgsDropdown(Org contextOrg) {
-        List validOrgs = []
-        List<Map> validOrgsDropdown = []
+    private Set<Map> getOrgsDropdown(Org contextOrg) {
+        Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
-            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE'])
+            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
             boolean isConsortium  = (contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
-            def fsq          = filterService.getOrgQuery(params)
+            //def fsq          = filterService.getOrgQuery(params)
             //validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
-            String comboQuery = 'select o.id, o.name, o.shortname, o.sortname from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
+            String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
             if (isConsortium){
                 validOrgs = Combo.executeQuery(comboQuery,
                         [toOrg: contextOrg,
                         type:  RDStore.COMBO_TYPE_CONSORTIUM])
-            } else if (isInstitution){
-                validOrgs = Combo.executeQuery(comboQuery,
-                        [toOrg: contextOrg,
-                        type:  RDStore.COMBO_TYPE_DEPARTMENT])
             }
-            validOrgs.each {
-                Long optionKey = it[0]
+            validOrgs.each { row ->
+                Long optionKey = row.id
                 if (isConsortium) {
-                    validOrgsDropdown << [optionKey: optionKey, optionValue: (it[1]?:'') + (it[2]?' (':'') + (it[2]?:'') + (it[2]?')':'')]
-                } else {
-                    validOrgsDropdown << [optionKey: optionKey, optionValue: (it[3]?:'')  + (it[1]?' (':'') + (it[1]?:'')  + (it[1]?')':'')]
+                    String optionValue
+                    if(row.sortname)
+                        optionValue = "${row.name} (${row.sortname})"
+                    else optionValue = "${row.name}"
+                    validOrgsDropdown << [optionKey: optionKey, optionValue: optionValue]
                 }
             }
         }
-        validOrgsDropdown.unique().sort{it.optionValue}
+        validOrgsDropdown
     }
 
 

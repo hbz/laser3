@@ -13,7 +13,7 @@
         </thead>
         <tbody>
         <g:each in="${instance.documents.sort{it.owner?.title?.toLowerCase()}}" var="docctx">
-            <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted') && ((!docctx.sharedFrom && docctx.owner?.owner?.id == contextService.org.id) || docctx.sharedFrom)}">
+            <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted') && ((!docctx.sharedFrom && docctx.owner?.owner?.id == contextService.getOrg().id) || docctx.sharedFrom)}">
                 <tr>
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK --%>
 
@@ -53,7 +53,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="noteedit(${docctx.owner.id});" class="ui icon button">
+                            <a onclick="JSPC.noteedit(${docctx.owner.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
@@ -70,8 +70,8 @@
 </g:form>
 
 
-<asset:script type="text/javascript">
-    function noteedit(id) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.noteedit = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
@@ -84,4 +84,4 @@
             }
         });
     }
-</asset:script>
+</laser:script>

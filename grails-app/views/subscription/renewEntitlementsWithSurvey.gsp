@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
 </head>
 
@@ -265,9 +265,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:form>
 
 </body>
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        var iesToAdd = [];
+<laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.iesToAdd = [];
 
         $(".select-all").click(function () {
             var id = $(this).parents("table").attr("id");
@@ -285,18 +284,16 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             var index = $(this).parents("tr").attr("data-index");
             if (this.checked) {
                 $("tr[data-index='" + index + "'").addClass("positive");
-                iesToAdd.push($(this).parents("tr").attr("data-ieId"));
+                JSPC.iesToAdd.push($(this).parents("tr").attr("data-ieId"));
             } else {
                 $("tr[data-index='" + index + "'").removeClass("positive");
-                var delIdx = iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) iesToAdd.splice(delIdx, 1);
+                var delIdx = JSPC.iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
+                if (~delIdx) JSPC.iesToAdd.splice(delIdx, 1);
             }
         });
 
         $("#renewEntitlements").submit(function () {
-            $("#iesToAdd").val(iesToAdd.join(','));
+            $("#iesToAdd").val(JSPC.iesToAdd.join(','));
         });
-
-    });
-</asset:script>
+</laser:script>
 </html>

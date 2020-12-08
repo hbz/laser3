@@ -13,6 +13,7 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SwissKnife
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -52,8 +53,7 @@ class SubscriptionService {
             else params.remove('resetFilter')
             cache.remove('subscriptionFilterCache') //has to be executed in any case in order to enable cache updating
         }
-        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, contextUser)
 
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('init data fetch')
@@ -147,8 +147,7 @@ class SubscriptionService {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('filterService')
 
-        result.max = params.max ? Integer.parseInt(params.max) : contextUser.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, contextUser)
 
         Map<String,Object> fsq = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
@@ -430,7 +429,7 @@ class SubscriptionService {
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         if (params.showConnectedObjs){
-            result.addAll(linksGenerationService.getAllLinkedSubscriptions(result, contextService.user))
+            result.addAll(linksGenerationService.getAllLinkedSubscriptions(result, contextService.getUser()))
         }
         result.sort {it.dropdownNamingConvention()}
     }
@@ -474,7 +473,7 @@ class SubscriptionService {
             queryParams.status = params.status
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.org)
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
         result
     }
 
@@ -486,7 +485,7 @@ class SubscriptionService {
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.org)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
     }
 
     //Lokallizenzen
@@ -497,7 +496,7 @@ class SubscriptionService {
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.org)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
     }
 
     List getValidSubChilds(Subscription subscription) {
@@ -795,7 +794,7 @@ class SubscriptionService {
     Map regroupSubscriptionProperties(List<Subscription> subsToCompare, Org org) {
         LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
         subsToCompare.each{ sub ->
-            Map allPropDefGroups = sub._getCalculatedPropDefGroups(org)
+            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
             allPropDefGroups.entrySet().each { propDefGroupWrapper ->
                 //group group level
                 //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
@@ -999,7 +998,7 @@ class SubscriptionService {
         Org subscr = sub.getSubscriber()
         if(!unlink && !curLink) {
             try {
-                if(Links.construct([source: newLicense, destination: sub, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.org])) {
+                if(Links.construct([source: newLicense, destination: sub, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.getOrg()])) {
                     RefdataValue licRole
                     switch(sub._getCalculatedType()) {
                         case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
@@ -1053,7 +1052,7 @@ class SubscriptionService {
 
     Map subscriptionImport(CommonsMultipartFile tsvFile) {
         Locale locale = LocaleContextHolder.getLocale()
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
@@ -1391,7 +1390,7 @@ class SubscriptionService {
 
     List addSubscriptions(candidates,GrailsParameterMap params) {
         List errors = []
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         candidates.eachWithIndex{ entry, int s ->
@@ -1473,7 +1472,7 @@ class SubscriptionService {
                         }
                     }
                     if(entry.notes) {
-                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.user)
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.getUser())
                         if(docContent.save()) {
                             DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RDStore.DOC_TYPE_NOTE)
                             dc.save()

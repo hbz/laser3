@@ -1,13 +1,13 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.helper.AjaxUtils; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.helper.RDStore;" %>
 <laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
-    Org contextOrg = contextOrg ?: contextService.org
+    Org contextOrg = contextOrg ?: contextService.getOrg()
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole(contextService.user, contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            editable = accessService.checkMinUserOrgRole(contextService.getUser(), contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
@@ -186,13 +186,6 @@
     </semui:card>
 </g:if>
 
-<script>
-    $( document ).ready(function() {
-        if (r2d2) {
-            r2d2.initDynamicSemuiStuff('#container-documents');
-        }
-
-
-    });
-
-</script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    r2d2.initDynamicSemuiStuff('#container-documents')
+</laser:script>

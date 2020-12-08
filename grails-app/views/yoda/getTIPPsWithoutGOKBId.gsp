@@ -3,7 +3,7 @@
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : Datenbereinigung: TIPPs ohne GOKb ID</title>
     </head>
 

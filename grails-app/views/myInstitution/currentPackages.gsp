@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.my.packages')}</title>
 </head>
 <body>
@@ -12,7 +12,7 @@
 </semui:breadcrumbs>
 <br />
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.packages')}
-    <semui:totalNumber total="${packagesTotal}"/>
+    <semui:totalNumber total="${packageListTotal}"/>
 </h1>
 
 <semui:messages data="${flash}" />
@@ -114,12 +114,7 @@
     </tbody>
 </table>
 
-<%--
-<semui:paginate action="currentPlatforms" controller="myInstitution" params="${params}"
-                next="${message(code:'default.paginate.next')}"
-                prev="${message(code:'default.paginate.prev')}"
-                max="${max}" total="${packagesTotal}" />
---%>
+    <semui:paginate total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
 </body>
 </html>

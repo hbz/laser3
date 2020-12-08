@@ -1,10 +1,10 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService; de.laser.SubscriptionPackage" %>
 <laser:serviceInjection/>
 
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.details.linkPackagesMembers.label', args: args.memberTypeGenitive)}</title>
 </head>
 
@@ -48,8 +48,8 @@
                             id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                     <div class="right floated content">
-                        <button class="ui negative button la-selectable-button"
-                                onclick="unlinkPackage(${subPkg.pkg.id}, ${subPkg.subscription.id})">
+                        <button class="ui negative button la-selectable-button unlinkPackages"
+                                data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
                             <i class="unlink icon"></i>
                         </button>
                     </div>
@@ -142,7 +142,6 @@
             </div>
 
             <div class="divider"></div>
-
             <table class="ui celled la-table table">
                 <thead>
                 <tr>
@@ -170,8 +169,7 @@
                     <g:set var="sub" value="${zeile.sub}"/>
                     <tr>
 
-                        <g:set var="filteredSubscribers" value="${zeile.orgs}"/>
-                        <g:each in="${filteredSubscribers}" var="subscr">
+                        <g:set var="subscr" value="${zeile.orgs}"/>
                             <td>
                                 <g:checkBox name="selectedMembers" value="${sub.id}" checked="false"/>
                             </td>
@@ -198,11 +196,6 @@
                                 </g:if>
 
                             </td>
-                        </g:each>
-                        <g:if test="${!sub.getAllSubscribers()}">
-                            <td></td>
-                            <td></td>
-                        </g:if>
 
                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
@@ -211,19 +204,12 @@
 
                             <div class="ui middle aligned selection list">
                                 <g:each in="${sub.packages}" var="sp">
-                                    <g:set var="childPkgHasCostItems"
-                                           value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.id = :sp', [sp: sp.id])}"/>
-                                    <div class="item">
-                                        <div class="right floated content">
-
-                                        </div>
-
-                                        <div class="content">
+                                    <div class="item"><div class="content">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
                                                 ${sp.pkg.name}<br />${raw(sp.getIEandPackageSize())}
                                             </g:link>
-                                            <g:if test="${editable && childPkgHasCostItems}">
+                                            <g:if test="${editable && childWithCostItems.find { SubscriptionPackage row -> row.id == sp.id }}">
                                                 <br /><g:message code="subscription.delete.existingCostItems"/>
                                             </g:if>
                                         </div>
@@ -258,7 +244,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
         $('#membersListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
@@ -268,21 +254,22 @@
             }
         });
 
-      function unlinkPackage(pkg_id, subscriptionID){
+      $('.unlinkPackages').on('click',function() {
+          JSPC.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
+      });
+
+      JSPC.unlinkPackage = function (pkg_id, subscriptionID) {
 
         var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionID+"&package="+pkg_id
 
         $.ajax({url: req_url,
-          success: function(result){
+          done: function(result){
              $('#magicArea').html(result);
-          },
-          complete: function(){
             $("#unlinkPackageModal").modal("show");
           }
         });
       }
-
-</asset:script>
+</laser:script>
 
 </body>
 </html>

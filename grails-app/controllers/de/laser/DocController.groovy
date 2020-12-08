@@ -65,7 +65,7 @@ class DocController  {
 						title: params.licenseNoteTitle,
 						content: params.licenseNote,
 						type: RDStore.DOC_TYPE_NOTE,
-						owner: contextService.org,
+						owner: contextService.getOrg(),
 						user: user).save()
 
 				log.debug("Setting new context type to ${params.ownertp}..")
@@ -118,7 +118,7 @@ class DocController  {
 
 					docInstance.properties = params
 					if (!docInstance.owner)
-						docInstance.owner = contextService.org
+						docInstance.owner = contextService.getOrg()
 
 					if (!docInstance.save()) {
 						//render view: 'edit', model: [docInstance: docInstance]

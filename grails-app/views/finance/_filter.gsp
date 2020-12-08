@@ -66,7 +66,7 @@
                                       optionValue="value"
                                       value="${filterPresets?.filterSubStatus?.id}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
-                            onchange="setupDropdowns()"
+                            onchange="JSPC.setupDropdowns()"
                         />
                     </div>
                 </g:if>
@@ -268,14 +268,15 @@
 
 <!-- _filter.gsp -->
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
+
     $.fn.dropdown.settings.message = {
         noResults: "<g:message code="select2.noMatchesFound" />"
     };
     $("#filterSubStatus, #filterCIStatus").dropdown({
         "clearable": true
     });
-    function setupDropdowns() {
+    JSPC.setupDropdowns = function () {
         if($("#filterSubStatus").length > 0) {
             var subStatus = $("#filterSubStatus").val();
             if(subStatus.length === 0) {
@@ -338,11 +339,11 @@
                 console.log("backspace event!");
         });
     }
-    $(document).ready(function(){
+
         <g:if test="${params.filterCIUnpaid}">
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
-        setupDropdowns();
+        JSPC.setupDropdowns();
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year'
         });
@@ -352,5 +353,5 @@
             else
                 $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",false);
         });
-    });
-</asset:script>
+
+</laser:script>

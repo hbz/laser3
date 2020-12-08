@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} Admin::Package Delete</title>
       <%-- r:require module="annotations" / --%>
   </head>
@@ -46,7 +46,7 @@
               ${fieldValue(bean: packageInstance, field: "name")} (${packageInstance?.contentProvider?.name})</g:link>
               </td>            
               <td class="link">
-                <button onclick="showDetails(${packageInstance.id});" class="ui tiny button">Prepare Delete</button>
+                <button onclick="JSPC.showDetails(${packageInstance.id});" class="ui tiny button">Prepare Delete</button>
               </td>
             </tr>
           </g:each>
@@ -60,12 +60,17 @@
 
         <div id="packageDetails_div"></div>
 
-        <asset:script type="text/javascript">
-        function showDetails(id){
-          jQuery.ajax({type:'get', url:"${createLink(controller:'admin', action:'hardDeletePkgs')}"+"/"+id,success:function(data,textStatus){jQuery('#packageDetails_div').html(data);$("#pkg_details_modal").modal("show")},error:function(XMLHttpRequest,textStatus,errorThrown){}
-        });
+        <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.showDetails = function (id) {
+            jQuery.ajax({type:'get', url:"${createLink(controller:'admin', action:'hardDeletePkgs')}"+"/"+id,
+                success: function(data,textStatus){
+                    jQuery('#packageDetails_div').html(data);
+                    $("#pkg_details_modal").modal("show");
+                },
+                error: function(XMLHttpRequest,textStatus,errorThrown){}
+            });
         }
-        </asset:script>
+        </laser:script>
 
   </body>
 </html>     

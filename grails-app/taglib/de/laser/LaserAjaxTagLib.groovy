@@ -1,7 +1,8 @@
 package de.laser
 
+import asset.pipeline.grails.AssetsTagLib
+import de.laser.helper.AjaxUtils
 import de.laser.helper.SwissKnife
-import org.springframework.web.util.HtmlUtils
 
 class LaserAjaxTagLib {
 
@@ -14,6 +15,9 @@ class LaserAjaxTagLib {
 
         def role = attrs.role
         attrs.remove('role')
+
+        def ariaLabel = attrs.ariaLabel
+        attrs.remove('ariaLabel')
 
         Closure switchEntries = { keys ->
             Map<String, Object> map = [:]
@@ -29,7 +33,7 @@ class LaserAjaxTagLib {
 
         String href = g.createLink(hrefMap)
 
-        out << "<a role='${role}' class='${cssClass} la-js-remoteLink'  href='" + href + "'"
+        out << "<a aria-label= '${ariaLabel}' role='${role}' class='${cssClass} la-js-remoteLink'  href='" + href + "'"
 
         attrs.each { k,v ->
             out << ' ' << k << '="' << v << '"'

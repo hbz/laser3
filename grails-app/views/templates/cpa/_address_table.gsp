@@ -78,7 +78,7 @@
             <td class="x">
                 <g:if test="${editable && tmplShowDeleteButton}">
 
-                    <button type="button" onclick="editAddress(${address.id})" class="ui icon button">
+                    <button type="button" onclick="JSPC.editAddress(${address.id})" class="ui icon button">
                         <i class="write icon"></i>
                     </button>
                     <g:link class="ui negative button js-open-confirm-modal"
@@ -94,28 +94,9 @@
     </tbody>
 </table>
 
-<asset:script type="text/javascript">
-    function editAddress(id) {
-        var url = '<g:createLink controller="ajaxHtml" action="editAddress"/>?id='+id;
-        private_address_modal(url)
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.editAddress = function (id) {
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", "<g:createLink controller="ajaxHtml" action="editAddress"/>?id=" + id, false);
+        func();
     }
-    function private_address_modal(url) {
-        $.ajax({
-            url: url,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#addressFormModal").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#addressFormModal');
-                        r2d2.initDynamicXEditableStuff('#addressFormModal');
-
-                        // ajaxPostFunc()
-                    }
-                }).modal('show');
-            }
-        });
-    }
-</asset:script>
+</laser:script>

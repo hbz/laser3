@@ -24,23 +24,23 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <asset:script type="text/javascript">
+                        <laser:script file="${this.getGroovyPageFileName()}">
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
                             $('.la-js-editmode-icon').addClass('thumbtack');
                             $('.meinToggleButton').attr('data-content','Wert wird vererbt');
-                        </asset:script>
+                        </laser:script>
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <asset:script type="text/javascript">
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');
                                 $('.la-js-editmode-icon').removeClass('thumbtack');
                                 $('.meinToggleButton').attr('data-content','Wert wird nicht vererbt');
-                            </asset:script>
+                            </laser:script>
                         </g:if>
                     </g:else>
                     <g:set var="test" value='true' />
@@ -49,7 +49,6 @@
                         action='wcagTest'
                         data-content="Wert wird nicht vererbt"
                         class="ui icon mini button la-audit-button la-popup-tooltip la-delay meinToggleButton"
-                        aria-labelledby="wcag_mlbbjc4mb"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
                         <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash "></i>
@@ -81,23 +80,23 @@
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">
-                        <asset:script type="text/javascript">
+                        <laser:script file="${this.getGroovyPageFileName()}">
                             $('.meinToggleButton').addClass('green');
                             $('.la-js-editmode-icon').removeClass('slash');
                             $('.la-js-editmode-icon').removeClass('la-thumbtack');
                             $('.la-js-editmode-icon').addClass('thumbtack');
                             $('.meinToggleButton').attr('data-content','Wert wird vererbt');
-                        </asset:script>
+                        </laser:script>
                     </g:if>
                     <g:else>
                         <g:if test="${params.toggle=="false"}">
-                            <asset:script type="text/javascript">
+                            <laser:script file="${this.getGroovyPageFileName()}">
                                 $('.meinToggleButton').removeClass('green');
                                 $('.la-js-editmode-icon').addClass('slash');
                                 $('.la-js-editmode-icon').addClass('la-thumbtack');
                                 $('.la-js-editmode-icon').removeClass('thumbtack');
                                 $('.meinToggleButton').attr('data-content','Wert nicht wird vererbt');
-                            </asset:script>
+                            </laser:script>
                         </g:if>
                     </g:else>
                     <g:set var="test" value='true' />

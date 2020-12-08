@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
@@ -237,8 +238,7 @@ class AdminController  {
             params.search = null
         }
         result.user = contextService.getUser()
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
     if(params.id){
         Package pkg = Package.get(params.id)

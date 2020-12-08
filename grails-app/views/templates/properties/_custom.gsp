@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_custom -->
-%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
+%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx --}%
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
@@ -110,7 +110,6 @@
                                                               id="${prop.id}"
                                                               data-content="${message(code:'property.audit.off.tooltip')}"
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                              data-always="c3po.loadJsAfterAjax()"
                                                               data-update="${custom_props_div}"
                                                               role="button"
                                             >
@@ -134,7 +133,6 @@
                                                               id="${prop.id}"
                                                               data-content="${message(code:'property.audit.off.tooltip')}"
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                              data-always="c3po.loadJsAfterAjax()"
                                                               data-update="${custom_props_div}"
                                                               role="button"
                                             >
@@ -159,7 +157,6 @@
                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [prop.type.getI10n('name')])}"
                                                           data-confirm-term-how="inherit"
                                                           data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                          data-always="c3po.loadJsAfterAjax()"
                                                           data-update="${custom_props_div}"
                                                           role="button"
                                         >
@@ -173,7 +170,7 @@
                                             <laser:remoteLink class="ui orange icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                              data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
+                                                              data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}">
                                                 <i class="icon eye la-js-editmode-icon"></i>
                                             </laser:remoteLink>
@@ -182,7 +179,7 @@
                                             <laser:remoteLink class="ui icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                              data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
+                                                              data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}">
                                                 <i class="icon eye slash la-js-editmode-icon"></i>
                                             </laser:remoteLink>
@@ -205,7 +202,6 @@
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                                       data-confirm-term-how="delete"
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax()"
                                                       data-update="${custom_props_div}"
                                                       role="button">
                                         <i class="trash alternate icon"></i>
@@ -223,7 +219,7 @@
                                     <laser:remoteLink class="ui orange icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
+                                                      data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                       data-update="${custom_props_div}">
                                         <i class="icon eye la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -232,7 +228,7 @@
                                     <laser:remoteLink class="ui icon button la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                      data-always="c3po.loadJsAfterAjax()" data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
+                                                      data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                       data-update="${custom_props_div}">
                                         <i class="icon eye slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -252,7 +248,6 @@
                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [prop.type.getI10n('name')])}"
                                                   data-confirm-term-how="delete"
                                                   data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                  data-always="c3po.loadJsAfterAjax()"
                                                   data-update="${custom_props_div}"
                                                   role="button">
                                     <i class="trash alternate icon"></i>
@@ -301,17 +296,13 @@
             </g:else>
                     <laser:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
                                   name="cust_prop_add_value_custom"
-                                  class="ui form"
+                                  class="ui properties form"
                                   data-update="${custom_props_div}"
-                                  data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                  data-always="c3po.loadJsAfterAjax()"
-                    >
-
+                                  data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')">
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
-                        <input type="hidden" name="showCollectiveFunctions" value="${showCollectiveFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 

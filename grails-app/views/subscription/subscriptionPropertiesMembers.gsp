@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.memberTypeGenitive)}</title>
 </head>
 
@@ -698,10 +698,7 @@
 
 <div id="magicArea"></div>
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
+<laser:script file="${this.getGroovyPageFileName()}">
 
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
@@ -711,20 +708,10 @@
         }
     });
 
-    function formatDate(input) {
-        if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
-            var inArr = input.split(/[\.\/-]/g);
-            return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
-        }
-        else {
-            return input;
-        }
-    }
-
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
         if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
-            var startDate = Date.parse(formatDate($("#valid_from").val()));
-            var endDate = Date.parse(formatDate($("#valid_to").val()));
+            var startDate = Date.parse(JSPC.helper.formatDate($("#valid_from").val()));
+            var endDate = Date.parse(JSPC.helper.formatDate($("#valid_to").val()));
             return (startDate < endDate);
         }
         else return true;
@@ -754,7 +741,9 @@
             }
         }
     });
-</asset:script>
+
+    $('.tabular.menu .item').tab()
+</laser:script>
 
 </body>
 </html>

@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
 </head>
 
@@ -154,11 +154,9 @@
 </g:if>
 
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
-</asset:script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.tabular.menu .item').tab()
+</laser:script>
 
 </body>
 </html>

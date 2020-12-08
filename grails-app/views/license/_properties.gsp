@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.License; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -26,12 +26,6 @@
                         prop_desc: PropertyDefinition.LIC_PROP,
                         ownobj: license,
                         custom_props_div: "member_props_div"]}"/>
-
-                <%--<asset:script type="text/javascript">
-                    $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
-                    });
-                </asset:script>--%>
             </div>
         </div>
     </div>
@@ -41,7 +35,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license._getCalculatedPropDefGroups(institution)}" />
+    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(institution)}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -126,39 +120,31 @@
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-        $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${license.class.simpleName}:${license.id}"]'/>", "#custom_props_div_props");
-        });
-    </asset:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
+    </laser:script>
 
 </div><!-- .card -->
 
 <%-- private properties --%>
 
+<div class="ui card la-dl-no-table la-js-hideable">
+    <div class="content">
+        <h5 class="ui header">${message(code:'license.properties.private')} ${contextOrg.name}</h5>
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <div id="${propertyWrapper}">
+            <g:render template="/templates/properties/private" model="${[
+                    prop_desc: PropertyDefinition.LIC_PROP,
+                    ownobj: license,
+                    propertyWrapper: "${propertyWrapper}",
+                    tenant: contextOrg]}"/>
 
-<g:each in="${authorizedOrgs}" var="authOrg">
-    <g:if test="${authOrg.name == institution.name}">
-        <div class="ui card la-dl-no-table la-js-hideable">
-            <div class="content">
-                <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+            </laser:script>
 
-                <div id="custom_props_div_${authOrg.id}">
-                    <g:render template="/templates/properties/private" model="${[
-                            prop_desc: PropertyDefinition.LIC_PROP,
-                            ownobj: license,
-                            custom_props_div: "custom_props_div_${authOrg.id}",
-                            tenant: authOrg]}"/>
-
-                    <asset:script type="text/javascript">
-                            $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                            });
-                    </asset:script>
-                </div>
-            </div>
-        </div><!--.card-->
-    </g:if>
-</g:each>
+        </div>
+    </div>
+</div><!--.card-->
 
 <!-- _properties -->

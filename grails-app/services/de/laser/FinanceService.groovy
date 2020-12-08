@@ -24,6 +24,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.NumberFormat
@@ -834,8 +835,8 @@ class FinanceService {
      * @param tsvFile - the input file
      * @return a {@link Map} with the data red off
      */
-    Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
-        Org contextOrg = contextService.org
+    Map<String,Map> financeImport(MultipartFile tsvFile) {
+        Org contextOrg = contextService.getOrg()
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
         Map<Integer,String> budgetCodes = [:]
@@ -1176,7 +1177,7 @@ class FinanceService {
             taxKey(nullable: true, blank: false) -> to combination of tax type and tax rate
              */
             if(colMap.taxType != null && colMap.taxRate != null) {
-                String taxTypeKey = cols[colMap.taxType]
+                String taxTypeKey = cols[colMap.taxType].toLowerCase()
                 int taxRate
                 try {
                     taxRate = Integer.parseInt(cols[colMap.taxRate])
@@ -1201,6 +1202,7 @@ class FinanceService {
                         RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey, RDConstants.TAX_TYPE)
                         if(!taxType)
                             taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
+                        //reverse charge must not be displayed here according to Micha, December 3rd, '20!
                         switch(taxType) {
                             case RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                 break
@@ -1304,7 +1306,7 @@ class FinanceService {
 
     Map<String,Object> importCostItems(GrailsParameterMap params) {
         Map<String,Object> result = [error:[]]
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         def candidates = JSON.parse(params.candidates)
         def bcJSON = JSON.parse(params.budgetCodes)
@@ -1372,7 +1374,7 @@ class FinanceService {
                 }
             }
         }
-        if(result.errors.size() > 0)
+        if(result.errors)
             [result:result,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
     }

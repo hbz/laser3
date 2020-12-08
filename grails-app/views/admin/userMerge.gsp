@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
       <title>${message(code:'laser')} : Admin: User Merge</title>
   </head>
 
@@ -81,9 +81,9 @@
 
 
   <g:if test="${userRoles}">
-      <asset:script type="text/javascript">
-      $('#user_merge_modal').modal('show');
-    </asset:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#user_merge_modal').modal('show');
+    </laser:script>
   </g:if>
   </body>
 </html>

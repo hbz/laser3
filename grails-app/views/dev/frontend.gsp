@@ -2,10 +2,10 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : Frontend for Developers</title>
 
-    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>
+    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>%{-- dont move --}%
 
     <style>
     #example .example .column .icon {
@@ -372,7 +372,7 @@
         <pre aria-hidden="true">
 Javascript:
 
-dcbStore.modal.show.customerTypeModal = function(trigger) {
+JSPC.callbacks.modal.show.customerTypeModal = function(trigger) {
     $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<strong>attr('data-orgName')</strong>)
     $('#customerTypeModal input[name=target]').attr('value', $(trigger).<strong>attr('data-ctTarget')</strong>)
                 .
@@ -457,18 +457,15 @@ if (customerType) {
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
 
-        <pre aria-hidden="true">
-            &ltr:require module="chartist" /&gt;
+        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/&gt;&ltasset:javascript src="chartist.js"/&gt;
         </pre>
 
     </div>
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Chartis-Objekt mit Javascript aufrufen innerhalb r:script</div>
-        <pre aria-hidden="true"> &ltr:script /&gt;
-        </pre>
-        <pre aria-hidden="true">    new Chartist.Line('.ct-chart', data);
-        </pre>
-        <pre aria-hidden="true">&lt/r:script&gt;
+        <pre aria-hidden="true">        &ltscript&gt;
+                new Chartist.Line('.ct-chart', data);
+        &lt/script&gt;
         </pre>
     </div>
     <div class="html ui top attached segment example">
@@ -519,7 +516,7 @@ if (customerType) {
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     new Chartist.Line('.ct-chart', {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         series: [
@@ -540,8 +537,8 @@ if (customerType) {
             })
         ]
     });
-</asset:script>
-<asset:script type="text/javascript">
+</laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     new Chartist.Pie('.ct-chart-pie', {
         labels: ['Piece A', 'Piece B', 'Piece C', 'Piece D'],
         series: [20, 10, 30, 40]
@@ -553,8 +550,8 @@ if (customerType) {
             })
         ]
     });
-</asset:script>
-<asset:script type="text/javascript">
+</laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     new Chartist.Bar('.ct-chart-bar', {
         labels: ['First quarter of the year', 'Second quarter of the year', 'Third quarter of the year', 'Fourth quarter of the year'],
         series: [
@@ -569,7 +566,7 @@ if (customerType) {
             })
         ]
     });
-</asset:script>
+</laser:script>
 
 
 </body>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.quartzInfo')}</title>
 </head>
 <body>
@@ -99,11 +99,11 @@
 <br />
 
     <%-- TODO: implement ajax calls --%>
-    <script>
+    <laser:script file="${this.getGroovyPageFileName()}">
         setTimeout(function() {
             window.document.location.reload();
         }, (30 * 1000)); // refresh ~ 30 Seconds
-    </script>
+    </laser:script>
 
 </body>
 </html>

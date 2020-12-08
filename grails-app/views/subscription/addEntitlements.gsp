@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.details.addEntitlements.label')}</title>
 </head>
 
@@ -123,7 +123,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
     </div>
 </g:form>
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });
@@ -132,7 +132,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         var name = e.target.files[0].name;
         $('input:text', $(e.target).parent()).val(name);
     });
-</asset:script>
+</laser:script>
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscription.id}"/>
     <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
@@ -416,9 +416,29 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 </g:form>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
 
-     $(document).ready(function() {
+    JSPC.selectAll = function () {
+        $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+        JSPC.updateSelectionCache("all",$('#select-all').prop('checked'));
+    }
+
+    JSPC.updateSelectionCache = function (index,checked) {
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="updateChecked" />",
+                data: {
+                    sub: ${subscription.id},
+                    index: index,
+                    referer: "${actionName}",
+                    checked: checked
+                }
+            }).done(function(result){
+
+            }).fail(function(xhr,status,message){
+                console.log("error occurred, consult logs!");
+            });
+    }
+
       $("simpleHiddenRefdata").editable({
         url: function(params) {
           var hidden_field_id = $(this).data('hidden-id');
@@ -428,7 +448,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
       });
 
     $(".bulkcheck").change(function() {
-        updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
+        JSPC.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
     });
 
     $(".ieOverwrite td").click(function() {
@@ -452,30 +472,9 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             console.log("error occurred, consult logs!");
         });
     });
-     });
 
 
-    function selectAll() {
-      $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
-      updateSelectionCache("all",$('#select-all').prop('checked'));
-    }
-
-    function updateSelectionCache(index,checked) {
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="updateChecked" />",
-            data: {
-                sub: ${subscription.id},
-                index: index,
-                referer: "${actionName}",
-                checked: checked
-            }
-        }).done(function(result){
-
-        }).fail(function(xhr,status,message){
-            console.log("error occurred, consult logs!");
-        });
-    }
-</asset:script>
+</laser:script>
 
 </body>
 </html>

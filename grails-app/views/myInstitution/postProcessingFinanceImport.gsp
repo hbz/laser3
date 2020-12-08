@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.post.title')}</title>
     </head>
 
@@ -103,8 +103,7 @@
             </table>
         </g:form>
     </body>
-    <asset:script type="text/javascript">
-        $(document).ready(function() {
+    <laser:script file="${this.getGroovyPageFileName()}">
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
                     $(".ciSelect").prop('checked',true);
@@ -113,6 +112,5 @@
                     $(".ciSelect").prop('checked',false);
                 }
             });
-        });
-    </asset:script>
+    </laser:script>
 </html>

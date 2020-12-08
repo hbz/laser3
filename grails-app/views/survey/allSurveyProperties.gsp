@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
 </head>
 
@@ -212,10 +212,10 @@
     </g:form>
 </semui:modal>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
 
 $('#pd_descr').change(function() {
-$('#cust_prop_modal_select').trigger('change');
+    $('#cust_prop_modal_select').trigger('change');
 });
 
 $('#cust_prop_modal_select').change(function() {
@@ -264,6 +264,7 @@ return {results: data.values};
 }
 }
 });
+
 $(".la-popup").popup({
 });
-</asset:script>
+</laser:script>

@@ -173,10 +173,6 @@ aside.ui.accordion .title:not(.ui) {
         font-weight: 900;
         display: block;
     }
-
-    h3 {
-        color: #2d6697 !important;
-    }
     .la-feature {
         display: flex;
         justify-content: center;

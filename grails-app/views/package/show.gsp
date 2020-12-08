@@ -3,9 +3,9 @@
 <!doctype html>
 <html>
     <head>
-        <meta name="layout" content="semanticUI">
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'package.details')}</title>
-        <asset:stylesheet src="datatables.css"/><asset:javascript src="datatables.js"/>
+        <asset:stylesheet src="datatables.css"/><asset:javascript src="datatables.js"/>%{-- dont move --}%
     </head>
     <body>
 
@@ -205,7 +205,7 @@
 
                                 <select class="ui dropdown" name="subid">
                                     <g:each in="${subscriptionList}" var="s">
-                                        <option value="${s.id}">${s.dropdownNamingConvention(contextService.org)}</option>
+                                        <option value="${s.id}">${s.dropdownNamingConvention(contextService.getOrg())}</option>
                                     </g:each>
                                 </select>
 

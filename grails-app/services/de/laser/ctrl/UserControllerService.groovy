@@ -19,8 +19,8 @@ class UserControllerService {
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
 
-        Map<String, Object> result = [orgInstance: contextService.org]
-        result.editor = contextService.user
+        Map<String, Object> result = [orgInstance: contextService.getOrg()]
+        result.editor = contextService.getUser()
 
         if (params.get('id')) {
             result.user = User.get(params.id)

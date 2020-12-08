@@ -1,11 +1,15 @@
 package de.laser.ctrl
 
 import de.laser.AccessService
+import de.laser.AuditService
 import de.laser.ContextService
 import de.laser.License
 import de.laser.LicenseController
 import de.laser.LinksGenerationService
 import de.laser.Task
+import de.laser.auth.User
+import de.laser.helper.SwissKnife
+import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -17,6 +21,7 @@ class LicenseControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    AuditService auditService
     ContextService contextService
     MessageSource messageSource
     LinksGenerationService linksGenerationService
@@ -63,19 +68,23 @@ class LicenseControllerService {
         Map<String, Object> result = [:]
 
         result.user            = contextService.getUser()
-        result.institution     = contextService.org
+        result.institution     = contextService.getOrg()
         result.contextOrg      = result.institution
+        result.contextCustomerType = result.institution.getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
+
+        if(result.license.instanceOf)
+            result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
+        else result.auditConfigs = auditService.getAllAuditConfigs(result.license)
 
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
 
-        result.showConsortiaFunctions = controller.showConsortiaFunctions(result.license)
+        result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ?: 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.license.isVisibleBy(result.user)) {
@@ -93,5 +102,9 @@ class LicenseControllerService {
         }
 
         result
+    }
+
+    boolean showConsortiaFunctions(License license) {
+        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 }

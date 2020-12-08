@@ -1,8 +1,9 @@
 package de.laser
 
-
+import de.laser.auth.User
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -30,9 +31,7 @@ class TippController  {
     }
 
     params.max = Math.min(params.max ? params.int('max') : 10, 100)
-    def paginate_after = params.paginate_after ?: 19;
-    result.max = params.max
-    result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+    SwissKnife.setPaginationParams(result, params, (User) result.user)
 
     String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = :title and tipp.status != :status "
     def qry_params = [title:result.titleInstanceInstance,status:RDStore.TIPP_STATUS_DELETED]

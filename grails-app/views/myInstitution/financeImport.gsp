@@ -1,8 +1,8 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.pageTitle')}</title>
   </head>
 
@@ -48,9 +48,10 @@
                             break
                         case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
                             break
-                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).collect { it -> it.getI10n('value') })
+                        //as of December 3rd '20, Micha said that no reverse charge should be made possible by tax type in order to avoid confusion with users of the interface
+                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).minus(RDStore.TAX_REVERSE_CHARGE).collect { it -> it.getI10n('value') })
                             break
-                        case 'taxRate': args.addAll([0,7,19])
+                        case 'taxRate': args.addAll([0,5,7,16,19])
                             break
                     }
                 %>
@@ -63,24 +64,11 @@
             </tbody>
           </table>
 
-          <g:form action="processFinanceImport" method="post" enctype="multipart/form-data">
-            <dl>
-              <div class="field">
-                <dt>${message(code:'myinst.financeImport.upload')}</dt>
-                <dd>
-                  <input type="file" name="tsvFile" />
-                </dd>
-              </div>
-              <%-- <div class="field">
-                <dt>Dry Run</dt>
-                <dt>${message(code:'myinst.financeImport.dryrun', default:'Dry Run')}</dt>
-                <dd>
-                  <input class="ui button" type="checkbox" name="dryRun" checked value="true" />
-                </dd>
-              </div> --%>
-              <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload")}</button>
-            </dl>
-          </g:form>
+          <g:uploadForm action="processFinanceImport" method="POST">
+              <label for="tsvFile">${message(code:'myinst.financeImport.upload')}</label>
+              <input class="ui input" type="file" name="tsvFile" id="tsvFile"/>
+              <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
+          </g:uploadForm>
 
   </body>
 </html>

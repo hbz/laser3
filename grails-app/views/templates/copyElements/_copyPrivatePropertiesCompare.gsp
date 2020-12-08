@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 %{--<head>--}%
-%{--<meta name="layout" content="semanticUI" />--}%
+%{--<meta name="layout" content="laser" />--}%
 %{--<title>${message(code:'laser')} : ${message(code:'menu.my.comp_lic')}</title>--}%
 %{--</head>--}%
 <body>
@@ -35,7 +35,7 @@
                     message(code: 'copyElementsIntoObject.copyProperties.button')}"/>
             <div class="sixteen wide field" style="text-align: right;">
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return jsConfirmation()" ${submitDisabled}/>
+                       onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:if>
         <g:else>
@@ -47,7 +47,7 @@
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
                         message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return jsConfirmation()" ${submitDisabled}/>
+                       onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:else>
 

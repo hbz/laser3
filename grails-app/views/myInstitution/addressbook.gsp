@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.myAddressbook')}</title>
 </head>
 
@@ -23,16 +23,16 @@
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
 
                 <a href="#createPersonModal" class="item" data-semui="modal"
-                   onclick="personCreate('contactPersonForInstitution');"><g:message
+                   onclick="JSPC.personCreate('contactPersonForInstitution');"><g:message
                         code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
 
             <a href="#createPersonModal" class="item" data-semui="modal"
-               onclick="personCreate('contactPersonForProviderAgency');"><g:message
+               onclick="JSPC.personCreate('contactPersonForProviderAgency');"><g:message
                     code="person.create_new.contactPersonForProviderAgency.label"/></a>
 
             <a href="#createPersonModal" class="item" data-semui="modal"
-               onclick="personCreate('contactPersonForPublic');"><g:message
+               onclick="JSPC.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
         </g:if>
@@ -156,12 +156,12 @@
 </body>
 
 
-<asset:script type="text/javascript">
-    function personCreate(contactFor) {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=false&showContacts=true';
-        createPersonModal(url)
+        JSPC.createPersonModal(url)
     }
-    function createPersonModal(url) {
+    JSPC.createPersonModal = function (url) {
         $.ajax({
             url: url,
             success: function(result){
@@ -178,6 +178,6 @@
             }
         });
     }
-</asset:script>
+</laser:script>
 
 </html>

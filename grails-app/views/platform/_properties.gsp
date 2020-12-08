@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -18,7 +18,7 @@
 
 <div class="ui card la-dl-no-table la-js-hideable">
 
-    <g:set var="allPropDefGroups" value="${platform._getCalculatedPropDefGroups(contextOrg)}" />
+    <g:set var="allPropDefGroups" value="${platform.getCalculatedPropDefGroups(contextOrg)}" />
 
 <%-- orphaned properties --%>
 
@@ -43,11 +43,9 @@
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-        $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
-        });
-    </asset:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_props");
+    </laser:script>
 
 </div><!-- .card -->
 <!-- _properties -->

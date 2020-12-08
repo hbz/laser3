@@ -29,7 +29,7 @@ class AddressbookService {
     }
 
     List<Person> getAllVisiblePersons(User user, List<Org> orgs) {
-        List membershipOrgIds = [contextService.org.id]
+        List membershipOrgIds = [contextService.getOrg().id]
 
         List visiblePersons = []
         orgs.each { org ->
@@ -86,7 +86,7 @@ class AddressbookService {
             case "addressbook":
                 qParams.public = false
                 qParts << 'p.tenant = :tenant'
-                qParams.tenant = contextService.org
+                qParams.tenant = contextService.getOrg()
                 break
             case "myPublicContacts":
                 qParams.public = true

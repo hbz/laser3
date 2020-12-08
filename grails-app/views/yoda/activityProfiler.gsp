@@ -1,9 +1,9 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
-    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>
+    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>%{-- dont move --}%
 </head>
 <body>
 
@@ -30,14 +30,13 @@
                     <td colspan="4">
                         <div id="ct-chart-${index}"></div>
 
-                        <script>
-                            $(document).ready(function(){
+                        <laser:script file="${this.getGroovyPageFileName()}">
 
                                 <g:if test="${index == 0}">
                                     setTimeout( function(){ console.log(".."); window.dispatchEvent(new Event('resize')) }, 99);
                                 </g:if>
 
-                                var chartData = {
+                                JSPC.chartData = {
                                     labels: [
                                         <% println '"' + labels.collect{ it.length() ? it.substring(0,3) + '00' : it }.join('","') + '"' %>
                                     ],
@@ -47,7 +46,7 @@
                                     ]
                                 };
 
-                                new Chartist.Bar('#ct-chart-${index}', chartData, {
+                                new Chartist.Bar('#ct-chart-${index}', JSPC.chartData, {
                                     stackBars: true,
                                     fullWidth: true,
                                     chartPadding: {
@@ -67,8 +66,8 @@
                                         });
                                     }
                                 });
-                            })
-                        </script>
+
+                        </laser:script>
                     </td>
                 </tr>
             </g:each>

@@ -1,11 +1,11 @@
-<asset:script type="text/javascript">
-    function jsConfirmation() {
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.jsConfirmation = function () {
         if ($("td input[data-action='delete']").is(":checked")) {
             return confirm("${g.message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}")
         }
     }
     // FOR ALL THE OTHER TABLES THEN PROPERTIES
-    function toggleAllCheckboxes(source) {
+    JSPC.toggleAllCheckboxes = function (source) {
         var action = $(source).attr("data-action")
         var checkboxes = document.querySelectorAll('input[data-action="' + action + '"]');
         for (var i = 0; i < checkboxes.length; i++) {
@@ -16,40 +16,40 @@
             }
         }
     }
-</asset:script>
+</laser:script>
 
 <g:if test="${!copyObject}">
-    <asset:script type="text/javascript">
+    <laser:script file="${this.getGroovyPageFileName()}">
         // ONLY FOR PROPERIES
-        var takeProperty = $('input[name="copyObject.takeProperty"]');
-        var deleteProperty = $('input[name="copyObject.deleteProperty"]');
+        JSPC.takeProperty = $('input[name="copyObject.takeProperty"]');
+        JSPC.deleteProperty = $('input[name="copyObject.deleteProperty"]');
 
-        function selectAllTake(source) {
+        JSPC.selectAllTake = function (source) {
             var table = $(source).closest('table');
-            var thisBulkcheck = $(table).find(takeProperty);
+            var thisBulkcheck = $(table).find(JSPC.takeProperty);
             $(thisBulkcheck).each(function (index, elem) {
                 elem.checked = source.checked;
-                markAffectedTake($(this));
+                JSPC.markAffectedTake($(this));
             })
         }
 
-        function selectAllDelete(source) {
+        JSPC.selectAllDelete = function (source) {
             var table = $(source).closest('table');
-            var thisBulkcheck = $(table).find(deleteProperty);
+            var thisBulkcheck = $(table).find(JSPC.deleteProperty);
             $(thisBulkcheck).each(function (index, elem) {
                 elem.checked = source.checked;
-                markAffectedDelete($(this));
+                JSPC.markAffectedDelete($(this));
             })
         }
 
-        $(takeProperty).change(function () {
-            markAffectedTake($(this));
+        $(JSPC.takeProperty).change(function () {
+            JSPC.markAffectedTake($(this));
         });
-        $(deleteProperty).change(function () {
-            markAffectedDelete($(this));
+        $(JSPC.deleteProperty).change(function () {
+            JSPC.markAffectedDelete($(this));
         });
 
-        markAffectedTake = function (that) {
+        JSPC.markAffectedTake = function (that) {
             var indexOfTakeCheckbox = ($(that).closest('.la-replace').index());
             var numberOfCheckedTakeCheckbox = $(that).closest('td').find("[type='checkbox']:checked").length;
             var multiPropertyIndex = $(that).closest('tr').find('.la-copyElements-flex-container').index();
@@ -90,7 +90,7 @@
                 }
             }
         }
-        markAffectedDelete = function (that) {
+        JSPC.markAffectedDelete = function (that) {
             var indexOfDeleteCheckbox = ($(that).closest('.la-noChange').index());
             var targetElem = $(that).closest('tr').find('.la-colorCode-target');
             //  _
@@ -121,10 +121,10 @@
         }
 
 
-        $(takeProperty).each(function (index, elem) {
+        $(JSPC.takeProperty).each(function (index, elem) {
             if (elem.checked) {
-                markAffectedTake(elem)
+                JSPC.markAffectedTake(elem)
             }
         });
-    </asset:script>
+    </laser:script>
 </g:if>

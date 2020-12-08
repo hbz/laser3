@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code: "menu.admin.dataConsistency")}</title>
 </head>
 
@@ -79,7 +79,7 @@
     </form>
 </semui:modal>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.x button').on('click', function(){
 
         var key = $(this).attr('data-key')
@@ -136,7 +136,7 @@
             }
         });
     })
-</asset:script>
+</laser:script>
 
 </body>
 </html>

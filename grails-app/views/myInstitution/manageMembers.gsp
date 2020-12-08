@@ -2,20 +2,12 @@
 <laser:serviceInjection />
 
 <%
-    String title, memberPlural
-    if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
-        title = message(code: 'menu.institutions.manage_consortia')
-        memberPlural = message(code: 'consortium.member.plural')
-    }
-    else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
-        title = message(code: 'menu.institutions.manage_departments')
-        memberPlural = message(code: 'collective.member.plural')
-    }
+    String title = message(code: 'menu.institutions.manage_consortia'), memberPlural = message(code: 'consortium.member.plural')
 %>
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI">
+    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <title>${message(code: 'laser')} : ${title}</title>
 </head>
@@ -66,16 +58,8 @@
 <g:render template="/templates/filter/javascript" />
 <semui:messages data="${flash}"/>
     <%
-        List configShowFilter = []
-        List configShowTable = []
-        if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
-            configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property']]
-            configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
-        }
-        else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
-            configShowFilter = [['name', 'identifier'], ['property']]
-            configShowTable = ['name', 'mainContact', 'legalInformation', 'numberOfSubscriptions']
-        }
+        List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property']]
+        List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
     <semui:filter showFilterButton="true">
@@ -121,5 +105,6 @@
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
+
 </body>
 </html>

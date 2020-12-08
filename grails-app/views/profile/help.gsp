@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code: 'menu.user.help')}</title>
 </head>
 
@@ -91,8 +91,6 @@
 
 </body>
 </html>
-<asset:script type="text/javascript">
-    $(document).ready(function() {
-            $('.ui.accordion').accordion('exclusive', false);
-    });
-</asset:script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.ui.accordion').accordion('exclusive', false);
+</laser:script>

@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="semanticUI">
+		<meta name="layout" content="laser">
 		<title>${message(code:'laser')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
 	</head>
 
@@ -222,7 +222,7 @@
 
             </g:form>
 
-            <asset:script type="text/javascript">
+            <laser:script file="${this.getGroovyPageFileName()}">
                         $('button[data-xcg-pd]').on('click', function(){
 
                             var pd = $(this).attr('data-xcg-pd');
@@ -254,7 +254,7 @@
                                 }, async: false
                             });
                         })
-            </asset:script>
+            </laser:script>
 
         </semui:modal>
 
@@ -310,13 +310,13 @@
 
         </semui:modal>
 
-		<asset:script type="text/javascript">
+		<laser:script file="${this.getGroovyPageFileName()}">
 
-			   if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.CLASS}") {
-					$("#cust_prop_ref_data_name").show();
-			   } else {
-                     $("#cust_prop_ref_data_name").hide();
-                }
+            if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.CLASS}") {
+                $("#cust_prop_ref_data_name").show();
+            } else {
+                 $("#cust_prop_ref_data_name").hide();
+            }
 
 			$('#cust_prop_modal_select').change(function() {
 				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
@@ -356,7 +356,7 @@
 				}
 			});
 
-		</asset:script>
+		</laser:script>
 
 	</body>
 </html>

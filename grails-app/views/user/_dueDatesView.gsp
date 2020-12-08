@@ -21,11 +21,9 @@
             %{--</g:else>--}%
 
     </g:if>
-<asset:script type="text/javascript">
-    $('#noData')
-            .popup()
-    ;
-</asset:script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#noData').popup();
+</laser:script>
 
     <g:if test="${dueDates}">
         <div id="container-table">

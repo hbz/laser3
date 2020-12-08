@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="semanticUI">
+		<meta name="layout" content="laser">
 		<g:set var="entityName" value="${message(code: 'org.label')}" />
 		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
@@ -32,7 +32,7 @@
 									<i class="checkmark icon"></i>
 									<g:message code="default.button.create.label"/>
 								</button>
-								<input type="button" class="ui button js-click-control" onclick="window.history.back();" value="${message(code:'default.button.cancel.label')}" />
+								<input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
 							</div>
 						</fieldset>
 					</g:form>

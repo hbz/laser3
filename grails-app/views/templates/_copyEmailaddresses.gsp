@@ -7,7 +7,6 @@
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
-
     <div class="ui la-filter segment la-clear-before">
         <div class="field">
             <div>
@@ -55,63 +54,30 @@
         <div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>
-        <button class="ui icon button right floated" onclick="copyToClipboard()">
+        <button class="ui icon button right floated" onclick="JSPC.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
-        <button class="ui icon button right floated" onclick="copyToEmailProgram()">
+        <button class="ui icon button right floated" onclick="JSPC.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
         <br />
     </div>
 
-    <asset:script type="text/javascript">
-            var jsonOrgIdList
-        // modals
-        $("*[data-semui='modal']").click(function() {
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
+        JSPC.jsonOrgIdList = null
 
-            var href = $(this).attr('data-href')
-            if (! href) {
-                href = $(this).attr('href')
-            }
-
-             if($(this).attr('data-orgIdList')){
-                jsonOrgIdList = $(this).attr('data-orgIdList').split(',');
-            }else {
-                jsonOrgIdList = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
-            }
-            $(href + '.ui.modal').modal({
-                onVisible: function() {
-                    updateTextArea();
-                    // $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                },
-                detachable: true,
-                autofocus: false,
-                closable: false,
-                transition: 'scale',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show')
-        });
-
-
-        $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
-        $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
-        $("#privateContacts").change(function() { updateTextArea(); });
-        $("#publicContacts").change(function() { updateTextArea(); });
-
-        function copyToEmailProgram() {
+        JSPC.copyToEmailProgram = function () {
             var emailAdresses = $("#emailAddressesTextArea").val();
-            window.location.href = "mailto:"+emailAdresses;
+            window.location.href = "mailto:" + emailAdresses;
         }
 
-        function copyToClipboard() {
+        JSPC.copyToClipboard = function () {
             $("#emailAddressesTextArea").select();
             document.execCommand("copy");
         }
 
-        function updateTextArea() {
+        JSPC.updateTextArea = function () {
             var isPrivate = $("#privateContacts").is(":checked")
             var isPublic = $("#publicContacts").is(":checked")
             $("#emailAddressesTextArea").val("")
@@ -119,14 +85,28 @@
 
             $.ajax({
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
-                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + jsonOrgIdList,
+                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.jsonOrgIdList,
                 success: function (data) {
                     $("#emailAddressesTextArea").val(data.join('; '));
                 }
             });
-
         }
-    </asset:script>
+
+        JSPC.callbacks.modal.show.${modalID ?: 'copyEmailaddresses_ajaxModal'} = function(trigger) {
+            if ($(trigger).attr('data-orgIdList')) {
+                JSPC.jsonOrgIdList = $(trigger).attr('data-orgIdList').split(',');
+            } else {
+                JSPC.jsonOrgIdList = JSPC.jsonOrgIdListDefault;
+            }
+            JSPC.updateTextArea();
+        };
+
+        $("#prsFunctionMultiSelect").change(function()  { JSPC.updateTextArea(); });
+        $("#prsPositionMultiSelect").change(function()  { JSPC.updateTextArea(); });
+        $("#privateContacts").change(function()         { JSPC.updateTextArea(); });
+        $("#publicContacts").change(function()          { JSPC.updateTextArea(); });
+
+    </laser:script>
 
 </semui:modal>
 <!-- _copyEmailAddresses.gsp -->

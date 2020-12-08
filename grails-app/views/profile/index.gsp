@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code: 'profile')}</title>
 </head>
 
@@ -87,10 +87,7 @@
                 </div>
 
             </g:form>
-            <asset:script type="text/javascript">
 
-
-            </asset:script>
         </div><!-- .segment -->
 
     </div><!-- .column -->
@@ -529,8 +526,16 @@
 
 </div><!-- .grid -->
 
-<asset:script type="text/javascript">
-    $(document).ready(function () {
+<laser:script file="${this.getGroovyPageFileName()}">
+
+    JSPC.setupUnitAmount = function (type, amount) {
+        console.log(type);
+        type.children().remove()
+        for (var i = 1; i <= amount; i++) {
+            type.append('<option value="' + i + '">' + i + '</option>');
+        }
+    }
+
                     $('.updateProfile')
                             .form({
                         on: 'blur',
@@ -601,6 +606,7 @@
                             }
                         }
                     });
+
         $('#passwordToggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
         })
@@ -625,13 +631,13 @@
             if (unit) {
                 switch (unit) {
                     case 'Day':
-                        setupUnitAmount(val,7)
+                        JSPC.setupUnitAmount(val,7)
                         break;
                     case 'Week':
-                        setupUnitAmount(val,4)
+                        JSPC.setupUnitAmount(val,4)
                         break;
                     case 'Month':
-                        setupUnitAmount(val,12)
+                        JSPC.setupUnitAmount(val,12)
                         break
                     default :
                         console.log('Impossible selection made!');
@@ -649,16 +655,8 @@
         });
 
         $('#isRemindByEmail').trigger('change');
-    });
 
-    function setupUnitAmount(type, amount) {
-        console.log(type);
-        type.children().remove()
-        for (var i = 1; i <= amount; i++) {
-            type.append('<option value="' + i + '">' + i + '</option>');
-        }
-    }
-</asset:script>
+</laser:script>
 
 </body>
 </html>

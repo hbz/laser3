@@ -6,7 +6,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} :  ${message(code: 'surveyInfo.copySurveyCostItems')}</title>
 
 </head>
@@ -490,7 +490,7 @@ ${surveyInfo.name}
         </div>
     </g:form>
 </semui:form>
-<script language="JavaScript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('#costItemsToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', true)
@@ -498,6 +498,6 @@ ${surveyInfo.name}
             $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', false)
         }
     })
-</script>
+</laser:script>
 </body>
 </html>

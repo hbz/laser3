@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.admin.systemEvents')}</title>
 </head>
 
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </form>
-        <asset:script type="text/javascript">
+        <laser:script file="${this.getGroovyPageFileName()}">
             $('#filterButton').on('click', function() {
 
                 var fCat = $('#filter_category').val()
@@ -73,7 +73,7 @@
             })
 
             $('#filterButton').trigger('click')
-        </asset:script>
+        </laser:script>
     </semui:filter>
 
 <div>

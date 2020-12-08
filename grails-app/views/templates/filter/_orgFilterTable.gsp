@@ -300,7 +300,7 @@
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
-                    <g:if test="${contextService.user.hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
+                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
@@ -403,7 +403,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <td class="center aligned">
                     <div class="la-flexbox">
-                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.org)
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
@@ -431,7 +431,7 @@
                         <div class="la-flexbox">
 
                             <g:set var="participantSurveys"
-                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.org, org, new Date(System.currentTimeMillis()))}"/>
+                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
                             <g:set var="numberOfSurveys"
                                    value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
@@ -507,29 +507,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('country')}">
                 <td>${org.country?.getI10n('value')}</td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('consortiaToggle')}">
-                <td>
-                <%-- here: switch if in consortia or not --%>
-                    <g:if test="${!consortiaMemberIds.contains(org.id)}">
-                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                data-content="${message(code: 'org.consortiaToggle.add.label')}"
-                                controller="organisation"
-                                action="toggleCombo" params="${params + [direction: 'add', fromOrg: org.id]}">
-                            <i class="plus icon"></i>
-                        </g:link>
-                    </g:if>
-                    <g:elseif test="${consortiaMemberIds.contains(org.id)}">
-                        <g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
-                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [org.name])}"
-                                data-confirm-term-how="unlink"
-                                data-content="${message(code: 'org.consortiaToggle.remove.label')}"
-                                controller="organisation" action="toggleCombo"
-                                params="${params + [direction: 'remove', fromOrg: org.id]}">
-                            <i class="minus icon"></i>
-                        </g:link>
-                    </g:elseif>
-                </td>
-            </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('addSubMembers')}">
                 <g:if test="${subInstance?.packages}">
@@ -537,13 +514,13 @@
                         <g:checkBox type="text" id="selectedPackage_${org.id + it.pkg.id}"
                                     name="selectedPackage_${org.id + it.pkg.id}" value="1"
                                     checked="false"
-                                    onclick="checkselectedPackage(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
+                                    onclick="JSPC.checkselectedPackage(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
                     </g:each>
                     </td>
                     <td><g:each in="${subInstance?.packages}">
                         <g:checkBox type="text" id="selectedIssueEntitlement_${org.id + it.pkg.id}"
                                     name="selectedIssueEntitlement_${org.id + it.pkg.id}" value="1" checked="false"
-                                    onclick="checkselectedIssueEntitlement(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
+                                    onclick="JSPC.checkselectedIssueEntitlement(${org.id + it.pkg.id});"/> ${it.pkg.name}<br />
                     </g:each>
                     </td>
                 </g:if><g:else>
@@ -705,13 +682,13 @@
                                 (${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notimeShort'))})
                             </g:if>
 
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
+                            <g:link onclick="JSPC.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
+                            <g:link onclick="JSPC.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
                                     class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
@@ -778,7 +755,7 @@
 </table>
 
 <g:if test="${tmplShowCheckbox}">
-    <script language="JavaScript">
+    <laser:script file="${this.getGroovyPageFileName()}">
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
@@ -788,13 +765,12 @@
         })
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
 
-        function checkselectedIssueEntitlement(selectedid) {
+        JSPC.checkselectedIssueEntitlement = function (selectedid) {
             if ($('#selectedIssueEntitlement_' + selectedid).prop('checked')) {
                 $('#selectedPackage_' + selectedid).prop('checked', false);
             }
         }
-
-        function checkselectedPackage(selectedid) {
+        JSPC.checkselectedPackage = function (selectedid) {
             if ($('#selectedPackage_' + selectedid).prop('checked')) {
                 $('#selectedIssueEntitlement_' + selectedid).prop('checked', false);
             }
@@ -802,12 +778,11 @@
         }
 
         </g:if>
-
-    </script>
+    </laser:script>
 
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-    <asset:script type="text/javascript">
+    <laser:script file="${this.getGroovyPageFileName()}">
    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();
 
@@ -822,8 +797,8 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                ajaxPostFunc();
-                                setupCalendar();
+                                JSPC.callbacks.dynPostFunc();
+                                JSPC.setupCalendar();
                             },
                             detachable: true,
                             closable: false,
@@ -836,7 +811,7 @@
                     })
                 });
 
-        function addEditSurveyCostItem(id, surveyConfigID, participant, costItem) {
+        JSPC.addEditSurveyCostItem = function (id, surveyConfigID, participant, costItem) {
             event.preventDefault();
             $.ajax({
                 url: "<g:createLink controller='survey' action='editSurveyCostItem'/>",
@@ -866,6 +841,6 @@
             })
         };
 
-    </asset:script>
+    </laser:script>
 </g:if>
 

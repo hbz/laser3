@@ -270,7 +270,7 @@
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
                             class="ui button blue">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
-                    <script>
+                    <laser:script file="${this.getGroovyPageFileName()}">
                         $('#subscription-info-toggle').on('click', function () {
                             $("#subscription-info").transition('slide down');
                             if ($("#subscription-info").hasClass('visible')) {
@@ -279,7 +279,7 @@
                                 $(this).html('Lizenzinformationen ausblenden <i class="ui angle double up icon"></i>')
                             }
                         })
-                    </script>
+                    </laser:script>
                 </div>
 
             </div>
@@ -449,7 +449,7 @@
                                                     <g:if test="${pair.propertySet}">
                                                         <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
                                                             <i class="ui angle double down icon"></i></button>
-                                                        <asset:script type="text/javascript">
+                                                        <laser:script file="${this.getGroovyPageFileName()}">
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
@@ -460,7 +460,7 @@
                                                             $(this).html('<i class="ui angle double up icon"></i>')
                                                         }
                                                     })
-                                                        </asset:script>
+                                                        </laser:script>
                                                     </g:if>
                                                 </td>
                                             </tr>
@@ -1096,8 +1096,8 @@
     <br />
 </g:if>
 
-<asset:script type="text/javascript">
-                                   $('body #participation').editable({
+<laser:script file="${this.getGroovyPageFileName()}">
+                                   $('body #participation').editable('destroy').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
                                                 var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
@@ -1132,4 +1132,4 @@
        </g:each>
     </g:if>
 
-</asset:script>
+</laser:script>

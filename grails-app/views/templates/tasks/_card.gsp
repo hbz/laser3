@@ -7,7 +7,7 @@
     <g:each in="${tasks}" var="tsk">
         <div class="ui grid">
             <div class="twelve wide column summary">
-                <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+                <a onclick="JSPC.taskedit(${tsk?.id});">${tsk?.title}</a>
                 <br />
                 <div class="content">
                     ${message(code:'task.endDate.label')}
@@ -24,24 +24,9 @@
     </g:each>
 </semui:card>
 
-<asset:script type="text/javascript">
-    function taskedit(id) {
-
-        $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalEditTask").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function() {
-                        $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                        ajaxPostFunc();
-                        $('.dropdown').dropdown();
-                    }
-                }).modal('show')
-            }
-        });
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.taskedit = function (id) {
+        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+        func();
     }
-</asset:script>
+</laser:script>

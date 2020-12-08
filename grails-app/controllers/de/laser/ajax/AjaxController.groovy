@@ -764,7 +764,7 @@ class AjaxController {
             redirect(controller:"propertyDefinition", action:"create")
         }
         else {
-            Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
 
             render(template: "/templates/properties/custom", model: [
                     ownobj: owner,
@@ -826,7 +826,7 @@ class AjaxController {
                 ])
               }
               else {
-                  Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
+                  Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
 
                   Map<String, Object> modelMap =  [
                           ownobj                : owner,
@@ -965,8 +965,8 @@ class AjaxController {
                       tenant          : tenant,
                       newProp         : newProp,
                       error           : error,
-                      contextOrg      : contextService.org,
-                      custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
+                      contextOrg      : contextService.getOrg(),
+                      propertyWrapper: "private-property-wrapper-${tenant.id}", // JS markup id
                       prop_desc       : type.descr // form data
               ])
           }
@@ -1096,7 +1096,7 @@ class AjaxController {
                 ])
             }
             else {
-                Map<String, Object>  allPropDefGroups = property.owner._getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextOrg)
 
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
@@ -1181,7 +1181,7 @@ class AjaxController {
           ])
         }
         else {
-            Map<String, Object>  allPropDefGroups = owner._getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object>  allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
 
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
@@ -1238,7 +1238,7 @@ class AjaxController {
           ])
         }
         else {
-            Map<String, Object> allPropDefGroups = owner._getCalculatedPropDefGroups(contextOrg)
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,
@@ -1281,8 +1281,8 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            contextOrg: contextService.org,
-            custom_props_div: "custom_props_div_${tenant.id}",  // JS markup id
+            contextOrg: contextService.getOrg(),
+            propertyWrapper: "private-property-wrapper-${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
   }
@@ -1303,12 +1303,12 @@ class AjaxController {
         log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
         Map<String, Object> result = [:]
-        result.user = contextService.user
-        result.institution = contextService.org
+        result.user = contextService.getUser()
+        result.institution = contextService.getOrg()
         flash.error = ''
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
+            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(401)
             return;
         }
@@ -1330,12 +1330,11 @@ class AjaxController {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1356,12 +1355,12 @@ class AjaxController {
         log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
 
         Map<String, Object> result = [:]
-        result.user = contextService.user
-        result.institution = contextService.org
+        result.user = contextService.getUser()
+        result.institution = contextService.getOrg()
         flash.error = ''
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to access ${contextService.org.name} pages. Please request access on the profile page"
+            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(401)
             return
         }
@@ -1390,12 +1389,11 @@ class AjaxController {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.user, contextService.org, false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false).size()
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }

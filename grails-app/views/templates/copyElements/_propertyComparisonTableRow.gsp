@@ -30,7 +30,7 @@
     </g:if>
 %{--th ACTION--}%
     <th class="center aligned">
-        <input type="checkbox" class="select-all" onclick="selectAllTake(this);" checked="${true}"/>
+        <input type="checkbox" class="select-all" onclick="JSPC.selectAllTake(this);" checked="${true}"/>
     </th>
     <g:if test="${!copyObject}">
         <th class="six wide center aligned">
@@ -53,7 +53,7 @@
     %{--th DELETE:--}%
         <th>
             <g:if test="${targetObject}">
-                <input type="checkbox" data-action="delete" class="select-all" onclick="selectAllDelete(this);"/>
+                <input type="checkbox" data-action="delete" class="select-all" onclick="JSPC.selectAllDelete(this);"/>
             </g:if>
         </th>
     </g:if>

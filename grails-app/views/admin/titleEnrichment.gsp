@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : Titles Enrichment</title>
 </head>
 
@@ -46,7 +46,7 @@
     </div>
 </g:form>
 
-<asset:script type="text/javascript">
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
     });
@@ -55,7 +55,7 @@
         var name = e.target.files[0].name;
         $('input:text', $(e.target).parent()).val(name);
     });
-</asset:script>
+</laser:script>
 
 </body>
 </html>

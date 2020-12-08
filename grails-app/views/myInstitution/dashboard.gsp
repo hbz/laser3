@@ -1,10 +1,9 @@
 <%@ page import="de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
-<g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
+
 <!doctype html>
 <html>
-<html>
     <head>
-        <meta name="layout" content="semanticUI"/>
+        <meta name="layout" content="laser">
         <title>${message(code:'laser')} : ${message(code:'menu.institutions.dash')}</title>
     </head>
     <body>
@@ -16,7 +15,6 @@
         </semui:breadcrumbs>
         <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name}</h1>
-
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -55,7 +53,6 @@
         </div>
 
         <semui:messages data="${flash}" />
-
         <br />
     <%-- should be made overridable by pagination setting --%>
     <%
@@ -121,7 +118,6 @@
 
 
     </div><!-- secondary -->
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <g:render template="/user/dueDatesView"
@@ -206,7 +202,6 @@
                 </div>
             </div>
         </g:if>
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
             <div class="la-float-right">
                 <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
@@ -257,7 +252,6 @@
                 <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
             </div>
         </div>
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
@@ -342,13 +336,12 @@
         </div>--%>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <a onclick="taskcreate();" class="ui icon button">
+                        <a onclick="JSPC.taskcreate();" class="ui icon button">
                             ${message(code:'task.create.new')}
                         </a>
                     </div>
@@ -372,7 +365,7 @@
                             <div class="meta">
                                 <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
                             </div>
-                            <a class="header" onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+                            <a class="header" onclick="JSPC.taskedit(${tsk?.id});">${tsk?.title}</a>
 
                             <div class="description">
                                 <g:if test="${tsk.description}">
@@ -422,7 +415,6 @@
 
         </g:if>
 
-
         <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
@@ -436,50 +428,14 @@
                     <g:render template="surveys"/>
         </div>
 
-    <asset:script type="text/javascript">
-        function taskcreate() {
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
 
-            $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="createTask"/>',
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalCreateTask").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalCreateTask');
-                            r2d2.initDynamicXEditableStuff('#modalCreateTask');
-
-                            ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
+        JSPC.taskedit = function(id) {
+            var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+            func();
         }
-        function taskedit(id) {
 
-            $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="editTask"/>?id='+id,
-                success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalEditTask").remove();
-
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal({
-                        onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#modalEditTask');
-                            r2d2.initDynamicXEditableStuff('#modalEditTask');
-
-                            ajaxPostFunc()
-                        }
-                    }).modal('show');
-                }
-            });
-        }
-    </asset:script>
-        <asset:script type="text/javascript">
-            $(document).ready( function(){
                 $('.tabular.menu .item').tab();
                 /* $('.item .widget-content').readmore({
                     speed: 250,
@@ -491,10 +447,12 @@
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {
                         //location.reload();
-                 });
+                });
 
+    </laser:script>
 
-            })
-        </asset:script>
+    <semui:debugInfo>
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </semui:debugInfo>
     </body>
 </html>

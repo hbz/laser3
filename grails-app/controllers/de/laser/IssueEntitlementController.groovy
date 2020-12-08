@@ -1,6 +1,7 @@
 package de.laser
 
-
+import de.laser.auth.User
+import de.laser.helper.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
  
@@ -49,9 +50,8 @@ class IssueEntitlementController  {
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
 
       params.max = Math.min(params.max ? params.int('max') : 10, 100)
-      def paginate_after = params.paginate_after ?: 19;
-      result.max = params.max
-      result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+      SwissKnife.setPaginationParams(result, params, (User) result.user)
 
       result.editable = result.issueEntitlementInstance.subscription.isEditableBy(result.user)
 

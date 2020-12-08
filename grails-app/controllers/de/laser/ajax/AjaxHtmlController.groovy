@@ -22,6 +22,8 @@ import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.auth.User
+import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -46,6 +48,7 @@ class AjaxHtmlController {
     AccessService accessService
     GokbService gokbService
     SubscriptionService subscriptionService
+    LicenseControllerService licenseControllerService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -67,7 +70,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def loadThirdLevel() {
-        Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.org,queried:params.queried]
+        Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.getOrg(),queried:params.queried]
         switch(result.secondLevel) {
             case 'orgProperty':
                 result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
@@ -84,7 +87,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getGraphsForGeneral() {
         def options = JSON.parse(params.requestOptions)
-        Map<String,Object> result = [:], configMap = [institution: contextService.org,requestParam: options.requestParam]
+        Map<String,Object> result = [:], configMap = [institution: contextService.getOrg(),requestParam: options.requestParam]
         if(options.groupOptions) {
             def groupOptions = options.groupOptions
             if(groupOptions.contains(","))
@@ -99,13 +102,13 @@ class AjaxHtmlController {
         if(configMap.groupOptions)
             result.growth = reportingService.generateGrowth(configMap)
         result.requestObject = configMap.requestParam
-        log.debug(result)
+        log.debug(result.toMapString())
         render view: '/reporting/_generalGraphs', model: result
     }
 
     @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
-        Map<String, Object> result = [institution:contextService.org]
+        Map<String, Object> result = [institution:contextService.getOrg()]
         def options = JSON.parse(params.requestOptions)
 
         if (params.costItem) {
@@ -115,7 +118,7 @@ class AjaxHtmlController {
             result.entry = entry
             result.displayConfig = options.displayConfiguration
         }
-        log.debug(result)
+        log.debug(result.toMapString())
         render view: '/reporting/_subscriptionGraphs', model: result
     }
 
@@ -123,7 +126,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def getLinks() {
-        Map<String,Object> result = [user:contextService.user,contextOrg:contextService.org,subscriptionLicenseLink:params.subscriptionLicenseLink]
+        Map<String,Object> result = [user:contextService.getUser(),contextOrg:contextService.getOrg(),subscriptionLicenseLink:params.subscriptionLicenseLink]
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
@@ -133,6 +136,7 @@ class AjaxHtmlController {
         }
         else if(entry instanceof License) {
             result.license = (License) entry
+            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() ? "true" : "false"
         }
         List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
         if(result.subscriptionLicenseLink) {
@@ -146,7 +150,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getPackageData() {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
-        Org contextOrg = contextService.org
+        Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
         ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true) //it is not intended to use several api sources, we take the first one
         result.subscription.packages.each { SubscriptionPackage sp ->
@@ -163,16 +167,32 @@ class AjaxHtmlController {
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
-        result.editmode = result.subscription.isEditableBy(contextService.user)
+        result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
     }
 
     @Secured(['ROLE_USER'])
     def getProperties() {
-        Org contextOrg = contextService.org
-        Subscription subscription = Subscription.get(params.subscription)
-        render template: "/subscription/properties", model: [subscription: subscription, showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription), contextOrg: contextOrg]
+        Org contextOrg = contextService.getOrg()
+        User user = contextService.getUser()
+        if(params.subscription) {
+            Subscription subscription = Subscription.get(params.subscription)
+            render template: "/subscription/properties", model: [calledFrom: 'subscription',
+                                                                 subscription: subscription,
+                                                                 showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription),
+                                                                 contextOrg: contextOrg,
+                                                                 editable: subscription.isEditableBy(user)]
+        }
+        else if(params.license) {
+            License license = License.get(params.license)
+            render template: "/license/properties", model: [calledFrom: 'license',
+                                                            license: license,
+                                                            showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license),
+                                                            contextOrg: contextOrg,
+                                                            institution: contextOrg,
+                                                            editable: license.isEditableBy(user)]
+        }
     }
 
     @Secured(['ROLE_USER'])

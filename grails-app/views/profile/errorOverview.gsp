@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code: 'menu.user.errorReport')}</title>
 </head>
 
@@ -134,13 +134,11 @@
             </tbody>
         </table>
 
-        <asset:script type="text/javascript">
-            $(function(){
-                $('tr[class*=ticket-row] .button').click( function(){
-                    $('.' + $(this).attr('data-target')).toggle()
-                })
+        <laser:script file="${this.getGroovyPageFileName()}">
+            $('tr[class*=ticket-row] .button').click( function(){
+                $('.' + $(this).attr('data-target')).toggle()
             })
-        </asset:script>
+        </laser:script>
     </div>
 </div>
 

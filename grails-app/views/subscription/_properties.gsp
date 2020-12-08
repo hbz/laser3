@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.helper.AjaxUtils; de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -26,12 +26,6 @@
                         prop_desc: PropertyDefinition.SUB_PROP,
                         ownobj: subscription,
                         custom_props_div: "member_props_div"]}"/>
-
-                <%--<asset:script type="text/javascript">
-                    $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${institution.id}", ${institution.id});
-                    });
-                </asset:script>--%>
             </div>
         </div>
     </div>
@@ -41,7 +35,7 @@
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscription._getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -119,17 +113,15 @@
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (controllerName == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
+                    editable: (calledFrom == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
     <%--</div>--%>
 
-    <asset:script type="text/javascript">
-    $(document).ready(function(){
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
-    });
-    </asset:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
+        </laser:script>
 
 </div><!--.card -->
 
@@ -139,18 +131,17 @@
 <div class="ui card la-dl-no-table ">
     <div class="content">
         <h5 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h5>
-        <div id="custom_props_div_${contextOrg.id}">
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <div id="${propertyWrapper}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
-                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                    propertyWrapper: "${propertyWrapper}",
                     tenant: contextOrg]}"/>
 
-            <asset:script type="text/javascript">
-                    $(document).ready(function(){
-                           c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_${contextOrg.id}", ${contextOrg.id});
-                    });
-            </asset:script>
+            <laser:script file="${this.getGroovyPageFileName()}">
+               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+            </laser:script>
         </div>
     </div>
 </div>

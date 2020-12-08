@@ -47,6 +47,7 @@ import de.laser.SurveyService
 import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
+import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
@@ -57,6 +58,7 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SwissKnife
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
@@ -335,9 +337,8 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.max = params.max ?: result.user.getDefaultPageSizeAsInteger()
-            result.offset = params.offset ?: 0
-            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id]
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
+            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id.toString()] //persistentObjectId is of type String
             Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
             result.historyLinesTotal = historyLines.size()
             result.historyLines = historyLines.drop(result.offset).take(result.max)
@@ -351,8 +352,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.max = params.max ?: result.user.getDefaultPageSizeAsInteger()
-            result.offset = params.offset ?: 0
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
             Map<String, Object> baseParams = [sub: result.subscription, stats: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]
             Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
             result.todoHistoryLinesTotal = todoHistoryLines.size()
@@ -504,7 +504,7 @@ class SubscriptionControllerService {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
         Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
-        result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+        result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -739,7 +739,7 @@ class SubscriptionControllerService {
             if(result.parentLicenses) {
                 result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
             }
-            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
             [result:result,status:STATUS_OK]
         }
     }
@@ -811,7 +811,8 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             result.validPackages = result.subscription.packages
-            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+            result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren)',[filteredSubChildren:result.filteredSubChilds.collect { row -> row.sub }])
             [result:result,status:STATUS_OK]
         }
     }
@@ -1066,7 +1067,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.filteredSubChilds = getFilteredSubscribers(controller,params,result.subscription)
+            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
             if(params.tab == 'providerAgency') {
                 result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
                 result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
@@ -1355,8 +1356,7 @@ class SubscriptionControllerService {
                 result.offset = 0
             }
             else {
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-                result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
             }
             boolean filterSet = false
             List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
@@ -1496,8 +1496,7 @@ class SubscriptionControllerService {
                 result.offset = 0
             }
             else {
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
-                result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
             }
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
@@ -2317,7 +2316,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
-    List<Map> getFilteredSubscribers(SubscriptionController controller, GrailsParameterMap params, Subscription parentSub) {
+    List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         params.remove("max")
         params.remove("offset")
@@ -2357,7 +2356,7 @@ class SubscriptionControllerService {
 
     Map<String,Object> setCopyResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        result.user = contextService.user
+        result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         if (params.sourceObjectId == "null")
             params.remove("sourceObjectId")
@@ -2384,18 +2383,18 @@ class SubscriptionControllerService {
 
         Map<String, Object> result = [:]
 
-        result.user = contextService.user
+        result.user = contextService.getUser()
         result.subscription = Subscription.get(params.id)
 
         if (!params.id && params.subscription) {
             result.subscription = Subscription.get(params.subscription)
         }
-        result.subscriptionConsortia = result.subscription.getConsortia()
-        result.contextOrg = contextService.org
+        result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.institution = result.subscription ? result.subscription.subscriber : result.contextOrg //TODO temp, remove the duplicate
+        result.institution = result.subscription ? result.subscription?.subscriber : result.contextOrg //TODO temp, remove the duplicate
 
         if (result.subscription) {
+            result.subscriptionConsortia = result.subscription.getConsortia()
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
             result.hasPrevious = links.prevLink.size() > 0

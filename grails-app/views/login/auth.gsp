@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} : Login</title>
 </head>
 
@@ -48,10 +48,8 @@
     </semui:card>
     </div>
 </div>
-<asset:script type="text/javascript">
-    (function () {
-        document.forms['loginForm'].elements['username'].focus();
-    })();
+<laser:script file="${this.getGroovyPageFileName()}">
+    document.forms['loginForm'].elements['username'].focus();
 
     $("#forgotten").click(function(e){
         e.preventDefault();
@@ -62,6 +60,6 @@
             $("#forgottenPassword").submit();
         }
     });
-</asset:script>
+</laser:script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'default.subscription.label')}</title>
 </head>
 
@@ -43,9 +43,9 @@
 </g:form>
 
 </body>
-<asset:script type="text/javascript">
-    $(document).ready(function() {
-        var tippsToAdd = [], tippsToDelete = [];
+<laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.tippsToAdd = [];
+        JSPC.tippsToDelete = [];
 
         $(".select-all").click(function() {
             var id = $(this).parents("table").attr("id");
@@ -71,21 +71,21 @@
             if(this.checked) {
                 if(corresp.attr("data-empty")) {
                     $("tr[data-index='"+index+"'").addClass("positive");
-                    if(tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId")) < 0)
-                        tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
+                    if(JSPC.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId")) < 0)
+                        JSPC.tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
                 }
                 else if(corresp.find(".bulkcheck:checked")) {
-                    var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                    if (~delIdx) tippsToDelete.splice(delIdx,1);
+                    var delIdx = JSPC.tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
+                    if (~delIdx) JSPC.tippsToDelete.splice(delIdx,1);
                     $("tr[data-index='"+index+"'").removeClass("negative").addClass("positive");
                     corresp.find(".bulkcheck:checked").prop("checked", false);
-                    tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
+                    JSPC.tippsToAdd.push($(this).parents("tr").attr("data-gokbId"));
                 }
             }
             else {
                 $("tr[data-index='"+index+"'").removeClass("positive");
-                var delIdx = tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToAdd.splice(delIdx,1);
+                var delIdx = JSPC.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
+                if (~delIdx) JSPC.tippsToAdd.splice(delIdx,1);
             }
         });
 
@@ -93,24 +93,22 @@
             var index = $(this).parents("tr").attr("data-index");
             var corresp = $("#source tr[data-index='"+index+"']");
             if(this.checked) {
-                var delIdx = tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToAdd.splice(delIdx,1);
+                var delIdx = JSPC.tippsToAdd.indexOf($(this).parents("tr").attr("data-gokbId"));
+                if (~delIdx) JSPC.tippsToAdd.splice(delIdx,1);
                 $("tr[data-index='"+index+"'").removeClass("positive").addClass("negative");
                 corresp.find(".bulkcheck:checked").prop("checked", false);
-                tippsToDelete.push($(this).parents("tr").attr("data-gokbId"));
+                JSPC.tippsToDelete.push($(this).parents("tr").attr("data-gokbId"));
             }
             else {
                 $("tr[data-index='"+index+"'").removeClass("negative");
-                var delIdx = tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
-                if (~delIdx) tippsToDelete.splice(delIdx,1);
+                var delIdx = JSPC.tippsToDelete.indexOf($(this).parents("tr").attr("data-gokbId"));
+                if (~delIdx) JSPC.tippsToDelete.splice(delIdx,1);
             }
         });
 
         $("#renewEntitlements").submit(function(){
-            $("#tippsToAdd").val(tippsToAdd.join(','));
-            $("#tippsToDelete").val(tippsToDelete.join(','));
+            $("#tippsToAdd").val(JSPC.tippsToAdd.join(','));
+            $("#tippsToDelete").val(JSPC.tippsToDelete.join(','));
         });
-
-    });
-</asset:script>
+</laser:script>
 </html>

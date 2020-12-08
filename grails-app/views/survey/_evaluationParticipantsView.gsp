@@ -493,7 +493,7 @@
                                           multiple="true"
                                           value="${RDStore.SUBSCRIPTION_CURRENT.id}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          onchange="adjustDropdown()"/>
+                                          onchange="JSPC.adjustDropdown()"/>
                         </div>
                         <br />
                         <br id="element-vor-target-dropdown" />
@@ -516,8 +516,8 @@
 
 </semui:form>
 
+<laser:script file="${this.getGroovyPageFileName()}">
 <g:if test="${showCheckbox}">
-    <script language="JavaScript">
         $('#orgListToggler').click(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
@@ -525,20 +525,16 @@
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
-
-    </script>
-
 </g:if>
-
 <g:if test="${showTransferFields}">
-    <asset:script type="text/javascript">
-     $(document).ready(function(){
-       adjustDropdown()
-    });
+    JSPC.adjustDropdown = function () {
 
-    function adjustDropdown() {
-        var status = $("#status").val();
-        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'+'?status='+JSON.stringify(status)
+        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '?' + status
+        }
 
         $.ajax({
             url: url,
@@ -578,5 +574,8 @@
             }, async: false
         });
     }
-    </asset:script>
+
+    JSPC.adjustDropdown()
 </g:if>
+</laser:script>
+

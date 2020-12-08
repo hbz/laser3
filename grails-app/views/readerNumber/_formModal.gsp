@@ -66,8 +66,7 @@
 
     </g:form>
 
-    <asset:script type="text/javascript">
-        $(document).ready(function() {
+    <laser:script file="${this.getGroovyPageFileName()}">
             $(".referenceGroup").dropdown({
                 allowAdditions: true,
                 clearable: true
@@ -107,8 +106,6 @@
                     }
                  }
             });
-        });
-
-    </asset:script>
+    </laser:script>
 
 </semui:modal>

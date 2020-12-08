@@ -5,14 +5,10 @@
 <div class="field">
     <label for="filterPropDef">${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
-        <span class="ui  popup ">
+        <span class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
         </span>
     </label>
-    <asset:script type="text/javascript">
-        $(".la-popup").popup({
-        });
-    </asset:script>
     <%-- value="${params.filterPropDef}" --%>
     <semui:dropdown id="filterPropDef" name="filterPropDef"
                     class="la-filterPropDef"
@@ -24,20 +20,7 @@
                                  "${it}"
                     }}"
                     optionValue="${{ it.name_de }}"
-                    noSelection="${message(code: 'default.select.choose.label')}"/>
-    <asset:script type="text/javascript">
-        $(function() {
-            $.each($(".la-filterPropDef"), function(i, dropdown) {
-                var val = $(dropdown).find(".item.active").data("value");
-                var text = $(dropdown).find(".item.active").html();
-                if (val != undefined) {
-                    $(dropdown)
-                            .dropdown("set value", val)
-                            .dropdown("set text", text);
-                }
-            });
-        });
-    </asset:script>
+                    noSelection="${message(code: 'default.select.choose.label')}" />
 </div>
 
 <g:if test="${!hideFilterProp}">
@@ -51,12 +34,20 @@
 
 
 
-<script>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $(".la-popup").popup({});
 
+        $.each($(".la-filterPropDef"), function(i, dropdown) {
+            var val = $(dropdown).find(".item.active").data("value");
+            var text = $(dropdown).find(".item.active").html();
+            if (val != undefined) {
+                $(dropdown)
+                        .dropdown("set value", val)
+                        .dropdown("set text", text);
+            }
+        });
 
-    $(function () {
-
-        var propertyFilterController = {
+        JSPC.propertyFilterController = {
 
             updateProp: function (selOpt) {
 
@@ -153,7 +144,7 @@
                 // register change event
                 $('#filterPropDef').change(function (e) {
                     var selOpt = $('option:selected', this);
-                    propertyFilterController.updateProp(selOpt);
+                    JSPC.propertyFilterController.updateProp(selOpt);
                 });
              */
                 $(document).ready(function() {
@@ -165,7 +156,7 @@
                             value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                             if ((typeof $selectedItem != 'undefined')){
                                 var selOpt = $selectedItem;
-                                propertyFilterController.updateProp(selOpt);
+                                JSPC.propertyFilterController.updateProp(selOpt);
                             }
                             else {
                                 $('#filterProp').dropdown ('clear', true)
@@ -186,24 +177,15 @@
                     // sets the URL Parameter on the hidden input field
                     var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
-
-
-                    propertyFilterController.updateProp(selOpt);
-
+                    JSPC.propertyFilterController.updateProp(selOpt);
 
                     // set filterProp by params
                     var paramFilterProp = "${params.filterProp}";
 
                     $('#filterProp').val(paramFilterProp);
-
-
-
             }
         }
+        JSPC.propertyFilterController.init()
 
-
-        propertyFilterController.init()
-    });
-
-</script>
+</laser:script>
 <!-- O: templates/properties/_genericFilter -->

@@ -93,7 +93,9 @@
 
         </select>
     </div>
-
+    <label for="license">
+        Das ist das Label
+    </label>
     <select  id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">>
         <option value="1116">Allianzlizenz</option>
         <option value="1214">Deal-Lizenz</option>
@@ -113,8 +115,8 @@
 
 
 
-<asset:script type="text/javascript">
-        function chooseRequiredDropdown(opt) {
+<laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
                 $('#create_task')
                     .form({
@@ -153,5 +155,5 @@
                     });
             })
         }
-        chooseRequiredDropdown('status.id');
-</asset:script>
+        JSPC.chooseRequiredDropdown('status.id');
+</laser:script>

@@ -4,7 +4,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
+    <meta name="layout" content="laser">
     <title>${message(code:'laser')} :
         <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
             <g:message code="subscription.details.consortiaMembers.label"/>
