@@ -62,6 +62,8 @@
 
         <g:render template="/templates/tasks/modal_create" />
 
+        &nbsp;
+
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
