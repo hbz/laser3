@@ -110,15 +110,14 @@
             <%
                 List<List<String>> tmplConfigShow
                 if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    tmplConfigShow = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                    tmplConfigShow = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']]
                 else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                    tmplConfigShow = [['name', 'identifier'], ['property']]
+                    tmplConfigShow = [['name', 'identifier'], ['property&value']]
             %>
             <g:render template="/templates/filter/orgFilter"
                   model="[
                       tmplConfigShow: tmplConfigShow,
-                      tmplConfigFormFilter: true,
-                      useNewLayouter: true
+                      tmplConfigFormFilter: true
                   ]"/>
         </g:form>
     </semui:filter>

@@ -13,7 +13,6 @@
     </select>
 </div>
 
-
 <div class="field">
     <label for="filterRegion">${message(code: 'org.region.label')}</label>
     <select id="filterRegion" name="region" multiple="" class="ui search selection fluid dropdown">

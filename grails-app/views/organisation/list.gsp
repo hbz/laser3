@@ -60,10 +60,10 @@
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier', 'type'], ['region', 'libraryNetwork',
-                                                                                    'sector', 'libraryType', 'subjectGroup']],
-                                  tmplConfigFormFilter: true,
-                                  useNewLayouter: true
+                                  tmplConfigShow: [['name', 'identifier', 'type'],
+                                                   ['country&region', 'libraryNetwork'],
+                                                   ['sector', 'libraryType', 'subjectGroup']],
+                                  tmplConfigFormFilter: true
                           ]"/>
             </g:form>
         </semui:filter>
