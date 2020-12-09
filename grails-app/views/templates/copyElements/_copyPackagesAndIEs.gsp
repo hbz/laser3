@@ -28,7 +28,7 @@
                         </div>
 
                         <div>
-                            <input type="checkbox" data-action="copy" onClick="JSPC.toggleAllCheckboxes(this)" checked/>
+                            <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                         </div>
                     </div>
                 </th>
@@ -42,7 +42,7 @@
                                 </div>
 
                                 <div>
-                                    <input type="checkbox" data-action="delete" onClick="JSPC.toggleAllCheckboxes(this)"/>
+                                    <input type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)"/>
                                 </div>
                             </div>
                         </th>
@@ -391,7 +391,7 @@
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
                     <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                           onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
+                           onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
                 </div>
             </div>
         </g:if>
@@ -405,7 +405,7 @@
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
                 <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.jsConfirmation()" ${submitDisabled}/>
+                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
             </div>
         </g:else>
     </g:form>
@@ -413,7 +413,7 @@
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.subCopyController = {
+        JSPC.app.subCopyController = {
 
             checkboxes: {
                 $takePackageIds: $('input[name="subscription.takePackageIds"]'),
@@ -427,38 +427,38 @@
             },
 
             init: function (elem) {
-                var ref = JSPC.subCopyController.checkboxes
+                var ref = JSPC.app.subCopyController.checkboxes
 
                 ref.$takePackageIds.change(function (event) {
-                    JSPC.subCopyController.takePackageIds(this);
+                    JSPC.app.subCopyController.takePackageIds(this);
                 }).trigger('change')
 
                 ref.$takePackageSettings.change(function (event) {
-                    JSPC.subCopyController.takePackageSettings(this);
+                    JSPC.app.subCopyController.takePackageSettings(this);
                 }).trigger('change')
 
                 ref.$deletePackageIds.change(function (event) {
-                    JSPC.subCopyController.deletePackageIds(this);
+                    JSPC.app.subCopyController.deletePackageIds(this);
                 }).trigger('change')
 
                 ref.$deletePackageSettings.change(function (event) {
-                    JSPC.subCopyController.deletePackageSettings(this);
+                    JSPC.app.subCopyController.deletePackageSettings(this);
                 }).trigger('change')
 
                 ref.$takeEntitlementIds.change(function (event) {
-                    JSPC.subCopyController.takeEntitlementIds(this);
+                    JSPC.app.subCopyController.takeEntitlementIds(this);
                 }).trigger('change')
 
                 ref.$deleteEntitlementIds.change(function (event) {
-                    JSPC.subCopyController.deleteEntitlementIds(this);
+                    JSPC.app.subCopyController.deleteEntitlementIds(this);
                 }).trigger('change')
 
                 ref.$takeTitleGroups.change(function (event) {
-                    JSPC.subCopyController.takeTitleGroups(this);
+                    JSPC.app.subCopyController.takeTitleGroups(this);
                 }).trigger('change')
 
                 ref.$deleteTitleGroups.change(function (event) {
-                    JSPC.subCopyController.deleteTitleGroups(this);
+                    JSPC.app.subCopyController.deleteTitleGroups(this);
                 }).trigger('change')
             },
 
@@ -468,7 +468,7 @@
                     $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
+                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
                         $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
                     }
                 }
@@ -515,7 +515,7 @@
                     $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1) {
+                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1) {
                         $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
                     }
                 }
@@ -537,7 +537,7 @@
                     $('.table tr td[name="subscription.takeTitleGroups.target"] div').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takeTitleGroups.source"] div[data-oid="' + elem.value + '"]').removeClass('willStay');
-                    if (JSPC.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeTitleGroups') < 1) {
+                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeTitleGroups') < 1) {
                         $('.table tr td[name="subscription.takeTitleGroups.target"] div').removeClass('willStay');
                     }
                 }
@@ -563,7 +563,7 @@
             }
         }
 
-        JSPC.subCopyController.init()
+        JSPC.app.subCopyController.init()
     </laser:script>
 </g:if>
 

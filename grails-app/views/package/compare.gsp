@@ -209,7 +209,7 @@
 			
 			<td>
 				<semui:listIcon type="${currentTitle[0].medium?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
-                          <i onclick="JSPC.showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
+                          <i onclick="JSPC.app.showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
                               <br />${id.ns.ns}: ${id.value}
@@ -259,7 +259,7 @@
 </g:each>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-	JSPC.applySelect2 = function (filter) {
+	JSPC.app.applySelect2 = function (filter) {
       var pkgA = {id:'${pkgInsts?.get(0)?.id}',text:"${pkgInsts?.get(0)?.name}"};
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};
 
@@ -311,12 +311,12 @@
 	    $(this).closest('form').submit();
 	});
 
-    JSPC.showMore = function (ident) {
+    JSPC.app.showMore = function (ident) {
 		$("#compare_details"+ident).modal('show')
     }
 
-	JSPC.applySelect2("A")
-	JSPC.applySelect2("B")
+	JSPC.app.applySelect2("A")
+	JSPC.app.applySelect2("B")
 
 </laser:script>
 

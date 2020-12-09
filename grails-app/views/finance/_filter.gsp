@@ -66,7 +66,7 @@
                                       optionValue="value"
                                       value="${filterPresets?.filterSubStatus?.id}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
-                            onchange="JSPC.setupDropdowns()"
+                            onchange="JSPC.app.setupDropdowns()"
                         />
                     </div>
                 </g:if>
@@ -276,7 +276,7 @@
     $("#filterSubStatus, #filterCIStatus").dropdown({
         "clearable": true
     });
-    JSPC.setupDropdowns = function () {
+    JSPC.app.setupDropdowns = function () {
         if($("#filterSubStatus").length > 0) {
             var subStatus = $("#filterSubStatus").val();
             if(subStatus.length === 0) {
@@ -343,7 +343,7 @@
         <g:if test="${params.filterCIUnpaid}">
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
-        JSPC.setupDropdowns();
+        JSPC.app.setupDropdowns();
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year'
         });

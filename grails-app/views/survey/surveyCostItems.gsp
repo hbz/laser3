@@ -107,14 +107,14 @@
             <div class="four wide column">
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">
-                    <g:link onclick="JSPC.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
+                    <g:link onclick="JSPC.app.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </g:link>
                 </g:if>
 
                 <g:if test="${params.tab == 'selectedParticipants'}">
-                    <g:link onclick="JSPC.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
+                    <g:link onclick="JSPC.app.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </g:link>
@@ -398,14 +398,14 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-JSPC.isClicked = false;
+JSPC.app.isClicked = false;
 
-JSPC.addForAllSurveyCostItem = function(orgsIDs) {
+JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                         event.preventDefault();
 
                         // prevent 2 Clicks open 2 Modals
-                        if (!JSPC.isClicked) {
-                            JSPC.isClicked = true;
+                        if (!JSPC.app.isClicked) {
+                            JSPC.app.isClicked = true;
                             $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
                             $('#dynamicModalContainer').empty()
 
@@ -436,16 +436,16 @@ JSPC.addForAllSurveyCostItem = function(orgsIDs) {
                                 }).modal('show');
                             })
                             setTimeout(function () {
-                                JSPC.isClicked = false;
+                                JSPC.app.isClicked = false;
                             }, 800);
                         }
                     }
 
-    JSPC.costItemElementConfigurations = ${raw(orgConfigurations as String)};
+    JSPC.app.costItemElementConfigurations = ${raw(orgConfigurations as String)};
 
-    JSPC.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+    JSPC.app.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
-    JSPC.isError = function (cssSel) {
+    JSPC.app.isError = function (cssSel) {
         if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
             $(".la-account-currency").children(".field").removeClass("error");
             $(cssSel).parent(".field").addClass("error");
@@ -455,26 +455,26 @@ JSPC.addForAllSurveyCostItem = function(orgsIDs) {
     };
 
     $('.calc').on('change', function () {
-        JSPC.calcTaxResults()
+        JSPC.app.calcTaxResults()
     });
 
-    JSPC.calcTaxResults = function () {
+    JSPC.app.calcTaxResults = function () {
         var roundF = $('*[name=newFinalCostRounding2]').prop('checked');
         console.log($("*[name=newTaxRate2]").val());
         var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
 
-        var parsedBillingCurrency = JSPC.convertDouble($("#newCostInBillingCurrency2").val());
+        var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency2").val());
 
 
         $('#newCostInBillingCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.convertDouble(parsedBillingCurrency * taxF)
+            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.app.convertDouble(parsedBillingCurrency * taxF)
         );
 
     };
 
-    JSPC.costElems = $("#newCostInBillingCurrency2");
+    JSPC.app.costElems = $("#newCostInBillingCurrency2");
 
-    JSPC.costElems.on('change', function () {
+    JSPC.app.costElems.on('change', function () {
         if ($("[name='newCostCurrency2']").val() != 0) {
             $("#newCostCurrency2").parent(".field").removeClass("error");
         } else {
@@ -482,7 +482,7 @@ JSPC.addForAllSurveyCostItem = function(orgsIDs) {
         }
     });
 
-    JSPC.convertDouble = function (input) {
+    JSPC.app.convertDouble = function (input) {
         console.log("input: " + input + ", typeof: " + typeof (input))
         var output;
         //determine locale from server

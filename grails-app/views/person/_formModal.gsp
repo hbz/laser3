@@ -290,7 +290,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.fc = "${RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
+        JSPC.app.fc = "${RDStore.PERSON_CONTACT_TYPE_FUNCTIONAL.getI10n('value')}";
 
         $('#create_person')
                 .form({
@@ -310,7 +310,7 @@
              }
         });
 
-        JSPC.changeForm = function (hide, mId) {
+        JSPC.app.changeForm = function (hide, mId) {
             var group1 = $("#"+mId+" #person_middle_name, #"+mId+" #person_first_name, #"+mId+" #person_title, #"+mId+" #person_gender, #"+mId+" .js-positionTypeWrapper")
             var group2 = $("#"+mId+" #person_gender .dropdown,#"+mId+" #person_gender select")
             var group3 = $("#"+mId+" #positionType,#"+mId+" #positionOrg")
@@ -337,13 +337,13 @@
             }
         }
 
-        JSPC.changeForm(false) // init
+        JSPC.app.changeForm(false) // init
 
         $("#${modalId} #contactType").on('change', function() {
-            JSPC.changeForm( ($("#${modalId} #contactType option:selected").text() == JSPC.fc), "${modalId}")
+            JSPC.app.changeForm( ($("#${modalId} #contactType option:selected").text() == JSPC.app.fc), "${modalId}")
         });
 
-        JSPC.changeForm( ($("#${modalId} #contactType option:selected").text() == JSPC.fc), "${modalId}")
+        JSPC.app.changeForm( ($("#${modalId} #contactType option:selected").text() == JSPC.app.fc), "${modalId}")
     </laser:script>
 
 </semui:modal>

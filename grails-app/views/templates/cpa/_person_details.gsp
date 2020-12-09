@@ -13,7 +13,7 @@
 
             <g:if test="${overwriteEditable}">
                 <div class="content la-space-right">
-                    <button class="ui mini icon button" type="button" onclick="JSPC.editPerson(${person.id})" >
+                    <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})" >
                         <i class="write icon"></i>
                     </button>
                 </div>
@@ -119,11 +119,11 @@
     </div><!-- .la-flex-list -->
 </g:if>
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.editPerson = function (id) {
+    JSPC.app.editPerson = function (id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
-            JSPC.person_editModal(url)
+            JSPC.app.person_editModal(url)
         }
-    JSPC.person_editModal = function (url) {
+    JSPC.app.person_editModal = function (url) {
             $.ajax({
                 url: url,
                 success: function(result){

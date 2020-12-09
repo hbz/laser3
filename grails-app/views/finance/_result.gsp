@@ -74,18 +74,18 @@
 
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
-                JSPC.tab = "${showView}";
-                JSPC.rawHref = $(".exportCSV").attr("href");
-                JSPC.isClicked = false;
+                JSPC.app.tab = "${showView}";
+                JSPC.app.rawHref = $(".exportCSV").attr("href");
+                JSPC.app.isClicked = false;
 
-                $("[data-tab='" + JSPC.tab + "']").addClass("active");
-                $(".exportCSV").attr("href", JSPC.rawHref + "&showView=" + JSPC.tab);
+                $("[data-tab='" + JSPC.app.tab + "']").addClass("active");
+                $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + JSPC.app.tab);
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
-                        $(".exportCSV").attr("href", JSPC.rawHref + "&showView=" + tabPath);
+                        $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + tabPath);
                         $("#showView").val(tabPath);
                     }
                 });
@@ -94,8 +94,8 @@
                     event.preventDefault();
 
                     // prevent 2 Clicks open 2 Modals
-                    if (! JSPC.isClicked) {
-                        JSPC.isClicked = true;
+                    if (! JSPC.app.isClicked) {
+                        JSPC.app.isClicked = true;
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty();
                         let preselectedSubscriptions = []
@@ -116,8 +116,8 @@
                                        r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                        r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                        JSPC.callbacks.dynPostFunc();
-                                       JSPC.setupCalendar();
-                                       JSPC.preselectMembers();
+                                       JSPC.app.setupCalendar();
+                                       JSPC.app.preselectMembers();
                                        },
                                    detachable: true,
                                    closable: false,
@@ -129,7 +129,7 @@
                             }).modal('show');
                         });
                         setTimeout(function () {
-                            JSPC.isClicked = false;
+                            JSPC.app.isClicked = false;
                             }, 800);
                     }
                 });
@@ -149,7 +149,7 @@
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.callbacks.dynPostFunc();
-                                JSPC.setupCalendar();
+                                JSPC.app.setupCalendar();
                             },
                             detachable: true,
                             closable: false,

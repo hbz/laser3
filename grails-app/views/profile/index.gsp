@@ -528,7 +528,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.setupUnitAmount = function (type, amount) {
+    JSPC.app.setupUnitAmount = function (type, amount) {
         console.log(type);
         type.children().remove()
         for (var i = 1; i <= amount; i++) {
@@ -631,13 +631,13 @@
             if (unit) {
                 switch (unit) {
                     case 'Day':
-                        JSPC.setupUnitAmount(val,7)
+                        JSPC.app.setupUnitAmount(val,7)
                         break;
                     case 'Week':
-                        JSPC.setupUnitAmount(val,4)
+                        JSPC.app.setupUnitAmount(val,4)
                         break;
                     case 'Month':
-                        JSPC.setupUnitAmount(val,12)
+                        JSPC.app.setupUnitAmount(val,12)
                         break
                     default :
                         console.log('Impossible selection made!');

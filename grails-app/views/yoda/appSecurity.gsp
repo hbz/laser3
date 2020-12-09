@@ -83,29 +83,29 @@
 <button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.resultViewModes = [
+    JSPC.app.resultViewModes = [
         'Sichtbar: Alle Methoden',
         'ToDo: Nicht transaktionsgesicherte Methoden',
         'Sichtbar: Überarbeitete Methoden',
     ]
-    JSPC.resultViewMode = 0
+    JSPC.app.resultViewMode = 0
 
     $('#resultToggle').on('click', function(){
 
-        if (++JSPC.resultViewMode >= JSPC.resultViewModes.length) {
-            JSPC.resultViewMode = 0
+        if (++JSPC.app.resultViewMode >= JSPC.app.resultViewModes.length) {
+            JSPC.app.resultViewMode = 0
         }
-        $('#resultToggle').html(JSPC.resultViewModes[JSPC.resultViewMode])
+        $('#resultToggle').html(JSPC.app.resultViewModes[JSPC.app.resultViewMode])
 
-        if (JSPC.resultViewMode == 0) {
+        if (JSPC.app.resultViewMode == 0) {
             $('.secInfoWrapper2 .list .item').removeClass('hidden')
         }
-        else if (JSPC.resultViewMode == 1) {
+        else if (JSPC.app.resultViewMode == 1) {
             $('.secInfoWrapper2 .list .item.refactoring-done').addClass('hidden')
             $('.secInfoWrapper2 .list .item:not(.refactoring-done)').removeClass('hidden')
 
         }
-        else if (JSPC.resultViewMode == 2) {
+        else if (JSPC.app.resultViewMode == 2) {
             $('.secInfoWrapper2 .list .item:not(.refactoring-done)').addClass('hidden')
             $('.secInfoWrapper2 .list .item.refactoring-done').removeClass('hidden')
         }

@@ -23,7 +23,7 @@
 
         <label>${message(code: 'filter.status')}</label>
 
-        <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="JSPC.adjustDropdown()">
+        <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="JSPC.app.adjustDropdown()">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }" var="status">
                 <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
@@ -34,12 +34,12 @@
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
-                                onchange="JSPC.adjustDropdown()"/>
+                                onchange="JSPC.app.adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                 </div><br />
             </g:if>
         %{--<div class="ui checkbox">
-            <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="JSPC.adjustDropdown()"/>
+            <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="JSPC.app.adjustDropdown()"/>
             <label for="show.connectedLicenses">${message(code:'default.compare.show.connectedLicenses.name')}</label>
         </div>--}%
         <br/>
@@ -77,7 +77,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.adjustDropdown = function () {
+    JSPC.app.adjustDropdown = function () {
 
         var showSubscriber = $("input[name='show.subscriber'").prop('checked');
         var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
@@ -109,7 +109,7 @@
         });
     }
 
-    JSPC.adjustDropdown()
+    JSPC.app.adjustDropdown()
 </laser:script>
 
 

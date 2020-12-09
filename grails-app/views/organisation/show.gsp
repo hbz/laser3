@@ -359,7 +359,7 @@
                                     <div class="item">
 
                                         <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
-                                           onclick="JSPC.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
+                                           onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
                                                 code="personFormModalTechnichalSupport"/></a>
 
                                     </div>
@@ -502,10 +502,10 @@
 </html>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#country').on('save', function(e, params) {
-        JSPC.showRegionsdropdown(params.newValue);
+        JSPC.app.showRegionsdropdown(params.newValue);
     });
 
-    JSPC.showRegionsdropdown = function (newValue) {
+    JSPC.app.showRegionsdropdown = function (newValue) {
         $("*[id^=regions_]").hide();
         if(newValue){
             var id = newValue.split(':')[1]
@@ -514,23 +514,23 @@
         }
     };
 
-    JSPC.addresscreate_org = function (orgId, typeId, redirect, hideType) {
+    JSPC.app.addresscreate_org = function (orgId, typeId, redirect, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
         func();
     }
 
-    JSPC.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
+    JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
         func();
     }
 
-    JSPC.showRegionsdropdown( $("#country").editable('getValue', true) );
+    JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
 
 <g:if test="${isProviderOrAgency}">
 
-    JSPC.personCreate = function (contactFor, org) {
+    JSPC.app.personCreate = function (contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true';
         var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
         func();

@@ -78,10 +78,10 @@
             <td class="x">
                 <g:if test="${editable && tmplShowDeleteButton}">
 
-                    <button type="button" onclick="JSPC.editAddress(${address.id})" class="ui icon button">
+                    <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button">
                         <i class="write icon"></i>
                     </button>
-                    <g:link class="ui negative button js-open-confirm-modal"
+                    <g:link class="ui negative button icon js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]">
@@ -95,7 +95,7 @@
 </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.editAddress = function (id) {
+    JSPC.app.editAddress = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", "<g:createLink controller="ajaxHtml" action="editAddress"/>?id=" + id, false);
         func();
     }
