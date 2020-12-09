@@ -105,13 +105,12 @@
         </table>
 
         <g:form name="triggerCleanup" controller="dataManager" action="executeTIPPCleanup" params="[format:'csv']" data-confirm-id="clearUp_form">
-                <g:hiddenField name="id" value="clearUp" />
+            <g:hiddenField name="id" value="clearUp" />
 
-                <div class="ui icon negative button js-open-confirm-modal"
+            <div class="ui icon negative button js-open-confirm-modal"
                  data-confirm-tokenMsg="${message(code: "confirm.dialogtriggerCleanup")}"
                  data-confirm-term-how="clearUp"
-                 data-confirm-id="clearUp" >
-                    <i class="bath icon"></i>
+                 data-confirm-id="clearUp">
                     <g:message code="admin.cleanupTIPP.submit"/>
             </div>
         </g:form>

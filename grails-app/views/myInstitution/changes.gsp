@@ -24,7 +24,6 @@
                     <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
                     <div class="ui buttons">
                         <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
-                        <div class="or" data-text="${message(code:'default.or')}"></div>
                         <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
                     </div>
                 </g:form>
@@ -81,7 +80,6 @@
                     <div class="three wide column">
                         <div class="ui buttons">
                             <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.change.id}"><g:message code="default.button.accept.label"/></g:link>
-                            <div class="or" data-text="${message(code:'default.or')}"></div>
                             <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.change.id}"><g:message code="default.button.reject.label"/></g:link>
                         </div>
                     </div><!-- .column -->
