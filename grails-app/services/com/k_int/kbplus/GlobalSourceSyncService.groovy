@@ -232,7 +232,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     List syncRecords() {
         List tippsToNotify = []
 
-        tippsToNotify
+        tippsToNotifyOr
     }
 
     void updateNonPackageData(GPathResult oaiBranch) throws SyncException {
