@@ -17,7 +17,7 @@
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 
     <asset:javascript src="base.js"/>%{-- dont move --}%
-    <script data-type="inline">
+    <script data-type="fix">
         <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
     </script>

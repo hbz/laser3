@@ -167,7 +167,5 @@
                 }
             });
         }
-
-        r2d2.initDynamicSemuiStuff('#container-notes')
-    </laser:script>
+</laser:script>
 

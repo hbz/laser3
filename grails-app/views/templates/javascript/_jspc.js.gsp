@@ -6,7 +6,7 @@ JSPC = {
     vars : { // -- var injection
         locale: "${message(code:'default.locale.label')}",
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
-        ajaxLookupUrl: "<g:createLink controller='ajaxJson' action='lookup'/>",
+        ajaxJsonLookupUrl: "<g:createLink controller='ajaxJson' action='lookup'/>",
         spotlightSearchUrl: "<g:createLink controller='search' action='spotlightSearch'/>",
     },
 
