@@ -8,10 +8,11 @@
 <g:each in="${tmplConfigShow}" var="row">
 
     <g:set var="numberOfFields" value="${row.size()}" />
-    <% if (row.contains('property')) { numberOfFields++ } %>
+    <% if (row.contains('country&region')) { numberOfFields++ } %>
+    <% if (row.contains('property&value')) { numberOfFields++ } %>
 
     <g:if test="${numberOfFields > 1}">
-        <div class="${numberOfFields==4 ? 'four fields' : numberOfFields==3 ? 'three fields' : numberOfFields==2 ? 'two fields' : ''}">
+        <div class="${numberOfFields==5 ? 'five fields' : numberOfFields==4 ? 'four fields' : numberOfFields==3 ? 'three fields' : numberOfFields==2 ? 'two fields' : ''}">
     </g:if>
 
         <g:each in="${row}" var="field" status="fieldCounter">
@@ -36,7 +37,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('property')}">
+            <g:if test="${field.equalsIgnoreCase('property&value')}">
                 <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
             </g:if>
 
@@ -84,7 +85,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('region')}">
+            <g:if test="${field.equalsIgnoreCase('country&region')}">
                 <g:render template="/templates/filter/orgRegionsFilter" />
             </g:if>
 
@@ -191,35 +192,7 @@
         </div><!-- .fields -->
     </g:if>
 
-
 </g:each>
-
-<%--
-<g:set var="allFields" value="${tmplConfigShow.flatten()}" />
-
-<g:if test="${! allFields.contains('type') && params.orgType}">
-    <input type="hidden" name="orgType" value="${params.orgType}" />
-</g:if>
-<g:if test="${! allFields.contains('role') && params.orgRole}">
-    <input type="hidden" name="orgRole" value="${params.orgRole}" />
-</g:if>
-<g:if test="${! allFields.contains('sector') && params.orgSector}">
-    <input type="hidden" name="orgSector" value="${params.orgSector}" />
-</g:if>
-<g:if test="${! allFields.contains('region') && params.region}">
-    <input type="hidden" name="region" value="${params.region}" />
-</g:if>
-<g:if test="${! allFields.contains('libraryNetwork') && params.libraryNetwork}">
-    <input type="hidden" name="libraryNetwork" value="${params.libraryNetwork}" />
-</g:if>
-<g:if test="${! allFields.contains('libraryType') && params.libraryType}">
-    <input type="hidden" name="libraryType" value="${params.libraryType}" />
-</g:if>
-<g:if test="${! allFields.contains('country') && params.country}">
-    <input type="hidden" name="country" value="${params.country}" />
-</g:if>
---%>
-
 
 <div class="field la-field-right-aligned">
 
