@@ -386,7 +386,6 @@
                                         <%--<g:link elementId="admin-ieTransfer" class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>--%>
                                         <%--<g:link elementId="admin-userMerge" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>--%>
                                         <%--<g:link elementId="admin-hardDeletePkgs" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>--%>
-                                        <g:link elementId="yoda-checkLicenseSubscriptionLinks" class="item" role="menuitem" controller="yoda" action="checkLicenseSubscriptionLinks">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</g:link>
                                         <g:link elementId="admin-manageDeletedObjects" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
                                         <g:link elementId="admin-databaseStatistics" class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
                                         <g:link elementId="admin-dataConsistency" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
@@ -439,7 +438,6 @@
 
                                         <g:link elementId="yoda-surveyCheck" class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                         <g:link elementId="yoda-subscriptionCheck" class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
-                                        <%--<g:link elementId="yoda-updateLinks" class="item" role="menuitem" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                         <%--<g:link elementId="yoda-startDateCheck" class="item" role="menuitem" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                         <%--<g:link elementId="yoda-updateTaxRates" class="item" role="menuitem" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
                                         <%--<g:link elementId="yoda-updateCustomerType" class="item" role="menuitem" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>--%>
