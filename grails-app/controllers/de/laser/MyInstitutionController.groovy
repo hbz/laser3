@@ -2004,7 +2004,7 @@ join sub.orgRelations or_sub where
                 else if (params.cmd == "deleteBudgetCode") {
                     BudgetCode bc = (BudgetCode) genericOIDService.resolveOID(params.bc)
                     if (bc && bc.owner.id == result.institution.id) {
-                        bc.delete()
+                        BudgetCode.executeUpdate('delete from BudgetCode bc where bc.id = :bcid', [bcid: bc.id])
                     }
                 }
 

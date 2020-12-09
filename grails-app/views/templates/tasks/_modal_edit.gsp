@@ -102,19 +102,22 @@
         JSPC.callbacks.dynPostFunc = function () {
             console.log('dynPostFunc @ tasks/_modal_edit.gsp');
 
-            $("#radioresponsibleOrgEdit").change(function () {
-                $("#responsibleUserEdit").hide();
-            });
+        $("#radioresponsibleOrgEdit").change(function () {
+            JSPC.app.toggleResponsibleUser();
+        });
+        $("#radioresponsibleUserEdit").change(function () {
+            JSPC.app.toggleResponsibleUser();
+        });
 
-            $("#radioresponsibleUserEdit").change(function () {
-                $("#responsibleUserEdit").show();
-            });
-
+        JSPC.app.toggleResponsibleUser = function () {
             if ($("#radioresponsibleUserEdit").is(':checked')) {
                 $("#responsibleUserEdit").show();
             } else {
                 $("#responsibleUserEdit").hide();
             }
+        }
+
+        JSPC.app.toggleResponsibleUser();
 
             $('#edit_task')
                 .form({

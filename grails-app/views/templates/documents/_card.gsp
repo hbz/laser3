@@ -186,6 +186,3 @@
     </semui:card>
 </g:if>
 
-<laser:script file="${this.getGroovyPageFileName()}">
-    r2d2.initDynamicSemuiStuff('#container-documents')
-</laser:script>

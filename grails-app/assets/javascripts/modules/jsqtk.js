@@ -95,8 +95,8 @@ jsqtk = {
         })
         jsqtk.keys.push(keys)
 
-        console.log('¯\\_(ツ)_/¯ .. jsqtk')
-        console.log('- event listeners found overall: ' + evsCounter)
+        console.groupCollapsed('jsqtk .. ¯\\_(ツ)_/¯' , jsqtk.resultCounter)
+        console.log('- event listener found overall: ' + evsCounter)
         if (jsqtk.blackList.length > 0) {
             console.log('- blacklist: ' + jsqtk.blackList)
         }
@@ -106,12 +106,11 @@ jsqtk = {
 
             console.log('- data-jsqtk-ids in use: ' + keys)
             console.log('- history of used data-jsqtk-ids: [' + history + ']')
-            console.log('- el doublets found: %o', jsqtk.resultCounter)
-            console.groupCollapsed('- elements with el doublets: ' + Object.keys(jsqtk.result).length)
+            console.log('- current elements with event listener doublets: ' + Object.keys(jsqtk.result).length)
             keys.forEach(function (k) {
                 console.log(jsqtk.result[k])
             })
-            console.groupEnd()
         }
+        console.groupEnd()
     }
 }

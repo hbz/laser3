@@ -31,7 +31,7 @@
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
 
     <asset:javascript src="base.js"/>%{-- dont move --}%
-    <script data-type="inline">
+    <script data-type="fix">
         <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
     </script>
@@ -747,7 +747,7 @@
 
         %{-- profiler --}%
 
-        <script data-type="inline">
+        <script data-type="fix">
             $(document).ready(function() {
                 $('#system-jsqtk').on('click', function(){ jsqtk.go() })
                 $('#system-jspc').on('click',  function(){ console.dir('JSPC:', JSPC) })
@@ -765,9 +765,10 @@
                         }
                     }
                 })
-
+                <g:if test="${ServerUtils.getCurrentServer() != ServerUtils.SERVER_PROD}">
                 jsqtk.go()
-                console.dir('JSPC:', JSPC);
+                console.log('JSPC:', JSPC);
+                </g:if>
             })
         </script>
 
