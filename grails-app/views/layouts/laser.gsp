@@ -88,11 +88,9 @@
                                     <g:link elementId="platform-list" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
                                     <div class="divider"></div>
-
                                     <g:link elementId="gasco" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
                                     <a id="gokb" href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
-
                                     <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
                             </div>
                         </div>
@@ -121,18 +119,14 @@
                                     <semui:securedMainNavItem elementId="survey-currentSurveysConsortia" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
                                     <div class="divider"></div>
-
                                     <semui:securedMainNavItem elementId="myInstitution-manageMembers" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
                                     <semui:securedMainNavItem elementId="myInstitution-manageConsortiaSubscriptions" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                                 </g:if>
 
-
                                 <div class="divider"></div>
-
                                 <semui:securedMainNavItem elementId="compare-compareSubscriptions" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
 
                                 <div class="divider"></div>
-
                                 <semui:securedMainNavItem elementId="compare-compareLicenses" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
 
                             </div>
@@ -160,7 +154,6 @@
                                 <semui:securedMainNavItem elementId="myInstitution-financeImport" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
                                 <div class="divider"></div>
-
                                 <semui:securedMainNavItem elementId="myInstitution-userList" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
@@ -207,7 +200,6 @@
 
                                     <div class="divider"></div>
 
-                                    <g:link elementId="title-findTitleMatches" class="item" role="menuitem" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
                                     <%--<g:link elementId="license-create" class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</g:link>--%>
                                     <%--<g:link elementId="platform-create" class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>--%>
                                     <g:link elementId="subscription-compare" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
@@ -223,7 +215,6 @@
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <div class="divider"></div>
-                                    <%--<g:link elementId="jasperReports-index" class="item" role="menuitem" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>--%>
                                     <g:link elementId="title-dmIndex" class="item" role="menuitem" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
 
                                     <div class="divider"></div>
@@ -304,7 +295,6 @@
                                 <g:link elementId="admin-showAffiliations" class="item" role="menuitem" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                                 <g:link elementId="usage-index" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
                                 <g:link elementId="admin-updateQASubscriptionDates" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</g:link>
-                                <% /* g:link  elementId="admin-juspSync" class="item" role="menuitem" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                                 <g:link elementId="admin-forceSendNotifications" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
 
                                 <div class="divider"></div>
@@ -331,8 +321,6 @@
                                 <div class="divider"></div>
 
                                 <g:link elementId="stats-statsHome" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</g:link>
-                               %{-- <g:link elementId="jasperReports-uploadReport" class="item" role="menuitem" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>--}%
-
                             </div>
                         </div>
                     </sec:ifAnyGranted>
@@ -398,7 +386,6 @@
                                         <%--<g:link elementId="admin-ieTransfer" class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>--%>
                                         <%--<g:link elementId="admin-userMerge" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>--%>
                                         <%--<g:link elementId="admin-hardDeletePkgs" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>--%>
-                                        <g:link elementId="yoda-checkLicenseSubscriptionLinks" class="item" role="menuitem" controller="yoda" action="checkLicenseSubscriptionLinks">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</g:link>
                                         <g:link elementId="admin-manageDeletedObjects" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
                                         <g:link elementId="admin-databaseStatistics" class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</g:link>
                                         <g:link elementId="admin-dataConsistency" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
@@ -427,7 +414,6 @@
                                     <div class="menu" role="menu">
                                         <g:link elementId="yoda-fullReset" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
                                         <g:link elementId="yoda-esIndexUpdate" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
-                                        <%--<g:link elementId="yoda-logViewer" class="item" role="menuitem" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                                         <g:link elementId="yoda-manageESSources" class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
                                         <g:link elementId="yoda-manageFTControl" class="item" role="menuitem" controller="yoda" action="manageFTControl" >Manage FTControl</g:link>
                                         <div class="divider"></div>
@@ -452,7 +438,6 @@
 
                                         <g:link elementId="yoda-surveyCheck" class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                         <g:link elementId="yoda-subscriptionCheck" class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
-                                        <%--<g:link elementId="yoda-updateLinks" class="item" role="menuitem" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                         <%--<g:link elementId="yoda-startDateCheck" class="item" role="menuitem" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                         <%--<g:link elementId="yoda-updateTaxRates" class="item" role="menuitem" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
                                         <%--<g:link elementId="yoda-updateCustomerType" class="item" role="menuitem" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>--%>
@@ -754,7 +739,6 @@
 
                 $.ajax({
                     url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
-                    <%--data: {uri: "${request.request.request.request.servletPath.replaceFirst('/grails','').replace('.dispatch','')}"},--%>
                     data: {uri: "${ ProfilerUtils.generateKey( webRequest )}"},
                     success: function (data) {
                         var $sp = $('#system-profiler')

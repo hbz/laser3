@@ -58,7 +58,7 @@
 <g:render template="/templates/filter/javascript" />
 <semui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property']]
+        List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']]
         List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
@@ -67,8 +67,7 @@
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: configShowFilter,
-                              tmplConfigFormFilter: true,
-                              useNewLayouter: true
+                              tmplConfigFormFilter: true
                       ]"/>
         </g:form>
     </semui:filter>

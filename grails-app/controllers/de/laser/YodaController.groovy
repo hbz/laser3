@@ -1065,26 +1065,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def updateLinks(){
-        int affected = statusUpdateService.updateLinks()
-        flash.message = "Es wurden ${affected} Vor-/Nachfolgebeziehungen neu verknüpft"
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @Secured(['ROLE_YODA'])
-    Map<String,Object> checkLicenseSubscriptionLinks() {
-        flash.message = "Überprüfung Lizenzen <-> Verträge <-> Teilnehmer läuft ..."
-        yodaService.checkLicenseSubscriptionLinks()
-    }
-
-    @Secured(['ROLE_YODA'])
-    def synchronizeSubscriptionLicenseOrgLinks() {
-        flash.message = "Synchronisiere Lizenz-Vertrag-Einrichtung-Verknüpfungen ..."
-        yodaService.synchronizeSubscriptionLicenseOrgLinks()
-        redirect controller: 'home', action: 'index'
-    }
-
-    @Secured(['ROLE_YODA'])
     def startDateCheck(){
         if(statusUpdateService.startDateCheck())
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
