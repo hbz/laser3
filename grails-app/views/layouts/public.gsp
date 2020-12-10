@@ -16,7 +16,7 @@
 
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 
-    <asset:javascript src="base.js"/>%{-- dont move --}%
+    <laser:javascript src="base.js"/>%{-- dont move --}%
     <script data-type="fix">
         <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
@@ -40,7 +40,7 @@
             <div class="clearfix"></div>
         </div>
 
-        <asset:javascript src="laser.js"/>%{-- dont move --}%
+        <laser:javascript src="laser.js"/>%{-- dont move --}%
 
         <laser:scriptBlock/>%{-- dont move --}%
 

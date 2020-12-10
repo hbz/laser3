@@ -11,12 +11,12 @@ a11yMenu = {
     },
 
     init: function (ctxSel) {
-        console.log('a11yMenu.init(' + ctxSel + ')')
+        console.log('a11yMenu.init( ' + ctxSel + ' )')
         a11yMenu.initDynamicDropdowns(ctxSel)
     },
 
     initDynamicDropdowns: function(ctxSel) {
-        console.log('a11yMenu.initDropdowns(' + ctxSel + ')')
+        console.log('a11yMenu.initDropdowns( ' + ctxSel + ' )')
 
         // for Main Menu
         $(ctxSel + ' .ui.dropdown').dropdown({

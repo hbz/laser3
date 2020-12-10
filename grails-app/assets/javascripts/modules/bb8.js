@@ -9,7 +9,7 @@ bb8 = {
     },
 
     init: function(ctxSel) {
-        console.log('bb8.init(' + ctxSel + ')')
+        console.log('bb8.init( ' + ctxSel + ' )')
 
         $(ctxSel + " .la-js-remoteLink").click(function (event) {
             event.preventDefault();
@@ -111,7 +111,6 @@ bb8 = {
     },
 
     ajax4SimpleModalFunction : function (cssId, url, callDynPostFunc) {
-
         console.log("bb8.ajaxSimpleModalFunction( " + cssId + ", " + url + ", " + callDynPostFunc + " )")
 
         return function () {

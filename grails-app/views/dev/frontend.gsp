@@ -5,7 +5,7 @@
     <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : Frontend for Developers</title>
 
-    <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>%{-- dont move --}%
+    <asset:stylesheet src="chartist.css"/><laser:javascript src="chartist.js"/>%{-- dont move --}%
 
     <style>
     #example .example .column .icon {
