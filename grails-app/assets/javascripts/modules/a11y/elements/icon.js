@@ -9,7 +9,7 @@ a11yIcon = {
     },
 
     init: function (ctxSel) {
-        console.log('a11yIcon.init(' + ctxSel + ')')
+        console.log('a11yIcon.init( ' + ctxSel + ' )')
 
         $(ctxSel + ' .ui.sortable.table thead .sorted.asc').attr( {
             'aria-sort' : 'ascending'
