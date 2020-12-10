@@ -567,11 +567,11 @@ r2d2 = {
             r2d2.countSettedFilters();
         })
 
-        function _addFilterDropdown(elem){
+        function _addFilterDropdown(elem) {
             $(elem).is('select') ? $( elem ).parent().addClass("la-filter-dropdown-selected" ) : $( elem ).addClass("la-filter-dropdown-selected" );
         }
 
-        function _removeFilterDropdown(elem){
+        function _removeFilterDropdown(elem) {
             $(elem).is('select') ? $( elem ).parent().removeClass("la-filter-dropdown-selected" ) : $( elem ).removeClass("la-filter-dropdown-selected" );
         }
 
