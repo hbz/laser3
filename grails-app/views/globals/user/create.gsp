@@ -124,4 +124,10 @@
             if($(".error").length === 0)
                 $("#userSubmit").removeAttr("disabled");
         }
+        // dropdowns not wished to be clearable
+        $('.ui.search.dropdown.la-not-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
+            fullTextSearch: 'exact',
+        });
 </laser:script>

@@ -512,10 +512,10 @@ r2d2 = {
         // datepicker
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
-        // dropdowns
+        // all dropdowns but dropdowns inside mainMenue
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
-            duration: 150,
-            transition: 'fade',
+            //duration: 150,
+            //transition: 'fade',
             forceSelection: false,
             selectOnKeydown: false,
             clearable: true,
@@ -526,6 +526,8 @@ r2d2 = {
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
+        // all dropdowns in filter
+        // special: stuff on change
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
@@ -535,11 +537,6 @@ r2d2 = {
             }
         });
 
-        $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
-            forceSelection: false,
-            selectOnKeydown: false,
-            fullTextSearch: 'exact',
-        });
 
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
