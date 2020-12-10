@@ -92,8 +92,7 @@
 </div>
 </section>
 
-    <script>
-        $(document).ready(function() {
+    <laser:script>
 
             function toggleFilterPart() {
                 console.log('! 1')
@@ -120,8 +119,7 @@
             toggleTableHeading()
             $('form .button.is-info').on('click', toggleTableHeading)
 
-        });
-    </script>
+    </laser:script>
 
 
 <g:if test="${subscriptions}">

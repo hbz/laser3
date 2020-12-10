@@ -159,8 +159,7 @@ console.log('(http-header) x-authorization: ' + authorization)
 
     <div id="main-container"></div>
 
-    <script>
-        window.onload = function() {
+    <laser:script>
 
             var selectors = {
                 query_q:       'tr[data-param-name="q"] input',
@@ -275,8 +274,7 @@ console.log('(http-header) x-authorization: ' + authorization)
                 }*/
                 return authorization
             }
-        }
-    </script>
+    </laser:script>
 
     <laser:scriptBlock/>%{-- dont move --}%
 
