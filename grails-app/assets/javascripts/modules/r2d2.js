@@ -506,6 +506,9 @@ r2d2 = {
             }
         });
 
+        // tabs
+        $(ctxSel + ' .tabular.menu .item').tab();
+
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
 

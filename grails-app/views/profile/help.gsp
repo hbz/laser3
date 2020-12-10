@@ -91,6 +91,3 @@
 
 </body>
 </html>
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('.ui.accordion').accordion('exclusive', false);
-</laser:script>

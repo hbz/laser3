@@ -538,8 +538,6 @@
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('.tabular.menu .item').tab()
-
     $('#orgListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
