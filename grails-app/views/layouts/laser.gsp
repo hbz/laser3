@@ -30,7 +30,7 @@
 
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
 
-    <asset:javascript src="base.js"/>%{-- dont move --}%
+    <laser:javascript src="base.js"/>%{-- dont move --}%
     <script data-type="fix">
         <g:render template="/templates/javascript/jspc.js" />%{-- dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- dont move --}%
@@ -611,7 +611,7 @@
 
     %{-- global content container --}%
 
-    <main class="ui main container ${visibilityContextOrgMenu} ">
+        <main class="ui main container ${visibilityContextOrgMenu}">
 
             %{-- system messages --}%
 
@@ -726,7 +726,7 @@
 
         %{-- javascript loading --}%
 
-        <asset:javascript src="${currentTheme}.js"/>%{-- dont move --}%
+        <laser:javascript src="${currentTheme}.js"/>%{-- dont move --}%
 
         <laser:scriptBlock/>%{-- dont move --}%
 

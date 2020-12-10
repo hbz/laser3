@@ -97,7 +97,7 @@
                             <label>${message(code:'template.addDocument.target')}</label>
                         </dt>
                         <dd>
-                            <g:select name="targetOrg" id="targetOrg" from="${orgs}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                            <g:select name="targetOrg" id="targetOrg" from="${controlledListService.getOrgs()}" optionKey="id" optionValue="text" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                         </dd>
                     </dl>
                 </g:if>

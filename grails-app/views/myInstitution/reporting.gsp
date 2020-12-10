@@ -5,7 +5,7 @@
     <head>
         <meta name="layout" content="laser">
         <title><g:message code="laser"/> : <g:message code="myinst.reporting"/></title>
-        <asset:stylesheet src="chartist.css"/><asset:javascript src="chartist.js"/>%{-- dont move --}%
+        <asset:stylesheet src="chartist.css"/><laser:javascript src="chartist.js"/>%{-- dont move --}%
     </head>
 
     <body>

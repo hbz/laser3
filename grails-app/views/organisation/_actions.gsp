@@ -17,6 +17,7 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 <semui:actionsDropdownItem data-semui="modal" href="#modalCreateNote" message="template.notes.add"/>
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
+                <g:set var="createModal" value="${true}"/>
             </g:if>
             <g:if test="${actionName == 'ids'}">
                 <g:if test="${editable_identifier}">
@@ -47,12 +48,15 @@
         </g:if>
         <g:if test="${actionName == 'tasks'}">
             <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask"/>
+            <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'documents'}">
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument"/>
+            <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'notes'}">
             <semui:actionsDropdownItem message="template.notes.add" data-semui="modal" href="#modalCreateNote"/>
+            <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'show'}">
             <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
@@ -70,7 +74,7 @@
     </g:if>
 </g:elseif>
 <%-- secure against listInstitution, where no orgId is given --%>
-<g:if test="${orgInstance}">
+<g:if test="${createModal}">
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <g:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
         <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
