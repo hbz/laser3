@@ -39,7 +39,7 @@
             <div class="ui top attached label">WCAG-Proof Dropdown mit hidden Input-Feld (Barrierefrei)</div>
         </div>
 
-        <div class="annotation transition visible" style="display: none;">
+
             <div class="ui instructive bottom attached segment">
                 <pre aria-hidden="true">
                     &lt;div class=&quot;field&quot;&gt;
@@ -63,7 +63,7 @@
                 &lt;/div&gt;
                 </pre>
             </div>
-        </div>
+
     </div>
 <!-- STOP Example with no form selection -->
 
@@ -90,21 +90,60 @@
                 <option value="0">Female</option>
             </select>
         </div>
-        </div>
-
-        <div class="ui top attached label">WCAG-Proof Dropdown mit hidden Input-Feld (Barrierefrei)</div>
+        <div class="ui top attached label">Dropdown, dass per Semantic UI Javascript aus HTML Select gebildet wird</div>
     </div>
 
-    <div class="annotation transition visible" style="display: none;">
-        <div class="ui instructive bottom attached segment">
-            <pre aria-hidden="true">
-                &lt;select class="ui dropdown">
-                    &lt;option value="">Gender</option>
-                    &lt;option value="1">Male</option>
-                 &lt;option value="0">Female</option>
-                &lt;/select>
-            </pre>
-        </div>
+
+    <div class="ui instructive bottom attached segment">
+        <pre aria-hidden="true">
+            &lt;select class="ui dropdown">
+                &lt;option value="">Gender</option>
+                &lt;option value="1">Male</option>
+             &lt;option value="0">Female</option>
+            &lt;/select>
+        </pre>
     </div>
+
 </div>
 <!-- STOP Example with form selection -->
+
+<!-- START Example search dropdown -->
+<div class="dropdown example">
+
+    <div class="html ui top attached segment">
+        <ui>
+            <li></li>
+            <li></li>
+        </ui>
+        <br />
+        <div class="field">
+            <label for="filterPropDef">
+                Merkmal
+                <i aria-hidden="true" class="question circle icon la-popup"></i>
+                <div class="ui  popup ">
+                    <i aria-hidden="true" class="shield alternate icon"></i> = Mein Merkmal
+                </div>
+            </label>
+            <select class="ui fluid search dropdown">
+                <option value="">Gender</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+            </select>
+        </div>
+        <div class="ui top attached label">Such-Dropdown, dass per Semantic UI Javascript aus HTML Select gebildet wird</div>
+    </div>
+
+
+    <div class="ui instructive bottom attached segment">
+        <pre aria-hidden="true">
+            &lt;select class="ui fluid search dropdown">
+            &lt;option value="">Gender</option>
+            &lt;option value="1">Male</option>
+            &lt;option value="0">Female</option>
+            &lt;/select>
+        </pre>
+    </div>
+
+</div>
+<!-- STOP Example search dropdown -->
+

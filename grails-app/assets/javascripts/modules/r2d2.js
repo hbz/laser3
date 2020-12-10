@@ -537,7 +537,21 @@ r2d2 = {
             }
         });
 
-
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
+            fullTextSearch: 'exact',
+            clearable: true,
+        });
+        $(ctxSel + ' .la-filter .ui.search.dropdown').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
+            fullTextSearch: 'exact',
+            clearable: true,
+            onChange: function(value, text, $choice){
+                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+            }
+        });
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
