@@ -94,20 +94,20 @@ r2d2 = {
     },
 
     initGlobalAjaxLogin : function() {
-        console.log('r2d2.initGlobalAjaxLogin()')
+        console.log('r2d2.initGlobalAjaxLogin()');
 
         $.ajaxSetup({
             statusCode: {
                 401: function() {
-                    $('.select2-container').select2('close')
-                    $('*[class^=xEditable]').editable('hide')
-                    showAjaxLoginModal()
+                    $('.select2-container').select2('close');
+                    $('*[class^=xEditable]').editable('hide');
+                    showAjaxLoginModal();
                 }
             }
         })
 
         function showAjaxLoginModal() {
-            $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show')
+            $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show');
         }
 
         function ajaxAuth() {
@@ -118,49 +118,49 @@ r2d2 = {
                 dataType: 'JSON',
                 success: function (json, textStatus, xhr) {
                     if (json.success) {
-                        $('#ajaxLoginForm')[0].reset()
-                        $('#ajaxLoginMessage').empty()
-                        $('#ajaxLoginModal').modal('hide')
+                        $('#ajaxLoginForm')[0].reset();
+                        $('#ajaxLoginMessage').empty();
+                        $('#ajaxLoginModal').modal('hide');
                     }
                     else if (json.error) {
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>')
+                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>');
                     }
                     else {
-                        $('#loginMessage').html(xhr.responseText)
+                        $('#loginMessage').html(xhr.responseText);
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
                         // the login request itself wasn't allowed, possibly because the
                         // post url is incorrect and access was denied to it
-                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>')
+                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
                     }
                     else {
-                        var responseText = xhr.responseText
+                        var responseText = xhr.responseText;
                         if (responseText) {
-                            var json = $.parseJSON(responseText)
+                            var json = $.parseJSON(responseText);
                             if (json.error) {
-                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>')
-                                return
+                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                                return;
                             }
                         }
                         else {
-                            responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')'
+                            responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')';
                         }
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>')
+                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>');
                     }
                 }
             })
         }
 
         $('#ajaxLoginForm').submit(function(event) {
-            event.preventDefault()
-            ajaxAuth()
+            event.preventDefault();
+            ajaxAuth();
         })
     },
 
     initGlobalSemuiStuff : function() {
-        console.log("r2d2.initGlobalSemuiStuff()")
+        console.log("r2d2.initGlobalSemuiStuff()");
         // copy email adress next to icon and putting it in cache
 
         $('.js-copyTrigger').click(function(){
@@ -253,7 +253,6 @@ r2d2 = {
                 }
             }
         });
-
     },
 
 
@@ -353,8 +352,8 @@ r2d2 = {
                             endDateInput = thisInput
                         }
                         if(startDateInput !== '' && endDateInput !== '') {
-                            startDate = Date.parse(formatDate(startDateInput));
-                            endDate = Date.parse(formatDate(endDateInput));
+                            startDate = Date.parse(JSPC.helper.formatDate(startDateInput));
+                            endDate = Date.parse(JSPC.helper.formatDate(endDateInput));
                             console.log(startDate+" "+endDate);
                             if(startDate > endDate)
                                 return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
@@ -391,20 +390,9 @@ r2d2 = {
                     });
                 }
             }
-
             $(".table").trigger('reflow')
         })
-
-        function formatDate(input) {
-            if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
-                var inArr = input.split(/[\.\/-]/g);
-                return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
-            }
-            else {
-                return input;
-            }
-        }
-
+        
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
@@ -533,7 +521,7 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
 
@@ -542,7 +530,7 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
 
@@ -552,7 +540,7 @@ r2d2 = {
             fullTextSearch: 'exact',
             clearable: true,
             onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
         $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
@@ -560,7 +548,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             onChange: function(value, text, $choice){
-                value !== '' ? addFilterDropdown(this) : removeFilterDropdown(this);
+                value !== '' ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
 
@@ -574,16 +562,16 @@ r2d2 = {
 
         $(ctxSel + ' .la-filter .ui.dropdown').each(function(index,elem){
             if ($(elem).dropdown('get value') != "") {
-                addFilterDropdown(elem)
+                _addFilterDropdown(elem);
             }
             r2d2.countSettedFilters();
         })
 
-        function addFilterDropdown(elem){
+        function _addFilterDropdown(elem){
             $(elem).is('select') ? $( elem ).parent().addClass("la-filter-dropdown-selected" ) : $( elem ).addClass("la-filter-dropdown-selected" );
         }
 
-        function removeFilterDropdown(elem){
+        function _removeFilterDropdown(elem){
             $(elem).is('select') ? $( elem ).parent().removeClass("la-filter-dropdown-selected" ) : $( elem ).removeClass("la-filter-dropdown-selected" );
         }
 
@@ -619,8 +607,8 @@ r2d2 = {
         });
 
         // confirmation modal
-        var buildConfirmationModal =
-            function(that){
+        function _buildConfirmationModal(that) {
+
                 //var $body = $('body');
                 //var $modal = $('#js-modal');
                 //var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
@@ -757,14 +745,13 @@ r2d2 = {
                                                     $modal.attr('aria-hidden', 'true');
                                                 }*/
                     })
-                    .modal('show')
-                ;
-            }
+                    .modal('show');
+        }
 
         // for links and submit buttons
         $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
             e.preventDefault();
-            buildConfirmationModal(this);
+            _buildConfirmationModal(this);
         });
 
         // for old remote links = ajax calls
@@ -772,7 +759,7 @@ r2d2 = {
             var onclickString = $(this).next('.js-gost').attr("onclick");
             $('#js-confirmation-button').attr("onclick", onclickString);
             var gostObject = $(this).next('.js-gost');
-            buildConfirmationModal(gostObject[0] );
+            _buildConfirmationModal(gostObject[0]);
         });
     },
 
@@ -799,8 +786,8 @@ r2d2 = {
             };
             var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
             // COUNT SELECTED CHECKBOXES
-            countSettedCheckboxes(uniquecheckboxNames);
-            function countSettedCheckboxes(params) {
+            _countSettedCheckboxes(uniquecheckboxNames);
+            function _countSettedCheckboxes(params) {
                 var sumCheck = 0;
                 for (i=0; i<params.length; i++) {
                     var checkboxName = params[i];
