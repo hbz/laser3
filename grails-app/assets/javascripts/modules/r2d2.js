@@ -518,6 +518,7 @@ r2d2 = {
             transition: 'fade',
             forceSelection: false,
             selectOnKeydown: false,
+            clearable: true,
             apiSettings: {
                 cache: false
             }
@@ -534,31 +535,10 @@ r2d2 = {
             }
         });
 
-        $(ctxSel + ' .ui.dropdown.la-clearable').dropdown({
-            forceSelection: false,
-            selectOnKeydown: false,
-            clearable: true,
-            onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
-            }
-        });
-
-        $(ctxSel + ' .ui.search.dropdown:not(.la-not-clearable)').dropdown({ // default behaviour
-            forceSelection: false,
-            selectOnKeydown: false,
-            fullTextSearch: 'exact',
-            clearable: true,
-            onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
-            }
-        });
         $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
-            onChange: function(value, text, $choice){
-                value !== '' ? addFilterDropdown(this) : removeFilterDropdown(this);
-            }
         });
 
         // dropdowns escape

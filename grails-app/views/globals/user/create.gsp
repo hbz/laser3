@@ -9,7 +9,7 @@
     <body>
 
         <g:render template="${breadcrumb}" model="${[inContextOrg: inContextOrg, orgInstance: orgInstance, departmentalView: departmentalView, institutionalView: institutionalView,  params:params ]}"/>
-
+        <br>
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
 
         <semui:messages data="${flash}" />
@@ -67,13 +67,13 @@
 </html>
 <laser:script file="${this.getGroovyPageFileName()}">
 
-        $("#username").keyup(function() {
-            JSPC.app.checkUsername();
-        });
+    $("#username").keyup(function() {
+        JSPC.app.checkUsername();
+    });
 
-        $(".validateNotEmpty").keyup(function(){
-            if($(this).val().length === 0) {
-                JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+    $(".validateNotEmpty").keyup(function(){
+        if($(this).val().length === 0) {
+            JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
             }
             else {
                 JSPC.app.removeError($(this),$("#"+$(this).attr("id")+"Error"));

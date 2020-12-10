@@ -50,6 +50,10 @@
     code:hover .tag .title {
         color: #892A6F;
     }
+    .example {
+        margin-top: 0em;
+        padding-top: 2em;
+    }
     </style>
 </head>
 
@@ -128,129 +132,10 @@
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
     </div>
     <h2 class="ui dividing header">Form-Elemente<a class="anchor" id="form-elemente"></a></h2>
-    <h4 class="ui header">Dropdowns</h4>
-    <div class="dropdown example">
+    <!-- Dropdowns -->
+    <g:render template="frontend_dropdowns" />
 
-        <div class="html ui top attached segment">
-            <ui>
-                <li>versehen mit Label, das mit Extra-Inputdfeld verbunden ist </li>
-                <li><g:link controller="myInstitution" action="currentSubscriptions">zum Beispiel hier verwendet (Merkmal innerhalb Filter)</g:link></li>
-            </ui>
-            <br />
-            <div class="field">
-                <label for="filterPropDef">
-                    Merkmal
-                    <i aria-hidden="true" class="question circle icon la-popup"></i>
-                    <div class="ui  popup ">
-                        <i aria-hidden="true" class="shield alternate icon"></i> = Mein Merkmal
-                    </div>
-                </label>
-                <div class="ui search selection dropdown ">
-                    <input type="hidden" name="filterPropDef">
-                    <i aria-hidden="true" class="dropdown icon"></i>
-                    <input class="search" id="filterPropDef">
-                    <div class="default text">Bitte auswählen</div>
-                    <div class="menu">
-                        <div class="item selected" data-value="${PropertyDefinition.class.name}:418">Abbestellgrund</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:414">Abbestellquote</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:269">AGB <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:384">Alternativname <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:448" data-rdc="${RefdataCategory.class.name}:1">Archivzugriff</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:225" data-rdc="${RefdataCategory.class.name}:1">Bei hbz Aufnahme der Metadaten nachfragen <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:415">Bestellnummer im Erwerbungssystem</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:393" data-rdc="${RefdataCategory.class.name}:1">Bundesweit offen</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:447" data-rdc="${RefdataCategory.class.name}:1">DBIS-Eintrag</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:566">DBIS-Link</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:256">DBIS-Nummer <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:424">Eingeschränkter Benutzerkreis</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:387" data-rdc="${RefdataCategory.class.name}:1">EZB Gelbschaltung</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:217" data-rdc="${RefdataCategory.class.name}:1">EZB-Gelbschaltungen <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:423">Fachstatistik / Klassifikation</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:450">GASCO-Anzeigename</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:121" data-rdc="${RefdataCategory.class.name}:1">GASCO-Eintrag</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:461">GASCO-Informations-Link</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:451">GASCO-Verhandlername</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:419">Hosting-Gebühr</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:214">Institut <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:406" data-rdc="${RefdataCategory.class.name}:1">KBART</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:248">Kostensplitting <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:293">Kostensplitting 2 <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:445" data-rdc="${RefdataCategory.class.name}:1">Kündigungsfrist</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:409" data-rdc="${RefdataCategory.class.name}:1">Mehrjahreslaufzeit</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:395" data-rdc="${RefdataCategory.class.name}:1">Mengenrabatt Stichtag</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:389">Metadaten Quelle</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:388" data-rdc="${RefdataCategory.class.name}:1">Metadatenlieferung</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:398" data-rdc="${RefdataCategory.class.name}:1">Neueinsteigerrabatt</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:234" data-rdc="${RefdataCategory.class.name}:1">Open Access <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:421">PDA/EBS-Programm</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:420">Pick&amp;Choose-Paket</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:413">Preis abhängig von</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:403" data-rdc="${RefdataCategory.class.name}:1">Preis gerundet</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:446">Preissteigerung</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:390" data-rdc="${RefdataCategory.class.name}:1">Preisvorteil durch weitere Produktteilnahme</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:408" data-rdc="${RefdataCategory.class.name}:1">Private Einrichtungen</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:391" data-rdc="${RefdataCategory.class.name}:1">Produktabhängigkeit</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:422">Produktsigel beantragt</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:410">Rabatt</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:411" data-rdc="${RefdataCategory.class.name}:1">Rabatt Zählung</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:392">Rabattstaffel</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:394" data-rdc="${RefdataCategory.class.name}:1">Rechnungsstellung durch Anbieter</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:401">Rechnungszeitpunkt</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:407" data-rdc="${RefdataCategory.class.name}:1">reverse charge</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:449" data-rdc="${RefdataCategory.class.name}:1">SFX-Eintrag</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:399" data-rdc="${RefdataCategory.class.name}:1">Simuser</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:400">Simuser Zahl</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:405">Statistik</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:564">Statistik-Link</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:444">Statistikzugang</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:563" data-rdc="${RefdataCategory.class.name}:1">Steuerbefreiung</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:565">Subskriptionsnummer des Lieferanten</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:417">Subskriptionsnummer des Verlags</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:404" data-rdc="${RefdataCategory.class.name}:1">Teilzahlung</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:377" data-rdc="${RefdataCategory.class.name}:2">Testeigenschaft zum Übertragen original</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:186">Testmerkmal <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:257" data-rdc="${RefdataCategory.class.name}:101">Testmerkmal zum Verschieben von Referenzwerten <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:396">Testzeitraum</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:397" data-rdc="${RefdataCategory.class.name}:1">Unterjähriger Einstieg</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:402">Zahlungsziel</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:235">Zugangskennungen (pro DB) <i aria-hidden="true" class="shield alternate icon"></i></div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:416">Zugangskennungen für Nutzer (pro Zeitschrift)</div>
-                        <div class="item" data-value="${PropertyDefinition.class.name}:412" data-rdc="${RefdataCategory.class.name}:1">Zusätzliche Software erforderlich?</div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="ui top attached label">WCAG-Proof Dropdown mit hidden Input-Feld (Barrierefrei)
-
-            </div>
-        </div>
-
-        <div class="annotation transition visible" style="display: none;">
-            <div class="ui instructive bottom attached segment">
-                <pre aria-hidden="true">
-&lt;div class=&quot;field&quot;&gt;
-    &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
-        Merkmal
-        &lt;i class=&quot;question circle icon la-popup&quot;&gt;&lt;/i&gt;
-        &lt;div class=&quot;ui  popup &quot;&gt;
-            &lt;i class=&quot;shield alternate icon&quot;&gt;&lt;/i&gt; = Meine Merkmal
-        &lt;/div&gt;
-    &lt;/label&gt;
-    &lt;div class=&quot;ui search selection dropdown la-filterPropDef&quot;&gt;
-        &lt;input type=&quot;hidden&quot; name=&quot;filterPropDef&quot;&gt; &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
-        &lt;input class=&quot;search&quot; <strong>id=&quot;filterPropDef&quot;</strong> &gt;
-        &lt;div class=&quot;default text&quot;&gt;Bitte ausw&auml;hlen&lt;/div&gt;
-        &lt;div class=&quot;menu&quot;&gt;
-            &lt;div class=&quot;item selected&quot; data-value=&quot;linkurl&quot;&gt;Abbestellgrund&lt;/div&gt;
-            &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;Abbestellquote&lt;/div&gt;
-            &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;AGB &lt;i class=&quot;shield alternate icon&quot;&gt;&lt;/i&gt;&lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
-                </pre>
-            </div>
-        </div>
-    </div>
     <h4 class="ui header">An- und Ausschalten von Buttons auf Show-Seiten</h4>
     <div class="dropdown example">
 
