@@ -718,7 +718,7 @@ class SemanticUiTagLib {
                     }
                 }
             } else {
-                out << "<div class='ui left pointing dropdown'>" +
+                out << "<div class='ui dropdown'>" +
                         "<i class='arrow right icon'></i>" +
                         "<div class='menu'>"
                 next?.each { n ->
@@ -800,7 +800,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         if(actionName != 'show'){
-            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << "<div class='ui label survey-${object.type.value}'>"
             out << object.type.getI10n('value')
             out << "</div>"
 
@@ -891,7 +891,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         if(actionName != 'show'){
-            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << "<div class='ui label survey-${object.type.value}'>"
             out << object.type.getI10n('value')
             out << "</div>"
 

@@ -271,7 +271,7 @@
                     </th>
 
                     <td class="center aligned">
-                        <div class="ui label left pointing survey-${surveyInfo.type.value}">
+                        <div class="ui label survey-${surveyInfo.type.value}">
                             ${surveyInfo.type.getI10n('value')}
                         </div>
 
