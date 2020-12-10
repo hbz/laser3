@@ -718,7 +718,7 @@ class SemanticUiTagLib {
                     }
                 }
             } else {
-                out << "<div class='ui dropdown'>" +
+                out << "<div class='ui left pointing dropdown'>" +
                         "<i class='arrow right icon'></i>" +
                         "<div class='menu'>"
                 next?.each { n ->
