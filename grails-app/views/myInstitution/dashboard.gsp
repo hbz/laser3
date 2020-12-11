@@ -436,7 +436,6 @@
             func();
         }
 
-                $('.tabular.menu .item').tab();
                 /* $('.item .widget-content').readmore({
                     speed: 250,
                     collapsedHeight: 21,

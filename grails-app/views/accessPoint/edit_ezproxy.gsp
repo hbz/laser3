@@ -213,8 +213,5 @@
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
 </div>
 
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('.menu .item').tab();
-</laser:script>
 </body>
 </html>
