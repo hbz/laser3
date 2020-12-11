@@ -11,7 +11,7 @@ tooltip = {
     },
 
     init : function(ctxSel) {
-        console.log('tooltip.init(' + ctxSel + ')')
+        console.log('tooltip.init( ' + ctxSel + ' )')
 
         tooltip.initDynamicPopups(ctxSel)
         tooltip.initDynamicAccessViaKeys(ctxSel)
@@ -45,7 +45,7 @@ tooltip = {
     },
 
     initDynamicPopups: function(ctxSel) {
-        console.log('tooltip.initDynamicPopups(' + ctxSel + ')')
+        console.log('tooltip.initDynamicPopups( ' + ctxSel + ' )')
 
         $(ctxSel + ' .la-popup-tooltip').each(function() {
             // add aria-label
@@ -77,7 +77,7 @@ tooltip = {
     },
 
     initDynamicAccessViaKeys: function(ctxSel){
-        console.log('tooltip.initDynamicAccessViaKeys(' + ctxSel + ')')
+        console.log('tooltip.initDynamicAccessViaKeys( ' + ctxSel + ' )')
 
         var $elem = $(ctxSel + ' .la-popup-tooltip')
 
