@@ -81,8 +81,9 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     String description_de
     String description_en
 
-    Boolean isHidden = false
-    Boolean isUnique = false
+    Boolean isHidden    = false
+    Boolean isUnique    = false
+    Boolean isFromLaser = false
 
     Date dateCreated
     Date lastUpdated
@@ -106,6 +107,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
         isHidden        column:'idns_is_hidden'
         isUnique        column:'idns_is_unique'
+        isFromLaser     column:'idns_is_from_laser'
 
         dateCreated column: 'idns_date_created'
         lastUpdated column: 'idns_last_updated'
