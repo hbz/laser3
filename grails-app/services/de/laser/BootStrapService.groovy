@@ -683,7 +683,7 @@ No Host Platform URL Content
             String namespace = namespaceProperties["ns"]
             String typ = namespaceProperties["typ"] ?: null
             //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
-            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save()
+            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false, isFromLaser: true).save()
         }
     }
 }

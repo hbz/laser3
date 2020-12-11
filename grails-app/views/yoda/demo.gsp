@@ -14,6 +14,21 @@
 <h1 class="ui header la-noMargin-top">debug only</h1>
 
 <div class="ui raised segment">
+    <div class="ui medium header">&lt;semui:link generateElementId="true" &gt;</div>
+
+    <semui:link generateElementId="true" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+    <semui:link generateElementId="true" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+    <semui:link generateElementId="true" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+
+    <semui:link elementId="aaa-logout" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+
+    <g:link elementId="bbb-logout" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</g:link>
+
+    <semui:link generateElementId="true" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+    <semui:link generateElementId="true" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+</div>
+
+<div class="ui raised segment">
     <div class="ui medium header">Ajax @ de.laser.ajax</div>
 
     <p><g:link controller="ajaxJson" action="test" id="111" target="_blank">controller="ajaxJson" &rArr; ajax/json/test</g:link></p>

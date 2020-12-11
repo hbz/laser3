@@ -92,9 +92,8 @@
                         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                     <g:render template="/templates/filter/orgFilter"
                               model="[
-                                      tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork', 'property']],
-                                      tmplConfigFormFilter: true,
-                                      useNewLayouter      : true
+                                      tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
+                                      tmplConfigFormFilter: true
                               ]"/>
                 </g:form>
             </semui:filter>
@@ -539,8 +538,6 @@
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('.tabular.menu .item').tab()
-
     $('#orgListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)

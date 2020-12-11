@@ -800,7 +800,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         if(actionName != 'show'){
-            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << "<div class='ui label survey-${object.type.value}'>"
             out << object.type.getI10n('value')
             out << "</div>"
 
@@ -891,7 +891,7 @@ class SemanticUiTagLib {
         out << '</div>'
 
         if(actionName != 'show'){
-            out << "<div class='ui label left pointing survey-${object.type.value}'>"
+            out << "<div class='ui label survey-${object.type.value}'>"
             out << object.type.getI10n('value')
             out << "</div>"
 

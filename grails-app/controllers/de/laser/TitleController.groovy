@@ -73,19 +73,6 @@ class TitleController  {
         result
     }
 
-  @Secured(['ROLE_ADMIN'])
-  def findTitleMatches() { 
-    // find all titles by n_title proposedTitle
-    Map<String, Object> result = [:]
-    if ( params.proposedTitle ) {
-      // def proposed_title_key = de.laser.titles.TitleInstance.generateKeyTitle(params.proposedTitle)
-      // result.titleMatches=de.laser.titles.TitleInstance.findAllByKeyTitle(proposed_title_key)
-      String normalised_title = TitleInstance.generateNormTitle(params.proposedTitle)
-      result.titleMatches = TitleInstance.findAllByNormTitleLike("${normalised_title}%")
-    }
-    result
-  }
-
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Map<String, Object> result = [:]

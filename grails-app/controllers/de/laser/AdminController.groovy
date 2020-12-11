@@ -1513,6 +1513,7 @@ class AdminController  {
                 break
 
             case 'POST':
+                idnsInstance.isFromLaser = true
                 if (IdentifierNamespace.findByNsIlike(params.ns) || ! idnsInstance.save()) {
 
                     if(IdentifierNamespace.findByNsIlike(params.ns)) {

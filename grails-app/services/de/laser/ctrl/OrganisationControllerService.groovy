@@ -140,10 +140,6 @@ class OrganisationControllerService {
                                       contextCustomerType:org.getCustomerType()]
 
         //if(result.contextCustomerType == 'ORG_CONSORTIUM')
-        //to translate in hql: select org_name from org left join combo on org_id = combo_from_org_fk where combo_to_org_fk = 1 or org_sector_rv_fk = 82 order by org_sortname asc, org_name asc;
-        Set<Org> orgs = Org.executeQuery("select o from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg or o.sector = :publisher) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED, publisher: RDStore.O_SECTOR_PUBLISHER])
-        orgs-org
-        result.orgs = orgs
 
         result.availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
         if(result.contextCustomerType == "ORG_CONSORTIUM"){

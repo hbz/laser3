@@ -56,9 +56,8 @@
         <g:form action="addMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name'], ['region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
-                              tmplConfigFormFilter: true,
-                              useNewLayouter: true
+                              tmplConfigShow: [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigFormFilter: true
                       ]"/>
         </g:form>
     </semui:filter>

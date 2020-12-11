@@ -83,8 +83,7 @@
                                 <div class="ui icon negative button js-open-confirm-modal"
                                      data-confirm-tokenMsg="${message(code: "confirm.dialogtriggerCleanup")}"
                                      data-confirm-term-how="clearUp"
-                                     data-confirm-id="clearUp" >
-                                    <i class="bath icon"></i>
+                                     data-confirm-id="clearUp">
                                     <g:message code="admin.cleanupTIPP.submit"/>
                                 </div>
                             </td>

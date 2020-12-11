@@ -55,13 +55,12 @@
             </div>
             <g:if test="${consAtMember}">
                 <%
-                    List<List<String>> tmplConfigShow = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['region', 'libraryNetwork','property'], ['subRunTimeMultiYear']]
+                    List<List<String>> tmplConfigShow = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']]
                 %>
                 <g:render template="/templates/filter/orgFilter"
                           model="[
                                   tmplConfigShow: tmplConfigShow,
-                                  tmplConfigFormFilter: true,
-                                  useNewLayouter: true
+                                  tmplConfigFormFilter: true
                           ]"/>
             </g:if>
             <g:else>

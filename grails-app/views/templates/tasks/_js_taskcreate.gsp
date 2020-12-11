@@ -1,19 +1,4 @@
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.taskcreate = function () {
 
-        $.ajax({
-            url: '<g:createLink controller="myInstitution" action="modal_create"/>',
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalCreateTask").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal({
-                    onVisible: function () {
-                            JSPC.callbacks.dynPostFunc();
-                    }
-                }).modal('show');
-            }
-        });
-    }
+    JSPC.app.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="myInstitution" action="modal_create"/>", true);
 </laser:script>

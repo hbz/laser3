@@ -1,13 +1,16 @@
 package de.laser
 
-
 import de.laser.helper.AjaxUtils
 import de.laser.helper.ServerUtils
 import org.grails.io.support.GrailsResourceUtils
 
-class LaserSystemTagLib {
+class LaserAssetsTagLib {
 
     static namespace = 'laser'
+
+    def javascript = {final attrs ->
+        out << asset.javascript(attrs).toString().replace(' type="text/javascript" ', ' data-type="external" ')
+    }
 
     def script = { attrs, body ->
 
