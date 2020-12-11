@@ -46,7 +46,6 @@ r2d2 = {
                         return year + '-' + month + '-' + day;
                     }
                     else {
-                        // TODO
                         alert('Please report this error: ' + JSPC.vars.dateFormat + ' for semui-datepicker unsupported');
                     }
                 }
@@ -80,8 +79,6 @@ r2d2 = {
     },
 
     go : function() {
-        // console.log('r2d2.go()')
-
         r2d2.initGlobalAjaxLogin();
 
         r2d2.initGlobalSemuiStuff();
@@ -104,7 +101,7 @@ r2d2 = {
                     showAjaxLoginModal();
                 }
             }
-        })
+        });
 
         function showAjaxLoginModal() {
             $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show');
@@ -156,7 +153,7 @@ r2d2 = {
         $('#ajaxLoginForm').submit(function(event) {
             event.preventDefault();
             ajaxAuth();
-        })
+        });
     },
 
     initGlobalSemuiStuff : function() {
@@ -249,7 +246,6 @@ r2d2 = {
                 },
                 onError: function(errorMessage) {
                     // invalid response
-
                 }
             }
         });
@@ -287,33 +283,6 @@ r2d2 = {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
 
         if (! ctxSel) { return null }
-
-        // DEPRECATED ?? never used
-        $(ctxSel + ' .xEditable').editable({
-            language: JSPC.vars.locale,
-            format:   JSPC.vars.dateFormat,
-            validate: function(value) {
-                // custom validate functions via semui:xEditable validation="xy"
-                var dVal = $(this).attr('data-validation')
-                if (dVal) {
-                    if (dVal.includes('notEmpty')) {
-                        if($.trim(value) == '') {
-                            return "Das Feld darf nicht leer sein";
-                        }
-                    }
-                    if (dVal.includes('url')) {
-                        var regex = /^(https?|ftp):\/\/(.)*/;
-                        var test = regex.test($.trim(value)) || $.trim(value) == ''
-                        if (! test) {
-                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
-                        }
-                    }
-                }
-            },
-            error: function (xhr, status, error) {
-                return xhr.status + ": " + xhr.statusText
-            },
-        })
 
         $(ctxSel + ' .xEditableValue').editable({
 
@@ -560,7 +529,7 @@ r2d2 = {
             }
         });
 
-        $(ctxSel + ' .la-filter .ui.dropdown').each(function(index,elem){
+        $(ctxSel + ' .la-filter .ui.dropdown').each(function(index, elem){
             if ($(elem).dropdown('get value') != "") {
                 _addFilterDropdown(elem);
             }
@@ -575,11 +544,7 @@ r2d2 = {
             $(elem).is('select') ? $( elem ).parent().removeClass("la-filter-dropdown-selected" ) : $( elem ).removeClass("la-filter-dropdown-selected" );
         }
 
-        $(ctxSel + '.la-filter .checkbox').checkbox({
-            onChange: function() {
-                // r2d2.countSettedFilters();
-            }
-        });
+        $(ctxSel + '.la-filter .checkbox').checkbox();
 
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
@@ -607,12 +572,12 @@ r2d2 = {
         });
 
         // confirmation modal
-        function _buildConfirmationModal(that) {
+        function _buildConfirmationModal(elem) {
 
                 //var $body = $('body');
                 //var $modal = $('#js-modal');
                 //var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
-                var ajaxUrl = that.getAttribute("data-confirm-messageUrl")
+                var ajaxUrl = elem.getAttribute("data-confirm-messageUrl")
                 if (ajaxUrl) {
                     $.ajax({
                         url: ajaxUrl
@@ -625,12 +590,12 @@ r2d2 = {
                         })
                 }
 
-                var tokenMsg = that.getAttribute("data-confirm-tokenMsg") ? that.getAttribute("data-confirm-tokenMsg") : false;
+                var tokenMsg = elem.getAttribute("data-confirm-tokenMsg") ? elem.getAttribute("data-confirm-tokenMsg") : false;
                 tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
 
-                var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
-                var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
-                var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
+                var dataAttr = elem.getAttribute("data-confirm-id")? elem.getAttribute("data-confirm-id")+'_form':false;
+                var how = elem.getAttribute("data-confirm-term-how") ? elem.getAttribute("data-confirm-term-how"):"delete";
+                var url = elem.getAttribute('href') && (elem.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (elem.getAttribute('class') != 'js-gost') ? elem.getAttribute('href'): false; // use url only if not remote link
                 var $jscb = $('#js-confirmation-button')
 
                 switch (how) {
@@ -659,7 +624,7 @@ r2d2 = {
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
                 }
 
-                var remoteLink = $(that).hasClass('la-js-remoteLink')
+                var remoteLink = $(elem).hasClass('la-js-remoteLink')
 
 
                 $('.tiny.modal')
@@ -668,13 +633,13 @@ r2d2 = {
                             //only in form context
                             if (dataAttr) {
                                 // only if the button that triggers the confirmation modal has the attribute value set
-                                if ($(that).val()) {
+                                if ($(elem).val()) {
                                     // than find the form that wraps the button
                                     // and insert the hidden field with name and value
-                                    var name = $(that).attr('name')
+                                    var name = $(elem).attr('name')
                                     var  hiddenField = $('<input id="additionalHiddenField" type="hidden"/>')
                                         .attr( 'name',name )
-                                        .val($(that).val());
+                                        .val($(elem).val());
                                     $('[data-confirm-id='+dataAttr+']').prepend(hiddenField);
                                 }
                             }
@@ -691,7 +656,7 @@ r2d2 = {
                                 window.location.href = url;
                             }
                             if (remoteLink) {
-                                bb8.ajax4remoteLink(that)
+                                bb8.ajax4remoteLink(elem)
                             }
                             $('#js-confirmation-content-term').html('');
                         },
