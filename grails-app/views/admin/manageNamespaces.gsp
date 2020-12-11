@@ -132,7 +132,7 @@
 							<th><g:message code="default.type.label"/></th>
                             <th><g:message code="identifierNamespace.validationRegex.label"/></th>
                             <th><g:message code="identifierNamespace.urlPrefix.label"/></th>
-                            <%--<th><g:message code="identifierNamespace.hide.label"/></th>--%>
+                            <th><g:message code="identifierNamespace.isFromLaser.label"/></th>
                             <th><g:message code="identifierNamespace.unique.label"/></th>
 							<th></th>
 						</tr>
@@ -163,7 +163,9 @@
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
-                                    <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
+                                    <td>
+                                        ${idNs.isFromLaser}
+                                    </td>
                                     <td>
                                         <semui:xEditableBoolean owner="${idNs}" field="isUnique"/>
                                     </td>
@@ -199,7 +201,9 @@
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
-                                    <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
+                                    <td>
+                                        ${idNs.isFromLaser}
+                                    </td>
                                     <td>
                                         ${idNs.isUnique}
                                     </td>
