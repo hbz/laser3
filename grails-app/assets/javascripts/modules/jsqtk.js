@@ -43,17 +43,15 @@ jsqtk = {
         }
         console.groupEnd()
 
-        if (jsqtk.id_result.length > 0) {
-            console.groupCollapsed('jsqtk .. id doublets', jsqtk.id_result.length)
-            jsqtk.id_result.forEach(function (k) {
-                let tmp = []
-                $.each($('[id="' + k + '"]'), function (i, elem) {
-                    tmp.push(elem)
-                })
-                console.log(tmp)
+        console.groupCollapsed('jsqtk .. id doublets', jsqtk.id_result.length)
+        jsqtk.id_result.forEach(function (k) {
+            let tmp = []
+            $.each($('[id="' + k + '"]'), function (i, elem) {
+                tmp.push(elem)
             })
-            console.groupEnd()
-        }
+            console.log(tmp)
+        })
+        console.groupEnd()
     },
 
     info: function (id) {
