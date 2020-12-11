@@ -79,14 +79,17 @@
                     <tbody>
                     <g:each in="${records}" var="record" status="jj">
                         <tr>
+                            <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
+                            <g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
+                            <g:set var="plat" value="${Platform.findByGokbId(record?.platformUuid)}"/>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
                                 <!--${record} -->
-                                <!--UUID: ${record.uuid} -->
-                                <!--Package: ${Package.findByGokbId(record.uuid)} -->
-                                <g:if test="${Package.findByGokbId(record.uuid)}">
+                                <%--UUID: ${record.uuid} --%>
+                                <%--Package: ${Package.findByGokbId(record.uuid)} --%>
+                                <g:if test="">
                                     <g:link controller="package" action="show"
-                                            id="${Package.findByGokbId(record.uuid).id}">${record.name}</g:link>
+                                            id="${pkg.id}">${record.name}</g:link>
                                 </g:if>
                                 <g:else>
                                     ${record.name} <a target="_blank"
@@ -97,18 +100,18 @@
                             <td>
                                 <g:if test="${record.titleCount}">
                                     <g:if test="${record.titleCount == 1}">
-                                        <g:if test="${Package.findByGokbId(record.uuid)}">
+                                        <g:if test="${pkg}">
                                             <g:link controller="package" action="current"
-                                                    id="${Package.findByGokbId(record.uuid).id}">${message(code: 'package.index.result.titles.single')}</g:link>
+                                                    id="${pkg.id}">${message(code: 'package.index.result.titles.single')}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'package.index.result.titles.single')}
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:if test="${Package.findByGokbId(record.uuid)}">
+                                        <g:if test="${pkg}">
                                             <g:link controller="package" action="current"
-                                                    id="${Package.findByGokbId(record.uuid).id}">${message(code: 'package.index.result.titles', args: [record.titleCount])}</g:link>
+                                                    id="${pkg.id}">${message(code: 'package.index.result.titles', args: [record.titleCount])}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'package.index.result.titles', args: [record.titleCount])}
@@ -120,14 +123,14 @@
                                     ${message(code: 'package.index.result.titles.unknown')}
                                 </g:else>
                             </td>
-                            <td><g:if test="${Org.findByGokbId(record.providerUuid)}"><g:link
+                            <td><g:if test="${org}"><g:link
                                     controller="organisation" action="show"
-                                    id="${Org.findByGokbId(record.providerUuid).id}">${record.providerName}</g:link></g:if>
+                                    id="${org.id}">${record.providerName}</g:link></g:if>
                             <g:else>${record.providerName}</g:else>
                             </td>
-                            <td><g:if test="${Platform.findByGokbId(record?.platformUuid)}"><g:link
+                            <td><g:if test="${plat}"><g:link
                                     controller="platform" action="show"
-                                    id="${Platform.findByGokbId(record?.platformUuid).id}">${record.platformName}</g:link></g:if>
+                                    id="${plat.id}">${record.platformName}</g:link></g:if>
                                 <g:else>${record.platformName}</g:else></td>
                             <td>
                                 <div class="ui bulleted list">

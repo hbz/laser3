@@ -29,7 +29,6 @@ import de.laser.titles.JournalInstance
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.titles.TitleInstance
-import grails.gorm.transactions.Transactional
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
@@ -63,7 +62,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static Map<Long,String> RECTYPES = [(RECTYPE_PACKAGE):'packages',(RECTYPE_TITLE):'titles',(RECTYPE_ORG):'orgs',(RECTYPE_TIPP):'tipps']
 
     Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:]
-    Set<String> processingPackageStack = []
+    Set<String> newPackages = [], newTIPPs = []
+    Long maxTimestamp = 0
 
     SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -158,26 +158,28 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                                 break
                             case RECTYPE_TIPP:
-                                updateNonPackageData(listOAI)
-                                Map<String,List> packagesToNotify = [:]
                                 List<String> tippUUIDsOnPage = [], platformsOnPage = [], titleInstancesOnPage = [], packageUUIDs = listOAI.'**'.findAll { node ->
                                     node.name() == "package"
                                 }.collect { node -> node.'@uuid'.text() }
                                 Map<String,Map<String,Object>> tippNodesOnPage = [:]
                                 //make package check: which ones do exist in LAS:eR at all, which do not?
                                 Set<Package> packagesExisting = Package.findAllByGokbIdInList(packageUUIDs)
-                                listOAI.record.each { r ->
-                                    Date recordTimestamp = DateUtils.parseDateGeneric(r.header.datestamp.text())
-                                    if(recordTimestamp.getTime() > maxTimestamp)
-                                        maxTimestamp = recordTimestamp.getTime()
-                                    NodeChildren tippNode = r.metadata.gokb.tipp
-                                    if(packagesExisting.find{ Package pkg -> pkg.gokbId == tippNode.package.'@uuid'.text() }) {
-                                        tippUUIDsOnPage << tippNode.'@uuid'.text()
-                                        tippNodesOnPage.put(tippNode.'@uuid'.text(),tippConv(tippNode))
-                                        platformsOnPage << tippNode.platform.'@uuid'.text()
-                                        titleInstancesOnPage << tippNode.title.'@uuid'.text()
-                                    }
+                                Map<String,Object> updateMap = collectDataToUpdate(listOAI,packagesExisting)
+                                updateMap.tippsOnPage.each { tippNode ->
+                                    tippUUIDsOnPage << tippNode.'@uuid'.text()
+                                    tippNodesOnPage.put(tippNode.'@uuid'.text(),tippConv(tippNode))
                                 }
+                                updateMap.platformsOnPage.each { platformNode ->
+                                    platformsOnPage << platformNode.'@uuid'.text()
+                                }
+                                updateMap.titleInstancesOnPage.each { titleInstanceNode ->
+                                    titleInstancesOnPage << titleInstanceNode.'@uuid'.text()
+                                }
+                                updateTitleInstances(updateMap.titleInstancesOnPage)
+                                updateProviders(updateMap.providersOnPage)
+                                updatePlatforms(updateMap.platformsOnPage)
+                                if(updateMap.maxTimestamp > maxTimestamp)
+                                    maxTimestamp = updateMap.maxTimestamp
                                 log.info("fetching objects for keys ...")
                                 Map<String,Platform> newPlatforms = [:]
                                 if(platformsOnPage) {
@@ -195,32 +197,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 //process existing ones
                                 if(tippUUIDsOnPage) {
                                     Set<TitleInstancePackagePlatform> existingTIPPs = TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDsOnPage)
-                                    tippNodesOnPage.each { String tippUUID, Map<String,Object> tippB ->
-                                        TitleInstancePackagePlatform tippA = existingTIPPs.find { TitleInstancePackagePlatform tippA -> tippA.gokbId == tippUUID }
-                                        List tippDiffsOfPackage = packagesToNotify.get(tippB.packageUUID)
-                                        if (!tippDiffsOfPackage)
-                                            tippDiffsOfPackage = []
-                                        if(tippA) {
-                                            tippDiffsOfPackage << processTippDiffs(tippA, tippB)
-                                        }
-                                        else {
-                                            tippA = addNewTIPP(packagesExisting.find { Package pkg -> pkg.gokbId == tippB.packageUUID }, tippB, newPlatforms, newTitleInstances)
-                                            tippDiffsOfPackage << [event: 'add', target: tippA]
-                                        }
-                                        packagesToNotify.put(tippA.pkg.gokbId,tippDiffsOfPackage)
-                                    }
+                                    tippsToNotify.addAll(processTippPage(existingTIPPs,tippNodesOnPage,packagesExisting,newPlatforms,newTitleInstances))
                                 }
                                 else if(!tippUUIDsOnPage) {
                                     log.info("no tipp UUIDs on page???")
                                 }
-                                //add new ones - ISSUE! TIPPs of the new package may be on different pages - we must store all those TIPPs in a cache for that processing may be reserve for one single thread!
+                                //add new ones
                                 packageUUIDs.each { String uuid ->
                                     if(!packagesExisting.find{ Package pkg -> pkg.gokbId == uuid }) {
                                         NodeChildren packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
                                         updateNonPackageData(packageRecord)
                                         createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
                                     }
-                                    else log.info("package ${uuid} already in process by another thread, no double loading ...")
                                 }
                                 //log.debug(packageUUIDs.toListString())
                                 break
@@ -277,10 +265,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     int completeListSize = Integer.parseInt(listOAI.resumptionToken.'@completeListSize'.text())
                     log.info("Total number of records: ${completeListSize}")
                     Set<Set<String>> threads = divideWork(listOAI.resumptionToken.text(),completeListSize)
-                    List<Long> maxTimestamps = []
                     threads.eachWithIndex { Set<String> tokens, int threadN ->
                         executorService.execute ({
-                            maxTimestamps << startThread(listOAI,tokens,threadN)
+                            startThread(listOAI,tokens,threadN)
+                            if(maxTimestamp+1000 > oldDate.time) {
+                                log.info("all OAI info fetched, timestamp ${source.haveUpTo} updated to ${DateUtils.getSDF_NoTime().format(new Date(maxTimestamp+1000))}")
+                                source.haveUpTo = new Date(maxTimestamp+1000)
+                                source.save()
+                            }
                         })
                     }
                 }
@@ -288,7 +280,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             catch (Exception e) {
                 SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
                 log.error("sync job has failed, please consult stacktrace as follows: ",e)
-                System.exit(987) //is for that I may read the stacktrace
             }
         }
         running = false
@@ -299,7 +290,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<String> tokenSet = [baseToken] //i = 10
         for(int i = 20;i < completeListSize;i+=10) {
             tokenSet << baseToken.replaceFirst('\\|(\\d+)\\|',"|${i}|")
-            if(i % 1000 == 0) {
+            if(i % 2000 == 0) {
                 log.debug("new thread opened")
                 threadSet << tokenSet
                 tokenSet = []
@@ -308,14 +299,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         threadSet
     }
 
-    Long startThread(GPathResult listOAI, Set<String> tokens, int threadN) {
+    void startThread(GPathResult listOAI, Set<String> tokens, int threadN) {
         Thread.currentThread().setName("parallelSync ${threadN}")
         Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
         List<List<Map<String,Object>>> tippsToNotify = []
-        Long maxTimestamp = 0
         if(threadN == 0) {
             log.debug(listOAI.toString())
-            tippsToNotify << syncRecords(listOAI)
+            tippsToNotify << syncRecords(listOAI,0)
         }
         try {
             tokens.each { String token ->
@@ -323,18 +313,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 queryParams.resumptionToken = token
                 listOAI = fetchRecord(source.uri,RECTYPES[source.rectype],queryParams)
                 if(listOAI) {
-                    tippsToNotify << syncRecords(listOAI)
+                    tippsToNotify << syncRecords(listOAI, threadN)
                     log.info("Continue with next iteration, token: ${token}")
-                    listOAI.'**'.findAll { node -> node.name() == 'header' }.each { header ->
-                        Date recordTimestamp = DateUtils.parseDateGeneric(header.datestamp.text())
-                        if(recordTimestamp.getTime() > maxTimestamp)
-                            maxTimestamp = recordTimestamp.getTime()
-                    }
                 }
             }
             notifyDependencies(tippsToNotify)
             log.info("thread ${threadN} finished")
-            maxTimestamp
         }
         catch (Exception e) {
             SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
@@ -342,82 +326,164 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
-    List syncRecords(listOAI) {
+    List syncRecords(GPathResult listOAI,int threadN) {
         List tippsToNotify = []
-        updateNonPackageData(listOAI)
-        Map<String,List> packagesToNotify = [:]
-        List<String> tippUUIDsOnPage = [], platformsOnPage = [], titleInstancesOnPage = [], packageUUIDs = listOAI.'**'.findAll { node ->
+        boolean dryRun = false //is for debugging
+        Set<String> tippUUIDsOnPage = [], platformsOnPage = [], titleInstancesOnPage = [], packageUUIDs = listOAI.'**'.findAll { node ->
             node.name() == "package"
-        }.collect { node -> node.'@uuid'.text() }
+        }.collect { node -> node.'@uuid'.text() }.toSet()
         Map<String,Map<String,Object>> tippNodesOnPage = [:]
-        //make package check: which ones do exist in LAS:eR at all, which do not?
         if(packageUUIDs) {
-            Set<Package> packagesExisting = Package.findAllByGokbIdInList(packageUUIDs)
-            listOAI.record.each { r ->
-                NodeChildren tippNode = r.metadata.gokb.tipp
-                if(packagesExisting.find{ Package pkg -> pkg.gokbId == tippNode.package.'@uuid'.text() }) {
+            Set<Package> packagesExisting = Package.findAllByGokbIdInList(packageUUIDs.toList())
+            Map<String,Object> updateMap = collectDataToUpdate(listOAI,packagesExisting)
+            //make package check: which ones do exist in LAS:eR at all, which do not?
+            if(!dryRun) {
+                log.warn("do it ...")
+                updateTitleInstances(updateMap.titleInstancesOnPage)
+                updateProviders(updateMap.providersOnPage)
+                updatePlatforms(updateMap.platformsOnPage)
+                updateMap.tippsOnPage.each { tippNode ->
                     tippUUIDsOnPage << tippNode.'@uuid'.text()
                     tippNodesOnPage.put(tippNode.'@uuid'.text(),tippConv(tippNode))
-                    platformsOnPage << tippNode.platform.'@uuid'.text()
-                    titleInstancesOnPage << tippNode.title.'@uuid'.text()
                 }
-            }
-            log.info("fetching objects for keys ...")
-            Map<String,Platform> newPlatforms = [:]
-            if(platformsOnPage) {
-                Platform.findAllByGokbIdInList(platformsOnPage).each { Platform plat ->
-                    newPlatforms.put(plat.gokbId,plat)
+                updateMap.platformsOnPage.each { platformNode ->
+                    platformsOnPage << platformNode.'@uuid'.text()
                 }
-            }
-            Map<String,TitleInstance> newTitleInstances = [:]
-            if(titleInstancesOnPage) {
-                //may cause crashes when processing 5 000 000 entries
-                TitleInstance.findAllByGokbIdInList(titleInstancesOnPage).each { TitleInstance ti ->
-                    newTitleInstances.put(ti.gokbId,ti)
+                updateMap.titleInstancesOnPage.each { titleInstanceNode ->
+                    titleInstancesOnPage << titleInstanceNode.'@uuid'.text()
                 }
-            }
-            //process existing ones
-            if(tippUUIDsOnPage) {
-                Set<TitleInstancePackagePlatform> existingTIPPs = TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDsOnPage)
-                tippNodesOnPage.each { String tippUUID, Map<String,Object> tippB ->
-                    TitleInstancePackagePlatform tippA = existingTIPPs.find { TitleInstancePackagePlatform tippA -> tippA.gokbId == tippUUID }
-                    List tippDiffsOfPackage = packagesToNotify.get(tippB.packageUUID)
-                    if (!tippDiffsOfPackage)
-                        tippDiffsOfPackage = []
-                    if(tippA) {
-                        tippDiffsOfPackage << processTippDiffs(tippA, tippB)
+                log.info("fetching objects for keys ...")
+                Map<String,Platform> newPlatforms = [:]
+                if(platformsOnPage) {
+                    Platform.findAllByGokbIdInList(platformsOnPage.toList()).each { Platform plat ->
+                        newPlatforms.put(plat.gokbId,plat)
                     }
-                    else {
-                        tippA = addNewTIPP(packagesExisting.find { Package pkg -> pkg.gokbId == tippB.packageUUID }, tippB, newPlatforms, newTitleInstances)
-                        tippDiffsOfPackage << [event: 'add', target: tippA]
-                    }
-                    packagesToNotify.put(tippA.pkg.gokbId,tippDiffsOfPackage)
                 }
-            }
-            else if(!tippUUIDsOnPage) {
-                log.info("no tipp UUIDs on page???")
-            }
-            //add new ones
-            packageUUIDs.each { String uuid ->
-                if(!packagesExisting.find{ Package pkg -> pkg.gokbId == uuid }) {
-                    if(!processingPackageStack.contains(uuid)) {
-                        processingPackageStack << uuid
-                        NodeChildren packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
+                Map<String,TitleInstance> newTitleInstances = [:]
+                if(titleInstancesOnPage) {
+                    //may cause crashes when processing 5 000 000 entries
+                    TitleInstance.findAllByGokbIdInList(titleInstancesOnPage.toList()).each { TitleInstance ti ->
+                        newTitleInstances.put(ti.gokbId,ti)
+                    }
+                }
+                //process existing ones
+                if(tippUUIDsOnPage) {
+                    Set<TitleInstancePackagePlatform> existingTIPPs = TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDsOnPage.toList())
+                    tippsToNotify.addAll(processTippPage(existingTIPPs,tippNodesOnPage,packagesExisting,newPlatforms,newTitleInstances))
+                }
+                else if(!tippUUIDsOnPage) {
+                    log.info("no tipp UUIDs on page???")
+                }
+                //add new ones
+                packageUUIDs.each { String uuid ->
+                    Package pkgExisting = packagesExisting.find { Package pkg -> pkg.gokbId == uuid }
+                    if(pkgExisting)
+                        log.debug("existing: ${uuid} with LAS:eR ID ${pkgExisting.id}")
+                    else if(!newPackages.contains(uuid)) {
+                        log.debug("existing: ${uuid} not existing, need to load")
+                        //filter here all TIPP-UUIDs and jump to next unprocessed entry
+                        GPathResult packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
+                        packageRecord.record.metadata.gokb.package.TIPPs.TIPP.each { tippNode ->
+                            newTIPPs.add(tippNode.'@uuid'.text()) //must be COMMON for each thread!
+                        }
                         updateNonPackageData(packageRecord)
                         createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
-                        processingPackageStack.remove(uuid)
+                        newPackages << uuid
                     }
                     else log.info("package ${uuid} already in process by another thread, no double loading ...")
                 }
+            }
+            else {
+                log.debug("thread ${threadN} has package UUIDs located: ${packageUUIDs}")
+                packageUUIDs.each { String uuid ->
+                    Package pkgExisting = packagesExisting.find { Package pkg -> pkg.gokbId == uuid }
+                    if(pkgExisting)
+                        log.debug("existing: ${uuid} with LAS:eR ID ${pkgExisting.id}")
+                    else if(!newPackages.contains(uuid)) {
+                        log.debug("existing: ${uuid} not existing, need to load")
+                        GPathResult packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
+                        packageRecord.record.metadata.gokb.package.TIPPs.TIPP.each { tippNode ->
+                            newTIPPs.add(tippNode.'@uuid'.text()) //must be COMMON for each thread!
+                        }
+                        newPackages << uuid
+                    }
+                }
+                listOAI.record.each { r ->
+                    NodeChildren tippNode = r.metadata.gokb.tipp
+                    if(packagesExisting.find{ Package pkg -> pkg.gokbId == tippNode.package.'@uuid'.text() }) {
+                        if(!newTIPPs.contains(tippNode.'@uuid'.text())) {
+                            tippUUIDsOnPage << tippNode.'@uuid'.text()
+                            platformsOnPage << tippNode.platform.'@uuid'.text()
+                            titleInstancesOnPage << tippNode.title.'@uuid'.text()
+                        }
+                        else {
+                            log.debug("omit TIPP ${tippNode.'@uuid'.text()}, already processed when adding its package")
+                        }
+                    }
+                }
+                log.debug("located TIPPs to update: ${tippUUIDsOnPage.toListString()}")
+                log.debug("located platforms to update: ${platformsOnPage.toListString()}")
+                log.debug("located titles to update: ${titleInstancesOnPage.toListString()}")
             }
         }
         tippsToNotify
     }
 
-    void updateNonPackageData(GPathResult oaiBranch) throws SyncException {
-        List titleNodes = oaiBranch.'**'.findAll { node ->
-            node.name() == "title"
+    Map<String,Object> collectDataToUpdate(GPathResult listOAI, Set<Package> packagesExisting) {
+        Set tippsOnPage = [], platformsOnPage = [], titleInstancesOnPage = [], providersOnPage = []
+        listOAI.record.each { r ->
+            Date recordTimestamp = DateUtils.parseDateGeneric(r.header.datestamp.text())
+            log.debug("timestamp of record ${r.header.datestamp.text()} vs. ${new Date(maxTimestamp)}")
+            if(recordTimestamp.getTime() > maxTimestamp) {
+                log.debug("${maxTimestamp} updated to ${recordTimestamp.getTime()}")
+                maxTimestamp = recordTimestamp.getTime()
+            }
+            NodeChildren tippNode = r.metadata.gokb.tipp
+            if(packagesExisting.find{ Package pkg -> pkg.gokbId == tippNode.package.'@uuid'.text() }) {
+                tippsOnPage << tippNode
+                platformsOnPage << tippNode.platform
+                providersOnPage << tippNode.package.provider
+                titleInstancesOnPage << tippNode.title
+            }
         }
+        [tippsOnPage:tippsOnPage, providersOnPage: providersOnPage, platformsOnPage: platformsOnPage, titleInstancesOnPage: titleInstancesOnPage]
+    }
+
+    Collection<List<Map<String,Object>>> processTippPage(Set<TitleInstancePackagePlatform> existingTIPPs, Map<String,Map<String,Object>> tippNodesOnPage, Set<Package> packagesExisting, Map<String,Platform> newPlatforms, Map<String,TitleInstance> newTitleInstances) {
+        Map<String,Object> packagesToNotify = [:]
+        tippNodesOnPage.each { String tippUUID, Map<String,Object> tippB ->
+            TitleInstancePackagePlatform tippA = existingTIPPs.find { TitleInstancePackagePlatform tippA -> tippA.gokbId == tippUUID }
+            List tippDiffsOfPackage = packagesToNotify.get(tippB.packageUUID)
+            if (!tippDiffsOfPackage)
+                tippDiffsOfPackage = []
+            if(tippA) {
+                tippDiffsOfPackage << processTippDiffs(tippA, tippB)
+            }
+            else {
+                tippA = addNewTIPP(packagesExisting.find { Package pkg -> pkg.gokbId == tippB.packageUUID }, tippB, newPlatforms, newTitleInstances)
+                tippDiffsOfPackage << [event: 'add', target: tippA]
+            }
+            packagesToNotify.put(tippA.pkg.gokbId,tippDiffsOfPackage)
+        }
+        packagesToNotify.values()
+    }
+
+    void updateNonPackageData(GPathResult oaiBranch) throws SyncException {
+        Set titleNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "title"
+        }.toSet()
+        updateTitleInstances(titleNodes)
+        Set providerNodes = oaiBranch.'**'.findAll { node ->
+            node.name() == "nominalProvider"
+        }.toSet()
+        updateProviders(providerNodes)
+        Set platformNodes = oaiBranch.'**'.findAll { node ->
+            node.name() in ["nominalPlatform","platform"]
+        }.toSet()
+        updatePlatforms(platformNodes)
+    }
+
+    void updateTitleInstances(Set titleNodes) {
         Set<String> titlesToUpdate = []
         titleNodes.each { title ->
             //temp fix
@@ -428,22 +494,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:title.'@uuid'.text()])
             }
         }
-        List providerNodes = oaiBranch.'**'.findAll { node ->
-            node.name() == "nominalProvider"
-        }
-        Set<String> providersToUpdate = []
-        providerNodes.each { provider ->
-            providersToUpdate << provider.'@uuid'.text()
-        }
-        List platformNodes = oaiBranch.'**'.findAll { node ->
-            node.name() in ["nominalPlatform","platform"]
-        }
-        Set<Map<String,String>> platformsToUpdate = []
-        platformNodes.each { platform ->
-            if (!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text() })
-                platformsToUpdate << [gokbId: platform.'@uuid'.text(), name: platform.name.text(), primaryUrl: platform.primaryUrl.text()]
-        }
-        titlesToUpdate.each { titleUUID ->
+        titlesToUpdate.each { String titleUUID ->
             //that may destruct debugging ...
             try {
                 createOrUpdateTitle(titleUUID)
@@ -453,7 +504,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[titleRecordKey:titleUUID])
             }
         }
-        providersToUpdate.each { providerUUID ->
+    }
+
+    void updateProviders(Set providerNodes) {
+        Set<String> providersToUpdate = []
+        providerNodes.each { provider ->
+            providersToUpdate << provider.'@uuid'.text()
+        }
+        providersToUpdate.each { String providerUUID ->
             try {
                 createOrUpdateProvider(providerUUID)
             }
@@ -461,6 +519,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.error(e.getStackTrace().toList().toListString())
                 SystemEvent.createEvent('GSSS_OAI_WARNING',[providerRecordKey:providerUUID])
             }
+        }
+    }
+
+    void updatePlatforms(Set platformNodes) {
+        Set<Map<String,String>> platformsToUpdate = []
+        platformNodes.each { platform ->
+            if (!platformsToUpdate.find { plat -> plat.platformUUID == platform.'@uuid'.text() })
+                platformsToUpdate << [gokbId: platform.'@uuid'.text(), name: platform.name.text(), primaryUrl: platform.primaryUrl.text()]
         }
         platformsToUpdate.each { Map<String,String> platformParams ->
             try {
@@ -655,9 +721,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.info("before processing identifiers - identifier count: ${packageData.identifiers.identifier.size()}")
                 packageData.identifiers.identifier.each { id ->
                     if(id.'@namespace'.text().toLowerCase() != 'originediturl') {
-                        Identifier.withTransaction {
-                            Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result, isUnique: false, nsType: Package.class.name])
-                        }
+                        Identifier.construct([namespace: id.'@namespace'.text(), value: id.'@value'.text(), reference: result, isUnique: false, nsType: Package.class.name])
                     }
                 }
                 log.info("after processing identifiers")
@@ -921,14 +985,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                         if(titleRecord.identifiers) {
                             //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
-                            if(titleInstance.ids){
-                                titleInstance.ids.clear()
-                                titleInstance.save() //damn those wrestlers ...
-                            }
-                            titleRecord.identifiers.identifier.each { idData ->
-                                if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
-                                    Identifier.withTransaction { TransactionStatus transactionStatus ->
+                            Identifier.withTransaction { TransactionStatus ts ->
+                                if(titleInstance.ids){
+                                    Identifier.executeUpdate('delete from Identifier i where i.ti = :title',[title:titleInstance]) //damn those wrestlers ...
+                                }
+                                titleRecord.identifiers.identifier.each { idData ->
+                                    if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
                                         Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance, isUnique: false, nsType: TitleInstance.class.name])
+                                        ts.flush() //continue here: do single thread checkups; thread #11 crashes here always
                                     }
                                 }
                             }
@@ -1033,15 +1097,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(particData.identifiers) {
                     particData.identifiers.identifier.each { idData ->
                         if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
-                            Identifier.withTransaction {
-                                Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: participant, isUnique: false, nsType: TitleInstance.class.name])
-                            }
+                            Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: participant, isUnique: false, nsType: TitleInstance.class.name])
                         }
                     }
                 }
-                Identifier.withTransaction {
-                    Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant, isUnique: false, nsType: TitleInstance.class.name])
-                }
+                Identifier.construct([namespace:'uri',value:particData.internalId.text(),reference:participant, isUnique: false, nsType: TitleInstance.class.name])
                 participant
             }
             else {

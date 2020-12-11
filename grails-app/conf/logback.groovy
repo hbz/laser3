@@ -62,7 +62,7 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
         append = true
         filter(ShrinkFilter)
         encoder(PatternLayoutEncoder) {
-            pattern = "%d{HH:mm:ss.SSS} | %level %logger - %nopex%msg%n"
+            pattern = "%d{HH:mm:ss.SSS} | %level %logger - %msg%n" //%nopex DO NOT COMMIT!
         }
     }
 

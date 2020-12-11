@@ -2,6 +2,7 @@ package de.laser.titles
 
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
+import org.springframework.dao.DuplicateKeyException
 
 class DatabaseInstance extends TitleInstance{
 
@@ -16,8 +17,14 @@ class DatabaseInstance extends TitleInstance{
         withTransaction {
             DatabaseInstance dbi = new DatabaseInstance(params)
             dbi.setGlobalUID()
-            if(!dbi.save())
-                throw new CreationException(dbi.errors)
+            try {
+                if(!dbi.save())
+                    throw new CreationException(dbi.errors)
+            }
+            catch (DuplicateKeyException ignored) {
+                log.info("database instance exists, returning existing one")
+                dbi = TitleInstance.findByGokbId(params.gokbId) as DatabaseInstance
+            }
             dbi
         }
     }

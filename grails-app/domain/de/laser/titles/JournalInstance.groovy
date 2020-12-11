@@ -2,6 +2,7 @@ package de.laser.titles
 
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
+import org.springframework.dao.DuplicateKeyException
 
 class JournalInstance extends TitleInstance {
 
@@ -16,8 +17,14 @@ class JournalInstance extends TitleInstance {
         withTransaction {
             JournalInstance ji = new JournalInstance(params)
             ji.setGlobalUID()
-            if(!ji.save())
-                throw new CreationException(ji.errors)
+            try {
+                if(!ji.save())
+                    throw new CreationException(ji.errors)
+            }
+            catch(DuplicateKeyException ignored) {
+                log.info("journal instance found, returning existing one ...")
+                ji = TitleInstance.findByGokbId(params.gokbId) as JournalInstance
+            }
             ji
         }
     }
