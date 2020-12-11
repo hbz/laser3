@@ -109,7 +109,7 @@
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
 
                     <%
-                    List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == object.class.name || nsType == null)}
+                    List<IdentifierNamespace> nsList = IdentifierNamespace.where{((nsType == object.class.name || nsType == null) && isFromLaser == true)}
                             .list(sort: 'ns')
                             .sort { a, b ->
                                 String aVal = a.getI10n('name') ?: a.ns

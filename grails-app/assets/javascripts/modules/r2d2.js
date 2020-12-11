@@ -46,7 +46,6 @@ r2d2 = {
                         return year + '-' + month + '-' + day;
                     }
                     else {
-                        // TODO
                         alert('Please report this error: ' + JSPC.vars.dateFormat + ' for semui-datepicker unsupported');
                     }
                 }
@@ -80,8 +79,6 @@ r2d2 = {
     },
 
     go : function() {
-        // console.log('r2d2.go()')
-
         r2d2.initGlobalAjaxLogin();
 
         r2d2.initGlobalSemuiStuff();
@@ -94,20 +91,20 @@ r2d2 = {
     },
 
     initGlobalAjaxLogin : function() {
-        console.log('r2d2.initGlobalAjaxLogin()')
+        console.log('r2d2.initGlobalAjaxLogin()');
 
         $.ajaxSetup({
             statusCode: {
                 401: function() {
-                    $('.select2-container').select2('close')
-                    $('*[class^=xEditable]').editable('hide')
-                    showAjaxLoginModal()
+                    $('.select2-container').select2('close');
+                    $('*[class^=xEditable]').editable('hide');
+                    showAjaxLoginModal();
                 }
             }
-        })
+        });
 
         function showAjaxLoginModal() {
-            $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show')
+            $('#ajaxLoginModal').modal('setting', 'closable', false).modal('show');
         }
 
         function ajaxAuth() {
@@ -118,49 +115,49 @@ r2d2 = {
                 dataType: 'JSON',
                 success: function (json, textStatus, xhr) {
                     if (json.success) {
-                        $('#ajaxLoginForm')[0].reset()
-                        $('#ajaxLoginMessage').empty()
-                        $('#ajaxLoginModal').modal('hide')
+                        $('#ajaxLoginForm')[0].reset();
+                        $('#ajaxLoginMessage').empty();
+                        $('#ajaxLoginModal').modal('hide');
                     }
                     else if (json.error) {
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>')
+                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>');
                     }
                     else {
-                        $('#loginMessage').html(xhr.responseText)
+                        $('#loginMessage').html(xhr.responseText);
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
                         // the login request itself wasn't allowed, possibly because the
                         // post url is incorrect and access was denied to it
-                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>')
+                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
                     }
                     else {
-                        var responseText = xhr.responseText
+                        var responseText = xhr.responseText;
                         if (responseText) {
-                            var json = $.parseJSON(responseText)
+                            var json = $.parseJSON(responseText);
                             if (json.error) {
-                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>')
-                                return
+                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                                return;
                             }
                         }
                         else {
-                            responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')'
+                            responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')';
                         }
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>')
+                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>');
                     }
                 }
             })
         }
 
         $('#ajaxLoginForm').submit(function(event) {
-            event.preventDefault()
-            ajaxAuth()
-        })
+            event.preventDefault();
+            ajaxAuth();
+        });
     },
 
     initGlobalSemuiStuff : function() {
-        console.log("r2d2.initGlobalSemuiStuff()")
+        console.log("r2d2.initGlobalSemuiStuff()");
         // copy email adress next to icon and putting it in cache
 
         $('.js-copyTrigger').click(function(){
@@ -249,11 +246,9 @@ r2d2 = {
                 },
                 onError: function(errorMessage) {
                     // invalid response
-
                 }
             }
         });
-
     },
 
 
@@ -288,33 +283,6 @@ r2d2 = {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
 
         if (! ctxSel) { return null }
-
-        // DEPRECATED ?? never used
-        $(ctxSel + ' .xEditable').editable({
-            language: JSPC.vars.locale,
-            format:   JSPC.vars.dateFormat,
-            validate: function(value) {
-                // custom validate functions via semui:xEditable validation="xy"
-                var dVal = $(this).attr('data-validation')
-                if (dVal) {
-                    if (dVal.includes('notEmpty')) {
-                        if($.trim(value) == '') {
-                            return "Das Feld darf nicht leer sein";
-                        }
-                    }
-                    if (dVal.includes('url')) {
-                        var regex = /^(https?|ftp):\/\/(.)*/;
-                        var test = regex.test($.trim(value)) || $.trim(value) == ''
-                        if (! test) {
-                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
-                        }
-                    }
-                }
-            },
-            error: function (xhr, status, error) {
-                return xhr.status + ": " + xhr.statusText
-            },
-        })
 
         $(ctxSel + ' .xEditableValue').editable({
 
@@ -353,8 +321,8 @@ r2d2 = {
                             endDateInput = thisInput
                         }
                         if(startDateInput !== '' && endDateInput !== '') {
-                            startDate = Date.parse(formatDate(startDateInput));
-                            endDate = Date.parse(formatDate(endDateInput));
+                            startDate = Date.parse(JSPC.helper.formatDate(startDateInput));
+                            endDate = Date.parse(JSPC.helper.formatDate(endDateInput));
                             console.log(startDate+" "+endDate);
                             if(startDate > endDate)
                                 return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
@@ -391,19 +359,8 @@ r2d2 = {
                     });
                 }
             }
-
             $(".table").trigger('reflow')
         })
-
-        function formatDate(input) {
-            if(input.match(/^\d{2}[\.\/-]\d{2}[\.\/-]\d{2,4}$/)) {
-                var inArr = input.split(/[\.\/-]/g);
-                return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
-            }
-            else {
-                return input;
-            }
-        }
 
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
@@ -506,6 +463,9 @@ r2d2 = {
             }
         });
 
+        // tabs
+        $(ctxSel + ' .tabular.menu .item').tab();
+
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
 
@@ -514,8 +474,8 @@ r2d2 = {
 
         // all dropdowns but dropdowns inside mainMenue
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
-            //duration: 150,
-            //transition: 'fade',
+            duration: 150,
+            transition: 'fade',
             forceSelection: false,
             selectOnKeydown: false,
             clearable: true,
@@ -533,7 +493,7 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
 
@@ -542,6 +502,9 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
+            onChange: function(value, text, $choice){
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
+            }
         });
         $(ctxSel + ' .la-filter .ui.search.dropdown').dropdown({
             forceSelection: false,
@@ -549,9 +512,10 @@ r2d2 = {
             fullTextSearch: 'exact',
             clearable: true,
             onChange: function(value, text, $choice){
-                (value !== '') ? addFilterDropdown(this) : removeFilterDropdown(this);
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
+
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
@@ -560,26 +524,22 @@ r2d2 = {
             }
         });
 
-        $(ctxSel + ' .la-filter .ui.dropdown').each(function(index,elem){
+        $(ctxSel + ' .la-filter .ui.dropdown').each(function(index, elem){
             if ($(elem).dropdown('get value') != "") {
-                addFilterDropdown(elem)
+                _addFilterDropdown(elem);
             }
             r2d2.countSettedFilters();
         })
 
-        function addFilterDropdown(elem){
+        function _addFilterDropdown(elem) {
             $(elem).is('select') ? $( elem ).parent().addClass("la-filter-dropdown-selected" ) : $( elem ).addClass("la-filter-dropdown-selected" );
         }
 
-        function removeFilterDropdown(elem){
+        function _removeFilterDropdown(elem) {
             $(elem).is('select') ? $( elem ).parent().removeClass("la-filter-dropdown-selected" ) : $( elem ).removeClass("la-filter-dropdown-selected" );
         }
 
-        $(ctxSel + '.la-filter .checkbox').checkbox({
-            onChange: function() {
-                // r2d2.countSettedFilters();
-            }
-        });
+        $(ctxSel + '.la-filter .checkbox').checkbox();
 
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
@@ -607,12 +567,12 @@ r2d2 = {
         });
 
         // confirmation modal
-        var buildConfirmationModal =
-            function(that){
+        function _buildConfirmationModal(elem) {
+
                 //var $body = $('body');
                 //var $modal = $('#js-modal');
                 //var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
-                var ajaxUrl = that.getAttribute("data-confirm-messageUrl")
+                var ajaxUrl = elem.getAttribute("data-confirm-messageUrl")
                 if (ajaxUrl) {
                     $.ajax({
                         url: ajaxUrl
@@ -625,12 +585,12 @@ r2d2 = {
                         })
                 }
 
-                var tokenMsg = that.getAttribute("data-confirm-tokenMsg") ? that.getAttribute("data-confirm-tokenMsg") : false;
+                var tokenMsg = elem.getAttribute("data-confirm-tokenMsg") ? elem.getAttribute("data-confirm-tokenMsg") : false;
                 tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
 
-                var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
-                var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
-                var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
+                var dataAttr = elem.getAttribute("data-confirm-id")? elem.getAttribute("data-confirm-id")+'_form':false;
+                var how = elem.getAttribute("data-confirm-term-how") ? elem.getAttribute("data-confirm-term-how"):"delete";
+                var url = elem.getAttribute('href') && (elem.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (elem.getAttribute('class') != 'js-gost') ? elem.getAttribute('href'): false; // use url only if not remote link
                 var $jscb = $('#js-confirmation-button')
 
                 switch (how) {
@@ -659,7 +619,7 @@ r2d2 = {
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
                 }
 
-                var remoteLink = $(that).hasClass('la-js-remoteLink')
+                var remoteLink = $(elem).hasClass('la-js-remoteLink')
 
 
                 $('.tiny.modal')
@@ -668,13 +628,13 @@ r2d2 = {
                             //only in form context
                             if (dataAttr) {
                                 // only if the button that triggers the confirmation modal has the attribute value set
-                                if ($(that).val()) {
+                                if ($(elem).val()) {
                                     // than find the form that wraps the button
                                     // and insert the hidden field with name and value
-                                    var name = $(that).attr('name')
+                                    var name = $(elem).attr('name')
                                     var  hiddenField = $('<input id="additionalHiddenField" type="hidden"/>')
                                         .attr( 'name',name )
-                                        .val($(that).val());
+                                        .val($(elem).val());
                                     $('[data-confirm-id='+dataAttr+']').prepend(hiddenField);
                                 }
                             }
@@ -691,7 +651,7 @@ r2d2 = {
                                 window.location.href = url;
                             }
                             if (remoteLink) {
-                                bb8.ajax4remoteLink(that)
+                                bb8.ajax4remoteLink(elem)
                             }
                             $('#js-confirmation-content-term').html('');
                         },
@@ -745,14 +705,13 @@ r2d2 = {
                                                     $modal.attr('aria-hidden', 'true');
                                                 }*/
                     })
-                    .modal('show')
-                ;
-            }
+                    .modal('show');
+        }
 
         // for links and submit buttons
         $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
             e.preventDefault();
-            buildConfirmationModal(this);
+            _buildConfirmationModal(this);
         });
 
         // for old remote links = ajax calls
@@ -760,7 +719,7 @@ r2d2 = {
             var onclickString = $(this).next('.js-gost').attr("onclick");
             $('#js-confirmation-button').attr("onclick", onclickString);
             var gostObject = $(this).next('.js-gost');
-            buildConfirmationModal(gostObject[0] );
+            _buildConfirmationModal(gostObject[0]);
         });
     },
 
@@ -787,8 +746,8 @@ r2d2 = {
             };
             var uniquecheckboxNames = eliminateDuplicates(allCheckboxes);
             // COUNT SELECTED CHECKBOXES
-            countSettedCheckboxes(uniquecheckboxNames);
-            function countSettedCheckboxes(params) {
+            _countSettedCheckboxes(uniquecheckboxNames);
+            function _countSettedCheckboxes(params) {
                 var sumCheck = 0;
                 for (i=0; i<params.length; i++) {
                     var checkboxName = params[i];

@@ -267,6 +267,10 @@ class SemanticUiNavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
+        if (attrs.generateElementId) {
+            attrs.elementId = generateElementId(attrs)
+        }
+
         out << g.link(linkBody,
                 controller: attrs.controller,
                 action: attrs.action,
@@ -303,6 +307,10 @@ class SemanticUiNavigationTagLib {
             }
         }
 
+        if (attrs.generateElementId) {
+            attrs.elementId = generateElementId(attrs)
+        }
+
         if (check) {
             out << g.link(linkBody,
                     controller: attrs.controller,
@@ -311,7 +319,6 @@ class SemanticUiNavigationTagLib {
                     class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
                     elementId: attrs.elementId,
                     role: attrs.role
-
             )
         }
         else {
@@ -319,16 +326,41 @@ class SemanticUiNavigationTagLib {
         }
     }
 
-    // introduced as of December 3rd, 2018 with ticket #793
-    // <semui:securedMainNavItemDisabled controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
+    def link = { attrs, body ->
 
+        if (attrs.generateElementId) {
+            attrs.elementId = generateElementId(attrs)
+        }
 
-    def securedMainNavItemDisabled = { attrs, body ->
-
-        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
-
-        out << '<div class="item"><div class="disabled" data-tooltip="Die Funktion \''+lbMessage+'\' ist zur Zeit nicht verfügbar!">' + linkBody + '</div></div>'
+        out << g.link(body,
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params,
+                class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
+                elementId: attrs.elementId,
+                role: attrs.role
+        )
     }
 
+    private String generateElementId(Map<String, Object> attrs) {
+
+        if (! request.getAttribute('navIds')) {
+            request.setAttribute('navIds', [])
+        }
+        String elementId = attrs.controller + '-' + attrs.action
+        int counter
+
+        while (((List) request.getAttribute('navIds')).contains(elementId)) {
+            if (counter) {
+                elementId = elementId.substring(0, elementId.lastIndexOf('-'))
+            }
+            else {
+                counter = 1 // first index needed: 2
+            }
+            elementId = elementId + '-' + (++counter)
+        }
+        ((List) request.getAttribute('navIds')).add(elementId)
+
+        elementId
+    }
 }

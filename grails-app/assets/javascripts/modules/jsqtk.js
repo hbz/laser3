@@ -12,6 +12,48 @@ jsqtk = {
     el_resultCounter: {},
     el_idCounter: 0,
 
+    go: function () {
+
+        jsqtk._checkIds()
+
+        let elCounter = jsqtk._checkEventListeners()
+        let currentKeys = jsqtk.el_keys[jsqtk.el_keys.length - 1]
+
+        let tmp = []
+        $.each(jsqtk.el_resultCounter, function (k, v) {
+            tmp.push(k + ': ' + v)
+        })
+
+        console.groupCollapsed('jsqtk .. el doublets', tmp)
+        console.log('- event listener found overall: ' + elCounter)
+
+        if (jsqtk.el_blacklist.length > 0) {
+            console.log('- el_blacklist: ' + jsqtk.el_blacklist)
+        }
+        if (currentKeys.length > 0) {
+            let history = []
+            jsqtk.el_keys.forEach(function (i){ history.push(i.length) })
+
+            console.log('- history count of used data-jsqtk-ids: [' + history + ']')
+            console.log('- currently used data-jsqtk-ids: ' + currentKeys)
+            console.log('- currently found elements with event listener doublets: ' + Object.keys(jsqtk.el_result).length)
+            currentKeys.forEach(function (k) {
+                console.log(jsqtk.el_result[k])
+            })
+        }
+        console.groupEnd()
+
+        console.groupCollapsed('jsqtk .. id doublets', jsqtk.id_result.length)
+        jsqtk.id_result.forEach(function (k) {
+            let tmp = []
+            $.each($('[id="' + k + '"]'), function (i, elem) {
+                tmp.push(elem)
+            })
+            console.log(tmp)
+        })
+        console.groupEnd()
+    },
+
     info: function (id) {
         console.log('jsqtk.info()')
         let elem = $('*[data-jsqtk-id="jsqtk-' + id + '"]')
@@ -34,36 +76,10 @@ jsqtk = {
         })
     },
 
-    _check: function (events) {
-        let result = []
+    // ----->
 
-        for (let i=0; i<events.length; i++) {
-            for (let j=i+1; j<events.length; j++) {
-                if (events[i].handler.toString() == events[j].handler.toString()) {
-                    if ($.inArray(events[i].handler, result) < 0) {
-                        result.push(events[i].handler)
-                    }
-                    if ($.inArray(events[j].handler, result) < 0) {
-                        result.push(events[j].handler)
-                    }
-                }
-            }
-        }
-        return result
-    },
-
-    go: function () {
-
-        $.each($('[id]'), function (i, elem) {
-            let id = $(elem).attr('id')
-            if ($.inArray(id, jsqtk.id_keys) < 0) {
-                jsqtk.id_keys.push(id)
-            } else {
-                jsqtk.id_result.push(id)
-            }
-        })
-
-        let evsCounter = 0
+    _checkEventListeners: function () {
+        let elCounter = 0
 
         jsqtk.el_result = {}
         jsqtk.el_resultCounter = {}
@@ -75,11 +91,11 @@ jsqtk = {
             let evs = $._data(elem, 'events')
 
             if (evs) {
-                evsCounter = evsCounter + Object.keys(evs).length
+                elCounter = elCounter + Object.keys(evs).length
 
                 $.each(evs, function (ii, elist) {
                     if ($.inArray(ii, jsqtk.el_blacklist) < 0 && elist.length > 1) {
-                        let checkList = jsqtk._check(elist)
+                        let checkList = jsqtk._checkEventListenersInternal(elist)
 
                         if (checkList.length > 0) {
                             if ($(elem).attr('data-jsqtk-id')) {
@@ -108,30 +124,38 @@ jsqtk = {
         })
         jsqtk.el_keys.push(keys)
 
-        console.groupCollapsed('jsqtk .. el doublets' , jsqtk.el_resultCounter)
-        console.log('- event listener found overall: ' + evsCounter)
-        if (jsqtk.el_blacklist.length > 0) {
-            console.log('- el_blacklist: ' + jsqtk.el_blacklist)
-        }
-        if (keys.length > 0) {
-            let history = []
-            jsqtk.el_keys.forEach(function(i){ history.push(i.length) })
+        return elCounter
+    },
 
-            console.log('- data-jsqtk-ids in use: ' + keys)
-            console.log('- history of used data-jsqtk-ids: [' + history + ']')
-            console.log('- current elements with event listener doublets: ' + Object.keys(jsqtk.el_result).length)
-            keys.forEach(function (k) {
-                console.log(jsqtk.el_result[k])
-            })
-        }
-        console.groupEnd()
+    _checkEventListenersInternal: function (events) {
+        let result = []
 
-        if (jsqtk.id_result.length > 0) {
-            console.groupCollapsed('jsqtk .. id doublets', jsqtk.id_result.length)
-            jsqtk.id_result.forEach(function (k) {
-                console.log($('[id="' + k + '"]'))
-            })
-            console.groupEnd()
+        for (let i=0; i<events.length; i++) {
+            for (let j=i+1; j<events.length; j++) {
+                if (events[i].handler.toString() == events[j].handler.toString()) {
+                    if ($.inArray(events[i].handler, result) < 0) {
+                        result.push(events[i].handler)
+                    }
+                    if ($.inArray(events[j].handler, result) < 0) {
+                        result.push(events[j].handler)
+                    }
+                }
+            }
         }
+        return result
+    },
+
+    _checkIds: function () {
+        jsqtk.id_keys = []
+        jsqtk.id_result = []
+
+        $.each($('[id]'), function (i, elem) {
+            let id = $(elem).attr('id')
+            if ($.inArray(id, jsqtk.id_keys) < 0) {
+                jsqtk.id_keys.push(id)
+            } else {
+                jsqtk.id_result.push(id)
+            }
+        })
     }
 }
