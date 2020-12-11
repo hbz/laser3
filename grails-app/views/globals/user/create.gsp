@@ -129,5 +129,6 @@
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
+            clearable: false,
         });
 </laser:script>

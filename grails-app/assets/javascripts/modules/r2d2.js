@@ -472,40 +472,36 @@ r2d2 = {
         // datepicker
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
-        // all dropdowns but dropdowns inside mainMenue
-        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
-            duration: 150,
-            transition: 'fade',
-            forceSelection: false,
-            selectOnKeydown: false,
-            clearable: true,
-            apiSettings: {
-                cache: false
-            }
-        });
-
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
-        // all dropdowns in filter
-        // special: stuff on change
-        $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
-            forceSelection: false,
+        // DROPDOWN
+
+        // all dropdowns but dropdowns inside mainMenue and but la-not-clearable at user/create view
+        // simple dropdown
+        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
             selectOnKeydown: false,
             clearable: true,
-            onChange: function(value, text, $choice){
-                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
-            }
         });
-
-        $(ctxSel + ' .ui.search.dropdown').dropdown({
+        // all search dropdowns but la-not-clearable at user/create view
+        // search dropdown
+        $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
+        });
+
+        // FILTER
+        // special: stuff on change
+        // simple dropdown
+        $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+            selectOnKeydown: false,
+            clearable: true,
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
+        // search dropdown
         $(ctxSel + ' .la-filter .ui.search.dropdown').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
