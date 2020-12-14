@@ -111,7 +111,6 @@ deckSaver = {
 
 
             deckSaver.enableXeditable('.xEditableValue');
-            deckSaver.enableXeditable('.xEditable');
             deckSaver.enableXeditable('.xEditableDatepicker');
             deckSaver.enableXeditable('.xEditableManyToOne');
 
@@ -153,7 +152,6 @@ deckSaver = {
 
 
             deckSaver.disableXeditable('.xEditableValue');
-            deckSaver.disableXeditable('.xEditable');
             deckSaver.disableXeditable('.xEditableDatepicker');
             deckSaver.disableXeditable('.xEditableManyToOne');
 

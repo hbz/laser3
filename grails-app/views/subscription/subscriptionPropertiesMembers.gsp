@@ -741,8 +741,6 @@
             }
         }
     });
-
-    $('.tabular.menu .item').tab()
 </laser:script>
 
 </body>

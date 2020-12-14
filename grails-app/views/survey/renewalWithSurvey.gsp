@@ -328,14 +328,7 @@ ${surveyInfo.name}
 </g:else>
 
 <g:if test="${parentSuccessorSubscription}">
-
     <g:render template="transferParticipantsModal"/>
-
 </g:if>
-
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('.menu .item').tab();
-</laser:script>
 </body>
 </html>
