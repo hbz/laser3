@@ -9,6 +9,9 @@ import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.grails.taglib.GroovyPageAttributes
+
+import javax.servlet.http.HttpServletRequest
 
 class SwissKnife {
 
@@ -96,7 +99,7 @@ class SwissKnife {
         return cloned
     }
 
-    static boolean checkAndCacheNavPerms(attrs, request) {
+    static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         AccessService accessService   = (AccessService) Holders.grailsApplication.mainContext.getBean('accessService')
@@ -129,11 +132,11 @@ class SwissKnife {
 
             if (!check) {
                 if (attrs.affiliation && attrs.orgPerm) {
-                    if (user?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
+                    if (user.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
                         check = true
                     }
                 }
-                else if (attrs.affiliation && user?.hasAffiliation(attrs.affiliation)) {
+                else if (attrs.affiliation && user.hasAffiliation(attrs.affiliation)) {
                     check = true
                 }
                 else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
@@ -141,7 +144,7 @@ class SwissKnife {
                 }
 
                 if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
+                    check = user.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
                 }
             }
             checkMap.put(lsmnic, check)
