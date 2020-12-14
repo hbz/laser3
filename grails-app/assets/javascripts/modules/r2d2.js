@@ -361,7 +361,7 @@ r2d2 = {
             }
             $(".table").trigger('reflow')
         })
-        
+
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
@@ -472,52 +472,43 @@ r2d2 = {
         // datepicker
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
-        // dropdowns
-        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
-            duration: 150,
-            transition: 'fade',
-            forceSelection: false,
-            selectOnKeydown: false,
-            apiSettings: {
-                cache: false
-            }
-        });
-
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
+        // DROPDOWN
+
+        // all dropdowns but dropdowns inside mainMenue and but la-not-clearable at user/create view
+        // simple dropdown
+        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
+            selectOnKeydown: false,
+            clearable: true,
+        });
+        // all search dropdowns but la-not-clearable at user/create view
+        // search dropdown
+        $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
+            fullTextSearch: 'exact',
+            clearable: true,
+        });
+
+        // FILTER
+        // special: stuff on change
+        // simple dropdown
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
-            forceSelection: false,
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
-
-        $(ctxSel + ' .ui.dropdown.la-clearable').dropdown({
-            forceSelection: false,
-            selectOnKeydown: false,
-            clearable: true,
-            onChange: function(value, text, $choice){
-                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
-            }
-        });
-
-        $(ctxSel + ' .ui.search.dropdown:not(.la-not-clearable)').dropdown({ // default behaviour
+        // search dropdown
+        $(ctxSel + ' .la-filter .ui.search.dropdown').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
-            }
-        });
-        $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
-            forceSelection: false,
-            selectOnKeydown: false,
-            fullTextSearch: 'exact',
-            onChange: function(value, text, $choice){
-                value !== '' ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
 

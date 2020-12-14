@@ -5,38 +5,19 @@ a11yMenu = {
 
     go: function () {
         // console.log('a11yMenu.go()')
-
-        a11yMenu.initMainMenue()
-        a11yMenu.init('body')
+        a11yMenu.initMenue()
     },
 
-    init: function (ctxSel) {
-        console.log('a11yMenu.init( ' + ctxSel + ' )')
-        a11yMenu.initDynamicDropdowns(ctxSel)
-    },
 
-    initDynamicDropdowns: function(ctxSel) {
-        console.log('a11yMenu.initDropdowns( ' + ctxSel + ' )')
 
-        // for Main Menu
-        $(ctxSel + ' .ui.dropdown').dropdown({
-            selectOnKeydown: false,
-            on: 'hover',
-            onHide: function() {
-                $(this).attr("aria-expanded", "false"); // a11y
-            },
-            onShow: function() {
-                $(this).attr("aria-expanded", "true"); // a11y
-            }
-        });
-    },
-
-    initMainMenue: function () {
+    initMenue: function () {
         console.log('a11yMenu.initMainMenue()')
 
         // for Main Menu
-        $('#mainMenue').dropdown({
-            action: 'nothing',
+        $('#mainMenue .dropdown').dropdown({
+            action: function(text, value, element) {
+                element.click();
+            },
             selectOnKeydown        : false,
             on: 'hover',
             onHide         : function() {
@@ -48,9 +29,11 @@ a11yMenu = {
         });
 
         // for Test Main Menu on dev/index view
-        $('#mainMenueTest').dropdown({
-            action: 'nothing',
-            selectOnKeydown        : true,
+        $('#mainMenueTest .dropdown').dropdown({
+            action: function(text, value, element) {
+                element.click();
+            },
+            selectOnKeydown        : false,
             on: 'hover',
             onHide         : function() {
                 $(this).attr("aria-expanded", "false"); // a11y
