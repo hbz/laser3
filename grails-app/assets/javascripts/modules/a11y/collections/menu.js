@@ -8,8 +8,6 @@ a11yMenu = {
         a11yMenu.initMenue()
     },
 
-
-
     initMenue: function () {
         console.log('a11yMenu.initMainMenue()')
 
