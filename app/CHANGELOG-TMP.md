@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3036    14.12.2020  rc1.6   1.6.6       Andreas Bug         Darstellungs- und Fallbackfehler bei Kosten behoben
+
 3030    11.12.2020  rc1.6   1.6.6       Moe     Bug         Titelumfrage: Bestand kann nicht übernommen wenn Umfrage Status "Umfrage beendet" hat
 
 3011    04.12.2020  rc1.6   1.6.6       Andreas Bug         verschiedene Bugs im Sync korrigiert
