@@ -1,8 +1,7 @@
 package de.laser
 
-import de.laser.auth.User
+
 import de.laser.helper.SwissKnife
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 class SemanticUiSubNavTagLib {
 
@@ -55,8 +54,7 @@ class SemanticUiSubNavTagLib {
 
         def tooltip = attrs.tooltip ?: ""
 
-        if(tooltip != "")
-        {
+        if(tooltip != "") {
             linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
         }
 
@@ -83,40 +81,19 @@ class SemanticUiSubNavTagLib {
 
     def securedSubNavItem = { attrs, body ->
 
-        User user = contextService.getUser()
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody = (text && message) ? text + " - " + message : text + message
+        String linkBody = (text && message) ? text + " - " + message : text + message
 
-        boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
-
-        if (!check) {
-
-            if (attrs.affiliation && attrs.orgPerm) {
-                if (user?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
-                    check = true
-                }
-            }
-            else if (attrs.affiliation && user?.hasAffiliation(attrs.affiliation)) {
-                check = true
-            }
-            else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
-                check = true
-            }
-
-            if (attrs.affiliation && attrs.affiliationOrg && check) {
-                check = user?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
-            }
-        }
+        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
 
         def tooltip = attrs.tooltip ?: ""
 
-        if(tooltip != "")
-        {
+        if (tooltip != "") {
             linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
         }
 
         if (check) {
-            def aClass = (this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item'
+            String aClass = (this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item'
 
             if (attrs.controller) {
                 out << g.link(linkBody,

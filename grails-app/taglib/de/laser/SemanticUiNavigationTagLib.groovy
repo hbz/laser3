@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.helper.SwissKnife
-import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 
 class SemanticUiNavigationTagLib {
@@ -285,26 +284,12 @@ class SemanticUiNavigationTagLib {
     def securedMainNavItem = { attrs, body ->
 
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+        String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
+        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
 
         if(attrs.newAffiliationRequests) {
             linkBody = linkBody + "<div class='ui floating red circular label'>${attrs.newAffiliationRequests}</div>";
-        }
-
-        if (!check) {
-            if (attrs.affiliation && attrs.orgPerm) {
-                if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
-                    check = true
-                }
-            }
-            else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
-                check = true
-            }
-            else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
-                check = true
-            }
         }
 
         if (attrs.generateElementId) {
@@ -344,13 +329,14 @@ class SemanticUiNavigationTagLib {
 
     private String generateElementId(Map<String, Object> attrs) {
 
-        if (! request.getAttribute('navIds')) {
-            request.setAttribute('navIds', [])
+        // IMPORTANT: cache only for current request
+        if (! request.getAttribute('laser_navigation_ids')) {
+            request.setAttribute('laser_navigation_ids', [])
         }
         String elementId = attrs.controller + '-' + attrs.action
         int counter
 
-        while (((List) request.getAttribute('navIds')).contains(elementId)) {
+        while (((List) request.getAttribute('laser_navigation_ids')).contains(elementId)) {
             if (counter) {
                 elementId = elementId.substring(0, elementId.lastIndexOf('-'))
             }
@@ -359,7 +345,7 @@ class SemanticUiNavigationTagLib {
             }
             elementId = elementId + '-' + (++counter)
         }
-        ((List) request.getAttribute('navIds')).add(elementId)
+        ((List) request.getAttribute('laser_navigation_ids')).add(elementId)
 
         elementId
     }
