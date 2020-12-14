@@ -78,6 +78,7 @@ class PlatformController  {
         result.platformInstance = platformInstance
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
 
+        /*
         List currentSubIds = orgTypeService.getCurrentSubscriptionIds(result.contextOrg)
 
         String qry = "select distinct(ap) , spoap.id" +
@@ -88,28 +89,26 @@ class PlatformController  {
                 "    subPkg.pkg = pkg and "+
                 "    platf.id =  (:platformId) and " +
                 "    subPkg.subscription.id in (:currentSubIds)"
-
         Map<String,Object> qryParams = [
                 platformId : platformInstance.id,
                 currentSubIds : currentSubIds
         ]
         //List orgAccessPointList = OrgAccessPoint.executeQuery(qry, qryParams)
+        */
 
-        //Map<String, Object> result = [:]
-
-        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} and oapl.subPkg is null order by LOWER(ap.name)"
+        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
+                    "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
+                    "and oapl.subPkg is null order by LOWER(ap.name)"
         result.orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : result.contextOrg])
 
-        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-        notActiveAPLinkQuery += "and not exists ("
-        notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id} and oapl.subPkg is null) order by lower(oap.name)"
-
+        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution " +
+            "and not exists (" +
+            "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true " +
+            "and oapl.platform.id = ${platformInstance.id} and oapl.subPkg is null) order by lower(oap.name)"
         result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : result.contextOrg])
+
         result.selectedInstitution = result.contextOrg.id
         result
-
     }
 
     //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

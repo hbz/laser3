@@ -370,7 +370,7 @@ class PackageController  {
         }
 
         result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub and sp.pkg = :pkg)',
-                [contextOrg: contextService.getOrg(), roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT,pkg:packageInstance])
+                [contextOrg: contextService.getOrg(), roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT, pkg:packageInstance])
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
@@ -416,35 +416,7 @@ class PackageController  {
         }
 
         result.packageInstance = packageInstance
-
-        /*
-        TODO [ticket=1142] matter of ERMS-1142
-        String filename = "${escapeService.escapeString(result.packageInstance.name)}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
-        */
-        withFormat {
-            html result
-            /*
-            json {
-                def map = exportService.getPackageMap(packageInstance, result.titlesList)
-
-                def json = map as JSON
-
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                response.contentType = "application/json"
-                render json
-            }
-            xml {
-                def starttime = exportService.printStart("Building XML Doc")
-                def doc = exportService.buildDocXML("Packages")
-                exportService.addPackageIntoXML(doc, doc.getDocumentElement(), packageInstance, result.titlesList)
-                exportService.printDuration(starttime, "Building XML Doc")
-
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                response.contentType = "text/xml"
-                exportService.streamOutXML(doc, response.outputStream)
-            }
-        */
-        }
+        result
     }
 
     @Secured(['ROLE_USER'])
