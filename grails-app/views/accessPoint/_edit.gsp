@@ -39,7 +39,7 @@
 
     <g:form class="ui form" url="[controller: 'accessPoint', action: 'edit_' + accessPoint.accessMethod]"
             id="${accessPoint.id}" method="GET">
-        <g:hiddenField name="id" value="${accessPoint.id}"/>
+        <g:hiddenField  id="id_${accessPoint?.id}" name="id" value="${accessPoint?.id}"/>
         <div class="la-inline-lists">
             <div class="ui card">
                 <div class="content">
@@ -51,7 +51,7 @@
             <dt><g:message code="accessMethod.label" default="Access Method"/></dt>
             <dd>
                 ${accessPoint.accessMethod.getI10n('value')}
-                <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod.id}"/>
+                <g:hiddenField  id="id_${accessPoint?.accessMethod.id}" name="accessMethod" value="${accessPoint?.accessMethod.id}"/>
             </dd>
         </dl>
         <g:if test="${accessPoint.hasProperty('url')}">

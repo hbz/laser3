@@ -347,7 +347,7 @@
 
     <div class="ui segment">
         <g:form action="processPropertiesMembers" method="post" class="ui form">
-            <g:hiddenField name="id" value="${params.id}"/>
+            <g:hiddenField id="id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field required">
                 <h4>${message(code: 'subscription.propertiesMembers.info', args: args.memberType)}</h4>

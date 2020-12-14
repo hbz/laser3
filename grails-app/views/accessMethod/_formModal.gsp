@@ -25,7 +25,7 @@
                     </semui:datepicker>
                 </div>
 
-                <g:hiddenField name="platfId" value="${platfId}"/>
+                <g:hiddenField  id="id_${platfId}" name="platfId" value="${platfId}"/>
                
             </div>
         </div>
