@@ -88,7 +88,7 @@
 
                     <g:if test="${editable}">
                         <g:form>
-                            <g:hiddenField name="id" value="${docInstance?.id}" />
+                            <g:hiddenField id="doc_id_${docInstance?.id}" name="id" value="${docInstance?.id}" />
                             <div class="ui form-actions">
                                 <g:link class="ui button" action="show" id="${docInstance?.id}">
                                     <i class="write icon"></i>

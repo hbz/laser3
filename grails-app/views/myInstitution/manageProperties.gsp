@@ -277,7 +277,7 @@
     <div class="ui segment">
 
         <g:form action="processManageProperties" method="post" class="ui form">
-            <g:hiddenField name="id" value="${params.id}"/>
+            <g:hiddenField id="pmp_id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field">
                 <h2>
