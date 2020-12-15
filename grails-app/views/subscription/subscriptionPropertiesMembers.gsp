@@ -159,7 +159,7 @@
 
             <div class="ui segment">
                 <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form propertiesSubscription">
-                    <g:hiddenField name="id" value="${params.id}"/>
+                    <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
                     <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
                     <h4>${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>

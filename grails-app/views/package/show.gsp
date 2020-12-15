@@ -199,7 +199,7 @@
             <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
                 <semui:card message="package.show.addToSub" class="notes">
                     <div class="content">
-                        <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
+                        <g:if test="${subscriptionList.size() > 0}">
 
                             <g:form controller="package" action="addToSub" id="${packageInstance.id}" class="ui form">
 

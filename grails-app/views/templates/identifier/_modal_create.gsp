@@ -6,9 +6,9 @@
 
     <g:form id="identifier" class="ui form"  url="[controller:'organisation', action:identifier? 'processEditIdentifier' : 'processCreateIdentifier', id:identifier?.id]" method="post">
 
-        <g:hiddenField name="orgid" value="${orgInstance?.id}"/>
+        <g:hiddenField id="org_id_${orgInstance?.id}" name="orgid" value="${orgInstance?.id}"/>
         <g:if test="${identifier}">
-            <g:hiddenField name="identifierId" value="${identifier.id}"/>
+            <g:hiddenField id="identifier_id_${identifier.id}" name="identifierId" value="${identifier.id}"/>
         </g:if>
 
         <div class="field fieldcontain">

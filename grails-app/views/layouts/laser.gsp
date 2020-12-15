@@ -57,7 +57,7 @@
     <nav aria-label="${message(code:'wcag.label.mainMenu')}">
         <div id="mainMenue" class="ui fixed inverted stackable menu" role="menubar" >
             <div class="ui container" role="none">
-                <semui:link generateElementId="true" role="menuitem" controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
+                <semui:link generateElementId="true" role="menuitem" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 </semui:link>
 
@@ -88,7 +88,7 @@
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</semui:link>
 
                                     <div class="divider"></div>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="gasco" action="index">${message(code:'menu.public.gasco_monitor')}</semui:link>
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</semui:link>
 
                                     <a id="gokb" href="${message(code:'url.gokb.' + currentServer)}" class="item" role="menuitem">GOKB</a>
                                     <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
@@ -331,7 +331,7 @@
 
                             <div class="menu" role="menu">
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dashboard">Dashboard</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">Dashboard</semui:link>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
@@ -504,7 +504,7 @@
 
                                     <div class="divider"></div>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="logout">${message(code:'menu.user.logout')}</semui:link>
                                     <div class="divider"></div>
 
                                     <g:if test="${grailsApplication.metadata['info.app.version']}">
@@ -522,7 +522,7 @@
 
                 <sec:ifNotGranted roles="ROLE_USER">
                     <sec:ifLoggedIn>
-                        <semui:link generateElementId="true" class="item" controller="logout" action="index">${message(code:'menu.user.logout')}</semui:link>
+                        <semui:link generateElementId="true" class="item" controller="logout">${message(code:'menu.user.logout')}</semui:link>
                     </sec:ifLoggedIn>
                 </sec:ifNotGranted>
 
@@ -610,7 +610,7 @@
 
     %{-- global content container --}%
 
-        <main class="ui main container ${visibilityContextOrgMenu}">
+        <main class="ui main container ${visibilityContextOrgMenu} hidden">
 
             %{-- system messages --}%
 
