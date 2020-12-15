@@ -333,7 +333,7 @@ class SemanticUiNavigationTagLib {
         if (! request.getAttribute('laser_navigation_ids')) {
             request.setAttribute('laser_navigation_ids', [])
         }
-        String elementId = attrs.controller + '-' + attrs.action
+        String elementId = attrs.controller + (attrs.action ? '-' + attrs.action : '')
         int counter
 
         while (((List) request.getAttribute('laser_navigation_ids')).contains(elementId)) {

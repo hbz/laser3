@@ -58,12 +58,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def index() {
-        redirect action: 'dashboard'
-    }
-
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def dashboard() {
         Map result = [:]
         result
     }
