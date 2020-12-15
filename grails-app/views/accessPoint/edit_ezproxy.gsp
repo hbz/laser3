@@ -48,7 +48,7 @@
                     <dt><g:message code="accessMethod.label" default="Access Method"/></dt>
                     <dd>
                         ${accessPoint.accessMethod.getI10n('value')}
-                        <g:hiddenField  id="id_${accessPoint?.accessMethod.id}" name="accessMethod" value="${accessPoint?.accessMethod.id}"/>
+                        <g:hiddenField id="accessMethod_id_${accessPoint?.accessMethod.id}" name="accessMethod" value="${accessPoint?.accessMethod.id}"/>
                     </dd>
                 </dl>
                 <g:if test="${accessPoint.hasProperty('url')}">
@@ -109,7 +109,7 @@
             <div class="content">
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}"
                         method="POST">
-                    <g:hiddenField  id="id_${accessPoint?.id}" name="id" value="${accessPoint?.id}"/>
+                    <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="id" value="${accessPoint.id}"/>
                     <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
 
                     <div class="ui form">

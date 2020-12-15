@@ -26,7 +26,7 @@
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
 
             <g:if test="${subInstance}">
-                <g:hiddenField id="id_${subInstance?.id}" name="sub" value="${subInstance?.id}"/>
+                <g:hiddenField id="sub_id_${subInstance?.id}" name="sub" value="${subInstance?.id}"/>
                 <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', default: 'Create a new license and link it to the subscription "{0}"', args: [subInstance.name])}</div>
             </g:if>
 

@@ -94,7 +94,7 @@
     </div>
 
     <g:form action="processLinkPackagesMembers" method="post" class="ui form">
-        <g:hiddenField id="id_${params.id}"  name="id" value="${params.id}"/>
+        <g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <div class="ui segment">
 

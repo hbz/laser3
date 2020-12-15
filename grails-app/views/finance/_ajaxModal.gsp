@@ -33,7 +33,7 @@
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
         <g:if test="${costItem}">
-            <g:hiddenField id="id_${costItem?.id}" name="costItemId" value="${costItem?.id}"/>
+            <g:hiddenField id="costItem_id_${costItem?.id}" name="costItemId" value="${costItem?.id}"/>
         </g:if>
         <g:if test="${copyCostsfromConsortia}">
             <g:hiddenField name="copyBase" value="${genericOIDService.getOID(costItem)}" />
