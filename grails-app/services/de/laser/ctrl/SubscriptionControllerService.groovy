@@ -5,7 +5,6 @@ import com.k_int.kbplus.FactService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.PackageService
-import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ApiSource
@@ -1220,7 +1219,7 @@ class SubscriptionControllerService {
                             try {
                                 globalSourceSyncService.defineMapFields()
                                 globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
-                                globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
+                                globalSourceSyncService.createOrUpdatePackageOAI(packageRecord.record.metadata.gokb.package)
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                                 if (addType == 'With') {
