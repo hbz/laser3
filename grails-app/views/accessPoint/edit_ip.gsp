@@ -48,7 +48,7 @@
                     <dt><g:message code="accessMethod.label" default="Access Method"/></dt>
                     <dd>
                         ${accessPoint.accessMethod.getI10n('value')}
-                        <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod.id}"/>
+                        <g:hiddenField id="accessMethod_id_${accessPoint.accessMethod.id}" name="accessMethod" value="${accessPoint.accessMethod.id}"/>
                     </dd>
                 </dl>
             </div>

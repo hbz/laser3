@@ -235,7 +235,7 @@
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
                     <td>
-                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencySymbol="EUR" />
+                        <g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" />
                         <br />
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
                     </td>

@@ -44,7 +44,7 @@
 				</dl>
 
 				<g:form class="ui form">
-					<g:hiddenField name="id" value="\${${propertyName}?.id}" />
+					<g:hiddenField id="id_${propertyName}?.id}" name="id" value="\${${propertyName}?.id}" />
 					<div class="ui form-actions">
 						<g:link class="ui button" action="edit" id="\${${propertyName}?.id}">
 							<i aria-hidden="true" class="write icon"></i>
