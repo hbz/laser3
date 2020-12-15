@@ -20,4 +20,6 @@ $(function () {
     tooltip.go();
     a11yMenu.go();
     a11yIcon.go();
+
+    $('main.ui.main').removeClass('hidden');
 })
