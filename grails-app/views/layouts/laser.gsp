@@ -610,7 +610,7 @@
 
     %{-- global content container --}%
 
-        <main class="ui main container ${visibilityContextOrgMenu}">
+        <main class="ui main container ${visibilityContextOrgMenu} hidden">
 
             %{-- system messages --}%
 
