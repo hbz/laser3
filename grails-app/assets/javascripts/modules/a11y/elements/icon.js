@@ -17,7 +17,7 @@ a11yIcon = {
         $(ctxSel + ' .ui.sortable.table thead .sorted.desc').attr( {
             'aria-sort' : 'descending'
         });
-        $(ctxSel + ' i.icon').attr( {
+        $(ctxSel + ' i.icon').not('.dropdown.icon').attr( {
             'aria-hidden' : 'true'
         });
     }
