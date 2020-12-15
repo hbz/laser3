@@ -18,7 +18,7 @@
 
 
                 <g:form class="ui form" url="[controller: 'accessMethod', action: 'update']" method="POST">
-                    <g:hiddenField id="accessMethod_id_${accessMethod?.id}" name="id" value="${accessMethod?.id}" />
+                    <g:hiddenField id="accessMethod_id_${accessMethod.id}" name="id" value="${accessMethod.id}" />
                     <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">

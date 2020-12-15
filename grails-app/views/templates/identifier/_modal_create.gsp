@@ -8,7 +8,7 @@
 
         <g:hiddenField id="org_id_${orgInstance?.id}" name="orgid" value="${orgInstance?.id}"/>
         <g:if test="${identifier}">
-            <g:hiddenField id="identifier_id_${identifier?.id}" name="identifierId" value="${identifier?.id}"/>
+            <g:hiddenField id="identifier_id_${identifier.id}" name="identifierId" value="${identifier.id}"/>
         </g:if>
 
         <div class="field fieldcontain">
