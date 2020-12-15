@@ -153,7 +153,8 @@ jsqtk = {
             let id = $(elem).attr('id')
             if ($.inArray(id, jsqtk.id_keys) < 0) {
                 jsqtk.id_keys.push(id)
-            } else {
+            }
+            else if ($.inArray(id, jsqtk.id_result) < 0) {
                 jsqtk.id_result.push(id)
             }
         })
