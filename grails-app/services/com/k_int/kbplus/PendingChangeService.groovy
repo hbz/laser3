@@ -557,13 +557,13 @@ class PendingChangeService extends AbstractLockableService {
             eventString = messageSource.getMessage('pendingChange.message_SU_NEW_01.eventString', null, locale)
         }
         else if(change.oid) {
-            if(change.oid.contains(IssueEntitlement.class.name)){
+            if(change.oid.split(":")[0] == IssueEntitlement.class.name){
                 IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
                 holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
                 pkgName = target.tipp.pkg.name
                 titleName = target.tipp.title.title
             }
-            else if(change.oid.contains(TitleInstancePackagePlatform.class.name)) {
+            else if(change.oid.split(":")[0] == TitleInstancePackagePlatform.class.name) {
                 TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) genericOIDService.resolveOID(change.oid)
                 pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.pkg.id, params: [filter:target.title.title])
                 pkgName = target.pkg.name
@@ -572,7 +572,7 @@ class PendingChangeService extends AbstractLockableService {
                 platformLink = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
                 platformName = target.platform.name
             }
-            else if(change.oid.contains(IssueEntitlementCoverage.class.name)) {
+            else if(change.oid.split(":")[0] == IssueEntitlementCoverage.class.name) {
                 IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(change.oid)
                 if(target) {
                     IssueEntitlement ie = target.issueEntitlement
@@ -589,7 +589,7 @@ class PendingChangeService extends AbstractLockableService {
                     coverageString = messageSource.getMessage('pendingChange.coverageStatementDeleted',null,locale)
                 }
             }
-            else if(change.oid.contains(TIPPCoverage.class.name)) {
+            else if(change.oid.split(":")[0] == TIPPCoverage.class.name) {
                 TIPPCoverage target = (TIPPCoverage) genericOIDService.resolveOID(change.oid)
                 pkgName = target.tipp.pkg.name
                 titleName = target.tipp.title.title
@@ -600,7 +600,7 @@ class PendingChangeService extends AbstractLockableService {
                 String endDate = target.endDate ? sdf.format(target.endDate) : ""
                 coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
             }
-            else if(change.oid.contains(Package.class.name)) {
+            else if(change.oid.split(":")[0] == Package.class.name) {
                 Package target = (Package) genericOIDService.resolveOID(change.oid)
                 pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.id)
                 pkgName = target.name
